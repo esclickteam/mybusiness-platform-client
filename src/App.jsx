@@ -12,6 +12,15 @@ import PhoneProfile from "./pages/staff/PhoneProfile";
 import MyTasks from "./pages/staff/MyTasks";
 import MySales from "./pages/staff/MySales";
 import ManagerDashboard from "./pages/manager/ManagerDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminLogs from "./pages/admin/AdminLogs";
+import AdminPlans from "./pages/admin/AdminPlans";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AdminUsers from "./pages/admin/AdminUsers";
+import EditSiteContent from "./pages/admin/EditSiteContent";
+import ManageRoles from "./pages/admin/ManageRoles";
+
+
 
 
 // טעינה עצלה של דפים עיקריים
@@ -66,6 +75,14 @@ function App() {
           <Route path="/staff/tasks" element={<MyTasks />} />
           <Route path="/staff/sales" element={<MySales />} />
           <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/logs" element={<AdminLogs />} />
+          <Route path="/admin/plans" element={<AdminPlans />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/site-edit" element={<EditSiteContent />} />
+          <Route path="/admin/roles" element={<ManageRoles />} />
+
 
 
           {/* עמוד פרטי עסק לצפייה (ללקוחות) */}
