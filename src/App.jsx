@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, useLocation, Navigate } from "react-route
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatTestPage from './pages/business/dashboardPages/buildTabs/ChatTestPage';
+import QuickJobsBoard from "./pages/QuickJobsBoard";
 
 // טעינה עצלה של דפים עיקריים
 const HomePage = lazy(() => import("./pages/Home"));
@@ -47,6 +48,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
 
           {/* עמוד פרטי עסק לצפייה (ללקוחות) */}
           <Route
