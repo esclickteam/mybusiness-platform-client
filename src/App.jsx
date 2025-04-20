@@ -11,6 +11,7 @@ import WorkSession from "./pages/staff/WorkSession";
 import PhoneProfile from "./pages/staff/PhoneProfile";
 import MyTasks from "./pages/staff/MyTasks";
 import MySales from "./pages/staff/MySales";
+import ManagerDashboard from "./pages/manager/ManagerDashboard";
 
 
 // טעינה עצלה של דפים עיקריים
@@ -64,6 +65,7 @@ function App() {
           <Route path="/staff/profile" element={<PhoneProfile />} />
           <Route path="/staff/tasks" element={<MyTasks />} />
           <Route path="/staff/sales" element={<MySales />} />
+          <Route path="/manager/dashboard" element={<ManagerDashboard />} />
 
 
           {/* עמוד פרטי עסק לצפייה (ללקוחות) */}
