@@ -1,0 +1,212 @@
+/* ShopTab.css – כולל 3 כרטיסים בשורה לפחות ועיצוב סל קניות אחד בלבד */
+
+.shop-editor {
+  max-width: 1000px;
+  margin: auto;
+  padding: 2rem;
+  background: #faf7ff;
+  border-radius: 16px;
+}
+
+.title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #5e0e9f;
+  margin-bottom: 2rem;
+}
+
+/* קטגוריות */
+.category-section {
+  margin-bottom: 1.5rem;
+}
+.category-manager {
+  display: flex;
+  gap: 0.5rem;
+}
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.category-list span {
+  background: #e1bee7;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.category-list button {
+  background: transparent;
+  border: none;
+  color: #a00000;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* מוצרים */
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.product-form input,
+.product-form textarea,
+.product-form select {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+.preview-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.product-form button {
+  background: linear-gradient(to right, #8e24aa, #6a1b9a);
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.preview-products-list {
+  margin-top: 2rem;
+}
+.preview-products-list h3 {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 1rem;
+}
+.product-cards-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+}
+.product-card-admin {
+  background: #f3e5f5;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.product-card-admin img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.delete-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: transparent;
+  border: none;
+  color: #c62828;
+  font-size: 16px;
+  cursor: pointer;
+}
+.card-content h4 {
+  margin: 0.5rem 0 0.3rem;
+  font-size: 16px;
+  color: #6a1b9a;
+}
+.card-content .description {
+  font-size: 14px;
+  color: #555;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* סליקה */
+.payment-settings,
+.payment-methods,
+.coupon-section,
+.coupons-table {
+  background: #f5efff;
+  padding: 1.5rem;
+  border-radius: 14px;
+  margin-bottom: 2rem;
+}
+.payment-providers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.payment-providers button {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+.payment-providers button.active {
+  background: #6a1b9a;
+  color: white;
+  border-color: #6a1b9a;
+}
+.payment-methods .options {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+.payment-methods label {
+  font-size: 14px;
+}
+
+/* קופונים */
+.coupon-section input {
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+.coupon-section button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #7b1fa2;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+.coupons-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 14px;
+}
+.coupons-table th,
+.coupons-table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+.coupons-table th {
+  background: #e1bee7;
+  color: #4a148c;
+}

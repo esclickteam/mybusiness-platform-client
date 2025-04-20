@@ -1,0 +1,67 @@
+.add-service-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .add-service-form input {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    min-width: 180px;
+    flex: 1;
+  }
+  
+  .add-service-form button {
+    background-color: #7c4dff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .add-service-form button:hover {
+    background-color: #6a3edb;
+  }
+  
+  .services-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .services-table th,
+  .services-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    text-align: right;
+  }
+  
+  .services-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+  }
+  
+  .services-table input {
+    padding: 0.4rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .services-table button {
+    background: none;
+    border: none;
+    color: #7c4dff;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+  
+  .services-table button:hover {
+    text-decoration: underline;
+  }
+  

@@ -1,0 +1,201 @@
+/* 📁 BusinessMessagesPage.css — גרסה מעודכנת עם שדרוגים */
+
+/* עיצוב כללי של הדף */
+/* לדוגמה, אם השורה הזו לא מתבצע עליה שינוי */
+.messages-page {
+  display: flex !important;
+  height: 100% !important;
+  min-height: 550px !important;
+  background: #f9f5ff !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  border: 1px solid #ddd !important;
+}
+
+
+/* סיידבר */
+.chat-sidebar {
+  width: 280px;
+  background: #f3edff;
+  padding: 1.2rem;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+/* כותרת של הסיידבר */
+.chat-sidebar h4 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #6b4fc4;
+}
+
+/* פריט ברשימת השיחות */
+.chat-list-item {
+  background: #ede7fe;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease; /* אנימציה רכה */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* צללית עדינה */
+}
+
+.chat-list-item:hover {
+  background: #ded1fb;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* צללית ברורה יותר */
+}
+
+/* פריט ברשימה שמסומן כפעיל */
+.chat-list-item.active {
+  background: #d3c4fa;
+  font-weight: bold;
+  border: 2px solid #6c63ff;
+  box-shadow: 0 0 0 2px #e6e0ff;
+  transform: scale(1.05); /* אפקט גידול עדין בשיחה פעילה */
+}
+
+/* פרטי השיחה (שם וסטטוס) */
+.chat-list-item strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #3b3b3b;
+}
+
+/* תוכן ההודעה (טקסט) */
+.chat-list-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* תוכן החלק הראשי של הדף */
+.chat-main {
+  flex: 1;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* בועת שיחה — עם שמות מחלקה ייחודיים */
+.bc-bubble {
+  width: fit-content;
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  line-height: 1.6;
+  word-break: break-word;
+  display: block;
+  white-space: pre-wrap;
+  animation: bubbleAnimation 0.5s ease-out;
+}
+
+/* בועת שיחה של לקוח */
+.bc-bubble-client {
+  background-color: #f0f0f0;
+  color: #222;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+/* בועת שיחה של עסק */
+.bc-bubble-business {
+  background-color: #e8dcff;
+  color: #222;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+/* זמן השיחה */
+.bc-time {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 6px;
+  text-align: left;
+  direction: ltr;
+}
+
+/* שורת הקלט של ההודעה */
+.bc-input-area {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 1rem;
+  align-items: center;
+}
+
+/* שדה הטקסט של הודעה חדשה */
+.bc-input-area input[type="text"] {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 28px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background: #fff;
+}
+
+/* כפתור שליחת ההודעה */
+.bc-input-area button {
+  padding: 10px 16px;
+  background-color: #6b4fc4;
+  color: white;
+  border: none;
+  border-radius: 28px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease; /* אנימציה לכפתור */
+}
+
+.bc-input-area button:hover {
+  background-color: #5a3dc0;
+  transform: scale(1.05); /* אפקט התפשטות עדין בכפתור */
+}
+
+/* הודעה כאשר אין שיחות */
+.empty-chat {
+  text-align: center;
+  color: #777;
+  margin-top: 3rem;
+  font-size: 1.1rem;
+}
+
+/* אנימציה לבועות שיחה */
+@keyframes bubbleAnimation {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* ✅ רספונסיביות */
+@media (max-width: 768px) {
+  .messages-page {
+      flex-direction: column;
+  }
+
+  .chat-sidebar {
+      width: 100%;
+      border-left: none;
+      border-bottom: 1px solid #ddd;
+  }
+
+  .chat-main {
+      padding: 1rem;
+  }
+
+  .chat-list-item {
+      font-size: 0.95rem;
+  }
+
+  .bc-bubble {
+      max-width: 90%;
+  }
+}

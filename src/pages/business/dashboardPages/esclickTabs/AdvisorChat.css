@@ -1,0 +1,130 @@
+/* ✅ עיצוב צ'אט אחיד – יועץ עסקי + שיווקי */
+
+.advisor-chat-container {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-grow: 1;
+  }
+  
+  .chat-box-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chat-box {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    padding: 1rem;
+    padding-bottom: 0 !important;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+  
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 16px;
+    background-color: #f2f2f2;
+    max-width: 100%;
+    direction: rtl;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: right;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .bubble.user {
+    align-self: flex-end;
+    background-color: #e1dbf8;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 4px;
+  }
+  
+  .bubble.assistant {
+    align-self: flex-start;
+    border-top-right-radius: 16px;
+    border-top-left-radius: 4px;
+  }
+  
+  .bubble * {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .chat-input {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding-bottom: 1rem;
+  }
+  
+  .chat-input input {
+    flex: 1;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  .chat-input button {
+    padding: 10px 20px;
+    background-color: #7e57c2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .chat-input button:hover {
+    background-color: #6843bb;
+  }
+  
+  .markdown-message ol,
+  .markdown-message ul {
+    padding-right: 1.2em;
+    margin: 0.2em 0;
+    list-style-position: inside;
+    direction: rtl;
+  }
+  
+  .markdown-message li {
+    margin: 0.1em 0;
+    line-height: 1.4;
+  }
+  
+  .markdown-message li > p {
+    display: inline !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    line-height: inherit !important;
+  }
+  
+  .markdown-message p {
+    margin: 0.2em 0;
+    direction: rtl;
+  }
+  
+  .markdown-message h1,
+  .markdown-message h2,
+  .markdown-message h3 {
+    margin: 0.4em 0 0.2em;
+    font-weight: bold;
+    direction: rtl;
+  }
+  

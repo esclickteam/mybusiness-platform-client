@@ -1,0 +1,96 @@
+/* CollabFindPartnerTab.css – עיצוב לתיבת חיפוש וכרטיסי שותפים */
+
+:root {
+  --card-bg: #ffffff;
+  --border-color: #e1d9f3;
+  --radius: 14px;
+  --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  --primary: #9b59b6;
+  --accent: #6c5ce7;
+}
+
+.search-container {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+.search-type-toggle {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.search-type-toggle input {
+  margin-left: 0.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background-color: #fdfdff;
+}
+
+.collab-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  max-width: 100%;
+}
+
+.collab-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.collab-card-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.message-box-button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.message-box-button:hover {
+  background-color: var(--accent);
+}
+
+.message-box-button.secondary {
+  background-color: #fff;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.message-box-button.secondary:hover {
+  background-color: #f3e8ff;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #00b894;
+  margin-top: 0.8rem;
+}

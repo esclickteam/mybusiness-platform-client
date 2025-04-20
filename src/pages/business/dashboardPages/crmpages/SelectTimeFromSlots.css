@@ -1,0 +1,22 @@
+.time-select-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .time-select-wrapper label {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .time-select-wrapper select {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 300px;
+  }
+  

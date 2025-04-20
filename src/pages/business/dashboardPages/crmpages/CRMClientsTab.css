@@ -1,0 +1,84 @@
+.clients-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .search-input {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    flex: 1;
+  }
+  
+  .add-client-btn {
+    background-color: #7c4dff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .add-client-btn:hover {
+    background-color: #6a3edb;
+  }
+  
+  .add-client-form {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .add-client-form input {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    min-width: 200px;
+  }
+  
+  .save-client-btn {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .save-client-btn:hover {
+    background: #45a045;
+  }
+  
+  .clients-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .clients-table th,
+  .clients-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    text-align: right;
+  }
+  
+  .clients-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+  }
+  
+  .clients-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  

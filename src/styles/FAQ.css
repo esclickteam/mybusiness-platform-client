@@ -1,0 +1,78 @@
+.faq-container {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.faq-title {
+    font-size: 36px;
+    color: #800080;
+    margin-bottom: 20px;
+}
+
+.faq-section {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center; /* ממקם את הטקסט במרכז */
+}
+
+.faq-section h2 {
+    color: #800080;
+    font-size: 24px;
+}
+
+.faq-section p {
+    font-size: 18px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.faq-footer {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    text-align: center; /* ממקם את הטקסט במרכז */
+}
+
+.faq-footer h3 {
+    color: #800080;
+    font-size: 22px;
+}
+
+.footer {
+    margin-top: 30px;
+    padding: 20px;
+    text-align: center;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-links li {
+    margin: 5px 10px;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.copyright {
+    font-size: 14px;
+    color: #777;
+}

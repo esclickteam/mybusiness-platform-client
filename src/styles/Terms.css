@@ -1,0 +1,96 @@
+/* 🌟 רקע דף התקנון */
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #e0e4ff, #ffffff); /* רקע כמו בעמוד בעלי עסקים */
+    direction: rtl;
+    font-family: Arial, sans-serif;
+}
+
+/* 🌟 מבנה הדף */
+.terms-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* 🌟 כותרת ראשית */
+.terms-title {
+    font-size: 36px;
+    color: #4a148c;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* 🌟 סגנון הסעיפים */
+.terms-section {
+    text-align: right;
+    margin-bottom: 25px;
+}
+
+.terms-section h2 {
+    font-size: 26px;
+    color: #4a148c;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.terms-section p {
+    font-size: 18px;
+    color: #333;
+    line-height: 1.8;
+}
+
+/* 🌟 התאמה לנייד */
+@media (max-width: 768px) {
+    .terms-container {
+        padding: 20px;
+        width: 90%;
+    }
+
+    .terms-title {
+        font-size: 30px;
+    }
+
+    .terms-section h2 {
+        font-size: 22px;
+    }
+
+    .terms-section p {
+        font-size: 16px;
+    }
+}
+
+/* 🌟 תחתית האתר */
+.footer {
+    margin-top: 40px;
+    padding: 20px;
+    text-align: center;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.footer-links li {
+    display: inline;
+    margin: 0 10px;
+    color: #333;
+    cursor: pointer;
+}
+
+.footer-links li:hover {
+    text-decoration: underline;
+}
+
+/* זכויות שמורות */
+.copyright {
+    font-size: 16px;
+    color: #000;
+}

@@ -1,0 +1,260 @@
+/* 🌟 רקע דף הבית */
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #e0e4ff, #ffffff);
+  direction: rtl;
+  font-family: Arial, sans-serif;
+}
+
+/* 🌟 מבנה הדף */
+.home-container {
+  text-align: center;
+  padding: 30px;
+}
+
+/* 🌟 תפריט עליון */
+.navbar {
+  background-color: #d1c4e9;
+  color: #4a148c;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.header-left {
+  display: flex;
+  gap: 15px;
+}
+
+.icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #4a148c;
+}
+
+/* 🌟 כותרות */
+.main-title {
+  font-size: 42px;
+  color: #4a148c;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 22px;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+/* 🌟 אזור החיפוש */
+.search-section {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 35px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  width: 350px;
+  padding: 14px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
+.search-button {
+  background: linear-gradient(90deg, #7c3aed, #4c1d95);
+  color: white;
+  padding: 14px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.search-button:hover {
+  background: linear-gradient(90deg, #4c1d95, #7c3aed);
+}
+
+/* 🌟 קטגוריות עם דפדוף */
+.categories-slider {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 10px;
+  position: relative;
+}
+
+.categories-container {
+  display: flex;
+  gap: 12px;
+  overflow: hidden;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.category {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+}
+
+.category:hover {
+  background-color: #c7d2fe;
+}
+
+.scroll-button {
+  background-color: #d1c4e9;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 🌟 כרטיסיות סימניה */
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.bookmark-card {
+  background: #ffffff;
+  border-radius: 0 20px 20px 0;
+  border-right: 6px solid #7c3aed;
+  padding: 1.5rem;
+  width: 280px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: right;
+  transition: transform 0.3s ease;
+}
+
+.bookmark-card:hover {
+  transform: translateY(-5px);
+}
+
+.bookmark-card h3 {
+  margin-top: 0;
+  color: #4c1d95;
+}
+
+.bookmark-card button {
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.bookmark-card button:hover {
+  background-color: #8b5cf6;
+}
+
+/* 🌟 תחתית האתר */
+.footer {
+  margin-top: 40px;
+  padding: 20px;
+  text-align: center;
+  background-color: #ede9fe;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.footer-links li {
+  color: #4c1d95;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.footer-links li:hover {
+  text-decoration: underline;
+}
+
+copyright {
+  font-size: 16px;
+  color: #000;
+}
+
+/* 🌟 התאמה לנייד */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px;
+  }
+
+  .main-title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .search-input {
+    width: 90%;
+  }
+
+  .cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bookmark-card {
+    width: 90%;
+  }
+
+  .action-button {
+    font-size: 16px;
+    padding: 12px 0;
+  }
+
+  .categories-container {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+}

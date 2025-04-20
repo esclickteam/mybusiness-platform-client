@@ -1,0 +1,52 @@
+.client-service-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.client-service-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.client-service-card h4 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.client-service-card p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 15px;
+}
+
+.go-to-calendar-btn,
+.back-button {
+  margin-top: 16px;
+  padding: 10px 24px;
+  background-color: #7a3df4;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(122, 61, 244, 0.25);
+}
+
+.go-to-calendar-btn:hover,
+.back-button:hover {
+  background-color: #5e2fcf;
+  transform: scale(1.03);
+}
+
+.go-to-calendar-btn:active,
+.back-button:active {
+  transform: scale(0.96);
+}

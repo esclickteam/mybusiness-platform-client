@@ -1,0 +1,170 @@
+.crm-appointments-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* חיפוש */
+  .search-input {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    max-width: 300px;
+    align-self: flex-start;
+  }
+  
+  /* כותרת טופס */
+  .appointments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* כפתור הוספה */
+  .add-btn {
+    background-color: #7c4dff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .add-btn:hover {
+    background-color: #6a3edb;
+  }
+  
+  /* טופס הוספה */
+  .add-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .add-form input {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  .add-form button {
+    background-color: #4caf50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  /* טבלה */
+  .appointments-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .appointments-table th,
+  .appointments-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    text-align: right;
+  }
+  
+  .appointments-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+  }
+  
+  .appointments-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* סטטוס */
+  .status-btn {
+    border: none;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .status-חדש {
+    background: #f5f5f5;
+    color: #444;
+  }
+  
+  .status-בטיפול {
+    background: #ffe58f;
+    color: #664d03;
+  }
+  
+  .status-הושלם {
+    background: #d9f7be;
+    color: #237804;
+  }
+  
+  /* שורת עריכה */
+  .appointments-table tr.editing {
+    background-color: #f5f5ff;
+  }
+  
+  /* שדות עריכה בתוך הטבלה */
+  .appointments-table td input {
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* כפתורי פעולה אחידים */
+  .action-btn {
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: 0.2s;
+  }
+  
+  /* כפתור ערוך / שמור */
+  .action-edit {
+    background-color: #ede7f6;
+    color: #7c4dff;
+  }
+  .action-edit:hover {
+    background-color: #d1c4e9;
+    color: #5e35b1;
+  }
+  
+  /* כפתור ביטול */
+  .action-cancel {
+    background-color: #ffe5e5;
+    color: #e53935;
+  }
+  .action-cancel:hover {
+    background-color: #ffcdd2;
+  }
+  
+  /* תא פעולות */
+  .actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  

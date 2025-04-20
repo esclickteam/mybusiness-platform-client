@@ -1,0 +1,167 @@
+.business-profile-card {
+  background: var(--card-bg, #fff);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow, 0 0 20px rgba(0, 0, 0, 0.05));
+  max-width: 850px;
+  margin: 0 auto;
+  transition: 0.3s ease-in-out;
+  direction: rtl;
+}
+
+.business-profile-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.business-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.business-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary, #9b59b6);
+  transition: 0.2s;
+}
+
+.business-logo:hover {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+.business-header-text {
+  flex: 1;
+  min-width: 180px;
+  text-align: right;
+}
+
+.business-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-dark, #222);
+  margin: 0;
+}
+
+.business-category {
+  font-size: 1rem;
+  color: var(--primary, #9b59b6);
+  margin-top: 0.3rem;
+}
+
+.business-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.business-section:last-of-type {
+  border-bottom: none;
+}
+
+.business-section h4 {
+  font-size: 1.15rem;
+  color: var(--primary-dark, #6e3aa6);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.business-section p,
+.business-section ul {
+  margin: 0;
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.7;
+}
+
+.business-section ul {
+  padding-inline-start: 1.2rem;
+  list-style-type: disc;
+}
+
+/* טופס בתוך מודאל */
+.styled-form {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1rem 0;
+}
+
+.styled-form label {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  display: block;
+  color: #333;
+}
+
+.styled-form input,
+.styled-form textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.styled-form input:focus,
+.styled-form textarea:focus {
+  border-color: var(--primary, #9b59b6);
+  background-color: white;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.15);
+}
+
+.styled-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* כפתורי שמירה/ביטול */
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.modal-buttons .collab-form-button {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 30px;
+}
+
+.collab-form-button {
+  background-color: var(--primary, #9b59b6);
+  color: white;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.collab-form-button:hover {
+  background-color: var(--primary-dark, #823cb4);
+}
+
+.collab-form-button.secondary {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.collab-form-button.secondary:hover {
+  background-color: #ccc;
+}

@@ -1,0 +1,121 @@
+.register-container {
+    width: 400px;
+    background: #f2e5ff; /* רקע סגול בהיר */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 60px auto;
+    text-align: center;
+}
+
+.register-container h2 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #3b007d; /* סגול כהה */
+}
+
+.register-container p {
+    font-size: 14px;
+    color: #5d5d5d;
+    margin-bottom: 20px;
+}
+
+.register-container input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #c084fc; /* סגול בינוני */
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #f9f9ff;
+    transition: 0.3s;
+}
+
+.register-container input:focus {
+    border-color: #8200ff; /* סגול כהה */
+    background-color: #fff;
+    outline: none;
+}
+
+/* עיצוב תיבת הבחירה לרדיובטנים */
+.radio-container {
+    display: flex;
+    justify-content: space-between; /* מרווח בין האפשרויות */
+    align-items: center;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #c084fc;
+    gap: 20px; /* ריווח אחיד */
+}
+
+/* עיצוב אפשרות בחירה */
+.radio-option {
+    display: flex;
+    flex-direction: column; /* כדי שהכפתור יהיה מעל */
+    align-items: center;
+    width: 50%; /* כל אפשרות תיקח חצי מהשטח */
+}
+
+/* עיצוב של כפתור הבחירה */
+.radio-option input[type="radio"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #3b007d; /* גבול סגול כהה */
+    border-radius: 50%;
+    margin-bottom: 5px;
+    position: relative;
+    cursor: pointer;
+}
+
+/* כאשר הכפתור נבחר */
+.radio-option input[type="radio"]:checked {
+    background-color: #3b007d;
+}
+
+/* טקסט ליד כפתור הבחירה */
+.radio-option label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #3b007d;
+    text-align: center;
+}
+
+/* כפתור הרשמה רחב, בולט ומרשים */
+.register-button {
+    width: 100%;
+    padding: 14px;
+    background: #6a00f4;
+    color: #fff;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+    box-shadow: 0px 4px 8px rgba(106, 0, 244, 0.3);
+}
+
+.register-button:hover {
+    background: #5000c9;
+    box-shadow: 0px 6px 12px rgba(80, 0, 201, 0.4);
+}
+
+/* לינק להתחברות */
+.login-link {
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.login-link a {
+    color: #6a00f4;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}

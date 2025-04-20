@@ -1,0 +1,81 @@
+/* 🌟 עיצוב עמוד "אודות" */
+.about-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    text-align: center;
+    direction: rtl;
+    background: linear-gradient(to bottom, #e0e4ff, #ffffff); /* רקע רך ונעים */
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 🌟 כותרת ראשית */
+.about-title {
+    font-size: 36px;
+    color: #4a148c;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* 🌟 פסקאות */
+.about-paragraph {
+    font-size: 20px;
+    color: #333;
+    line-height: 1.8;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* 🌟 כותרות ביניים */
+.about-section-title {
+    font-size: 26px;
+    color: #4a148c;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* 🌟 רשימה */
+.about-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.about-list li {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 12px;
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    width: 80%;
+}
+
+/* 🌟 התאמה לנייד */
+@media (max-width: 768px) {
+    .about-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .about-title {
+        font-size: 30px;
+    }
+
+    .about-paragraph {
+        font-size: 18px;
+    }
+
+    .about-section-title {
+        font-size: 22px;
+    }
+
+    .about-list li {
+        font-size: 16px;
+        width: 100%;
+    }
+}

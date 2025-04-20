@@ -1,0 +1,53 @@
+/* styles/App.css */
+
+/* כפתורים בכרטיסיות - צבעוניים, גדולים ומודגשים יותר */
+.action-button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 5px;
+  background-color: #8e24aa;
+  color: white;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.action-button:hover {
+  background-color: #6a1b9a;
+  transform: scale(1.05);
+}
+
+/* כותרת האתר - גדולה יותר ובצבע סגול */
+.main-title {
+  color: #6a1b9a;
+  font-size: 48px;
+  margin-top: 20px;
+}
+
+/* כפתור תפריט והתחברות - בצד שמאל עם אימוג'ים מתאימים */
+.navbar {
+  display: flex;
+  gap: 15px;
+  margin-left: auto;
+}
+
+.menu-button,
+.login-button {
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.menu-button:hover,
+.login-button:hover {
+  color: #ccc;
+}
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+

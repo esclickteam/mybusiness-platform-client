@@ -1,0 +1,73 @@
+.checkout-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f5f7fa;
+    text-align: center;
+}
+
+.checkout-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.checkout-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #6a11cb;
+    margin-bottom: 15px;
+}
+
+.checkout-content {
+    font-size: 18px;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.checkout-price, .checkout-duration {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.error-message {
+    color: #d9534f;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.pay-button {
+    background: #6a11cb;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+}
+
+.pay-button:hover {
+    background: #5a0dab;
+}
+
+.return-link {
+    display: block;
+    margin-top: 15px;
+    color: #6a11cb;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.return-link:hover {
+    text-decoration: underline;
+}

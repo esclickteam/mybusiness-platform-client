@@ -1,0 +1,54 @@
+.business-dashboard-layout {
+    display: flex;
+    height: 100vh;
+    direction: rtl;
+    background: linear-gradient(to bottom, #f3edff, #ede9f7);
+  }
+  
+  /* סרגל צד */
+  .sidebar {
+    width: 240px;
+    background-color: #c9aef5;
+    color: white;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    background-color: #b088f9;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+  }
+  
+  .sidebar a:hover {
+    background-color: #a072f5;
+  }
+  
+  .sidebar a.active {
+    background-color: #884df2;
+    font-weight: bold;
+  }
+  
+  /* תוכן ראשי */
+  .dashboard-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+  }
+  

@@ -1,0 +1,115 @@
+.contact-container {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    direction: rtl;
+}
+
+.contact-title {
+    font-size: 36px;
+    font-weight: bold;
+    color: #800080;
+    margin-bottom: 10px;
+}
+
+.contact-subtitle {
+    font-size: 18px;
+    color: #4a4a4a;
+    margin-bottom: 20px;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    text-align: right;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 2px solid #800080;
+    border-radius: 10px;
+    font-size: 18px;
+    font-family: inherit;
+    color: #333;
+}
+
+.contact-form textarea {
+    height: 150px;
+    resize: none;
+}
+
+/* כפתור שליחה גדול ובולט */
+.submit-button {
+    background-color: #800080;
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+    text-transform: uppercase;
+    box-shadow: 0px 4px 10px rgba(128, 0, 128, 0.4);
+}
+
+.submit-button:hover {
+    background-color: #5a005a;
+    box-shadow: 0px 6px 15px rgba(128, 0, 128, 0.6);
+    transform: scale(1.05);
+}
+
+.contact-email {
+    font-size: 18px;
+    color: #333;
+    margin-top: 20px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.footer-links li {
+    display: inline-block;
+    margin: 5px 10px;
+    font-size: 16px;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: #800080;
+    font-weight: bold;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.copyright {
+    font-size: 14px;
+    color: #000;
+}
