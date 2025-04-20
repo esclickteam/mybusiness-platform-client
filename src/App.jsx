@@ -6,6 +6,12 @@ import ChatTestPage from './pages/business/dashboardPages/buildTabs/ChatTestPage
 import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ClientDashboard from "./pages/client/ClientDashboard";
+import StaffDashboard from "./pages/staff/StaffDashboard";
+import WorkSession from "./pages/staff/WorkSession";
+import PhoneProfile from "./pages/staff/PhoneProfile";
+import MyTasks from "./pages/staff/MyTasks";
+import MySales from "./pages/staff/MySales";
+
 
 // טעינה עצלה של דפים עיקריים
 const HomePage = lazy(() => import("./pages/Home"));
@@ -53,6 +59,12 @@ function App() {
           <Route path="/quick-jobs" element={<QuickJobsBoard />} />
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
           <Route path="/client" element={<ClientDashboard />} />
+          <Route path="/staff/dashboard" element={<StaffDashboard />} />
+          <Route path="/staff/session" element={<WorkSession />} />
+          <Route path="/staff/profile" element={<PhoneProfile />} />
+          <Route path="/staff/tasks" element={<MyTasks />} />
+          <Route path="/staff/sales" element={<MySales />} />
+
 
           {/* עמוד פרטי עסק לצפייה (ללקוחות) */}
           <Route
