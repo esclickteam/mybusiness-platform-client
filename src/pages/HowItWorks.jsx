@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 function HowItWorks() {
   return (
     <div className="howitworks-container">
-      <h1 className="howitworks-title"> איך זה עובד - Eshet Asakim </h1>
+      <h1 className="howitworks-title"> איך זה עובד - עסקליק </h1>
       <p className="howitworks-subtitle">
         נסביר בצורה פשוטה איך הפלטפורמה שלנו עובדת, איך היא יכולה לעזור לך כעסק או כלקוח, ואיך להתחיל להשתמש בה בקלות.
       </p>
@@ -101,7 +101,7 @@ function HowItWorks() {
           <li><Link to="/terms">📜 תקנון</Link></li>
           <li><Link to="/contact">📞 יצירת קשר</Link></li>
         </ul>
-        <p className="copyright">כל הזכויות שמורות © Eshet Asakim</p>
+        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
       </footer>
     </div>
   );

@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 function About() {
   return (
     <div className="about-container">
-      <h1 className="about-title">קצת עלינו - Eshet Asakim</h1>
+      <h1 className="about-title">קצת עלינו - עסקליק</h1>
       <p className="about-paragraph">
-        ברוכים הבאים ל-Eshet Asakim!<br />
+        ברוכים הבאים ל-עסקליק!<br />
         אנחנו כאן כדי להפוך את החיבור בין עסקים ללקוחות ובין עסקים לעסקים לפשוט, מהיר ומדויק.
         הפלטפורמה שלנו מציעה מגוון כלים חכמים לעסקים שמחפשים לגדול וללקוחות שמחפשים שירותים ומוצרים בצורה קלה ונוחה.
       </p>
@@ -20,7 +20,7 @@ function About() {
 
       <h2 className="about-section-title">איך הכל התחיל</h2>
       <p className="about-paragraph">
-        הסיפור של Eshet Asakim התחיל מתוך חוויה אישית. גם אנחנו נתקלנו בקושי למצוא עסקים איכותיים ושירותים אמינים במהירות.
+        הסיפור של עסקליק התחיל מתוך חוויה אישית. גם אנחנו נתקלנו בקושי למצוא עסקים איכותיים ושירותים אמינים במהירות.
         ובתור עסקים התקשינו למצוא את עצמנו, גם עם אתר משלנו ושיווק, ולכן הבנו את הצורך ב"סניף אינטרנטי" נוסף ושיתופי פעולה עם עסקים נוספים בתחום שלנו.
       </p>
 
@@ -55,7 +55,7 @@ function About() {
           <li><Link to="/terms">📜 תקנון</Link></li>
           <li><Link to="/contact">📞 יצירת קשר</Link></li>
         </ul>
-        <p className="copyright">כל הזכויות שמורות © Eshet Asakim</p>
+        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
       </footer>
     </div>
   );

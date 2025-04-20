@@ -13,32 +13,6 @@ body {
   padding: 30px;
 }
 
-/* 🌟 תפריט עליון */
-.navbar {
-  background-color: #d1c4e9;
-  color: #4a148c;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-size: 1.6rem;
-  font-weight: bold;
-}
-
-.header-left {
-  display: flex;
-  gap: 15px;
-}
-
-.icon {
-  font-size: 24px;
-  cursor: pointer;
-  color: #4a148c;
-}
-
 /* 🌟 כותרות */
 .main-title {
   font-size: 42px;
@@ -52,6 +26,75 @@ body {
   color: #333;
   font-weight: bold;
   margin-bottom: 25px;
+}
+
+/* 🌟 הצגת עיר לפי מיקום */
+.location-hint {
+  color: #555;
+  margin-top: -10px;
+  font-size: 16px;
+}
+.location-hint strong {
+  color: #4a148c;
+}
+
+/* 🌟 מחולל התאמה מהירה */
+.quick-options h3 {
+  color: #4a148c;
+  margin-bottom: 1rem;
+}
+
+.quick-options-container {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.quick-option-btn {
+  background: #ede9fe;
+  border: 2px solid #d1c4e9;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: bold;
+  color: #4a148c;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.quick-option-btn:hover {
+  background-color: #e9d5ff;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* 🌟 חיפושים חמים */
+.trending-box {
+  margin-bottom: 2rem;
+  background: #f4f1fd;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  max-width: 700px;
+  margin-inline: auto;
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+
+.trending-box h4 {
+  margin-bottom: 10px;
+  color: #4c1d95;
+}
+
+.trending-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trending-box li {
+  margin-bottom: 6px;
+  color: #555;
+  font-size: 15px;
 }
 
 /* 🌟 אזור החיפוש */
@@ -223,10 +266,6 @@ copyright {
 
 /* 🌟 התאמה לנייד */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 10px;
-  }
-
   .main-title {
     font-size: 32px;
   }
@@ -257,4 +296,24 @@ copyright {
     flex-wrap: nowrap;
     justify-content: flex-start;
   }
+}
+.quick-jobs-button-wrapper {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.quick-jobs-button {
+  background: linear-gradient(90deg, #4c1d95, #7c3aed);
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.quick-jobs-button:hover {
+  background: linear-gradient(90deg, #7c3aed, #4c1d95);
 }

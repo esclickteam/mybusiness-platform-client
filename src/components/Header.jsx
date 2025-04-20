@@ -33,7 +33,7 @@ const Header = () => {
   left: "50%",
   transform: "translateX(-50%)",
 }}>
-  <img src={logo} alt="Eshet Asakim" style={{
+  <img src={logo} alt="עסקליק" style={{
     height: "120px", // מותאם לגובה שורה
     objectFit: "contain"
   }} />

@@ -5,12 +5,12 @@ import { Link } from "react-router-dom";
 function FAQ() {
   return (
     <div className="faq-container">
-      <h1 className="faq-title">שאלות נפוצות - Eshet Asakim</h1>
+      <h1 className="faq-title">שאלות נפוצות - עסקליק</h1>
 
       <div className="faq-section">
         <h2> כללי</h2>
-        <p><b>מהי הפלטפורמה Eshet Asakim?</b><br />
-        Eshet Asakim היא פלטפורמה המחברת בין עסקים ללקוחות בצורה חכמה, מהירה ונוחה. היא מאפשרת חיפוש עסקים, קביעת תורים, רכישות אונליין, יצירת קשר בין עסקים ולקוחות ועוד.</p>
+        <p><b>מהי הפלטפורמה עסקליק?</b><br />
+        עסקליק היא פלטפורמה המחברת בין עסקים ללקוחות בצורה חכמה, מהירה ונוחה. היא מאפשרת חיפוש עסקים, קביעת תורים, רכישות אונליין, יצירת קשר בין עסקים ולקוחות ועוד.</p>
 
         <p><b>האם השירות כרוך בתשלום?</b><br />
         השימוש הבסיסי בפלטפורמה הוא חינמי, אך לעסקים מוצעות חבילות בתשלום עם כלים מתקדמים לשיווק, ניהול וקידום העסק.</p>
@@ -77,7 +77,7 @@ function FAQ() {
           <li><Link to="/terms" className="footer-link">📜 תקנון</Link></li>
           <li><Link to="/contact" className="footer-link">📞 יצירת קשר</Link></li>
         </ul>
-        <p className="copyright">כל הזכויות שמורות © Eshet Asakim</p>
+        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
       </footer>
     </div>
   );
