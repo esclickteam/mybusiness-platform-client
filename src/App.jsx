@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatTestPage from './pages/business/dashboardPages/buildTabs/ChatTestPage';
 import QuickJobsBoard from "./pages/QuickJobsBoard";
+import QuickJobForm from "./pages/QuickJobForm";
 
 // טעינה עצלה של דפים עיקריים
 const HomePage = lazy(() => import("./pages/Home"));
@@ -49,6 +50,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
           {/* עמוד פרטי עסק לצפייה (ללקוחות) */}
           <Route
