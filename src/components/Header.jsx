@@ -1,9 +1,9 @@
-// src/components/Header.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import { FaBars, FaSearch } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import "../styles/Header.css";     // ← ייבוא CSS
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -12,7 +12,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/login");
+      navigate("/");   // אחרי logout עובר לעמוד הבית
     } catch (err) {
       console.error("❌ logout failed:", err);
     }
@@ -36,67 +36,35 @@ const Header = () => {
   };
 
   return (
-    <nav
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: "#d1b3ff",
-        padding: "10px 20px",
-        height: "100px",
-        position: "relative",
-      }}
-    >
-      {/* תפריט צד */}
-      <button style={{ background: "none", border: "none", cursor: "pointer" }}>
+    <nav className="app-header">
+      <button className="menu-button">
         <FaBars size={24} />
       </button>
 
-      <Link
-        to="/"
-        style={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}
-      >
-        <img src={logo} alt="Eshet Asakim" style={{ height: "120px", objectFit: "contain" }} />
+      <Link to="/" className="logo-link">
+        <img src={logo} alt="Logo" className="logo" />
       </Link>
 
-      {/* חיפוש והתחברות/התנתקות */}
-      <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-        <Link to="/search" style={{ color: "#000", textDecoration: "none" }}>
+      <div className="auth-controls">
+        <Link to="/search" className="icon-button">
           <FaSearch size={24} />
         </Link>
 
         {user ? (
           <>
-            <span style={{ marginRight: "10px", fontWeight: "bold" }}>
-              שלום, {user.email}
-            </span>
+            <span className="username">שלום, {user.name || user.email}</span>
             <button
               onClick={() => navigate(getDashboardPath())}
-              style={{
-                background: "#fff",
-                border: "1px solid #888",
-                padding: "5px 10px",
-                cursor: "pointer",
-                borderRadius: "4px",
-              }}
+              className="personal-area-button"
             >
               אזור אישי
             </button>
-            <button
-              onClick={handleLogout}
-              style={{
-                marginLeft: "10px",
-                background: "transparent",
-                border: "none",
-                color: "#000",
-                cursor: "pointer",
-              }}
-            >
+            <button onClick={handleLogout} className="logout-button">
               התנתק
             </button>
           </>
         ) : (
-          <Link to="/login" style={{ color: "#000", textDecoration: "none" }}>
+          <Link to="/login" className="login-button">
             התחבר
           </Link>
         )}
