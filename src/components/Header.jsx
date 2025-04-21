@@ -2,7 +2,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
-import { FaBars, FaUser, FaSearch } from "react-icons/fa";
+import { FaBars, FaSearch } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
@@ -10,13 +10,28 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    console.log("🔒 handleLogout fired");
     try {
       await logout();
-      console.log("✅ logout() finished");
       navigate("/login");
     } catch (err) {
       console.error("❌ logout failed:", err);
+    }
+  };
+
+  const getDashboardPath = () => {
+    switch (user?.role) {
+      case "business":
+        return "/dashboard";
+      case "customer":
+        return "/client-dashboard";
+      case "worker":
+        return "/staff/dashboard";
+      case "manager":
+        return "/manager/dashboard";
+      case "admin":
+        return "/admin/dashboard";
+      default:
+        return "/";
     }
   };
 
@@ -33,25 +48,15 @@ const Header = () => {
       }}
     >
       {/* תפריט צד */}
-      <button
-        style={{ background: "none", border: "none", cursor: "pointer" }}
-      >
+      <button style={{ background: "none", border: "none", cursor: "pointer" }}>
         <FaBars size={24} />
       </button>
 
       <Link
         to="/"
-        style={{
-          position: "absolute",
-          left: "50%",
-          transform: "translateX(-50%)",
-        }}
+        style={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}
       >
-        <img
-          src={logo}
-          alt="Eshet Asakim"
-          style={{ height: "120px", objectFit: "contain" }}
-        />
+        <img src={logo} alt="Eshet Asakim" style={{ height: "120px", objectFit: "contain" }} />
       </Link>
 
       {/* חיפוש והתחברות/התנתקות */}
@@ -62,12 +67,21 @@ const Header = () => {
 
         {user ? (
           <>
-            <Link
-              to="/profile"
-              style={{ color: "#000", textDecoration: "none" }}
+            <span style={{ marginRight: "10px", fontWeight: "bold" }}>
+              שלום, {user.email}
+            </span>
+            <button
+              onClick={() => navigate(getDashboardPath())}
+              style={{
+                background: "#fff",
+                border: "1px solid #888",
+                padding: "5px 10px",
+                cursor: "pointer",
+                borderRadius: "4px",
+              }}
             >
-              <FaUser size={24} />
-            </Link>
+              אזור אישי
+            </button>
             <button
               onClick={handleLogout}
               style={{
@@ -83,7 +97,7 @@ const Header = () => {
           </>
         ) : (
           <Link to="/login" style={{ color: "#000", textDecoration: "none" }}>
-            <FaUser size={24} />
+            התחבר
           </Link>
         )}
       </div>
