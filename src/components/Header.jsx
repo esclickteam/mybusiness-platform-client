@@ -1,9 +1,10 @@
+// src/components/Header.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import { FaBars, FaSearch } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import "../styles/Header.css";     // ← ייבוא CSS
+import "../styles/Header.css";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -12,7 +13,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/");   // אחרי logout עובר לעמוד הבית
+      navigate("/login"); // לאחר התנתקות מפנים לעמוד ההתחברות
     } catch (err) {
       console.error("❌ logout failed:", err);
     }

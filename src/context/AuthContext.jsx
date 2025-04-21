@@ -9,17 +9,18 @@ export function AuthProvider({ children }) {
   if (import.meta.env.DEV) {
     const devUser = {
       userId: "dev123",
+      name: "משתמש מבחן",
       email: "dev@example.com",
       subscriptionPlan: "premium",
       role: "business",
       businessId: "dev-id",
     };
 
-    const devLogout = () => {
+    const devLogout = async () => {
       console.log("🔒 dev logout");
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
-      // Navigation should be handled by Header in DEV as well
-      window.location.replace("/login");
+      // no redirect here; Header will navigate
     };
 
     return (
@@ -54,6 +55,7 @@ export function AuthProvider({ children }) {
       if (!res.data) throw new Error("Empty response");
       const u = {
         userId: res.data.userId || res.data._id,
+        name: res.data.name || res.data.username || "",
         email: res.data.email,
         subscriptionPlan: res.data.subscriptionPlan || "free",
         role: res.data.role || "customer",
@@ -61,6 +63,7 @@ export function AuthProvider({ children }) {
         businessId: res.data.businessId || null,
       };
       console.log("✅ user loaded:", u);
+      localStorage.setItem("token", res.data.token || "");
       localStorage.setItem("user", JSON.stringify(u));
       setUser(u);
       return u;
@@ -77,7 +80,6 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    // Always attempt to refresh user from the server
     refreshUserData();
   }, []);
 
@@ -93,6 +95,7 @@ export function AuthProvider({ children }) {
       if (!res.data?.token || !res.data?.user) throw new Error("Invalid response");
       const u = {
         userId: res.data.user.userId || res.data.user._id,
+        name: res.data.user.name || res.data.user.username || "",
         email: res.data.user.email,
         subscriptionPlan: res.data.user.subscriptionPlan || "free",
         role: res.data.user.role || "customer",
@@ -119,7 +122,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("user");
       setUser(null);
       console.log("✅ logged out");
-      // redirect handled by Header component
+      // no redirect; Header handles navigation
     } catch (e) {
       console.error("❌ logout error:", e.response?.data || e.message);
     }
