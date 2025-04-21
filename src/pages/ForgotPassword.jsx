@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../styles/ForgotPassword.css";
+import API from "../api";
 
 const ForgotPassword = ({ closePopup }) => {
   const [email, setEmail] = useState("");
@@ -13,16 +14,17 @@ const ForgotPassword = ({ closePopup }) => {
     }
 
     setLoading(true);
+    setMessage("");
+
     try {
-      // TODO: כאן תוכל להוסיף קריאה ל-API אמיתי
-      console.log("שולח קוד איפוס ל:", email);
-      setTimeout(() => {
-        setMessage("✅ קוד איפוס נשלח לאימייל שלך!");
-        setLoading(false);
-      }, 1000);
+      const res = await API.post("/auth/forgot-password", { email });
+      setMessage("✅ קישור איפוס נשלח לאימייל שלך!");
     } catch (error) {
       console.error("❌ שגיאה בשליחת קוד איפוס:", error);
-      setMessage("❌ אירעה שגיאה. נסה שוב.");
+      setMessage(
+        error.response?.data?.error || "❌ שגיאה בלתי צפויה. נסה שוב."
+      );
+    } finally {
       setLoading(false);
     }
   };
@@ -31,18 +33,24 @@ const ForgotPassword = ({ closePopup }) => {
     <div className="forgot-password-overlay">
       <div className="forgot-password-modal">
         <h2>שחזור סיסמה</h2>
-        <p>הזן את כתובת האימייל שלך ונשלח לך קוד לאיפוס הסיסמה</p>
+        <p>הזן את כתובת האימייל שלך ונשלח לך קישור לאיפוס הסיסמה</p>
         <input
           type="email"
           placeholder="הזן אימייל"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <button onClick={handleSendReset} className="send-button" disabled={loading}>
-          {loading ? "שולח..." : "שלח קוד איפוס"}
+        <button
+          onClick={handleSendReset}
+          className="send-button"
+          disabled={loading}
+        >
+          {loading ? "🔄 שולח..." : "שלח קישור איפוס"}
         </button>
         {message && <p className="message">{message}</p>}
-        <button onClick={closePopup} className="close-button">סגור</button>
+        <button onClick={closePopup} className="close-button">
+          סגור
+        </button>
       </div>
     </div>
   );

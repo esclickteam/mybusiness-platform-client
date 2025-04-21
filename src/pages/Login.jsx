@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../api";
@@ -8,8 +7,8 @@ import ForgotPassword from "./ForgotPassword";
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", username: "", password: "" });
   const [isEmployeeLogin, setIsEmployeeLogin] = useState(false);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
 
@@ -22,10 +21,9 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    // בדיקת שדות
     if (
       (!isEmployeeLogin && (!formData.email || !formData.password)) ||
-      ( isEmployeeLogin && (!formData.username || !formData.password))
+      (isEmployeeLogin && (!formData.username || !formData.password))
     ) {
       setError("נא למלא את כל השדות");
       setLoading(false);
@@ -33,23 +31,19 @@ const Login = () => {
     }
 
     try {
-      // בונים payload לפי מצב
       const payload = isEmployeeLogin
         ? { username: formData.username, password: formData.password }
         : { email: formData.email, password: formData.password };
 
       const res = await API.post("/auth/login", payload, { withCredentials: true });
 
-      // שומרים טוקן
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
       }
 
-      // שומרים משתמש
       const user = res.data.user;
       localStorage.setItem("user", JSON.stringify(user));
 
-      // ניתוב לפי תפקיד
       switch (user.role) {
         case "business":
           navigate("/dashboard");
@@ -125,31 +119,46 @@ const Login = () => {
 
         {error && <p className="error-message">{error}</p>}
 
-        <div className="login-links">
-          <button
-            className="toggle-login-mode"
-            onClick={() => {
-              setIsEmployeeLogin(!isEmployeeLogin);
-              setError("");
-            }}
-          >
-            {isEmployeeLogin
-              ? "🔙 חזרה להתחברות רגילה"
-              : "👤 כניסת עובדים / מנהלים / אדמין"}
-          </button>
-
-          <span
-            className="forgot-link"
-            onClick={() => setShowForgot(true)}
-          >
-            שכחת את הסיסמה?
-          </span>
-
-          {!isEmployeeLogin && (
-            <Link to="/register" className="register-link">
-              אין לך חשבון? הירשם עכשיו
-            </Link>
+        <div className="login-extra-options">
+          {!isEmployeeLogin ? (
+            <button
+              className="staff-login-link"
+              onClick={() => {
+                setIsEmployeeLogin(true);
+                setError("");
+              }}
+            >
+              👤 כניסת עובדים
+            </button>
+          ) : (
+            <button
+              className="staff-login-link"
+              onClick={() => {
+                setIsEmployeeLogin(false);
+                setError("");
+              }}
+            >
+              🔙 חזרה להתחברות רגילה
+            </button>
           )}
+
+          <div className="bottom-links">
+            <span
+              className="forgot-password"
+              onClick={() => setShowForgot(true)}
+            >
+              שכחת את הסיסמה?
+            </span>
+
+            {!isEmployeeLogin && (
+              <>
+                <span className="separator">|</span>
+                <Link to="/register" className="register-link">
+                  אין לך חשבון? הירשם עכשיו
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

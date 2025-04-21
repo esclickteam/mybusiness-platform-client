@@ -1,5 +1,3 @@
-/* src/styles/Login.css */
-
 /* עיצוב דף ההתחברות */
 .login-container {
     display: flex;
@@ -7,30 +5,26 @@
     align-items: center;
     height: 100vh;
     background: linear-gradient(135deg, #e5d9f2, #c084fc);
-}
-
-.login-box {
+    padding: 20px;
+  }
+  
+  .login-box {
     background: #f5e9ff;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 400px;
-}
-
-.login-box h2 {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .login-box h2 {
     font-size: 26px;
     font-weight: bold;
     color: #3b007d;
-}
-
-.login-subtitle {
-    font-size: 14px;
-    color: #5d5d5d;
-    margin-bottom: 20px;
-}
-
-input {
+  }
+  
+  input {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
@@ -39,15 +33,15 @@ input {
     font-size: 16px;
     background-color: #f9f9ff;
     transition: 0.3s;
-}
-
-input:focus {
+  }
+  
+  input:focus {
     border-color: #8200ff;
     background-color: #fff;
     outline: none;
-}
-
-.login-button {
+  }
+  
+  .login-button {
     width: 100%;
     padding: 14px;
     background: #6a00f4;
@@ -59,47 +53,87 @@ input:focus {
     font-weight: bold;
     transition: 0.3s;
     box-shadow: 0px 4px 8px rgba(106, 0, 244, 0.3);
-}
-
-.login-button:hover {
+  }
+  
+  .login-button:hover {
     background: #5000c9;
     box-shadow: 0px 6px 12px rgba(80, 0, 201, 0.4);
-}
-
-.error-message {
+  }
+  
+  .error-message {
     color: red;
     font-size: 14px;
     margin-top: 10px;
-}
-
-/* קישור שכחתי סיסמה */
-.forgot-password-link {
-    margin-top: 10px;
+  }
+  
+  /* ⚙️ כפתור מעבר לכניסת עובדים / רגילה */
+  .staff-login-link {
+    background: none;
+    border: none;
+    color: #444;
     font-size: 14px;
-}
-
-.forgot-link {
-    color: red;
-    font-weight: bold;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: inline-block;
+    transition: color 0.3s ease;
+  }
+  
+  .staff-login-link:hover {
+    color: #6b46c1;
+  }
+  
+  /* 🔗 קישורים תחתונים */
+  .login-extra-options {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .bottom-links {
+    font-size: 13px;
+    color: #666;
+  }
+  
+  .bottom-links span,
+  .bottom-links a {
+    cursor: pointer;
+    font-weight: 600;
     text-decoration: none;
-}
-
-.forgot-link:hover {
-    text-decoration: underline;
-}
-
-/* קישור להרשמה */
-.register-link {
-    margin-top: 10px;
-    font-size: 14px;
-}
-
-.register-link a {
-    color: #6a00f4;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.register-link a:hover {
-    text-decoration: underline;
-}
+  }
+  
+  .forgot-password {
+    color: #e53e3e;
+  }
+  
+  .register-link {
+    color: #6b46c1;
+  }
+  
+  .separator {
+    margin: 0 6px;
+    color: #999;
+  }
+  
+  /* 📱 רספונסיביות למובייל */
+  @media (max-width: 480px) {
+    .login-box {
+      padding: 20px;
+    }
+  
+    .login-box h2 {
+      font-size: 22px;
+    }
+  
+    .login-button {
+      font-size: 16px;
+    }
+  
+    .staff-login-link {
+      font-size: 13px;
+    }
+  
+    .bottom-links {
+      font-size: 12px;
+    }
+  }
+  

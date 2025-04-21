@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import API from "../api";  // מודול ה-API שלך
+import { useNavigate, Link } from "react-router-dom";
+import API from "../api";
+import "../styles/Register.css"; // ודא שקיים
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -8,7 +9,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    userType: "customer",  // ברירת מחדל
+    userType: "customer", // ברירת מחדל: לקוח
   });
 
   const [error, setError] = useState("");
@@ -19,6 +20,11 @@ const Register = () => {
   };
 
   const registerNewUser = async () => {
+    if (formData.password !== formData.confirmPassword) {
+      setError("⚠️ הסיסמאות לא תואמות");
+      return;
+    }
+
     try {
       const response = await API.post("/auth/register", {
         name: formData.name,
@@ -27,17 +33,17 @@ const Register = () => {
         userType: formData.userType,
       });
 
-      console.log("המשתמש נרשם בהצלחה:", response.data);
+      console.log("🎉 נרשמת בהצלחה:", response.data);
 
-      // שליחה ל־loginUser אחרי יצירת המשתמש החדש
+      // כניסה אוטומטית לאחר הרשמה
       loginUser(formData.email, formData.password);
     } catch (err) {
-      console.error("שגיאה בהרשמה:", err.response?.data);
+      console.error("❌ שגיאה בהרשמה:", err.response?.data);
       setError(
         err.response?.data?.error ||
         (err.response?.status === 400
-          ? "❌ האימייל כבר קיים במערכת"
-          : "❌ שגיאה בלתי צפויה, נסה שוב מאוחר יותר.")
+          ? "❌ אימייל כבר רשום במערכת"
+          : "❌ שגיאה בלתי צפויה. נסה שוב מאוחר יותר.")
       );
     }
   };
@@ -49,29 +55,36 @@ const Register = () => {
         password,
       });
 
-      console.log("ההתחברות הצליחה:", response.data);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("token", response.data.token);
 
-      // ניווט אחרי התחברות
-      if (formData.userType === "business") {
-        navigate("/plans");
-      } else {
-        navigate("/");
+      // ניווט לפי תפקיד
+      const role = response.data.user.role;
+      switch (role) {
+        case "business":
+          navigate("/plans");
+          break;
+        case "customer":
+          navigate("/client-dashboard");
+          break;
+        default:
+          navigate("/");
       }
     } catch (err) {
-      console.error("שגיאה בהתחברות:", err.response?.data);
+      console.error("❌ שגיאה בהתחברות:", err.response?.data);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError("");
     registerNewUser();
   };
 
   return (
     <div className="register-container">
       <h2>הרשמה</h2>
+      <p>בחר את סוג החשבון שלך והזן את הפרטים</p>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -131,9 +144,16 @@ const Register = () => {
           </div>
         </div>
 
-        <button type="submit" className="register-button">הירשם</button>
+        <button type="submit" className="register-button">
+          הירשם
+        </button>
+
         {error && <p className="error-message">{error}</p>}
       </form>
+
+      <div className="login-link">
+        כבר יש לך חשבון? <Link to="/login">התחבר עכשיו</Link>
+      </div>
     </div>
   );
 };
