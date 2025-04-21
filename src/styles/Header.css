@@ -1,28 +1,23 @@
+/* src/styles/Header.css */
 .app-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #d1b3ff9a;
+    background-color: #d1b3ff9a; /* רקע סגול בהיר כפי שהיה */
     padding: 0 20px;
     height: 80px;
+  }
+  
+  .logo-link .logo {
+    height: 80px;        /* הגדלנו את הגובה מ‑60px ל‑80px */
+    object-fit: contain;
   }
   
   .menu-button {
     background: none;
     border: none;
-    color: #fff;
+    color: #000;         /* איקון ההמבורגר יהיה שחור */
     cursor: pointer;
-  }
-  
-  .logo-link {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  .logo {
-    height: 60px;
-    object-fit: contain;
   }
   
   .auth-controls {
@@ -32,22 +27,20 @@
   }
   
   .icon-button {
-    color: #fff;
+    color: #000;         /* אייקון החיפוש יהיה שחור */
     text-decoration: none;
-    display: flex;
-    align-items: center;
   }
   
   .username {
-    color: #fff;
+    color: #000;         /* שם המשתמש שחור */
     font-weight: 500;
     margin-right: 8px;
   }
   
   .personal-area-button {
     background-color: #fff;
-    color: #6a1b9a;
-    border: none;
+    color: #000;         /* כפתור אזור אישי – טקסט שחור */
+    border: 1px solid #000;
     padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
@@ -56,8 +49,8 @@
   
   .logout-button {
     background: transparent;
-    color: #fff;
-    border: 1px solid #fff;
+    color: #000;         /* כפתור התנתק – טקסט שחור */
+    border: 1px solid #000;
     padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
@@ -66,7 +59,7 @@
   
   .login-button {
     background-color: #fff;
-    color: #6a1b9a;
+    color: #000;         /* כפתור התחבר – טקסט שחור */
     border: none;
     padding: 8px 12px;
     border-radius: 4px;
