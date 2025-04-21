@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api";
 
@@ -20,7 +19,6 @@ export function AuthProvider({ children }) {
       console.log("🔒 dev logout");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      // no redirect here; Header will navigate
     };
 
     return (
@@ -79,9 +77,20 @@ export function AuthProvider({ children }) {
     }
   };
 
-  useEffect(() => {
+  // 🧠 נטען את המשתמש רק אם קיים טוקן
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  console.log("🟨 useEffect – token in localStorage:", token);
+
+  if (token) {
+    console.log("🟦 טוקן קיים – טוען משתמש מ־/users/me");
     refreshUserData();
-  }, []);
+  } else {
+    console.log("🟥 אין טוקן – לא טוען משתמש");
+    setLoading(false);
+  }
+}, []);
+
 
   const login = async (email, password) => {
     setError(null);
@@ -122,7 +131,6 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("user");
       setUser(null);
       console.log("✅ logged out");
-      // no redirect; Header handles navigation
     } catch (e) {
       console.error("❌ logout error:", e.response?.data || e.message);
     }
