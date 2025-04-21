@@ -46,7 +46,7 @@ const DashboardPage = () => {
         setLoading(false);
         return;
       }
-
+  
       if (isTestUser) {
         setStats({
           mock: true,
@@ -89,9 +89,10 @@ const DashboardPage = () => {
         setLoading(false);
         return;
       }
-
+  
       try {
-        const response = await API.get(`/api/businesses/stats/${currentUser?.businessId || "dev-id"}`);
+        const businessId = currentUser?.businessId || "dev-id";
+        const response = await API.get(`/businesses/stats/${businessId}`);
         setStats(response.data);
       } catch (err) {
         console.error("שגיאה בטעינת נתונים:", err);
@@ -100,9 +101,12 @@ const DashboardPage = () => {
         setLoading(false);
       }
     };
+  
+    fetchStats(); // ✅ הפעלה של הפונקציה
+  
+  }, [currentUser]); // ✅ כאן נסגר ה־useEffect כמו שצריך
+  
 
-    fetchStats();
-  }, [currentUser]);
 
   if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים...</p>;
   if (error) return <p className="error-text">{error}</p>;
