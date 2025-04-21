@@ -10,6 +10,8 @@ export function AuthProvider({ children }) {
       userId: "dev123",
       email: "dev@example.com",
       subscriptionPlan: "premium",
+      role: "business",
+      businessId: "dev-id",
     };
 
     return (
@@ -48,6 +50,9 @@ export function AuthProvider({ children }) {
           userId: response.data.userId || response.data._id,
           email: response.data.email,
           subscriptionPlan: response.data.subscriptionPlan || "free",
+          role: response.data.role || "customer",
+          isTempPassword: response.data.isTempPassword || false,
+          businessId: response.data.businessId || null,
         };
 
         console.log("✅ נתוני משתמש נטענו:", userData);
@@ -93,6 +98,9 @@ export function AuthProvider({ children }) {
           userId: response.data.user?.userId || response.data.user?._id,
           email: response.data.user.email,
           subscriptionPlan: response.data.user.subscriptionPlan || "free",
+          role: response.data.user.role || "customer",
+          isTempPassword: response.data.user.isTempPassword || false,
+          businessId: response.data.user.businessId || null,
         };
 
         localStorage.setItem("token", response.data.token);
@@ -118,7 +126,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("user");
       setUser(null);
 
-      console.log("✅ התנתקות הושלמה.");
+      console.log("✅ התנתקות בוצעה בהצלחה");
       window.location.replace("/login");
     } catch (error) {
       console.error("❌ שגיאה ביציאה:", error.response?.data || error.message);

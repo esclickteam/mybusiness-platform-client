@@ -185,8 +185,9 @@ const DashboardPage = () => {
           </div>
         </div>
       )}
-    </div>
+        </div>
   );
-};
+}; // ✅ סגירה תקינה של הפונקציה
 
 export default DashboardPage;
+
