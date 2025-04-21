@@ -5,16 +5,14 @@ import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ children, requiredPackage = "any" }) => {
   const { user, loading } = useAuth();
-  const devMode = import.meta.env.DEV; // משתמשים ב־Vite ENV במקום hardcoded
+  const devMode = import.meta.env.DEV;
 
   console.log("🔐 ProtectedRoute → user:", user, "loading:", loading, "devMode:", devMode);
 
-  // בפיתוח מאשרים תמיד
-  if (devMode) {
-    return children;
-  }
+  // ✅ מצב פיתוח תמיד מאשר גישה
+  if (devMode) return children;
 
-  // עדיין טוען — אפשר להחליף בספינר
+  // ⏳ בזמן טעינה – מציג מסך טוען (אפשר לשים Spinner אמיתי)
   if (loading) {
     return (
       <div className="loading-screen" style={{ textAlign: "center", padding: "2rem" }}>
@@ -23,13 +21,13 @@ const ProtectedRoute = ({ children, requiredPackage = "any" }) => {
     );
   }
 
-  // אין משתמש — מפנים ל־Login
+  // ❌ אין משתמש מחובר – מפנה ל־Login
   if (!user || !user.email) {
     console.warn("⚠️ אין משתמש מחובר – מפנה לדף התחברות");
     return <Navigate to="/login" replace />;
   }
 
-  // בדיקת חבילת מנוי אם נדרש
+  // 🚫 אין גישה לפי סוג מנוי
   if (
     requiredPackage !== "any" &&
     (!user.subscriptionPlan || user.subscriptionPlan !== requiredPackage)
@@ -38,7 +36,7 @@ const ProtectedRoute = ({ children, requiredPackage = "any" }) => {
     return <Navigate to="/plans" replace />;
   }
 
-  // אם כל הבדיקות עברו — מציגים את ה־children
+  // ✅ הכל תקין – מציג את הרכיב
   return children;
 };
 
