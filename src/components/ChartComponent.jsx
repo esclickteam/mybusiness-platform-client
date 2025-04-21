@@ -17,7 +17,7 @@ function ChartComponent({ businessId }) {
       }
 
       try {
-        const response = await API.get(`/businesses/stats/${businessId}`);
+        const response = await API.get(`/business/stats/${businessId}`);
 
 
 
