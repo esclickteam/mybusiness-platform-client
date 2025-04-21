@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
@@ -23,18 +23,18 @@ import ManageRoles from "./pages/admin/ManageRoles";
 import ChangePassword from "./pages/ChangePassword";
 
 // Lazy-loaded pages
-const HomePage = lazy(() => import("./pages/Home"));
-const About = lazy(() => import("./pages/About"));
-const HowItWorks = lazy(() => import("./pages/HowItWorks"));
-const FAQ = lazy(() => import("./pages/FAQ"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Contact = lazy(() => import("./pages/Contact"));
-const Business = lazy(() => import("./pages/business/Business"));
-const Plans = lazy(() => import("./pages/business/Plans"));
-const Checkout = lazy(() => import("./pages/Checkout"));
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const BusinessPage = lazy(() => import("./components/BusinessPage"));
+const HomePage                = lazy(() => import("./pages/Home"));
+const About                   = lazy(() => import("./pages/About"));
+const HowItWorks              = lazy(() => import("./pages/HowItWorks"));
+const FAQ                     = lazy(() => import("./pages/FAQ"));
+const Terms                   = lazy(() => import("./pages/Terms"));
+const Contact                 = lazy(() => import("./pages/Contact"));
+const Business                = lazy(() => import("./pages/business/Business"));
+const Plans                   = lazy(() => import("./pages/business/Plans"));
+const Checkout                = lazy(() => import("./pages/Checkout"));
+const Login                   = lazy(() => import("./pages/Login"));
+const Register                = lazy(() => import("./pages/Register"));
+const BusinessPage            = lazy(() => import("./components/BusinessPage"));
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 
 function ScrollToTop() {
@@ -47,9 +47,10 @@ function ScrollToTop() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <>
       <Header />
       <ScrollToTop />
+
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -81,7 +82,7 @@ export default function App() {
           <Route path="/admin/roles" element={<ManageRoles />} />
           <Route path="/change-password" element={<ChangePassword />} />
 
-          {/* דף פרטי עסק (ללקוחות) */}
+          {/* עמוד עסק לצפייה (ללקוחות) */}
           <Route
             path="/business/:businessId"
             element={
@@ -91,7 +92,7 @@ export default function App() {
             }
           />
 
-          {/* דשבורד בעלי עסקים */}
+          {/* דשבורד לבעלי עסקים */}
           <Route
             path="/dashboard/*"
             element={
@@ -104,13 +105,13 @@ export default function App() {
           {/* הפניה מ־/dashboard/calendar */}
           <Route path="/dashboard/calendar" element={<Navigate to="/dashboard" />} />
 
-          {/* בדיקת צ'אט */}
+          {/* בדיקת צ'אט ישירה */}
           <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
-          {/* ברירת מחדל */}
+          {/* ברירת מחדל: חזור לעמוד הבית */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </>
   );
 }
