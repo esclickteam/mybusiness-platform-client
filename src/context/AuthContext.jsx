@@ -15,14 +15,21 @@ export function AuthProvider({ children }) {
       businessId: "dev-id",
     };
 
+    const devLogout = () => {
+      console.log("🔒 dev logout");
+      localStorage.removeItem("user");
+      // Navigation should be handled by Header in DEV as well
+      window.location.replace("/login");
+    };
+
     return (
       <AuthContext.Provider
         value={{
           user: devUser,
-          login: () => {},
-          logout: () => {},
+          login: async () => devUser,
+          logout: devLogout,
           error: null,
-          refreshUserData: () => {},
+          refreshUserData: async () => devUser,
           setUser: () => {},
           loading: false,
         }}
@@ -33,17 +40,17 @@ export function AuthProvider({ children }) {
   }
 
   // ✅ real auth flow
-  const [user, setUser]     = useState(() => {
+  const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
 
   const refreshUserData = async () => {
     try {
       console.log("📡 loading user data…");
-      const res = await API.get("/users/me");
+      const res = await API.get("/users/me", { withCredentials: true });
       if (!res.data) throw new Error("Empty response");
       const u = {
         userId: res.data.userId || res.data._id,
@@ -96,6 +103,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("user", JSON.stringify(u));
       console.log("✅ logged in:", u);
       setUser(u);
+      return u;
     } catch (e) {
       console.error("❌ login failed:", e.response?.data || e.message);
       setError("⚠️ אימייל או סיסמה שגויים");
@@ -111,7 +119,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("user");
       setUser(null);
       console.log("✅ logged out");
-      window.location.replace("/login");
+      // redirect handled by Header component
     } catch (e) {
       console.error("❌ logout error:", e.response?.data || e.message);
     }

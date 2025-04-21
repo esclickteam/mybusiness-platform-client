@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import { FaBars, FaUser, FaSearch } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import "../styles/Header.css";
 
 const Header = () => {
   const { user, logout } = useAuth();
