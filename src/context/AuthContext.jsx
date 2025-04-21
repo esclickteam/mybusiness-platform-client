@@ -17,6 +17,7 @@ export function AuthProvider({ children }) {
 
     const devLogout = async () => {
       console.log("🔒 dev logout");
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
     };
 
@@ -49,7 +50,7 @@ export function AuthProvider({ children }) {
   const refreshUserData = async () => {
     try {
       console.log("📡 loading user data from /users/me");
-      const res = await API.get("/users/me", { withCredentials: true });
+      const res = await API.get("/users/me");
       if (!res.data) throw new Error("Empty response");
 
       const u = {
@@ -68,6 +69,7 @@ export function AuthProvider({ children }) {
       return u;
     } catch (e) {
       console.error("❌ failed to refresh user:", e.response?.data || e.message);
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
       setError("⚠️ failed to load user");
@@ -88,8 +90,7 @@ export function AuthProvider({ children }) {
       console.log("📡 logging in...");
       const res = await API.post(
         "/auth/login",
-        { email, password },
-        { withCredentials: true }
+        { email, password }
       );
       if (!res.data?.user) throw new Error("Invalid response");
 
@@ -117,12 +118,14 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       console.log("📡 logging out...");
-      await API.post("/auth/logout", {}, { withCredentials: true });
+      await API.post("/auth/logout");
+    } catch (e) {
+      console.error("❌ logout error:", e.response?.data || e.message);
+    } finally {
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
       console.log("✅ logged out");
-    } catch (e) {
-      console.error("❌ logout error:", e.response?.data || e.message);
     }
   };
 
