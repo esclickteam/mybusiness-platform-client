@@ -1,7 +1,6 @@
 // src/App.jsx
-import React, { useEffect, Suspense, lazy } from "react";
-import { BrowserRouter, Route, Routes, useLocation, Navigate } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import React, { Suspense, lazy, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
@@ -23,7 +22,7 @@ import EditSiteContent from "./pages/admin/EditSiteContent";
 import ManageRoles from "./pages/admin/ManageRoles";
 import ChangePassword from "./pages/ChangePassword";
 
-// Lazy pages
+// Lazy-loaded pages
 const HomePage = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
@@ -48,64 +47,70 @@ function ScrollToTop() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Header />
-        <ScrollToTop />
-        <Suspense fallback={<p>🔄 טוען את הדף…</p>}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/business" element={<Business />} />
-            <Route path="/plans" element={<Plans />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/quick-jobs" element={<QuickJobsBoard />} />
-            <Route path="/quick-jobs/new" element={<QuickJobForm />} />
-            <Route path="/client" element={<ClientDashboard />} />
-            <Route path="/staff/dashboard" element={<StaffDashboard />} />
-            <Route path="/staff/session" element={<WorkSession />} />
-            <Route path="/staff/profile" element={<PhoneProfile />} />
-            <Route path="/staff/tasks" element={<MyTasks />} />
-            <Route path="/staff/sales" element={<MySales />} />
-            <Route path="/manager/dashboard" element={<ManagerDashboard />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/logs" element={<AdminLogs />} />
-            <Route path="/admin/plans" element={<AdminPlans />} />
-            <Route path="/admin/settings" element={<AdminSettings />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/site-edit" element={<EditSiteContent />} />
-            <Route path="/admin/roles" element={<ManageRoles />} />
-            <Route path="/change-password" element={<ChangePassword />} />
+    <BrowserRouter>
+      <Header />
+      <ScrollToTop />
+      <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/business" element={<Business />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
+          <Route path="/client" element={<ClientDashboard />} />
+          <Route path="/staff/dashboard" element={<StaffDashboard />} />
+          <Route path="/staff/session" element={<WorkSession />} />
+          <Route path="/staff/profile" element={<PhoneProfile />} />
+          <Route path="/staff/tasks" element={<MyTasks />} />
+          <Route path="/staff/sales" element={<MySales />} />
+          <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/logs" element={<AdminLogs />} />
+          <Route path="/admin/plans" element={<AdminPlans />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/site-edit" element={<EditSiteContent />} />
+          <Route path="/admin/roles" element={<ManageRoles />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
-            <Route
-              path="/business/:businessId"
-              element={
-                <ProtectedRoute requiredPackage="free">
-                  <BusinessPage />
-                </ProtectedRoute>
-              }
-            />
+          {/* דף פרטי עסק (ללקוחות) */}
+          <Route
+            path="/business/:businessId"
+            element={
+              <ProtectedRoute requiredPackage="free">
+                <BusinessPage />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/dashboard/*"
-              element={
-                <ProtectedRoute>
-                  <BusinessDashboardRoutes />
-                </ProtectedRoute>
-              }
-            />
+          {/* דשבורד בעלי עסקים */}
+          <Route
+            path="/dashboard/*"
+            element={
+              <ProtectedRoute>
+                <BusinessDashboardRoutes />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route path="/dashboard/calendar" element={<Navigate to="/dashboard" />} />
-            <Route path="/chat-test-direct" element={<ChatTestPage />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </AuthProvider>
+          {/* הפניה מ־/dashboard/calendar */}
+          <Route path="/dashboard/calendar" element={<Navigate to="/dashboard" />} />
+
+          {/* בדיקת צ'אט */}
+          <Route path="/chat-test-direct" element={<ChatTestPage />} />
+
+          {/* ברירת מחדל */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
   );
 }
