@@ -1,0 +1,76 @@
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #6a1b9a;
+    padding: 0 20px;
+    height: 80px;
+  }
+  
+  .menu-button {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .logo-link {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .logo {
+    height: 60px;
+    object-fit: contain;
+  }
+  
+  .auth-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .icon-button {
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+  
+  .username {
+    color: #fff;
+    font-weight: 500;
+    margin-right: 8px;
+  }
+  
+  .personal-area-button {
+    background-color: #fff;
+    color: #6a1b9a;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .logout-button {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .login-button {
+    background-color: #fff;
+    color: #6a1b9a;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
