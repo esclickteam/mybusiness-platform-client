@@ -14,7 +14,8 @@ const Login = () => {
 
   const refreshUserData = async () => {
     try {
-      const response = await API.get("/users/me", { withCredentials: true });
+      const response = await API.get("/users/me");
+
 
       const userData = {
         userId: response.data.userId || response.data._id,

@@ -17,7 +17,11 @@ function ChartComponent({ businessId }) {
       }
 
       try {
-        const response = await API.get(`/api/businesses/stats/${businessId}`);
+        const response = await API.get(`/businesses/stats/${businessId}`);
+
+
+
+
         setStats(response.data);
       } catch (err) {
         setError("⚠️ לא ניתן לטעון נתונים.");

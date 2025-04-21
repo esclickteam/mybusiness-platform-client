@@ -43,7 +43,8 @@ export function AuthProvider({ children }) {
   const refreshUserData = async () => {
     try {
       console.log("📡 מנסה לטעון את נתוני המשתמש...");
-      const response = await API.get("/users/me", { withCredentials: true });
+      const response = await API.get("/users/me");
+
 
       if (response?.data) {
         const userData = {

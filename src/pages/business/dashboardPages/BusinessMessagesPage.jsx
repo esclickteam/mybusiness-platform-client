@@ -21,7 +21,7 @@ const BusinessMessagesPage = () => {
         }
 
         console.log("📡 מבצע קריאה ל-conversations של:", userId);
-        const { data } = await API.get(`/business/${userId}/conversations`);
+        const { data } = await API.get(`/business/${user.businessId}/conversations`);
         console.log("📥 שיחות שהתקבלו מהשרת:", data);
 
         if (data.length > 0) {

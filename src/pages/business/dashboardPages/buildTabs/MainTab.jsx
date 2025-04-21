@@ -10,18 +10,23 @@ const MainTab = ({ businessDetails, handleSave }) => {
     return item.url || item.preview || "";
   };
 
+  const getImageFit = (file) => {
+    const key = file?.name || file?.url || "";
+    return businessDetails.galleryFits?.[key] || "cover";
+  };
+
   return (
     <>
       <div className="gallery-preview no-actions">
-        {businessDetails.gallery.map((file, i) => (
+        {businessDetails.gallery?.map((file, i) => (
           <div key={i} className="gallery-item-wrapper">
             <div className="gallery-item">
               <img
-                src={getImageUrl(file)}
+                src={getImageUrl(file) || "/images/placeholder.jpg"}
                 alt={`preview-${i}`}
                 className="gallery-img"
                 style={{
-                  objectFit: businessDetails.galleryFits?.[file.name] || "cover",
+                  objectFit: getImageFit(file),
                 }}
               />
             </div>
@@ -30,7 +35,7 @@ const MainTab = ({ businessDetails, handleSave }) => {
       </div>
 
       <div className="reviews">
-        {businessDetails.reviews.slice(0, 2).map((r, i) => (
+        {businessDetails.reviews?.slice(0, 2).map((r, i) => (
           <div key={i} className="review-card improved">
             <div className="review-header">
               <span className="review-user">{r.user}</span>
