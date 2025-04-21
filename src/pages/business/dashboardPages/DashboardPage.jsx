@@ -1,3 +1,4 @@
+// src/pages/business/dashboardPages/DashboardPage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
@@ -31,13 +32,13 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const cardsRef = useRef(null);
-  const insightsRef = useRef(null);
-  const comparisonRef = useRef(null);
-  const chartsRef = useRef(null);
-  const leadsRef = useRef(null);
-  const appointmentsRef = useRef(null);
-  const calendarRef = useRef(null);
+  const cardsRef       = useRef(null);
+  const insightsRef    = useRef(null);
+  const comparisonRef  = useRef(null);
+  const chartsRef      = useRef(null);
+  const leadsRef       = useRef(null);
+  const appointmentsRef= useRef(null);
+  const calendarRef    = useRef(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -46,8 +47,9 @@ const DashboardPage = () => {
         setLoading(false);
         return;
       }
-  
+
       if (isTestUser) {
+        // Mock data for test user
         setStats({
           mock: true,
           views_count: 88,
@@ -89,24 +91,22 @@ const DashboardPage = () => {
         setLoading(false);
         return;
       }
-  
+
       try {
         const businessId = currentUser?.businessId || "dev-id";
-        const response = await API.get(`/businesses/stats/${businessId}`);
+        // 👇 נתיב מתוקן: /business/stats במקום /businesses/stats
+        const response = await API.get(`/business/stats/${businessId}`);
         setStats(response.data);
       } catch (err) {
-        console.error("שגיאה בטעינת נתונים:", err);
-        setError("שגיאה בטעינת נתונים מהשרת");
+        console.error("❌ שגיאה בטעינת נתונים:", err);
+        setError("❌ שגיאה בטעינת נתונים מהשרת");
       } finally {
         setLoading(false);
       }
     };
-  
-    fetchStats(); // ✅ הפעלה של הפונקציה
-  
-  }, [currentUser]); // ✅ כאן נסגר ה־useEffect כמו שצריך
-  
 
+    fetchStats();
+  }, [currentUser, devMode, isTestUser]);
 
   if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים...</p>;
   if (error) return <p className="error-text">{error}</p>;
@@ -115,26 +115,60 @@ const DashboardPage = () => {
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">📊 דשבורד העסק</h2>
 
-      <DashboardNav refs={{ cardsRef, insightsRef, comparisonRef, chartsRef, leadsRef, appointmentsRef, calendarRef }} />
+      <DashboardNav
+        refs={{
+          cardsRef,
+          insightsRef,
+          comparisonRef,
+          chartsRef,
+          leadsRef,
+          appointmentsRef,
+          calendarRef
+        }}
+      />
+
       {stats && <NotificationsPanel stats={stats} />}
 
-      <div ref={cardsRef}>{stats && <DashboardCards stats={stats} />}</div>
-      <div ref={insightsRef}>{stats && <Insights stats={stats} />}</div>
-      <div ref={comparisonRef}>{stats && <BusinessComparison stats={stats} />}</div>
+      <div ref={cardsRef}>
+        {stats && <DashboardCards stats={stats} />}
+      </div>
+      <div ref={insightsRef}>
+        {stats && <Insights stats={stats} />}
+      </div>
+      <div ref={comparisonRef}>
+        {stats && <BusinessComparison stats={stats} />}
+      </div>
+
       {stats && <NextActions stats={stats} />}
-      {stats && <StatsProgressBar value={stats.orders_count || 0} goal={20} label="התקדמות לקראת יעד ההזמנות החודשי" />}
+      {stats && (
+        <StatsProgressBar
+          value={stats.orders_count || 0}
+          goal={20}
+          label="התקדמות לקראת יעד ההזמנות החודשי"
+        />
+      )}
 
       <div ref={chartsRef} className="graph-row">
-        <BarChart data={{
-          labels: ["לקוחות", "בקשות", "הזמנות"],
-          datasets: [{
-            label: "נתוני העסק",
-            data: [stats?.views_count || 0, stats?.requests_count || 0, stats?.orders_count || 0],
-            backgroundColor: ["#6a5acd", "#ffa07a", "#90ee90"],
-            borderRadius: 8,
-          }],
-        }} options={{ responsive: true }} />
-        {stats?.income_distribution && (
+        <BarChart
+          data={{
+            labels: ["לקוחות", "בקשות", "הזמנות"],
+            datasets: [
+              {
+                label: "נתוני העסק",
+                data: [
+                  stats.views_count   || 0,
+                  stats.requests_count|| 0,
+                  stats.orders_count  || 0,
+                ],
+                backgroundColor: ["#6a5acd", "#ffa07a", "#90ee90"],
+                borderRadius: 8,
+              },
+            ],
+          }}
+          options={{ responsive: true }}
+        />
+
+        {stats.income_distribution && (
           <div className="graph-box">
             <PieChart data={stats.income_distribution} />
           </div>
@@ -142,8 +176,10 @@ const DashboardPage = () => {
       </div>
 
       <div className="graph-row">
-        <div className="graph-box"><LineChart stats={stats} /></div>
-        {stats?.monthly_comparison && (
+        <div className="graph-box">
+          <LineChart stats={stats} />
+        </div>
+        {stats.monthly_comparison && (
           <div className="graph-box">
             <MonthlyComparisonChart data={stats.monthly_comparison} />
           </div>
@@ -151,12 +187,12 @@ const DashboardPage = () => {
       </div>
 
       <div className="graph-row equal-height">
-        {stats?.recent_activity && (
+        {stats.recent_activity && (
           <div className="graph-box">
             <RecentActivityTable activities={stats.recent_activity} />
           </div>
         )}
-        {stats?.appointments?.length > 0 && (
+        {stats.appointments?.length > 0 && (
           <div className="graph-box appointments-box">
             <AppointmentsList appointments={stats.appointments} />
           </div>
@@ -168,7 +204,7 @@ const DashboardPage = () => {
         <OpenLeadsTable leads={stats.leads || []} />
       </div>
 
-      {stats?.appointments?.length > 0 && (
+      {stats.appointments?.length > 0 && (
         <div ref={calendarRef} className="calendar-row">
           <div className="calendar-grid-box">
             <CalendarView
@@ -185,9 +221,8 @@ const DashboardPage = () => {
           </div>
         </div>
       )}
-        </div>
+    </div>
   );
-}; // ✅ סגירה תקינה של הפונקציה
+};
 
 export default DashboardPage;
-
