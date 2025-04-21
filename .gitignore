@@ -1,0 +1,5 @@
+# React / Node.js artifacts
+node_modules/
+build/
+.env
+.DS_Store
