@@ -21,18 +21,15 @@ import DashboardNav from "../../../components/dashboard/DashboardNav";
 import "../../../styles/dashboard.css";
 
 const DashboardPage = () => {
-  const auth = useAuth() || {};
-  const user = auth.user;
-
-  const devMode = true; // ✅ מאפשר גישה חופשית גם אם המשתמש לא מחובר
+  const { user, loading: authLoading } = useAuth();
+  const devMode = import.meta.env.DEV;
+  const currentUser = user || JSON.parse(localStorage.getItem("user") || "null");
+  const isTestUser = currentUser?.email === "testasakim@example.com";
 
   const [stats, setStats] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const currentUser = user || JSON.parse(localStorage.getItem("user") || "null");
-  const isTestUser = currentUser?.email === "testasakim@example.com";
 
   const cardsRef = useRef(null);
   const insightsRef = useRef(null);
@@ -107,7 +104,7 @@ const DashboardPage = () => {
     fetchStats();
   }, [currentUser]);
 
-  if (loading) return <p className="loading-text">⏳ טוען נתונים...</p>;
+  if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים...</p>;
   if (error) return <p className="error-text">{error}</p>;
 
   return (

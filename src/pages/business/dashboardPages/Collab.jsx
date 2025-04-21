@@ -11,8 +11,8 @@ import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import "./Collab.css";
 
 export default function Collab() {
-  const { user, loading } = useAuth();
-  const devMode = true; // ✅ מאפשר גישה חופשית בזמן פיתוח
+  const { user, loading: authLoading } = useAuth();
+  const devMode = import.meta.env.DEV;
 
   const [tab, setTab] = useState(0);
   const [showBusinessChat, setShowBusinessChat] = useState(false);
@@ -30,11 +30,13 @@ export default function Collab() {
   const [profileData, setProfileData] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
+  const isDevUser = user?.email === "newuser@example.com";
+  const hasCollabAccess = isDevUser || user?.subscriptionPlan?.includes("collaboration");
+
   useEffect(() => {
     async function fetchProfile() {
-      const API_BASE_URL = "/api";
       try {
-        const res = await fetch(`${API_BASE_URL}/business/my`, {
+        const res = await fetch("/api/business/my", {
           credentials: "include",
         });
 
@@ -44,8 +46,6 @@ export default function Collab() {
         }
 
         const data = JSON.parse(text);
-        console.log("✅ נתוני העסק מהשרת:", data);
-
         setProfileData({
           businessName: data.businessName || data.name || "",
           category: data.category || "",
@@ -65,9 +65,6 @@ export default function Collab() {
 
     fetchProfile();
   }, []);
-
-  const isDevUser = user?.email === "newuser@example.com";
-  const hasCollabAccess = isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
@@ -99,7 +96,8 @@ export default function Collab() {
     console.log("פותח צ׳אט עם:", business);
   };
 
-  if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
+  if (authLoading) return <div className="p-6 text-center">🔄 טוען נתוני משתמש...</div>;
+
   if (!user && !devMode) {
     return <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>;
   }
