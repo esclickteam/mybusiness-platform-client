@@ -1,178 +1,135 @@
 // src/pages/Login.jsx
--import React, { useState } from "react";
--import { Link, useNavigate } from "react-router-dom";
--import API from "../api";
--import "../styles/Login.css";
--import ForgotPassword from "./ForgotPassword";
-+import React, { useState } from "react";
-+import { useNavigate } from "react-router-dom";
-+import API from "../api";
-+import "../styles/Login.css";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import API from "../api";  // שימוש ב-API מעודכן
+import "../styles/Login.css";
+import ForgotPassword from "./ForgotPassword";
 
--const Login = () => {
--  const [formData, setFormData] = useState({ email: "", username: "", password: "" });
-+const Login = () => {
-+  const [formData, setFormData] = useState({ username: "", password: "" });
-   const [error, setError] = useState("");
-   const [loading, setLoading] = useState(false);
--  const [showForgotPassword, setShowForgotPassword] = useState(false);
--  const [isEmployeeLogin, setIsEmployeeLogin] = useState(false);
-   const navigate = useNavigate();
+const Login = () => {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const navigate = useNavigate();
 
--  const refreshUserData = async () => { /*...*/ };
--
-   const handleChange = (e) => {
--    setFormData({ ...formData, [e.target.name]: e.target.value });
-+    setFormData({ ...formData, [e.target.name]: e.target.value });
-   };
+  const refreshUserData = async () => {
+    try {
+      // כאן אתה שולח את הבקשה לנתיב הנכון
+      const response = await API.get("/users/me", { withCredentials: true });
 
-   const handleSubmit = async (e) => {
-     e.preventDefault();
-     setError("");
-     setLoading(true);
+      console.log("📦 נתוני משתמש מעודכנים מהשרת:", response.data);
 
--    const { email, username, password } = formData;
-+    const { username, password } = formData;
+      const userData = {
+        userId: response.data.userId,
+        email: response.data.email,
+        subscriptionPlan: response.data.subscriptionPlan,
+      };
 
--    if ((!email && !username) || !password) {
--      setError("נא למלא את כל השדות.");
-+    if (!username || !password) {
-+      setError("נא למלא שם משתמש וסיסמה.");
-       setLoading(false);
-       return;
-     }
+      localStorage.setItem("user", JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      console.error("❌ שגיאה בקבלת נתוני המשתמש:", error.response?.data || error.message);
+      return null;
+    }
+  };
 
-     try {
--      const response = await API.post("/auth/login", formData, { withCredentials: true });
-+      const response = await API.post("/auth/login", { username, password }, { withCredentials: true });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-       if (response.data.token) {
-         localStorage.setItem("token", response.data.token);
-       }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
--      const updatedUser = await refreshUserData();
-+      // AuthContext יוריד את המשתמש דרך /users/me
+    if (!formData.email || !formData.password) {
+      setError("נא למלא את כל השדות.");
+      return;
+    }
 
--      if (!updatedUser) {
--        setError("⚠️ התחברות נכשלה.");
-+      navigate("/dashboard");
+    try {
+      // כאן אתה שולח את הבקשה לנתיב ה-login
+      const response = await API.post("/auth/login", formData, { withCredentials: true });
 
--      if (updatedUser.isTempPassword) {
--        navigate("/change-password");
--        return;
--      }
--
--      // ✅ ניתוב לפי תפקיד
--      switch (updatedUser.role) {
--        case "business":
--          navigate("/dashboard");
--          break;
--        case "customer":
--          navigate("/client-dashboard");
--          break;
--        case "worker":
--          navigate("/worker-dashboard");
--          break;
--        case "manager":
--          navigate("/manager-dashboard");
--          break;
--        case "admin":
--          navigate("/admin-dashboard");
--          break;
--        default:
--          navigate("/");
--      }
-+    } catch (err) {
-+      setError(err.response?.data?.error || "❌ אימות נכשל");
-     } finally {
-       setLoading(false);
-     }
-   };
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
 
-   return (
-     <div className="login-container">
-       <div className="login-box">
--        <h2>התחברות</h2>
-+        <h2>כניסת עובדים</h2>
--        <p className="login-subtitle">
--          {isEmployeeLogin
--            ? "כניסת עובדים"
--            : "היכנסו לחשבון שלכם והתחילו לנהל את העסק"}
--        </p>
-+        <p className="login-subtitle">היכנסו עם שם המשתמש שלכם כדי להתחיל</p>
+      if (response.data.user) {
+        const userData = {
+          userId: response.data.user.userId,
+          email: response.data.user.email,
+          subscriptionPlan: response.data.user.subscriptionPlan,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
 
-       <form onSubmit={handleSubmit}>
--          {isEmployeeLogin && (
--            <input
--              type="text"
--              name="username"
--              placeholder="שם משתמש"
--              value={formData.username}
--              onChange={handleChange}
--              autoComplete="username"
--              required
--            />
--          )}
-+          <input
-+            type="text"
-+            name="username"
-+            placeholder="שם משתמש"
-+            value={formData.username}
-+            onChange={handleChange}
-+            autoComplete="username"
-+            required
-+          />
+      const updatedUser = await refreshUserData();
 
--          {!isEmployeeLogin && (
--            <input
--              type="email"
--              name="email"
--              placeholder="אימייל"
--              value={formData.email}
--              onChange={handleChange}
--              autoComplete="email"
--              required
--            />
--          )}
+      if (!updatedUser || !updatedUser.subscriptionPlan) {
+        navigate("/plans");
+        return;
+      }
 
-         <input
-           type="password"
-           name="password"
-           placeholder="סיסמה"
-           value={formData.password}
-           onChange={handleChange}
-           autoComplete="current-password"
-           required
-         />
+      if (updatedUser.subscriptionPlan === "free") {
+        navigate("/create-business-page");
+      } else {
+        navigate("/business-dashboard");
+      }
+    } catch (err) {
+      console.error("❌ שגיאה בהתחברות:", err);
+      const status = err.response?.status;
+      setError(
+        err.response?.data?.error ||
+        (status === 401
+          ? "❌ אימייל או סיסמה שגויים"
+          : status === 500
+          ? "❌ שגיאת שרת פנימית. נסה שוב מאוחר יותר."
+          : "❌ שגיאה לא ידועה. נסה שוב מאוחר יותר.")
+      );
+    }
+  };
 
-         <button type="submit" className="login-button" disabled={loading}>
-           {loading ? "🔄 מתחבר..." : "התחבר"}
-         </button>
-       </form>
+  return (
+    <div className="login-container">
+      <div className="login-box">
+        <h2>התחברות</h2>
+        <p className="login-subtitle">היכנסו לחשבונכם והתחילו לנהל את העסק שלכם</p>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="אימייל"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            autoComplete="email"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="סיסמה"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            autoComplete="current-password"
+          />
+          <button type="submit" className="login-button">התחבר</button>
+        </form>
+        {error && <p className="error-message">{error}</p>}
 
-       {error && <p className="error-message">{error}</p>}
+        <p className="forgot-password-link">
+          <span className="forgot-link" onClick={() => setShowForgotPassword(true)}>
+            שכחתם את הסיסמה?
+          </span>
+        </p>
 
--      <p className="forgot-password-link">
--        <span className="forgot-link" onClick={() => setShowForgotPassword(true)}>
--          שכחתם את הסיסמה?
--        </span>
--      </p>
--
--      {!isEmployeeLogin && (
--        <p className="register-link">
--          אין לכם חשבון? <Link to="/register">הירשמו עכשיו</Link>
--        </p>
--      )}
--
--      <p className="employee-login-toggle">
--        <span onClick={() => setIsEmployeeLogin(!isEmployeeLogin)} style={{ cursor: "pointer", color: "#6a1b9a" }}>
--          {isEmployeeLogin ? "🔙 חזרה להתחברות רגילה" : "👤 כניסת עובדים / מנהלים / אדמין"}
--        </span>
--      </p>
-+      {/* אין תפריטים נוספים */}
-     </div>
-   </div>
- );
-}
+        <p className="register-link">
+          אין לכם חשבון? <Link to="/register">הירשמו עכשיו</Link>
+        </p>
+      </div>
+
+      {showForgotPassword && <ForgotPassword closePopup={() => setShowForgotPassword(false)} />}
+    </div>
+  );
+};
 
 export default Login;
