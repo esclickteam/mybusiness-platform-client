@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://mybusinessplatformclean-production.up.railway.app/api/$1"
+      "destination": "https://api.esclick.co.il/api/$1"
     },
     {
       "source": "/(.*)",
