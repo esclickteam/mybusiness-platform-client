@@ -17,7 +17,6 @@ export function AuthProvider({ children }) {
 
     const devLogout = async () => {
       console.log("🔒 dev logout");
-      localStorage.removeItem("token");
       localStorage.removeItem("user");
     };
 
@@ -43,14 +42,16 @@ export function AuthProvider({ children }) {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const refreshUserData = async () => {
     try {
-      console.log("📡 loading user data…");
+      console.log("📡 loading user data from /users/me");
       const res = await API.get("/users/me", { withCredentials: true });
       if (!res.data) throw new Error("Empty response");
+
       const u = {
         userId: res.data.userId || res.data._id,
         name: res.data.name || res.data.username || "",
@@ -60,14 +61,13 @@ export function AuthProvider({ children }) {
         isTempPassword: res.data.isTempPassword || false,
         businessId: res.data.businessId || null,
       };
+
       console.log("✅ user loaded:", u);
-      localStorage.setItem("token", res.data.token || "");
       localStorage.setItem("user", JSON.stringify(u));
       setUser(u);
       return u;
     } catch (e) {
       console.error("❌ failed to refresh user:", e.response?.data || e.message);
-      localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
       setError("⚠️ failed to load user");
@@ -77,31 +77,22 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 🧠 נטען את המשתמש רק אם קיים טוקן
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  console.log("🟨 useEffect – token in localStorage:", token);
-
-  if (token) {
-    console.log("🟦 טוקן קיים – טוען משתמש מ־/users/me");
+  // 🧠 טען תמיד את המשתמש מה-cookie
+  useEffect(() => {
     refreshUserData();
-  } else {
-    console.log("🟥 אין טוקן – לא טוען משתמש");
-    setLoading(false);
-  }
-}, []);
-
+  }, []);
 
   const login = async (email, password) => {
     setError(null);
     try {
-      console.log("📡 logging in…");
+      console.log("📡 logging in...");
       const res = await API.post(
         "/auth/login",
         { email, password },
         { withCredentials: true }
       );
-      if (!res.data?.token || !res.data?.user) throw new Error("Invalid response");
+      if (!res.data?.user) throw new Error("Invalid response");
+
       const u = {
         userId: res.data.user.userId || res.data.user._id,
         name: res.data.user.name || res.data.user.username || "",
@@ -111,7 +102,7 @@ useEffect(() => {
         isTempPassword: res.data.user.isTempPassword || false,
         businessId: res.data.user.businessId || null,
       };
-      localStorage.setItem("token", res.data.token);
+
       localStorage.setItem("user", JSON.stringify(u));
       console.log("✅ logged in:", u);
       setUser(u);
@@ -125,9 +116,8 @@ useEffect(() => {
 
   const logout = async () => {
     try {
-      console.log("📡 logging out…");
+      console.log("📡 logging out...");
       await API.post("/auth/logout", {}, { withCredentials: true });
-      localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
       console.log("✅ logged out");
