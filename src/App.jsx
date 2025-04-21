@@ -19,6 +19,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminUsers from "./pages/admin/AdminUsers";
 import EditSiteContent from "./pages/admin/EditSiteContent";
 import ManageRoles from "./pages/admin/ManageRoles";
+import ChangePassword from "./pages/ChangePassword"; // מסלול לפי המיקום בפועל
 
 
 
@@ -82,6 +83,7 @@ function App() {
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/site-edit" element={<EditSiteContent />} />
           <Route path="/admin/roles" element={<ManageRoles />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
 
 

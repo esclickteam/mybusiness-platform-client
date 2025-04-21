@@ -4,31 +4,32 @@ import API from "../api";
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // ✅ שלב פיתוח – לדלג על התחברות לחלוטין בכל סביבה
-  const devUser = {
-    userId: "dev123",
-    email: "dev@example.com",
-    subscriptionPlan: "premium",
-  };
+  // ✅ מצב פיתוח בלבד – משתמש מזויף רק ב־localhost
+  if (import.meta.env.DEV) {
+    const devUser = {
+      userId: "dev123",
+      email: "dev@example.com",
+      subscriptionPlan: "premium",
+    };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user: devUser,
-        login: () => {},
-        logout: () => {},
-        error: null,
-        refreshUserData: () => {},
-        setUser: () => {},
-        loading: false,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+      <AuthContext.Provider
+        value={{
+          user: devUser,
+          login: () => {},
+          logout: () => {},
+          error: null,
+          refreshUserData: () => {},
+          setUser: () => {},
+          loading: false,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    );
+  }
 
-  // ❌ הקוד הרגיל מבוטל זמנית – יחזור לפעולה כשתסירי את ה־return שלמעלה:
-
+  // ✅ קוד התחברות אמיתי
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
