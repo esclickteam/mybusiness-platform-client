@@ -1,33 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./AdminUsers.css";
 import { Link } from "react-router-dom";
+import API from "../../api";
 
 function AdminUsers() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  const [users, setUsers] = useState([
-    { id: 1, name: "דנה כהן", username: "dana123", email: "dana@example.com", phone: "0501234567", role: "לקוח", status: "פעיל" },
-    { id: 2, name: "רוני לוי", username: "roni456", email: "roni@example.com", phone: "0549876543", role: "עסק", status: "חסום" },
-    { id: 3, name: "שחר ישראלי", username: "shachar789", email: "shachar@example.com", phone: "0523332211", role: "עובד", status: "פעיל" }
-  ]);
+  const [users, setUsers] = useState([]);
 
+  // 1. fetch users from server
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await API.get('/admin/users');
+        setUsers(res.data);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  // 2. filter logic
   const filtered = users.filter((u) => {
     const matchSearch =
-      u.phone.includes(search) ||
-      u.username.toLowerCase().includes(search.toLowerCase()) ||
+      u.phone?.includes(search) ||
+      u.username?.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase());
     const matchRole = filter === "all" || u.role === filter;
     return matchSearch && matchRole;
   });
 
-  const handleStatusToggle = (id) => {
-    setUsers(users.map(u =>
-      u.id === id ? { ...u, status: u.status === "פעיל" ? "חסום" : "פעיל" } : u
-    ));
+  // 3. delete handler
+  const handleDelete = async (id) => {
+    if (!window.confirm('בטוח שברצונך למחוק את המשתמש?')) return;
+    try {
+      await API.delete(`/admin/users/${id}`);
+      setUsers(prev => prev.filter(u => u._id !== id));
+    } catch (err) {
+      console.error('Error deleting user:', err);
+    }
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter(u => u.id !== id));
+  // 4. toggle status (requires matching backend endpoint)
+  const handleStatusToggle = async (id, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'blocked' : 'active';
+    try {
+      await API.put(`/admin/users/${id}`, { status: newStatus });
+      setUsers(prev => prev.map(u => u._id === id ? { ...u, status: newStatus } : u));
+    } catch (err) {
+      console.error('Error toggling status:', err);
+    }
   };
 
   return (
@@ -67,18 +90,25 @@ function AdminUsers() {
         </thead>
         <tbody>
           {filtered.map(user => (
-            <tr key={user.id}>
+            <tr key={user._id}>
               <td>{user.name}</td>
-              <td>{user.username}</td>
+              <td>{user.username || '-'}</td>
               <td>{user.email}</td>
-              <td>{user.phone}</td>
+              <td>{user.phone || '-'}</td>
               <td>{user.role}</td>
               <td>{user.status}</td>
               <td>
-                <button className="edit-btn">✏️</button>
-                <button className="delete-btn" onClick={() => handleDelete(user.id)}>🗑️</button>
-                <button className="status-btn" onClick={() => handleStatusToggle(user.id)}>
-                  {user.status === "פעיל" ? "🚫 חסום" : "✅ הפעל"}
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(user._id)}
+                >
+                  🗑️
+                </button>
+                <button
+                  className="status-btn"
+                  onClick={() => handleStatusToggle(user._id, user.status)}
+                >
+                  {user.status === 'active' ? '🚫 חסום' : '✅ הפעל'}
                 </button>
               </td>
             </tr>
