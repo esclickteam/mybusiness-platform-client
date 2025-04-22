@@ -1,0 +1,41 @@
+.admin-payout-page {
+    max-width: 1000px;
+    margin: auto;
+    padding: 2rem;
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .admin-payout-page table {
+    width: 100%;
+    margin-top: 1.5rem;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+  
+  .admin-payout-page th,
+  .admin-payout-page td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+  }
+  
+  .admin-payout-page th {
+    background-color: #f3e9ff;
+  }
+  
+  .export-button {
+    margin-top: 2rem;
+  }
+  
+  .export-button a {
+    background-color: #6200ea;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+  }

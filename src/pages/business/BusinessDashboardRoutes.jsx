@@ -11,7 +11,7 @@ import Upgrade from "./dashboardPages/Upgrade";
 import CartPage from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
 import ChatTab from "./dashboardPages/buildTabs/ChatTab";
 import BusinessChat from "./dashboardPages/BusinessChatComponent";
-
+import AffiliatePage from "./dashboardPages/AffiliatePage";
 // ✅ יועץ עסקליק
 import EsclickAdvisor from "./dashboardPages/EsclickAdvisor";
 
@@ -56,7 +56,7 @@ const BusinessDashboardRoutes = () => {
         <Route path="goals" element={<GoalsPage />} />
         <Route path="chat-test" element={<ChatTab isPreview={true} />} />
         <Route path="chat/:partnerId" element={<BusinessChat />} />
-
+        <Route path="affiliate" element={<AffiliatePage />} />
         {/* ✅ הודעות מלקוחות */}
         <Route path="messages" element={<BusinessMessagesPage />} />
 

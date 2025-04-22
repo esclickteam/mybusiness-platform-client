@@ -33,6 +33,7 @@ function AdminDashboard() {
         <Link to="/admin/logs" className="admin-link">🕐 פעולות מערכת (לוגים)</Link>
         <Link to="/admin/settings" className="admin-link">⚙️ הגדרות כלליות</Link>
         <Link to="/reset-password" className="admin-link">🔒 שינוי סיסמה</Link> {/* ← הוספנו כאן */}
+        <Link to="/admin/affiliate-payouts" className="admin-link">💸 דו"ח תשלומים לשותפים</Link>
       </div>
     </div>
   );
