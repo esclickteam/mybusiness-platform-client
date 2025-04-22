@@ -9,7 +9,7 @@ function ManageRoles() {
     username: "",
     email: "",
     phone: "",
-    role: "worker", // תואם ל־enum במודל
+    role: "worker",
   });
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -34,14 +34,8 @@ function ManageRoles() {
       const data = await res.json();
       if (res.ok) {
         alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${data.tempPassword}`);
-        setUsers([...users, { ...form, id: Date.now() }]);
-        setForm({
-          name: "",
-          username: "",
-          email: "",
-          phone: "",
-          role: "worker",
-        });
+        setUsers([...users, { ...form, _id: data.userId }]); // שמור מזהה
+        setForm({ name: "", username: "", email: "", phone: "", role: "worker" });
       } else {
         alert(`❌ שגיאה: ${data.error}`);
       }
@@ -51,8 +45,34 @@ function ManageRoles() {
     }
   };
 
+  const handleReset = async (userId) => {
+    const newPassword = prompt("הזן סיסמה חדשה (לפחות 6 תווים):", "12345678");
+    if (!newPassword || newPassword.length < 6) {
+      alert("סיסמה לא תקינה");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/reset-user-password", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, newPassword }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(`✅ הסיסמה אופסה ל: ${newPassword}`);
+      } else {
+        alert(`❌ שגיאה: ${data.error}`);
+      }
+    } catch (err) {
+      console.error("❌ שגיאה באיפוס סיסמה:", err);
+      alert("שגיאה כללית");
+    }
+  };
+
   const handleDelete = (id) => {
-    setUsers(users.filter((u) => u.id !== id));
+    setUsers(users.filter((u) => u._id !== id));
   };
 
   const filteredUsers = users.filter((user) =>
@@ -67,34 +87,10 @@ function ManageRoles() {
       <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
 
       <div className="role-form">
-        <input
-          type="text"
-          name="name"
-          placeholder="שם מלא"
-          value={form.name}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="username"
-          placeholder="שם משתמש ייחודי"
-          value={form.username}
-          onChange={handleChange}
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="אימייל"
-          value={form.email}
-          onChange={handleChange}
-        />
-        <input
-          type="tel"
-          name="phone"
-          placeholder="טלפון"
-          value={form.phone}
-          onChange={handleChange}
-        />
+        <input type="text" name="name" placeholder="שם מלא" value={form.name} onChange={handleChange} />
+        <input type="text" name="username" placeholder="שם משתמש ייחודי" value={form.username} onChange={handleChange} />
+        <input type="email" name="email" placeholder="אימייל" value={form.email} onChange={handleChange} />
+        <input type="tel" name="phone" placeholder="טלפון" value={form.phone} onChange={handleChange} />
         <select name="role" value={form.role} onChange={handleChange}>
           <option value="worker">עובד</option>
           <option value="manager">מנהל</option>
@@ -121,19 +117,20 @@ function ManageRoles() {
             <th>אימייל</th>
             <th>טלפון</th>
             <th>תפקיד</th>
-            <th>מחיקה</th>
+            <th>פעולות</th>
           </tr>
         </thead>
         <tbody>
           {filteredUsers.map((user) => (
-            <tr key={user.id}>
+            <tr key={user._id}>
               <td>{user.name}</td>
               <td>{user.username}</td>
               <td>{user.email}</td>
               <td>{user.phone}</td>
               <td>{user.role}</td>
               <td>
-                <button onClick={() => handleDelete(user.id)}>🗑️</button>
+                <button onClick={() => handleDelete(user._id)}>🗑️</button>
+                <button onClick={() => handleReset(user._id)}>🔄 איפוס סיסמה</button>
               </td>
             </tr>
           ))}
