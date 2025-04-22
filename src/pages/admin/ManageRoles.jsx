@@ -19,17 +19,18 @@ function ManageRoles() {
       try {
         const res = await fetch("/api/admin/users");
         const data = await res.json();
+        console.log("📦 משתמשים מהשרת:", data); // ← הדפסה חיונית!
         if (res.ok) {
           setUsers(data);
-        } else {
-          console.error("❌ שגיאה בטעינת משתמשים:", data.error);
         }
       } catch (err) {
         console.error("❌ שגיאה בטעינת משתמשים:", err);
       }
     };
+  
     fetchUsers();
   }, []);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
