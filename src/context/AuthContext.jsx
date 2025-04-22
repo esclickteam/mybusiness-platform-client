@@ -38,11 +38,8 @@ export function AuthProvider({ children }) {
     );
   }
 
-  // ✅ real auth flow
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState(null);
+
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

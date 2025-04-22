@@ -12,7 +12,7 @@ const Login = () => {
   const [showForgot, setShowForgot] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuth(); // ✅ שימוש בפונקציית login מתוך AuthContext
+  const { login } = useAuth(); // שימוש ב־login מתוך AuthContext
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,29 +32,36 @@ const Login = () => {
     }
 
     try {
-      // ✅ קריאה ל־login מה־Context
       const user = await login(identifier, formData.password);
 
+      if (!user || !user.role) {
+        setError("❌ לא ניתן לקבוע תפקיד משתמש");
+        return;
+      }
+
       // ✅ ניתוב לפי תפקיד
-      switch (user?.role) {
-        case "business":
-          navigate("/dashboard");
-          break;
-        case "customer":
-          navigate("/client-dashboard");
-          break;
-        case "worker":
-          navigate("/staff/dashboard");
+      let dashboardPath = "/";
+      switch (user.role) {
+        case "admin":
+          dashboardPath = "/admin/dashboard";
           break;
         case "manager":
-          navigate("/manager/dashboard");
+          dashboardPath = "/manager/dashboard";
           break;
-        case "admin":
-          navigate("/admin/dashboard");
+        case "worker":
+          dashboardPath = "/staff/dashboard";
+          break;
+        case "business":
+          dashboardPath = "/dashboard";
+          break;
+        case "customer":
+          dashboardPath = "/client-dashboard";
           break;
         default:
-          navigate("/");
+          dashboardPath = "/";
       }
+
+      navigate(dashboardPath);
     } catch (err) {
       const status = err.response?.status;
       setError(
