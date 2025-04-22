@@ -8,21 +8,21 @@ function AdminUsers() {
   const [filter, setFilter] = useState("all");
   const [users, setUsers] = useState([]);
 
-  // 1. fetch users from server
+  // שליפת משתמשים
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await API.get('/admin/users');
+        const res = await API.get("/admin/users");
         setUsers(res.data);
       } catch (err) {
-        console.error('Error fetching users:', err);
+        console.error("❌ שגיאה בטעינת המשתמשים:", err);
         alert("❌ שגיאה בטעינת המשתמשים");
       }
     };
     fetchUsers();
   }, []);
 
-  // 2. filter logic
+  // סינון לפי חיפוש ותפקיד
   const filtered = users.filter((u) => {
     const matchSearch =
       u.phone?.includes(search) ||
@@ -32,25 +32,30 @@ function AdminUsers() {
     return matchSearch && matchRole;
   });
 
-  // 3. delete handler - ✅ כולל הודעת שגיאה
+  // מחיקת משתמש
   const handleDelete = async (id) => {
-    if (!window.confirm('❗ פעולה בלתי הפיכה\nהאם למחוק את המשתמש?')) return;
+    console.log("📡 נלחץ כפתור מחיקה למשתמש:", id);
+
+    if (!window.confirm("❗ פעולה בלתי הפיכה\nהאם למחוק את המשתמש?")) return;
+
     try {
       await API.delete(`/admin/users/${id}`);
-      setUsers(prev => prev.filter(u => u._id !== id));
+      setUsers((prev) => prev.filter((u) => u._id !== id));
       alert("✅ המשתמש נמחק בהצלחה");
     } catch (err) {
-      console.error("❌ שגיאה במחיקת משתמש:", err.response?.data || err.message);
-      alert(err.response?.data?.error || "שגיאת שרת כללית בעת מחיקה");
+      console.error("❌ שגיאה במחיקה:", err.response?.data || err.message);
+      alert(err.response?.data?.error || "שגיאה כללית");
     }
   };
 
-  // 4. toggle status (active/blocked)
+  // החלפת סטטוס משתמש
   const handleStatusToggle = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'active' ? 'blocked' : 'active';
+    const newStatus = currentStatus === "active" ? "blocked" : "active";
     try {
       await API.put(`/admin/users/${id}`, { status: newStatus });
-      setUsers(prev => prev.map(u => u._id === id ? { ...u, status: newStatus } : u));
+      setUsers((prev) =>
+        prev.map((u) => (u._id === id ? { ...u, status: newStatus } : u))
+      );
     } catch (err) {
       console.error("❌ שגיאה בהחלפת סטטוס:", err.response?.data || err.message);
       alert(err.response?.data?.error || "שגיאה בעדכון סטטוס");
@@ -59,7 +64,9 @@ function AdminUsers() {
 
   return (
     <div className="admin-users">
-      <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
+      <Link to="/admin/dashboard" className="back-dashboard">
+        🔙 חזרה לדשבורד
+      </Link>
       <h1>👥 ניהול משתמשים</h1>
 
       <div className="filter-bar">
@@ -93,26 +100,33 @@ function AdminUsers() {
           </tr>
         </thead>
         <tbody>
-          {filtered.map(user => (
+          {filtered.map((user) => (
             <tr key={user._id}>
               <td>{user.name}</td>
-              <td>{user.username || '-'}</td>
+              <td>{user.username || "-"}</td>
               <td>{user.email}</td>
-              <td>{user.phone || '-'}</td>
+              <td>{user.phone || "-"}</td>
               <td>{user.role}</td>
-              <td>{user.status || 'active'}</td>
+              <td>{user.status || "active"}</td>
               <td>
                 <button
                   className="delete-btn"
-                  onClick={() => handleDelete(user._id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("🧪 נלחץ מחיקה על:", user._id);
+                    handleDelete(user._id);
+                  }}
                 >
                   🗑️
                 </button>
                 <button
                   className="status-btn"
-                  onClick={() => handleStatusToggle(user._id, user.status)}
+                  onClick={() =>
+                    handleStatusToggle(user._id, user.status)
+                  }
                 >
-                  {user.status === 'active' ? '🚫 חסום' : '✅ הפעל'}
+                  {user.status === "active" ? "🚫 חסום" : "✅ הפעל"}
                 </button>
               </td>
             </tr>
