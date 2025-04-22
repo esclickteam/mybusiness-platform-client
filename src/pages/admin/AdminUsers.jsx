@@ -16,6 +16,7 @@ function AdminUsers() {
         setUsers(res.data);
       } catch (err) {
         console.error('Error fetching users:', err);
+        alert("❌ שגיאה בטעינת המשתמשים");
       }
     };
     fetchUsers();
@@ -31,25 +32,28 @@ function AdminUsers() {
     return matchSearch && matchRole;
   });
 
-  // 3. delete handler
+  // 3. delete handler - ✅ כולל הודעת שגיאה
   const handleDelete = async (id) => {
-    if (!window.confirm('בטוח שברצונך למחוק את המשתמש?')) return;
+    if (!window.confirm('❗ פעולה בלתי הפיכה\nהאם למחוק את המשתמש?')) return;
     try {
       await API.delete(`/admin/users/${id}`);
       setUsers(prev => prev.filter(u => u._id !== id));
+      alert("✅ המשתמש נמחק בהצלחה");
     } catch (err) {
-      console.error('Error deleting user:', err);
+      console.error("❌ שגיאה במחיקת משתמש:", err.response?.data || err.message);
+      alert(err.response?.data?.error || "שגיאת שרת כללית בעת מחיקה");
     }
   };
 
-  // 4. toggle status (requires matching backend endpoint)
+  // 4. toggle status (active/blocked)
   const handleStatusToggle = async (id, currentStatus) => {
     const newStatus = currentStatus === 'active' ? 'blocked' : 'active';
     try {
       await API.put(`/admin/users/${id}`, { status: newStatus });
       setUsers(prev => prev.map(u => u._id === id ? { ...u, status: newStatus } : u));
     } catch (err) {
-      console.error('Error toggling status:', err);
+      console.error("❌ שגיאה בהחלפת סטטוס:", err.response?.data || err.message);
+      alert(err.response?.data?.error || "שגיאה בעדכון סטטוס");
     }
   };
 
@@ -68,10 +72,10 @@ function AdminUsers() {
         />
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option value="all">הכל</option>
-          <option value="לקוח">לקוחות</option>
-          <option value="עסק">עסקים</option>
-          <option value="עובד">עובדים</option>
-          <option value="מנהל">מנהלים</option>
+          <option value="customer">לקוחות</option>
+          <option value="business">עסקים</option>
+          <option value="worker">עובדים</option>
+          <option value="manager">מנהלים</option>
           <option value="admin">אדמינים</option>
         </select>
       </div>
@@ -96,7 +100,7 @@ function AdminUsers() {
               <td>{user.email}</td>
               <td>{user.phone || '-'}</td>
               <td>{user.role}</td>
-              <td>{user.status}</td>
+              <td>{user.status || 'active'}</td>
               <td>
                 <button
                   className="delete-btn"
