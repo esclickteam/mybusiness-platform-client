@@ -4,7 +4,7 @@ import API from "../api";
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // ✅ DEV-only: fake user on localhost
+  // ✅ מצב פיתוח: משתמש מזויף
   if (import.meta.env.DEV) {
     const devUser = {
       userId: "dev123",
@@ -38,9 +38,8 @@ export function AuthProvider({ children }) {
     );
   }
 
+  // ✅ מצב אמיתי
   const [user, setUser] = useState(null);
-
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -76,7 +75,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 🧠 טען תמיד את המשתמש מה-cookie
+  // ⏳ טען משתמש בעת טעינת האפליקציה
   useEffect(() => {
     refreshUserData();
   }, []);
@@ -85,26 +84,12 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       console.log("📡 logging in...");
-      const res = await API.post(
-        "/auth/login",
-        { email, password }
-      );
-      if (!res.data?.user) throw new Error("Invalid response");
+      await API.post("/auth/login", { email, password });
 
-      const u = {
-        userId: res.data.user.userId || res.data.user._id,
-        name: res.data.user.name || res.data.user.username || "",
-        email: res.data.user.email,
-        subscriptionPlan: res.data.user.subscriptionPlan || "free",
-        role: res.data.user.role || "customer",
-        isTempPassword: res.data.user.isTempPassword || false,
-        businessId: res.data.user.businessId || null,
-      };
-
-      localStorage.setItem("user", JSON.stringify(u));
-      console.log("✅ logged in:", u);
-      setUser(u);
-      return u;
+      // ✅ טען את המשתמש מחדש מהשרת לאחר התחברות
+      const refreshedUser = await refreshUserData();
+      if (!refreshedUser) throw new Error("User failed to load");
+      return refreshedUser;
     } catch (e) {
       console.error("❌ login failed:", e.response?.data || e.message);
       setError("⚠️ אימייל או סיסמה שגויים");
