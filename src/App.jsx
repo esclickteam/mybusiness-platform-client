@@ -1,4 +1,5 @@
 // src/App.jsx
+
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
@@ -6,23 +7,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
-import ClientDashboard from "./pages/client/ClientDashboard";
-import StaffDashboard from "./pages/staff/StaffDashboard";
-import WorkSession from "./pages/staff/WorkSession";
-import PhoneProfile from "./pages/staff/PhoneProfile";
-import MyTasks from "./pages/staff/MyTasks";
-import MySales from "./pages/staff/MySales";
-import ManagerDashboard from "./pages/manager/ManagerDashboard";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminLogs from "./pages/admin/AdminLogs";
-import AdminPlans from "./pages/admin/AdminPlans";
-import AdminSettings from "./pages/admin/AdminSettings";
-import AdminUsers from "./pages/admin/AdminUsers";
-import EditSiteContent from "./pages/admin/EditSiteContent";
-import ManageRoles from "./pages/admin/ManageRoles";
+import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import ResetPassword from "./pages/ResetPassword"; // 🟣 לוודא שזה קיים
-import AdminPayoutPage from "./pages/admin/AdminPayoutPage";
 
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
@@ -38,12 +24,25 @@ const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
 const BusinessPage            = lazy(() => import("./components/BusinessPage"));
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
+const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
+const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession             = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile            = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks                 = lazy(() => import("./pages/staff/MyTasks"));
+const MySales                 = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard        = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard          = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs               = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans              = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings           = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers              = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent         = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles             = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage         = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+  useEffect(() => window.scrollTo(0, 0), [pathname]);
   return null;
 }
 
@@ -55,6 +54,7 @@ export default function App() {
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
+          {/* Public */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
@@ -68,25 +68,138 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/quick-jobs" element={<QuickJobsBoard />} />
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
-          <Route path="/client" element={<ClientDashboard />} />
-          <Route path="/staff/dashboard" element={<StaffDashboard />} />
-          <Route path="/staff/session" element={<WorkSession />} />
-          <Route path="/staff/profile" element={<PhoneProfile />} />
-          <Route path="/staff/tasks" element={<MyTasks />} />
-          <Route path="/staff/sales" element={<MySales />} />
-          <Route path="/manager/dashboard" element={<ManagerDashboard />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/logs" element={<AdminLogs />} />
-          <Route path="/admin/plans" element={<AdminPlans />} />
-          <Route path="/admin/settings" element={<AdminSettings />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/site-edit" element={<EditSiteContent />} />
-          <Route path="/admin/roles" element={<ManageRoles />} />
-          <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/admin/affiliate-payouts" element={<AdminPayoutPage />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
-          {/* עמוד עסק לצפייה (ללקוחות) */}
+          {/* Customer Dashboard */}
+          <Route
+            path="/client"
+            element={
+              <ProtectedRoute role="customer">
+                <ClientDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Staff (Worker) Dashboard */}
+          <Route
+            path="/staff/dashboard"
+            element={
+              <ProtectedRoute role="worker">
+                <StaffDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staff/session"
+            element={
+              <ProtectedRoute role="worker">
+                <WorkSession />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staff/profile"
+            element={
+              <ProtectedRoute role="worker">
+                <PhoneProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staff/tasks"
+            element={
+              <ProtectedRoute role="worker">
+                <MyTasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staff/sales"
+            element={
+              <ProtectedRoute role="worker">
+                <MySales />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Manager Dashboard */}
+          <Route
+            path="/manager/dashboard"
+            element={
+              <ProtectedRoute role="manager">
+                <ManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Dashboard */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/logs"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminLogs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/plans"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminPlans />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminSettings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminUsers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/site-edit"
+            element={
+              <ProtectedRoute role="admin">
+                <EditSiteContent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/roles"
+            element={
+              <ProtectedRoute role="admin">
+                <ManageRoles />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/affiliate-payouts"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminPayoutPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Business Page (public-free) */}
           <Route
             path="/business/:businessId"
             element={
@@ -96,23 +209,23 @@ export default function App() {
             }
           />
 
-          {/* דשבורד לבעלי עסקים */}
+          {/* Business Dashboard */}
           <Route
             path="/dashboard/*"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute role="business">
                 <BusinessDashboardRoutes />
               </ProtectedRoute>
             }
           />
 
-          {/* הפניה מ־/dashboard/calendar */}
+          {/* Calendar Redirect */}
           <Route path="/dashboard/calendar" element={<Navigate to="/dashboard" />} />
 
-          {/* בדיקת צ'אט ישירה */}
+          {/* Chat Test */}
           <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
-          {/* ברירת מחדל: חזור לעמוד הבית */}
+          {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>

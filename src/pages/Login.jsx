@@ -45,7 +45,7 @@ const Login = () => {
         return;
       }
 
-      // ניתוב לפי תפקיד, כולל businessId עבור בעל עסק
+      // ניתוב לפי תפקיד
       let dashboardPath = "/";
       switch (user.role) {
         case "admin":
@@ -58,10 +58,8 @@ const Login = () => {
           dashboardPath = "/staff/dashboard";
           break;
         case "business":
-          // אם יש ID של העסק – לכרטיס הדשבורד העסקי, אחרת ליצירת עמוד עסק חדש
-          dashboardPath = user.businessId
-            ? `/business/${user.businessId}/dashboard`
-            : "/create-business";
+          // ניתוב פשוט ל־/dashboard
+          dashboardPath = "/dashboard";
           break;
         case "customer":
           dashboardPath = "/client-dashboard";
