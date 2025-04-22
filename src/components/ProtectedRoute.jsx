@@ -1,42 +1,39 @@
-// src/components/ProtectedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children, requiredPackage = "any" }) => {
+const ProtectedRoute = ({ children, role = null, plan = null }) => {
   const { user, loading } = useAuth();
   const devMode = import.meta.env.DEV;
 
-  console.log("🔐 ProtectedRoute → user:", user, "loading:", loading, "devMode:", devMode);
-
-  // ✅ מצב פיתוח תמיד מאשר גישה
+  // מצב פיתוח תמיד מאשר גישה
   if (devMode) return children;
 
-  // ⏳ בזמן טעינה – מציג מסך טוען (אפשר לשים Spinner אמיתי)
+  // בזמן טעינה – טוען
   if (loading) {
     return (
       <div className="loading-screen" style={{ textAlign: "center", padding: "2rem" }}>
-        ⏳ טוען נתונים...
+        🔄 טוען נתונים...
       </div>
     );
   }
 
-  // ❌ אין משתמש מחובר – מפנה ל־Login
-  if (!user || !user.email) {
-    console.warn("⚠️ אין משתמש מחובר – מפנה לדף התחברות");
+  // אין משתמש מחובר – הפניה לכניסה
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // 🚫 אין גישה לפי סוג מנוי
-  if (
-    requiredPackage !== "any" &&
-    (!user.subscriptionPlan || user.subscriptionPlan !== requiredPackage)
-  ) {
-    console.warn(`🚫 אין למשתמש גישה לחבילת ${requiredPackage}`);
+  // אם נדרש תפקיד ואין התאמה – הפניה
+  if (role && user.role !== role) {
+    return <Navigate to="/" replace />;
+  }
+
+  // אם נדרשת חבילה ואין התאמה – הפניה
+  if (plan && user.subscriptionPlan !== plan) {
     return <Navigate to="/plans" replace />;
   }
 
-  // ✅ הכל תקין – מציג את הרכיב
+  // הכל תקין – מציג את הרכיב
   return children;
 };
 

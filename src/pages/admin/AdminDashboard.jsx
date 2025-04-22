@@ -1,20 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
-import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function AdminDashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      navigate("/");
+    }
+  }, [user]);
+
   const stats = {
     totalUsers: 980,
     totalBusinesses: 245,
     totalPlans: 8,
     totalSales: 58920,
     activeManagers: 6,
-    blockedUsers: 17
+    blockedUsers: 17,
   };
 
   return (
     <div className="admin-dashboard">
       <h1>👑 דשבורד אדמין ראשי</h1>
+      <p className="welcome-admin">שלום, {user?.name || user?.email || "מנהל"}</p>
 
       <div className="admin-summary">
         <div className="summary-card">👥 משתמשים במערכת: <strong>{stats.totalUsers}</strong></div>
@@ -32,7 +43,7 @@ function AdminDashboard() {
         <Link to="/admin/users" className="admin-link">👥 ניהול משתמשים</Link>
         <Link to="/admin/logs" className="admin-link">🕐 פעולות מערכת (לוגים)</Link>
         <Link to="/admin/settings" className="admin-link">⚙️ הגדרות כלליות</Link>
-        <Link to="/reset-password" className="admin-link">🔒 שינוי סיסמה</Link> {/* ← הוספנו כאן */}
+        <Link to="/reset-password" className="admin-link">🔒 שינוי סיסמה</Link>
         <Link to="/admin/affiliate-payouts" className="admin-link">💸 דו"ח תשלומים לשותפים</Link>
       </div>
     </div>

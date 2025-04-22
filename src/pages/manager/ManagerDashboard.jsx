@@ -1,26 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext"; // ודא שהנתיב נכון
 import "./ManagerDashboard.css";
-import { Link } from "react-router-dom";
 
 function ManagerDashboard() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user?.role !== "manager") {
+      navigate("/"); // או /login
+    }
+  }, [user, loading]);
+
   const stats = {
     teamSize: 12,
     totalSales: 37920,
     totalCalls: 642,
     activePlans: 95,
     openTasks: 18,
-    leadsToday: 7
+    leadsToday: 7,
   };
 
   const teamStats = [
     { id: 1, name: "רוני", calls: 32, sales: 5, goals: 10, status: "פעיל" },
     { id: 2, name: "שחר", calls: 18, sales: 2, goals: 7, status: "בהפסקה" },
-    { id: 3, name: "אורי", calls: 40, sales: 9, goals: 12, status: "פעיל" }
+    { id: 3, name: "אורי", calls: 40, sales: 9, goals: 12, status: "פעיל" },
   ];
+
+  if (loading) return <div className="loading-screen">🔄 טוען נתונים…</div>;
 
   return (
     <div className="manager-dashboard">
-      <h1>👨‍💼 ברוך הבא, מנהל</h1>
+      <h1>👨‍💼 ברוך הבא, {user?.name || user?.email || "מנהל"}</h1>
 
       <div className="top-summary">
         <div className="summary-box">👥 גודל צוות: <strong>{stats.teamSize}</strong></div>

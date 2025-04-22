@@ -1,8 +1,8 @@
-import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import "../../styles/BusinessDashboardLayout.css"; // ודא שזה הנתיב הנכון לקובץ ה-CSS שלך
+import React, { useEffect } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import "../../styles/BusinessDashboardLayout.css";
 
-// 👇 טאב חדש ל"יעדים שלי" נוסף פה
 const tabs = [
   { path: "profile", label: "👤 פרופיל" },
   { path: "build", label: "🧱 עריכת עמוד עסקי" },
@@ -11,12 +11,23 @@ const tabs = [
   { path: "collab", label: "🤝 שיתופי פעולה" },
   { path: "crm", label: "📇 מערכת CRM" },
   { path: "esclick", label: "🧠 יועץ עסקליק" },
-  { path: "goals", label: "🎯 היעדים שלי" }, // ✅ נוספה כאן שורת הטאב החדש
+  { path: "goals", label: "🎯 היעדים שלי" },
   { path: "affiliate", label: "👥 תכנית שותפים" },
   { path: "upgrade", label: "🚀 שדרוג חבילה" },
 ];
 
 const BusinessDashboardLayout = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user?.role !== "business") {
+      navigate("/");
+    }
+  }, [user, loading]);
+
+  if (loading) return <div className="loading-screen">🔄 טוען נתונים…</div>;
+
   return (
     <div className="business-dashboard-layout">
       <aside className="sidebar">
