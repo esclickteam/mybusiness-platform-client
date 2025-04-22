@@ -71,25 +71,31 @@ const Register = () => {
       localStorage.setItem("token", response.data.token);
 
       // ✅ ניתוב לפי תפקיד
+      if (!user || !user.role) {
+        setError("❌ לא ניתן לקבוע תפקיד משתמש");
+        return;
+      }
+
+      let dashboardPath = "/";
       switch (user.role) {
-        case "business":
-          navigate("/dashboard");
-          break;
-        case "customer":
-          navigate("/client-dashboard");
-          break;
-        case "worker":
-          navigate("/staff/dashboard");
+        case "admin":
+          dashboardPath = "/admin/dashboard";
           break;
         case "manager":
-          navigate("/manager/dashboard");
+          dashboardPath = "/manager/dashboard";
           break;
-        case "admin":
-          navigate("/admin/dashboard");
+        case "worker":
+          dashboardPath = "/staff/dashboard";
           break;
-        default:
-          navigate("/");
+        case "business":
+          dashboardPath = "/dashboard";
+          break;
+        case "customer":
+          dashboardPath = "/client-dashboard";
+          break;
       }
+
+      navigate(dashboardPath);
     } catch (err) {
       console.error("❌ שגיאה בהתחברות:", err.response?.data);
       setError("❌ שגיאה בעת ההתחברות לאחר הרשמה");
