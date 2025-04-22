@@ -46,10 +46,11 @@ const Register = () => {
       const response = await API.post("/auth/register", {
         name: formData.name,
         email: formData.email,
-        phone: formData.userType === "business" ? formData.phone : "", // טלפון רק לעסק
+        phone: formData.userType === "business" ? formData.phone : "",
         password: formData.password,
-        role: formData.userType === "business" ? "business" : "customer",
+        userType: formData.userType, // ← זה השם הנכון שמצופה בשרת
       });
+      
 
       console.log("🎉 נרשמת בהצלחה:", response.data);
       loginUser(formData.email, formData.password);
