@@ -52,7 +52,9 @@ const Register = () => {
         phone: formData.userType === "business" ? formData.phone : "",
         password: formData.password,
         userType: formData.userType,
+        role: formData.userType === "business" ? "business" : "customer", // ✅ הוספה חשובה
       });
+      
 
       console.log("🎉 נרשמת בהצלחה:", response.data);
       loginUser(formData.email, formData.password);
