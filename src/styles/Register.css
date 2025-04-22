@@ -12,7 +12,7 @@
     font-size: 26px;
     font-weight: bold;
     margin-bottom: 10px;
-    color: #3b007d; /* סגול כהה */
+    color: #3b007d;
   }
   
   .register-container p {
@@ -69,6 +69,7 @@
     margin-bottom: 5px;
     position: relative;
     cursor: pointer;
+    transition: 0.3s;
   }
   
   .radio-option input[type="radio"]:checked {
@@ -100,6 +101,13 @@
   .register-button:hover {
     background: #5000c9;
     box-shadow: 0px 6px 12px rgba(80, 0, 201, 0.4);
+  }
+  
+  /* הודעות שגיאה */
+  .error-message {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
   }
   
   /* לינק להתחברות */
