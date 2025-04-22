@@ -21,6 +21,8 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import EditSiteContent from "./pages/admin/EditSiteContent";
 import ManageRoles from "./pages/admin/ManageRoles";
 import ChangePassword from "./pages/ChangePassword";
+import ResetPassword from "./pages/ResetPassword"; // 🟣 לוודא שזה קיים
+
 
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
@@ -81,6 +83,8 @@ export default function App() {
           <Route path="/admin/site-edit" element={<EditSiteContent />} />
           <Route path="/admin/roles" element={<ManageRoles />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
 
           {/* עמוד עסק לצפייה (ללקוחות) */}
           <Route

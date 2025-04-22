@@ -32,8 +32,7 @@ function AdminDashboard() {
         <Link to="/admin/users" className="admin-link">👥 ניהול משתמשים</Link>
         <Link to="/admin/logs" className="admin-link">🕐 פעולות מערכת (לוגים)</Link>
         <Link to="/admin/settings" className="admin-link">⚙️ הגדרות כלליות</Link>
-        
-
+        <Link to="/reset-password" className="admin-link">🔒 שינוי סיסמה</Link> {/* ← הוספנו כאן */}
       </div>
     </div>
   );
