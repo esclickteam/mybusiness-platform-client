@@ -7,10 +7,10 @@ const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "", // ✅ חדש
+    phone: "",
     password: "",
     confirmPassword: "",
-    userType: "customer",
+    userType: "customer", // לקוח / בעל עסק
   });
 
   const [error, setError] = useState("");
@@ -20,19 +20,35 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const isValidPhone = (phone) => {
+    const phoneRegex = /^05\d{8}$/;
+    return phoneRegex.test(phone);
+  };
+
   const registerNewUser = async () => {
     if (formData.password !== formData.confirmPassword) {
       setError("⚠️ הסיסמאות לא תואמות");
       return;
     }
 
+    if (formData.userType === "business") {
+      if (!formData.phone.trim()) {
+        setError("⚠️ יש להזין מספר טלפון כדי להירשם כבעל עסק");
+        return;
+      }
+      if (!isValidPhone(formData.phone)) {
+        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב־05)");
+        return;
+      }
+    }
+
     try {
       const response = await API.post("/auth/register", {
         name: formData.name,
         email: formData.email,
-        phone: formData.phone, // ✅ שולח לשרת
+        phone: formData.userType === "business" ? formData.phone : "", // טלפון רק לעסק
         password: formData.password,
-        userType: formData.userType,
+        role: formData.userType === "business" ? "business" : "customer",
       });
 
       console.log("🎉 נרשמת בהצלחה:", response.data);
@@ -97,14 +113,16 @@ const Register = () => {
           onChange={handleChange}
           required
         />
-        <input
-          type="tel"
-          name="phone"
-          placeholder="טלפון"
-          value={formData.phone}
-          onChange={handleChange}
-          required={formData.userType === "business"} // ✅ חובה רק לבעל עסק
-        />
+        {formData.userType === "business" && (
+          <input
+            type="tel"
+            name="phone"
+            placeholder="טלפון"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
+        )}
         <input
           type="password"
           name="password"
