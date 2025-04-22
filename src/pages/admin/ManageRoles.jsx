@@ -95,10 +95,11 @@ function ManageRoles() {
   };
 
   const filteredUsers = users.filter((user) =>
-    user.username.includes(searchTerm) ||
-    user.name.includes(searchTerm) ||
-    user.phone.includes(searchTerm)
+    (user.username || "").includes(searchTerm) ||
+    (user.name || "").includes(searchTerm) ||
+    (user.phone || "").includes(searchTerm)
   );
+  
 
   return (
     <div className="manage-roles">
