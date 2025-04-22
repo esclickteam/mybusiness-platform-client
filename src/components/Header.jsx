@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -7,13 +6,15 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
 const Header = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
+
+  if (loading) return null; // ⏳ לא מציג כלום עד שהטעינה מסתיימת
 
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/login"); // לאחר התנתקות מפנים לעמוד ההתחברות
+      navigate("/login");
     } catch (err) {
       console.error("❌ logout failed:", err);
     }

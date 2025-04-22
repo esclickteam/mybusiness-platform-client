@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import API from "../api";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 
@@ -10,7 +10,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
+
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✅ שימוש בפונקציית login מתוך AuthContext
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,30 +23,20 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    if (
-      (!isEmployeeLogin && (!formData.email || !formData.password)) ||
-      (isEmployeeLogin && (!formData.username || !formData.password))
-    ) {
+    const identifier = isEmployeeLogin ? formData.username : formData.email;
+
+    if (!identifier || !formData.password) {
       setError("נא למלא את כל השדות");
       setLoading(false);
       return;
     }
 
     try {
-      const payload = isEmployeeLogin
-        ? { username: formData.username, password: formData.password }
-        : { email: formData.email, password: formData.password };
+      // ✅ קריאה ל־login מה־Context
+      const user = await login(identifier, formData.password);
 
-      const res = await API.post("/auth/login", payload, { withCredentials: true });
-
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-      }
-
-      const user = res.data.user;
-      localStorage.setItem("user", JSON.stringify(user));
-
-      switch (user.role) {
+      // ✅ ניתוב לפי תפקיד
+      switch (user?.role) {
         case "business":
           navigate("/dashboard");
           break;
