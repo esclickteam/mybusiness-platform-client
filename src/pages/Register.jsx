@@ -20,10 +20,7 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const isValidPhone = (phone) => {
-    const phoneRegex = /^05\d{8}$/;
-    return phoneRegex.test(phone);
-  };
+  const isValidPhone = (phone) => /^05\d{8}$/.test(phone);
 
   const registerNewUser = async () => {
     if (formData.password !== formData.confirmPassword) {
@@ -42,15 +39,20 @@ const Register = () => {
       }
     }
 
+    // 🔍 debug - לוודא מה נשלח
+    console.log("📤 נתונים שנשלחים לשרת:", {
+      ...formData,
+      phone: formData.userType === "business" ? formData.phone : "",
+    });
+
     try {
       const response = await API.post("/auth/register", {
         name: formData.name,
         email: formData.email,
         phone: formData.userType === "business" ? formData.phone : "",
         password: formData.password,
-        userType: formData.userType, // ← זה השם הנכון שמצופה בשרת
+        userType: formData.userType,
       });
-      
 
       console.log("🎉 נרשמת בהצלחה:", response.data);
       loginUser(formData.email, formData.password);
@@ -114,16 +116,15 @@ const Register = () => {
           onChange={handleChange}
           required
         />
-        {formData.userType === "business" && (
-          <input
-            type="tel"
-            name="phone"
-            placeholder="טלפון"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-          />
-        )}
+        <input
+          type="tel"
+          name="phone"
+          placeholder="טלפון"
+          value={formData.phone}
+          onChange={handleChange}
+          required={formData.userType === "business"}
+          style={{ display: formData.userType === "business" ? "block" : "none" }}
+        />
         <input
           type="password"
           name="password"
