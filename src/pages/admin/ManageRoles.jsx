@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ManageRoles.css";
 import { Link } from "react-router-dom";
 
@@ -12,6 +12,24 @@ function ManageRoles() {
     role: "worker",
   });
   const [searchTerm, setSearchTerm] = useState("");
+
+  // ✅ טוען את המשתמשים מהשרת בהתחלה
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch("/api/admin/users");
+        const data = await res.json();
+        if (res.ok) {
+          setUsers(data);
+        } else {
+          console.error("❌ שגיאה בטעינת משתמשים:", data.error);
+        }
+      } catch (err) {
+        console.error("❌ שגיאה בטעינת משתמשים:", err);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,7 +52,7 @@ function ManageRoles() {
       const data = await res.json();
       if (res.ok) {
         alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${data.tempPassword}`);
-        setUsers([...users, { ...form, _id: data.userId }]); // שמור מזהה
+        setUsers((prev) => [...prev, { ...form, _id: data.userId }]);
         setForm({ name: "", username: "", email: "", phone: "", role: "worker" });
       } else {
         alert(`❌ שגיאה: ${data.error}`);
