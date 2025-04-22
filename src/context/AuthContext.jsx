@@ -1,12 +1,10 @@
-// src/context/AuthContext.jsx
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // ✅ מצב פיתוח: משתמש מזויף
+  // מצב פיתוח: משתמש מזויף
   if (import.meta.env.DEV) {
     const devUser = {
       userId: "dev123",
@@ -45,7 +43,7 @@ export function AuthProvider({ children }) {
     );
   }
 
-  // ✅ מצב אמיתי
+  // מצב אמיתי
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -82,23 +80,26 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // טען משתמש בהתקנת הקומפוננטה
+  // טען משתמש ברגע שהקומפוננט עולה
   useEffect(() => {
     refreshUserData();
   }, []);
 
-  // login(identifier, password)
+  // login: שולח credentials, שומר token, מביא user data
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
     try {
       console.log("📡 POST /api/auth/login", identifier);
-      // בודק אם זה אימייל או username
       const body = identifier.includes("@")
         ? { email: identifier.trim(), password }
         : { username: identifier.trim(), password };
 
-      await API.post("/auth/login", body);
+      // התחברות ושמירת הטוקן
+      const res = await API.post("/auth/login", body);
+      localStorage.setItem("token", res.data.token);
+
+      // טעינת נתוני המשתמש
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
       return u;
@@ -115,6 +116,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // logout: שולח בקשה להתנתקות ואז מנקה נתונים
   const logout = async () => {
     try {
       console.log("📡 POST /api/auth/logout");
@@ -141,7 +143,15 @@ export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) {
     console.warn("⚠️ useAuth must be used within AuthProvider");
-    return { user: null, loading: false, error: null, login: async () => {}, logout: async () => {}, refreshUserData: async () => null, setUser: () => {} };
+    return {
+      user: null,
+      loading: false,
+      error: null,
+      login: async () => {},
+      logout: async () => {},
+      refreshUserData: async () => null,
+      setUser: () => {},
+    };
   }
   return ctx;
 }
