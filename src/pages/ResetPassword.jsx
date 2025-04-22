@@ -1,11 +1,10 @@
 // ✅ src/pages/ResetPassword.jsx
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import API from "../api";
 import "../styles/ForgotPassword.css";
 
 const ResetPassword = () => {
-  const { token } = useParams();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,12 +24,12 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      const res = await API.post("/auth/reset-password", { token, password });
+      const res = await API.put("/auth/reset-password", { newPassword: password });
       setMessage("✅ הסיסמה עודכנה בהצלחה!");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      console.error("❌ שגיאה באיפוס סיסמה:", err);
-      setMessage("❌ הקישור פג תוקף או שגיאה בשרת");
+      console.error("❌ שגיאה בשמירת סיסמה חדשה:", err);
+      setMessage("❌ שגיאה בשמירת הסיסמה");
     } finally {
       setLoading(false);
     }
@@ -39,7 +38,7 @@ const ResetPassword = () => {
   return (
     <div className="forgot-password-overlay">
       <div className="forgot-password-modal">
-        <h2>איפוס סיסמה</h2>
+        <h2>שינוי סיסמה</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="password"
