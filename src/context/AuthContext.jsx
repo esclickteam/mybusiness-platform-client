@@ -1,3 +1,5 @@
+// src/context/AuthContext.jsx
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api";
 
@@ -15,22 +17,27 @@ export function AuthProvider({ children }) {
       businessId: "dev-id",
     };
 
+    const devLogin = async (identifier, password) => {
+      console.log("🔑 dev login:", identifier, password);
+      return devUser;
+    };
     const devLogout = async () => {
       console.log("🔒 dev logout");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     };
+    const devRefresh = async () => devUser;
 
     return (
       <AuthContext.Provider
         value={{
           user: devUser,
-          login: async () => devUser,
-          logout: devLogout,
-          error: null,
-          refreshUserData: async () => devUser,
-          setUser: () => {},
           loading: false,
+          error: null,
+          login: devLogin,
+          logout: devLogout,
+          refreshUserData: devRefresh,
+          setUser: () => {},
         }}
       >
         {children}
@@ -43,63 +50,74 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // טוען נתוני משתמש מהשרת
   const refreshUserData = async () => {
     try {
-      console.log("📡 loading user data from /users/me");
+      console.log("📡 fetching /api/users/me");
       const res = await API.get("/users/me");
-      if (!res.data) throw new Error("Empty response");
-
+      const data = res.data;
       const u = {
-        userId: res.data.userId || res.data._id,
-        name: res.data.name || res.data.username || "",
-        email: res.data.email,
-        subscriptionPlan: res.data.subscriptionPlan || "free",
-        role: res.data.role || "customer",
-        isTempPassword: res.data.isTempPassword || false,
-        businessId: res.data.businessId || null,
+        userId: data.userId,
+        name: data.name || data.username || "",
+        email: data.email,
+        subscriptionPlan: data.subscriptionPlan,
+        role: data.role,
+        isTempPassword: data.isTempPassword || false,
+        businessId: data.businessId || null,
       };
-
-      console.log("✅ user loaded:", u);
+      console.log("✅ loaded user:", u);
       localStorage.setItem("user", JSON.stringify(u));
       setUser(u);
+      setError(null);
       return u;
     } catch (e) {
-      console.error("❌ failed to refresh user:", e.response?.data || e.message);
+      console.error("❌ refreshUserData failed:", e.response?.data || e.message);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      setError("⚠️ failed to load user");
+      setError("⚠️ יש להתחבר מחדש");
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // ⏳ טען משתמש בעת טעינת האפליקציה
+  // טען משתמש בהתקנת הקומפוננטה
   useEffect(() => {
     refreshUserData();
   }, []);
 
-  const login = async (email, password) => {
+  // login(identifier, password)
+  const login = async (identifier, password) => {
+    setLoading(true);
     setError(null);
     try {
-      console.log("📡 logging in...");
-      await API.post("/auth/login", { email, password });
+      console.log("📡 POST /api/auth/login", identifier);
+      // בודק אם זה אימייל או username
+      const body = identifier.includes("@")
+        ? { email: identifier.trim(), password }
+        : { username: identifier.trim(), password };
 
-      // ✅ טען את המשתמש מחדש מהשרת לאחר התחברות
-      const refreshedUser = await refreshUserData();
-      if (!refreshedUser) throw new Error("User failed to load");
-      return refreshedUser;
+      await API.post("/auth/login", body);
+      const u = await refreshUserData();
+      if (!u) throw new Error("User load failed");
+      return u;
     } catch (e) {
-      console.error("❌ login failed:", e.response?.data || e.message);
-      setError("⚠️ אימייל או סיסמה שגויים");
+      console.error("❌ login error:", e.response?.data || e.message);
+      setError(
+        e.response?.status === 401
+          ? "❌ שם משתמש או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסו שוב"
+      );
       throw e;
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
     try {
-      console.log("📡 logging out...");
+      console.log("📡 POST /api/auth/logout");
       await API.post("/auth/logout");
     } catch (e) {
       console.error("❌ logout error:", e.response?.data || e.message);
@@ -107,13 +125,12 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      console.log("✅ logged out");
     }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, error, refreshUserData, setUser, loading }}
+      value={{ user, loading, error, login, logout, refreshUserData, setUser }}
     >
       {loading ? <div className="loading-screen">🔄 טוען נתונים…</div> : children}
     </AuthContext.Provider>
@@ -123,16 +140,8 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) {
-    console.warn("⚠️ useAuth called outside AuthProvider");
-    return {
-      user: null,
-      loading: false,
-      login: async () => {},
-      logout: async () => {},
-      error: null,
-      refreshUserData: async () => null,
-      setUser: () => {},
-    };
+    console.warn("⚠️ useAuth must be used within AuthProvider");
+    return { user: null, loading: false, error: null, login: async () => {}, logout: async () => {}, refreshUserData: async () => null, setUser: () => {} };
   }
   return ctx;
 }

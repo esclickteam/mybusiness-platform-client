@@ -1,3 +1,5 @@
+// src/pages/Login.jsx
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -12,10 +14,10 @@ const Login = () => {
   const [showForgot, setShowForgot] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuth(); // שימוש ב־login מתוך AuthContext
+  const { login } = useAuth(); // מתוך AuthContext: login(identifier,password) => { user, token }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
@@ -23,23 +25,27 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    const identifier = isEmployeeLogin ? formData.username : formData.email;
+    // לפי מצב – מזהה בכניסה
+    const identifier = isEmployeeLogin ? formData.username.trim() : formData.email.trim();
+    const password   = formData.password;
 
-    if (!identifier || !formData.password) {
+    if (!identifier || !password) {
       setError("נא למלא את כל השדות");
       setLoading(false);
       return;
     }
 
     try {
-      const user = await login(identifier, formData.password);
+      // login מחזיר אובייקט { user, token }
+      const { user } = await login(identifier, password);
 
       if (!user || !user.role) {
         setError("❌ לא ניתן לקבוע תפקיד משתמש");
+        setLoading(false);
         return;
       }
 
-      // ✅ ניתוב לפי תפקיד
+      // ניתוב לפי תפקיד, כולל businessId עבור בעל עסק
       let dashboardPath = "/";
       switch (user.role) {
         case "admin":
@@ -52,7 +58,10 @@ const Login = () => {
           dashboardPath = "/staff/dashboard";
           break;
         case "business":
-          dashboardPath = "/dashboard";
+          // אם יש ID של העסק – לכרטיס הדשבורד העסקי, אחרת ליצירת עמוד עסק חדש
+          dashboardPath = user.businessId
+            ? `/business/${user.businessId}/dashboard`
+            : "/create-business";
           break;
         case "customer":
           dashboardPath = "/client-dashboard";
@@ -77,7 +86,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>{isEmployeeLogin ? "כניסת עובדים" : "התחברות"}</h2>
+        <h2>{isEmployeeLogin ? "כניסת צוות" : "התחברות"}</h2>
         <form onSubmit={handleSubmit}>
           {isEmployeeLogin ? (
             <input
@@ -87,7 +96,6 @@ const Login = () => {
               value={formData.username}
               onChange={handleChange}
               autoComplete="username"
-              required
             />
           ) : (
             <input
@@ -97,10 +105,8 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               autoComplete="email"
-              required
             />
           )}
-
           <input
             type="password"
             name="password"
@@ -108,9 +114,7 @@ const Login = () => {
             value={formData.password}
             onChange={handleChange}
             autoComplete="current-password"
-            required
           />
-
           <button type="submit" className="login-button" disabled={loading}>
             {loading ? "🔄 מתחבר..." : "התחבר"}
           </button>
@@ -119,17 +123,7 @@ const Login = () => {
         {error && <p className="error-message">{error}</p>}
 
         <div className="login-extra-options">
-          {!isEmployeeLogin ? (
-            <button
-              className="staff-login-link"
-              onClick={() => {
-                setIsEmployeeLogin(true);
-                setError("");
-              }}
-            >
-              👤 כניסת עובדים
-            </button>
-          ) : (
+          {isEmployeeLogin ? (
             <button
               className="staff-login-link"
               onClick={() => {
@@ -138,6 +132,16 @@ const Login = () => {
               }}
             >
               🔙 חזרה להתחברות רגילה
+            </button>
+          ) : (
+            <button
+              className="staff-login-link"
+              onClick={() => {
+                setIsEmployeeLogin(true);
+                setError("");
+              }}
+            >
+              👥 כניסת צוות
             </button>
           )}
 
@@ -161,9 +165,7 @@ const Login = () => {
         </div>
       </div>
 
-      {showForgot && (
-        <ForgotPassword closePopup={() => setShowForgot(false)} />
-      )}
+      {showForgot && <ForgotPassword closePopup={() => setShowForgot(false)} />}
     </div>
   );
 };

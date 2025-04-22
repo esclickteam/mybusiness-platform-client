@@ -1,6 +1,9 @@
+// src/pages/Register.jsx
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Register.css";
 
 const Register = () => {
@@ -12,70 +15,57 @@ const Register = () => {
     confirmPassword: "",
     userType: "customer",
   });
-
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const isValidPhone = (phone) => /^05\d{8}$/.test(phone);
 
-  const registerNewUser = async () => {
-    if (formData.password !== formData.confirmPassword) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const { name, email, phone, password, confirmPassword, userType } = formData;
+
+    // בדיקות בסיס
+    if (!name || !email || !password || !confirmPassword) {
+      setError("⚠️ יש למלא את כל השדות הנדרשים");
+      return;
+    }
+    if (password !== confirmPassword) {
       setError("⚠️ הסיסמאות לא תואמות");
       return;
     }
-
-    if (formData.userType === "business") {
-      if (!formData.phone.trim()) {
+    if (userType === "business") {
+      if (!phone.trim()) {
         setError("⚠️ יש להזין מספר טלפון כדי להירשם כבעל עסק");
         return;
       }
-      if (!isValidPhone(formData.phone)) {
-        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב־05)");
+      if (!isValidPhone(phone.trim())) {
+        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב‑05)");
         return;
       }
     }
 
     try {
-      const response = await API.post("/auth/register", {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.userType === "business" ? formData.phone : "",
-        password: formData.password,
-        userType: formData.userType,
-        role: formData.userType === "business" ? "business" : "customer",
+      // שליחה לשרת להרשמה
+      await API.post("/auth/register", {
+        name: name.trim(),
+        email: email.trim(),
+        phone: userType === "business" ? phone.trim() : "",
+        password,
+        userType,
+        role: userType === "business" ? "business" : "customer",
       });
 
-      console.log("🎉 נרשמת בהצלחה:", response.data);
-      loginUser(formData.email, formData.password);
-    } catch (err) {
-      console.error("❌ שגיאה בהרשמה:", err.response?.data);
-      setError(
-        err.response?.data?.error ||
-        (err.response?.status === 400
-          ? "❌ אימייל כבר רשום במערכת"
-          : "❌ שגיאה בלתי צפויה. נסה שוב מאוחר יותר.")
-      );
-    }
-  };
+      // אחרי הרשמה – מבצעים login דרך ה‐AuthContext
+      const user = await login(email.trim(), password);
 
-  const loginUser = async (email, password) => {
-    try {
-      const response = await API.post("/auth/login", { email, password });
-
-      const user = response.data.user;
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("token", response.data.token);
-
-      // ✅ ניתוב לפי תפקיד
-      if (!user || !user.role) {
-        setError("❌ לא ניתן לקבוע תפקיד משתמש");
-        return;
-      }
-
+      // ניתוב לפי תפקיד ו־businessId
       let dashboardPath = "/";
       switch (user.role) {
         case "admin":
@@ -88,24 +78,28 @@ const Register = () => {
           dashboardPath = "/staff/dashboard";
           break;
         case "business":
-          dashboardPath = "/dashboard";
+          dashboardPath = user.businessId
+            ? `/business/${user.businessId}/dashboard`
+            : "/create-business";
           break;
         case "customer":
           dashboardPath = "/client-dashboard";
           break;
+        default:
+          dashboardPath = "/";
       }
 
       navigate(dashboardPath);
     } catch (err) {
-      console.error("❌ שגיאה בהתחברות:", err.response?.data);
-      setError("❌ שגיאה בעת ההתחברות לאחר הרשמה");
+      console.error("❌ Registration error:", err.response?.data || err.message);
+      if (err.response?.status === 400) {
+        setError(err.response.data.error || "❌ אימייל כבר רשום במערכת");
+      } else if (err.response?.status === 401) {
+        setError("❌ לא מצליח להתחבר לאחר הרשמה, נסה שוב");
+      } else {
+        setError("❌ שגיאה בלתי צפויה. נסה שוב מאוחר יותר.");
+      }
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError("");
-    registerNewUser();
   };
 
   return (
@@ -129,15 +123,16 @@ const Register = () => {
           onChange={handleChange}
           required
         />
-        <input
-          type="tel"
-          name="phone"
-          placeholder="טלפון"
-          value={formData.phone}
-          onChange={handleChange}
-          required={formData.userType === "business"}
-          style={{ display: formData.userType === "business" ? "block" : "none" }}
-        />
+        {formData.userType === "business" && (
+          <input
+            type="tel"
+            name="phone"
+            placeholder="טלפון"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
+        )}
         <input
           type="password"
           name="password"
