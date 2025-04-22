@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// משתמש רק בפרוקסי של vercel.json
 const BASE_URL = "/api";
 
 const API = axios.create({
@@ -12,10 +11,16 @@ const API = axios.create({
   },
 });
 
-// ❌ הסר את הכנסת ה־Authorization אם אתה משתמש ב־cookie בלבד
-// אפשר להשאיר אותו – רק אם אתה רוצה future support להרשאות חכמות יותר
-// אבל כרגע – אפשר גם להסיר
+// ✅ הוספתי interceptor לשליחת הטוקן בבקשות
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
+// ✅ מטפל בהתנתקות אוטומטית אם הטוקן לא תקין
 API.interceptors.response.use(
   (resp) => resp,
   (error) => {
