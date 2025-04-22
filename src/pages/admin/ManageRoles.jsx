@@ -9,7 +9,7 @@ function ManageRoles() {
     username: "",
     email: "",
     phone: "",
-    role: "staff"
+    role: "worker", // תואם ל־enum במודל
   });
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -33,14 +33,14 @@ function ManageRoles() {
 
       const data = await res.json();
       if (res.ok) {
-        alert(`✅ המשתמש נוצר!\nסיסמה זמנית: ${data.tempPassword}`);
+        alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${data.tempPassword}`);
         setUsers([...users, { ...form, id: Date.now() }]);
         setForm({
           name: "",
           username: "",
           email: "",
           phone: "",
-          role: "staff",
+          role: "worker",
         });
       } else {
         alert(`❌ שגיאה: ${data.error}`);
@@ -67,12 +67,36 @@ function ManageRoles() {
       <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
 
       <div className="role-form">
-        <input type="text" name="name" placeholder="שם מלא" value={form.name} onChange={handleChange} />
-        <input type="text" name="username" placeholder="שם משתמש ייחודי" value={form.username} onChange={handleChange} />
-        <input type="email" name="email" placeholder="אימייל" value={form.email} onChange={handleChange} />
-        <input type="tel" name="phone" placeholder="טלפון" value={form.phone} onChange={handleChange} />
+        <input
+          type="text"
+          name="name"
+          placeholder="שם מלא"
+          value={form.name}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="username"
+          placeholder="שם משתמש ייחודי"
+          value={form.username}
+          onChange={handleChange}
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="אימייל"
+          value={form.email}
+          onChange={handleChange}
+        />
+        <input
+          type="tel"
+          name="phone"
+          placeholder="טלפון"
+          value={form.phone}
+          onChange={handleChange}
+        />
         <select name="role" value={form.role} onChange={handleChange}>
-          <option value="staff">עובד</option>
+          <option value="worker">עובד</option>
           <option value="manager">מנהל</option>
           <option value="admin">אדמין</option>
         </select>
