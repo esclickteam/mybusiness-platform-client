@@ -14,7 +14,7 @@ const Login = () => {
   const [showForgot, setShowForgot] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuth(); // מתוך AuthContext: login(identifier,password) => { user, token }
+  const { login } = useAuth(); // login returns the user object
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -36,8 +36,8 @@ const Login = () => {
     }
 
     try {
-      // login מחזיר אובייקט { user, token }
-      const { user } = await login(identifier, password);
+      // login מחזיר אובייקט user
+      const user = await login(identifier, password);
 
       if (!user || !user.role) {
         setError("❌ לא ניתן לקבוע תפקיד משתמש");
