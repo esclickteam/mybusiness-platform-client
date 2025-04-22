@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
-import "../styles/Register.css"; // ודא שקיים
+import "../styles/Register.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "", // ✅ חדש
     password: "",
     confirmPassword: "",
-    userType: "customer", // ברירת מחדל: לקוח
+    userType: "customer",
   });
 
   const [error, setError] = useState("");
@@ -29,13 +30,12 @@ const Register = () => {
       const response = await API.post("/auth/register", {
         name: formData.name,
         email: formData.email,
+        phone: formData.phone, // ✅ שולח לשרת
         password: formData.password,
         userType: formData.userType,
       });
 
       console.log("🎉 נרשמת בהצלחה:", response.data);
-
-      // כניסה אוטומטית לאחר הרשמה
       loginUser(formData.email, formData.password);
     } catch (err) {
       console.error("❌ שגיאה בהרשמה:", err.response?.data);
@@ -50,15 +50,10 @@ const Register = () => {
 
   const loginUser = async (email, password) => {
     try {
-      const response = await API.post("/auth/login", {
-        email,
-        password,
-      });
-
+      const response = await API.post("/auth/login", { email, password });
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("token", response.data.token);
 
-      // ניווט לפי תפקיד
       const role = response.data.user.role;
       switch (role) {
         case "business":
@@ -101,6 +96,14 @@ const Register = () => {
           value={formData.email}
           onChange={handleChange}
           required
+        />
+        <input
+          type="tel"
+          name="phone"
+          placeholder="טלפון"
+          value={formData.phone}
+          onChange={handleChange}
+          required={formData.userType === "business"} // ✅ חובה רק לבעל עסק
         />
         <input
           type="password"
