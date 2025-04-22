@@ -3,12 +3,14 @@ import "./ManageRoles.css";
 import { Link } from "react-router-dom";
 
 function ManageRoles() {
-  const [users, setUsers] = useState([
-    { id: 1, username: "dana123", name: "דנה כהן", phone: "0501234567", role: "manager" },
-    { id: 2, username: "roni456", name: "רוני לוי", phone: "0529876543", role: "staff" }
-  ]);
-
-  const [form, setForm] = useState({ name: "", username: "", phone: "", role: "staff" });
+  const [users, setUsers] = useState([]);
+  const [form, setForm] = useState({
+    name: "",
+    username: "",
+    email: "",
+    phone: "",
+    role: "staff"
+  });
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleChange = (e) => {
@@ -16,18 +18,44 @@ function ManageRoles() {
     setForm({ ...form, [name]: value });
   };
 
-  const handleAdd = () => {
-    if (!form.name || !form.username) return;
-    const newUser = { ...form, id: Date.now() };
-    setUsers([...users, newUser]);
-    setForm({ name: "", username: "", phone: "", role: "staff" });
+  const handleAdd = async () => {
+    if (!form.name || !form.username || !form.email) {
+      alert("יש למלא את כל השדות");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/create-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(`✅ המשתמש נוצר!\nסיסמה זמנית: ${data.tempPassword}`);
+        setUsers([...users, { ...form, id: Date.now() }]);
+        setForm({
+          name: "",
+          username: "",
+          email: "",
+          phone: "",
+          role: "staff",
+        });
+      } else {
+        alert(`❌ שגיאה: ${data.error}`);
+      }
+    } catch (err) {
+      console.error("❌ שגיאה ביצירת משתמש:", err);
+      alert("❌ שגיאה בלתי צפויה");
+    }
   };
 
   const handleDelete = (id) => {
-    setUsers(users.filter(u => u.id !== id));
+    setUsers(users.filter((u) => u.id !== id));
   };
 
-  const filteredUsers = users.filter(user =>
+  const filteredUsers = users.filter((user) =>
     user.username.includes(searchTerm) ||
     user.name.includes(searchTerm) ||
     user.phone.includes(searchTerm)
@@ -36,12 +64,12 @@ function ManageRoles() {
   return (
     <div className="manage-roles">
       <h1>🔐 ניהול משתמשים ותפקידים</h1>
-
       <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
 
       <div className="role-form">
         <input type="text" name="name" placeholder="שם מלא" value={form.name} onChange={handleChange} />
         <input type="text" name="username" placeholder="שם משתמש ייחודי" value={form.username} onChange={handleChange} />
+        <input type="email" name="email" placeholder="אימייל" value={form.email} onChange={handleChange} />
         <input type="tel" name="phone" placeholder="טלפון" value={form.phone} onChange={handleChange} />
         <select name="role" value={form.role} onChange={handleChange}>
           <option value="staff">עובד</option>
@@ -66,19 +94,23 @@ function ManageRoles() {
           <tr>
             <th>שם</th>
             <th>שם משתמש</th>
+            <th>אימייל</th>
             <th>טלפון</th>
             <th>תפקיד</th>
             <th>מחיקה</th>
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.map(user => (
+          {filteredUsers.map((user) => (
             <tr key={user.id}>
               <td>{user.name}</td>
               <td>{user.username}</td>
+              <td>{user.email}</td>
               <td>{user.phone}</td>
               <td>{user.role}</td>
-              <td><button onClick={() => handleDelete(user.id)}>🗑️</button></td>
+              <td>
+                <button onClick={() => handleDelete(user.id)}>🗑️</button>
+              </td>
             </tr>
           ))}
         </tbody>
