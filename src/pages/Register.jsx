@@ -10,7 +10,7 @@ const Register = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    userType: "customer", // לקוח / בעל עסק
+    userType: "customer",
   });
 
   const [error, setError] = useState("");
@@ -39,12 +39,6 @@ const Register = () => {
       }
     }
 
-    // 🔍 debug - לוודא מה נשלח
-    console.log("📤 נתונים שנשלחים לשרת:", {
-      ...formData,
-      phone: formData.userType === "business" ? formData.phone : "",
-    });
-
     try {
       const response = await API.post("/auth/register", {
         name: formData.name,
@@ -52,9 +46,8 @@ const Register = () => {
         phone: formData.userType === "business" ? formData.phone : "",
         password: formData.password,
         userType: formData.userType,
-        role: formData.userType === "business" ? "business" : "customer", // ✅ הוספה חשובה
+        role: formData.userType === "business" ? "business" : "customer",
       });
-      
 
       console.log("🎉 נרשמת בהצלחה:", response.data);
       loginUser(formData.email, formData.password);
@@ -72,22 +65,34 @@ const Register = () => {
   const loginUser = async (email, password) => {
     try {
       const response = await API.post("/auth/login", { email, password });
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      const user = response.data.user;
+      localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", response.data.token);
 
-      const role = response.data.user.role;
-      switch (role) {
+      // ✅ ניתוב לפי תפקיד
+      switch (user.role) {
         case "business":
-          navigate("/plans");
+          navigate("/dashboard");
           break;
         case "customer":
           navigate("/client-dashboard");
+          break;
+        case "worker":
+          navigate("/staff/dashboard");
+          break;
+        case "manager":
+          navigate("/manager/dashboard");
+          break;
+        case "admin":
+          navigate("/admin/dashboard");
           break;
         default:
           navigate("/");
       }
     } catch (err) {
       console.error("❌ שגיאה בהתחברות:", err.response?.data);
+      setError("❌ שגיאה בעת ההתחברות לאחר הרשמה");
     }
   };
 
