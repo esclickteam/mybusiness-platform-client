@@ -1,5 +1,3 @@
-// src/pages/auth/Login.jsx
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -29,30 +27,28 @@ export default function Login() {
     }
 
     try {
-      // שולחים רק את זה ל־login, כל שאר הפלאגינים בצד ה-frontend
-      const user = await login(identifier.trim(), password);
+      // שולחים גם את הדגל של כניסת צוות
+      const user = await login(identifier.trim(), password, isEmployeeLogin);
 
-      // ניתוב לפי תפקיד
-      if (isEmployeeLogin) {
-        // צוות (worker / manager / admin)
-        if (user.role === "worker") {
+      // ניתוב לפי role
+      switch (user.role) {
+        case "business":
+          navigate("/dashboard");
+          break;
+        case "customer":
+          navigate("/client");
+          break;
+        case "worker":
           navigate("/staff/dashboard");
-        } else if (user.role === "manager") {
+          break;
+        case "manager":
           navigate("/manager/dashboard");
-        } else if (user.role === "admin") {
+          break;
+        case "admin":
           navigate("/admin/dashboard");
-        } else {
-          setError("אין הרשאה להתחברות כצוות");
-        }
-      } else {
-        // התחברות רגילה (business / customer)
-        if (user.role === "business") {
-          navigate("/dashboard");        // או "/business/dashboard" לפי ה-route שלך
-        } else if (user.role === "customer") {
-          navigate("/client");           // או "/customer/dashboard"
-        } else {
-          setError("אין הרשאה להתחברות רגילה");
-        }
+          break;
+        default:
+          navigate("/");
       }
     } catch (err) {
       setError(
@@ -68,21 +64,35 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>{isEmployeeLogin ? "🔐 כניסת צוות" : "🔐 התחברות"}</h2>
+        <h2>{isEmployeeLogin ? "כניסת צוות" : "התחברות"}</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder={isEmployeeLogin ? "שם משתמש" : "אימייל או שם משתמש"}
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-          />
+          {isEmployeeLogin ? (
+            <input
+              type="text"
+              placeholder="שם משתמש"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              required
+            />
+          ) : (
+            <input
+              type="text"
+              placeholder="אימייל או שם משתמש"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              required
+            />
+          )}
+
           <input
             type="password"
             placeholder="סיסמה"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          <button type="submit" disabled={loading} className="login-button">
+
+          <button type="submit" className="login-button" disabled={loading}>
             {loading ? "🔄 מתחבר..." : "התחבר"}
           </button>
         </form>
@@ -90,15 +100,28 @@ export default function Login() {
         {error && <p className="error-message">{error}</p>}
 
         <div className="login-extra-options">
-          <button
-            className="staff-login-toggle"
-            onClick={() => {
-              setIsEmployeeLogin((prev) => !prev);
-              setError("");
-            }}
-          >
-            {isEmployeeLogin ? "🔙 חזרה להתחברות רגילה" : "👥 כניסת צוות"}
-          </button>
+          {isEmployeeLogin ? (
+            <button
+              className="staff-login-link"
+              onClick={() => {
+                setIsEmployeeLogin(false);
+                setError("");
+              }}
+            >
+              🔙 חזרה להתחברות רגילה
+            </button>
+          ) : (
+            <button
+              className="staff-login-link"
+              onClick={() => {
+                setIsEmployeeLogin(true);
+                setError("");
+              }}
+            >
+              👥 כניסת צוות
+            </button>
+          )}
+
           <div className="bottom-links">
             <span
               className="forgot-password"
@@ -118,9 +141,7 @@ export default function Login() {
         </div>
       </div>
 
-      {showForgot && (
-        <ForgotPassword closePopup={() => setShowForgot(false)} />
-      )}
+      {showForgot && <ForgotPassword closePopup={() => setShowForgot(false)} />}
     </div>
   );
 }
