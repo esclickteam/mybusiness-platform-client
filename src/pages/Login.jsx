@@ -1,15 +1,13 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
--import { useAuth } from "../context/AuthContext";
-+import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext"; // ✅ להשתמש ב־logout בנוסף ל־login
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 
 export default function Login() {
--  const { login } = useAuth();
-+  // ✅ עכשיו שולפים גם את logout כדי לנקות קודם את ה-cookie מהשרת
-+  const { login, logout } = useAuth();
+  // ✅ שולפים גם את logout כדי לנקות קודם את העוגיה הישנה
+  const { login, logout } = useAuth();
 
   const [identifier, setIdentifier] = useState(""); // אימייל או שם משתמש
   const [password, setPassword] = useState("");
@@ -31,13 +29,13 @@ export default function Login() {
       return;
     }
 
-+   // ✅ 1. קוראים קודם ל־logout כדי שהשרת ייגרום ל-clearCookie("token")
-+   //    וכשהוא מסיים – אין cookie ישן יותר שיפליא אותנו role=business
-+   try {
-+     await logout();
-+   } catch {
-+     // אפילו אם נכשל, ממשיכ/ה ל-login
-+   }
+    // ✅ קודם מנקים session ישן בשרת (clearCookie) כדי שלא ייפרע מה־role הקודם
+    try {
+      await logout();
+    } catch (err) {
+      // אפילו אם זה נכשׂל, נמשיך להתחברות החדשה
+      console.warn("logout failed:", err);
+    }
 
     try {
       // מבצעים את הקריאה ל־login ב־AuthContext
@@ -46,7 +44,6 @@ export default function Login() {
       // ניתוב לפי role
       switch (user.role) {
         case "business":
-          // דשבורד בעלי עסקים מוגדר ב־App כב-/dashboard/*
           navigate("/dashboard", { replace: true });
           break;
         case "customer":
@@ -139,10 +136,7 @@ export default function Login() {
           )}
 
           <div className="bottom-links">
-            <span
-              className="forgot-password"
-              onClick={() => setShowForgot(true)}
-            >
+            <span className="forgot-password" onClick={() => setShowForgot(true)}>
               שכחת את הסיסמה?
             </span>
             {!isEmployeeLogin && (
