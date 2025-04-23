@@ -4,14 +4,13 @@ import {
   Routes,
   Route,
   Navigate,
-  useLocation,
-  useNavigate
+  useLocation
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-// אימפורט דפים ב-lazy
+// Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
 const About                   = lazy(() => import("./pages/About"));
 const HowItWorks              = lazy(() => import("./pages/HowItWorks"));
@@ -53,38 +52,33 @@ function ScrollToTop() {
   return null;
 }
 
-// אנכי שמנתב אוטומטית למי שכבר מחובר
-function HomeRedirect() {
+// קומפוננטה שמטפלת ב-"/"
+function HomeIndex() {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        navigate("/", { replace: true });
-      } else {
-        switch (user.role) {
-          case "business":
-            navigate("/dashboard", { replace: true });
-            break;
-          case "customer":
-            navigate("/client", { replace: true });
-            break;
-          case "worker":
-            navigate("/staff/dashboard", { replace: true });
-            break;
-          case "manager":
-            navigate("/manager/dashboard", { replace: true });
-            break;
-          case "admin":
-            navigate("/admin/dashboard", { replace: true });
-            break;
-          default:
-            navigate("/", { replace: true });
-        }
-      }
+
+  // 1. loading? מציג spinner
+  if (loading) return <div>🔄 טוען…</div>;
+
+  // 2. משתמש מחובר? מפנה לדשבורד לפי role
+  if (user) {
+    switch (user.role) {
+      case "business":
+        return <Navigate to="/dashboard" replace />;
+      case "customer":
+        return <Navigate to="/client" replace />;
+      case "worker":
+        return <Navigate to="/staff/dashboard" replace />;
+      case "manager":
+        return <Navigate to="/manager/dashboard" replace />;
+      case "admin":
+        return <Navigate to="/admin/dashboard" replace />;
+      default:
+        return <Navigate to="/login" replace />;
     }
-  }, [user, loading, navigate]);
-  return <div>🔄 טוען…</div>;
+  }
+
+  // 3. אין משתמש → מציג את HomePage
+  return <HomePage />;
 }
 
 export default function App() {
@@ -95,11 +89,12 @@ export default function App() {
         <ScrollToTop />
         <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
           <Routes>
-            {/* נחיתה */}
-            <Route path="/" element={<HomeRedirect />} />
+            {/* נחיתה ראשית */}
+            <Route path="/" element={<HomeIndex />} />
+            {/* קישור ישיר ל-HomePage */}
+            <Route path="/home" element={<HomePage />} />
 
             {/* Public */}
-            <Route path="/home" element={<HomePage />} />
             <Route path="/about" element={<About />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/faq" element={<FAQ />} />
@@ -116,7 +111,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/change-password" element={<ChangePassword />} />
 
-            {/* Public business profile */}
+            {/* פרופיל עסק ציבורי */}
             <Route path="/business/:businessId" element={<BusinessPage />} />
 
             {/* Customer Dashboard */}
