@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import API from "../api.js";
+import API from "../JS/api.js";
 import BusinessProfileView from "../pages/business/dashboardPages/buildTabs/BusinessProfileView";
-import checkFeatureAvailability from "../../FeatureAvailability";
+import checkFeatureAvailability from "../pages/business/FeatureAvailability";
 import "./BusinessPage.css"; // אם יש לך סגנונות נפרדים
 
 export default function BusinessPage() {
