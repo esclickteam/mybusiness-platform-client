@@ -1,4 +1,3 @@
-// src/components/ProtectedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -27,8 +26,14 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
 
   // אין משתמש מחובר – הפניה לעמוד login
   if (!user) {
+    console.log("No user found. Redirecting to login.");
     return <Navigate to="/login" replace />;
   }
+
+  // הדפס את המשתמש, התפקיד ו-businessId
+  console.log("User:", user);
+  console.log("User Role:", user?.role);
+  console.log("User Business ID:", user?.businessId);
 
   // אם נדרשות תפקידים ואין התאמה – הפניה לדשבורד של התפקיד הקיים
   if (roles.length > 0 && !roles.includes(user.role)) {
@@ -54,6 +59,7 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
     user.role === "business" &&
     !user.businessId
   ) {
+    console.log("Redirecting to create business page.");
     return <Navigate to="/create-business" replace />;
   }
 
