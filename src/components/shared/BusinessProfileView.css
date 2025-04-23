@@ -1,0 +1,79 @@
+.business-profile-view {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .profile-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .profile-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
+  .profile-name-section h1 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  .category-area,
+  .rating {
+    margin: 0.25rem 0;
+  }
+  .profile-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  .message-button,
+  .schedule-button {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .profile-section {
+    margin-bottom: 1rem;
+  }
+  .gallery-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .gallery-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+  .story-strip {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+  }
+  .story-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .service-list {
+    list-style: none;
+    padding: 0;
+  }
+  .review-box,
+  .faq-item {
+    background: #f9f9f9;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+  }
+  .contact-section ul {
+    list-style: none;
+    padding: 0;
+  }
+  

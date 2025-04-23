@@ -2,10 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import API from "../api";
-import BusinessProfileView from "../pages/business/dashboardPages/buildTabs/BusinessProfileView";
+import BusinessProfileView from "./shared/BusinessProfileView";
 // תיקון הנתיב ל־FeatureAvailability.js שנמצא ב־src/components
 import checkFeatureAvailability from "./FeatureAvailability";
-import "./BusinessPage.css";
 
 export default function BusinessPage() {
   const { businessId } = useParams();

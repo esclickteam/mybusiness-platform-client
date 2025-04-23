@@ -8,6 +8,10 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
+import BusinessPage      from "./components/BusinessPage";
+import PublicProfilePage from "./pages/PublicProfilePage";
+
+
 
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
@@ -69,6 +73,9 @@ export default function App() {
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/dashboard/business/:businessId" element={<BusinessPage />} />
+          <Route path="/public/:businessId" element={<PublicProfilePage />} />
+
 
           {/* Public business page */}
           <Route path="/business/:businessId" element={<BusinessPage />} />
