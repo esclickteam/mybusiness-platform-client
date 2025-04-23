@@ -1,26 +1,10 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // מצב פיתוח: משתמש מזויף
-  if (import.meta.env.DEV) {
-    const devUser = {
-      userId: "dev123",
-      name: "משתמש מבחן",
-      email: "dev@example.com",
-      subscriptionPlan: "premium",
-      role: "business",
-      businessId: "dev-id",
-    };
-    return (
-      <AuthContext.Provider value={{ ...devUser, login: async () => devUser, logout: async () => {}, loading: false, error: null }}>
-        {children}
-      </AuthContext.Provider>
-    );
-  }
-
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,6 +28,7 @@ export function AuthProvider({ children }) {
       setError(null);
       return u;
     } catch (e) {
+      // אם אין session תקין, מנקים הכל
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
@@ -54,10 +39,13 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // בדיקה ראשונית אם כבר מחובר
   useEffect(() => {
     refreshUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // פונקציית התחברות
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
@@ -86,11 +74,13 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // פונקציית התנתקות
   const logout = async () => {
     try {
       await API.post("/auth/logout");
-    } catch {}
-    finally {
+    } catch {
+      // ממשיכים לנקות גם אם ה־logout לוקה בכשל
+    } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
