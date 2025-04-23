@@ -1,5 +1,3 @@
-// src/App.jsx
-
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
@@ -70,6 +68,9 @@ export default function App() {
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
+
+          {/* Business Page (public) */}
+          <Route path="/business/:businessId" element={<BusinessPage />} />
 
           {/* Customer Dashboard */}
           <Route
@@ -195,16 +196,6 @@ export default function App() {
             element={
               <ProtectedRoute role="admin">
                 <AdminPayoutPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Business Page (public-free) */}
-          <Route
-            path="/business/:businessId"
-            element={
-              <ProtectedRoute requiredPackage="free">
-                <BusinessPage />
               </ProtectedRoute>
             }
           />

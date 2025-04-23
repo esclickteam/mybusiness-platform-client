@@ -11,7 +11,7 @@ const API = axios.create({
   },
 });
 
-// ✅ הוספתי interceptor לשליחת הטוקן בבקשות
+// מוסיף את ה‑JWT לכל בקשה אם קיים
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -20,7 +20,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// ✅ מטפל בהתנתקות אוטומטית אם הטוקן לא תקין
+// מנתק אוטומטית אם מקבל 401 ולא בדף /login
 API.interceptors.response.use(
   (resp) => resp,
   (error) => {

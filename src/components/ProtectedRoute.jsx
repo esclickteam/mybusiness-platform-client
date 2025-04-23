@@ -1,10 +1,15 @@
 // src/components/ProtectedRoute.jsx
-
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children, role = null, plan = null }) => {
+/**
+ * ProtectedRoute
+ * @param {ReactNode} children - התוכן להציג אם האבטחה עברה
+ * @param {string|null} role - תפקיד נדרש ("admin", "manager", "worker", "business", "customer")
+ * @param {string|null} requiredPackage - שם החבילה הנדרשת ("free", "standard", "premium" וכדומה)
+ */
+const ProtectedRoute = ({ children, role = null, requiredPackage = null }) => {
   const { user, loading } = useAuth();
   const devMode = import.meta.env.DEV;
 
@@ -34,7 +39,7 @@ const ProtectedRoute = ({ children, role = null, plan = null }) => {
   }
 
   // אם נדרשת חבילה מסוימת ואין התאמה – הפניה לעמוד חבילות
-  if (plan && user.subscriptionPlan !== plan) {
+  if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
     return <Navigate to="/plans" replace />;
   }
 
