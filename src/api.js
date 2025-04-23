@@ -1,6 +1,18 @@
+// src/api.js
+
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_API_URL || "/api";
+// השתמש ישירות ב־REACT_APP_API_URL (מוגדר ב־Vercel לסביבת Production)
+// אם אינו מוגדר – נשתמש בריק כדי להפיל שגיאה ברורה, ולא ב־localhost
+const BASE_URL = process.env.REACT_APP_API_URL;
+if (!BASE_URL) {
+  throw new Error(
+    "Missing environment variable REACT_APP_API_URL. " +
+    "Please define it in Vercel under Settings → Environment Variables " +
+    "with value https://api.esclick.co.il/api"
+  );
+}
+
 const API = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
@@ -10,7 +22,7 @@ const API = axios.create({
   },
 });
 
-// מוסיף את ה‑JWT לכל בקשה אם קיים
+// מוסיף את ה-JWT לכל בקשה אם קיים
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
