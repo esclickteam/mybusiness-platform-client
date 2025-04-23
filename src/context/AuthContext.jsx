@@ -1,76 +1,85 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate }         from "react-router-dom";
-import API                     from "../api";
+import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser]       = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
-  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
-  // 1️⃣ טוען את המשתמש הנוכחי מ־/auth/me
+  // טוען פרטי משתמש מ־/auth/me
   const refreshUserData = async () => {
     try {
       const res = await API.get("/auth/me");
-      // אם השרת מחזיר { user: {...} } או ישר את השדות
-      const u = res.data.user ?? res.data;
-      console.log("🔍 /auth/me returned:", u);
-      setUser(u);
+      console.log("🔍 /auth/me returned:", res.data);
+
+      const data = res.data;
+      const u = {
+        userId: data.userId,
+        name: data.name || "",
+        email: data.email,
+        subscriptionPlan: data.subscriptionPlan,
+        role: data.role,
+        isTempPassword: data.isTempPassword,
+        businessId: data.businessId,
+      };
       localStorage.setItem("user", JSON.stringify(u));
+      setUser(u);
       setError(null);
       return u;
     } catch (e) {
-      console.warn("⚠️ /auth/me failed:", e);
+      // אם אין session תקין, מנקים הכל
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      setError("יש להתחבר מחדש");
+      setError("⚠️ יש להתחבר מחדש");
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // ביצוע ראשוני: אם יש token נטען נתונים, אחרת נהפוך ל־false לטעינה
+  // בדיקה ראשונית אם כבר מחובר
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       refreshUserData();
     } else {
+      // אין טוקן – לא נטען session אוטומטי
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2️⃣ ניווט אוטומטי כש־user נטען (ולא בזמן טעינה)
-  useEffect(() => {
-    if (!loading && user) {
-      if (user.role === "business") {
-        navigate("/dashboard/business", { replace: true });
-      } else {
-        navigate("/dashboard/client",   { replace: true });
-      }
-    }
-  }, [user, loading, navigate]);
-
-  // 3️⃣ פונקציית התחברות
+  // פונקציית התחברות
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
+
+    // 🧹 נקה קודם את ה-token הישן (cookie ו-localStorage)
+    document.cookie = "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    localStorage.removeItem("token");
+
     try {
-      const res = await API.post("/auth/login", {
-        identifier: identifier.trim(),
-        password,
-      });
+      const body = identifier.includes("@")
+        ? { email: identifier.trim(), password }
+        : { username: identifier.trim(), password };
+
+      // 1️⃣ התחברות ושמירת הטוקן
+      const res = await API.post("/auth/login", body);
       localStorage.setItem("token", res.data.token);
-      await refreshUserData();
+
+      // 2️⃣ טעינת פרטי המשתמש
+      const u = await refreshUserData();
+      if (!u) throw new Error("User load failed");
+      return u;
     } catch (e) {
       setError(
         e.response?.status === 401
-          ? "אימייל/שם משתמש או סיסמה שגויים"
-          : "שגיאה בשרת, נסה שוב"
+          ? "❌ שם משתמש או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסו שוב"
       );
       throw e;
     } finally {
@@ -78,24 +87,22 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 4️⃣ התנתקות
+  // פונקציית התנתקות
   const logout = async () => {
     try {
       await API.post("/auth/logout");
-    } catch {}
-    finally {
+    } catch {
+      // ממשיכים לנקות גם אם ה־logout נכשל
+    } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      navigate("/login", { replace: true });
     }
   };
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {loading
-        ? <div className="loading-screen">🔄 טוען נתונים…</div>
-        : children}
+      {loading ? <div className="loading-screen">🔄 טוען נתונים…</div> : children}
     </AuthContext.Provider>
   );
 }
