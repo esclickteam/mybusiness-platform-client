@@ -1,80 +1,76 @@
-// src/context/AuthContext.jsx
+// src/context/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
+  const navigate = useNavigate();
 
-  // טוען פרטי משתמש מ־/auth/me
+  // 1️⃣ טוען את המשתמש הנוכחי מ־/auth/me
   const refreshUserData = async () => {
     try {
-      const res = await API.get("/auth/me");
-      console.log("🔍 /auth/me returned:", res.data);
-
-      const data = res.data;
-      const u = {
-        userId: data.userId,
-        name: data.name || "",
-        email: data.email,
-        subscriptionPlan: data.subscriptionPlan,
-        role: data.role,
-        isTempPassword: data.isTempPassword,
-        businessId: data.businessId,
-      };
-      localStorage.setItem("user", JSON.stringify(u));
+      const res = await API.get("/auth/me"); 
+      // מניח שהשרת מחזיר { user: { ... } }
+      const u = res.data.user;
+      console.log("🔍 /auth/me returned user:", u);
       setUser(u);
+      localStorage.setItem("user", JSON.stringify(u));
       setError(null);
       return u;
     } catch (e) {
-      // אם אין session תקין, מנקים הכל
+      console.warn("⚠️ failed to fetch /auth/me:", e);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      setError("⚠️ יש להתחבר מחדש");
+      setError("יש להתחבר מחדש");
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // בדיקה ראשונית אם כבר מחובר
+  // בודק אם יש token ומשליך על refreshUserData
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       refreshUserData();
     } else {
-      // אין טוקן – לא נטען session אוטומטי
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // פונקציית התחברות
+  // 2️⃣ התחברות: שולח credentials, שומר token ומטען שוב את המשתמש
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
+
     try {
-      const body = identifier.includes("@")
-        ? { email: identifier.trim(), password }
-        : { username: identifier.trim(), password };
-
-      // 1️⃣ התחברות ושמירת הטוקן
-      const res = await API.post("/auth/login", body);
+      const res = await API.post("/auth/login", {
+        identifier: identifier.trim(),
+        password,
+      });
+      // שומר את ה־JWT
       localStorage.setItem("token", res.data.token);
-
-      // 2️⃣ טעינת פרטי המשתמש
+      // מרענן את משתמש
       const u = await refreshUserData();
-      if (!u) throw new Error("User load failed");
+      if (!u) throw new Error("לא הצלחנו לטעון את המשתמש");
+      // ניווט לפי תפקיד
+      if (u.role === "business") {
+        navigate("/dashboard/business", { replace: true });
+      } else {
+        navigate("/dashboard/client", { replace: true });
+      }
       return u;
     } catch (e) {
       setError(
         e.response?.status === 401
-          ? "❌ שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסו שוב"
+          ? "אימייל/שם משתמש או סיסמה שגויים"
+          : "שגיאה בשרת, נסה שוב"
       );
       throw e;
     } finally {
@@ -82,22 +78,24 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // פונקציית התנתקות
+  // 3️⃣ ההתנתקות: קורא ל־logout ומאפס state
   const logout = async () => {
     try {
       await API.post("/auth/logout");
-    } catch {
-      // ממשיכים לנקות גם אם ה־logout נכשל
-    } finally {
+    } catch {}
+    finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
+      navigate("/login", { replace: true });
     }
   };
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {loading ? <div className="loading-screen">🔄 טוען נתונים…</div> : children}
+      {loading
+        ? <div className="loading-screen">🔄 טוען נתונים…</div>
+        : children}
     </AuthContext.Provider>
   );
 }
