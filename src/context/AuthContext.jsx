@@ -1,6 +1,4 @@
-// src/context/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 export const AuthContext = createContext();
@@ -9,68 +7,79 @@ export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
-  const navigate = useNavigate();
 
-  // 1️⃣ טוען את המשתמש הנוכחי מ־/auth/me
+  // ✅ 1. פעם ראשונה נטען /auth/me אם יש טוקן
+  //    כדי לשמור ב-state את פרטי המשתמש (role, email וכו’).
   const refreshUserData = async () => {
     try {
-      const res = await API.get("/auth/me"); 
-      // מניח שהשרת מחזיר { user: { ... } }
-      const u = res.data.user;
-      console.log("🔍 /auth/me returned user:", u);
-      setUser(u);
+      // 📌 שולח GET ל־/auth/me עם ה־Authorization header שמוכן ב־API.interceptors
+      const res  = await API.get("/auth/me");
+      console.log("🔍 /auth/me returned:", res.data);
+
+      const data = res.data;
+      const u = {
+        userId:           data.userId,
+        name:             data.name  || "",
+        email:            data.email,
+        subscriptionPlan: data.subscriptionPlan,
+        role:             data.role,          // ✅ role שמחזיר השרת
+        isTempPassword:   data.isTempPassword,
+        businessId:       data.businessId,
+      };
       localStorage.setItem("user", JSON.stringify(u));
+      setUser(u);
       setError(null);
       return u;
     } catch (e) {
-      console.warn("⚠️ failed to fetch /auth/me:", e);
+      // ❌ אם אין session תקין – מחזירים מאפסים
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      setError("יש להתחבר מחדש");
+      setError("⚠️ יש להתחבר מחדש");
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // בודק אם יש token ומשליך על refreshUserData
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      // ✅ אם קיים token ב־localStorage – נטען פרטי משתמש
       refreshUserData();
     } else {
+      // ✅ אחרת – נחכה עד שילחץ login
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2️⃣ התחברות: שולח credentials, שומר token ומטען שוב את המשתמש
+  // ✅ 2. פונקציית התחברות שמקבלת identifier (email או username) + password
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
 
     try {
+      // ✅ שולחים בדיוק את שני השדות שהשרת מצפה להם:
+      //    { identifier: "...", password: "..." }
+      //    במקום לשלוח { email } או { username } – השרת מפענח בעצמו
       const res = await API.post("/auth/login", {
         identifier: identifier.trim(),
-        password,
+        password:   password,
       });
-      // שומר את ה־JWT
+
+      // ✅ שומרים את הטוקן שהשרת שלח לנו
       localStorage.setItem("token", res.data.token);
-      // מרענן את משתמש
+
+      // ✅ מרעננים את הפרטים (role, businessId וכו’) עם הטוקן החדש
       const u = await refreshUserData();
-      if (!u) throw new Error("לא הצלחנו לטעון את המשתמש");
-      // ניווט לפי תפקיד
-      if (u.role === "business") {
-        navigate("/dashboard/business", { replace: true });
-      } else {
-        navigate("/dashboard/client", { replace: true });
-      }
+      if (!u) throw new Error("User load failed");
       return u;
     } catch (e) {
       setError(
         e.response?.status === 401
-          ? "אימייל/שם משתמש או סיסמה שגויים"
-          : "שגיאה בשרת, נסה שוב"
+          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסו שוב"
       );
       throw e;
     } finally {
@@ -78,7 +87,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 3️⃣ ההתנתקות: קורא ל־logout ומאפס state
+  // ✅ 3. התנתקות: קורא ל־/auth/logout ומנקה state ו־localStorage
   const logout = async () => {
     try {
       await API.post("/auth/logout");
@@ -87,15 +96,13 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      navigate("/login", { replace: true });
     }
   };
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {loading
-        ? <div className="loading-screen">🔄 טוען נתונים…</div>
-        : children}
+      {/* ✅ עד לסיום הטעינה מראה מסך טוען ולא מרנדר כלום */}
+      {loading ? <div className="loading-screen">🔄 טוען נתונים…</div> : children}
     </AuthContext.Provider>
   );
 }
