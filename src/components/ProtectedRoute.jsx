@@ -1,3 +1,4 @@
+// src/components/ProtectedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -32,9 +33,17 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // אם נדרשים תפקידים ואין התאמה – הפניה לעמוד הבית
+  // אם נדרשות תפקידים ואין התאמה – הפניה לדשבורד של התפקיד הקיים
   if (roles.length > 0 && !roles.includes(user.role)) {
-    return <Navigate to="/" replace />;
+    const redirectMap = {
+      customer: "/client/dashboard",
+      business: "/dashboard",
+      worker:   "/staff/dashboard",
+      manager:  "/manager/dashboard",
+      admin:    "/admin/dashboard",
+    };
+    const target = redirectMap[user.role] || "/";
+    return <Navigate to={target} replace />;
   }
 
   // אם נדרשת חבילה מסוימת ואין התאמה – הפניה לעמוד חבילות
@@ -43,7 +52,11 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
   }
 
   // אם נדרשת גישה לבעל עסק אך עדיין אין לו עמוד עסקי – הפניה ליצירת עמוד עסק
-  if (roles.includes("business") && user.role === "business" && !user.businessId) {
+  if (
+    roles.includes("business") &&
+    user.role === "business" &&
+    !user.businessId
+  ) {
     return <Navigate to="/create-business" replace />;
   }
 

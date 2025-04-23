@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -27,30 +28,29 @@ export default function Login() {
     }
 
     try {
-      // שולחים גם את הדגל של כניסת צוות
-      const user = await login(identifier.trim(), password, isEmployeeLogin);
-      console.log("🛠️ login response:", user);
+      // מבצעים את הקריאה ל־login ב־AuthContext
+      const user = await login(identifier.trim(), password);
 
       // ניתוב לפי role
       switch (user.role) {
         case "business":
-          navigate("/dashboard");
+          // דשבורד בעלי עסקים מוגדר ב־App כב-/dashboard/*
+          navigate("/dashboard", { replace: true });
           break;
-          case "customer":
-            navigate('/client/dashboard');
-            break;
-          
+        case "customer":
+          navigate("/client/dashboard", { replace: true });
+          break;
         case "worker":
-          navigate("/staff/dashboard");
+          navigate("/staff/dashboard", { replace: true });
           break;
         case "manager":
-          navigate("/manager/dashboard");
+          navigate("/manager/dashboard", { replace: true });
           break;
         case "admin":
-          navigate("/admin/dashboard");
+          navigate("/admin/dashboard", { replace: true });
           break;
         default:
-          navigate("/");
+          navigate("/", { replace: true });
       }
     } catch (err) {
       setError(
@@ -104,6 +104,7 @@ export default function Login() {
         <div className="login-extra-options">
           {isEmployeeLogin ? (
             <button
+              type="button"
               className="staff-login-link"
               onClick={() => {
                 setIsEmployeeLogin(false);
@@ -114,6 +115,7 @@ export default function Login() {
             </button>
           ) : (
             <button
+              type="button"
               className="staff-login-link"
               onClick={() => {
                 setIsEmployeeLogin(true);
