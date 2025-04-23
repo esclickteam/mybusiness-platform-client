@@ -11,38 +11,38 @@ import ChangePassword from "./pages/ChangePassword";
 import PublicProfilePage from "./pages/PublicProfilePage";
 
 // Lazy-loaded pages
-const HomePage                = lazy(() => import("./pages/Home"));
-const About                   = lazy(() => import("./pages/About"));
-const HowItWorks              = lazy(() => import("./pages/HowItWorks"));
-const FAQ                     = lazy(() => import("./pages/FAQ"));
-const Terms                   = lazy(() => import("./pages/Terms"));
-const Contact                 = lazy(() => import("./pages/Contact"));
-const Business                = lazy(() => import("./pages/business/Business"));
-const Plans                   = lazy(() => import("./pages/business/Plans"));
-const Checkout                = lazy(() => import("./pages/Checkout"));
-const Login                   = lazy(() => import("./pages/Login"));
-const Register                = lazy(() => import("./pages/Register"));
+const HomePage = lazy(() => import("./pages/Home"));
+const About = lazy(() => import("./pages/About"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Business = lazy(() => import("./pages/business/Business"));
+const Plans = lazy(() => import("./pages/business/Plans"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
 
 // מעל כל זה נטען גם BusinessPage ב־lazy
-const BusinessPage            = lazy(() => import("./components/BusinessPage"));
+const BusinessPage = lazy(() => import("./components/BusinessPage"));
 
 // שאר הדשבורדים
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
-const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
-const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession             = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile            = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks                 = lazy(() => import("./pages/staff/MyTasks"));
-const MySales                 = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard        = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard          = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs               = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans              = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings           = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers              = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent         = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles             = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage         = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
+const StaffDashboard = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks = lazy(() => import("./pages/staff/MyTasks"));
+const MySales = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -74,9 +74,10 @@ export default function App() {
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
+
+          {/* Public business page */}
           <Route path="/business/:businessId" element={<PublicProfilePage />} />
 
-          
           {/* Business dashboard – מוגן */}
           <Route
             path="/dashboard/business/:businessId"
@@ -85,18 +86,6 @@ export default function App() {
                 <BusinessPage />
               </ProtectedRoute>
             }
-          />
-
-          {/* Public profile page */}
-          <Route
-            path="/public/:businessId"
-            element={<PublicProfilePage />}
-          />
-
-          {/* Public business alias (אם צריך) */}
-          <Route
-            path="/business/:businessId"
-            element={<PublicProfilePage />}
           />
 
           {/* Customer Dashboard */}
