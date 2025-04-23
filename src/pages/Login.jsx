@@ -6,74 +6,57 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 
-const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    username: "",
-    password: "",
-    userType: "business" // ברירת מחדל: עסק
-  });
+export default function Login() {
+  const [identifier, setIdentifier] = useState("");  // אימייל או שם משתמש
+  const [password, setPassword] = useState("");
   const [isEmployeeLogin, setIsEmployeeLogin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
 
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const { login } = useAuth(); // עכשיו login מקבל גם userType
-
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // מזהה: משתמש צוות לפי username, אחרת לפי email
-    const identifier = isEmployeeLogin
-      ? formData.username.trim()
-      : formData.email.trim();
-    const { password, userType } = formData;
-
-    if (!identifier || !password) {
+    if (!identifier.trim() || !password) {
       setError("נא למלא את כל השדות");
       setLoading(false);
       return;
     }
 
     try {
-      // שולחים גם את userType (business/customer)
-      const user = await login(identifier, password, isEmployeeLogin ? "employee" : userType);
+      // login מחזיר את ה־user עם ה־role
+      const user = await login(identifier.trim(), password);
 
-      // אחרי התחברות, נתיב לפי role שמוחזר
-      let dashboardPath = "/";
+      // ניתוב לפי role
       switch (user.role) {
-        case "admin":
-          dashboardPath = "/admin/dashboard";
-          break;
-        case "manager":
-          dashboardPath = "/manager/dashboard";
-          break;
-        case "worker":
-        case "employee":
-          dashboardPath = "/staff/dashboard";
-          break;
         case "business":
-          dashboardPath = "/dashboard";
+          navigate("/dashboard");
           break;
         case "customer":
-          dashboardPath = "/client-dashboard";
+          navigate("/client");
           break;
+        case "worker":
+          navigate("/staff/dashboard");
+          break;
+        case "manager":
+          navigate("/manager/dashboard");
+          break;
+        case "admin":
+          navigate("/admin/dashboard");
+          break;
+        default:
+          navigate("/");
       }
-
-      navigate(dashboardPath);
     } catch (err) {
-      const status = err.response?.status;
       setError(
-        status === 401
-          ? "❌ שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסו שוב מאוחר יותר"
+        err.response?.status === 401
+          ? "❌ אימייל/סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסו שוב"
       );
     } finally {
       setLoading(false);
@@ -85,48 +68,30 @@ const Login = () => {
       <div className="login-box">
         <h2>{isEmployeeLogin ? "כניסת צוות" : "התחברות"}</h2>
         <form onSubmit={handleSubmit}>
-          {/* רק בהתחברות רגילה – בוחרים בין לקוח לעסק */}
-          {!isEmployeeLogin && (
-            <label className="user-type-label">
-              סוג משתמש:
-              <select
-                name="userType"
-                value={formData.userType}
-                onChange={handleChange}
-              >
-                <option value="customer">לקוח</option>
-                <option value="business">עסק</option>
-              </select>
-            </label>
-          )}
-
           {isEmployeeLogin ? (
             <input
               type="text"
-              name="username"
               placeholder="שם משתמש"
-              value={formData.username}
-              onChange={handleChange}
-              autoComplete="username"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              required
             />
           ) : (
             <input
-              type="email"
-              name="email"
-              placeholder="אימייל"
-              value={formData.email}
-              onChange={handleChange}
-              autoComplete="email"
+              type="text"
+              placeholder="אימייל או שם משתמש"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              required
             />
           )}
 
           <input
             type="password"
-            name="password"
             placeholder="סיסמה"
-            value={formData.password}
-            onChange={handleChange}
-            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
 
           <button type="submit" className="login-button" disabled={loading}>
@@ -166,7 +131,6 @@ const Login = () => {
             >
               שכחת את הסיסמה?
             </span>
-
             {!isEmployeeLogin && (
               <>
                 <span className="separator">|</span>
@@ -182,6 +146,4 @@ const Login = () => {
       {showForgot && <ForgotPassword closePopup={() => setShowForgot(false)} />}
     </div>
   );
-};
-
-export default Login;
+}
