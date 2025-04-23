@@ -14,7 +14,6 @@ import "./Collab.css";
 
 export default function Collab() {
   const { user, loading: authLoading } = useAuth();
-  const devMode = import.meta.env.DEV;
 
   const [tab, setTab] = useState(0);
   const [showBusinessChat, setShowBusinessChat] = useState(false);
@@ -48,7 +47,7 @@ export default function Collab() {
 
   // fetch profile once
   useEffect(() => {
-    API.get(`/business/my${devMode ? "?dev=true" : ""}`)
+    API.get("/business/my")
       .then(res => {
         const d = res.data;
         setProfileData({
@@ -64,9 +63,9 @@ export default function Collab() {
       })
       .catch(err => console.error("❌ טעינת פרופיל:", err))
       .finally(() => setLoadingProfile(false));
-  }, [devMode]);
+  }, []);
 
-  // fetch tab‑specific data on change
+  // fetch tab-specific data on change
   useEffect(() => {
     const loadTab = async () => {
       try {
@@ -118,8 +117,8 @@ export default function Collab() {
   };
 
   if (authLoading) return <div className="p-6 text-center">🔄 טוען נתוני משתמש…</div>;
-  if (!user && !devMode) return <div className="p-6 text-center">⚠️ יש להתחבר.</div>;
-  if (!hasCollabAccess && !devMode)
+  if (!user) return <div className="p-6 text-center">⚠️ יש להתחבר.</div>;
+  if (!hasCollabAccess)
     return (
       <div className="p-6 text-center">
         <h2>שידרוג נדרש לשיתופי פעולה</h2>

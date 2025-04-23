@@ -11,10 +11,7 @@ import { useAuth } from "../context/AuthContext";
  */
 const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
   const { user, loading } = useAuth();
-  const devMode = import.meta.env.DEV;
-
-  // במצב פיתוח תמיד מאשר גישה
-  if (devMode) return children;
+  
 
   // בזמן טעינה – תצוגת "טוען"
   if (loading) {
