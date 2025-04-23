@@ -73,142 +73,143 @@ export default function App() {
           <Route path="/business/:businessId" element={<BusinessPage />} />
 
           {/* Customer Dashboard */}
-          <Route
-            path="/client"
-            element={
-              <ProtectedRoute role="customer">
-                <ClientDashboard />
-              </ProtectedRoute>
-            }
-          />
+<Route
+  path="/client"
+  element={
+    <ProtectedRoute roles={["customer"]}>
+      <ClientDashboard />
+    </ProtectedRoute>
+  }
+/>
 
-          {/* Staff (Worker) Dashboard */}
-          <Route
-            path="/staff/dashboard"
-            element={
-              <ProtectedRoute role="worker">
-                <StaffDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/staff/session"
-            element={
-              <ProtectedRoute role="worker">
-                <WorkSession />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/staff/profile"
-            element={
-              <ProtectedRoute role="worker">
-                <PhoneProfile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/staff/tasks"
-            element={
-              <ProtectedRoute role="worker">
-                <MyTasks />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/staff/sales"
-            element={
-              <ProtectedRoute role="worker">
-                <MySales />
-              </ProtectedRoute>
-            }
-          />
+{/* Staff (Worker) Dashboard */}
+<Route
+  path="/staff/dashboard"
+  element={
+    <ProtectedRoute roles={["worker"]}>
+      <StaffDashboard />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/staff/session"
+  element={
+    <ProtectedRoute roles={["worker"]}>
+      <WorkSession />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/staff/profile"
+  element={
+    <ProtectedRoute roles={["worker"]}>
+      <PhoneProfile />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/staff/tasks"
+  element={
+    <ProtectedRoute roles={["worker"]}>
+      <MyTasks />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/staff/sales"
+  element={
+    <ProtectedRoute roles={["worker"]}>
+      <MySales />
+    </ProtectedRoute>
+  }
+/>
 
-          {/* Manager Dashboard */}
-          <Route
-            path="/manager/dashboard"
-            element={
-              <ProtectedRoute role="manager">
-                <ManagerDashboard />
-              </ProtectedRoute>
-            }
-          />
+{/* Manager Dashboard */}
+<Route
+  path="/manager/dashboard"
+  element={
+    <ProtectedRoute roles={["manager"]}>
+      <ManagerDashboard />
+    </ProtectedRoute>
+  }
+/>
 
-          {/* Admin Dashboard */}
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/logs"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminLogs />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/plans"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminPlans />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminSettings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminUsers />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/site-edit"
-            element={
-              <ProtectedRoute role="admin">
-                <EditSiteContent />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/roles"
-            element={
-              <ProtectedRoute role="admin">
-                <ManageRoles />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/affiliate-payouts"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminPayoutPage />
-              </ProtectedRoute>
-            }
-          />
+{/* Admin Dashboard */}
+<Route
+  path="/admin/dashboard"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <AdminDashboard />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/logs"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <AdminLogs />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/plans"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <AdminPlans />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/settings"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <AdminSettings />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/users"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <AdminUsers />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/site-edit"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <EditSiteContent />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/roles"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <ManageRoles />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/affiliate-payouts"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <AdminPayoutPage />
+    </ProtectedRoute>
+  }
+/>
 
-          {/* Business Dashboard */}
-          <Route
-            path="/dashboard/*"
-            element={
-              <ProtectedRoute role="business">
-                <BusinessDashboardRoutes />
-              </ProtectedRoute>
-            }
-          />
+{/* Business Dashboard */}
+<Route
+  path="/dashboard/*"
+  element={
+    <ProtectedRoute roles={["business"]}>
+      <BusinessDashboardRoutes />
+    </ProtectedRoute>
+  }
+/>
+
 
           {/* Calendar Redirect */}
           <Route path="/dashboard/calendar" element={<Navigate to="/dashboard" />} />

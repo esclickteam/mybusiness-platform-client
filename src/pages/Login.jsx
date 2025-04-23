@@ -35,9 +35,10 @@ export default function Login() {
         case "business":
           navigate("/dashboard");
           break;
-        case "customer":
-          navigate("/client");
-          break;
+          case "customer":
+            navigate("/customer/dashboard");
+            break;
+          
         case "worker":
           navigate("/staff/dashboard");
           break;
