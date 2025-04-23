@@ -1,80 +1,77 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser]       = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
-  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
   // טוען פרטי משתמש מ־/auth/me
   const refreshUserData = async () => {
     try {
       const res = await API.get("/auth/me");
       console.log("🔍 /auth/me returned:", res.data);
-      // במידה והשרת לא עוטף ב־{ user: … }
-      const data = res.data.user ?? res.data;
-      console.log("🚩 parsed user role:", data.role);
 
-      setUser(data);
-      localStorage.setItem("user", JSON.stringify(data));
+      const data = res.data;
+      const u = {
+        userId: data.userId,
+        name: data.name || "",
+        email: data.email,
+        subscriptionPlan: data.subscriptionPlan,
+        role: data.role,
+        isTempPassword: data.isTempPassword,
+        businessId: data.businessId,
+      };
+      localStorage.setItem("user", JSON.stringify(u));
+      setUser(u);
       setError(null);
-      return data;
+      return u;
     } catch (e) {
-      console.warn("⚠️ /auth/me failed:", e);
+      // אם אין session תקין, מנקים הכל
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      setError("יש להתחבר מחדש");
+      setError("⚠️ יש להתחבר מחדש");
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // בקריאה ראשונית: אם יש token נטען session
+  // בדיקה ראשונית אם כבר מחובר
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       refreshUserData();
     } else {
+      // אין טוקן – לא נטען session אוטומטי
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ברגע שה־user נטען (loading עבר ל־false ו־user אינו null), ננווט ל־dashboard
-  useEffect(() => {
-    if (!loading && user) {
-      console.log("🚀 navigating as:", user.role);
-      if (user.role === "business") {
-        navigate("/dashboard/business", { replace: true });
-      } else {
-        navigate("/dashboard/client",   { replace: true });
-      }
-    }
-  }, [user, loading, navigate]);
-
-  // התחברות
+  // פונקציית התחברות
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
 
-    // נקה טוקן קודם
+    // 🧹 נקה קודם את ה-token הישן (cookie ו-localStorage)
     document.cookie = "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
     localStorage.removeItem("token");
 
     try {
       const body = identifier.includes("@")
-        ? { email: identifier.trim(),    password }
+        ? { email: identifier.trim(), password }
         : { username: identifier.trim(), password };
 
+      // 1️⃣ התחברות ושמירת הטוקן
       const res = await API.post("/auth/login", body);
       localStorage.setItem("token", res.data.token);
 
+      // 2️⃣ טעינת פרטי המשתמש
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
       return u;
@@ -90,24 +87,22 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // התנתקות
+  // פונקציית התנתקות
   const logout = async () => {
     try {
       await API.post("/auth/logout");
-    } catch {}
-    finally {
+    } catch {
+      // ממשיכים לנקות גם אם ה־logout נכשל
+    } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      navigate("/login", { replace: true });
     }
   };
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {loading
-        ? <div className="loading-screen">🔄 טוען נתונים…</div>
-        : children}
+      {loading ? <div className="loading-screen">🔄 טוען נתונים…</div> : children}
     </AuthContext.Provider>
   );
 }
