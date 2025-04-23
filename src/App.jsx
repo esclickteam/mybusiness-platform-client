@@ -8,10 +8,7 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import BusinessPage      from "./components/BusinessPage";
 import PublicProfilePage from "./pages/PublicProfilePage";
-
-
 
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
@@ -25,7 +22,11 @@ const Plans                   = lazy(() => import("./pages/business/Plans"));
 const Checkout                = lazy(() => import("./pages/Checkout"));
 const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
+
+// מעל כל זה נטען גם BusinessPage ב־lazy
 const BusinessPage            = lazy(() => import("./components/BusinessPage"));
+
+// שאר הדשבורדים
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
@@ -73,12 +74,28 @@ export default function App() {
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/dashboard/business/:businessId" element={<BusinessPage />} />
-          <Route path="/public/:businessId" element={<PublicProfilePage />} />
 
+          {/* Business dashboard – מוגן */}
+          <Route
+            path="/dashboard/business/:businessId"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BusinessPage />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Public business page */}
-          <Route path="/business/:businessId" element={<BusinessPage />} />
+          {/* Public profile page */}
+          <Route
+            path="/public/:businessId"
+            element={<PublicProfilePage />}
+          />
+
+          {/* Public business alias (אם צריך) */}
+          <Route
+            path="/business/:businessId"
+            element={<PublicProfilePage />}
+          />
 
           {/* Customer Dashboard */}
           <Route
@@ -90,7 +107,7 @@ export default function App() {
             }
           />
 
-          {/* Staff (Worker) Dashboard */}
+          {/* Staff */}
           <Route
             path="/staff/dashboard"
             element={
@@ -208,7 +225,7 @@ export default function App() {
             }
           />
 
-          {/* Business Dashboard */}
+          {/* Business Dashboard nested routes */}
           <Route
             path="/dashboard/*"
             element={
@@ -218,7 +235,7 @@ export default function App() {
             }
           />
 
-          {/* Calendar Redirect (inside business) */}
+          {/* Calendar Redirect */}
           <Route path="/dashboard/calendar" element={<Navigate to="/dashboard" />} />
 
           {/* Chat Test */}
