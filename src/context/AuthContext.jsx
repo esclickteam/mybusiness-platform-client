@@ -1,5 +1,3 @@
-// src/context/AuthContext.jsx
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api";
 
@@ -52,7 +50,7 @@ export function AuthProvider({ children }) {
   const refreshUserData = async () => {
     try {
       console.log("📡 fetching /api/users/me");
-      const res = await API.get("/users/me");
+      const res = await API.get("/users/me", { withCredentials: true });
       const data = res.data;
       const u = {
         userId: data.userId,
@@ -82,21 +80,28 @@ export function AuthProvider({ children }) {
     refreshUserData();
   }, []);
 
-  // login: שולח identifier/password ושומר את המשתמש מה־/users/me
-  const login = async (identifier, password) => {
+  // login: שולח identifier/password ו־userType, שומר את המשתמש מה־/users/me
+  const login = async (identifier, password, isEmployeeLogin = false) => {
     setLoading(true);
     setError(null);
     try {
-      console.log("📡 POST /api/auth/login", identifier);
+      // 1. בחרי את ה־userType לפי האם זו כניסת צוות או רגילה
+      const userType = isEmployeeLogin ? "worker" : "customer";
+
+      // 2. הכנת ה־payload: אם זה אימייל – שלחי email, אחרת username
       const body = {
-        identifier: identifier.trim(),
         password,
+        userType,
+        ...(identifier.includes("@")
+          ? { email: identifier.trim() }
+          : { username: identifier.trim() }),
       };
+      console.log("📡 POST /api/auth/login", body);
 
-      // מבצע התחברות; cookie עם הטוקן נשמר אוטומטית
-      await API.post("/auth/login", body);
+      // 3. קריאה ל־API עם body מלא ו־withCredentials
+      await API.post("/auth/login", body, { withCredentials: true });
 
-      // מביא שוב את פרטי המשתמש
+      // 4. קבלת פרטי המשתמש אחרי התחברות
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
       return u;
@@ -117,7 +122,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       console.log("📡 POST /api/auth/logout");
-      await API.post("/auth/logout");
+      await API.post("/auth/logout", {}, { withCredentials: true });
     } catch (e) {
       console.error("❌ logout error:", e.response?.data || e.message);
     } finally {

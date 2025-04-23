@@ -1,5 +1,3 @@
-// src/pages/Login.jsx
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -7,7 +5,7 @@ import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 
 export default function Login() {
-  const [identifier, setIdentifier] = useState("");  // אימייל או שם משתמש
+  const [identifier, setIdentifier] = useState(""); // אימייל או שם משתמש
   const [password, setPassword] = useState("");
   const [isEmployeeLogin, setIsEmployeeLogin] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,8 +27,8 @@ export default function Login() {
     }
 
     try {
-      // login מחזיר את ה־user עם ה־role
-      const user = await login(identifier.trim(), password);
+      // שולחים גם את הדגל של כניסת צוות
+      const user = await login(identifier.trim(), password, isEmployeeLogin);
 
       // ניתוב לפי role
       switch (user.role) {
@@ -55,7 +53,7 @@ export default function Login() {
     } catch (err) {
       setError(
         err.response?.status === 401
-          ? "❌ אימייל/סיסמה שגויים"
+          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
           : "❌ שגיאה בשרת, נסו שוב"
       );
     } finally {
