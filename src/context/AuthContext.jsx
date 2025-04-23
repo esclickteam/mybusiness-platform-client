@@ -43,7 +43,13 @@ export function AuthProvider({ children }) {
 
   // בדיקה ראשונית אם כבר מחובר
   useEffect(() => {
-    refreshUserData();
+    const token = localStorage.getItem("token");
+    if (token) {
+      refreshUserData();
+    } else {
+      // אין טוקן – לא נטען session אוטומטי
+      setLoading(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
