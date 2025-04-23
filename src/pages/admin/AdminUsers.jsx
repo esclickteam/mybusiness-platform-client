@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "./AdminUsers.css";
 import { Link } from "react-router-dom";
+import { FaTrashAlt, FaBan, FaCheck } from "react-icons/fa";
 import API from "../../api";
+import "./AdminUsers.css";
 
 function AdminUsers() {
   const [search, setSearch] = useState("");
@@ -27,17 +28,15 @@ function AdminUsers() {
     const matchSearch =
       u.phone?.includes(search) ||
       u.username?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase());
+      u.email.toLowerCase().includes(search.toLowerCase()) ||
+      u.name.toLowerCase().includes(search.toLowerCase());
     const matchRole = filter === "all" || u.role === filter;
     return matchSearch && matchRole;
   });
 
   // מחיקת משתמש
   const handleDelete = async (id) => {
-    console.log("📡 נלחץ כפתור מחיקה למשתמש:", id);
-
     if (!window.confirm("❗ פעולה בלתי הפיכה\nהאם למחוק את המשתמש?")) return;
-
     try {
       await API.delete(`/admin/users/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id));
@@ -57,7 +56,7 @@ function AdminUsers() {
         prev.map((u) => (u._id === id ? { ...u, status: newStatus } : u))
       );
     } catch (err) {
-      console.error("❌ שגיאה בהחלפת סטטוס:", err.response?.data || err.message);
+      console.error("❌ שגיאה בעדכון סטטוס:", err.response?.data || err.message);
       alert(err.response?.data?.error || "שגיאה בעדכון סטטוס");
     }
   };
@@ -72,7 +71,7 @@ function AdminUsers() {
       <div className="filter-bar">
         <input
           type="text"
-          placeholder="🔍 חיפוש לפי טלפון / שם משתמש / אימייל"
+          placeholder="🔍 חיפוש לפי טלפון / שם / שם משתמש / אימייל"
           className="user-search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -108,25 +107,20 @@ function AdminUsers() {
               <td>{user.phone || "-"}</td>
               <td>{user.role}</td>
               <td>{user.status || "active"}</td>
-              <td>
+              <td className="actions-cell">
                 <button
                   className="delete-btn"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log("🧪 נלחץ מחיקה על:", user._id);
-                    handleDelete(user._id);
-                  }}
+                  title="מחיקת משתמש"
+                  onClick={() => handleDelete(user._id)}
                 >
-                  🗑️
+                  <FaTrashAlt />
                 </button>
                 <button
                   className="status-btn"
-                  onClick={() =>
-                    handleStatusToggle(user._id, user.status)
-                  }
+                  title={user.status === "active" ? "חסום משתמש" : "הפעל משתמש"}
+                  onClick={() => handleStatusToggle(user._id, user.status)}
                 >
-                  {user.status === "active" ? "🚫 חסום" : "✅ הפעל"}
+                  {user.status === "active" ? <FaBan /> : <FaCheck />}
                 </button>
               </td>
             </tr>
