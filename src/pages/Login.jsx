@@ -29,6 +29,7 @@ export default function Login() {
     try {
       // שולחים גם את הדגל של כניסת צוות
       const user = await login(identifier.trim(), password, isEmployeeLogin);
+      console.log("🛠️ login response:", user);
 
       // ניתוב לפי role
       switch (user.role) {
