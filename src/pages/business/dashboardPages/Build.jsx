@@ -1,4 +1,6 @@
+
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Build.css";
 import MainTab from "./buildTabs/MainTab";
 import GalleryTab from "./buildTabs/GalleryTab";
@@ -19,7 +21,8 @@ const TABS = [
 ];
 
 const BuildBusinessPage = () => {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser }  = useAuth();
+  const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState("ראשי");
 
   const [businessDetails,  setBusinessDetails] = useState({
@@ -107,6 +110,8 @@ const BuildBusinessPage = () => {
   
       if (res.status === 200) {
         alert("✅ נשמר בהצלחה!");
+        // ניווט אוטומטי לפרופיל הציבורי אחרי שמירה
+        navigate(`/business/${currentUser.businessId}`, { replace: true });
       } else {
         alert("❌ שמירה נכשלה");
       }
@@ -383,8 +388,9 @@ const BuildBusinessPage = () => {
   ))}
 </div>
 
-<button className="save-btn" onClick={handleSave}>שמור</button>
-
+<button onClick={handleSave} className="save-button">
+        💾 שמור
+      </button>
 
     </div>
 

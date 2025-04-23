@@ -1,7 +1,12 @@
 import React from "react";
 import "./BusinessProfileView.css";
 
-export default function BusinessProfileView({ profileData, profileImage }) {
+export default function BusinessProfileView({
+  profileData,
+  profileImage,
+  canChat,
+  canSchedule,
+}) {
   if (!profileData) return <p>לא נמצא מידע על העסק</p>;
 
   const getImageUrl = (item) => {
@@ -32,14 +37,32 @@ export default function BusinessProfileView({ profileData, profileImage }) {
           className="profile-image"
         />
         <div className="profile-name-section">
-          <h1 className="business-name">{profileData.name || "שם העסק"}</h1>
+          <h1 className="business-name">
+            {profileData.name || "שם העסק"}
+          </h1>
           <p className="category-area">
-            {profileData.category} {profileData.area ? `| ${profileData.area}` : ""}
+            {profileData.category}{" "}
+            {profileData.area ? `| ${profileData.area}` : ""}
           </p>
           {averageRating && (
             <p className="rating">⭐️ {averageRating} / 5</p>
           )}
         </div>
+      </div>
+
+      {/* כפתורי פיצ’רים */}
+      <div className="profile-actions">
+        {canChat && (
+          <button className="message-button">
+            💬 צ'אט עם העסק
+          </button>
+        )}
+        {canSchedule && (
+          <button className="schedule-button">
+            📅 תיאום תור / שירות
+
+          </button>
+        )}
       </div>
 
       {/* אודות */}
@@ -108,7 +131,8 @@ export default function BusinessProfileView({ profileData, profileImage }) {
           <ul className="service-list">
             {profileData.services.map((s, i) => (
               <li key={i}>
-                <strong>{s.name}</strong> — {s.description} — {s.price} ₪
+                <strong>{s.name}</strong> — {s.description} —{" "}
+                {s.price} ₪
               </li>
             ))}
           </ul>
@@ -133,7 +157,8 @@ export default function BusinessProfileView({ profileData, profileImage }) {
           <h3>❓ שאלות ותשובות</h3>
           {profileData.faqs.map((f, i) => (
             <div key={i} className="faq-item">
-              <strong>ש:</strong> {f.q}<br />
+              <strong>ש:</strong> {f.q}
+              <br />
               <strong>ת:</strong> {f.a}
             </div>
           ))}
@@ -145,16 +170,19 @@ export default function BusinessProfileView({ profileData, profileImage }) {
         <div className="profile-section contact-section">
           <h3>📞 פרטי קשר</h3>
           <ul>
-            {profileData.phone && <li><strong>טלפון:</strong> {profileData.phone}</li>}
-            {profileData.email && <li><strong>אימייל:</strong> {profileData.email}</li>}
+            {profileData.phone && (
+              <li>
+                <strong>טלפון:</strong> {profileData.phone}
+              </li>
+            )}
+            {profileData.email && (
+              <li>
+                <strong>אימייל:</strong> {profileData.email}
+              </li>
+            )}
           </ul>
         </div>
       )}
-
-      {/* כפתור הודעה */}
-      <div className="profile-section text-center">
-        <button className="message-button">💬 שלח הודעה לעסק</button>
-      </div>
     </div>
   );
 }
