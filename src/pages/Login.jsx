@@ -33,10 +33,10 @@ export default function Login() {
       // ניתוב לפי role
       switch (user.role) {
         case "business":
-          navigate("/dashboard");
+          navigate('/business/dashboard');
           break;
           case "customer":
-            navigate("/customer/dashboard");
+            navigate('/client/dashboard');
             break;
           
         case "worker":

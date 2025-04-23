@@ -74,7 +74,7 @@ export default function App() {
 
           {/* Customer Dashboard */}
 <Route
-  path="/client"
+  path="/client/dashboard"
   element={
     <ProtectedRoute roles={["customer"]}>
       <ClientDashboard />
