@@ -1,22 +1,6 @@
-// src/api.js
-
 import axios from "axios";
 
-// -----------------------------
-// 1. Base URL חייב להיות מוגדר כ־env var!
-//    תוודא/י ב־Vercel (Settings → Environment Variables):
-//      Key:   REACT_APP_API_URL
-//      Value: https://api.esclick.co.il/api
-//    ואז תעשה Redeploy, כדי שהערך ייטמע ב־bundle.
-// -----------------------------
-const BASE_URL = process.env.REACT_APP_API_URL;
-if (!BASE_URL) {
-  throw new Error(
-    "Missing REACT_APP_API_URL – " +
-    "define it in Vercel (Settings → Environment Variables) " +
-    "with value https://api.esclick.co.il/api"
-  );
-}
+const BASE_URL = process.env.REACT_APP_API_URL || "https://api.esclick.co.il/api";
 
 const API = axios.create({
   baseURL: BASE_URL,
@@ -27,7 +11,7 @@ const API = axios.create({
   },
 });
 
-// מוסיף את ה-JWT אוטומטית
+// מוסיף את ה‑JWT לכל בקשה אם קיים
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -36,7 +20,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// אם 401 ומבחוץ לדף /login – מפנה מחדש ל־login
+// מנתק אוטומטית אם מקבל 401 ולא בדף /login
 API.interceptors.response.use(
   (resp) => resp,
   (error) => {
