@@ -1,11 +1,16 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+-import { useAuth } from "../context/AuthContext";
++import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 
 export default function Login() {
+-  const { login } = useAuth();
++  // ✅ עכשיו שולפים גם את logout כדי לנקות קודם את ה-cookie מהשרת
++  const { login, logout } = useAuth();
+
   const [identifier, setIdentifier] = useState(""); // אימייל או שם משתמש
   const [password, setPassword] = useState("");
   const [isEmployeeLogin, setIsEmployeeLogin] = useState(false);
@@ -13,7 +18,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
 
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -26,6 +30,14 @@ export default function Login() {
       setLoading(false);
       return;
     }
+
++   // ✅ 1. קוראים קודם ל־logout כדי שהשרת ייגרום ל-clearCookie("token")
++   //    וכשהוא מסיים – אין cookie ישן יותר שיפליא אותנו role=business
++   try {
++     await logout();
++   } catch {
++     // אפילו אם נכשל, ממשיכ/ה ל-login
++   }
 
     try {
       // מבצעים את הקריאה ל־login ב־AuthContext

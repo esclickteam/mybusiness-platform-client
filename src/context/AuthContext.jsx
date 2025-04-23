@@ -57,11 +57,6 @@ export function AuthProvider({ children }) {
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
-
-    // 🧹 נקה קודם את ה-token הישן (cookie ו-localStorage)
-    document.cookie = "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    localStorage.removeItem("token");
-
     try {
       const body = identifier.includes("@")
         ? { email: identifier.trim(), password }
