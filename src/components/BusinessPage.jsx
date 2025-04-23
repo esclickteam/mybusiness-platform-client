@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import API from "../JS/api.js";
+import API from "../api";
 import BusinessProfileView from "../pages/business/dashboardPages/buildTabs/BusinessProfileView";
 import checkFeatureAvailability from "../pages/business/FeatureAvailability";
 import "./BusinessPage.css"; // אם יש לך סגנונות נפרדים
