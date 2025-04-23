@@ -9,10 +9,10 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // טוען פרטי משתמש מ־/users/me
+  // טוען פרטי משתמש מ־/auth/me
   const refreshUserData = async () => {
     try {
-      const res = await API.get("/users/me");
+      const res = await API.get("/auth/me");
       const data = res.data;
       const u = {
         userId: data.userId,
@@ -79,7 +79,7 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout");
     } catch {
-      // ממשיכים לנקות גם אם ה־logout לוקה בכשל
+      // ממשיכים לנקות גם אם ה־logout נכשל
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
