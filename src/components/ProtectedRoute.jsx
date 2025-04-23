@@ -1,4 +1,5 @@
 // src/components/ProtectedRoute.jsx
+
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -7,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
  * ProtectedRoute
  * @param {ReactNode} children - התוכן להציג אם האבטחה עברה
  * @param {string|null} role - תפקיד נדרש ("admin", "manager", "worker", "business", "customer")
- * @param {string|null} requiredPackage - שם החבילה הנדרשת ("free", "standard", "premium" וכדומה)
+ * @param {string|null} requiredPackage - שם החבילה הנדרשת ("free", "standard", "premium" וכו')
  */
 const ProtectedRoute = ({ children, role = null, requiredPackage = null }) => {
   const { user, loading } = useAuth();

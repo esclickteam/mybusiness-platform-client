@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // טוען נתוני משתמש מהשרת
+  // טוען נתוני משתמש מהשרת (משתמש ב-cookie בלבד)
   const refreshUserData = async () => {
     try {
       console.log("📡 fetching /api/users/me");
@@ -64,13 +64,11 @@ export function AuthProvider({ children }) {
         businessId: data.businessId || null,
       };
       console.log("✅ loaded user:", u);
-      localStorage.setItem("user", JSON.stringify(u));
       setUser(u);
       setError(null);
       return u;
     } catch (e) {
       console.error("❌ refreshUserData failed:", e.response?.data || e.message);
-      localStorage.removeItem("user");
       setUser(null);
       setError("⚠️ יש להתחבר מחדש");
       return null;
@@ -84,21 +82,21 @@ export function AuthProvider({ children }) {
     refreshUserData();
   }, []);
 
-  // login: שולח credentials, שומר token, מביא user data
+  // login: שולח identifier/password ושומר את המשתמש מה־/users/me
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
     try {
       console.log("📡 POST /api/auth/login", identifier);
-      const body = identifier.includes("@")
-        ? { email: identifier.trim(), password }
-        : { username: identifier.trim(), password };
+      const body = {
+        identifier: identifier.trim(),
+        password,
+      };
 
-      // התחברות ושמירת הטוקן
-      const res = await API.post("/auth/login", body);
-      localStorage.setItem("token", res.data.token);
+      // מבצע התחברות; cookie עם הטוקן נשמר אוטומטית
+      await API.post("/auth/login", body);
 
-      // טעינת נתוני המשתמש
+      // מביא שוב את פרטי המשתמש
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
       return u;
@@ -106,7 +104,7 @@ export function AuthProvider({ children }) {
       console.error("❌ login error:", e.response?.data || e.message);
       setError(
         e.response?.status === 401
-          ? "❌ שם משתמש או סיסמה שגויים"
+          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
           : "❌ שגיאה בשרת, נסו שוב"
       );
       throw e;
@@ -115,7 +113,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // logout: שולח בקשה להתנתקות ואז מנקה נתונים
+  // logout: מוחק cookie במידת הצורך ונקה state
   const logout = async () => {
     try {
       console.log("📡 POST /api/auth/logout");
@@ -123,8 +121,6 @@ export function AuthProvider({ children }) {
     } catch (e) {
       console.error("❌ logout error:", e.response?.data || e.message);
     } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
       setUser(null);
     }
   };
