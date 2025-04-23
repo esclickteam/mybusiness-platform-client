@@ -1,5 +1,3 @@
-// src/context/AuthContext.jsx
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api";
 
@@ -16,59 +14,38 @@ export function AuthProvider({ children }) {
       role: "business",
       businessId: "dev-id",
     };
-
-    const devLogin = async (identifier, password) => {
-      console.log("🔑 dev login:", identifier, password);
-      return devUser;
-    };
-    const devLogout = async () => {
-      console.log("🔒 dev logout");
-    };
-    const devRefresh = async () => devUser;
-
     return (
-      <AuthContext.Provider
-        value={{
-          user: devUser,
-          loading: false,
-          error: null,
-          login: devLogin,
-          logout: devLogout,
-          refreshUserData: devRefresh,
-          setUser: () => {},
-        }}
-      >
+      <AuthContext.Provider value={{ ...devUser, login: async () => devUser, logout: async () => {}, loading: false, error: null }}>
         {children}
       </AuthContext.Provider>
     );
   }
 
-  // מצב אמיתי
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // טוען נתוני משתמש מהשרת (משתמש ב-cookie בלבד)
+  // טוען פרטי משתמש מ־/users/me
   const refreshUserData = async () => {
     try {
-      console.log("📡 fetching /api/auth/me");
-      const res = await API.get("/auth/me", { withCredentials: true });
+      const res = await API.get("/users/me");
       const data = res.data;
       const u = {
         userId: data.userId,
-        name: data.name || data.username || "",
+        name: data.name || "",
         email: data.email,
         subscriptionPlan: data.subscriptionPlan,
         role: data.role,
-        isTempPassword: data.isTempPassword || false,
-        businessId: data.businessId || null,
+        isTempPassword: data.isTempPassword,
+        businessId: data.businessId,
       };
-      console.log("✅ loaded user:", u);
+      localStorage.setItem("user", JSON.stringify(u));
       setUser(u);
       setError(null);
       return u;
     } catch (e) {
-      console.error("❌ refreshUserData failed:", e.response?.data || e.message);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       setUser(null);
       setError("⚠️ יש להתחבר מחדש");
       return null;
@@ -77,41 +54,30 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // טען משתמש ברגע שהקומפוננט עולה
   useEffect(() => {
     refreshUserData();
   }, []);
 
-  // login: שולח identifier/password ו־userType, שומר את המשתמש מה־/auth/me
-  const login = async (identifier, password, isEmployeeLogin = false) => {
+  const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
     try {
-      // 1. בחרי את ה־userType לפי האם זו כניסת צוות או רגילה
-      const userType = isEmployeeLogin ? "worker" : "customer";
+      const body = identifier.includes("@")
+        ? { email: identifier.trim(), password }
+        : { username: identifier.trim(), password };
 
-      // 2. הכנת ה־payload: אם זה אימייל – שלחי email, אחרת username
-      const body = {
-        password,
-        userType,
-        ...(identifier.includes("@")
-          ? { email: identifier.trim() }
-          : { username: identifier.trim() }),
-      };
-      console.log("📡 POST /api/auth/login", body);
+      // 1️⃣ התחברות ושמירת הטוקן
+      const res = await API.post("/auth/login", body);
+      localStorage.setItem("token", res.data.token);
 
-      // 3. קריאה ל־API עם body מלא ו־withCredentials
-      await API.post("/auth/login", body, { withCredentials: true });
-
-      // 4. קבלת פרטי המשתמש אחרי התחברות
+      // 2️⃣ טעינת פרטי המשתמש
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
       return u;
     } catch (e) {
-      console.error("❌ login error:", e.response?.data || e.message);
       setError(
         e.response?.status === 401
-          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
+          ? "❌ שם משתמש או סיסמה שגויים"
           : "❌ שגיאה בשרת, נסו שוב"
       );
       throw e;
@@ -120,40 +86,24 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // logout: מוחק cookie במידת הצורך ונקה state
   const logout = async () => {
     try {
-      console.log("📡 POST /api/auth/logout");
-      await API.post("/auth/logout", {}, { withCredentials: true });
-    } catch (e) {
-      console.error("❌ logout error:", e.response?.data || e.message);
-    } finally {
+      await API.post("/auth/logout");
+    } catch {}
+    finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       setUser(null);
     }
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, loading, error, login, logout, refreshUserData, setUser }}
-    >
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
       {loading ? <div className="loading-screen">🔄 טוען נתונים…</div> : children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    console.warn("⚠️ useAuth must be used within AuthProvider");
-    return {
-      user: null,
-      loading: false,
-      error: null,
-      login: async () => {},
-      logout: async () => {},
-      refreshUserData: async () => null,
-      setUser: () => {},
-    };
-  }
-  return ctx;
+  return useContext(AuthContext);
 }

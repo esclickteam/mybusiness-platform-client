@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_API_URL || "https://api.esclick.co.il/api";
+const BASE_URL = "/api";
 
 const API = axios.create({
   baseURL: BASE_URL,
