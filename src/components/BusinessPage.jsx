@@ -1,4 +1,3 @@
-// src/components/BusinessPage.jsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import API from "../api";
@@ -12,7 +11,10 @@ export default function BusinessPage() {
   const [userPlan, setUserPlan] = useState("free");
   const [loading, setLoading] = useState(true);
 
+  // הדפסת ה-businessId ב-console לשם בדיקה
   useEffect(() => {
+    console.log("Business ID:", businessId); // לוודא שה-businessId תקין
+
     const fetchBusinessData = async () => {
       try {
         const { data } = await API.get(`/business/${businessId}`);
@@ -32,7 +34,7 @@ export default function BusinessPage() {
   if (loading) return <p>🔄 טוען פרופיל העסק…</p>;
   if (!business) return <p>העסק לא נמצא</p>;
 
-  const canChat     = checkFeatureAvailability("chat",    userPlan);
+  const canChat = checkFeatureAvailability("chat", userPlan);
   const canSchedule = checkFeatureAvailability("booking", userPlan);
 
   return (
