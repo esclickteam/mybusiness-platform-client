@@ -34,7 +34,7 @@ export default function Login() {
       // ניתוב לפי role
       switch (user.role) {
         case "business":
-          navigate('/business/dashboard');
+          navigate("/dashboard");
           break;
           case "customer":
             navigate('/client/dashboard');

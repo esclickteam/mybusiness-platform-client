@@ -83,7 +83,7 @@ const Register = () => {
             : "/create-business";
           break;
         case "customer":
-          dashboardPath = "/client-dashboard";
+          dashboardPath = "/client/dashboard";
           break;
         default:
           dashboardPath = "/";

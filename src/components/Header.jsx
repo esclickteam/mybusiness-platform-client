@@ -23,7 +23,7 @@ const Header = () => {
   const getDashboardPath = () => {
     switch (user?.role) {
       case "business":
-        return '/business/dashboard';
+        return "/dashboard";
       case "customer":
         return '/client/dashboard';
       case "worker":
