@@ -233,7 +233,7 @@ export default function App() {
           <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
           {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*"  element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
     </>
