@@ -1,12 +1,9 @@
 {
+  "version": 2,
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://api.esclick.co.il/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/api/:path*",
+      "destination": "https://api.esclick.co.il/api/:path*"
     }
   ]
 }
