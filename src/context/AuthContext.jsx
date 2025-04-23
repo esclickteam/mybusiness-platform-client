@@ -1,5 +1,7 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import API from "../api";
+import { useNavigate }         from "react-router-dom";
+import API                     from "../api";
 
 export const AuthContext = createContext();
 
@@ -7,79 +9,68 @@ export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
+  const navigate = useNavigate();
 
-  // ✅ 1. פעם ראשונה נטען /auth/me אם יש טוקן
-  //    כדי לשמור ב-state את פרטי המשתמש (role, email וכו’).
+  // 1️⃣ טוען את המשתמש הנוכחי מ־/auth/me
   const refreshUserData = async () => {
     try {
-      // 📌 שולח GET ל־/auth/me עם ה־Authorization header שמוכן ב־API.interceptors
-      const res  = await API.get("/auth/me");
-      console.log("🔍 /auth/me returned:", res.data);
-
-      const data = res.data;
-      const u = {
-        userId:           data.userId,
-        name:             data.name  || "",
-        email:            data.email,
-        subscriptionPlan: data.subscriptionPlan,
-        role:             data.role,          // ✅ role שמחזיר השרת
-        isTempPassword:   data.isTempPassword,
-        businessId:       data.businessId,
-      };
-      localStorage.setItem("user", JSON.stringify(u));
+      const res = await API.get("/auth/me");
+      // אם השרת מחזיר { user: {...} } או ישר את השדות
+      const u = res.data.user ?? res.data;
+      console.log("🔍 /auth/me returned:", u);
       setUser(u);
+      localStorage.setItem("user", JSON.stringify(u));
       setError(null);
       return u;
     } catch (e) {
-      // ❌ אם אין session תקין – מחזירים מאפסים
+      console.warn("⚠️ /auth/me failed:", e);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-      setError("⚠️ יש להתחבר מחדש");
+      setError("יש להתחבר מחדש");
       return null;
     } finally {
       setLoading(false);
     }
   };
 
+  // ביצוע ראשוני: אם יש token נטען נתונים, אחרת נהפוך ל־false לטעינה
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      // ✅ אם קיים token ב־localStorage – נטען פרטי משתמש
       refreshUserData();
     } else {
-      // ✅ אחרת – נחכה עד שילחץ login
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ 2. פונקציית התחברות שמקבלת identifier (email או username) + password
+  // 2️⃣ ניווט אוטומטי כש־user נטען (ולא בזמן טעינה)
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role === "business") {
+        navigate("/dashboard/business", { replace: true });
+      } else {
+        navigate("/dashboard/client",   { replace: true });
+      }
+    }
+  }, [user, loading, navigate]);
+
+  // 3️⃣ פונקציית התחברות
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
-
     try {
-      // ✅ שולחים בדיוק את שני השדות שהשרת מצפה להם:
-      //    { identifier: "...", password: "..." }
-      //    במקום לשלוח { email } או { username } – השרת מפענח בעצמו
       const res = await API.post("/auth/login", {
         identifier: identifier.trim(),
-        password:   password,
+        password,
       });
-
-      // ✅ שומרים את הטוקן שהשרת שלח לנו
       localStorage.setItem("token", res.data.token);
-
-      // ✅ מרעננים את הפרטים (role, businessId וכו’) עם הטוקן החדש
-      const u = await refreshUserData();
-      if (!u) throw new Error("User load failed");
-      return u;
+      await refreshUserData();
     } catch (e) {
       setError(
         e.response?.status === 401
-          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסו שוב"
+          ? "אימייל/שם משתמש או סיסמה שגויים"
+          : "שגיאה בשרת, נסה שוב"
       );
       throw e;
     } finally {
@@ -87,7 +78,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ✅ 3. התנתקות: קורא ל־/auth/logout ומנקה state ו־localStorage
+  // 4️⃣ התנתקות
   const logout = async () => {
     try {
       await API.post("/auth/logout");
@@ -96,13 +87,15 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
+      navigate("/login", { replace: true });
     }
   };
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {/* ✅ עד לסיום הטעינה מראה מסך טוען ולא מרנדר כלום */}
-      {loading ? <div className="loading-screen">🔄 טוען נתונים…</div> : children}
+      {loading
+        ? <div className="loading-screen">🔄 טוען נתונים…</div>
+        : children}
     </AuthContext.Provider>
   );
 }
