@@ -1,3 +1,5 @@
+// src/context/AuthContext.jsx
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api";
 
@@ -49,8 +51,8 @@ export function AuthProvider({ children }) {
   // טוען נתוני משתמש מהשרת (משתמש ב-cookie בלבד)
   const refreshUserData = async () => {
     try {
-      console.log("📡 fetching /api/users/me");
-      const res = await API.get("/users/me", { withCredentials: true });
+      console.log("📡 fetching /api/auth/me");
+      const res = await API.get("/auth/me", { withCredentials: true });
       const data = res.data;
       const u = {
         userId: data.userId,
@@ -80,7 +82,7 @@ export function AuthProvider({ children }) {
     refreshUserData();
   }, []);
 
-  // login: שולח identifier/password ו־userType, שומר את המשתמש מה־/users/me
+  // login: שולח identifier/password ו־userType, שומר את המשתמש מה־/auth/me
   const login = async (identifier, password, isEmployeeLogin = false) => {
     setLoading(true);
     setError(null);
