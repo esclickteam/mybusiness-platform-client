@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from "react";
 import "./Profile.css";
 
-import ProfileHeader from "../../../components/shared/ProfileHeader";
+import ProfileHeader from "../../components/shared/ProfileHeader";
 import GalleryTab from "../dashboardPages/buildTabs/GalleryTab";
 import ShopAndCalendar from "../dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar";
 import ReviewsModule from "../dashboardPages/buildTabs/ReviewsModule";
 import FaqTab from "../dashboardPages/buildTabs/FaqTab";
 import ChatTab from "../dashboardPages/buildTabs/ChatTab";
-import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
+import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
 const TABS = [
   { key: "main", label: "ראשי" },

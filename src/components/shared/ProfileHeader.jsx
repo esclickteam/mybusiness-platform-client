@@ -1,33 +1,59 @@
-// src/components/shared/ProfileHeader.jsx
+// src/components/ProfileHeader.jsx
+
 import React from "react";
 import "./ProfileHeader.css";
 
-export default function ProfileHeader({ business }) {
-  if (!business) return null;
+const ProfileHeader = ({ businessDetails }) => {
+  if (!businessDetails) return null;
 
-  const { logo, name, about = "", reviews = [] } = business;
-  const avg =
-    reviews.length > 0
-      ? (reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) / reviews.length).toFixed(1)
-      : null;
+  const getImageUrl = (item) => {
+    if (!item) return "";
+    if (typeof item === "string") return item;
+    return item.url || item.preview || "";
+  };
+
+  const averageRating = businessDetails.reviews?.length
+    ? (
+        businessDetails.reviews.reduce(
+          (sum, r) => sum + Number(r.rating || 0),
+          0
+        ) / businessDetails.reviews.length
+      ).toFixed(1)
+    : null;
 
   return (
-    <div className="profile-header">
-      <div className="profile-header__logo">
+    <div className="profile-top-section">
+      <div className="profile-header">
         <img
-          src={logo || "/images/placeholder.jpg"}
-          alt="לוגו העסק"
+          src={getImageUrl(businessDetails.logo) || "/images/placeholder.jpg"}
+          alt="לוגו עסק"
+          className="profile-image"
         />
+        <div className="profile-name-section">
+          <h1 className="business-name">{businessDetails.name || "שם העסק"}</h1>
+          <p className="category-area">
+            {businessDetails.category || "לא מוגדר"}
+            {businessDetails.area ? ` | ${businessDetails.area}` : ""}
+          </p>
+          {averageRating && (
+            <p className="rating-badge">⭐ {averageRating} / 5</p>
+          )}
+        </div>
       </div>
-      <h1 className="profile-header__name">{name || "שם העסק"}</h1>
-      {avg && (
-        <div className="profile-header__rating">
-          ⭐ {avg} / 5
+
+      {businessDetails.about && (
+        <div className="about-section">
+          <p className="about-snippet">
+            {businessDetails.about.length > 100
+              ? businessDetails.about.slice(0, 100) + "..."
+              : businessDetails.about}
+          </p>
         </div>
       )}
-      {about && (
-        <p className="profile-header__about">{about}</p>
-      )}
+
+      <hr className="profile-divider" />
     </div>
   );
-}
+};
+
+export default ProfileHeader;
