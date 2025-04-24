@@ -17,9 +17,9 @@ function ManageRoles() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/admin/users");
+        const res = await fetch("/api/users/all"); // ← תוקן מ-/admin/users
         const data = await res.json();
-        console.log("📦 משתמשים מהשרת:", data); // ← הדפסה חיונית!
+        console.log("📦 משתמשים מהשרת:", data);
         if (res.ok) {
           setUsers(data);
         }
@@ -27,10 +27,9 @@ function ManageRoles() {
         console.error("❌ שגיאה בטעינת משתמשים:", err);
       }
     };
-  
+
     fetchUsers();
   }, []);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -99,7 +98,6 @@ function ManageRoles() {
     (user.name || "").includes(searchTerm) ||
     (user.phone || "").includes(searchTerm)
   );
-  
 
   return (
     <div className="manage-roles">
