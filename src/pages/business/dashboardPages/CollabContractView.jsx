@@ -1,8 +1,6 @@
-// CollabContractView.jsx – כולל חתימה של הצד השני + שליחה לשרת בעת אישור
-
 import React, { useRef, useState, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import axios from "axios";
+import API from "../../../api"; // ודא שזה הנתיב הנכון לפי מיקום הקובץ
 import "./CollabContractView.css";
 
 const CollabContractView = ({ contract, onApprove, currentUser }) => {
@@ -55,10 +53,9 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       status: "מאושר",
     };
 
-    // שלח לשרת (אם נדרש)
     try {
-      await axios.post("/api/chat/send", {
-        ...contract.messageMetadata, // אם יש נתונים של ההודעה (conversationId, from, to...)
+      await API.post("/chat/send", {
+        ...contract.messageMetadata,
         type: "contract",
         contractData: updatedContract,
         time: new Date().toISOString(),
@@ -67,7 +64,6 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       console.error("❌ שגיאה בשליחת אישור החוזה לשרת:", err);
     }
 
-    // עדכן ב־state המקומי
     onApprove({
       receiverSignature: localReceiverSig,
       status: "מאושר",
