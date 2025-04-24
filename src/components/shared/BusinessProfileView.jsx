@@ -8,10 +8,10 @@ export default function BusinessProfileView({ profileData }) {
 
   return (
     <div className="business-profile-view full-style">
-      {/* הכותרת המשותפת */}
+      {/* 1. כותרת משותפת */}
       <ProfileHeader businessDetails={profileData} />
 
-      {/* קטע אודות */}
+      {/* 2. אודות העסק */}
       {profileData.about && (
         <div className="about-section">
           <p className="about-snippet">
@@ -24,7 +24,7 @@ export default function BusinessProfileView({ profileData }) {
 
       <hr className="profile-divider" />
 
-      {/* גלריה */}
+      {/* 3. גלריה */}
       <div className="gallery-preview no-actions">
         {profileData.gallery?.map((file, i) => (
           <div key={i} className="gallery-item-wrapper">
@@ -37,7 +37,7 @@ export default function BusinessProfileView({ profileData }) {
         ))}
       </div>
 
-      {/* ביקורות אחרונות */}
+      {/* 4. ביקורות אחרונות */}
       {profileData.reviews?.length > 0 && (
         <div className="reviews">
           <h3>⭐ ביקורות אחרונות</h3>
