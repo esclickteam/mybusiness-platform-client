@@ -1,3 +1,4 @@
+// src/pages/business/dashboardPages/Profile.jsx
 import React, { useEffect, useState } from "react";
 import "./Profile.css";
 import BusinessProfileView from "../../../components/shared/BusinessProfileView";
@@ -8,34 +9,46 @@ import FaqTab from "../dashboardPages/buildTabs/FaqTab";
 import ChatTab from "../dashboardPages/buildTabs/ChatTab";
 import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
 
-const TABS = ["ראשי", "גלריה", "חנות / יומן", "ביקורות", "צ'אט עם העסק", "שאלות ותשובות"];
+const TABS = [
+  "ראשי",
+  "גלריה",
+  "חנות / יומן",
+  "ביקורות",
+  "צ'אט עם העסק",
+  "שאלות ותשובות",
+];
 
 const fallbackBusiness = {
   name: "עסק לדוגמה",
-  about: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
+  about:
+    "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
   phone: "050-1234567",
   logo: "https://via.placeholder.com/100",
   category: "שיווק",
   area: "מרכז",
   gallery: [
     { url: "https://via.placeholder.com/300", type: "image" },
-    { url: "https://via.placeholder.com/300", type: "image" }
+    { url: "https://via.placeholder.com/300", type: "image" },
   ],
   stories: [
-    { url: "https://via.placeholder.com/150", type: "image", uploadedAt: Date.now() }
+    {
+      url: "https://via.placeholder.com/150",
+      type: "image",
+      uploadedAt: Date.now(),
+    },
   ],
   services: [
     { name: "ייעוץ", description: "שיחת ייעוץ ראשונית", price: 150 },
-    { name: "ליווי", description: "תוכנית ליווי חודשית", price: 800 }
+    { name: "ליווי", description: "תוכנית ליווי חודשית", price: 800 },
   ],
   reviews: [
     { user: "שירה", comment: "שירות מהמם!", rating: 5 },
-    { user: "אלון", comment: "ממש מקצועיים!", rating: 5 }
+    { user: "אלון", comment: "ממש מקצועיים!", rating: 5 },
   ],
   faqs: [
     { q: "איך אפשר להזמין?", a: "פשוט דרך הכפתור באתר" },
-    { q: "האם השירות כולל מע״מ?", a: "כן" }
-  ]
+    { q: "האם השירות כולל מע״מ?", a: "כן" },
+  ],
 };
 
 const Profile = () => {
@@ -47,24 +60,35 @@ const Profile = () => {
     async function fetchBusiness() {
       const API_BASE_URL = "/api";
       const isLoggedIn = !!localStorage.getItem("token");
-      const url = `${API_BASE_URL}/business/my${isLoggedIn ? "" : "?dev=true"}`;
+      const url = `${API_BASE_URL}/business/my${
+        isLoggedIn ? "" : "?dev=true"
+      }`;
 
       try {
         const res = await fetch(url, { credentials: "include" });
-
         if (res.status === 404) throw new Error("404 Not Found");
 
         const text = await res.text();
-
-        if (text.startsWith("<!DOCTYPE html>") || text.includes("Not Found")) {
+        if (
+          text.startsWith("<!DOCTYPE html>") ||
+          text.includes("Not Found")
+        ) {
           throw new Error("תשובת HTML – כנראה אין חיבור ל־API");
         }
 
         const data = JSON.parse(text);
-        console.log("✅ נתוני עסק:", data);
-        setBusinessData(data);
+        console.log("✅ נתוני עסק מה-API:", data);
+
+        // מיזוג עם fallbackBusiness כדי להבטיח שיש about ו-reviews
+        setBusinessData({
+          ...fallbackBusiness,
+          ...data,
+        });
       } catch (err) {
-        console.warn("⚠️ שגיאה בפרופיל – טוען עסק לדוגמה:", err.message);
+        console.warn(
+          "⚠️ שגיאה בפרופיל – טוען עסק לדוגמה:",
+          err.message
+        );
         setBusinessData(fallbackBusiness);
       } finally {
         setLoading(false);
@@ -74,7 +98,8 @@ const Profile = () => {
     fetchBusiness();
   }, []);
 
-  if (loading) return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
+  if (loading)
+    return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
 
   return (
     <div className="profile-wrapper">
@@ -82,7 +107,9 @@ const Profile = () => {
         {TABS.map((tab) => (
           <button
             key={tab}
-            className={`tab ${currentTab === tab ? "active" : ""}`}
+            className={`tab ${
+              currentTab === tab ? "active" : ""
+            }`}
             onClick={() => setCurrentTab(tab)}
           >
             {tab}
@@ -91,7 +118,7 @@ const Profile = () => {
       </div>
 
       {/* 🟠 הודעה אם מוצג עסק דמו */}
-      {businessData?.name === "עסק לדוגמה" && (
+      {businessData.name === "עסק לדוגמה" && (
         <div className="dev-warning">
           🟠 מציגים עסק לדוגמה – אין חיבור לשרת
         </div>
@@ -99,23 +126,26 @@ const Profile = () => {
 
       {currentTab === "ראשי" && (
         <section>
-          <BusinessProfileView
-            profileData={businessData}
-            profileImage={businessData.logo}
-          />
+          <BusinessProfileView profileData={businessData} />
         </section>
       )}
 
       {currentTab === "גלריה" && (
         <section>
-          <GalleryTab isForm={false} businessDetails={businessData} />
+          <GalleryTab
+            isForm={false}
+            businessDetails={businessData}
+          />
         </section>
       )}
 
       {currentTab === "חנות / יומן" && (
         <section>
           <BusinessServicesProvider>
-            <ShopAndCalendar isPreview={true} businessDetails={businessData} />
+            <ShopAndCalendar
+              isPreview={true}
+              businessDetails={businessData}
+            />
           </BusinessServicesProvider>
         </section>
       )}
