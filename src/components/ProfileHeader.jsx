@@ -22,7 +22,7 @@ const ProfileHeader = ({ businessDetails }) => {
     : null;
 
   return (
-    <div className="profile-header-wrapper">
+    <div className="profile-top-section">
       <div className="profile-header">
         <img
           src={getImageUrl(businessDetails.logo) || "/images/placeholder.jpg"}
@@ -31,18 +31,24 @@ const ProfileHeader = ({ businessDetails }) => {
         />
         <div className="profile-name-section">
           <h1 className="business-name">{businessDetails.name || "שם העסק"}</h1>
+          <p className="category-area">
+            {businessDetails.category || "לא מוגדר"}
+            {businessDetails.area ? ` | ${businessDetails.area}` : ""}
+          </p>
           {averageRating && (
-            <p className="rating">⭐ {averageRating} / 5</p>
+            <p className="rating-badge">⭐ {averageRating} / 5</p>
           )}
         </div>
       </div>
 
       {businessDetails.about && (
-        <p className="about-snippet">
-          {businessDetails.about.length > 100
-            ? businessDetails.about.slice(0, 100) + "..."
-            : businessDetails.about}
-        </p>
+        <div className="about-section">
+          <p className="about-snippet">
+            {businessDetails.about.length > 100
+              ? businessDetails.about.slice(0, 100) + "..."
+              : businessDetails.about}
+          </p>
+        </div>
       )}
 
       <hr className="profile-divider" />

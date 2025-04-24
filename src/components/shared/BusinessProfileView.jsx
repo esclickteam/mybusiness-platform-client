@@ -26,16 +26,23 @@ const BusinessProfileView = ({ profileData }) => {
         />
         <div className="profile-name-section">
           <h1 className="business-name">{profileData.name || "שם העסק"}</h1>
+          <p className="category-area">
+            {profileData.category || "לא מוגדר"}
+            {profileData.area ? ` | ${profileData.area}` : ""}
+          </p>
           {averageRating && (
-            <p className="rating">⭐ {averageRating} / 5</p>
+            <p className="rating-badge">⭐ {averageRating} / 5</p>
           )}
         </div>
       </div>
 
       {profileData.about && (
-        <div className="about-text">
-          <h3>📝 אודות העסק</h3>
-          <p>{profileData.about}</p>
+        <div className="about-section">
+          <p className="about-snippet">
+            {profileData.about.length > 100
+              ? profileData.about.slice(0, 100) + "..."
+              : profileData.about}
+          </p>
         </div>
       )}
 
