@@ -5,7 +5,7 @@ import "./Build.css";
 // סגנונות ספציפיים לתצוגת הפרופיל
 import "./BusinessProfileView.css";
 // הכותרת המשותפת (לוגו, שם, דירוג)
-import ProfileHeader from "../../../components/ProfileHeader";
+import ProfileHeader from "./ProfileHeader";
 
 const BusinessProfileView = ({ profileData }) => {
   if (!profileData) return <div>טוען...</div>;
