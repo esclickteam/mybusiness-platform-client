@@ -1,7 +1,7 @@
 // src/pages/business/dashboardPages/build/buildTabs/FaqTab.jsx
 import React, { useState, useEffect } from 'react';
 // סגנונות כלליים של עמוד הבניה
-import './Build.css';
+import '../Build.css';
 // סגנונות ספציפיים לטאב שאלות ותשובות
 import './FaqTab.css';
 
