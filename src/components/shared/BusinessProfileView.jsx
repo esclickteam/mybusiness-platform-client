@@ -1,41 +1,21 @@
+// src/pages/business/dashboardPages/buildTabs/BusinessProfileView.jsx
 import React from "react";
-import "./Build.css";
-import "./MainTab.css";
+// סגנונות כלליים של עמוד הבניה
+import "../Build.css";
+// סגנונות ספציפיים לתצוגת הפרופיל
+import "./BusinessProfileView.css";
+// הכותרת המשותפת (לוגו, שם, דירוג)
+import ProfileHeader from "../../../components/ProfileHeader";
 
 const BusinessProfileView = ({ profileData }) => {
-  const getImageUrl = (item) => {
-    if (!item) return "";
-    if (typeof item === "string") return item;
-    return item.url || item.preview || "";
-  };
-
-  const averageRating = profileData.reviews?.length
-    ? (
-        profileData.reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) /
-        profileData.reviews.length
-      ).toFixed(1)
-    : null;
+  if (!profileData) return <div>טוען...</div>;
 
   return (
     <div className="business-profile-view full-style">
-      <div className="profile-header">
-        <img
-          src={getImageUrl(profileData.logo) || "/images/placeholder.jpg"}
-          alt="לוגו עסק"
-          className="profile-image"
-        />
-        <div className="profile-name-section">
-          <h1 className="business-name">{profileData.name || "שם העסק"}</h1>
-          <p className="category-area">
-            {profileData.category || "לא מוגדר"}
-            {profileData.area ? ` | ${profileData.area}` : ""}
-          </p>
-          {averageRating && (
-            <p className="rating-badge">⭐ {averageRating} / 5</p>
-          )}
-        </div>
-      </div>
+      {/* הכותרת המשותפת */}
+      <ProfileHeader businessDetails={profileData} />
 
+      {/* אודות קצר */}
       {profileData.about && (
         <div className="about-section">
           <p className="about-snippet">
@@ -48,12 +28,13 @@ const BusinessProfileView = ({ profileData }) => {
 
       <hr className="profile-divider" />
 
+      {/* גלריה */}
       <div className="gallery-preview no-actions">
         {profileData.gallery?.map((file, i) => (
           <div key={i} className="gallery-item-wrapper">
             <div className="gallery-item">
               <img
-                src={getImageUrl(file) || "/images/placeholder.jpg"}
+                src={typeof file === "string" ? file : file.url}
                 alt={`preview-${i}`}
                 className="gallery-img"
               />
@@ -62,6 +43,7 @@ const BusinessProfileView = ({ profileData }) => {
         ))}
       </div>
 
+      {/* ביקורות אחרונות */}
       {profileData.reviews?.length > 0 && (
         <div className="reviews">
           <h3>⭐ ביקורות אחרונות</h3>

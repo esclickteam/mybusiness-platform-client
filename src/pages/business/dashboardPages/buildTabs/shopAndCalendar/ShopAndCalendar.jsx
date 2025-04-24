@@ -1,5 +1,10 @@
+// src/pages/business/dashboardPages/build/buildTabs/ShopAndCalendar.jsx
 import React, { useState, useEffect } from 'react';
+// סגנונות כלליים של עמוד הבניה
+import '../../Build.css';
+// סגנונות ספציפיים לטאב החנות/יומן
 import './ShopAndCalendar.css';
+
 import AppointmentsMain from './Appointments/AppointmentsMain';
 import CalendarSetup from './Appointments/CalendarSetup';
 import ShopTab from './Appointments/ShopTab';
@@ -21,7 +26,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
   const [showPayment, setShowPayment] = useState(false);
   const [demoHours, setDemoHours] = useState({});
 
-  // 🔁 שולח את השירותים והמוצרים חזרה ל־BuildBusinessPage
+  // שולח את השירותים והמוצרים חזרה ל-BuildBusinessPage
   useEffect(() => {
     if (!isPreview && setBusinessDetails) {
       setBusinessDetails(prev => ({
@@ -32,6 +37,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
     }
   }, [services, products, isPreview, setBusinessDetails]);
 
+  // טעינת שעות עבודה לדמו
   useEffect(() => {
     if (isPreview) {
       const saved = localStorage.getItem("demoWorkHours");
@@ -45,11 +51,11 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
     }
   }, [isPreview]);
 
-  const handleSelectMode = (selectedMode) => {
+  const handleSelectMode = selectedMode => {
     setMode(selectedMode);
   };
 
-  const handleRemoveFromCart = (index) => {
+  const handleRemoveFromCart = index => {
     const updated = [...cart];
     updated.splice(index, 1);
     setCart(updated);
@@ -68,6 +74,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
 
+      {/* בחירת מצב עריכה */}
       {!isPreview && !mode && (
         <div className="mode-select-wrapper">
           <h2 className="centered-title">איזה סוג שירות ברצונך לעצב?</h2>
@@ -78,24 +85,27 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
         </div>
       )}
 
+      {/* כפתור חזרה */}
       {!isPreview && mode && (
         <button onClick={() => setMode(null)} className="back-button">
           🔙 חזרה לבחירת שירות
         </button>
       )}
 
+      {/* טאב יומן עיצוב */}
       {!isPreview && mode === 'appointments' && (
         <AppointmentsMain
           isPreview={false}
           services={services}
           setServices={setServices}
-          onNext={(service) => {
+          onNext={service => {
             setSelectedService(service);
             setMode('calendar');
           }}
         />
       )}
 
+      {/* טאב הגדרת יומן */}
       {!isPreview && mode === 'calendar' && (
         <div>
           <h3>🗕️ הגדרת יומן</h3>
@@ -106,8 +116,10 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
         </div>
       )}
 
+      {/* טאב חנות עיצוב */}
       {!isPreview && mode === 'store' && <ShopTab isPreview={false} />}
 
+      {/* תצוגה מוקדמת של החנות */}
       {isPreview && mode === 'store' && !showPayment && (
         <ShopPreview
           products={products}
@@ -126,6 +138,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
         />
       )}
 
+      {/* תצוגת תשלום מוקדמת */}
       {isPreview && mode === 'store' && showPayment && (
         <PaymentSection
           paymentMethod="both"
@@ -135,6 +148,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
         />
       )}
 
+      {/* תצוגת דמו יומן */}
       {isPreview && (mode === 'appointments' || mode === 'calendar') && (
         <AppointmentsMain
           isPreview={true}

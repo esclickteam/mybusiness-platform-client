@@ -1,6 +1,9 @@
+// src/pages/business/dashboardPages/build/buildTabs/MainTab.jsx
 import React from "react";
+// Build.css נמצא בתיקיית האב של buildTabs
 import "../Build.css";
-import "../buildTabs/MainTab.css";
+// MainTab.css נמצא באותה תיקייה
+import "./MainTab.css";
 
 const MainTab = ({ businessDetails, handleSave }) => {
   const getImageUrl = (item) => {
@@ -47,7 +50,11 @@ const MainTab = ({ businessDetails, handleSave }) => {
         </div>
       )}
 
-      <button className="save-btn" onClick={handleSave} style={{ marginTop: "1.5rem" }}>
+      <button
+        className="save-btn"
+        onClick={handleSave}
+        style={{ marginTop: "1.5rem" }}
+      >
         💾 שמור
       </button>
     </>

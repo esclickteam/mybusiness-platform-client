@@ -1,6 +1,11 @@
+// src/pages/business/dashboardPages/build/buildTabs/GalleryTab.jsx
 import React, { useState, useRef, useEffect } from "react";
-import GalleryDndKit from "./GalleryDndKit.jsx";
+// ייבוא סגנונות גלובליים של העמוד
+import "../Build.css";
+// סגנונות ספציפיים לטאב הגלריה
 import "./GalleryTab.css";
+
+import GalleryDndKit from "./GalleryDndKit";
 
 const GalleryTab = ({
   isForm,
@@ -17,7 +22,7 @@ const GalleryTab = ({
   const galleryTabImages = businessDetails?.galleryTabImages || [];
   const galleryTabFits = businessDetails?.galleryTabFits || {};
 
-  // ✅ פונקציית מחיקה מובנית
+  // פונקציית מחיקה
   const handleDeleteGalleryTabImage = (indexToRemove) => {
     setBusinessDetails((prev) => ({
       ...prev,
@@ -124,9 +129,7 @@ const GalleryTab = ({
         !popupRef.current.contains(e.target) &&
         !e.target.closest(".edit-btn")
       ) {
-        if (typeof setEditGalleryTabIndex === "function") {
-          setEditGalleryTabIndex(null);
-        }
+        setEditGalleryTabIndex?.(null);
       }
     };
 
@@ -134,19 +137,18 @@ const GalleryTab = ({
     return () => {
       document.removeEventListener("pointerdown", handleClickOutside);
     };
-  }, [editGalleryTabIndex]);
+  }, [setEditGalleryTabIndex]);
 
   const handleUpload = (e) => {
     const files = Array.from(e.target.files);
-    const existing = galleryTabImages.map(
-      (img) => img?.file?.name + img?.file?.size
-    );
+    const existingKeys = galleryTabImages.map((img) => img.id);
     const newImages = files
-      .filter((file) => !existing.includes(file.name + file.size))
+      .filter((file) => !existingKeys.includes(`${file.name}-${file.size}`))
       .map((file) => {
         const isVideo = file.type.startsWith("video");
+        const id = `${file.name}-${file.size}-${Date.now()}`;
         return {
-          id: `${Date.now()}-${Math.random()}`,
+          id,
           file,
           url: URL.createObjectURL(file),
           type: isVideo ? "video" : "image",
@@ -155,7 +157,7 @@ const GalleryTab = ({
 
     setBusinessDetails((prev) => ({
       ...prev,
-      galleryTabImages: [...(prev?.galleryTabImages || []), ...newImages],
+      galleryTabImages: [...(prev.galleryTabImages || []), ...newImages],
     }));
   };
 
@@ -189,7 +191,7 @@ const GalleryTab = ({
         }
         setActiveImageIndex={setActiveImageIndex}
         isForm={true}
-        onDelete={handleDeleteGalleryTabImage} // ✅ עכשיו עובד מבפנים
+        onDelete={handleDeleteGalleryTabImage}
         setEditIndex={setEditGalleryTabIndex}
         editIndex={editGalleryTabIndex}
         handleFitChange={handleFitChange}

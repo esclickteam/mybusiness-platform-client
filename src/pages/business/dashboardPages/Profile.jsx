@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Profile.css";
-import BusinessProfileView from "./buildTabs/BusinessProfileView";
+import BusinessProfileView from "../../components/shared/BusinessProfileView";
 import GalleryTab from "../dashboardPages/buildTabs/GalleryTab";
 import ShopAndCalendar from "../dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar";
 import ReviewsModule from "../dashboardPages/buildTabs/ReviewsModule";

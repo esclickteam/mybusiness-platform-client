@@ -1,5 +1,10 @@
+// src/pages/business/dashboardPages/build/buildTabs/ReviewsModule.jsx
 import React, { useState, useEffect, useRef } from 'react';
+// סגנונות כלליים של עמוד הבניה
+import '../../Build.css';
+// סגנונות ספציפיים לטאב הביקורות
 import './ReviewsModule.css';
+
 import StarRatingChart from './StarRatingChart';
 import ReviewForm from './ReviewForm';
 import axios from 'axios';
@@ -21,7 +26,7 @@ const PARAMETER_EXPLANATIONS = {
   timing: 'האם התחייבו לזמן והגיעו בזמן',
   availability: 'האם הייתה מענה מהיר ונגישות',
   value: 'האם המחיר תאם את הערך שקיבלתי',
-  experience: 'תחושת שביעות רצון כללית'
+  experience: 'תחושת שביעות רצון כללית',
 };
 
 const exampleReviews = [
@@ -29,7 +34,8 @@ const exampleReviews = [
     id: 'ex1',
     user: 'שירה',
     date: '10.03.2025',
-    comment: 'חווית שירות מעולה! ענו לי מהר, המחיר היה הוגן, וגם עמדו בזמנים. בהחלט אמליץ לחברים!',
+    comment:
+      'חווית שירות מעולה! ענו לי מהר, המחיר היה הוגן, וגם עמדו בזמנים. בהחלט אמליץ לחברים!',
     service: "5",
     professional: "4.5",
     timing: "5",
@@ -43,7 +49,8 @@ const exampleReviews = [
     id: 'ex2',
     user: 'אלון',
     date: '06.03.2025',
-    comment: 'השירות היה מקצועי מאוד, סבלני, ועם הסברים ברורים. ממליץ לכל מי שמחפש שירות איכותי באמת!',
+    comment:
+      'השירות היה מקצועי מאוד, סבלני, ועם הסברים ברורים. ממליץ לכל מי שמחפש שירות איכותי באמת!',
     service: "5",
     professional: "5",
     timing: "5",
@@ -52,7 +59,7 @@ const exampleReviews = [
     goal: "5",
     experience: "5",
     isExample: true,
-  }
+  },
 ];
 
 const StarDisplay = ({ rating }) => {
@@ -72,8 +79,8 @@ const ReviewCard = ({ review = {} }) => {
   const isLong = text.length > 120;
 
   const average = Object.keys(PARAMETERS)
-    .map(k => parseFloat(review[k]))
-    .filter(v => !isNaN(v))
+    .map((k) => parseFloat(review[k]))
+    .filter((v) => !isNaN(v))
     .reduce((a, b, _, arr) => (a + b) / arr.length, 0);
 
   return (
@@ -91,7 +98,9 @@ const ReviewCard = ({ review = {} }) => {
       <p className={`review-comment ${showMore ? 'expanded' : 'truncated'}`}>
         {showMore || !isLong ? text : text.slice(0, 120) + '...'}
         {isLong && !showMore && (
-          <button className="read-more" onClick={() => setShowMore(true)}>קרא עוד</button>
+          <button className="read-more" onClick={() => setShowMore(true)}>
+            קרא עוד
+          </button>
         )}
       </p>
       <button className="styled-toggle" onClick={() => setShowDetails(!showDetails)}>
@@ -99,14 +108,17 @@ const ReviewCard = ({ review = {} }) => {
       </button>
       {showDetails && (
         <div className="review-details-box">
-          {Object.entries(PARAMETERS).map(([key, label]) => (
-            review[key] !== undefined && (
-              <div key={key} className="review-detail-row">
-                <span>{label}</span>
-                <span><StarDisplay rating={parseFloat(review[key])} /> ({review[key]})</span>
-              </div>
-            )
-          ))}
+          {Object.entries(PARAMETERS).map(
+            ([key, label]) =>
+              review[key] !== undefined && (
+                <div key={key} className="review-detail-row">
+                  <span>{label}</span>
+                  <span>
+                    <StarDisplay rating={parseFloat(review[key])} /> ({review[key]})
+                  </span>
+                </div>
+              )
+          )}
         </div>
       )}
     </div>
@@ -144,7 +156,9 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId }) => 
     const checkReviewPermission = async () => {
       try {
         if (currentUser && businessId) {
-          const res = await axios.get(`/api/reviews/can-review?businessId=${businessId}`);
+          const res = await axios.get(
+            `/api/reviews/can-review?businessId=${businessId}`
+          );
           setCanReview(res.data.canReview);
         }
       } catch (err) {
@@ -160,18 +174,18 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId }) => 
     Array.isArray(reviews) && reviews.length > 0
       ? reviews
       : currentUser
-        ? exampleReviews
-        : [];
+      ? exampleReviews
+      : [];
 
-  const computedReviews = displayReviews.map(r => {
+  const computedReviews = displayReviews.map((r) => {
     const values = Object.keys(PARAMETERS)
-      .map(k => parseFloat(r[k]))
-      .filter(v => typeof v === 'number' && !isNaN(v));
+      .map((k) => parseFloat(r[k]))
+      .filter((v) => typeof v === 'number' && !isNaN(v));
     const avg = values.length
       ? values.reduce((a, b) => a + b, 0) / values.length
       : typeof r.rating === 'number'
-        ? r.rating
-        : undefined;
+      ? r.rating
+      : undefined;
     return { ...r, average: avg };
   });
 
@@ -183,7 +197,10 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId }) => 
 
           {currentUser && canReview && (
             <>
-              <button className="add-review-btn" onClick={() => setShowReviewForm(true)}>
+              <button
+                className="add-review-btn"
+                onClick={() => setShowReviewForm(true)}
+              >
                 💬 הוסף ביקורת
               </button>
 
@@ -206,7 +223,9 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId }) => 
             </p>
           )}
 
-          <p className="review-count">{computedReviews.length} ביקורות שנכתבו על העסק</p>
+          <p className="review-count">
+            {computedReviews.length} ביקורות שנכתבו על העסק
+          </p>
           <StarRatingChart reviews={computedReviews} />
 
           <div className="review-list">
@@ -221,7 +240,8 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId }) => 
           <div className="info-box">
             <h3>🧾 איך עובדות ביקורות?</h3>
             <p>
-              הביקורות בעמוד זה נכתבות על ידי לקוחות אמיתיים שהתנסו בשירות שלך – הן לא ניתנות לעריכה או מחיקה מצדך.
+              הביקורות בעמוד זה נכתבות על ידי לקוחות אמיתיים שהתנסו בשירות שלך
+              – הן לא ניתנות לעריכה או מחיקה מצדך.
             </p>
             <ul className="review-info-list">
               <li>✅ כל ביקורת כוללת ציון כללי מ-1 עד 5</li>
