@@ -11,14 +11,17 @@ const API = axios.create({
   },
 });
 
-// ✅ הוספתי interceptor לשליחת הטוקן בבקשות
+// שליחת Authorization רק אם את עובדת עם טוקן (למשל בפיתוח)
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (process.env.NODE_ENV !== "production") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
+
 
 // ✅ מטפל בהתנתקות אוטומטית אם הטוקן לא תקין
 API.interceptors.response.use(
