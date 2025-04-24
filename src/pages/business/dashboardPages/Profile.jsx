@@ -2,13 +2,12 @@
 import React, { useEffect, useState } from "react";
 import "./Profile.css";
 import ProfileHeader from "../../../components/shared/ProfileHeader";
-// ✅ החלפנו את הייבוא:
-import MainTab from "../dashboardPages/buildTabs/MainTab";
-import GalleryTab from "../dashboardPages/buildTabs/GalleryTab";
-import ShopAndCalendar from "../dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar";
-import ReviewsModule from "../dashboardPages/buildTabs/ReviewsModule";
-import FaqTab from "../dashboardPages/buildTabs/FaqTab";
-import ChatTab from "../dashboardPages/buildTabs/ChatTab";
+import MainTab from "./buildTabs/MainTab";
+import GalleryTab from "./buildTabs/GalleryTab";
+import ShopAndCalendar from "./buildTabs/shopAndCalendar/ShopAndCalendar";
+import ReviewsModule from "./buildTabs/ReviewsModule";
+import FaqTab from "./buildTabs/FaqTab";
+import ChatTab from "./buildTabs/ChatTab";
 import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
 
 const TABS = [
@@ -96,6 +95,10 @@ export default function Profile() {
 
   return (
     <div className="profile-wrapper">
+      {/* 1. Header עליון – לוגו, שם, דירוג, אודות */}
+      <ProfileHeader businessDetails={businessData} />
+
+      {/* 2. כפתורי הטאבים */}
       <div className="tabs">
         {TABS.map((tab) => (
           <button
@@ -108,12 +111,10 @@ export default function Profile() {
         ))}
       </div>
 
+      {/* 3. תוכן הטאב הנבחר */}
       {currentTab === "ראשי" && (
         <section>
-          {/* Header עליון */}
-          <ProfileHeader businessDetails={businessData} />
-
-          {/* גלריה + 2 ביקורות אחרונות */}
+          {/* גלריה + שתי ביקורות אחרונות */}
           <MainTab isForm={false} businessDetails={businessData} />
         </section>
       )}
