@@ -1,6 +1,6 @@
 import React from "react";
 import "./Build.css";
-import "./buildTabs/MainTab.css";
+import "./MainTab.css";
 
 const BusinessProfileView = ({ profileData }) => {
   const getImageUrl = (item) => {
