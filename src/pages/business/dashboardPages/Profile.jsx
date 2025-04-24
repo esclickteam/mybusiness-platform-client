@@ -20,8 +20,7 @@ const TABS = [
 
 const fallbackBusiness = {
   name: "עסק לדוגמה",
-  about:
-    "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
+  about: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
   phone: "050-1234567",
   logo: "https://via.placeholder.com/100",
   category: "שיווק",
@@ -60,35 +59,32 @@ const Profile = () => {
     async function fetchBusiness() {
       const API_BASE_URL = "/api";
       const isLoggedIn = !!localStorage.getItem("token");
-      const url = `${API_BASE_URL}/business/my${
-        isLoggedIn ? "" : "?dev=true"
-      }`;
+      const url = `${API_BASE_URL}/business/my${isLoggedIn ? "" : "?dev=true"}`;
 
       try {
         const res = await fetch(url, { credentials: "include" });
         if (res.status === 404) throw new Error("404 Not Found");
 
         const text = await res.text();
-        if (
-          text.startsWith("<!DOCTYPE html>") ||
-          text.includes("Not Found")
-        ) {
+        if (text.startsWith("<!DOCTYPE html>") || text.includes("Not Found")) {
           throw new Error("תשובת HTML – כנראה אין חיבור ל־API");
         }
 
         const data = JSON.parse(text);
         console.log("✅ נתוני עסק מה-API:", data);
 
-        // מיזוג עם fallbackBusiness כדי להבטיח שיש about ו-reviews
+        // מיזוג מבוקר עם fallback:
         setBusinessData({
           ...fallbackBusiness,
           ...data,
+          about: data.about || fallbackBusiness.about,
+          reviews:
+            Array.isArray(data.reviews) && data.reviews.length > 0
+              ? data.reviews
+              : fallbackBusiness.reviews,
         });
       } catch (err) {
-        console.warn(
-          "⚠️ שגיאה בפרופיל – טוען עסק לדוגמה:",
-          err.message
-        );
+        console.warn("⚠️ שגיאה בפרופיל – טוען עסק לדוגמה:", err.message);
         setBusinessData(fallbackBusiness);
       } finally {
         setLoading(false);
@@ -98,8 +94,7 @@ const Profile = () => {
     fetchBusiness();
   }, []);
 
-  if (loading)
-    return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
+  if (loading) return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
 
   return (
     <div className="profile-wrapper">
@@ -107,9 +102,7 @@ const Profile = () => {
         {TABS.map((tab) => (
           <button
             key={tab}
-            className={`tab ${
-              currentTab === tab ? "active" : ""
-            }`}
+            className={`tab ${currentTab === tab ? "active" : ""}`}
             onClick={() => setCurrentTab(tab)}
           >
             {tab}
@@ -132,10 +125,7 @@ const Profile = () => {
 
       {currentTab === "גלריה" && (
         <section>
-          <GalleryTab
-            isForm={false}
-            businessDetails={businessData}
-          />
+          <GalleryTab isForm={false} businessDetails={businessData} />
         </section>
       )}
 
