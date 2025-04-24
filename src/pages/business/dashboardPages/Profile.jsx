@@ -132,10 +132,7 @@ const Profile = () => {
       {currentTab === "חנות / יומן" && (
         <section>
           <BusinessServicesProvider>
-            <ShopAndCalendar
-              isPreview={true}
-              businessDetails={businessData}
-            />
+            <ShopAndCalendar isPreview={true} businessDetails={businessData} />
           </BusinessServicesProvider>
         </section>
       )}
