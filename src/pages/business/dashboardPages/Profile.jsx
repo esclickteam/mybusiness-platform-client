@@ -1,6 +1,6 @@
 // src/pages/business/ProfilePage.jsx
 import React, { useState, useEffect } from "react";
-import "./ProfilePage.css";
+import "./Profile.css";
 
 import ProfileHeader from "../../components/shared/ProfileHeader";
 import GalleryTab from "../dashboardPages/buildTabs/GalleryTab";
