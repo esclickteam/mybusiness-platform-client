@@ -1,0 +1,54 @@
+/* src/components/ProfileHeader.css */
+
+.profile-header-wrapper {
+    text-align: center;
+    padding: 1.5rem 1rem 1rem;
+    background-color: #f8ebff;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .profile-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+  }
+  
+  .profile-name-section {
+    text-align: center;
+  }
+  
+  .business-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+    color: #333;
+  }
+  
+  .rating {
+    color: #ffc107;
+    font-weight: bold;
+  }
+  
+  .about-snippet {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: #555;
+  }
+  
+  .profile-divider {
+    margin-top: 1rem;
+    border: none;
+    border-top: 1px solid #ddd;
+  }
+  
