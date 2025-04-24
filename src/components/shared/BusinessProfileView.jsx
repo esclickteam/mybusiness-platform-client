@@ -1,7 +1,5 @@
 // src/pages/business/dashboardPages/buildTabs/BusinessProfileView.jsx
 import React from "react";
-// סגנונות כלליים של עמוד הבניה
-import "./Build.css";
 // סגנונות ספציפיים לתצוגת הפרופיל
 import "./BusinessProfileView.css";
 // הכותרת המשותפת (לוגו, שם, דירוג)
