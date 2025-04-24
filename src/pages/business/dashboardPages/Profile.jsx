@@ -1,85 +1,179 @@
-// src/pages/business/ProfilePage.jsx
-import React, { useState, useEffect } from "react";
+// src/pages/business/dashboardPages/Profile.jsx
+import React, { useEffect, useState } from "react";
 import "./Profile.css";
-
-import ProfileHeader from "../../components/shared/ProfileHeader";
+import ProfileHeader from "../../../components/shared/ProfileHeader";
+import BusinessProfileView from "../../../components/shared/BusinessProfileView";
 import GalleryTab from "../dashboardPages/buildTabs/GalleryTab";
 import ShopAndCalendar from "../dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar";
 import ReviewsModule from "../dashboardPages/buildTabs/ReviewsModule";
 import FaqTab from "../dashboardPages/buildTabs/FaqTab";
 import ChatTab from "../dashboardPages/buildTabs/ChatTab";
-import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
+import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
 
 const TABS = [
-  { key: "main", label: "ראשי" },
-  { key: "gallery", label: "גלריה" },
-  { key: "shop", label: "חנות / יומן" },
-  { key: "reviews", label: "ביקורות" },
-  { key: "chat", label: "צ'אט עם העסק" },
-  { key: "faq", label: "שאלות ותשובות" },
+  "ראשי",
+  "גלריה",
+  "חנות / יומן",
+  "ביקורות",
+  "צ'אט עם העסק",
+  "שאלות ותשובות",
 ];
 
-export default function ProfilePage() {
-  const [business, setBusiness] = useState(null);
+const fallbackBusiness = {
+  name: "עסק לדוגמה",
+  about: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
+  phone: "050-1234567",
+  logo: "https://via.placeholder.com/100",
+  category: "שיווק",
+  area: "מרכז",
+  gallery: [
+    { url: "https://via.placeholder.com/300", type: "image" },
+    { url: "https://via.placeholder.com/300", type: "image" },
+  ],
+  stories: [
+    {
+      url: "https://via.placeholder.com/150",
+      type: "image",
+      uploadedAt: Date.now(),
+    },
+  ],
+  services: [
+    { name: "ייעוץ", description: "שיחת ייעוץ ראשונית", price: 150 },
+    { name: "ליווי", description: "תוכנית ליווי חודשית", price: 800 },
+  ],
+  reviews: [
+    { user: "שירה", comment: "שירות מהמם!", rating: 5 },
+    { user: "אלון", comment: "ממש מקצועיים!", rating: 5 },
+  ],
+  faqs: [
+    { q: "איך אפשר להזמין?", a: "פשוט דרך הכפתור באתר" },
+    { q: "האם השירות כולל מע״מ?", a: "כן" },
+  ],
+};
+
+const Profile = () => {
+  const [businessData, setBusinessData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [currentTab, setCurrentTab] = useState("main");
+  const [currentTab, setCurrentTab] = useState("ראשי");
 
   useEffect(() => {
-    // Here you fetch your business data from API or context
-    fetch("/api/business/my?dev=true", { credentials: "include" })
-      .then((r) => r.json())
-      .then((data) => setBusiness(data))
-      .catch(() => setBusiness(null))
-      .finally(() => setLoading(false));
+    async function fetchBusiness() {
+      const API_BASE_URL = "/api";
+      const isLoggedIn = !!localStorage.getItem("token");
+      const url = `${API_BASE_URL}/business/my${isLoggedIn ? "" : "?dev=true"}`;
+
+      try {
+        const res = await fetch(url, { credentials: "include" });
+        if (res.status === 404) throw new Error("404 Not Found");
+
+        const text = await res.text();
+        if (text.startsWith("<!DOCTYPE html>") || text.includes("Not Found")) {
+          throw new Error("תשובת HTML – כנראה אין חיבור ל־API");
+        }
+
+        const data = JSON.parse(text);
+        console.log("✅ נתוני עסק מה-API:", data);
+
+        setBusinessData({
+          ...fallbackBusiness,
+          ...data,
+          about: data.about || fallbackBusiness.about,
+          reviews:
+            Array.isArray(data.reviews) && data.reviews.length > 0
+              ? data.reviews
+              : fallbackBusiness.reviews,
+        });
+      } catch (err) {
+        console.warn("⚠️ שגיאה בפרופיל – טוען עסק לדוגמה:", err.message);
+        setBusinessData(fallbackBusiness);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchBusiness();
   }, []);
 
-  if (loading) return <div className="profile-page__loading">טוען...</div>;
-  if (!business) return <div className="profile-page__error">שגיאה בטעינת הפרופיל</div>;
-
-  const renderTab = () => {
-    switch (currentTab) {
-      case "main":
-        return <BusinessServicesProvider>
-                 {/* anything else needed */}
-               </BusinessServicesProvider>;
-      case "gallery":
-        return <GalleryTab isForm={false} businessDetails={business} />;
-      case "shop":
-        return (
-          <BusinessServicesProvider>
-            <ShopAndCalendar isPreview businessDetails={business} />
-          </BusinessServicesProvider>
-        );
-      case "reviews":
-        return <ReviewsModule reviews={business.reviews} setReviews={() => {}} isPreview currentUser={null} />;
-      case "chat":
-        return <ChatTab isPreview businessDetails={business} setBusinessDetails={() => {}} />;
-      case "faq":
-        return <FaqTab faqs={business.faqs} setFaqs={() => {}} isPreview currentUser={null} />;
-      default:
-        return null;
-    }
-  };
+  if (loading) return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
 
   return (
-    <div className="profile-page">
-      <ProfileHeader business={business} />
-
-      <nav className="profile-tabs">
-        {TABS.map(({ key, label }) => (
+    <div className="profile-wrapper">
+      <div className="tabs">
+        {TABS.map((tab) => (
           <button
-            key={key}
-            className={`profile-tab ${currentTab === key ? "active" : ""}`}
-            onClick={() => setCurrentTab(key)}
+            key={tab}
+            className={`tab ${currentTab === tab ? "active" : ""}`}
+            onClick={() => setCurrentTab(tab)}
           >
-            {label}
+            {tab}
           </button>
         ))}
-      </nav>
-
-      <div className="profile-content">
-        {renderTab()}
       </div>
+
+      {currentTab === "ראשי" && (
+        <section>
+          {/* כאן הכותרת עם הלוגו ושם העסק */}
+          <ProfileHeader businessDetails={businessData} />
+
+          {/* הודעת "ברוכים הבאים" */}
+          {businessData.name === "עסק לדוגמה" && (
+            <div className="dev-warning">
+              😊 ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים
+            </div>
+          )}
+
+          {/* התוכן העיקרי */}
+          <BusinessProfileView profileData={businessData} />
+        </section>
+      )}
+
+      {currentTab === "גלריה" && (
+        <section>
+          <GalleryTab isForm={false} businessDetails={businessData} />
+        </section>
+      )}
+
+      {currentTab === "חנות / יומן" && (
+        <section>
+          <BusinessServicesProvider>
+            <ShopAndCalendar isPreview businessDetails={businessData} />
+          </BusinessServicesProvider>
+        </section>
+      )}
+
+      {currentTab === "ביקורות" && (
+        <section>
+          <ReviewsModule
+            reviews={businessData.reviews}
+            setReviews={() => {}}
+            isPreview
+            currentUser={null}
+          />
+        </section>
+      )}
+
+      {currentTab === "צ'אט עם העסק" && (
+        <section>
+          <ChatTab
+            businessDetails={businessData}
+            setBusinessDetails={() => {}}
+            isPreview
+          />
+        </section>
+      )}
+
+      {currentTab === "שאלות ותשובות" && (
+        <section>
+          <FaqTab
+            faqs={businessData.faqs}
+            setFaqs={() => {}}
+            isPreview
+            currentUser={null}
+          />
+        </section>
+      )}
     </div>
   );
-}
+};
+
+export default Profile;
