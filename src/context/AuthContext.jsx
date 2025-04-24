@@ -21,16 +21,19 @@ export function AuthProvider({ children }) {
         name: data.name || "",
         email: data.email,
         subscriptionPlan: data.subscriptionPlan,
-        role: data.role,
+        role: data.role,  // חשוב לוודא שה־role נכון
         isTempPassword: data.isTempPassword,
         businessId: data.businessId,
       };
+
+      // שמירה ב־localStorage
       localStorage.setItem("user", JSON.stringify(u));
       setUser(u);
       setError(null);
       return u;
     } catch (e) {
       // אם אין session תקין, מנקים הכל
+      console.error("Error in refreshUserData:", e);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
@@ -45,12 +48,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      refreshUserData();
+      refreshUserData();  // טוען את נתוני המשתמש אם יש טוקן
     } else {
-      // אין טוקן – לא נטען session אוטומטי
-      setLoading(false);
+      setLoading(false);  // אם אין טוקן, סיים את הטעינה
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // פונקציית התחברות
@@ -74,6 +75,10 @@ export function AuthProvider({ children }) {
       // 2️⃣ טעינת פרטי המשתמש
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
+
+      // הדפסת ה־role לאחר התחברות לצורך Debug
+      console.log("User role after login:", u.role);
+
       return u;
     } catch (e) {
       setError(
@@ -90,13 +95,19 @@ export function AuthProvider({ children }) {
   // פונקציית התנתקות
   const logout = async () => {
     try {
-      await API.post("/auth/logout");
-    } catch {
-      // ממשיכים לנקות גם אם ה־logout נכשל
+      await API.post("/auth/logout");  // שולח בקשה ל־logout בצד השרת
+    } catch (err) {
+      console.warn("Logout failed:", err);  // אם יש שגיאה בביצוע logout, מדפיסים אזהרה
     } finally {
+      // מנקים את ה־token ו־user מ־localStorage
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+
+      // מאפסים את המשתמש בקונטקסט
       setUser(null);
+
+      // הפניית המשתמש לדף התחברות לאחר יציאה
+      window.location.href = "/login";
     }
   };
 

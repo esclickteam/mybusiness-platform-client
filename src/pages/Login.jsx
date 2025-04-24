@@ -22,25 +22,25 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+  
     if (!identifier.trim() || !password) {
       setError("נא למלא את כל השדות");
       setLoading(false);
       return;
     }
-
+  
     // ✅ קודם מנקים session ישן בשרת (clearCookie) כדי שלא ייפרע מה־role הקודם
     try {
-      await logout();
+      await logout();  // מבצע את ה־logout לפני כל ניסיון להתחברות חדשה
     } catch (err) {
-      // אפילו אם זה נכשׂל, נמשיך להתחברות החדשה
+      // אפילו אם זה נכשל, נמשיך להתחברות החדשה
       console.warn("logout failed:", err);
     }
-
+  
     try {
       // מבצעים את הקריאה ל־login ב־AuthContext
       const user = await login(identifier.trim(), password);
-
+  
       // ניתוב לפי role
       switch (user.role) {
         case "business":
@@ -71,6 +71,7 @@ export default function Login() {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="login-container">

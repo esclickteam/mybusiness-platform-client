@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./BusinessProfileView.css";
 
 export default function BusinessProfileView({
@@ -6,6 +6,7 @@ export default function BusinessProfileView({
   profileImage,
   canChat,
   canSchedule,
+  isPublicView = false, // אם מדובר בתצוגה ציבורית
 }) {
   if (!profileData) return <p>לא נמצא מידע על העסק</p>;
 
@@ -37,26 +38,30 @@ export default function BusinessProfileView({
           className="profile-image"
         />
         <div className="profile-name-section">
-          <h1 className="business-name">{profileData.name || "שם העסק"}</h1>
+          <h1 className="business-name">
+            {profileData.name || "שם העסק"}
+          </h1>
           <p className="category-area">
             {profileData.category}{" "}
             {profileData.area ? `| ${profileData.area}` : ""}
           </p>
-          {averageRating && <p className="rating">⭐️ {averageRating} / 5</p>}
+          {averageRating && (
+            <p className="rating">⭐️ {averageRating} / 5</p>
+          )}
         </div>
       </div>
 
       {/* כפתורי פיצ’רים */}
-      <div className="profile-actions">
-        {canChat && (
-          <button className="message-button">💬 צ'אט עם העסק</button>
-        )}
-        {canSchedule && (
-          <button className="schedule-button">
-            📅 תיאום תור / שירות
-          </button>
-        )}
-      </div>
+      {!isPublicView && (
+        <div className="profile-actions">
+          {canChat && (
+            <button className="message-button">💬 צ'אט עם העסק</button>
+          )}
+          {canSchedule && (
+            <button className="schedule-button">📅 תיאום תור / שירות</button>
+          )}
+        </div>
+      )}
 
       {/* אודות */}
       {profileData.about && (
@@ -66,7 +71,7 @@ export default function BusinessProfileView({
         </div>
       )}
 
-      {/* תמונות ראשיות */}
+      {/* תמונות עמוד ראשי */}
       {profileData.mainImages?.length > 0 && (
         <div className="profile-section">
           <h3>🖼️ תמונות ראשיות</h3>
@@ -176,5 +181,5 @@ export default function BusinessProfileView({
         </div>
       )}
     </div>
-);
+  );
 }

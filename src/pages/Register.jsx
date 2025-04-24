@@ -67,27 +67,31 @@ const Register = () => {
 
       // ניתוב לפי תפקיד ו־businessId
       let dashboardPath = "/";
-      switch (user.role) {
-        case "admin":
-          dashboardPath = "/admin/dashboard";
-          break;
-        case "manager":
-          dashboardPath = "/manager/dashboard";
-          break;
-        case "worker":
-          dashboardPath = "/staff/dashboard";
-          break;
-        case "business":
-          dashboardPath = user.businessId
-            ? `/business/${user.businessId}/dashboard`
-            : "/create-business";
-          break;
-        case "customer":
-          dashboardPath = "/client/dashboard";
-          break;
-        default:
-          dashboardPath = "/";
-      }
+switch (user.role) {
+  case "admin":
+    dashboardPath = "/admin/dashboard";
+    break;
+  case "manager":
+    dashboardPath = "/manager/dashboard";
+    break;
+  case "worker":
+    dashboardPath = "/staff/dashboard";
+    break;
+  case "business":
+    // אם ל־business אין businessId, יש להעביר אותו ליצירת עמוד עסקי
+    dashboardPath = user.businessId
+      ? `/business/${user.businessId}/dashboard`
+      : "/create-business";
+    break;
+  case "customer":
+    dashboardPath = "/client/dashboard";
+    break;
+  default:
+    dashboardPath = "/";
+}
+
+navigate(dashboardPath); // ניתוב לפי ה-role
+
 
       navigate(dashboardPath);
     } catch (err) {
