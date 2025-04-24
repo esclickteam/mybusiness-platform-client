@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import API from "../../../api"; // ודא שזה הנתיב הנכון
+import axios from "axios";
 import "./BusinessChat.css";
 import {
   Paperclip,
@@ -12,7 +12,6 @@ import {
 
 import CollabContractForm from "./CollabContractForm";
 import CollabContractView from "./CollabContractView";
-
 
 const BusinessCollabChat = () => {
   const [isTestMode, setIsTestMode] = useState(false);
@@ -117,7 +116,7 @@ const BusinessCollabChat = () => {
     setCollabMessages((prev) => [...prev, { ...newMsg, from: "me", pending: true }]);
 
     try {
-      await API.post("/chat/send", newMsg);
+      await axios.post("/api/chat/send", newMsg); // לא חובה
       setCollabMessages((prev) =>
         prev.map((msg, i) =>
           i === prev.length - 1 ? { ...msg, pending: false } : msg
