@@ -1,7 +1,7 @@
 // src/pages/business/dashboardPages/build/buildTabs/ReviewsModule.jsx
 import React, { useState, useEffect, useRef } from 'react';
 // סגנונות כלליים של עמוד הבניה
-import '../../Build.css';
+import '../Build.css';
 // סגנונות ספציפיים לטאב הביקורות
 import './ReviewsModule.css';
 
