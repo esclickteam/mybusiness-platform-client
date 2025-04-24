@@ -455,7 +455,10 @@ const BuildBusinessPage = () => {
   isPreview={false}
   shopMode={shopMode}
   setShopMode={setShopMode}
+  setBusinessDetails={setBusinessDetails}
 />
+
+
 <button className="save-btn" onClick={handleSave}>שמור</button>
 
 

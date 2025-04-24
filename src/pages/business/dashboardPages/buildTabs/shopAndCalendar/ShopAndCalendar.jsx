@@ -7,7 +7,7 @@ import ShopPreview from './Appointments/ShopPreview';
 import PaymentSection from './Appointments/PaymentSection';
 import { useBusinessServices } from '../../../../../context/BusinessServicesContext';
 
-const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode }) => {
+const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusinessDetails }) => {
   const { services, setServices, products } = useBusinessServices();
 
   const mode = shopMode;
@@ -21,6 +21,17 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode }) => {
   const [showPayment, setShowPayment] = useState(false);
   const [demoHours, setDemoHours] = useState({});
 
+  // 🔁 שולח את השירותים והמוצרים חזרה ל־BuildBusinessPage
+  useEffect(() => {
+    if (!isPreview && setBusinessDetails) {
+      setBusinessDetails(prev => ({
+        ...prev,
+        services,
+        products
+      }));
+    }
+  }, [services, products, isPreview, setBusinessDetails]);
+
   useEffect(() => {
     if (isPreview) {
       const saved = localStorage.getItem("demoWorkHours");
@@ -31,7 +42,6 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode }) => {
           console.error("⚠️ demoWorkHours is not valid JSON");
         }
       }
-
     }
   }, [isPreview]);
 
@@ -100,21 +110,20 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode }) => {
 
       {isPreview && mode === 'store' && !showPayment && (
         <ShopPreview
-        products={products}
-        cart={cart}
-        setCart={setCart}
-        coupon={appliedCoupon}
-        showCart={showCart}
-        setShowCart={setShowCart}
-        couponCode={couponCode}
-        setCouponCode={setCouponCode}
-        discount={discount}
-        total={total}
-        showPayment={showPayment}
-        setShowPayment={setShowPayment}
-        business={{ name: 'העסק שלך', shippingType: 'paid', shippingCost: 20 }}
-      />
-      
+          products={products}
+          cart={cart}
+          setCart={setCart}
+          coupon={appliedCoupon}
+          showCart={showCart}
+          setShowCart={setShowCart}
+          couponCode={couponCode}
+          setCouponCode={setCouponCode}
+          discount={discount}
+          total={total}
+          showPayment={showPayment}
+          setShowPayment={setShowPayment}
+          business={{ name: 'העסק שלך', shippingType: 'paid', shippingCost: 20 }}
+        />
       )}
 
       {isPreview && mode === 'store' && showPayment && (
