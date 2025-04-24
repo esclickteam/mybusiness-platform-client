@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import ProfileHeader from "../../components/ProfileHeader";
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [
@@ -48,6 +49,7 @@ const BusinessDashboardLayout = () => {
       </aside>
 
       <main className="dashboard-content">
+        <ProfileHeader businessDetails={user} />
         <Outlet />
       </main>
     </div>
