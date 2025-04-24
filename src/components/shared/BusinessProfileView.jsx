@@ -1,17 +1,12 @@
 import React from "react";
-import "./Build.css";
-import "./MainTab.css";
+import "../Build.css";
+import "../buildTabs/MainTab.css";
 
 const BusinessProfileView = ({ profileData }) => {
   const getImageUrl = (item) => {
     if (!item) return "";
     if (typeof item === "string") return item;
     return item.url || item.preview || "";
-  };
-
-  const getImageFit = (file) => {
-    const key = file?.name || file?.url || "";
-    return profileData.galleryFits?.[key] || "cover";
   };
 
   const averageRating = profileData.reviews?.length
@@ -22,7 +17,7 @@ const BusinessProfileView = ({ profileData }) => {
     : null;
 
   return (
-    <div className="business-profile-view">
+    <div className="business-profile-view full-style">
       <div className="profile-header">
         <img
           src={getImageUrl(profileData.logo) || "/images/placeholder.jpg"}
@@ -37,10 +32,14 @@ const BusinessProfileView = ({ profileData }) => {
         </div>
       </div>
 
-      <div className="about-text">
-        <h3>📝 אודות העסק</h3>
-        <p>{profileData.about || "טרם הוזן מידע"}</p>
-      </div>
+      {profileData.about && (
+        <div className="about-text">
+          <h3>📝 אודות העסק</h3>
+          <p>{profileData.about}</p>
+        </div>
+      )}
+
+      <hr className="profile-divider" />
 
       <div className="gallery-preview no-actions">
         {profileData.gallery?.map((file, i) => (
@@ -50,7 +49,6 @@ const BusinessProfileView = ({ profileData }) => {
                 src={getImageUrl(file) || "/images/placeholder.jpg"}
                 alt={`preview-${i}`}
                 className="gallery-img"
-                style={{ objectFit: getImageFit(file) }}
               />
             </div>
           </div>
