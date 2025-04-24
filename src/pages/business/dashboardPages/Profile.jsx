@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import "./Profile.css";
 import ProfileHeader from "../../../components/shared/ProfileHeader";
-import BusinessProfileView from "../../../components/shared/BusinessProfileView";
+// ✅ החלפנו את הייבוא:
+import MainTab from "../dashboardPages/buildTabs/MainTab";
 import GalleryTab from "../dashboardPages/buildTabs/GalleryTab";
 import ShopAndCalendar from "../dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar";
 import ReviewsModule from "../dashboardPages/buildTabs/ReviewsModule";
@@ -51,7 +52,7 @@ const fallbackBusiness = {
   ],
 };
 
-const Profile = () => {
+export default function Profile() {
   const [businessData, setBusinessData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
@@ -72,8 +73,6 @@ const Profile = () => {
         }
 
         const data = JSON.parse(text);
-        console.log("✅ נתוני עסק מה-API:", data);
-
         setBusinessData({
           ...fallbackBusiness,
           ...data,
@@ -84,7 +83,6 @@ const Profile = () => {
               : fallbackBusiness.reviews,
         });
       } catch (err) {
-        console.warn("⚠️ שגיאה בפרופיל – טוען עסק לדוגמה:", err.message);
         setBusinessData(fallbackBusiness);
       } finally {
         setLoading(false);
@@ -112,18 +110,11 @@ const Profile = () => {
 
       {currentTab === "ראשי" && (
         <section>
-          {/* כאן הכותרת עם הלוגו ושם העסק */}
+          {/* Header עליון */}
           <ProfileHeader businessDetails={businessData} />
 
-          {/* הודעת "ברוכים הבאים" */}
-          {businessData.name === "עסק לדוגמה" && (
-            <div className="dev-warning">
-              😊 ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים
-            </div>
-          )}
-
-          {/* התוכן העיקרי */}
-          <BusinessProfileView profileData={businessData} />
+          {/* גלריה + 2 ביקורות אחרונות */}
+          <MainTab isForm={false} businessDetails={businessData} />
         </section>
       )}
 
@@ -174,6 +165,4 @@ const Profile = () => {
       )}
     </div>
   );
-};
-
-export default Profile;
+}
