@@ -10,7 +10,6 @@ import FaqTab from "./buildTabs/FaqTab";
 import ChatTab from "./buildTabs/ChatTab";
 import { useAuth } from "../../../context/AuthContext";
 import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
-import ProfileHeader from "../../../components/ProfileHeader";
 
 
 
