@@ -1,6 +1,7 @@
 // src/pages/business/dashboardPages/Profile.jsx
 import React, { useEffect, useState } from "react";
 import "./Profile.css";
+import ProfileHeader from "../../../components/shared/ProfileHeader";
 import BusinessProfileView from "../../../components/shared/BusinessProfileView";
 import GalleryTab from "../dashboardPages/buildTabs/GalleryTab";
 import ShopAndCalendar from "../dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar";
@@ -73,7 +74,6 @@ const Profile = () => {
         const data = JSON.parse(text);
         console.log("✅ נתוני עסק מה-API:", data);
 
-        // מיזוג מבוקר עם fallback:
         setBusinessData({
           ...fallbackBusiness,
           ...data,
@@ -110,15 +110,19 @@ const Profile = () => {
         ))}
       </div>
 
-      {/* 🟠 הודעה אם מוצג עסק דמו */}
-      {businessData.name === "עסק לדוגמה" && (
-        <div className="dev-warning">
-          🟠 מציגים עסק לדוגמה – אין חיבור לשרת
-        </div>
-      )}
-
       {currentTab === "ראשי" && (
         <section>
+          {/* כאן הכותרת עם הלוגו ושם העסק */}
+          <ProfileHeader businessDetails={businessData} />
+
+          {/* הודעת "ברוכים הבאים" */}
+          {businessData.name === "עסק לדוגמה" && (
+            <div className="dev-warning">
+              😊 ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים
+            </div>
+          )}
+
+          {/* התוכן העיקרי */}
           <BusinessProfileView profileData={businessData} />
         </section>
       )}
@@ -132,7 +136,7 @@ const Profile = () => {
       {currentTab === "חנות / יומן" && (
         <section>
           <BusinessServicesProvider>
-            <ShopAndCalendar isPreview={true} businessDetails={businessData} />
+            <ShopAndCalendar isPreview businessDetails={businessData} />
           </BusinessServicesProvider>
         </section>
       )}
@@ -142,7 +146,7 @@ const Profile = () => {
           <ReviewsModule
             reviews={businessData.reviews}
             setReviews={() => {}}
-            isPreview={true}
+            isPreview
             currentUser={null}
           />
         </section>
@@ -153,7 +157,7 @@ const Profile = () => {
           <ChatTab
             businessDetails={businessData}
             setBusinessDetails={() => {}}
-            isPreview={true}
+            isPreview
           />
         </section>
       )}
@@ -163,7 +167,7 @@ const Profile = () => {
           <FaqTab
             faqs={businessData.faqs}
             setFaqs={() => {}}
-            isPreview={true}
+            isPreview
             currentUser={null}
           />
         </section>
