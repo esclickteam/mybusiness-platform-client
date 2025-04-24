@@ -15,34 +15,8 @@ const MainTab = ({ businessDetails, handleSave }) => {
     return businessDetails.galleryFits?.[key] || "cover";
   };
 
-  const averageRating = businessDetails.reviews?.length
-    ? (
-        businessDetails.reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) /
-        businessDetails.reviews.length
-      ).toFixed(1)
-    : null;
-
   return (
     <>
-      <div className="profile-header">
-        <img
-          src={getImageUrl(businessDetails.logo) || "/images/placeholder.jpg"}
-          alt="לוגו עסק"
-          className="profile-image"
-        />
-        <div className="profile-name-section">
-          <h1 className="business-name">{businessDetails.name || "שם העסק"}</h1>
-          {averageRating && (
-            <p className="rating">⭐ {averageRating} / 5</p>
-          )}
-        </div>
-      </div>
-
-      <div className="about-text">
-        <h3>📝 אודות העסק</h3>
-        <p>{businessDetails.about || "טרם הוזן מידע"}</p>
-      </div>
-
       <div className="gallery-preview no-actions">
         {businessDetails.gallery?.map((file, i) => (
           <div key={i} className="gallery-item-wrapper">
