@@ -1,66 +1,35 @@
 /* src/components/shared/BusinessProfileView.css */
-
-/* ======= Container (זהה לעיצוב ב-Build) ======= */
-.business-profile-view.full-style {
-  background-color: #f2e6ff;    /* רקע סגול בהיר */
-  padding: 2rem;                /* מרווח פנימי */
-  border-radius: 2rem;          /* קצוות מעוגלות גדולות */
-  max-width: 600px;             /* רוחב מקסימלי */
-  margin: 2rem auto;            /* מרכז ואמצע ריווח */
-  border: 3px solid #000;       /* גבול שחור עבה */
+.full-style {
+  background-color: #f2e6ff;
+  padding: 2rem;
+  border-radius: 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  border: 3px solid #000;
 }
 
-/* ======= כותרת העסק ======= */
-.profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1rem;
-}
-
-.profile-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ccc;
-}
-
-.profile-name-section h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.category-area,
-.rating {
-  margin: 0.25rem 0;
-}
-
-/* ======= אודות ======= */
-.about-section .about-snippet {
-  font-size: 1rem;
-  color: #444;
-}
-
-/* ======= מפריד ======= */
 .profile-divider {
   border-top: 1px solid #aaa;
   margin: 1.5rem 0;
 }
 
-/* ======= גלריה ======= */
+.about-section .about-snippet {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
 .gallery-preview.no-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .gallery-item-wrapper {
-  position: relative;
   width: 100%;
-  padding-top: 100%; /* לשמור על יחס רוחב/גובה 1:1 */
+  padding-top: 100%;
+  position: relative;
 }
 
 .gallery-item-wrapper .gallery-img {
@@ -72,7 +41,6 @@
   border-radius: 8px;
 }
 
-/* ======= ביקורות ======= */
 .reviews h3 {
   margin-bottom: 1rem;
   font-size: 1.25rem;
@@ -103,40 +71,4 @@
 .review-text {
   margin: 0;
   color: #444;
-}
-
-/* ======= שאלות ותשובות (FAQ) ======= */
-.faq-item {
-  background: #f9f9f9;
-  padding: 0.5rem;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-}
-
-/* ======= סיפורונים ======= */
-.story-strip {
-  display: flex;
-  overflow-x: auto;
-  gap: 0.5rem;
-}
-
-.story-thumb {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-/* ======= רשימת שירותים ======= */
-.service-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* ======= מנהור יצירת קשר ======= */
-.contact-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }

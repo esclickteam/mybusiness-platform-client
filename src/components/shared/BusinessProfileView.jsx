@@ -1,11 +1,9 @@
-// src/pages/business/dashboardPages/buildTabs/BusinessProfileView.jsx
+// src/components/shared/BusinessProfileView.jsx
 import React from "react";
-// סגנונות ספציפיים לתצוגת הפרופיל
 import "./BusinessProfileView.css";
-// הכותרת המשותפת (לוגו, שם, דירוג)
 import ProfileHeader from "./ProfileHeader";
 
-const BusinessProfileView = ({ profileData }) => {
+export default function BusinessProfileView({ profileData }) {
   if (!profileData) return <div>טוען...</div>;
 
   return (
@@ -13,7 +11,7 @@ const BusinessProfileView = ({ profileData }) => {
       {/* הכותרת המשותפת */}
       <ProfileHeader businessDetails={profileData} />
 
-      {/* אודות קצר */}
+      {/* קטע אודות */}
       {profileData.about && (
         <div className="about-section">
           <p className="about-snippet">
@@ -30,13 +28,11 @@ const BusinessProfileView = ({ profileData }) => {
       <div className="gallery-preview no-actions">
         {profileData.gallery?.map((file, i) => (
           <div key={i} className="gallery-item-wrapper">
-            <div className="gallery-item">
-              <img
-                src={typeof file === "string" ? file : file.url}
-                alt={`preview-${i}`}
-                className="gallery-img"
-              />
-            </div>
+            <img
+              src={typeof file === "string" ? file : file.url}
+              alt={`preview-${i}`}
+              className="gallery-img"
+            />
           </div>
         ))}
       </div>
@@ -48,7 +44,7 @@ const BusinessProfileView = ({ profileData }) => {
           {profileData.reviews.slice(0, 2).map((r, i) => (
             <div key={i} className="review-card improved">
               <div className="review-header">
-                <span className="review-user">{r.user}</span>
+                <strong className="review-user">{r.user}</strong>
                 <span className="star-text">★ {r.rating} / 5</span>
               </div>
               <p className="review-text">{r.comment || r.text}</p>
@@ -58,6 +54,4 @@ const BusinessProfileView = ({ profileData }) => {
       )}
     </div>
   );
-};
-
-export default BusinessProfileView;
+}
