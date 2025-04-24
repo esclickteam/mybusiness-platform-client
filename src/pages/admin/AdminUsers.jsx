@@ -13,7 +13,8 @@ function AdminUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await API.get("/admin/users");
+        const res = await API.get("/users/all");
+
         setUsers(res.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת המשתמשים:", err);
