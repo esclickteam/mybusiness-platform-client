@@ -1,185 +1,78 @@
 import React from "react";
-import "./BusinessProfileView.css";
+import "../Build.css";
+import "../buildTabs/MainTab.css";
 
-export default function BusinessProfileView({
-  profileData,
-  profileImage,
-  canChat,
-  canSchedule,
-  isPublicView = false, // אם מדובר בתצוגה ציבורית
-}) {
-  if (!profileData) return <p>לא נמצא מידע על העסק</p>;
-
+const BusinessProfileView = ({ profileData }) => {
   const getImageUrl = (item) => {
     if (!item) return "";
     if (typeof item === "string") return item;
     return item.url || item.preview || "";
   };
 
+  const getImageFit = (file) => {
+    const key = file?.name || file?.url || "";
+    return profileData.galleryFits?.[key] || "cover";
+  };
+
   const averageRating = profileData.reviews?.length
     ? (
-        profileData.reviews.reduce((sum, r) => sum + (r.rating || 0), 0) /
+        profileData.reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) /
         profileData.reviews.length
       ).toFixed(1)
     : null;
 
   return (
     <div className="business-profile-view">
-      {/* לוגו + שם העסק */}
       <div className="profile-header">
         <img
-          src={
-            profileData.logo?.preview ||
-            profileData.logo ||
-            profileImage ||
-            "https://via.placeholder.com/150"
-          }
+          src={getImageUrl(profileData.logo) || "/images/placeholder.jpg"}
           alt="לוגו עסק"
           className="profile-image"
         />
         <div className="profile-name-section">
-          <h1 className="business-name">
-            {profileData.name || "שם העסק"}
-          </h1>
-          <p className="category-area">
-            {profileData.category}{" "}
-            {profileData.area ? `| ${profileData.area}` : ""}
-          </p>
+          <h1 className="business-name">{profileData.name || "שם העסק"}</h1>
           {averageRating && (
-            <p className="rating">⭐️ {averageRating} / 5</p>
+            <p className="rating">⭐ {averageRating} / 5</p>
           )}
         </div>
       </div>
 
-      {/* כפתורי פיצ’רים */}
-      {!isPublicView && (
-        <div className="profile-actions">
-          {canChat && (
-            <button className="message-button">💬 צ'אט עם העסק</button>
-          )}
-          {canSchedule && (
-            <button className="schedule-button">📅 תיאום תור / שירות</button>
-          )}
-        </div>
-      )}
+      <div className="about-text">
+        <h3>📝 אודות העסק</h3>
+        <p>{profileData.about || "טרם הוזן מידע"}</p>
+      </div>
 
-      {/* אודות */}
-      {profileData.about && (
-        <div className="profile-section">
-          <h3>📝 על העסק</h3>
-          <p>{profileData.about}</p>
-        </div>
-      )}
-
-      {/* תמונות עמוד ראשי */}
-      {profileData.mainImages?.length > 0 && (
-        <div className="profile-section">
-          <h3>🖼️ תמונות ראשיות</h3>
-          <div className="gallery-grid">
-            {profileData.mainImages.map((item, i) => (
+      <div className="gallery-preview no-actions">
+        {profileData.gallery?.map((file, i) => (
+          <div key={i} className="gallery-item-wrapper">
+            <div className="gallery-item">
               <img
-                key={i}
-                src={getImageUrl(item)}
-                alt={`תמונה ראשית ${i + 1}`}
-                className="gallery-image"
+                src={getImageUrl(file) || "/images/placeholder.jpg"}
+                alt={`preview-${i}`}
+                className="gallery-img"
+                style={{ objectFit: getImageFit(file) }}
               />
-            ))}
+            </div>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
 
-      {/* גלריה */}
-      {profileData.gallery?.length > 0 && (
-        <div className="profile-section">
-          <h3>📸 גלריה</h3>
-          <div className="gallery-grid">
-            {profileData.gallery.map((item, i) => (
-              <img
-                key={i}
-                src={getImageUrl(item)}
-                alt={`תמונה ${i + 1}`}
-                className="gallery-image"
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* סטוריז */}
-      {(profileData.story || profileData.stories)?.length > 0 && (
-        <div className="profile-section">
-          <h3>📱 סטוריז</h3>
-          <div className="story-strip">
-            {(profileData.story || profileData.stories).map((s, i) => (
-              <img
-                key={i}
-                src={s.url}
-                alt={`סטורי ${i + 1}`}
-                className="story-thumb"
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* שירותים / מוצרים */}
-      {profileData.services?.length > 0 && (
-        <div className="profile-section">
-          <h3>🛍️ שירותים / מוצרים</h3>
-          <ul className="service-list">
-            {profileData.services.map((s, i) => (
-              <li key={i}>
-                <strong>{s.name}</strong> — {s.description} — {s.price} ₪
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* ביקורות */}
       {profileData.reviews?.length > 0 && (
-        <div className="profile-section">
-          <h3>⭐️ ביקורות</h3>
-          {profileData.reviews.map((r, i) => (
-            <div key={i} className="review-box">
-              <strong>{r.user}</strong>: {r.comment || r.text}
+        <div className="reviews">
+          <h3>⭐ ביקורות אחרונות</h3>
+          {profileData.reviews.slice(0, 2).map((r, i) => (
+            <div key={i} className="review-card improved">
+              <div className="review-header">
+                <span className="review-user">{r.user}</span>
+                <span className="star-text">★ {r.rating} / 5</span>
+              </div>
+              <p className="review-text">{r.comment || r.text}</p>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* שאלות ותשובות */}
-      {profileData.faqs?.length > 0 && (
-        <div className="profile-section">
-          <h3>❓ שאלות ותשובות</h3>
-          {profileData.faqs.map((f, i) => (
-            <div key={i} className="faq-item">
-              <strong>ש:</strong> {f.q}
-              <br />
-              <strong>ת:</strong> {f.a}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* פרטי קשר */}
-      {(profileData.phone || profileData.email) && (
-        <div className="profile-section contact-section">
-          <h3>📞 פרטי קשר</h3>
-          <ul>
-            {profileData.phone && (
-              <li>
-                <strong>טלפון:</strong> {profileData.phone}
-              </li>
-            )}
-            {profileData.email && (
-              <li>
-                <strong>אימייל:</strong> {profileData.email}
-              </li>
-            )}
-          </ul>
         </div>
       )}
     </div>
   );
-}
+};
+
+export default BusinessProfileView;
