@@ -1,16 +1,12 @@
 // src/components/shared/BusinessProfileView.jsx
 import React from "react";
 import "./BusinessProfileView.css";
-import ProfileHeader from "./ProfileHeader";
 
 export default function BusinessProfileView({ profileData }) {
   if (!profileData) return <div>טוען...</div>;
 
   return (
     <div className="business-profile-view full-style">
-      {/* 1. כותרת משותפת */}
-      <ProfileHeader businessDetails={profileData} />
-
       {/* 2. אודות העסק */}
       {profileData.about && (
         <div className="about-section">
