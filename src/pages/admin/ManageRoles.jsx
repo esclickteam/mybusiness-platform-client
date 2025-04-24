@@ -71,7 +71,8 @@ function ManageRoles() {
     }
 
     try {
-      const res = await fetch("/api/admin/reset-user-password", {
+      const res = await fetch("/api/users/reset-user-password", {
+
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, newPassword }),
