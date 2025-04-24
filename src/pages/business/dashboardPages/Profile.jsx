@@ -8,7 +8,7 @@ import ShopAndCalendar from "../dashboardPages/buildTabs/shopAndCalendar/ShopAnd
 import ReviewsModule from "../dashboardPages/buildTabs/ReviewsModule";
 import FaqTab from "../dashboardPages/buildTabs/FaqTab";
 import ChatTab from "../dashboardPages/buildTabs/ChatTab";
-import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
+import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
 
 const TABS = [
   { key: "main", label: "ראשי" },
