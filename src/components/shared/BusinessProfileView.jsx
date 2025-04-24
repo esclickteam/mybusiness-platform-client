@@ -1,5 +1,5 @@
 import React from "react";
-import "../Build.css";
+import "../../../pages/business/dashboardPages/Build.css";
 import "../buildTabs/MainTab.css";
 
 const BusinessProfileView = ({ profileData }) => {
