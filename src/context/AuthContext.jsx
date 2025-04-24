@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
     } catch (e) {
       localStorage.removeItem("user");
       setUser(null);
-      setError("⚠️ יש להתחבר מחדש");
+      setError("\u26a0\ufe0f יש להתחבר מחדש");
       return null;
     } finally {
       setLoading(false);
@@ -47,9 +47,12 @@ export function AuthProvider({ children }) {
 
     try {
       const res = await API.post("/auth/login", {
-        identifier: identifier.trim(), // ✅ כאן השם הנכון
+        identifier: identifier.trim(),
         password,
       });
+
+      console.log("✅ login response:", res.data);
+      console.log("🍪 current cookies:", document.cookie);
 
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
@@ -57,8 +60,8 @@ export function AuthProvider({ children }) {
     } catch (e) {
       setError(
         e.response?.status === 401
-          ? "❌ שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסו שוב"
+          ? "\u274c שם משתמש או סיסמה שגויים"
+          : "\u274c שגיאה בשרת, נסו שוב"
       );
       throw e;
     } finally {
@@ -76,7 +79,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {loading ? <div className="loading-screen">🔄 טוען נתונים...</div> : children}
+      {loading ? <div className="loading-screen">\uD83D\uDD04 טוען נתונים...</div> : children}
     </AuthContext.Provider>
   );
 }
