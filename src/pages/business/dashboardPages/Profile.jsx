@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./Profile.css";
 
-import ProfileHeader from "../../components/shared/ProfileHeader";
+import ProfileHeader from "../../../components/shared/ProfileHeader";
 import GalleryTab from "../dashboardPages/buildTabs/GalleryTab";
 import ShopAndCalendar from "../dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar";
 import ReviewsModule from "../dashboardPages/buildTabs/ReviewsModule";
