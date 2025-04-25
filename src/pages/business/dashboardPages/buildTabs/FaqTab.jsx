@@ -172,7 +172,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
       {/* 💾 כפתור שמור כללי */}
       {!isPreview && faqs.length > 0 && (
         <button className="save-all-button" onClick={saveFaqsToServer}>
-          💾 שמור הכל
+          💾 שמור
         </button>
       )}
     </div>
