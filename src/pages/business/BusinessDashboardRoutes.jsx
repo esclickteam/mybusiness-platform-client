@@ -1,4 +1,3 @@
-// src/pages/business/BusinessDashboardRoutes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
@@ -24,11 +23,17 @@ import GoalsPage from "./dashboardPages/GoalsPage";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
+// 💥 הוספתי את הפרופיל לצפייה
+import BusinessProfileView from "../../components/shared/BusinessProfileView";
+
 const BusinessDashboardRoutes = () => (
   <Routes>
     <Route element={<BusinessDashboardLayout />}>
       {/* ברירת מחדל לדשבורד */}
       <Route index element={<Navigate to="dashboard" replace />} />
+
+      {/* 👀 צפייה בפרופיל ציבורי */}
+      <Route path="profile" element={<BusinessProfileView />} />
 
       {/* העמוד הראשי */}
       <Route path="dashboard" element={<DashboardPage />} />

@@ -76,11 +76,7 @@ export default function App() {
           <Route path="/reset-password"  element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
 
-          {/* 🔹 עמוד פרופיל ציבורי של עסק */}
-          <Route
-            path="/business/:businessId"
-            element={<BusinessProfileView />}
-          />
+          
 
           {/* 🔹 עמוד עריכה פרופיל עסקי — רוחב מלא */}
           <Route

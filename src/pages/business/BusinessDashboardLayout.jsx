@@ -40,12 +40,13 @@ export default function BusinessDashboardLayout() {
             {/* לינק לצפייה בפרופיל הציבורי */}
             {user?.role === "business" && (
               <NavLink
-                to={`/business/${businessId}`}
-                end
-                className={({ isActive }) => (isActive ? "active" : undefined)}
-              >
-                👀 צפייה בפרופיל
-              </NavLink>
+              to="profile"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
+              👀 צפייה בפרופיל
+            </NavLink>
+            
+            
             )}
             {/* שאר הלשוניות */}
             {tabs.map(({ path, label }) => (
