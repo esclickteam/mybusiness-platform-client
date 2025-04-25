@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import API from "../api";
 import BusinessProfileView from "./shared/BusinessProfileView";
-// תיקון הנתיב ל־FeatureAvailability.js שנמצא ב־src/components
 import checkFeatureAvailability from "./FeatureAvailability";
 
 export default function BusinessPage() {
@@ -11,18 +10,18 @@ export default function BusinessPage() {
   const [userPlan, setUserPlan] = useState("free");
   const [loading, setLoading] = useState(true);
 
-  // הדפסת ה-businessId ב-console לשם בדיקה
   useEffect(() => {
-    console.log("Business ID:", businessId); // לוודא שה-businessId תקין
+    console.log("🔍 Business ID:", businessId);
 
     const fetchBusinessData = async () => {
       try {
         const { data } = await API.get(`/business/${businessId}`);
         const b = data.business ?? data;
+        console.log("📦 מידע שהתקבל:", b);
         setBusiness(b);
         setUserPlan(b.subscriptionPlan || "free");
       } catch (error) {
-        console.error("שגיאה בטעינת פרופיל העסק:", error);
+        console.error("❌ שגיאה בטעינת פרופיל העסק:", error);
       } finally {
         setLoading(false);
       }
@@ -32,7 +31,7 @@ export default function BusinessPage() {
   }, [businessId]);
 
   if (loading) return <p>🔄 טוען פרופיל העסק…</p>;
-  if (!business) return <p>העסק לא נמצא</p>;
+  if (!business) return <p>⚠️ העסק לא נמצא</p>;
 
   const canChat = checkFeatureAvailability("chat", userPlan);
   const canSchedule = checkFeatureAvailability("booking", userPlan);
@@ -45,6 +44,20 @@ export default function BusinessPage() {
         canChat={canChat}
         canSchedule={canSchedule}
       />
+
+      {/* ✅ תצוגת בדיקה זמנית של הנתונים */}
+      <pre
+        style={{
+          background: "#eee",
+          padding: "1rem",
+          marginTop: "2rem",
+          borderRadius: "8px",
+          direction: "ltr",
+          overflowX: "auto",
+        }}
+      >
+        {JSON.stringify(business, null, 2)}
+      </pre>
     </div>
   );
 }
