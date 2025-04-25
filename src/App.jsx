@@ -21,6 +21,7 @@ const Checkout                = lazy(() => import("./pages/Checkout"));
 const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
+const BusinessPage            = lazy(() => import("./pages/BusinessPage")); // ✅ הוספנו
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
 const WorkSession             = lazy(() => import("./pages/staff/WorkSession"));
@@ -68,6 +69,9 @@ export default function App() {
           <Route path="/quick-jobs/new"        element={<QuickJobForm />} />
           <Route path="/reset-password"        element={<ResetPassword />} />
           <Route path="/change-password"       element={<ChangePassword />} />
+
+          {/* 🔹 עמוד פרופיל ציבורי של עסק */}
+          <Route path="/business/:businessId" element={<BusinessPage />} />
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
           <Route
