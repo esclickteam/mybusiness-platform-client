@@ -1,8 +1,9 @@
 // src/pages/BusinessProfilePage.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Outlet } from 'react-router-dom';
 import API from '@api';
 import './BusinessProfilePage.css';
+import PublicBusinessTabs from '../components/PublicBusinessTabs';
 
 const BusinessProfilePage = () => {
   const { businessId } = useParams();
@@ -45,6 +46,7 @@ const BusinessProfilePage = () => {
               className="business-profile__logo"
             />
           )}
+
           <h1 className="business-profile__name">{name}</h1>
 
           {description && (
@@ -85,6 +87,11 @@ const BusinessProfilePage = () => {
             </div>
           )}
         </div>
+
+        {/* רצועת טאבים ציבורית */}
+        <PublicBusinessTabs />
+        {/* כאן נטען תוכן הטאב שנבחר */}
+        <Outlet />
       </div>
     </div>
   );

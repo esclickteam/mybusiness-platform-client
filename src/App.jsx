@@ -1,5 +1,4 @@
 // src/App.jsx
-
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
@@ -9,29 +8,34 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import BusinessesList from './pages/BusinessesList'; 
+import BusinessesList from './pages/BusinessesList';
 
+// Lazy-loaded public pages
+const HomePage           = lazy(() => import("./pages/Home"));
+const About              = lazy(() => import("./pages/About"));
+const SearchBusinesses   = lazy(() => import("./pages/SearchBusinesses"));
+const HowItWorks         = lazy(() => import("./pages/HowItWorks"));
+const FAQ                = lazy(() => import("./pages/FAQ"));
+const Terms              = lazy(() => import("./pages/Terms"));
+const Contact            = lazy(() => import("./pages/Contact"));
+const BusinessOverview   = lazy(() => import("./pages/business/Business"));
+const Plans              = lazy(() => import("./pages/business/Plans"));
+const Checkout           = lazy(() => import("./pages/Checkout"));
+const Login              = lazy(() => import("./pages/Login"));
+const Register           = lazy(() => import("./pages/Register"));
 
-// Lazy-loaded pages
-const HomePage                = lazy(() => import("./pages/Home"));
-const About                   = lazy(() => import("./pages/About"));
-const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
-const HowItWorks              = lazy(() => import("./pages/HowItWorks"));
-const FAQ                     = lazy(() => import("./pages/FAQ"));
-const Terms                   = lazy(() => import("./pages/Terms"));
-const Contact                 = lazy(() => import("./pages/Contact"));
-const Business                = lazy(() => import("./pages/business/Business"));
-const Plans                   = lazy(() => import("./pages/business/Plans"));
-const Checkout                = lazy(() => import("./pages/Checkout"));
-const Login                   = lazy(() => import("./pages/Login"));
-const Register                = lazy(() => import("./pages/Register"));
+// Lazy-loaded public profile with nested tabs
+const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 
-// Public profile view (shared component)
-const BusinessProfilePage     = lazy(() => import("./pages/BusinessProfilePage")); // פרופיל ציבורי של עסק
+// Static imports for public tab content
+import GalleryPage         from './pages/GalleryPage';
+import ReviewsPage         from './pages/ReviewsPage';
+import FaqPage             from './pages/FaqPage';
+import ChatPage            from './pages/ChatPage';
+import ShopAndCalendarPage from './pages/business/dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar';
 
-// Build page (edit)
+// Lazy-loaded edit & dashboard routes
 const BuildBusinessPage       = lazy(() => import("./pages/business/dashboardPages/Build"));
-
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
@@ -64,27 +68,33 @@ export default function App() {
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           {/* 🔹 עמודים ציבוריים */}
-          <Route path="/"                element={<HomePage />} />
-          <Route path="/about"           element={<About />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<About />} />
           <Route path="/search" element={<SearchBusinesses />} />
-          <Route path="/how-it-works"    element={<HowItWorks />} />
-          <Route path="/faq"             element={<FAQ />} />
-          <Route path="/terms"           element={<Terms />} />
-          <Route path="/contact"         element={<Contact />} />
-          <Route path="/business"        element={<Business />} />
-          <Route path="/plans"           element={<Plans />} />
-          <Route path="/checkout"        element={<Checkout />} />
-          <Route path="/login"           element={<Login />} />
-          <Route path="/register"        element={<Register />} />
-          <Route path="/quick-jobs"      element={<QuickJobsBoard />} />
-          <Route path="/quick-jobs/new"  element={<QuickJobForm />} />
-          <Route path="/reset-password"  element={<ResetPassword />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/business" element={<BusinessOverview />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/businesses" element={<BusinessesList />} />
 
-
-          {/* 🔹 דף פרופיל ציבורי של עסק */}
-          <Route path="/business/:businessId" element={<BusinessProfilePage />} />
+          {/* 🔹 דף פרופיל ציבורי של עסק עם nested tabs */}
+          <Route path="/business/:businessId" element={<BusinessProfilePage />}>
+            <Route index element={null} />
+            <Route path="gallery" element={<GalleryPage />} />
+            <Route path="reviews" element={<ReviewsPage />} />
+            <Route path="faq" element={<FaqPage />} />
+            <Route path="chat" element={<ChatPage />} />
+            <Route path="shop" element={<ShopAndCalendarPage />} />
+          </Route>
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
           <Route
@@ -226,7 +236,7 @@ export default function App() {
 
           {/* 🔹 ברירות מחדל נוספות */}
           <Route path="/dashboard/calendar" element={<Navigate to="/business/dashboard" />} />
-          <Route path="/chat-test-direct"   element={<ChatTestPage />} />
+          <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
           {/* 🔹 ברירת מחדל לכל שאר הכתובות */}
           <Route path="*" element={<Navigate to="/" replace />} />
