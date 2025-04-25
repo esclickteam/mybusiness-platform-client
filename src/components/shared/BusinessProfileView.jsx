@@ -1,37 +1,52 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import API from "@api";
 import "./BusinessProfileView.css";
 
-export default function BusinessProfileView({ profileData }) {
-  if (!profileData) return <div>טוען...</div>;
+export default function BusinessProfileView() {
+  const { businessId } = useParams();
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // קודם כל לוקחים description אם קיים, אחרת נופשים ל־about הישן
+  useEffect(() => {
+    setLoading(true);
+    API.get(`/business/${businessId}`)
+      .then(res => {
+        const data = res.data.business || res.data;
+        setProfileData(data);
+      })
+      .catch(err => console.error("❌ Error loading business:", err))
+      .finally(() => setLoading(false));
+  }, [businessId]);
+
+  if (loading) return <div>טוען...</div>;
+  if (!profileData) return <div>העסק לא נמצא</div>;
+
+  // מעדיף description על about
   const description =
-    typeof profileData.description === "string" && profileData.description.trim() !== ""
+    profileData.description?.trim()
       ? profileData.description
       : profileData.about || "";
 
   const phone = profileData.phone || "";
-
   const { gallery = [], reviews = [] } = profileData;
 
   return (
     <div className="business-profile-view full-style">
-      {/* כפתור עריכה */}
       <button className="edit-profile-btn">ערוך פרופיל ✏️</button>
 
-      {/* שם העסק */}
       <h1 className="business-name">{profileData.name}</h1>
 
-      {/* תיאור העסק */}
       {description && (
         <div className="about-section">
           <p className="about-snippet">
-            {description.length > 200 ? description.slice(0, 200) + "..." : description}
+            {description.length > 200
+              ? description.slice(0, 200) + "..."
+              : description}
           </p>
         </div>
       )}
 
-      {/* טלפון */}
       {phone && (
         <div className="phone-section">
           <strong>טלפון:</strong> {phone}
@@ -40,11 +55,9 @@ export default function BusinessProfileView({ profileData }) {
 
       <hr className="profile-divider" />
 
-      {/* גלריה */}
-      {Array.isArray(gallery) && gallery.length > 0 && (
+      {gallery.length > 0 && (
         <div className="gallery-preview no-actions">
           {gallery.map((item, i) => {
-            // תומכים גם במערך URL-ים וגם במערך אובייקטים {url, preview}
             const src = typeof item === "string" ? item : item.url || item.preview;
             return (
               src && (
@@ -57,8 +70,7 @@ export default function BusinessProfileView({ profileData }) {
         </div>
       )}
 
-      {/* ביקורות אחרונות */}
-      {Array.isArray(reviews) && reviews.length > 0 && (
+      {reviews.length > 0 && (
         <div className="reviews">
           <h3>⭐ ביקורות אחרונות</h3>
           {reviews.slice(0, 2).map((r, i) => (

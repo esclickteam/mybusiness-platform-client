@@ -21,8 +21,10 @@ const Plans                   = lazy(() => import("./pages/business/Plans"));
 const Checkout                = lazy(() => import("./pages/Checkout"));
 const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
-// Public profile view (replaces BusinessPage)
-const BusinessProfileView     = lazy(() => import("./pages/business/BusinessProfileView"));
+
+// Public profile view (shared component)
+const BusinessProfileView     = lazy(() => import("./components/shared/BusinessProfileView"));
+
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
