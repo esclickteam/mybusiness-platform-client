@@ -16,29 +16,30 @@ export default function BusinessPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBusinessData = async () => {
+    async function fetchBusinessData() {
       try {
         const { data } = await API.get(`/business/${businessId}`);
         const b = data.business ?? data;
 
-        // ערכי ברירת מחדל כדי להימנע מ־undefined.includes(...)
+        // ערכי ברירת מחדל למניעת קריסה
         b.services     = Array.isArray(b.services)    ? b.services    : [];
         b.gallery      = Array.isArray(b.gallery)     ? b.gallery     : [];
         b.galleryFits  = b.galleryFits && typeof b.galleryFits === "object"
-                          ? b.galleryFits
-                          : {};
+                            ? b.galleryFits
+                            : {};
         b.story        = Array.isArray(b.story)       ? b.story       : [];
         b.reviews      = Array.isArray(b.reviews)     ? b.reviews     : [];
         b.faqs         = Array.isArray(b.faqs)        ? b.faqs        : [];
+        b.fullGallery  = Array.isArray(b.fullGallery) ? b.fullGallery : [];
 
         setBusiness(b);
         setUserPlan(b.subscriptionPlan || "free");
-      } catch (error) {
-        console.error("❌ שגיאה בטעינת פרופיל העסק:", error);
+      } catch (err) {
+        console.error("❌ שגיאה בטעינת פרופיל העסק:", err);
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     fetchBusinessData();
   }, [businessId]);
@@ -46,8 +47,20 @@ export default function BusinessPage() {
   if (loading) return <p>🔄 טוען פרופיל העסק…</p>;
   if (!business) return <p>⚠️ העסק לא נמצא</p>;
 
-  const canChat     = checkFeatureAvailability("chat", userPlan);
-  const canSchedule = checkFeatureAvailability("booking", userPlan);
+  // בדיקת זמינות תכונות עם guard למניעת קריסה
+  let canChat = false;
+  try {
+    canChat = checkFeatureAvailability("chat", userPlan);
+  } catch (e) {
+    console.warn("checkFeatureAvailability(chat) failed:", e);
+  }
+
+  let canSchedule = false;
+  try {
+    canSchedule = checkFeatureAvailability("booking", userPlan);
+  } catch (e) {
+    console.warn("checkFeatureAvailability(booking) failed:", e);
+  }
 
   const isOwner =
     user?.role === "business" && user.businessId === businessId;
@@ -66,7 +79,7 @@ export default function BusinessPage() {
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
-              fontSize: "16px"
+              fontSize: "16px",
             }}
           >
             ✏️ ערוך פרופיל
