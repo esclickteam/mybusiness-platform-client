@@ -1,6 +1,6 @@
 // src/pages/business/BusinessDashboardLayout.jsx
 import React, { useEffect } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/BusinessDashboardLayout.css";
 
@@ -20,6 +20,7 @@ const tabs = [
 export default function BusinessDashboardLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { businessId } = useParams();
 
   useEffect(() => {
     if (!loading && user?.role !== "business") {
@@ -38,6 +39,17 @@ export default function BusinessDashboardLayout() {
         <aside className="sidebar">
           <h2>ניהול העסק</h2>
           <nav>
+            {/* לינק לצפייה בפרופיל הציבורי */}
+            {user?.role === "business" && (
+              <NavLink
+                to={`/business/${businessId}`}
+                end
+                className={({ isActive }) => (isActive ? "active" : undefined)}
+              >
+                👀 צפייה בפרופיל
+              </NavLink>
+            )}
+            {/* שאר הלשוניות */}
             {tabs.map(({ path, label }) => (
               <NavLink
                 key={path}
