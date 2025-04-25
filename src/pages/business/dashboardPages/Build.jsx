@@ -82,51 +82,34 @@ useEffect(() => {
 
 const handleSave = async () => {
   try {
-    const formData = new FormData();
-
-    // סינון ושילוח רק של השדות המותרנים
+    // בונים payload רק מהשדות המותרים
+    const payload = {};
     Object.entries(businessDetails)
       .filter(([key]) => ALLOWED_KEYS.includes(key))
       .forEach(([key, value]) => {
-        // קובץ לוגו
-        if (key === "logo" && value instanceof File) {
-          formData.append("logo", value);
-
-        // מיפוי שדה about ל־description
-        } else if (key === "about") {
-          formData.append("description", value);
-
-        // שדות מערכים בשילוח כ־JSON
-        } else if (
-          ["gallery", "story", "services", "reviews", "faqs", "messages", "galleryTabImages", "galleryCategories", "fullGallery"]
-            .includes(key)
-        ) {
-          formData.append(key, JSON.stringify(value));
-
-        // שדות טקסט/מספר
-        } else if (value !== undefined && value !== null) {
-          // description אם הגיע ישירות
-          if (key === "description") {
-            formData.append("description", value);
-          } else {
-            formData.append(key, value);
-          }
+        if (key === "about") {
+          // מיפוי about → description
+          payload.description = value;
+        } else if (key === "description") {
+          payload.description = value;
+        } else if (key === "phone") {
+          payload.phone = value;
+        } else if (key === "name") {
+          payload.name = value;
         }
+        // אם בעתיד נוסיף עוד שדות טקסט פשוטים – נטפל גם בהם כאן
       });
 
-    // ====== לוג של כל כניסות ה־FormData ======
-    for (let [key, val] of formData.entries()) {
-      console.log("🧩 formData entry:", key, val);
-    }
+    console.log("📤 שולח JSON ל־API:", payload);
 
-    console.log("📤 שולח ל־API:", "/business/my");
-
-    const res = await API.put("/business/my", formData);
+    const res = await API.put("/business/my", payload, {
+      headers: { "Content-Type": "application/json" }
+    });
 
     if (res.status === 200) {
       alert("✅ נשמר בהצלחה!");
-      const updated = res.data.business || res.data;
-      setBusinessDetails(prev => ({ ...prev, ...updated }));
+      // תחליף לגמרי את ה-state באובייקט החדש שהשרת החזיר
+      setBusinessDetails(res.data.business);
       setShowViewProfile(true);
     } else {
       alert("❌ שמירה נכשלה");
@@ -136,6 +119,7 @@ const handleSave = async () => {
     alert("❌ שגיאה בשמירה");
   }
 };
+
 
 
   
