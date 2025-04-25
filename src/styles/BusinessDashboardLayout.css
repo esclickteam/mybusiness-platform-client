@@ -7,10 +7,12 @@
 /* מבנה הדשבורד */
 .business-dashboard-layout {
   display: flex;
-  flex-direction: row; /* סדר רגיל - סיידבר בסוף = ימין */
+  flex-direction: row; /* סדר רגיל: תוכן ואז סיידבר */
   height: 100vh;
   background: linear-gradient(to bottom, #f3edff, #ede9f7);
+  direction: rtl !important; /* ✅ זה מה שיכריח את הכול להיות RTL */
 }
+
 
 /* סיידבר */
 .sidebar {
