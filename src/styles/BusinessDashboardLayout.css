@@ -1,10 +1,18 @@
+/* עוטף ראשי שמכריח RTL */
+.rtl-wrapper {
+  direction: rtl !important;
+  unicode-bidi: embed;
+}
+
+/* מבנה הדשבורד */
 .business-dashboard-layout {
   display: flex;
-  flex-direction: row; /* סדר רגיל */
+  flex-direction: row; /* סדר רגיל - סיידבר בסוף = ימין */
   height: 100vh;
   background: linear-gradient(to bottom, #f3edff, #ede9f7);
 }
 
+/* סיידבר */
 .sidebar {
   width: 240px;
   background-color: #c9aef5;
@@ -17,7 +25,7 @@
   overflow-y: auto;
   text-align: right;
   direction: rtl;
-  order: 2; /* ✅ יופיע מימין תמיד */
+  order: 2; /* בצד ימין תמיד */
 }
 
 .sidebar h2 {
@@ -53,9 +61,10 @@
   font-weight: bold;
 }
 
+/* תוכן ראשי */
 .dashboard-content {
   flex: 1;
   padding: 40px;
   overflow-y: auto;
-  order: 1; /* ✅ תמיד בצד שמאל */
+  order: 1; /* תמיד בשמאל */
 }

@@ -29,7 +29,7 @@ const BusinessDashboardLayout = () => {
   if (loading) return <div className="loading-screen">🔄 טוען נתונים…</div>;
 
   return (
-    <div dir="rtl">
+    <div className="rtl-wrapper">
       <div className="business-dashboard-layout">
         <main className="dashboard-content">
           <Outlet />
