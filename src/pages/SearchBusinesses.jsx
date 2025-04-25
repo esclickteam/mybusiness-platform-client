@@ -1,7 +1,7 @@
 // src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect } from 'react';
 import API from '@api';
-import { Link } from 'react-router-dom';
+import BusinessProfileCard from '../components/BusinessProfileCard';
 
 const SearchBusinesses = () => {
   const [businesses, setBusinesses] = useState([]);
@@ -9,7 +9,7 @@ const SearchBusinesses = () => {
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const response = await API.get('/business'); 
+        const response = await API.get('/business');
         setBusinesses(response.data);
       } catch (error) {
         console.error("Error fetching businesses:", error);
@@ -24,13 +24,7 @@ const SearchBusinesses = () => {
       <h1>רשימת עסקים</h1>
       <div className="business-list">
         {businesses.map((business) => (
-          <div key={business._id} className="business-item">
-            <Link to={`/business/${business._id}`}>
-              <h2>{business.name}</h2>
-            </Link>
-            <p>{business.description}</p>
-            <p>טלפון: {business.phone}</p>
-          </div>
+          <BusinessProfileCard key={business._id} business={business} />
         ))}
       </div>
     </div>

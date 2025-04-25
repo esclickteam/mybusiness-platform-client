@@ -1,0 +1,43 @@
+/* src/components/BusinessProfileCard.css */
+
+/* קונטיינר הכרטיס כולו */
+.business-card {
+    display: block;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+  }
+  
+  /* אפקט הובר להבלטת הכרטיס */
+  .business-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  /* שם העסק */
+  .business-card__name {
+    margin: 0 0 8px;
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  /* תיאור העסק */
+  .business-card__description {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  /* טלפון העסק */
+  .business-card__phone {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #333;
+  }
+  

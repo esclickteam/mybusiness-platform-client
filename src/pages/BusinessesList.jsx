@@ -1,7 +1,7 @@
 // src/pages/BusinessesList.jsx
 import React, { useEffect, useState } from "react";
-import API from "@api"; // או אם אתה משתמש ב-fetch
-import { Link } from "react-router-dom";
+import API from "@api";
+import BusinessProfileCard from '../components/BusinessProfileCard';
 
 const BusinessesList = () => {
   const [businesses, setBusinesses] = useState([]);
@@ -9,7 +9,7 @@ const BusinessesList = () => {
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const response = await API.get("/api/business"); // שליפת כל העסקים
+        const response = await API.get('/business');
         setBusinesses(response.data);
       } catch (error) {
         console.error("Error fetching businesses:", error);
@@ -22,13 +22,9 @@ const BusinessesList = () => {
   return (
     <div>
       <h1>רשימת עסקים</h1>
-      <div>
-        {businesses.map((business) => (
-          <div key={business._id}>
-            <h2>{business.name}</h2>
-            <p>{business.description}</p>
-            <Link to={`/business/${business._id}`}>ראה את פרופיל העסק</Link>
-          </div>
+      <div className="business-list">
+        {businesses.map(business => (
+          <BusinessProfileCard key={business._id} business={business} />
         ))}
       </div>
     </div>

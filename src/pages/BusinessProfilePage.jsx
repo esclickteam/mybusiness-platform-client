@@ -10,7 +10,7 @@ const BusinessProfilePage = () => {
   useEffect(() => {
     const fetchBusinessData = async () => {
       try {
-        const response = await API.get(`/api/business/${businessId}`);
+        const response = await API.get(`/business/${businessId}`);
         setBusinessData(response.data); // שומרים את המידע של העסק במצב
       } catch (error) {
         console.error('Error fetching business data:', error);
