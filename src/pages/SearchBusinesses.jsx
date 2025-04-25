@@ -9,7 +9,7 @@ const SearchBusinesses = () => {
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const response = await API.get('/api/business');
+        const response = await API.get('/business'); 
         setBusinesses(response.data);
       } catch (error) {
         console.error("Error fetching businesses:", error);
