@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
 import API from '@api';
-import './BusinessProfilePage.css';
+import './BusinessList.css';
 import PublicBusinessTabs from '../components/PublicBusinessTabs';
 
 const BusinessProfilePage = () => {
