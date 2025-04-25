@@ -1,11 +1,8 @@
-/* src/styles/BusinessDashboardLayout.css */
-
 .business-dashboard-layout {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row; /* ✅ כיוון רגיל - כדי שה-sidebar יישאר בצד ימין */
   height: 100vh;
   background: linear-gradient(to bottom, #f3edff, #ede9f7);
-  direction: rtl; /* ✅ תוודא שהכול מיושר לימין */
 }
 
 .sidebar {
@@ -18,7 +15,8 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  text-align: right; /* ✅ יישור לימין בתוך הסיידבר */
+  text-align: right;
+  direction: rtl;
 }
 
 .sidebar h2 {
@@ -41,6 +39,8 @@
   padding: 10px 15px;
   border-radius: 8px;
   transition: background-color 0.3s;
+  text-align: right;
+  direction: rtl;
 }
 
 .sidebar a:hover {

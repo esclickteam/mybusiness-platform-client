@@ -30,6 +30,10 @@ const BusinessDashboardLayout = () => {
 
   return (
     <div className="business-dashboard-layout">
+      <main className="dashboard-content">
+        <Outlet />
+      </main>
+
       <aside className="sidebar">
         <h2>ניהול העסק</h2>
         <nav>
@@ -46,11 +50,6 @@ const BusinessDashboardLayout = () => {
           ))}
         </nav>
       </aside>
-
-      <main className="dashboard-content">
-        
-        <Outlet />
-      </main>
     </div>
   );
 };
