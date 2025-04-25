@@ -23,9 +23,9 @@ const Header = () => {
   const getDashboardPath = () => {
     switch (user?.role) {
       case "business":
-        return "/dashboard";
+        return "/business/build"; // ✅ נתיב נכון לדשבורד בעלי עסקים
       case "customer":
-        return '/client/dashboard';
+        return "/client/dashboard";
       case "worker":
         return "/staff/dashboard";
       case "manager":
