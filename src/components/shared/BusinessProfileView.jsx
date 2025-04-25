@@ -36,75 +36,72 @@ export default function BusinessProfileView() {
   const realReviews = reviews.filter(r => typeof r.rating === "number");
 
   return (
-    <div className="business-profile-view full-style full-page">
-      {/* ✏️ כפתור עריכה */}
-      <button
-        className="edit-profile-btn"
-        onClick={() =>
-          // נווט לעמוד העריכה של העסק
-          navigate(`/business/${businessId}/edit`)
-        }
-      >
-        ערוך עמוד עסקי ✏️
-      </button>
+    <div className="business-profile-view full-style">
+      <div className="profile-inner">
+        {/* ✏️ כפתור עריכה */}
+        <button
+          className="edit-profile-btn"
+          onClick={() => navigate(`/business/${businessId}/edit`)}
+        >
+          ערוך עמוד עסקי ✏️
+        </button>
 
-      <h1 className="business-name">{name}</h1>
+        <h1 className="business-name">{name}</h1>
 
-      {/* תיאור */}
-      {description && (
-        <div className="about-section">
-          <p className="about-snippet">
-            {description.length > 200
-              ? description.slice(0, 200) + "..."
-              : description}
-          </p>
-        </div>
-      )}
+        {/* תיאור */}
+        {description && (
+          <div className="about-section">
+            <p className="about-snippet">
+              {description.length > 200
+                ? description.slice(0, 200) + "..."
+                : description}
+            </p>
+          </div>
+        )}
 
-      {/* טלפון */}
-      {phone && (
-        <div className="phone-section">
-          <strong>טלפון:</strong> {phone}
-        </div>
-      )}
+        {/* טלפון */}
+        {phone && (
+          <div className="phone-section">
+            <strong>טלפון:</strong> {phone}
+          </div>
+        )}
 
-      <hr className="profile-divider" />
+        <hr className="profile-divider" />
 
-      {/* גלריה */}
-      {gallery.length > 0 && (
-        <div className="gallery-preview no-actions">
-          {gallery.map((item, i) => {
-            const src = typeof item === "string" ? item : item.url || item.preview;
-            return (
-              src && (
-                <div key={i} className="gallery-item-wrapper">
-                  <img src={src} alt={`gallery-${i}`} className="gallery-img" />
+        {/* גלריה */}
+        {gallery.length > 0 && (
+          <div className="gallery-preview no-actions">
+            {gallery.map((item, i) => {
+              const src = typeof item === "string" ? item : item.url || item.preview;
+              return (
+                src && (
+                  <div key={i} className="gallery-item-wrapper">
+                    <img src={src} alt={`gallery-${i}`} className="gallery-img" />
+                  </div>
+                )
+              );
+            })}
+          </div>
+        )}
+
+        {/* ביקורות אמיתיות בלבד */}
+        {realReviews.length > 0 && (
+          <div className="reviews">
+            <h3>⭐ ביקורות אחרונות</h3>
+            {realReviews.map((r, i) => (
+              <div key={i} className="review-card improved">
+                <div className="review-header">
+                  <strong className="review-user">{r.user}</strong>
+                  <span className="star-text">★ {r.rating} / 5</span>
                 </div>
-              )
-            );
-          })}
-        </div>
-      )}
-
-      {/* ביקורות אמיתיות בלבד */}
-      {realReviews.length > 0 && (
-        <div className="reviews">
-          <h3>⭐ ביקורות אחרונות</h3>
-          {realReviews.map((r, i) => (
-            <div key={i} className="review-card improved">
-              <div className="review-header">
-                <strong className="review-user">{r.user}</strong>
-                <span className="star-text">
-                  ★ {r.rating} / 5
-                </span>
+                <p className="review-text">
+                  {r.comment || r.text || "אין תוכן לביקורת."}
+                </p>
               </div>
-              <p className="review-text">
-                {r.comment || r.text || "אין תוכן לביקורת."}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,27 +1,32 @@
 /* src/components/shared/BusinessProfileView.css */
 
-/* .full-style – קופסת הפרופיל במרכז, ללא גבול שחור, עם צל עדין */
-.full-style {
+/* רקע סגול ברוחב מלא, עם פדינג וצל עדין */
+.business-profile-view.full-style {
   background-color: #f2e6ff;
-  padding: 2rem;
+  padding: 2rem 0;               /* פדינג ורטיקלי בלבד */
   border-radius: 2rem;
-  width: 100%;
-  max-width: 600px;         /* רוחב קבוע בנייד */
-  margin: 2rem auto;        /* מרכז אופקית, ריווח מלמעלה ומן התחתית */
-  border: none;             /* מסירים את הגבול השחור */
+  border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* במסכים רחבים – תבטל את ה-max-width ותתפרס לרוחב מלא */
+/* תכולת הפרופיל – מגבילה וממרכזת את התוכן באמצע המסך */
+.profile-inner {
+  width: 100%;
+  max-width: 600px;              /* רוחב קבוע במובייל */
+  margin: 0 auto;                /* מרכז אופקית */
+  padding: 0 2rem;               /* ריווח פנימי צדדי */
+  box-sizing: border-box;
+}
+
+/* במסכים רחבים – הסר את המגבלה כדי שהתוכן יתפרס */
 @media (min-width: 768px) {
-  .full-style {
+  .profile-inner {
     max-width: none;
-    margin: 2rem;          /* אם רוצים מעט ריווח מאחורה */
-    padding: 3rem;         /* אפשר להגדיל את הפדינג במחשב */
+    padding: 0 3rem;             /* פדינג גדול יותר במחשב */
   }
 }
 
-/* שאר הקלאסים נשארים כפי שהיו, ללא שינוי */
+/* המחלקות הבאות נשארות כפי שהיו, ללא שינוי */
 
 .profile-divider {
   border-top: 1px solid #aaa;
