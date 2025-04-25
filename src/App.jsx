@@ -70,21 +70,22 @@ export default function App() {
           <Route path="/reset-password"        element={<ResetPassword />} />
           <Route path="/change-password"       element={<ChangePassword />} />
 
-          {/* ✅ 🔹 עמוד פרופיל ציבורי של עסק (לפני הדשבורד!) */}
-          <Route
-            path="/business/:businessId"
-            element={<BusinessPage />}
-          />
+          {/* 🔹 עמוד פרופיל ציבורי של עסק (לפני הדשבורד) */}
+<Route
+  path="/business/:businessId"
+  element={<BusinessPage />}
+/>
 
-          {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
-          <Route
-            path="/business/*"
-            element={
-              <ProtectedRoute roles={["business"]}>
-                <BusinessDashboardRoutes />
-              </ProtectedRoute>
-            }
-          />
+{/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
+<Route
+  path="/business/*"
+  element={
+    <ProtectedRoute roles={["business"]}>
+      <BusinessDashboardRoutes />
+    </ProtectedRoute>
+  }
+/>
+
 
           {/* 🔹 דשבורד לקוח */}
           <Route
