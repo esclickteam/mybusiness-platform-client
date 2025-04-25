@@ -24,55 +24,56 @@ import GoalsPage from "./dashboardPages/GoalsPage";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
-const BusinessDashboardRoutes = () => {
-  return (
-    <Routes>
-      {/* 🔸 דשבורד עם סיידבר */}
-      <Route element={<BusinessDashboardLayout />}>
-        {/* ברירת מחדל לדשבורד */}
-        <Route index element={<Navigate to="dashboard" replace />} />
+const BusinessDashboardRoutes = () => (
+  <Routes>
+    <Route element={<BusinessDashboardLayout />}>
+      {/* ברירת מחדל לדשבורד */}
+      <Route index element={<Navigate to="dashboard" replace />} />
 
-        {/* טאבים שונים */}
-        <Route path="dashboard" element={<DashboardPage />} />
-        {/* פרופיל הוסר */}
+      {/* העמוד הראשי */}
+      <Route path="dashboard" element={<DashboardPage />} />
 
-        <Route
-          path="build"
-          element={
-            <BusinessServicesProvider>
-              <Build />
-            </BusinessServicesProvider>
-          }
-        />
-        <Route
-          path="cart"
-          element={
-            <BusinessServicesProvider>
-              <CartPage />
-            </BusinessServicesProvider>
-          }
-        />
+      {/* 🖊️ עמוד עריכה */}
+      <Route
+        path="edit"
+        element={
+          <BusinessServicesProvider>
+            <Build />
+          </BusinessServicesProvider>
+        }
+      />
 
-        <Route path="collab" element={<Collab />} />
-        <Route path="upgrade" element={<Upgrade />} />
-        <Route path="esclick" element={<EsclickAdvisor />} />
-        <Route path="goals" element={<GoalsPage />} />
-        <Route path="chat-test" element={<ChatTab isPreview={true} />} />
-        <Route path="chat/:partnerId" element={<BusinessChat />} />
-        <Route path="affiliate" element={<AffiliatePage />} />
-        <Route path="messages" element={<BusinessMessagesPage />} />
+      {/* אם יש לך עדיין build כטאב נפרד – תשאיר או תסיר לפי צורך */}
+      <Route
+        path="build"
+        element={
+          <BusinessServicesProvider>
+            <Build />
+          </BusinessServicesProvider>
+        }
+      />
 
-        {/* מערכת CRM */}
-        <Route path="crm" element={<CRMMain />}>
-          <Route index element={<Navigate to="appointments" replace />} />
-          <Route path="appointments" element={<CRMAppointmentsTab />} />
-          <Route path="clients" element={<CRMClientsTab />} />
-          <Route path="services" element={<CRMServicesTab />} />
-          <Route path="settings" element={<CRMSettingsTab />} />
-        </Route>
+      {/* שאר ה־tabs */}
+      <Route path="cart" element={<BusinessServicesProvider><CartPage /></BusinessServicesProvider>} />
+      <Route path="collab" element={<Collab />} />
+      <Route path="upgrade" element={<Upgrade />} />
+      <Route path="esclick" element={<EsclickAdvisor />} />
+      <Route path="goals" element={<GoalsPage />} />
+      <Route path="chat-test" element={<ChatTab isPreview />} />
+      <Route path="chat/:partnerId" element={<BusinessChat />} />
+      <Route path="affiliate" element={<AffiliatePage />} />
+      <Route path="messages" element={<BusinessMessagesPage />} />
+
+      {/* מערכת CRM */}
+      <Route path="crm" element={<CRMMain />}>
+        <Route index element={<Navigate to="appointments" replace />} />
+        <Route path="appointments" element={<CRMAppointmentsTab />} />
+        <Route path="clients" element={<CRMClientsTab />} />
+        <Route path="services" element={<CRMServicesTab />} />
+        <Route path="settings" element={<CRMSettingsTab />} />
       </Route>
-    </Routes>
-  );
-};
+    </Route>
+  </Routes>
+);
 
 export default BusinessDashboardRoutes;
