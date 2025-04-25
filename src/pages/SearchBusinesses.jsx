@@ -1,7 +1,7 @@
 // src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect } from 'react';
 import API from '@api';
-import BusinessProfileCard from '../components/BusinessProfileCard';
+import BusinessCard from '../components/BusinessCard';
 
 const SearchBusinesses = () => {
   const [businesses, setBusinesses] = useState([]);
@@ -24,7 +24,7 @@ const SearchBusinesses = () => {
       <h1>רשימת עסקים</h1>
       <div className="business-list">
         {businesses.map((business) => (
-          <BusinessProfileCard key={business._id} business={business} />
+          <BusinessCard       key={business._id} business={business} />
         ))}
       </div>
     </div>

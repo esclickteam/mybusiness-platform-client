@@ -1,7 +1,7 @@
 // src/pages/BusinessesList.jsx
 import React, { useEffect, useState } from "react";
 import API from "@api";
-import BusinessProfileCard from '../components/BusinessProfileCard';
+import BusinessCard from '../components/BusinessCard';
 import './BusinessList.css';
 
 const BusinessesList = () => {
@@ -25,7 +25,7 @@ const BusinessesList = () => {
       <h1>רשימת עסקים</h1>
       <div className="business-list">
         {businesses.map(business => (
-          <BusinessProfileCard key={business._id} business={business} />
+          <BusinessCard       key={business._id} business={business} />
         ))}
       </div>
     </div>
