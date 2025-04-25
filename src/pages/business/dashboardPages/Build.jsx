@@ -29,7 +29,7 @@ const BuildBusinessPage = () => {
   const { user: currentUser }  = useAuth();
   const navigate = useNavigate();
 
-  
+
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails,  setBusinessDetails] = useState({
@@ -403,8 +403,27 @@ const BuildBusinessPage = () => {
 </div>
 
 <button onClick={handleSave} className="save-button">
-        💾 שמור
-      </button>
+  💾 שמור
+</button>
+
+{showViewProfile && (
+  <button
+    onClick={() => navigate(`/business/${currentUser.businessId}`)}
+    className="view-profile-button"
+    style={{
+      marginTop: "1rem",
+      padding: "8px 16px",
+      background: "#00aaff",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+    }}
+  >
+    👀 צפה בפרופיל
+  </button>
+)}
+
 
     </div>
 
