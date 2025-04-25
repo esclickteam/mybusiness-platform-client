@@ -35,7 +35,7 @@ const Build = () => {
 // רשימת השדות המותרת לעדכון
 const ALLOWED_KEYS = [
   "name",
-  "about",
+  "description",
   "phone",
   "logo",
   "gallery",
