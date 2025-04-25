@@ -1,14 +1,29 @@
 /* src/pages/BusinessProfilePage.css */
 
-.business-profile {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 24px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+/* עוטף כל העמוד ברקע סגול וב-padding */
+.profile-page {
+    background-color: #f2e6ff;
+    min-height: 100vh;
+    padding: 2rem 0;
+    box-sizing: border-box;
   }
   
+  /* הכרטיס הלבן המעוצב עם פינות עגולות וצל */
+  .business-profile-view.full-style {
+    background-color: #ffffff;
+    border-radius: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  
+  /* Padding פנימי לכל התוכן */
+  .profile-inner {
+    padding: 2rem;
+  }
+  
+  /* לוגו העסק במרכז הכרטיס */
   .business-profile__logo {
     display: block;
     max-width: 200px;
@@ -17,18 +32,21 @@
     margin: 0 auto 16px;
   }
   
+  /* כותרת שם העסק במרכז */
   .business-profile__name {
     font-size: 2rem;
     text-align: center;
     margin-bottom: 16px;
   }
   
+  /* תיאור העסק בפונט קריא */
   .business-profile__description {
     font-size: 1.125rem;
     margin-bottom: 16px;
     line-height: 1.6;
   }
   
+  /* פרטי קשר, כתובת ושעות */
   .business-profile__contact p,
   .business-profile__address,
   .business-profile__hours {
@@ -37,6 +55,7 @@
     color: #333;
   }
   
+  /* גלריה של תמונות העסק */
   .business-profile__gallery {
     margin-top: 24px;
   }
