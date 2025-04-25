@@ -27,12 +27,22 @@ const Register           = lazy(() => import("./pages/Register"));
 // Lazy-loaded public profile with nested tabs
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 
-// Static imports for public tab content
-import GalleryPage         from './pages/GalleryPage';
-import ReviewsPage         from './pages/ReviewsPage';
-import FaqPage             from './pages/FaqPage';
-import ChatPage            from './pages/ChatPage';
-import ShopAndCalendarPage from './pages/business/dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar';
+// Lazy-loaded public tab content (reusing existing buildTabs components)
+const GalleryPage        = lazy(() => import(
+  './pages/business/dashboardPages/buildTabs/GalleryTab'
+));
+const ReviewsPage        = lazy(() => import(
+  './pages/business/dashboardPages/buildTabs/ReviewsModule'
+));
+const FaqPage            = lazy(() => import(
+  './pages/business/dashboardPages/buildTabs/FaqTab'
+));
+const ChatPage           = lazy(() => import(
+  './pages/business/dashboardPages/buildTabs/ChatTab'
+));
+const ShopAndCalendarPage = lazy(() => import(
+  './pages/business/dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar'
+));
 
 // Lazy-loaded edit & dashboard routes
 const BuildBusinessPage       = lazy(() => import("./pages/business/dashboardPages/Build"));
