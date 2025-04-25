@@ -31,10 +31,6 @@ const BusinessDashboardLayout = () => {
   return (
     <div className="rtl-wrapper">
       <div className="business-dashboard-layout">
-        <main className="dashboard-content">
-          <Outlet />
-        </main>
-
         <aside className="sidebar">
           <h2>ניהול העסק</h2>
           <nav>
@@ -42,13 +38,19 @@ const BusinessDashboardLayout = () => {
               <NavLink
                 key={tab.path}
                 to={tab.path}
-                className={({ isActive }) => (isActive ? "active" : undefined)}
+                className={({ isActive }) =>
+                  isActive ? "active" : undefined
+                }
               >
                 {tab.label}
               </NavLink>
             ))}
           </nav>
         </aside>
+
+        <main className="dashboard-content">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
