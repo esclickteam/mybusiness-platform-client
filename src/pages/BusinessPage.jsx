@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import API from "../api";
-import BusinessProfileView from "./shared/BusinessProfileView";
-import checkFeatureAvailability from "./FeatureAvailability";
+import BusinessProfileView from "../components/shared/BusinessProfileView";
+import checkFeatureAvailability from "../components/FeatureAvailability";
 
 export default function BusinessPage() {
   const { businessId } = useParams();

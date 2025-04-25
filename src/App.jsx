@@ -21,7 +21,7 @@ const Checkout                = lazy(() => import("./pages/Checkout"));
 const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
-const BusinessPage = lazy(() => import("./components/BusinessPage"));
+const BusinessPage = lazy(() => import("./pages/BusinessPage"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
 const WorkSession             = lazy(() => import("./pages/staff/WorkSession"));
