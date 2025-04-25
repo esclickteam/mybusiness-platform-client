@@ -121,14 +121,7 @@ const handleSave = async () => {
 
     console.log("📤 שולח ל־API:", "/business/my");
 
-    // שולח גם header של multipart/form-data
-    const res = await API.put(
-      "/business/my",
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
-    );
+    const res = await API.put("/business/my", formData);
 
     if (res.status === 200) {
       alert("✅ נשמר בהצלחה!");
