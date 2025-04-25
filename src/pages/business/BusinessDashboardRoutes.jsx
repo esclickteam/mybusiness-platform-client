@@ -1,3 +1,4 @@
+// src/pages/business/BusinessDashboardRoutes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
@@ -35,7 +36,7 @@ const BusinessDashboardRoutes = () => {
 
         {/* טאבים שונים */}
         <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="profile" element={<Profile />} />
+        <Route path="profile"   element={<Profile />} />
 
         <Route
           path="build"
@@ -55,22 +56,22 @@ const BusinessDashboardRoutes = () => {
           }
         />
 
-        <Route path="collab" element={<Collab />} />
-        <Route path="upgrade" element={<Upgrade />} />
-        <Route path="esclick" element={<EsclickAdvisor />} />
-        <Route path="goals" element={<GoalsPage />} />
+        <Route path="collab"   element={<Collab />} />
+        <Route path="upgrade"  element={<Upgrade />} />
+        <Route path="esclick"  element={<EsclickAdvisor />} />
+        <Route path="goals"    element={<GoalsPage />} />
         <Route path="chat-test" element={<ChatTab isPreview={true} />} />
         <Route path="chat/:partnerId" element={<BusinessChat />} />
         <Route path="affiliate" element={<AffiliatePage />} />
-        <Route path="messages" element={<BusinessMessagesPage />} />
+        <Route path="messages"  element={<BusinessMessagesPage />} />
 
         {/* מערכת CRM */}
         <Route path="crm" element={<CRMMain />}>
           <Route index element={<Navigate to="appointments" replace />} />
           <Route path="appointments" element={<CRMAppointmentsTab />} />
-          <Route path="clients" element={<CRMClientsTab />} />
-          <Route path="services" element={<CRMServicesTab />} />
-          <Route path="settings" element={<CRMSettingsTab />} />
+          <Route path="clients"      element={<CRMClientsTab />} />
+          <Route path="services"     element={<CRMServicesTab />} />
+          <Route path="settings"     element={<CRMSettingsTab />} />
         </Route>
 
       </Route>

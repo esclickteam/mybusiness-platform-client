@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
@@ -20,8 +21,8 @@ const Plans                   = lazy(() => import("./pages/business/Plans"));
 const Checkout                = lazy(() => import("./pages/Checkout"));
 const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
-const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const BusinessPage            = lazy(() => import("./pages/BusinessPage"));
+const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
 const WorkSession             = lazy(() => import("./pages/staff/WorkSession"));
@@ -54,38 +55,37 @@ export default function App() {
         <Routes>
 
           {/* 🔹 עמודים ציבוריים */}
-          <Route path="/"                      element={<HomePage />} />
-          <Route path="/about"                 element={<About />} />
-          <Route path="/how-it-works"          element={<HowItWorks />} />
-          <Route path="/faq"                   element={<FAQ />} />
-          <Route path="/terms"                 element={<Terms />} />
-          <Route path="/contact"               element={<Contact />} />
-          <Route path="/business"              element={<Business />} />
-          <Route path="/plans"                 element={<Plans />} />
-          <Route path="/checkout"              element={<Checkout />} />
-          <Route path="/login"                 element={<Login />} />
-          <Route path="/register"              element={<Register />} />
-          <Route path="/quick-jobs"            element={<QuickJobsBoard />} />
-          <Route path="/quick-jobs/new"        element={<QuickJobForm />} />
-          <Route path="/reset-password"        element={<ResetPassword />} />
-          <Route path="/change-password"       element={<ChangePassword />} />
+          <Route path="/"                element={<HomePage />} />
+          <Route path="/about"           element={<About />} />
+          <Route path="/how-it-works"    element={<HowItWorks />} />
+          <Route path="/faq"             element={<FAQ />} />
+          <Route path="/terms"           element={<Terms />} />
+          <Route path="/contact"         element={<Contact />} />
+          <Route path="/business"        element={<Business />} />
+          <Route path="/plans"           element={<Plans />} />
+          <Route path="/checkout"        element={<Checkout />} />
+          <Route path="/login"           element={<Login />} />
+          <Route path="/register"        element={<Register />} />
+          <Route path="/quick-jobs"      element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new"  element={<QuickJobForm />} />
+          <Route path="/reset-password"  element={<ResetPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
-          {/* 🔹 עמוד פרופיל ציבורי של עסק (לפני הדשבורד) */}
-<Route
-  path="/business/:businessId"
-  element={<BusinessPage />}
-/>
+          {/* 🔹 עמוד פרופיל ציבורי של עסק */}
+          <Route
+            path="/business/:businessId"
+            element={<BusinessPage />}
+          />
 
-{/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
-<Route
-  path="/business/*"
-  element={
-    <ProtectedRoute roles={["business"]}>
-      <BusinessDashboardRoutes />
-    </ProtectedRoute>
-  }
-/>
-
+          {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
+          <Route
+            path="/business/:businessId/*"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BusinessDashboardRoutes />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 🔹 דשבורד לקוח */}
           <Route
@@ -215,13 +215,11 @@ export default function App() {
             }
           />
 
-          {/* 🔹 הפניה פנימית */}
+          {/* 🔹 ברירות מחדל נוספות */}
           <Route path="/dashboard/calendar" element={<Navigate to="/business/dashboard" />} />
+          <Route path="/chat-test-direct"   element={<ChatTestPage />} />
 
-          {/* 🔹 צ'אט טסט */}
-          <Route path="/chat-test-direct" element={<ChatTestPage />} />
-
-          {/* 🔹 ברירת מחדל */}
+          {/* 🔹 ברירת מחדל לכל שאר הכתובות */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>

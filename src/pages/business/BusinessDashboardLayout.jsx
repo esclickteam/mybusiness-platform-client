@@ -1,32 +1,36 @@
+// src/pages/business/BusinessDashboardLayout.jsx
 import React, { useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [
-  { path: "profile", label: "👤 פרופיל" },
-  { path: "build", label: "🧱 עריכת עמוד עסקי" },
+  { path: "profile",   label: "👤 פרופיל" },
+  { path: "build",     label: "🧱 עריכת עמוד עסקי" },
   { path: "dashboard", label: "📊 דשבורד" },
-  { path: "messages", label: "💬 הודעות מלקוחות" },
-  { path: "collab", label: "🤝 שיתופי פעולה" },
-  { path: "crm", label: "📇 מערכת CRM" },
-  { path: "esclick", label: "🧠 יועץ עסקליק" },
-  { path: "goals", label: "🎯 היעדים שלי" },
+  { path: "messages",  label: "💬 הודעות מלקוחות" },
+  { path: "collab",    label: "🤝 שיתופי פעולה" },
+  { path: "crm",       label: "📇 מערכת CRM" },
+  { path: "esclick",   label: "🧠 יועץ עסקליק" },
+  { path: "goals",     label: "🎯 היעדים שלי" },
   { path: "affiliate", label: "👥 תכנית שותפים" },
-  { path: "upgrade", label: "🚀 שדרוג חבילה" },
+  { path: "upgrade",   label: "🚀 שדרוג חבילה" },
 ];
 
-const BusinessDashboardLayout = () => {
+export default function BusinessDashboardLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!loading && user?.role !== "business") {
-      navigate("/");
+      // אם אין הרשאה, נייצא חזרה לדף הבית
+      navigate("/", { replace: true });
     }
-  }, [user, loading]);
+  }, [user, loading, navigate]);
 
-  if (loading) return <div className="loading-screen">🔄 טוען נתונים…</div>;
+  if (loading) {
+    return <div className="loading-screen">🔄 טוען נתונים…</div>;
+  }
 
   return (
     <div className="rtl-wrapper">
@@ -34,15 +38,13 @@ const BusinessDashboardLayout = () => {
         <aside className="sidebar">
           <h2>ניהול העסק</h2>
           <nav>
-            {tabs.map((tab) => (
+            {tabs.map(({ path, label }) => (
               <NavLink
-                key={tab.path}
-                to={tab.path}
-                className={({ isActive }) =>
-                  isActive ? "active" : undefined
-                }
+                key={path}
+                to={path}
+                className={({ isActive }) => (isActive ? "active" : undefined)}
               >
-                {tab.label}
+                {label}
               </NavLink>
             ))}
           </nav>
@@ -54,6 +56,4 @@ const BusinessDashboardLayout = () => {
       </div>
     </div>
   );
-};
-
-export default BusinessDashboardLayout;
+}
