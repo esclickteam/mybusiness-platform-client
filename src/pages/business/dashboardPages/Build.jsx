@@ -89,15 +89,33 @@ const handleSave = async () => {
       .forEach(([key, value]) => {
         if (key === "logo" && value instanceof File) {
           formData.append("logo", value);
-        } else if (["gallery", "story", "services", "reviews", "faqs", "messages", "galleryTabImages", "galleryCategories", "fullGallery"].includes(key)) {
+        } else if (
+          ["gallery","story","services","reviews","faqs","messages","galleryTabImages","galleryCategories","fullGallery"]
+            .includes(key)
+        ) {
           formData.append(key, JSON.stringify(value));
         } else if (value !== undefined && value !== null) {
           formData.append(key, value);
         }
       });
 
-    console.log("📤 נשלח לשרת:", businessDetails);
-    const res = await API.put("/business/my", formData);
+    // ====== לוג של כל כניסות ה־FormData ======
+    for (let [key, val] of formData.entries()) {
+      console.log("🧩 formData entry:", key, val);
+    }
+
+    console.log("📤 שולח ל־API:", "/business/my");
+
+    // שולח גם header של multipart/form-data
+    const res = await API.put(
+      "/business/my",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
     if (res.status === 200) {
       alert("✅ נשמר בהצלחה!");
@@ -112,6 +130,7 @@ const handleSave = async () => {
     alert("❌ שגיאה בשמירה");
   }
 };
+
 
   
       
