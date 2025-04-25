@@ -76,7 +76,11 @@ export default function BusinessProfileView() {
               return (
                 src && (
                   <div key={i} className="gallery-item-wrapper">
-                    <img src={src} alt={`gallery-${i}`} className="gallery-img" />
+                    <img
+                      src={src}
+                      alt={`gallery-${i}`}
+                      className="gallery-img"
+                    />
                   </div>
                 )
               );
