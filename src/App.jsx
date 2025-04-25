@@ -8,7 +8,8 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import BuildBusinessPage from "./pages/business/dashboardPages/Build"; // ← שימוש רק ב־Build
+import BuildBusinessPage from "./pages/business/dashboardPages/Build";
+import BusinessDashboardLayout from "./pages/business/BusinessDashboardLayout";
 
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
@@ -54,26 +55,30 @@ export default function App() {
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           {/* Public */}
-          <Route path="/"                      element={<HomePage />} />
-          <Route path="/about"                 element={<About />} />
-          <Route path="/how-it-works"          element={<HowItWorks />} />
-          <Route path="/faq"                   element={<FAQ />} />
-          <Route path="/terms"                 element={<Terms />} />
-          <Route path="/contact"               element={<Contact />} />
-          <Route path="/business"              element={<Business />} />
-          <Route path="/plans"                 element={<Plans />} />
-          <Route path="/checkout"              element={<Checkout />} />
-          <Route path="/login"                 element={<Login />} />
-          <Route path="/register"              element={<Register />} />
-          <Route path="/quick-jobs"            element={<QuickJobsBoard />} />
-          <Route path="/quick-jobs/new"        element={<QuickJobForm />} />
-          <Route path="/reset-password"        element={<ResetPassword />} />
-          <Route path="/change-password"       element={<ChangePassword />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/business" element={<Business />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
-          {/* Public business profile & editor in one */}
+          {/* Public business profile עם הסיידבר */}
           <Route
             path="/business/:businessId"
-            element={<BuildBusinessPage />}
+            element={
+              <BusinessDashboardLayout>
+                <BuildBusinessPage />
+              </BusinessDashboardLayout>
+            }
           />
 
           {/* Business profile editor (protected) */}
