@@ -30,77 +30,89 @@ const Build = () => {
   const navigate = useNavigate();
 
 
-  const [currentTab, setCurrentTab] = useState("ראשי");
-  const [showViewProfile, setShowViewProfile] = useState(false);
-  const [businessDetails, setBusinessDetails] = useState({
-    name: "",
-    about: "",
-    phone: "",
-    logo: null,
-    story: [],
-    gallery: [],
-    services: [],
-    galleryFits: {},
-    galleryTabImages: [],
-    galleryTabFits: {},
-    galleryCategories: [],
-    fullGallery: [],
-    storyFits: {},
-    reviews: [],
-    faqs: [],
-    messages: []
+  // בתוך רכיב BuildBusinessPage.jsx
+
+// רשימת השדות המותרת לעדכון
+const ALLOWED_KEYS = [
+  "name",
+  "about",
+  "phone",
+  "logo",
+  "gallery",
+  "story",
+  "services",
+  "reviews",
+  "faqs",
+  "messages",
+  "galleryTabImages",
+  "galleryCategories",
+  "fullGallery",
+];
+
+const [currentTab, setCurrentTab] = useState("ראשי");
+const [showViewProfile, setShowViewProfile] = useState(false);
+const [businessDetails, setBusinessDetails] = useState({
+  name: "",
+  about: "",
+  phone: "",
+  logo: null,
+  story: [],
+  gallery: [],
+  services: [],
+  galleryFits: {},
+  galleryTabImages: [],
+  galleryTabFits: {},
+  galleryCategories: [],
+  fullGallery: [],
+  storyFits: {},
+  reviews: [],
+  faqs: [],
+  messages: []
+});
+
+// טען נתוני העסק בעת העלאה
+useEffect(() => {
+  API.get("/business/my").then(res => {
+    if (res.status === 200) {
+      setBusinessDetails(res.data.business || res.data);
+    }
   });
+}, []);
 
-  // טען נתוני העסק בעת העלאה
-  useEffect(() => {
-    API.get("/business/my").then(res => {
-      if (res.status === 200) {
-        setBusinessDetails(res.data.business || res.data);
-      }
-    });
-  }, []);
+const handleSave = async () => {
+  try {
+    const formData = new FormData();
 
-  const handleSave = async () => {
-    try {
-      const formData = new FormData();
-
-      // אפנד/FormData לכל שדה
-      Object.entries(businessDetails).forEach(([key, value]) => {
+    // סינון ושילוח רק של השדות המותרנים
+    Object.entries(businessDetails)
+      .filter(([key]) => ALLOWED_KEYS.includes(key))
+      .forEach(([key, value]) => {
         if (key === "logo" && value instanceof File) {
           formData.append("logo", value);
-        } else if ([
-          "gallery",
-          "story",
-          "services",
-          "reviews",
-          "faqs",
-          "messages",
-          "galleryTabImages",
-          "galleryCategories",
-          "fullGallery"
-        ].includes(key)) {
+        } else if (["gallery", "story", "services", "reviews", "faqs", "messages", "galleryTabImages", "galleryCategories", "fullGallery"].includes(key)) {
           formData.append(key, JSON.stringify(value));
         } else if (value !== undefined && value !== null) {
           formData.append(key, value);
         }
       });
 
-      console.log("📤 נשלח לשרת:", businessDetails);
-      const res = await API.put("/business/my", formData);
+    console.log("📤 נשלח לשרת:", businessDetails);
+    const res = await API.put("/business/my", formData);
 
-      if (res.status === 200) {
-        alert("✅ נשמר בהצלחה!");
-        const updated = res.data.business || res.data;
-        setBusinessDetails(prev => ({ ...prev, ...updated }));
-        setShowViewProfile(true);
-      } else {
-        alert("❌ שמירה נכשלה");
-      }
-    } catch (error) {
-      console.error("❌ שגיאה בשמירה:", error);
-      alert("❌ שגיאה בשמירה");
+    if (res.status === 200) {
+      alert("✅ נשמר בהצלחה!");
+      const updated = res.data.business || res.data;
+      setBusinessDetails(prev => ({ ...prev, ...updated }));
+      setShowViewProfile(true);
+    } else {
+      alert("❌ שמירה נכשלה");
     }
-  };
+  } catch (error) {
+    console.error("❌ שגיאה בשמירה:", error);
+    alert("❌ שגיאה בשמירה");
+  }
+};
+
   
       
         
