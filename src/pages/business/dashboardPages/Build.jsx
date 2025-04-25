@@ -53,7 +53,7 @@ const [currentTab, setCurrentTab] = useState("ראשי");
 const [showViewProfile, setShowViewProfile] = useState(false);
 const [businessDetails, setBusinessDetails] = useState({
   name: "",
-  about: "",
+  description: "",
   phone: "",
   logo: null,
   story: [],
@@ -255,7 +255,7 @@ const handleSave = async () => {
           </div>
         </div>
         <p className="about-text center-text">
-          {businessDetails.about || "אודות העסק"}
+          {businessDetails.description || "אודות העסק"}
         </p>
         <hr className="divider" />
         <div className="tabs">
@@ -278,18 +278,45 @@ const handleSave = async () => {
       {currentTab === "ראשי" && (
   <>
     <div className="form-column">
-      <h2>🎨 עיצוב הכרטיס</h2>
-      <label>שם העסק:</label>
-      <input type="text" name="name" value={businessDetails.name} onChange={handleInputChange} />
-      <label>אודות:</label>
-      <textarea name="about" value={businessDetails.about} onChange={handleInputChange} />
-      <label>מספר טלפון:</label>
-      <input type="text" name="phone" value={businessDetails.phone} onChange={handleInputChange} placeholder="050-1234567" />
-      <label>לוגו:</label>
-      <input type="file" ref={logoInputRef} onChange={handleLogoChange} style={{ display: "none" }} />
-      <button onClick={handleLogoClick} className="upload-logo-btn">העלאת לוגו</button>
-      <label>סטורי:</label>
-      <input type="file" multiple onChange={handleStoryUpload} />
+  <h2>🎨 עיצוב הכרטיס</h2>
+
+  <label>שם העסק:</label>
+  <input
+    type="text"
+    name="name"
+    value={businessDetails.name}
+    onChange={handleInputChange}
+  />
+
+  <label>תיאור:</label>
+  <textarea
+    name="description"
+    value={businessDetails.description}
+    onChange={handleInputChange}
+  />
+
+  <label>מספר טלפון:</label>
+  <input
+    type="text"
+    name="phone"
+    value={businessDetails.phone}
+    onChange={handleInputChange}
+    placeholder="050-1234567"
+  />
+
+  <label>לוגו:</label>
+  <input
+    type="file"
+    ref={logoInputRef}
+    onChange={handleLogoChange}
+    style={{ display: "none" }}
+  />
+  <button onClick={handleLogoClick} className="upload-logo-btn">
+    העלאת לוגו
+  </button>
+
+  <label>סטורי:</label>
+  <input type="file" multiple onChange={handleStoryUpload} />
 
       {/* גלריה ראשית */}
 <label>תמונות לעמוד הראשי (עד 5):</label>
