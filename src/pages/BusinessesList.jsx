@@ -25,7 +25,7 @@ const BusinessesList = () => {
       <h1>רשימת עסקים</h1>
       <div className="business-list">
         {businesses.map(business => (
-          <BusinessCard       key={b._id} business={b} />
+          <BusinessCard key={business._id} business={business} />
         ))}
       </div>
     </div>

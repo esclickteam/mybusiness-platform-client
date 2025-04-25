@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import API from '@api';
 import BusinessCard from '../components/BusinessCard';
+import '../styles/BusinessList.css'; // אם עוד לא ייבאת
 
 const SearchBusinesses = () => {
   const [businesses, setBusinesses] = useState([]);
@@ -24,7 +25,10 @@ const SearchBusinesses = () => {
       <h1>רשימת עסקים</h1>
       <div className="business-list">
         {businesses.map((business) => (
-          <BusinessCard       key={b._id} business={b} />
+          <BusinessCard
+            key={business._id}
+            business={business}
+          />
         ))}
       </div>
     </div>

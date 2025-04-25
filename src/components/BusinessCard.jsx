@@ -10,11 +10,7 @@ const BusinessCard = ({ business }) => {
     <div className="business-card">
       <Link to={`/business/${_id}`} className="business-card__link">
         {logo && (
-          <img
-            src={logo}
-            alt={name}
-            className="business-card__logo"
-          />
+          <img src={logo} alt={name} className="business-card__logo" />
         )}
         <h2 className="business-card__name">{name}</h2>
       </Link>
@@ -26,7 +22,6 @@ const BusinessCard = ({ business }) => {
             : description}
         </p>
       )}
-
       {phone && <p className="business-card__phone">טלפון: {phone}</p>}
     </div>
   );
