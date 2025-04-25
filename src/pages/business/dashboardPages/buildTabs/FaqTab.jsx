@@ -28,8 +28,12 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
 
   const saveFaqsToServer = async () => {
     try {
-      const cleanFaqs = faqs.map(({ id, _id, ...rest }) => rest); // הסרת מזהים
-      await API.put("/business/my", { faqs: cleanFaqs }); // שליחה נקייה
+      const cleanFaqs = faqs.map(({ id, _id, question, answer }) => ({
+        question: question || "",
+        answer: answer || "",
+      }));
+      console.log("📤 cleanFaqs לשמירה:", cleanFaqs); // בדיקה
+      await API.put("/business/my", { faqs: cleanFaqs });
       alert("✅ כל השאלות נשמרו!");
     } catch (err) {
       console.error("❌ שגיאה בשמירה:", err);
