@@ -23,7 +23,7 @@ const TABS = [
   "שאלות ותשובות",
 ];
 
-const BuildBusinessPage = () => {
+const Build = () => {
   console.log("✅ Build.jsx נטען דרך הדשבורד");
 
   const { user: currentUser }  = useAuth();
@@ -32,89 +32,67 @@ const BuildBusinessPage = () => {
 
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
-  const [businessDetails,  setBusinessDetails] = useState({
-    
+  const [businessDetails, setBusinessDetails] = useState({
     name: "",
     about: "",
     phone: "",
     logo: null,
     story: [],
     gallery: [],
-    services: [], // ← הוספה חשובה!
+    services: [],
     galleryFits: {},
     galleryTabImages: [],
     galleryTabFits: {},
     galleryCategories: [],
     fullGallery: [],
     storyFits: {},
-    reviews: [
-      {
-        user: "שירה",
-        comment: "שירות מדהים! עונים מהר ומקצועיים.",
-        service: "5",
-        professional: "4.5",
-        timing: "5",
-        availability: "4.5",
-        value: "5",
-        goal: "5",
-        experience: "4.5"
-      },
-      {
-        user: "אלון",
-        comment: "מקצועיים ומתקדמים מאוד.",
-        service: "5",
-        professional: "5",
-        timing: "5",
-        availability: "5",
-        value: "5",
-        goal: "5",
-        experience: "5"
-      },
-    ],
+    reviews: [],
     faqs: [],
-    messages: [],
-  })
+    messages: []
+  });
+
+  // טען נתוני העסק בעת העלאה
+  useEffect(() => {
+    API.get("/business/my").then(res => {
+      if (res.status === 200) {
+        setBusinessDetails(res.data.business || res.data);
+      }
+    });
+  }, []);
 
   const handleSave = async () => {
     try {
       const formData = new FormData();
-  
-      for (const key in businessDetails) {
-        const value = businessDetails[key];
-  
+
+      // אפנד/FormData לכל שדה
+      Object.entries(businessDetails).forEach(([key, value]) => {
         if (key === "logo" && value instanceof File) {
           formData.append("logo", value);
-        } else if (key === "gallery") {
-          const galleryUrls = value
-            .map(item =>
-              typeof item === "string"
-                ? item
-                : item.url || item.preview || null
-            )
-            .filter(Boolean);
-          formData.append("gallery", JSON.stringify(galleryUrls));
-        } else if (key === "story") {
-          const cleanedStory = value
-            .map(item => ({
-              url: item.url || item.preview || null,
-              type: item.type,
-              uploadedAt: item.uploadedAt,
-            }))
-            .filter(s => s.url);
-          formData.append("story", JSON.stringify(cleanedStory));
-        } else {
+        } else if ([
+          "gallery",
+          "story",
+          "services",
+          "reviews",
+          "faqs",
+          "messages",
+          "galleryTabImages",
+          "galleryCategories",
+          "fullGallery"
+        ].includes(key)) {
           formData.append(key, JSON.stringify(value));
+        } else if (value !== undefined && value !== null) {
+          formData.append(key, value);
         }
-      }
-  
+      });
+
       console.log("📤 נשלח לשרת:", businessDetails);
-  
       const res = await API.put("/business/my", formData);
-  
+
       if (res.status === 200) {
         alert("✅ נשמר בהצלחה!");
-        // ניווט אוטומטי לפרופיל הציבורי כדי שירענן עם הנתונים החדשים
-        navigate(`/business/${currentUser.businessId}`, { replace: true });
+        const updated = res.data.business || res.data;
+        setBusinessDetails(prev => ({ ...prev, ...updated }));
+        setShowViewProfile(true);
       } else {
         alert("❌ שמירה נכשלה");
       }
@@ -391,27 +369,26 @@ const BuildBusinessPage = () => {
 </div>
 
 <button onClick={handleSave} className="save-button">
-  💾 שמור
-</button>
+        💾 שמור
+      </button>
 
-{showViewProfile && (
-  <button
-    onClick={() => navigate(`/business/${currentUser.businessId}`)}
-    className="view-profile-button"
-    style={{
-      marginTop: "1rem",
-      padding: "8px 16px",
-      background: "#00aaff",
-      color: "#fff",
-      border: "none",
-      borderRadius: "6px",
-      cursor: "pointer",
-    }}
-  >
-    👀 צפה בפרופיל
-  </button>
-)}
-
+      {showViewProfile && (
+        <button
+          onClick={() => navigate(`/business/${currentUser.businessId}`)}
+          className="view-profile-button"
+          style={{
+            marginTop: "1rem",
+            padding: "8px 16px",
+            background: "#00aaff",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+          }}
+        >
+          👀 צפה בפרופיל
+        </button>
+      )}
 
     </div>
 
@@ -556,4 +533,4 @@ const BuildBusinessPage = () => {
   );
 }; // ← סוגר את const BuildBusinessPage = () => { … }
 
-export default BuildBusinessPage;
+export default Build;
