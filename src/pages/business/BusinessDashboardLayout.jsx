@@ -5,7 +5,6 @@ import { useAuth } from "../../context/AuthContext";
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [
-  { path: "profile",   label: "👤 פרופיל" },
   { path: "build",     label: "🧱 עריכת עמוד עסקי" },
   { path: "dashboard", label: "📊 דשבורד" },
   { path: "messages",  label: "💬 הודעות מלקוחות" },
@@ -20,7 +19,7 @@ const tabs = [
 export default function BusinessDashboardLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const { businessId } = useParams(); // <–– כאן
+  const { businessId } = useParams();
 
   useEffect(() => {
     if (!loading && user?.role !== "business") {

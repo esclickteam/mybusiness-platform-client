@@ -78,10 +78,10 @@ const BuildBusinessPage = () => {
   const handleSave = async () => {
     try {
       const formData = new FormData();
- 
+  
       for (const key in businessDetails) {
         const value = businessDetails[key];
- 
+  
         if (key === "logo" && value instanceof File) {
           formData.append("logo", value);
         } else if (key === "gallery") {
@@ -106,42 +106,30 @@ const BuildBusinessPage = () => {
           formData.append(key, JSON.stringify(value));
         }
       }
- 
+  
       console.log("📤 נשלח לשרת:", businessDetails);
- 
+  
       const res = await API.put("/business/my", formData);
- 
+  
       if (res.status === 200) {
         alert("✅ נשמר בהצלחה!");
- 
-        // עדכון ה-state עם הנתונים המעודכנים מהשרת
-        const updated = res.data.business ?? res.data;
-        setBusinessDetails(prev => ({
-          ...prev,
-          ...updated,
-        }));
- +      // מציג את כפתור "צפה בפרופיל"
- +      setShowViewProfile(true);
+        // ניווט אוטומטי לפרופיל הציבורי כדי שירענן עם הנתונים החדשים
+        navigate(`/business/${currentUser.businessId}`, { replace: true });
       } else {
         alert("❌ שמירה נכשלה");
       }
-    } catch (err) {
-      console.error("❌ שגיאה בשמירה:", err);
+    } catch (error) {
+      console.error("❌ שגיאה בשמירה:", error);
       alert("❌ שגיאה בשמירה");
     }
   };
- 
   
-  
-  
-  
+      
+        
   console.log("🔁 שינוי כפוי לבנייה מחדש");
   console.log("💥 שינוי כפוי כדי לנקות את Vercel");
 
-  
-      
-  
-
+          
   const [editIndex, setEditIndex] = useState(null);
   const [editGalleryTabIndex, setEditGalleryTabIndex] = useState(null);
   const [activeStoryIndex, setActiveStoryIndex] = useState(null);
@@ -566,6 +554,6 @@ const BuildBusinessPage = () => {
 
 </div>
   );
-}; // ← סוגר את const BuildBusinessPage = () => { ... כאן
+}; // ← סוגר את const BuildBusinessPage = () => { … }
 
 export default BuildBusinessPage;

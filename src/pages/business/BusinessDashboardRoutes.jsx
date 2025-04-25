@@ -4,7 +4,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 
 import Build from "./dashboardPages/Build";
-import Profile from "./dashboardPages/Profile";
 import DashboardPage from "./dashboardPages/DashboardPage";
 import Collab from "./dashboardPages/Collab";
 import Upgrade from "./dashboardPages/Upgrade";
@@ -30,13 +29,12 @@ const BusinessDashboardRoutes = () => {
     <Routes>
       {/* 🔸 דשבורד עם סיידבר */}
       <Route element={<BusinessDashboardLayout />}>
-
         {/* ברירת מחדל לדשבורד */}
         <Route index element={<Navigate to="dashboard" replace />} />
 
         {/* טאבים שונים */}
         <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="profile"   element={<Profile />} />
+        {/* פרופיל הוסר */}
 
         <Route
           path="build"
@@ -46,7 +44,6 @@ const BusinessDashboardRoutes = () => {
             </BusinessServicesProvider>
           }
         />
-
         <Route
           path="cart"
           element={
@@ -56,24 +53,23 @@ const BusinessDashboardRoutes = () => {
           }
         />
 
-        <Route path="collab"   element={<Collab />} />
-        <Route path="upgrade"  element={<Upgrade />} />
-        <Route path="esclick"  element={<EsclickAdvisor />} />
-        <Route path="goals"    element={<GoalsPage />} />
+        <Route path="collab" element={<Collab />} />
+        <Route path="upgrade" element={<Upgrade />} />
+        <Route path="esclick" element={<EsclickAdvisor />} />
+        <Route path="goals" element={<GoalsPage />} />
         <Route path="chat-test" element={<ChatTab isPreview={true} />} />
         <Route path="chat/:partnerId" element={<BusinessChat />} />
         <Route path="affiliate" element={<AffiliatePage />} />
-        <Route path="messages"  element={<BusinessMessagesPage />} />
+        <Route path="messages" element={<BusinessMessagesPage />} />
 
         {/* מערכת CRM */}
         <Route path="crm" element={<CRMMain />}>
           <Route index element={<Navigate to="appointments" replace />} />
           <Route path="appointments" element={<CRMAppointmentsTab />} />
-          <Route path="clients"      element={<CRMClientsTab />} />
-          <Route path="services"     element={<CRMServicesTab />} />
-          <Route path="settings"     element={<CRMSettingsTab />} />
+          <Route path="clients" element={<CRMClientsTab />} />
+          <Route path="services" element={<CRMServicesTab />} />
+          <Route path="settings" element={<CRMSettingsTab />} />
         </Route>
-
       </Route>
     </Routes>
   );
