@@ -14,6 +14,9 @@ export default function BusinessPage() {
   const [userPlan, setUserPlan] = useState("free");
   const [loading, setLoading] = useState(true);
 
+  console.log("BusinessPage נטען עם ID:", businessId); // ✅ הוספה כאן
+
+
   useEffect(() => {
     console.log("🔍 Business ID:", businessId);
 

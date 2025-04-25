@@ -24,9 +24,13 @@ const TABS = [
 ];
 
 const BuildBusinessPage = () => {
+  console.log("✅ Build.jsx נטען דרך הדשבורד");
+
   const { user: currentUser }  = useAuth();
   const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState("ראשי");
+
+  
 
   const [businessDetails,  setBusinessDetails] = useState({
     
