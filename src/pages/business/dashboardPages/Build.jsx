@@ -28,10 +28,10 @@ const BuildBusinessPage = () => {
 
   const { user: currentUser }  = useAuth();
   const navigate = useNavigate();
-  const [currentTab, setCurrentTab] = useState("ראשי");
 
   
-
+  const [currentTab, setCurrentTab] = useState("ראשי");
+  const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails,  setBusinessDetails] = useState({
     
     name: "",
@@ -78,15 +78,15 @@ const BuildBusinessPage = () => {
   const handleSave = async () => {
     try {
       const formData = new FormData();
-  
+ 
       for (const key in businessDetails) {
         const value = businessDetails[key];
-  
+ 
         if (key === "logo" && value instanceof File) {
           formData.append("logo", value);
         } else if (key === "gallery") {
           const galleryUrls = value
-            .map((item) =>
+            .map(item =>
               typeof item === "string"
                 ? item
                 : item.url || item.preview || null
@@ -95,30 +95,33 @@ const BuildBusinessPage = () => {
           formData.append("gallery", JSON.stringify(galleryUrls));
         } else if (key === "story") {
           const cleanedStory = value
-            .map((item) => ({
+            .map(item => ({
               url: item.url || item.preview || null,
               type: item.type,
               uploadedAt: item.uploadedAt,
             }))
-            .filter((s) => s.url);
+            .filter(s => s.url);
           formData.append("story", JSON.stringify(cleanedStory));
         } else {
           formData.append(key, JSON.stringify(value));
         }
       }
-  
+ 
       console.log("📤 נשלח לשרת:", businessDetails);
-  
+ 
       const res = await API.put("/business/my", formData);
-  
+ 
       if (res.status === 200) {
         alert("✅ נשמר בהצלחה!");
-  
-        // ניווט חזרה לעריכת העמוד (build) ולא לתצוגה הציבורית
-        navigate(
-          `/business/${currentUser.businessId}/build`,
-          { replace: true }
-        );
+ 
+        // עדכון ה-state עם הנתונים המעודכנים מהשרת
+        const updated = res.data.business ?? res.data;
+        setBusinessDetails(prev => ({
+          ...prev,
+          ...updated,
+        }));
+ +      // מציג את כפתור "צפה בפרופיל"
+ +      setShowViewProfile(true);
       } else {
         alert("❌ שמירה נכשלה");
       }
@@ -127,6 +130,8 @@ const BuildBusinessPage = () => {
       alert("❌ שגיאה בשמירה");
     }
   };
+ 
+  
   
   
   
