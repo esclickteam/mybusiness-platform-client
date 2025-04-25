@@ -28,7 +28,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
 
   const saveFaqsToServer = async () => {
     try {
-      await API.put(`/api/business/my`, { faqs });
+      await API.put("/business/my", { faqs }); // ✅ נכון
       alert("✅ כל השאלות נשמרו!");
     } catch (err) {
       console.error("❌ שגיאה בשמירה:", err);
