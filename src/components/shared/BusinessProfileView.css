@@ -1,39 +1,48 @@
 /* src/components/shared/BusinessProfileView.css */
 
-/* רקע סגול ברוחב מלא, עם פדינג וצל עדין */
-.business-profile-view.full-style {
+/* ✨ עטיפת הדף כולה: רקע סגול ברוחב ובגובה מלא */
+.profile-page {
   background-color: #f2e6ff;
-  padding: 2rem 0;               
-  border-radius: 2rem;
-  border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* שכבת התוכן המרכזית */
-.profile-inner {
-  width: 100%;
-  max-width: 600px;        /* רוחב קבוע במובייל */
-  margin: 0 auto;          /* מרכז אופקית */
-  padding: 0 2rem;         /* ריווח צדדי */
+  min-height: 100vh;
+  padding: 2rem 0;                /* ריווח ורטיקלי */
   box-sizing: border-box;
-  text-align: center;      /* מרכז את כל הטקסט והכותרות */
 }
 
-/* עיצוב כפתור העריכה: ממרכז את עצמו אופקית */
+/* ✨ הקופסה הממוזגת באמצע: ה״כרטיס״ עם פדינג, עיגול וצל */
+.business-profile-view.full-style {
+  background-color: #f2e6ff;      /* אפשר גם לשים שקוף אם הרקע יעבור ל־profile-page */
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 100%;
+  padding: 0;                     /* הפדינג יועבר ל־.profile-inner */
+}
+
+/* ✨ שכבת התוכן המרכזית: מגבילה ומרכזת את כל התוכן */
+.profile-inner {
+  max-width: 600px;               /* רוחב קבוע בנייד */
+  margin: 0 auto;                 /* מרכז אופקית */
+  padding: 2rem;                  /* ריווח פנימי לנוחות קריאה */
+  box-sizing: border-box;
+  text-align: center;             /* מרכז טקסט, כותרות וכפתור */
+}
+
+/* ✏️ יישור כפתור העריכה למרכז */
 .edit-profile-btn {
   display: inline-block;
   margin-bottom: 1rem;
 }
 
-/* במחשבים רחבים – מרחיבים את התוכן */
+/* במחשבים רחבים – אפשר להרחיב מעט את רוחב התוכן */
 @media (min-width: 768px) {
   .profile-inner {
-    max-width: none;
-    padding: 0 3rem;
+    max-width: 800px;
+    padding: 3rem;
   }
 }
 
-/* שאר הקלאסים נשארים ללא שינוי: */
+/* ———————————————————————————————— */
+/* שאר הקלאסים נשארים ללא שינוי:   */
+/* ———————————————————————————————— */
 
 .profile-divider {
   border-top: 1px solid #aaa;
