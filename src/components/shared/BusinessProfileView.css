@@ -1,167 +1,167 @@
-.gallery-tab {
-  padding: 2rem;
-  background-color: #fafafa;
+/* עמוד כללי */
+.profile-page {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  background-color: #f2e6ff;
+  padding: 2rem;
   text-align: center;
 }
 
-.gallery-categories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;  /* מרכז את הקטגוריות */
-}
-
-.category-card {
+/* הקופסה המרכזית */
+.business-profile-view.full-style {
   background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  padding: 1rem;
-  flex: 1 1 300px;
-  min-width: 280px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;    /* מרכז את התוכן בתוך הקטגוריה */
-}
-
-.category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
   width: 100%;
 }
 
-.category-title {
-  font-weight: 600;
-  font-size: 1.2rem;
-  color: #333;
+/* תוכן בפנים */
+.profile-inner {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
-.add-media-btn {
+/* כפתור עריכת פרופיל */
+.edit-profile-btn {
   background-color: #7b4fe0;
   color: white;
   border: none;
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 1rem;
   font-size: 0.9rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  align-self: flex-end;
+  margin-bottom: 1rem;
 }
-.add-media-btn:hover {
+.edit-profile-btn:hover {
   background-color: #6a3ed3;
 }
 
-.gallery-grid {
+/* שם העסק */
+.business-name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+/* תיאור וטלפון */
+.about-section, .phone-section {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* קו מפריד */
+.profile-divider {
+  width: 100%;
+  margin: 1rem 0;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+/* טאבים */
+.profile-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.profile-tabs .tab {
+  background-color: #f3f0ff;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.profile-tabs .tab.active {
+  background-color: #7b4fe0;
+  color: #fff;
+}
+
+.profile-tabs .tab:hover {
+  background-color: #ddd;
+}
+
+/* גלריה */
+.gallery-preview {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   gap: 0.5rem;
-  width: 100%;    /* יאפשר תצוגה מלאה */
+  width: 100%;
+  margin-top: 1rem;
 }
 
-.media-item {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+.gallery-item-wrapper {
   border-radius: 8px;
   overflow: hidden;
-  cursor: grab;
-  background-color: #eee;
-  transition: transform 0.2s ease;
-}
-.media-item:active {
-  cursor: grabbing;
 }
 
-.media-item img,
-.media-item video {
+.gallery-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: filter 0.2s ease;
 }
 
-.media-item:hover img,
-.media-item:hover video {
-  filter: brightness(85%);
-}
-
-.media-actions {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: flex;
-  gap: 6px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-.media-item:hover .media-actions {
-  opacity: 1;
-}
-
-.media-actions button {
-  background-color: rgba(0, 0, 0, 0.65);
-  color: white;
-  border: none;
-  padding: 4px 6px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.media-actions button:hover {
-  background-color: rgba(0, 0, 0, 0.85);
-}
-
-.media-info {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: #555;
-  text-align: center;
-}
-
-/* עבור טאב ראשי (shared style) */
-.media-preview {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 0.5rem;
-  margin-top: 1rem;
+/* ביקורות */
+.reviews {
   width: 100%;
 }
 
-/* כפתור שמור אחיד */
-.save-button {
-  background-color: #7b4fe0;
-  color: #fff;
-  padding: 0.6rem 1.4rem;
+.review-card.improved {
+  background-color: #fafafa;
+  padding: 1rem;
   border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  margin-bottom: 0.5rem;
+  text-align: right;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.review-user {
+  font-weight: bold;
+  color: #333;
+}
+
+.star-text {
+  color: #ff9900;
+}
+
+/* שאלות ותשובות */
+.faqs {
+  width: 100%;
+}
+
+.faq-item {
+  background-color: #fafafa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  text-align: right;
+}
+
+.faq-item strong {
+  color: #333;
+}
+
+/* פלייסהולדרים */
+.chat-tab-placeholder, .shop-tab-placeholder {
   margin-top: 1rem;
-}
-.save-button:hover {
-  background-color: #6a3ed3;
-}
-
-/* סטייל לפופאפ עריכת fit */
-.fit-popup {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 4px 6px;
-  z-index: 10;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.fit-popup select {
-  font-size: 0.85rem;
-  padding: 2px 4px;
+  color: #777;
+  font-size: 0.95rem;
 }
