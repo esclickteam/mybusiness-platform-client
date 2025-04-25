@@ -1,11 +1,8 @@
-// src/pages/business/dashboardPages/build/buildTabs/FaqTab.jsx
 import React, { useState, useEffect } from 'react';
-// סגנונות כלליים של עמוד הבניה
 import '../Build.css';
-// סגנונות ספציפיים לטאב שאלות ותשובות
 import './FaqTab.css';
-
 import { v4 as uuidv4 } from 'uuid';
+import API from '@api'; // לוודא קיים
 
 const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
   const [openAnswers, setOpenAnswers] = useState([]);
@@ -13,43 +10,33 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
   const [editFaqId, setEditFaqId] = useState(null);
   const [editedFaq, setEditedFaq] = useState({ question: '', answer: '' });
 
-  const isValidUuid = (id) => {
-    return (
-      typeof id === 'string' &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
-        id
-      )
-    );
-  };
+  const isValidUuid = (id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
 
   useEffect(() => {
     const upgradedFaqs = faqs.map((faq) => {
       if (!isValidUuid(faq.id)) {
-        console.warn(
-          `🔄 ממיר id ישן ל-uuid עבור שאלה: "${faq.question}"`
-        );
         return { ...faq, id: uuidv4() };
       }
       return faq;
     });
-
-    const hasUpgrades = upgradedFaqs.some(
-      (faq, idx) => faq.id !== faqs[idx].id
-    );
+    const hasUpgrades = upgradedFaqs.some((faq, idx) => faq.id !== faqs[idx].id);
     if (hasUpgrades) {
       setFaqs(upgradedFaqs);
+      saveFaqsToServer(upgradedFaqs);
     }
-  }, []); // ריצה פעם אחת על mount
+  }, []);
 
-  if (!Array.isArray(faqs)) {
-    console.error('⚠️ faqs אינו מערך:', faqs);
-    return <p>שגיאה בטעינת שאלות</p>;
-  }
+  const saveFaqsToServer = async (updatedFaqs) => {
+    try {
+      await API.put(`/business/${currentUser.businessId}`, { faqs: updatedFaqs });
+      console.log("✅ נשמר לשרת");
+    } catch (err) {
+      console.error("❌ שגיאה בשמירה:", err);
+    }
+  };
 
   const toggleAnswer = (id) => {
-    setOpenAnswers((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
+    setOpenAnswers((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
   };
 
   const handleChange = (e) => {
@@ -61,30 +48,28 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
     e.preventDefault();
     if (!newFaq.question.trim() || !newFaq.answer.trim()) return;
 
-    const newEntry = {
-      ...newFaq,
-      id: uuidv4(),
-      userId: currentUser.id,
-    };
+    const newEntry = { ...newFaq, id: uuidv4(), userId: currentUser.id };
+    const updatedFaqs = [newEntry, ...faqs];
 
-    setFaqs([newEntry, ...faqs]);
+    setFaqs(updatedFaqs);
+    saveFaqsToServer(updatedFaqs);
     setNewFaq({ question: '', answer: '' });
   };
 
   const handleDelete = (id) => {
     const updated = faqs.filter((faq) => faq.id !== id);
     setFaqs(updated);
+    saveFaqsToServer(updated);
   };
 
   const handleSaveEdit = (id) => {
     if (!editedFaq.question.trim() || !editedFaq.answer.trim()) return;
 
     const updated = faqs.map((faq) =>
-      faq.id === id
-        ? { ...faq, question: editedFaq.question, answer: editedFaq.answer }
-        : faq
+      faq.id === id ? { ...faq, question: editedFaq.question, answer: editedFaq.answer } : faq
     );
     setFaqs(updated);
+    saveFaqsToServer(updated);
     setEditFaqId(null);
     setEditedFaq({ question: '', answer: '' });
   };
@@ -127,10 +112,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
                     className="inline-btn edit"
                     onClick={() => {
                       setEditFaqId(faq.id);
-                      setEditedFaq({
-                        question: faq.question,
-                        answer: faq.answer,
-                      });
+                      setEditedFaq({ question: faq.question, answer: faq.answer });
                     }}
                   >
                     ✏️ ערוך
@@ -149,22 +131,12 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
                   <input
                     type="text"
                     value={editedFaq.question}
-                    onChange={(e) =>
-                      setEditedFaq((prev) => ({
-                        ...prev,
-                        question: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => setEditedFaq((prev) => ({ ...prev, question: e.target.value }))}
                     placeholder="עדכן את השאלה"
                   />
                   <textarea
                     value={editedFaq.answer}
-                    onChange={(e) =>
-                      setEditedFaq((prev) => ({
-                        ...prev,
-                        answer: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => setEditedFaq((prev) => ({ ...prev, answer: e.target.value }))}
                     placeholder="עדכן את התשובה"
                   />
                   <button
@@ -183,15 +155,9 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
                     onClick={() => toggleAnswer(faq.id)}
                     className="toggle-answer-btn"
                   >
-                    {openAnswers.includes(faq.id)
-                      ? 'הסתר תשובה'
-                      : 'הצג תשובה'}
+                    {openAnswers.includes(faq.id) ? 'הסתר תשובה' : 'הצג תשובה'}
                   </button>
-                  <div
-                    className={`faq-answer-wrapper ${
-                      openAnswers.includes(faq.id) ? 'open' : ''
-                    }`}
-                  >
+                  <div className={`faq-answer-wrapper ${openAnswers.includes(faq.id) ? 'open' : ''}`}>
                     {openAnswers.includes(faq.id) && (
                       <p>
                         <strong>תשובה:</strong> {faq.answer}
