@@ -1,4 +1,3 @@
-// src/components/shared/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "@api";
@@ -20,6 +19,10 @@ export default function BusinessProfileView() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
+  // צ'אט
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatName, setChatName] = useState("");
+
   useEffect(() => {
     setLoading(true);
     API.get(`/business/${businessId}`)
@@ -31,6 +34,26 @@ export default function BusinessProfileView() {
       .finally(() => setLoading(false));
   }, [businessId]);
 
+  const sendChatMessage = async () => {
+    if (!chatMessage.trim() || !chatName.trim()) {
+      alert("נא למלא את כל השדות");
+      return;
+    }
+
+    try {
+      await API.post(`/business/${businessId}/chat`, {
+        name: chatName,
+        text: chatMessage,
+      });
+      alert("✅ ההודעה נשלחה!");
+      setChatMessage("");
+      setChatName("");
+    } catch (err) {
+      console.error("❌ שגיאה בשליחת ההודעה:", err);
+      alert("❌ שגיאה בשליחה");
+    }
+  };
+
   if (loading) return <div>טוען…</div>;
   if (!profileData) return <div>העסק לא נמצא</div>;
 
@@ -41,17 +64,14 @@ export default function BusinessProfileView() {
     gallery = [],
     reviews = [],
     faqs = []
-    // אפשר להוסיף כאן נתונים לצ'אט או לחנות אם תרצה בעתיד
   } = profileData;
 
-  // סינון רק ביקורות עם rating מספרי
   const realReviews = reviews.filter(r => typeof r.rating === "number");
 
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          {/* ✏️ כפתור עריכה */}
           <button
             className="edit-profile-btn"
             onClick={() => navigate(`/business/${businessId}/edit`)}
@@ -59,13 +79,10 @@ export default function BusinessProfileView() {
             ערוך עמוד עסקי ✏️
           </button>
 
-          {/* שם העסק */}
           <h1 className="business-name">{name}</h1>
 
-          {/* רק בטאב ראשי */}
           {currentTab === "ראשי" && (
             <>
-              {/* תיאור */}
               {description && (
                 <div className="about-section">
                   <p className="about-snippet">
@@ -75,7 +92,6 @@ export default function BusinessProfileView() {
                   </p>
                 </div>
               )}
-              {/* טלפון */}
               {phone && (
                 <div className="phone-section">
                   <strong>טלפון:</strong> {phone}
@@ -86,7 +102,6 @@ export default function BusinessProfileView() {
 
           <hr className="profile-divider" />
 
-          {/* פס טאבים */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
@@ -99,7 +114,6 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
-          {/* תכולת טאב: גלריה */}
           {currentTab === "גלריה" && gallery.length > 0 && (
             <div className="gallery-preview no-actions">
               {gallery.map((item, i) => {
@@ -120,7 +134,6 @@ export default function BusinessProfileView() {
             </div>
           )}
 
-          {/* תכולת טאב: ביקורות */}
           {currentTab === "ביקורות" && realReviews.length > 0 && (
             <div className="reviews">
               <h3>⭐ ביקורות אחרונות</h3>
@@ -138,7 +151,6 @@ export default function BusinessProfileView() {
             </div>
           )}
 
-          {/* תכולת טאב: שאלות ותשובות */}
           {currentTab === "שאלות ותשובות" && faqs.length > 0 && (
             <div className="faqs">
               <h3>❓ שאלות ותשובות</h3>
@@ -151,14 +163,25 @@ export default function BusinessProfileView() {
             </div>
           )}
 
-          {/* תכולת טאב: צ'אט */}
           {currentTab === "צ'אט עם העסק" && (
-            <div className="chat-tab-placeholder">
-              <p>🚧 תכונה זו תיבנה בקרוב…</p>
+            <div className="chat-tab">
+              <h3>💬 שלח הודעה לעסק</h3>
+              <textarea
+                placeholder="כתוב הודעה..."
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                rows={4}
+              />
+              <input
+                type="text"
+                placeholder="השם שלך"
+                value={chatName}
+                onChange={(e) => setChatName(e.target.value)}
+              />
+              <button onClick={sendChatMessage}>שלח</button>
             </div>
           )}
 
-          {/* תכולת טאב: חנות / יומן */}
           {currentTab === "חנות / יומן" && (
             <div className="shop-tab-placeholder">
               <p>🚧 תכונה זו תיבנה בקרוב…</p>

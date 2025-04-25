@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Paperclip,
-  Mic,
-  Image,
-  FileText,
-  Send,
-  ScrollText,
-  FileSignature,
-} from "lucide-react";
-import axios from "axios";
+import { Paperclip, Mic, Image, FileText, Send, ScrollText, FileSignature } from "lucide-react";
+import API from "@api"; // השתמש ב־API במקום axios
 
 const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => {
   const [messages, setMessages] = useState([]);
@@ -16,6 +8,8 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const messagesEndRef = useRef(null);
+
+  const isDemo = partnerId === "demo123";
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -34,7 +28,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
       }
 
       try {
-        const res = await axios.get(`/api/chat/${partnerId}`);
+        const res = await API.get(`/chat/${partnerId}`);
         setMessages(res.data || []);
       } catch (err) {
         console.error("❌ שגיאה בטעינת שיחה", err);
@@ -57,15 +51,17 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
     setMessages((prev) => [...prev, { ...newMessage, from: "me", pending: true }]);
     setInput("");
 
-    try {
-      await axios.post("/api/chat/send", newMessage);
-      setMessages((prev) =>
-        prev.map((msg, i) =>
-          i === prev.length - 1 ? { ...msg, pending: false } : msg
-        )
-      );
-    } catch (error) {
-      console.error("❌ שגיאה בשליחת הודעה", error);
+    if (!isDemo) {
+      try {
+        await API.post("/chat/send", newMessage);
+        setMessages((prev) =>
+          prev.map((msg, i) =>
+            i === prev.length - 1 ? { ...msg, pending: false } : msg
+          )
+        );
+      } catch (error) {
+        console.error("❌ שגיאה בשליחת הודעה", error);
+      }
     }
   };
 
@@ -133,10 +129,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
               <div key={idx} className={`bc-bubble ${isMe ? "bc-bubble-business" : "bc-bubble-client"}`}>
                 <div>{msg.type === "audio" ? <audio controls src={msg.fileData} /> : msg.text}</div>
                 <div className="bc-time">
-                  {new Date(msg.time).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {new Date(msg.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   {msg.pending && <span className="ml-2 text-gray-400">⏳</span>}
                 </div>
               </div>
@@ -157,11 +150,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
         >
           <Mic size={18} color={isRecording ? "#e74c3c" : "#6c5ce7"} />
         </button>
-        <button
-          className="p-2 hover:text-purple-600"
-          onClick={handleSendAgreement}
-          title="שלח הסכם"
-        >
+        <button className="p-2 hover:text-purple-600" onClick={handleSendAgreement} title="שלח הסכם">
           <FileSignature size={18} />
         </button>
         <input
