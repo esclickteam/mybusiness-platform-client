@@ -44,7 +44,8 @@ export default function Login() {
       // ניתוב לפי role
       switch (user.role) {
         case "business":
-          navigate("/dashboard", { replace: true });
+          // מעבירים ישר לדשבורד העסק עם ה־businessId
+          navigate(`/business/${user.businessId}/dashboard`, { replace: true });
           break;
         case "customer":
           navigate("/client/dashboard", { replace: true });
