@@ -1,4 +1,3 @@
-
 .faq-tab {
   padding: 40px;
   direction: rtl;
@@ -11,7 +10,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  align-items: center; /* או center או start לפי העדפה */
+  align-items: center;
 }
 
 .faq-form input,
@@ -19,8 +18,11 @@
   background: #f9f9ff;
   border: 1px solid #d4c4ef;
   color: #333;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  border-radius: 8px;
 }
-
 
 .faq-form input:focus,
 .faq-form textarea:focus {
@@ -29,7 +31,7 @@
 }
 
 .faq-form button {
-  width: 160px; /* אפשר גם 180px אם בא לך יותר בולט */
+  width: 160px;
   text-align: center;
   padding: 12px;
   font-size: 16px;
@@ -43,9 +45,6 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   margin-top: 10px;
 }
-
-
-
 
 .faq-form button:hover {
   background: linear-gradient(to right, #8e44ad, #6c3483);
@@ -124,6 +123,7 @@
 .save-edit-btn {
   background: #a5d6a7;
   color: #1b5e20;
+  margin-top: 8px;
 }
 
 .save-edit-btn:hover {
@@ -174,4 +174,23 @@
 
 .faq-answer-wrapper.open {
   max-height: 500px;
+}
+
+/* 💾 כפתור שמור הכל */
+.save-all-button {
+  background: linear-gradient(to right, #9b59b6, #8e44ad);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease;
+}
+
+.save-all-button:hover {
+  background: linear-gradient(to right, #8e44ad, #6c3483);
 }

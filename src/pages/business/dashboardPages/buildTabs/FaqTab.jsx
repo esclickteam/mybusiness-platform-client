@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../Build.css';
 import './FaqTab.css';
 import { v4 as uuidv4 } from 'uuid';
-import API from '@api'; // לוודא קיים
+import API from '@api';
 
 const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
   const [openAnswers, setOpenAnswers] = useState([]);
@@ -10,7 +10,8 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
   const [editFaqId, setEditFaqId] = useState(null);
   const [editedFaq, setEditedFaq] = useState({ question: '', answer: '' });
 
-  const isValidUuid = (id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
+  const isValidUuid = (id) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
 
   useEffect(() => {
     const upgradedFaqs = faqs.map((faq) => {
@@ -22,21 +23,23 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
     const hasUpgrades = upgradedFaqs.some((faq, idx) => faq.id !== faqs[idx].id);
     if (hasUpgrades) {
       setFaqs(upgradedFaqs);
-      saveFaqsToServer(upgradedFaqs);
     }
   }, []);
 
-  const saveFaqsToServer = async (updatedFaqs) => {
+  const saveFaqsToServer = async () => {
     try {
-      await API.put(`/business/${currentUser.businessId}`, { faqs: updatedFaqs });
-      console.log("✅ נשמר לשרת");
+      await API.put(`/business/${currentUser.businessId}`, { faqs });
+      alert("✅ כל השאלות נשמרו!");
     } catch (err) {
       console.error("❌ שגיאה בשמירה:", err);
+      alert("❌ שגיאה בשמירה");
     }
   };
 
   const toggleAnswer = (id) => {
-    setOpenAnswers((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+    setOpenAnswers((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
   };
 
   const handleChange = (e) => {
@@ -49,17 +52,13 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
     if (!newFaq.question.trim() || !newFaq.answer.trim()) return;
 
     const newEntry = { ...newFaq, id: uuidv4(), userId: currentUser.id };
-    const updatedFaqs = [newEntry, ...faqs];
-
-    setFaqs(updatedFaqs);
-    saveFaqsToServer(updatedFaqs);
+    setFaqs([newEntry, ...faqs]);
     setNewFaq({ question: '', answer: '' });
   };
 
   const handleDelete = (id) => {
     const updated = faqs.filter((faq) => faq.id !== id);
     setFaqs(updated);
-    saveFaqsToServer(updated);
   };
 
   const handleSaveEdit = (id) => {
@@ -69,7 +68,6 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
       faq.id === id ? { ...faq, question: editedFaq.question, answer: editedFaq.answer } : faq
     );
     setFaqs(updated);
-    saveFaqsToServer(updated);
     setEditFaqId(null);
     setEditedFaq({ question: '', answer: '' });
   };
@@ -143,7 +141,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
                     className="save-edit-btn"
                     onClick={() => handleSaveEdit(faq.id)}
                   >
-                    💾 שמור
+                    💾 שמור עריכה
                   </button>
                 </div>
               ) : (
@@ -170,6 +168,13 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
           ))
         )}
       </div>
+
+      {/* 💾 כפתור שמור כללי */}
+      {!isPreview && faqs.length > 0 && (
+        <button className="save-all-button" onClick={saveFaqsToServer}>
+          💾 שמור הכל
+        </button>
+      )}
     </div>
   );
 };
