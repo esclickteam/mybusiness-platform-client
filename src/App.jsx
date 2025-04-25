@@ -1,14 +1,3 @@
-// src/App.jsx
-import React, { Suspense, lazy, useEffect } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Header from "./components/Header";
-import ProtectedRoute from "./components/ProtectedRoute";
-import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
-import QuickJobsBoard from "./pages/QuickJobsBoard";
-import QuickJobForm from "./pages/QuickJobForm";
-import ResetPassword from "./pages/ResetPassword";
-import ChangePassword from "./pages/ChangePassword";
-
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
 const About                   = lazy(() => import("./pages/About"));
@@ -23,7 +12,7 @@ const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
 
 // Public profile view (shared component)
-const BusinessProfileView     = lazy(() => import("./components/shared/BusinessProfileView"));
+const BusinessProfileView     = lazy(() => import("./components/shared/BusinessProfileView")); // פרופיל ציבורי של עסק
 
 // Build page (edit)
 const BuildBusinessPage       = lazy(() => import("./pages/business/dashboardPages/Build"));
@@ -44,6 +33,8 @@ const AdminUsers              = lazy(() => import("./pages/admin/AdminUsers"));
 const EditSiteContent         = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles             = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage         = lazy(() => import("./pages/admin/AdminPayoutPage"));
+
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -76,10 +67,10 @@ export default function App() {
           <Route path="/reset-password"  element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
 
-          
+          {/* 🔹 דף פרופיל ציבורי של עסק */}
+        <Route path="/business/:businessId" element={<BusinessProfilePage />} /> {/* הוספתי את ה-Route */}
 
           
-
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
           <Route
             path="/business/:businessId/*"
