@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
+import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
 import MainTab from "./buildTabs/MainTab";
@@ -105,12 +106,7 @@ const BuildBusinessPage = () => {
   
       console.log("📤 נשלח לשרת:", businessDetails);
   
-      const res = await fetch("https://api.esclick.co.il/api/business/my", {
-        method: "PUT",
-        credentials: "include",
-        body: formData
-      });
-      
+      const res = await API.put("/business/my", formData);
   
       if (res.status === 200) {
         alert("✅ נשמר בהצלחה!");

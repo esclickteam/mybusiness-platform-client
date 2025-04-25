@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
 import BusinessChat from "./BusinessChat";
@@ -12,7 +13,7 @@ import "./Collab.css";
 
 export default function Collab() {
   const { user, loading } = useAuth();
-  const devMode = true; // ✅ מאפשר גישה חופשית בזמן פיתוח
+  const devMode = true; // מאפשר גישה חופשית בזמן פיתוח
 
   const [tab, setTab] = useState(0);
   const [showBusinessChat, setShowBusinessChat] = useState(false);
@@ -32,18 +33,9 @@ export default function Collab() {
 
   useEffect(() => {
     async function fetchProfile() {
-      const API_BASE_URL = "/api";
       try {
-        const res = await fetch(`${API_BASE_URL}/business/my`, {
-          credentials: "include",
-        });
-
-        const text = await res.text();
-        if (text.startsWith("<!DOCTYPE html>")) {
-          throw new Error("❌ חזר HTML במקום JSON – ייתכן וה־fetch לא פונה ל־API הנכון");
-        }
-
-        const data = JSON.parse(text);
+        // קריאה דרך ה-proxy ל-same-origin, שולחת אוטומטית את ה-cookie
+        const { data } = await API.get("/business/my");
         console.log("✅ נתוני העסק מהשרת:", data);
 
         setProfileData({
@@ -67,7 +59,8 @@ export default function Collab() {
   }, []);
 
   const isDevUser = user?.email === "newuser@example.com";
-  const hasCollabAccess = isDevUser || user?.subscriptionPlan?.includes("collaboration");
+  const hasCollabAccess =
+    isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
@@ -101,14 +94,19 @@ export default function Collab() {
 
   if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
   if (!user && !devMode) {
-    return <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>;
+    return (
+      <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>
+    );
   }
 
   if (!hasCollabAccess && !devMode) {
     return (
       <div className="p-6 text-center">
         <h2>שיתופי פעולה זמינים רק בחבילה מתקדמת</h2>
-        <p>שדרג את החבילה שלך כדי לפתוח את האפשרות לשתף פעולה עם עסקים אחרים.</p>
+        <p>
+          שדרג את החבילה שלך כדי לפתוח את האפשרות לשתף פעולה עם עסקים
+          אחרים.
+        </p>
         <UpgradeBanner />
       </div>
     );
@@ -117,7 +115,10 @@ export default function Collab() {
   return showBusinessChat ? (
     <div className="p-6 collab-container">
       <BusinessChat currentUser={user} />
-      <button className="collab-form-button mt-4" onClick={() => setShowBusinessChat(false)}>
+      <button
+        className="collab-form-button mt-4"
+        onClick={() => setShowBusinessChat(false)}
+      >
         🔙 חזרה לפרופיל העסקי
       </button>
     </div>
@@ -176,7 +177,10 @@ export default function Collab() {
 
       {tab === 2 && <CollabSentRequestsTab sentRequests={sentRequests} />}
       {tab === 3 && (
-        <CollabReceivedRequestsTab receivedRequests={receivedRequests} isDevUser={isDevUser} />
+        <CollabReceivedRequestsTab
+          receivedRequests={receivedRequests}
+          isDevUser={isDevUser}
+        />
       )}
       {tab === 4 && <CollabActiveTab isDevUser={isDevUser} />}
       {tab === 5 && <CollabMarketTab isDevUser={isDevUser} />}

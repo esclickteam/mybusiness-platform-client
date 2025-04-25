@@ -22,15 +22,12 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    // ✏️ הוספת proxy:
     proxy: {
-      // כל קריאה שמתחילה ב־/api תופנה אוטומטית ל־backend שלך
       '/api': {
         target: 'https://api.esclick.co.il',
-        changeOrigin: true,   // משנה את ה־Host ל־target
-        secure: false,        // אם יש לך SSL self-signed
-        rewrite: (path) => path.replace(/^\/api/, '/api') 
-        // (בשבילנו זה זהה, אבל אפשר לעדכן אם ברצונך להסיר/להוסיף prefix)
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api')
       },
     }
   }

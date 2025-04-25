@@ -1,5 +1,5 @@
-// src/pages/business/dashboardPages/Profile.jsx
 import React, { useEffect, useState } from "react";
+import API from "@api";
 import "./Profile.css";
 import ProfileHeader from "../../../components/shared/ProfileHeader";
 import MainTab from "./buildTabs/MainTab";
@@ -30,7 +30,7 @@ const fallbackBusiness = {
     { url: "https://via.placeholder.com/300", type: "image" },
     { url: "https://via.placeholder.com/300", type: "image" },
   ],
-  stories: [
+  story: [
     {
       url: "https://via.placeholder.com/150",
       type: "image",
@@ -58,20 +58,11 @@ export default function Profile() {
 
   useEffect(() => {
     async function fetchBusiness() {
-      const API_BASE_URL = "/api";
       const isLoggedIn = !!localStorage.getItem("token");
-      const url = `${API_BASE_URL}/business/my${isLoggedIn ? "" : "?dev=true"}`;
+      const suffix = isLoggedIn ? "" : "?dev=true";
 
       try {
-        const res = await fetch(url, { credentials: "include" });
-        if (res.status === 404) throw new Error("404 Not Found");
-
-        const text = await res.text();
-        if (text.startsWith("<!DOCTYPE html>") || text.includes("Not Found")) {
-          throw new Error("תשובת HTML – כנראה אין חיבור ל־API");
-        }
-
-        const data = JSON.parse(text);
+        const { data } = await API.get(`/business/my${suffix}`);
         setBusinessData({
           ...fallbackBusiness,
           ...data,
@@ -114,7 +105,6 @@ export default function Profile() {
       {/* 3. תוכן הטאב הנבחר */}
       {currentTab === "ראשי" && (
         <section>
-          {/* גלריה + שתי ביקורות אחרונות */}
           <MainTab isForm={false} businessDetails={businessData} />
         </section>
       )}
