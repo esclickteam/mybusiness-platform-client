@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import API from '@api';
 import BusinessCard from '../components/BusinessCard';
-import '../styles/BusinessList.css'; // אם עוד לא ייבאת
+import './BusinessList.css';
 
 const SearchBusinesses = () => {
   const [businesses, setBusinesses] = useState([]);
