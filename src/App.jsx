@@ -8,9 +8,9 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
+import BuildBusinessPage from "./pages/business/dashboardPages/Build"; // ← שימוש רק ב־Build
 
-// Lazy-loaded public pages
+// Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
 const About                   = lazy(() => import("./pages/About"));
 const HowItWorks              = lazy(() => import("./pages/HowItWorks"));
@@ -22,6 +22,7 @@ const Plans                   = lazy(() => import("./pages/business/Plans"));
 const Checkout                = lazy(() => import("./pages/Checkout"));
 const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
+const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
 const WorkSession             = lazy(() => import("./pages/staff/WorkSession"));
@@ -53,26 +54,39 @@ export default function App() {
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           {/* Public */}
-          <Route path="/"                    element={<HomePage />} />
-          <Route path="/about"               element={<About />} />
-          <Route path="/how-it-works"        element={<HowItWorks />} />
-          <Route path="/faq"                 element={<FAQ />} />
-          <Route path="/terms"               element={<Terms />} />
-          <Route path="/contact"             element={<Contact />} />
-          <Route path="/business"            element={<Business />} />
-          <Route path="/plans"               element={<Plans />} />
-          <Route path="/checkout"            element={<Checkout />} />
-          <Route path="/login"               element={<Login />} />
-          <Route path="/register"            element={<Register />} />
-          <Route path="/quick-jobs"          element={<QuickJobsBoard />} />
-          <Route path="/quick-jobs/new"      element={<QuickJobForm />} />
-          <Route path="/reset-password"      element={<ResetPassword />} />
-          <Route path="/change-password"     element={<ChangePassword />} />
+          <Route path="/"                      element={<HomePage />} />
+          <Route path="/about"                 element={<About />} />
+          <Route path="/how-it-works"          element={<HowItWorks />} />
+          <Route path="/faq"                   element={<FAQ />} />
+          <Route path="/terms"                 element={<Terms />} />
+          <Route path="/contact"               element={<Contact />} />
+          <Route path="/business"              element={<Business />} />
+          <Route path="/plans"                 element={<Plans />} />
+          <Route path="/checkout"              element={<Checkout />} />
+          <Route path="/login"                 element={<Login />} />
+          <Route path="/register"              element={<Register />} />
+          <Route path="/quick-jobs"            element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new"        element={<QuickJobForm />} />
+          <Route path="/reset-password"        element={<ResetPassword />} />
+          <Route path="/change-password"       element={<ChangePassword />} />
 
-          {/* Public business profile */}
-          <Route path="/business/:businessId" element={<PublicProfilePage />} />
+          {/* Public business profile & editor in one */}
+          <Route
+            path="/business/:businessId"
+            element={<BuildBusinessPage />}
+          />
 
-          {/* Business dashboard (protected, with sidebar tabs) */}
+          {/* Business profile editor (protected) */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BuildBusinessPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Business dashboard nested routes */}
           <Route
             path="/dashboard/*"
             element={
@@ -82,7 +96,7 @@ export default function App() {
             }
           />
 
-          {/* Client dashboard */}
+          {/* Customer Dashboard */}
           <Route
             path="/client/dashboard"
             element={
@@ -92,7 +106,7 @@ export default function App() {
             }
           />
 
-          {/* Staff */}
+          {/* Staff Dashboard */}
           <Route
             path="/staff/dashboard"
             element={
@@ -134,7 +148,7 @@ export default function App() {
             }
           />
 
-          {/* Manager */}
+          {/* Manager Dashboard */}
           <Route
             path="/manager/dashboard"
             element={
@@ -144,7 +158,7 @@ export default function App() {
             }
           />
 
-          {/* Admin */}
+          {/* Admin Dashboard */}
           <Route
             path="/admin/dashboard"
             element={
@@ -153,19 +167,68 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/admin/logs"          element={<ProtectedRoute roles={["admin"]}><AdminLogs /></ProtectedRoute>} />
-          <Route path="/admin/plans"         element={<ProtectedRoute roles={["admin"]}><AdminPlans /></ProtectedRoute>} />
-          <Route path="/admin/settings"      element={<ProtectedRoute roles={["admin"]}><AdminSettings /></ProtectedRoute>} />
-          <Route path="/admin/users"         element={<ProtectedRoute roles={["admin"]}><AdminUsers /></ProtectedRoute>} />
-          <Route path="/admin/site-edit"     element={<ProtectedRoute roles={["admin"]}><EditSiteContent /></ProtectedRoute>} />
-          <Route path="/admin/roles"         element={<ProtectedRoute roles={["admin"]}><ManageRoles /></ProtectedRoute>} />
-          <Route path="/admin/affiliate-payouts" element={<ProtectedRoute roles={["admin"]}><AdminPayoutPage /></ProtectedRoute>} />
+          <Route
+            path="/admin/logs"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AdminLogs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/plans"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AdminPlans />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AdminSettings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AdminUsers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/site-edit"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <EditSiteContent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/roles"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <ManageRoles />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/affiliate-payouts"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AdminPayoutPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Calendar Redirect */}
           <Route path="/dashboard/calendar" element={<Navigate to="/dashboard" />} />
 
           {/* Chat Test */}
-          <Route path="/chat-test-direct"    element={<ChatTestPage />} />
+          <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
           {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
