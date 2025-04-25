@@ -1,7 +1,8 @@
 // src/components/BusinessProfileCard.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import '../pages/BusinessProfilePage.css'; // משמש גם לעיצוב הכרטיס
+import PublicBusinessTabs from './PublicBusinessTabs';
 
 const BusinessProfileCard = ({ business }) => {
   const {
@@ -17,18 +18,14 @@ const BusinessProfileCard = ({ business }) => {
   } = business;
 
   return (
-    <Link to={`/business/${_id}`} className="business-card-link">
+    <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          {logo && (
-            <img
-              src={logo}
-              alt={name}
-              className="business-profile__logo"
-            />
-          )}
-
-          <h1 className="business-profile__name">{name}</h1>
+          {/* כפתור לניווט לפרופיל מלא */}
+          <Link to={`/business/${_id}`} className="business-profile__name-link">
+            {logo && <img src={logo} alt={name} className="business-profile__logo" />}
+            <h1 className="business-profile__name">{name}</h1>
+          </Link>
 
           {description && (
             <p className="business-profile__description">
@@ -58,18 +55,20 @@ const BusinessProfileCard = ({ business }) => {
               <h2>גלריה</h2>
               <div className="gallery-images">
                 {gallery.map((url, idx) => (
-                  <img
-                    key={idx}
-                    src={url}
-                    alt={`${name} תמונה ${idx + 1}`}
-                  />
+                  <img key={idx} src={url} alt={`${name} תמונה ${idx + 1}`} />
                 ))}
               </div>
             </div>
           )}
         </div>
+
+        {/* רצועת הטאבים הציבוריים */}
+        <PublicBusinessTabs />
+
+        {/* Outlet להצגת תוכן הטאב הנבחר */}
+        <Outlet />
       </div>
-    </Link>
+    </div>
   );
 };
 
