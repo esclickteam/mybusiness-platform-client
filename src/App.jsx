@@ -71,20 +71,21 @@ export default function App() {
           <Route path="/change-password"       element={<ChangePassword />} />
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
-          <Route
-            path="/business/*"
-            element={
-              <ProtectedRoute roles={["business"]}>
-                <BusinessDashboardRoutes />
-              </ProtectedRoute>
-            }
-          />
+<Route
+  path="/business/*"
+  element={
+    <ProtectedRoute roles={["business"]}>
+      <BusinessDashboardRoutes />
+    </ProtectedRoute>
+  }
+/>
 
-          {/* 🔹 עמוד פרופיל ציבורי של עסק (חייב להיות אחרי הדשבורד) */}
-          <Route
-            path="/business/:businessId"
-            element={<BusinessPage />}
-          />
+{/* 🔹 עמוד פרופיל ציבורי של עסק (חייב להיות אחרי הדשבורד) */}
+<Route
+  path="/business/:businessId"
+  element={<BusinessPage />}
+/>
+
 
           {/* 🔹 דשבורד לקוח */}
           <Route

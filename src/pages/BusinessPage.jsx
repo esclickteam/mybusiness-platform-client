@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
 import BusinessProfileView from "../components/shared/BusinessProfileView";
 import checkFeatureAvailability from "../components/FeatureAvailability";
+import { useAuth } from "../context/AuthContext";
 
 export default function BusinessPage() {
   const { businessId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [business, setBusiness] = useState(null);
   const [userPlan, setUserPlan] = useState("free");
   const [loading, setLoading] = useState(true);
@@ -36,8 +40,31 @@ export default function BusinessPage() {
   const canChat = checkFeatureAvailability("chat", userPlan);
   const canSchedule = checkFeatureAvailability("booking", userPlan);
 
+  const isOwner =
+    user?.role === "business" && user.businessId === businessId;
+
   return (
     <div className="business-page-container">
+      {/* ✅ כפתור חזור לעריכה - רק לבעל העסק */}
+      {isOwner && (
+        <div style={{ textAlign: "center", margin: "2rem 0" }}>
+          <button
+            onClick={() => navigate("/business/build")}
+            style={{
+              padding: "10px 20px",
+              background: "#7c4dff",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "16px"
+            }}
+          >
+            ✏️ חזור לעריכה
+          </button>
+        </div>
+      )}
+
       <BusinessProfileView
         profileData={business}
         profileImage={business.logo?.preview || business.logo}
