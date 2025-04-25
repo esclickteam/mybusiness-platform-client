@@ -24,7 +24,9 @@ export default function BusinessPage() {
         // ערכי ברירת מחדל כדי להימנע מ־undefined.includes(...)
         b.services     = Array.isArray(b.services)    ? b.services    : [];
         b.gallery      = Array.isArray(b.gallery)     ? b.gallery     : [];
-        b.galleryFits  = Array.isArray(b.galleryFits) ? b.galleryFits : [];
+        b.galleryFits  = b.galleryFits && typeof b.galleryFits === "object"
+                          ? b.galleryFits
+                          : {};
         b.story        = Array.isArray(b.story)       ? b.story       : [];
         b.reviews      = Array.isArray(b.reviews)     ? b.reviews     : [];
         b.faqs         = Array.isArray(b.faqs)        ? b.faqs        : [];
@@ -52,7 +54,7 @@ export default function BusinessPage() {
 
   return (
     <div className="business-page-container">
-      {/* כפתור חזרה לעריכה - רק לבעל העסק */}
+      {/* כפתור עריכת פרופיל - רק לבעל העסק */}
       {isOwner && (
         <div style={{ textAlign: "center", margin: "2rem 0" }}>
           <button
@@ -67,7 +69,7 @@ export default function BusinessPage() {
               fontSize: "16px"
             }}
           >
-            ✏️ חזור לעריכה
+            ✏️ ערוך פרופיל
           </button>
         </div>
       )}
