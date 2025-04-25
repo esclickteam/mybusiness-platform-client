@@ -8,7 +8,6 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import PublicProfilePage from "./pages/PublicProfilePage";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 
 // Lazy-loaded public pages
