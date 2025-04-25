@@ -20,11 +20,10 @@ const tabs = [
 export default function BusinessDashboardLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const { businessId } = useParams();
+  const { businessId } = useParams(); // <–– כאן
 
   useEffect(() => {
     if (!loading && user?.role !== "business") {
-      // אם אין הרשאה, נייצא חזרה לדף הבית
       navigate("/", { replace: true });
     }
   }, [user, loading, navigate]);
