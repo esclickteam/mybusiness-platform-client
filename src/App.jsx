@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
@@ -8,7 +7,6 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import BuildBusinessPage from "./pages/business/dashboardPages/Build"; // ← שימוש רק ב־Build
 
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
@@ -53,7 +51,8 @@ export default function App() {
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
-          {/* Public */}
+
+          {/* 🔹 עמודים ציבוריים */}
           <Route path="/"                      element={<HomePage />} />
           <Route path="/about"                 element={<About />} />
           <Route path="/how-it-works"          element={<HowItWorks />} />
@@ -70,25 +69,9 @@ export default function App() {
           <Route path="/reset-password"        element={<ResetPassword />} />
           <Route path="/change-password"       element={<ChangePassword />} />
 
-          {/* Public business profile & editor in one */}
+          {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
           <Route
-            path="/business/:businessId"
-            element={<BuildBusinessPage />}
-          />
-
-          {/* Business profile editor (protected) */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute roles={["business"]}>
-                <BuildBusinessPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Business dashboard nested routes */}
-          <Route
-            path="/dashboard/*"
+            path="/business/*"
             element={
               <ProtectedRoute roles={["business"]}>
                 <BusinessDashboardRoutes />
@@ -96,7 +79,7 @@ export default function App() {
             }
           />
 
-          {/* Customer Dashboard */}
+          {/* 🔹 דשבורד לקוח */}
           <Route
             path="/client/dashboard"
             element={
@@ -106,7 +89,7 @@ export default function App() {
             }
           />
 
-          {/* Staff Dashboard */}
+          {/* 🔹 דשבורד עובדים */}
           <Route
             path="/staff/dashboard"
             element={
@@ -148,7 +131,7 @@ export default function App() {
             }
           />
 
-          {/* Manager Dashboard */}
+          {/* 🔹 דשבורד מנהל */}
           <Route
             path="/manager/dashboard"
             element={
@@ -158,7 +141,7 @@ export default function App() {
             }
           />
 
-          {/* Admin Dashboard */}
+          {/* 🔹 דשבורד אדמין */}
           <Route
             path="/admin/dashboard"
             element={
@@ -224,13 +207,13 @@ export default function App() {
             }
           />
 
-          {/* Calendar Redirect */}
-          <Route path="/dashboard/calendar" element={<Navigate to="/dashboard" />} />
+          {/* 🔹 הפניה פנימית */}
+          <Route path="/dashboard/calendar" element={<Navigate to="/business/dashboard" />} />
 
-          {/* Chat Test */}
+          {/* 🔹 צ'אט טסט */}
           <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
-          {/* Catch-all */}
+          {/* 🔹 ברירת מחדל */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
