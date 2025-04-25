@@ -78,15 +78,7 @@ export default function App() {
 
           
 
-          {/* 🔹 עמוד עריכה פרופיל עסקי — רוחב מלא */}
-          <Route
-            path="/business/:businessId/edit"
-            element={
-              <ProtectedRoute roles={["business"]}>
-                <BuildBusinessPage />
-              </ProtectedRoute>
-            }
-          />
+          
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
           <Route
