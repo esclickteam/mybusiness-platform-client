@@ -3,30 +3,37 @@
 /* רקע סגול ברוחב מלא, עם פדינג וצל עדין */
 .business-profile-view.full-style {
   background-color: #f2e6ff;
-  padding: 2rem 0;               /* פדינג ורטיקלי בלבד */
+  padding: 2rem 0;               
   border-radius: 2rem;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* תכולת הפרופיל – מגבילה וממרכזת את התוכן באמצע המסך */
+/* שכבת התוכן המרכזית */
 .profile-inner {
   width: 100%;
-  max-width: 600px;              /* רוחב קבוע במובייל */
-  margin: 0 auto;                /* מרכז אופקית */
-  padding: 0 2rem;               /* ריווח פנימי צדדי */
+  max-width: 600px;        /* רוחב קבוע במובייל */
+  margin: 0 auto;          /* מרכז אופקית */
+  padding: 0 2rem;         /* ריווח צדדי */
   box-sizing: border-box;
+  text-align: center;      /* מרכז את כל הטקסט והכותרות */
 }
 
-/* במסכים רחבים – הסר את המגבלה כדי שהתוכן יתפרס */
+/* עיצוב כפתור העריכה: ממרכז את עצמו אופקית */
+.edit-profile-btn {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+/* במחשבים רחבים – מרחיבים את התוכן */
 @media (min-width: 768px) {
   .profile-inner {
     max-width: none;
-    padding: 0 3rem;             /* פדינג גדול יותר במחשב */
+    padding: 0 3rem;
   }
 }
 
-/* המחלקות הבאות נשארות כפי שהיו, ללא שינוי */
+/* שאר הקלאסים נשארים ללא שינוי: */
 
 .profile-divider {
   border-top: 1px solid #aaa;

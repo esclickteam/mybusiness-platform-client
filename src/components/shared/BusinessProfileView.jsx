@@ -46,6 +46,7 @@ export default function BusinessProfileView() {
           ערוך עמוד עסקי ✏️
         </button>
 
+        {/* שם העסק */}
         <h1 className="business-name">{name}</h1>
 
         {/* תיאור */}
