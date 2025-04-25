@@ -1,42 +1,51 @@
+// src/components/shared/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import API from "@api";
 import "./BusinessProfileView.css";
 
 export default function BusinessProfileView() {
   const { businessId } = useParams();
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     API.get(`/business/${businessId}`)
-      .then(res => {
+      .then((res) => {
         const data = res.data.business || res.data;
         setProfileData(data);
       })
-      .catch(err => console.error("❌ Error loading business:", err))
+      .catch((err) => console.error("❌ Error loading business:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  if (loading) return <div>טוען...</div>;
+  if (loading) return <div>טוען…</div>;
   if (!profileData) return <div>העסק לא נמצא</div>;
 
-  // מעדיף description על about
-  const description =
-    profileData.description?.trim()
-      ? profileData.description
-      : profileData.about || "";
-
-  const phone = profileData.phone || "";
-  const { gallery = [], reviews = [] } = profileData;
+  const {
+    name,
+    description = "",
+    phone = "",
+    gallery = [],
+    reviews = [],
+  } = profileData;
 
   return (
     <div className="business-profile-view full-style">
-      <button className="edit-profile-btn">ערוך פרופיל ✏️</button>
+      {/* כפתור עריכה */}
+      <button
+        className="edit-profile-btn"
+        onClick={() => navigate(`/business/${businessId}/dashboard`)}
+      >
+        ערוך פרופיל ✏️
+      </button>
 
-      <h1 className="business-name">{profileData.name}</h1>
+      {/* שם */}
+      <h1 className="business-name">{name}</h1>
 
+      {/* תיאור */}
       {description && (
         <div className="about-section">
           <p className="about-snippet">
@@ -47,6 +56,7 @@ export default function BusinessProfileView() {
         </div>
       )}
 
+      {/* טלפון */}
       {phone && (
         <div className="phone-section">
           <strong>טלפון:</strong> {phone}
@@ -55,6 +65,7 @@ export default function BusinessProfileView() {
 
       <hr className="profile-divider" />
 
+      {/* גלריה */}
       {gallery.length > 0 && (
         <div className="gallery-preview no-actions">
           {gallery.map((item, i) => {
@@ -70,10 +81,11 @@ export default function BusinessProfileView() {
         </div>
       )}
 
+      {/* ביקורות אמיתיות בלבד */}
       {reviews.length > 0 && (
         <div className="reviews">
           <h3>⭐ ביקורות אחרונות</h3>
-          {reviews.slice(0, 2).map((r, i) => (
+          {reviews.map((r, i) => (
             <div key={i} className="review-card improved">
               <div className="review-header">
                 <strong className="review-user">{r.user}</strong>
