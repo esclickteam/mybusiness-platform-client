@@ -8,7 +8,7 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import BusinessesList from './pages/BusinessesList';
+import BusinessesList from "./pages/BusinessesList";
 
 // Lazy-loaded public pages
 const HomePage           = lazy(() => import("./pages/Home"));
@@ -27,22 +27,12 @@ const Register           = lazy(() => import("./pages/Register"));
 // Lazy-loaded public profile with nested tabs
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 
-// Lazy-loaded public tab content (reusing existing buildTabs components)
-const GalleryPage        = lazy(() => import(
-  './pages/business/dashboardPages/buildTabs/GalleryTab'
-));
-const ReviewsPage        = lazy(() => import(
-  './pages/business/dashboardPages/buildTabs/ReviewsModule'
-));
-const FaqPage            = lazy(() => import(
-  './pages/business/dashboardPages/buildTabs/FaqTab'
-));
-const ChatPage           = lazy(() => import(
-  './pages/business/dashboardPages/buildTabs/ChatTab'
-));
-const ShopAndCalendarPage = lazy(() => import(
-  './pages/business/dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar'
-));
+// Lazy-loaded public tab content
+const GalleryTab          = lazy(() => import("./pages/business/dashboardPages/buildTabs/GalleryTab"));
+const ReviewsModule       = lazy(() => import("./pages/business/dashboardPages/buildTabs/ReviewsModule"));
+const FaqTab              = lazy(() => import("./pages/business/dashboardPages/buildTabs/FaqTab"));
+const ChatTab             = lazy(() => import("./pages/business/dashboardPages/buildTabs/ChatTab"));
+const ShopAndCalendar     = lazy(() => import("./pages/business/dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar"));
 
 // Lazy-loaded edit & dashboard routes
 const BuildBusinessPage       = lazy(() => import("./pages/business/dashboardPages/Build"));
@@ -99,11 +89,11 @@ export default function App() {
           {/* 🔹 דף פרופיל ציבורי של עסק עם nested tabs */}
           <Route path="/business/:businessId" element={<BusinessProfilePage />}>
             <Route index element={null} />
-            <Route path="gallery" element={<GalleryPage />} />
-            <Route path="reviews" element={<ReviewsPage />} />
-            <Route path="faq" element={<FaqPage />} />
-            <Route path="chat" element={<ChatPage />} />
-            <Route path="shop" element={<ShopAndCalendarPage />} />
+            <Route path="gallery" element={<GalleryTab />} />
+            <Route path="reviews" element={<ReviewsModule />} />
+            <Route path="faq" element={<FaqTab />} />
+            <Route path="chat" element={<ChatTab />} />
+            <Route path="shop" element={<ShopAndCalendar />} />
           </Route>
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
