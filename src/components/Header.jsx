@@ -1,3 +1,4 @@
+// src/components/Header.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -23,7 +24,8 @@ const Header = () => {
   const getDashboardPath = () => {
     switch (user?.role) {
       case "business":
-        return "/business/build"; // ✅ נתיב נכון לדשבורד בעלי עסקים
+        // נווט לדשבורד העסק לפי ה-businessId
+        return `/business/${user.businessId}/dashboard`;
       case "customer":
         return "/client/dashboard";
       case "worker":
@@ -39,7 +41,7 @@ const Header = () => {
 
   return (
     <nav className="app-header">
-      <button className="menu-button">
+      <button className="menu-button" onClick={() => {/* פתיחת סיידבר אם יש */}}>
         <FaBars size={24} />
       </button>
 
