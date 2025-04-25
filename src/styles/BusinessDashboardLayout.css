@@ -10,9 +10,8 @@
   flex-direction: row; /* סדר רגיל: תוכן ואז סיידבר */
   height: 100vh;
   background: linear-gradient(to bottom, #f3edff, #ede9f7);
-  direction: rtl !important; /* ✅ זה מה שיכריח את הכול להיות RTL */
+  direction: rtl !important; /* 💥 דורס כל LTR חיצוני */
 }
-
 
 /* סיידבר */
 .sidebar {
@@ -20,14 +19,15 @@
   background-color: #c9aef5;
   color: white;
   padding: 20px;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
   text-align: right;
   direction: rtl;
-  order: 2; /* בצד ימין תמיד */
+  order: 1; /* מופיע ראשון = בצד ימין */
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1); /* גבול פנימי להפרדה מימין */
+  z-index: 10;
 }
 
 .sidebar h2 {
@@ -68,5 +68,7 @@
   flex: 1;
   padding: 40px;
   overflow-y: auto;
-  order: 1; /* תמיד בשמאל */
+  background-color: #ffffff;
+  border-left: 1px solid #ddd; /* ✅ גבול ברור מהסיידבר */
+  order: 2;
 }
