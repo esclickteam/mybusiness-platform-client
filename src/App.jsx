@@ -21,7 +21,8 @@ const Plans                   = lazy(() => import("./pages/business/Plans"));
 const Checkout                = lazy(() => import("./pages/Checkout"));
 const Login                   = lazy(() => import("./pages/Login"));
 const Register                = lazy(() => import("./pages/Register"));
-const BusinessPage            = lazy(() => import("./pages/BusinessPage"));
+// Public profile view (replaces BusinessPage)
+const BusinessProfileView     = lazy(() => import("./pages/business/BusinessProfileView"));
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
@@ -53,7 +54,6 @@ export default function App() {
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
-
           {/* 🔹 עמודים ציבוריים */}
           <Route path="/"                element={<HomePage />} />
           <Route path="/about"           element={<About />} />
@@ -74,7 +74,7 @@ export default function App() {
           {/* 🔹 עמוד פרופיל ציבורי של עסק */}
           <Route
             path="/business/:businessId"
-            element={<BusinessPage />}
+            element={<BusinessProfileView />}
           />
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
