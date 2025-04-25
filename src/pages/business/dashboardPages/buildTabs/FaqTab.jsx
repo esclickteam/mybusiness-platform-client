@@ -28,7 +28,8 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
 
   const saveFaqsToServer = async () => {
     try {
-      await API.put("/business/my", { faqs }); // ✅ נכון
+      const cleanFaqs = faqs.map(({ id, _id, ...rest }) => rest); // הסרת מזהים
+      await API.put("/business/my", { faqs: cleanFaqs }); // שליחה נקייה
       alert("✅ כל השאלות נשמרו!");
     } catch (err) {
       console.error("❌ שגיאה בשמירה:", err);
