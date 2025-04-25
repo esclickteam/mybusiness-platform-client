@@ -27,18 +27,9 @@ import { BusinessServicesProvider } from "../../context/BusinessServicesContext"
 const BusinessDashboardRoutes = () => {
   return (
     <Routes>
-      {/* 🔹 עמוד ציבורי של העסק – בלי דשבורד */}
-      <Route
-        path="/business/:businessId"
-        element={
-          <BusinessServicesProvider>
-            <Build />
-          </BusinessServicesProvider>
-        }
-      />
-
       {/* 🔸 דשבורד עם סיידבר */}
       <Route element={<BusinessDashboardLayout />}>
+
         {/* ברירת מחדל לדשבורד */}
         <Route index element={<Navigate to="dashboard" replace />} />
 
@@ -81,6 +72,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="services" element={<CRMServicesTab />} />
           <Route path="settings" element={<CRMSettingsTab />} />
         </Route>
+
       </Route>
     </Routes>
   );
