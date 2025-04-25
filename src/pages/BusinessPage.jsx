@@ -1,3 +1,4 @@
+// src/pages/BusinessPage.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
@@ -14,17 +15,20 @@ export default function BusinessPage() {
   const [userPlan, setUserPlan] = useState("free");
   const [loading, setLoading] = useState(true);
 
-  console.log("BusinessPage נטען עם ID:", businessId); // ✅ הוספה כאן
-
-
   useEffect(() => {
-    console.log("🔍 Business ID:", businessId);
-
     const fetchBusinessData = async () => {
       try {
         const { data } = await API.get(`/business/${businessId}`);
         const b = data.business ?? data;
-        console.log("📦 מידע שהתקבל:", b);
+
+        // ערכי ברירת מחדל כדי להימנע מ־undefined.includes(...)
+        b.services     = Array.isArray(b.services)    ? b.services    : [];
+        b.gallery      = Array.isArray(b.gallery)     ? b.gallery     : [];
+        b.galleryFits  = Array.isArray(b.galleryFits) ? b.galleryFits : [];
+        b.story        = Array.isArray(b.story)       ? b.story       : [];
+        b.reviews      = Array.isArray(b.reviews)     ? b.reviews     : [];
+        b.faqs         = Array.isArray(b.faqs)        ? b.faqs        : [];
+
         setBusiness(b);
         setUserPlan(b.subscriptionPlan || "free");
       } catch (error) {
@@ -40,7 +44,7 @@ export default function BusinessPage() {
   if (loading) return <p>🔄 טוען פרופיל העסק…</p>;
   if (!business) return <p>⚠️ העסק לא נמצא</p>;
 
-  const canChat = checkFeatureAvailability("chat", userPlan);
+  const canChat     = checkFeatureAvailability("chat", userPlan);
   const canSchedule = checkFeatureAvailability("booking", userPlan);
 
   const isOwner =
@@ -48,11 +52,11 @@ export default function BusinessPage() {
 
   return (
     <div className="business-page-container">
-      {/* ✅ כפתור חזור לעריכה - רק לבעל העסק */}
+      {/* כפתור חזרה לעריכה - רק לבעל העסק */}
       {isOwner && (
         <div style={{ textAlign: "center", margin: "2rem 0" }}>
           <button
-            onClick={() => navigate("/business/build")}
+            onClick={() => navigate(`/business/${businessId}/build`)}
             style={{
               padding: "10px 20px",
               background: "#7c4dff",
@@ -75,7 +79,7 @@ export default function BusinessPage() {
         canSchedule={canSchedule}
       />
 
-      {/* ✅ תצוגת בדיקה זמנית של הנתונים */}
+      {/* תצוגת בדיקה של הנתונים */}
       <pre
         style={{
           background: "#eee",
