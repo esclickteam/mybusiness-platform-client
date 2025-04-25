@@ -1,3 +1,5 @@
+// src/pages/business/dashboardPages/Profile.jsx
+
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./Profile.css";
@@ -19,9 +21,10 @@ const TABS = [
   "שאלות ותשובות",
 ];
 
+// מבחינת שדה תיאור, אנחנו מאחדים בין `about` במונגו ל־`description` בצד הלקוח
 const fallbackBusiness = {
   name: "עסק לדוגמה",
-  about: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
+  description: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
   phone: "050-1234567",
   logo: "https://via.placeholder.com/100",
   category: "שיווק",
@@ -58,15 +61,17 @@ export default function Profile() {
 
   useEffect(() => {
     async function fetchBusiness() {
-      const isLoggedIn = !!localStorage.getItem("token");
-      const suffix = isLoggedIn ? "" : "?dev=true";
+      const token = localStorage.getItem("token");
+      const suffix = token ? "" : "?dev=true";
 
       try {
         const { data } = await API.get(`/business/my${suffix}`);
+
+        // מאחדים את השדות מהמונגו (about → description) לפורמט צד-לקוח
         setBusinessData({
           ...fallbackBusiness,
           ...data,
-          about: data.about || fallbackBusiness.about,
+          description: data.about ?? fallbackBusiness.description,
           reviews:
             Array.isArray(data.reviews) && data.reviews.length > 0
               ? data.reviews
@@ -82,11 +87,13 @@ export default function Profile() {
     fetchBusiness();
   }, []);
 
-  if (loading) return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
+  if (loading) {
+    return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
+  }
 
   return (
     <div className="profile-wrapper">
-      {/* 1. Header עליון – לוגו, שם, דירוג, אודות */}
+      {/* 1. Header עליון – לוגו, שם, דירוג, תיאור, טלפון */}
       <ProfileHeader businessDetails={businessData} />
 
       {/* 2. כפתורי הטאבים */}
