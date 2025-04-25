@@ -1,25 +1,18 @@
 /* src/components/shared/BusinessProfileView.css */
 
-/* הקלאס full-style נשאר כקיים, כדי לשמור על צבע הרקע, הפדינג והגבול */
+/* .full-style – קופסת הפרופיל במרכז, ללא גבול שחור, עם צל עדין */
 .full-style {
   background-color: #f2e6ff;
   padding: 2rem;
   border-radius: 2rem;
-  max-width: 600px;
-  margin: 2rem auto;
-  border: 3px solid #000;
+  max-width: 600px;         /* רוחב קבוע */
+  margin: 2rem auto;        /* מרכז אופקית, ריווח מלמעלה ומן התחתית */
+  border: none;             /* מסירים את הגבול השחור */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* overrides עבור תצוגה ברוחב מלא */
-.full-page {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 auto !important;
-  /* אם רוצים, נוכל לבטל את העיגול ולהחזיר רקע רגיל: */
-  /* border-radius: 0 !important; */
-}
+/* שאר הקלאסים נשארים כפי שהיו, ללא שינוי */
 
-/* שאר הקלאסים נשארים ללא שינוי */
 .profile-divider {
   border-top: 1px solid #aaa;
   margin: 1.5rem 0;
