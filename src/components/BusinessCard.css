@@ -1,72 +1,41 @@
 .business-card {
-    direction: rtl;
-    background-color: #fff;
-    border-radius: 16px;
-    padding: 24px;
-    margin: 0 auto;
-    max-width: 600px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
-    font-family: "Segoe UI", sans-serif;
-    color: #333;
-  }
-  
-  .business-logo img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto 16px auto;
-  }
-  
-  .business-name {
-    text-align: center;
-    color: #6b21a8;
-    margin-bottom: 8px;
-  }
-  
-  .business-detail {
-    text-align: right;
-    margin: 4px 0;
-    font-size: 14px;
-  }
-  
-  .business-section {
-    margin-top: 20px;
-  }
-  
-  .business-section h4 {
-    color: #6b21a8;
-    margin-bottom: 6px;
-    font-size: 16px;
-  }
-  
-  .gallery-wrapper {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-top: 8px;
-  }
-  
-  .gallery-wrapper img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-  }
-  
-  .review-box {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-  
-  .review-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-    font-size: 14px;
-    font-weight: bold;
-  }
-  
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.business-card__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.business-card__logo {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.business-card__name {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.business-card__description {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0;
+}
+
+.business-card__phone {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 0;
+}
