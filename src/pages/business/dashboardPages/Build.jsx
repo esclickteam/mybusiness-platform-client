@@ -35,7 +35,8 @@ const Build = () => {
 // רשימת השדות המותרת לעדכון
 const ALLOWED_KEYS = [
   "name",
-  "description",
+  "about",        // so we can map it to description
+  "description",  // just in case
   "phone",
   "logo",
   "gallery",
@@ -87,15 +88,29 @@ const handleSave = async () => {
     Object.entries(businessDetails)
       .filter(([key]) => ALLOWED_KEYS.includes(key))
       .forEach(([key, value]) => {
+        // קובץ לוגו
         if (key === "logo" && value instanceof File) {
           formData.append("logo", value);
+
+        // מיפוי שדה about ל־description
+        } else if (key === "about") {
+          formData.append("description", value);
+
+        // שדות מערכים בשילוח כ־JSON
         } else if (
-          ["gallery","story","services","reviews","faqs","messages","galleryTabImages","galleryCategories","fullGallery"]
+          ["gallery", "story", "services", "reviews", "faqs", "messages", "galleryTabImages", "galleryCategories", "fullGallery"]
             .includes(key)
         ) {
           formData.append(key, JSON.stringify(value));
+
+        // שדות טקסט/מספר
         } else if (value !== undefined && value !== null) {
-          formData.append(key, value);
+          // description אם הגיע ישירות
+          if (key === "description") {
+            formData.append("description", value);
+          } else {
+            formData.append(key, value);
+          }
         }
       });
 
@@ -111,9 +126,7 @@ const handleSave = async () => {
       "/business/my",
       formData,
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       }
     );
 
