@@ -9,6 +9,8 @@ import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
+import BusinessesList from './pages/BusinessesList'; 
+
 
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
@@ -76,6 +78,8 @@ export default function App() {
           <Route path="/quick-jobs/new"  element={<QuickJobForm />} />
           <Route path="/reset-password"  element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/businesses" element={<BusinessesList />} />
+
 
           {/* 🔹 דף פרופיל ציבורי של עסק */}
           <Route path="/business/:businessId" element={<BusinessProfilePage />} />
