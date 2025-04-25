@@ -29,27 +29,27 @@ const BusinessDashboardLayout = () => {
   if (loading) return <div className="loading-screen">🔄 טוען נתונים…</div>;
 
   return (
-    <div className="business-dashboard-layout">
-      <main className="dashboard-content">
-        <Outlet />
-      </main>
+    <div dir="rtl">
+      <div className="business-dashboard-layout">
+        <main className="dashboard-content">
+          <Outlet />
+        </main>
 
-      <aside className="sidebar">
-        <h2>ניהול העסק</h2>
-        <nav>
-          {tabs.map((tab) => (
-            <NavLink
-              key={tab.path}
-              to={tab.path}
-              className={({ isActive }) =>
-                isActive ? "active" : undefined
-              }
-            >
-              {tab.label}
-            </NavLink>
-          ))}
-        </nav>
-      </aside>
+        <aside className="sidebar">
+          <h2>ניהול העסק</h2>
+          <nav>
+            {tabs.map((tab) => (
+              <NavLink
+                key={tab.path}
+                to={tab.path}
+                className={({ isActive }) => (isActive ? "active" : undefined)}
+              >
+                {tab.label}
+              </NavLink>
+            ))}
+          </nav>
+        </aside>
+      </div>
     </div>
   );
 };

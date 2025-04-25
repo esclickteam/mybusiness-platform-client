@@ -1,6 +1,6 @@
 .business-dashboard-layout {
   display: flex;
-  flex-direction: row; /* ✅ כיוון רגיל - כדי שה-sidebar יישאר בצד ימין */
+  flex-direction: row; /* סדר רגיל */
   height: 100vh;
   background: linear-gradient(to bottom, #f3edff, #ede9f7);
 }
@@ -17,6 +17,7 @@
   overflow-y: auto;
   text-align: right;
   direction: rtl;
+  order: 2; /* ✅ יופיע מימין תמיד */
 }
 
 .sidebar h2 {
@@ -56,4 +57,5 @@
   flex: 1;
   padding: 40px;
   overflow-y: auto;
+  order: 1; /* ✅ תמיד בצד שמאל */
 }
