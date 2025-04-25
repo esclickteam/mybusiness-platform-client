@@ -36,7 +36,7 @@ export default function BusinessProfileView() {
   const realReviews = reviews.filter(r => typeof r.rating === "number");
 
   return (
-    <div className="business-profile-view full-style">
+    <div className="business-profile-view full-style full-page">
       {/* ✏️ כפתור עריכה */}
       <button
         className="edit-profile-btn"

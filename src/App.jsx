@@ -25,6 +25,9 @@ const Register                = lazy(() => import("./pages/Register"));
 // Public profile view (shared component)
 const BusinessProfileView     = lazy(() => import("./components/shared/BusinessProfileView"));
 
+// Build page (edit)
+const BuildBusinessPage       = lazy(() => import("./pages/business/dashboardPages/Build"));
+
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
@@ -77,6 +80,16 @@ export default function App() {
           <Route
             path="/business/:businessId"
             element={<BusinessProfileView />}
+          />
+
+          {/* 🔹 עמוד עריכה פרופיל עסקי — רוחב מלא */}
+          <Route
+            path="/business/:businessId/edit"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BuildBusinessPage />
+              </ProtectedRoute>
+            }
           />
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
