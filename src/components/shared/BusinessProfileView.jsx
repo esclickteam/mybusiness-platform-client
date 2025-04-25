@@ -4,11 +4,21 @@ import { useParams, useNavigate } from "react-router-dom";
 import API from "@api";
 import "./BusinessProfileView.css";
 
+const TABS = [
+  "ראשי",
+  "גלריה",
+  "ביקורות",
+  "שאלות ותשובות",
+  "צ'אט עם העסק",
+  "חנות / יומן",
+];
+
 export default function BusinessProfileView() {
   const { businessId } = useParams();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentTab, setCurrentTab] = useState("ראשי");
 
   useEffect(() => {
     setLoading(true);
@@ -29,7 +39,9 @@ export default function BusinessProfileView() {
     description = "",
     phone = "",
     gallery = [],
-    reviews = []
+    reviews = [],
+    faqs = []
+    // אפשר להוסיף כאן נתונים לצ'אט או לחנות אם תרצה בעתיד
   } = profileData;
 
   // סינון רק ביקורות עם rating מספרי
@@ -50,31 +62,49 @@ export default function BusinessProfileView() {
           {/* שם העסק */}
           <h1 className="business-name">{name}</h1>
 
-          {/* תיאור */}
-          {description && (
-            <div className="about-section">
-              <p className="about-snippet">
-                {description.length > 200
-                  ? description.slice(0, 200) + "..."
-                  : description}
-              </p>
-            </div>
-          )}
-
-          {/* טלפון */}
-          {phone && (
-            <div className="phone-section">
-              <strong>טלפון:</strong> {phone}
-            </div>
+          {/* רק בטאב ראשי */}
+          {currentTab === "ראשי" && (
+            <>
+              {/* תיאור */}
+              {description && (
+                <div className="about-section">
+                  <p className="about-snippet">
+                    {description.length > 200
+                      ? description.slice(0, 200) + "..."
+                      : description}
+                  </p>
+                </div>
+              )}
+              {/* טלפון */}
+              {phone && (
+                <div className="phone-section">
+                  <strong>טלפון:</strong> {phone}
+                </div>
+              )}
+            </>
           )}
 
           <hr className="profile-divider" />
 
-          {/* גלריה */}
-          {gallery.length > 0 && (
+          {/* פס טאבים */}
+          <div className="profile-tabs">
+            {TABS.map(tab => (
+              <button
+                key={tab}
+                className={`tab ${currentTab === tab ? "active" : ""}`}
+                onClick={() => setCurrentTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* תכולת טאב: גלריה */}
+          {currentTab === "גלריה" && gallery.length > 0 && (
             <div className="gallery-preview no-actions">
               {gallery.map((item, i) => {
-                const src = typeof item === "string" ? item : item.url || item.preview;
+                const src =
+                  typeof item === "string" ? item : item.url || item.preview;
                 return (
                   src && (
                     <div key={i} className="gallery-item-wrapper">
@@ -90,8 +120,8 @@ export default function BusinessProfileView() {
             </div>
           )}
 
-          {/* ביקורות אמיתיות בלבד */}
-          {realReviews.length > 0 && (
+          {/* תכולת טאב: ביקורות */}
+          {currentTab === "ביקורות" && realReviews.length > 0 && (
             <div className="reviews">
               <h3>⭐ ביקורות אחרונות</h3>
               {realReviews.map((r, i) => (
@@ -105,6 +135,33 @@ export default function BusinessProfileView() {
                   </p>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* תכולת טאב: שאלות ותשובות */}
+          {currentTab === "שאלות ותשובות" && faqs.length > 0 && (
+            <div className="faqs">
+              <h3>❓ שאלות ותשובות</h3>
+              {faqs.map((f, i) => (
+                <div key={i} className="faq-item">
+                  <strong>{f.question}</strong>
+                  <p>{f.answer}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* תכולת טאב: צ'אט */}
+          {currentTab === "צ'אט עם העסק" && (
+            <div className="chat-tab-placeholder">
+              <p>🚧 תכונה זו תיבנה בקרוב…</p>
+            </div>
+          )}
+
+          {/* תכולת טאב: חנות / יומן */}
+          {currentTab === "חנות / יומן" && (
+            <div className="shop-tab-placeholder">
+              <p>🚧 תכונה זו תיבנה בקרוב…</p>
             </div>
           )}
         </div>
