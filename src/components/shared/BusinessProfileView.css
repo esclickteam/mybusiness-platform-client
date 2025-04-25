@@ -67,22 +67,26 @@
 
 /* טאבים */
 .profile-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* 3 בעמודה */
   gap: 1rem;
   margin-top: 1rem;
+  width: 100%;
+  max-width: 500px;  /* שומר שזה לא יהיה רחב מדי */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .profile-tabs .tab {
   background-color: #f3f0ff;
   color: #333;
   border: none;
-  padding: 0.6rem 1.2rem;
+  padding: 0.6rem 1rem;
   border-radius: 20px;
   cursor: pointer;
   font-size: 0.95rem;
   transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
 }
 
 .profile-tabs .tab.active {
@@ -93,6 +97,7 @@
 .profile-tabs .tab:hover {
   background-color: #ddd;
 }
+
 
 /* גלריה */
 .gallery-preview {
