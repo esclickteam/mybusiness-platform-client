@@ -109,8 +109,15 @@ const BuildBusinessPage = () => {
   
       if (res.status === 200) {
         alert("✅ נשמר בהצלחה!");
-        // ניווט אוטומטי לפרופיל הציבורי אחרי שמירה
-        navigate(`/business/${currentUser.businessId}`, { replace: true });
+  
+        // ניווט לדף הפרופיל + רענון כפוי כדי לטעון את המידע החדש
+        const url = `/business/${currentUser.businessId}`;
+        navigate(url, { replace: true });
+  
+        // מוסיפים רענון מוחלט לדף כדי לאלץ טעינה מחדש מהשרת
+        setTimeout(() => {
+          window.location.reload();
+        }, 200);
       } else {
         alert("❌ שמירה נכשלה");
       }
@@ -119,6 +126,7 @@ const BuildBusinessPage = () => {
       alert("❌ שגיאה בשמירה");
     }
   };
+  
   
   console.log("🔁 שינוי כפוי לבנייה מחדש");
   console.log("💥 שינוי כפוי כדי לנקות את Vercel");
