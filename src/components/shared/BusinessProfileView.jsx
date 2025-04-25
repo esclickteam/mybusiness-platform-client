@@ -13,11 +13,11 @@ export default function BusinessProfileView() {
   useEffect(() => {
     setLoading(true);
     API.get(`/business/${businessId}`)
-      .then((res) => {
+      .then(res => {
         const data = res.data.business || res.data;
         setProfileData(data);
       })
-      .catch((err) => console.error("❌ Error loading business:", err))
+      .catch(err => console.error("Error loading business:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
 
@@ -29,20 +29,25 @@ export default function BusinessProfileView() {
     description = "",
     phone = "",
     gallery = [],
-    reviews = [],
+    reviews = []
   } = profileData;
+
+  // סינון רק ביקורות עם rating מספרי
+  const realReviews = reviews.filter(r => typeof r.rating === "number");
 
   return (
     <div className="business-profile-view full-style">
-      {/* כפתור עריכה */}
+      {/* ✏️ כפתור עריכה */}
       <button
         className="edit-profile-btn"
-        onClick={() => navigate(`/business/${businessId}/dashboard`)}
+        onClick={() =>
+          // נווט לעמוד העריכה של העסק
+          navigate(`/business/${businessId}/edit`)
+        }
       >
-        ערוך פרופיל ✏️
+        ערוך עמוד עסקי ✏️
       </button>
 
-      {/* שם */}
       <h1 className="business-name">{name}</h1>
 
       {/* תיאור */}
@@ -82,15 +87,15 @@ export default function BusinessProfileView() {
       )}
 
       {/* ביקורות אמיתיות בלבד */}
-      {reviews.length > 0 && (
+      {realReviews.length > 0 && (
         <div className="reviews">
           <h3>⭐ ביקורות אחרונות</h3>
-          {reviews.map((r, i) => (
+          {realReviews.map((r, i) => (
             <div key={i} className="review-card improved">
               <div className="review-header">
                 <strong className="review-user">{r.user}</strong>
                 <span className="star-text">
-                  ★ {r.rating != null ? r.rating : "5"} / 5
+                  ★ {r.rating} / 5
                 </span>
               </div>
               <p className="review-text">
