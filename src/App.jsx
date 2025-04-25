@@ -15,6 +15,7 @@ import BusinessesList from './pages/BusinessesList';
 // Lazy-loaded pages
 const HomePage                = lazy(() => import("./pages/Home"));
 const About                   = lazy(() => import("./pages/About"));
+const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
 const HowItWorks              = lazy(() => import("./pages/HowItWorks"));
 const FAQ                     = lazy(() => import("./pages/FAQ"));
 const Terms                   = lazy(() => import("./pages/Terms"));
@@ -65,6 +66,7 @@ export default function App() {
           {/* 🔹 עמודים ציבוריים */}
           <Route path="/"                element={<HomePage />} />
           <Route path="/about"           element={<About />} />
+          <Route path="/search" element={<SearchBusinesses />} />
           <Route path="/how-it-works"    element={<HowItWorks />} />
           <Route path="/faq"             element={<FAQ />} />
           <Route path="/terms"           element={<Terms />} />
