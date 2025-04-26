@@ -1,74 +1,58 @@
-/* עוטף ראשי שמכריח RTL */
+/* src/styles/BusinessDashboardLayout.css */
+
+/* הגדרת רקע גלובלי כבר ב-index.css (gradient) */
+
+/* עוטף הגדר RTL */
 .rtl-wrapper {
-  direction: rtl !important;
-  unicode-bidi: embed;
+  direction: rtl;
+  background: none;         /* מסיר כל רקע מקומי */
+  min-height: 100vh;
 }
 
-/* מבנה הדשבורד */
+/* פריסה ראשית */
 .business-dashboard-layout {
   display: flex;
-  flex-direction: row; /* סדר רגיל: תוכן ואז סיידבר */
-  height: 100vh;
-  background: linear-gradient(to bottom, #f3edff, #ede9f7);
-  direction: rtl !important; /* 💥 דורס כל LTR חיצוני */
+  width: 100%;
+  margin: 0;
+  background: none;         /* gradient גלובלי ברקע */
 }
 
 /* סיידבר */
 .sidebar {
   width: 240px;
-  background-color: #c9aef5;
-  color: white;
-  padding: 20px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  text-align: right;
-  direction: rtl;
-  order: 1; /* מופיע ראשון = בצד ימין */
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1); /* גבול פנימי להפרדה מימין */
-  z-index: 10;
+  padding: 1rem;
+  background: none;         /* אין צבע רקע לבן */
+  box-shadow: none;
+  border-radius: 0;
 }
-
 .sidebar h2 {
-  font-size: 1.4rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: var(--text-main);
 }
-
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.5rem;
 }
-
 .sidebar a {
-  color: white;
+  padding: 0.5rem;
+  border-radius: 6px;
+  color: var(--text-secondary);
   text-decoration: none;
-  font-size: 1rem;
-  background-color: #b088f9;
-  padding: 10px 15px;
-  border-radius: 8px;
-  transition: background-color 0.3s;
-  text-align: right;
-  direction: rtl;
+  transition: background 0.2s;
 }
-
 .sidebar a:hover {
-  background-color: #a072f5;
+  background: rgba(138,43,226,0.1);
 }
-
 .sidebar a.active {
-  background-color: #884df2;
-  font-weight: bold;
+  background: var(--primary);
+  color: #fff;
 }
 
-/* תוכן ראשי */
+/* אזור התוכן המרכזי */
 .dashboard-content {
   flex: 1;
-  padding: 40px;
-  overflow-y: auto;
-  background-color: #ffffff;
-  border-left: 1px solid #ddd; /* ✅ גבול ברור מהסיידבר */
-  order: 2;
+  padding: 1rem;
+  background: none;         /* אין רקע לבן */
 }
