@@ -1,8 +1,8 @@
 /* src/styles/BusinessDashboardLayout.css */
 
-/* גרדיאנט גלובלי כבר ב-index.css, אין צורך ברקעים מקומיים */
+/* גרדיאנט גלובלי כבר ב־index.css, אין צורך ברקעים מקומיים */
 
-/* עוטף בכיוון ימין-לשמאל */
+/* עוטף בכיוון ימין־לשמאל */
 .rtl-wrapper {
   direction: rtl;
   background: none;
@@ -19,32 +19,45 @@
 
 /* סיידבר (עכשיו בצד ימין דרך rtl) */
 .sidebar {
-  width: 240px;
+  width: 240px;                  /* רוחב קבוע */
   padding: 1rem;
-  background-color: #d1b3ff9a;  /* רקע חדש – חצי־שקוף ורוד */
+  background-color: #d1b3ff9a;   /* רקע חדש – חצי־שקוף ורוד */
   box-shadow: none;
   border-radius: 0;
+
+  /* תיקון: גלילה אנכית כשיש overflow */
+  max-height: 100vh;
+  overflow-y: auto;
 }
+
 .sidebar h2 {
   margin-top: 0;
   font-size: 1.2rem;
   color: var(--text-main);
 }
+
 .sidebar nav {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
+
 .sidebar a {
   padding: 0.5rem;
   border-radius: 6px;
   color: var(--text-secondary);
   text-decoration: none;
   transition: background 0.2s;
+
+  /* מתיר שבירת שורות בתוך הקישור במקום חיתוך */
+  white-space: normal;
+  word-wrap: break-word;
 }
+
 .sidebar a:hover {
   background: rgba(138, 43, 226, 0.1);
 }
+
 .sidebar a.active {
   background: var(--primary);
   color: #fff;
