@@ -1,24 +1,31 @@
 /* src/index.css */
 
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    direction: rtl; /* כיוון הטקסט מימין לשמאל */
-    text-align: right; /* יישור לימין */
-    background-color: #f5f5f5;
-  }
-  
-  * {
-    box-sizing: border-box;
-  }
-  
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
-  
-  button {
-    cursor: pointer;
-  }
-  
+:root {
+  /* משתני צבעים גלובליים */
+  --bg-start: #fdfcff;
+  --bg-end:   #e4e8ff;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  direction: rtl;     /* כיוון הטקסט מימין לשמאל */
+  text-align: right;  /* יישור לימין */
+  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  overflow: auto;     /* מאפשר גלילה */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}

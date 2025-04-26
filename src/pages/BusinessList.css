@@ -20,10 +20,7 @@
   
   /* רקע לבן נקי לרשימת העסקים */
   .list-page {
-    background: #fff;
-    min-height: 100vh;
-    padding: var(--gap-lg) 1rem;
-    box-sizing: border-box;
+    padding: 0 1rem;
   }
   
   .business-list-container {

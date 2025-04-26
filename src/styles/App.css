@@ -1,5 +1,23 @@
 /* styles/App.css */
 
+:root {
+  /* צבעים גלובליים */
+  --bg-start: #fdfcff;
+  --bg-end:   #e4e8ff;
+}
+
+/* רקע גרדיאנט גלובלי על כל האפליקציה */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  /* מאפשר גלילה בכל העמודים */
+  overflow: auto;
+}
+
 /* כפתורים בכרטיסיות - צבעוניים, גדולים ומודגשים יותר */
 .action-button {
   padding: 10px 25px;
@@ -46,8 +64,3 @@
 .login-button:hover {
   color: #ccc;
 }
-html, body, #root {
-  height: 100%;
-  overflow: hidden;
-}
-

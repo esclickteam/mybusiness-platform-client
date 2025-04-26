@@ -1,165 +1,125 @@
-/* עמוד כללי */
+/* src/pages/BusinessProfilePage.css */
+
+:root {
+  /* משתני צבעים גלובליים */
+  --bg-start:        #fdfcff;
+  --bg-end:          #e4e8ff;
+
+  --card-bg:         #ffffff;
+  --card-radius:     24px;
+  --card-shadow:     0 4px 12px rgba(0,0,0,0.05);
+
+  --primary:         #8a2be2;
+  --primary-hover:   #7a23d0;
+
+  --text-main:       #222222;
+  --text-secondary:  #555555;
+
+  --gap-sm:          12px;
+  --gap-md:          16px;
+  --gap-lg:          24px;
+}
+
+/* עמוד כללי ללא רקע מקומי - רק padding  */
 .profile-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f2e6ff;
-  padding: 2rem;
+  padding: var(--gap-lg) 0;
   text-align: center;
 }
 
+/* סגנון כללי לתצוגת העמוד (ללא כרטיס) */
+.business-profile-view {
+  background: none;
+  border-radius: 0;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--gap-lg) 0;
+  box-shadow: none;
+  position: relative;
+}
 
+/* כפתור חזור */
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-bottom: var(--gap-md);
+  padding: 0;
+}
+.back-btn:hover {
+  text-decoration: underline;
+}
 
-/* תוכן בפנים */
 .profile-inner {
-  padding: 2rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: var(--gap-md);
+  text-align: center;
 }
 
-/* כפתור עריכת פרופיל */
-.edit-profile-btn {
-  background-color: #7b4fe0;
-  color: white;
-  border: none;
-  padding: 0.4rem 1rem;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  cursor: pointer;
-  align-self: flex-end;
-  margin-bottom: 1rem;
-}
-.edit-profile-btn:hover {
-  background-color: #6a3ed3;
+.business-profile__logo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
-/* שם העסק */
-.business-name {
+.business-profile__name {
   font-size: 2rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 0.5rem;
+  margin: 0;
+  color: var(--text-main);
 }
 
-/* תיאור וטלפון */
-.about-section, .phone-section {
+.business-profile__description,
+.business-profile__category,
+.business-profile__contact p,
+.business-profile__address,
+.business-profile__hours {
   font-size: 1rem;
-  color: #555;
+  color: var(--text-secondary);
+  margin: 8px 0;
 }
 
-/* קו מפריד */
-.profile-divider {
-  width: 100%;
-  margin: 1rem 0;
-  border: 0;
-  border-top: 1px solid #ddd;
-}
-
-/* טאבים */
-.profile-tabs {
+/* טאב-בר ציבורי – פריסה ב-3 עמודות, מרווח מצומצם */
+.profile-tabs,
+.public-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);  /* 3 בעמודה */
-  gap: 1rem;
-  margin-top: 1rem;
-  width: 100%;
-  max-width: 500px;  /* שומר שזה לא יהיה רחב מדי */
-  margin-left: auto;
-  margin-right: auto;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-sm);
+  margin: var(--gap-md) auto 0;
+  max-width: 700px;
+  direction: ltr;
 }
 
-.profile-tabs .tab {
-  background-color: #f3f0ff;
-  color: #333;
-  border: none;
-  padding: 0.6rem 1rem;
+.profile-tabs .tab,
+.public-tabs .tab {
+  justify-self: center;
+  padding: 8px 20px;
   border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  width: 100%;
+  background: #f0eaff;
+  color: #333;
+  text-decoration: none;
+  transition: background 0.2s;
 }
 
-.profile-tabs .tab.active {
-  background-color: #7b4fe0;
+.profile-tabs .tab:hover,
+.public-tabs .tab:hover {
+  background: #e4d6ff;
+}
+
+.profile-tabs .tab.active,
+.public-tabs .tab.active {
+  background: var(--primary);
   color: #fff;
 }
 
-.profile-tabs .tab:hover {
-  background-color: #ddd;
-}
-
-
-/* גלריה */
-.gallery-preview {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 0.5rem;
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.gallery-item-wrapper {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.gallery-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ביקורות */
-.reviews {
-  width: 100%;
-}
-
-.review-card.improved {
-  background-color: #fafafa;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  text-align: right;
-}
-
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.review-user {
-  font-weight: bold;
-  color: #333;
-}
-
-.star-text {
-  color: #ff9900;
-}
-
-/* שאלות ותשובות */
-.faqs {
-  width: 100%;
-}
-
-.faq-item {
-  background-color: #fafafa;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  text-align: right;
-}
-
-.faq-item strong {
-  color: #333;
-}
-
-/* פלייסהולדרים */
-.chat-tab-placeholder, .shop-tab-placeholder {
-  margin-top: 1rem;
-  color: #777;
-  font-size: 0.95rem;
+/* אזור הטאב הנבחר */
+.outlet-wrapper {
+  margin-top: var(--gap-lg);
 }
