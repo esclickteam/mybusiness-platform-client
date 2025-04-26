@@ -9,6 +9,9 @@ const tabs = [
   { path: "dashboard", label: "📊 דשבורד" },
   { path: "messages",  label: "💬 הודעות מלקוחות" },
   { path: "collab",    label: "🤝 שיתופי פעולה" },
+  { path: "crm",       label: "📇 מערכת CRM" },
+  { path: "esclick",   label: "🧠 יועץ עסקליק" },
+  { path: "goals",     label: "🎯 היעדים שלי" },
   { path: "affiliate", label: "👥 תכנית שותפים" },
   { path: "upgrade",   label: "🚀 שדרוג חבילה" },
 ];
@@ -31,9 +34,15 @@ export default function BusinessDashboardLayout() {
   return (
     <div className="rtl-wrapper">
       <div className="business-dashboard-layout">
-        <aside className="sidebar">
+        <aside
+          className="sidebar"
+          style={{
+            minWidth: "240px",
+            width: "auto",
+            maxWidth: "100%",
+          }}
+        >
           <h2>ניהול העסק</h2>
-
           <nav>
             {user?.role === "business" && (
               <NavLink
@@ -43,8 +52,6 @@ export default function BusinessDashboardLayout() {
                 👀 צפייה בפרופיל
               </NavLink>
             )}
-
-            {/* שאר הטאבים הרגילים */}
             {tabs.map(({ path, label }) => (
               <NavLink
                 key={path}
@@ -54,23 +61,6 @@ export default function BusinessDashboardLayout() {
                 {label}
               </NavLink>
             ))}
-
-            {/* כותרת ו־submenu של מערכת CRM */}
-            <h2 className="crm-title">מערכת CRM</h2>
-            <div className="crm-submenu">
-              <NavLink
-                to="esclick"
-                className={({ isActive }) => (isActive ? "active" : undefined)}
-              >
-                🧠 יועץ עסקליק
-              </NavLink>
-              <NavLink
-                to="goals"
-                className={({ isActive }) => (isActive ? "active" : undefined)}
-              >
-                🎯 היעדים שלי
-              </NavLink>
-            </div>
           </nav>
         </aside>
 
