@@ -192,16 +192,33 @@ const handleSave = async () => {
     }
   };
 
-  const handleLogoChange = (e) => {
+  const handleLogoChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      file.preview = URL.createObjectURL(file);
-      setBusinessDetails((prev) => ({
-        ...prev,
-        logo: file,
-      }));
+    if (!file) return;
+  
+    // הכנת FormData עם הקובץ
+    const formData = new FormData();
+    formData.append("logo", file);
+  
+    try {
+      // שליחה ל-endpoint הייעודי
+      const res = await API.put("/business/my/logo", formData);
+  
+      if (res.status === 200) {
+        // עדכון ה-state עם ה-URL מהשרת
+        setBusinessDetails(prev => ({
+          ...prev,
+          logo: res.data.logo
+        }));
+      } else {
+        console.error("Upload failed, status:", res.status);
+      }
+    } catch (err) {
+      console.error("Error uploading logo:", err);
     }
   };
+  
+  
 
   const handleStoryUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -262,9 +279,14 @@ const handleSave = async () => {
     return (
       <>
         <div className="logo-circle" onClick={handleLogoClick}>
-          {businessDetails.logo?.preview ? (
+          {typeof businessDetails.logo === "string" ? (
+            // מקרה של URL מהענן
+            <img src={businessDetails.logo} alt="לוגו" className="logo-img" />
+          ) : businessDetails.logo?.preview ? (
+            // מקרה של קובץ חדש עם preview
             <img src={businessDetails.logo.preview} alt="לוגו" className="logo-img" />
           ) : (
+            // המצב ההתחלתי
             <span>לוגו / פרופיל</span>
           )}
         </div>
@@ -350,33 +372,42 @@ const handleSave = async () => {
 />
 
 <div className="gallery-preview">
-{businessDetails.gallery.map((file, i) => (
-  <div
-    className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
-    key={i}
-    style={{ position: "relative" }} // חובה בשביל הצמדה לפנים
-  >
-    <div className="gallery-item">
-      <img
-        src={URL.createObjectURL(file)}
-        alt={`gallery-${i}`}
-        className="gallery-img"
-        style={{
-          objectFit: businessDetails.galleryFits[file.name] || "cover",
-        }}
-      />
-    </div>
-
-    <button
-      className="edit-btn"
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setEditIndex(i);
-      }}
+  {businessDetails.gallery.map((item, i) => (
+    <div
+      key={i}
+      className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
+      style={{ position: "relative" }} // חובה בשביל הצמדה לפנים
     >
-      ✏️
-    </button>
+      <div className="gallery-item">
+        <img
+          src={
+            // אם זה URL מהשרת
+            typeof item === "string"
+              ? item
+              // אחרת אובייקט File עם preview
+              : item.preview
+          }
+          alt={`gallery-${i}`}
+          className="gallery-img"
+          style={{
+            objectFit:
+              typeof item === "string"
+                ? businessDetails.galleryFits[item] || "cover"
+                : businessDetails.galleryFits[item.name] || "cover",
+          }}
+        />
+      </div>
+
+      <button
+        className="edit-btn"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setEditIndex(i);
+        }}
+      >
+        ✏️
+      </button>
 
     <button
       className="delete-btn"
@@ -402,15 +433,20 @@ const handleSave = async () => {
         }}
       >
         <select
-          value={businessDetails.galleryFits[file.name] || "cover"}
-          onChange={(e) => handleFitChange(i, e.target.value)}
-        >
-          <option value="cover">חתוך (cover)</option>
-          <option value="contain">מותאם (contain)</option>
-        </select>
-        <button className="confirm-btn" onClick={() => setEditIndex(null)}>
-          ✔ שמור
-        </button>
+  value={
+    typeof item === "string"
+      ? businessDetails.galleryFits[item] || "cover"
+      : businessDetails.galleryFits[item.name] || "cover"
+  }
+  onChange={(e) => handleFitChange(i, e.target.value)}
+>
+  <option value="cover">חתוך (cover)</option>
+  <option value="contain">מותאם (contain)</option>
+</select>
+<button className="confirm-btn" onClick={() => setEditIndex(null)}>
+  ✔ שמור
+</button>
+
       </div>
     )}
   </div>
