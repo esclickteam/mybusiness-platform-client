@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
+import BusinessMessagesPage from "./pages/business/dashboardPages/BusinessMessagesPage";
 import QuickJobsBoard from "./pages/QuickJobsBoard";
 import QuickJobForm from "./pages/QuickJobForm";
 import ResetPassword from "./pages/ResetPassword";
@@ -97,15 +98,23 @@ export default function App() {
           </Route>
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
-<Route
-  path="/business/:businessId/dashboard/*"
-  element={
-    <ProtectedRoute roles={["business"]}>
-      <BusinessDashboardRoutes />
-    </ProtectedRoute>
-  }
-/>
-
+ <Route
+   path="/business/:businessId/dashboard/*"
+   element={
+     <ProtectedRoute roles={["business"]}>
+       <BusinessDashboardRoutes />
+     </ProtectedRoute>
+   }
+ />
+          {/* 🔹 דשבורד העסק — מסך הודעות */}
+          <Route
+            path="/business/:businessId/dashboard/messages"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BusinessMessagesPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 🔹 דשבורד לקוח */}
           <Route

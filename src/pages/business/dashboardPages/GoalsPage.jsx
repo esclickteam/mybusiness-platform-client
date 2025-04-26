@@ -20,7 +20,7 @@ const GoalsPage = () => {
       try {
         const { data: business } = await API.get("/business/my");
         if (!business?._id) throw new Error("לא הוחזר מזהה עסק");
-        const response = await API.get(`/business/stats/${business._id}`);
+        const response = await API.get(`/business/${business._id}/stats`);
         setData(response.data);
       } catch (error) {
         console.error("❌ שגיאה בטעינת סטטיסטיקות:", error.response?.data || error.message);

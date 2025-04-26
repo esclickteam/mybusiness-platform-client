@@ -1,4 +1,3 @@
-// BusinessMessagesPage.jsx
 import React, { useEffect, useState } from "react";
 import API from "../../../api";
 import BusinessChat from "./BusinessChatComponent";
@@ -16,12 +15,13 @@ const BusinessMessagesPage = () => {
         const userEmail = storedUser?.email;
 
         if (!userId) {
-          console.warn("⚠️ אין userId בלוקאל סטורג'"); 
+          console.warn("⚠️ אין userId בלוקאל סטורג'");
           return;
         }
 
         console.log("📡 מבצע קריאה ל-conversations של:", userId);
-        const { data } = await API.get(`/business/${userId}/conversations`);
+        // קריאה ל-endpoint הנכון ב-chatRoutes
+        const { data } = await API.get(`/chat/conversations/${userId}`);
         console.log("📥 שיחות שהתקבלו מהשרת:", data);
 
         if (data.length > 0) {
