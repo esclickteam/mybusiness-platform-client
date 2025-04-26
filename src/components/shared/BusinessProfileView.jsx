@@ -72,13 +72,13 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          {/* כפתור עריכה */}
-          <button
+          {/* כפתור עריכה בדשבורד */}
+          <Link
+            to={`/business/${businessId}/dashboard/edit`}
             className="edit-profile-btn"
-            onClick={() => navigate(`/business/${businessId}/edit`)}
           >
             ✏️ ערוך עמוד עסקי
-          </button>
+          </Link>
 
           <h1 className="business-name">{name}</h1>
 
