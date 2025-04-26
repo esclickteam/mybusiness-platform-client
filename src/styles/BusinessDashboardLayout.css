@@ -49,7 +49,7 @@
   align-items: center !important; /* מרכז את התוכן אנכית */
   justify-content: flex-start !important;
   min-height: 50px !important; /* גובה מינימלי */
-  padding: 0.5rem !important;
+  padding: 0.5rem 1rem !important; /* הוספתי padding אחיד */
   border-radius: 6px !important;
   color: var(--text-secondary) !important;
   text-decoration: none !important;
