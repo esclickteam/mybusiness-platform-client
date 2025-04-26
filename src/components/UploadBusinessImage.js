@@ -36,6 +36,8 @@ const UploadBusinessImage = ({ businessId }) => {
 
         // שליחה לעדכון במסד הנתונים
         await updateLogo(data.secure_url); // עדכון הלוגו ב-Backend
+      } else {
+        alert("שגיאה: לא התקבל URL לתמונה");
       }
     } catch (error) {
       console.error("שגיאה בהעלאת הקובץ:", error);
@@ -59,6 +61,8 @@ const UploadBusinessImage = ({ businessId }) => {
       const data = await res.json();
       if (data.logo) {
         alert("הלוגו עודכן בהצלחה!");
+      } else {
+        alert("שגיאה בעדכון הלוגו");
       }
     } catch (error) {
       console.error("שגיאה בעדכון הלוגו:", error);
