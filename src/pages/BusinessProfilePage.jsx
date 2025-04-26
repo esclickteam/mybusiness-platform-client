@@ -1,12 +1,12 @@
-// src/pages/BusinessProfilePage.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Outlet } from 'react-router-dom';
+import { useParams, Outlet, useNavigate } from 'react-router-dom';
 import API from '@api';
 import './BusinessProfilePage.css';
 import PublicBusinessTabs from '../components/PublicBusinessTabs';
 
 const BusinessProfilePage = () => {
   const { businessId } = useParams();
+  const navigate = useNavigate();
   const [businessData, setBusinessData] = useState(null);
 
   useEffect(() => {
@@ -38,6 +38,11 @@ const BusinessProfilePage = () => {
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
+        {/* כפתור חזרה */}
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          ← חזור
+        </button>
+
         <div className="profile-inner">
           {logo && (
             <img

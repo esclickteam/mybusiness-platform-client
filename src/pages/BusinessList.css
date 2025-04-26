@@ -1,4 +1,11 @@
-.business-list-container {
+.list-page {
+    background: #fff;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+  }
+  
+  .business-list-container {
     max-width: 1200px;
     margin: 0 auto;
     padding-bottom: var(--gap-lg);

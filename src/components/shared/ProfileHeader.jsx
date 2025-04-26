@@ -1,5 +1,3 @@
-// src/components/ProfileHeader.jsx
-
 import React from "react";
 import "./ProfileHeader.css";
 
@@ -21,32 +19,37 @@ const ProfileHeader = ({ businessDetails }) => {
       ).toFixed(1)
     : null;
 
+  const { name, logo, category, area, about } = businessDetails;
+
   return (
     <div className="profile-top-section">
       <div className="profile-header">
         <img
-          src={getImageUrl(businessDetails.logo) || "/images/placeholder.jpg"}
+          src={getImageUrl(logo) || "/images/placeholder.jpg"}
           alt="לוגו עסק"
           className="profile-image"
         />
         <div className="profile-name-section">
-          <h1 className="business-name">{businessDetails.name || "שם העסק"}</h1>
-          <p className="category-area">
-            {businessDetails.category || "לא מוגדר"}
-            {businessDetails.area ? ` | ${businessDetails.area}` : ""}
-          </p>
+          <h1 className="business-name">{name || "שם העסק"}</h1>
+
+          {/* הצגת קטגוריה ואזור רק אם קיימים */}
+          {(category || area) && (
+            <p className="category-area">
+              {category}
+              {category && area ? ` | ${area}` : area}
+            </p>
+          )}
+
           {averageRating && (
             <p className="rating-badge">⭐ {averageRating} / 5</p>
           )}
         </div>
       </div>
 
-      {businessDetails.about && (
+      {about && (
         <div className="about-section">
           <p className="about-snippet">
-            {businessDetails.about.length > 100
-              ? businessDetails.about.slice(0, 100) + "..."
-              : businessDetails.about}
+            {about.length > 100 ? about.slice(0, 100) + "..." : about}
           </p>
         </div>
       )}

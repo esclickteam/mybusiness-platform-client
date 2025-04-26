@@ -18,6 +18,7 @@
     --gap-lg:          24px;
   }
   
+  /* רקע העמוד */
   .profile-page {
     background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
     padding: 40px 16px;
@@ -25,6 +26,7 @@
     box-sizing: border-box;
   }
   
+  /* תצוגת הכרטיס הראשי */
   .business-profile-view {
     background: var(--card-bg);
     border-radius: var(--card-radius);
@@ -32,6 +34,21 @@
     margin: 0 auto;
     padding: var(--gap-lg);
     box-shadow: var(--card-shadow);
+    position: relative;
+  }
+  
+  /* כפתור חזור */
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-bottom: var(--gap-md);
+    padding: 0;
+  }
+  .back-btn:hover {
+    text-decoration: underline;
   }
   
   .profile-inner {
@@ -52,12 +69,14 @@
   .business-profile__name {
     font-size: 2rem;
     margin: 0;
+    color: var(--text-main);
   }
   
   .business-profile__description,
   .business-profile__contact p,
   .business-profile__address,
-  .business-profile__hours {
+  .business-profile__hours,
+  .business-profile__category {
     font-size: 1rem;
     color: var(--text-secondary);
     margin: 8px 0;
@@ -67,6 +86,7 @@
   .business-profile__gallery {
     width: 100%;
     text-align: left;
+    margin-top: var(--gap-lg);
   }
   .gallery-images {
     display: grid;

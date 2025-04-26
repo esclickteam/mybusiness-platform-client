@@ -1,8 +1,8 @@
+// src/pages/BusinessesList.jsx
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
-import "./BusinessList.css";
-import "./BusinessProfilePage.css";  // כדי לטעון גם את משתני הנושא והגרדיאנט
+import "./BusinessList.css";          // רק CSS של הרשימה בלבד
 
 const BusinessesList = () => {
   const [businesses, setBusinesses] = useState([]);
@@ -20,7 +20,7 @@ const BusinessesList = () => {
   }, []);
 
   return (
-    <div className="profile-page">
+    <div className="list-page">      {/* רקע לבן נקי */}
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
         <div className="business-list">
