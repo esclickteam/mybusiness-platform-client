@@ -196,20 +196,27 @@ const handleSave = async () => {
     const file = e.target.files[0];
     if (!file) return;
   
-    // הכנת FormData עם הקובץ
+    // 1. צור פריוויו מקומי לצורך התצוגה המיידית
+    file.preview = URL.createObjectURL(file);
+    setBusinessDetails(prev => ({
+      ...prev,
+      logo: file,
+    }));
+  
+    // 2. העלה את הקובץ באמצעות FormData
     const formData = new FormData();
     formData.append("logo", file);
   
     try {
-      // שליחה ל-endpoint הייעודי
       const res = await API.put("/business/my/logo", formData);
-  
       if (res.status === 200) {
-        // עדכון ה-state עם ה-URL מהשרת
+        // 3. לאחר ההעלאה – עדכן את ה־state ל־URL החוזר מהשרת
         setBusinessDetails(prev => ({
           ...prev,
           logo: res.data.logo
         }));
+        // 4. שחרור ה־blob URL אם רוצים לחסוך זיכרון
+        URL.revokeObjectURL(file.preview);
       } else {
         console.error("Upload failed, status:", res.status);
       }
@@ -217,6 +224,7 @@ const handleSave = async () => {
       console.error("Error uploading logo:", err);
     }
   };
+  
   
   
 
@@ -279,17 +287,18 @@ const handleSave = async () => {
     return (
       <>
         <div className="logo-circle" onClick={handleLogoClick}>
-          {typeof businessDetails.logo === "string" ? (
-            // מקרה של URL מהענן
-            <img src={businessDetails.logo} alt="לוגו" className="logo-img" />
-          ) : businessDetails.logo?.preview ? (
-            // מקרה של קובץ חדש עם preview
-            <img src={businessDetails.logo.preview} alt="לוגו" className="logo-img" />
-          ) : (
-            // המצב ההתחלתי
-            <span>לוגו / פרופיל</span>
-          )}
-        </div>
+  {typeof businessDetails.logo === "string" ? (
+    // מקרה של URL מהענן
+    <img src={businessDetails.logo} alt="לוגו" className="logo-img" />
+  ) : businessDetails.logo?.preview ? (
+    // מקרה של אובייקט File עם preview
+    <img src={businessDetails.logo.preview} alt="לוגו" className="logo-img" />
+  ) : (
+    // אין לוגו עדיין
+    <span>לוגו / פרופיל</span>
+  )}
+</div>
+
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
@@ -372,83 +381,83 @@ const handleSave = async () => {
 />
 
 <div className="gallery-preview">
-  {businessDetails.gallery.map((item, i) => (
-    <div
-      key={i}
-      className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
-      style={{ position: "relative" }} // חובה בשביל הצמדה לפנים
-    >
-      <div className="gallery-item">
-        <img
-          src={
-            // אם זה URL מהשרת
+{businessDetails.gallery.map((item, i) => (
+  <div
+    key={i}
+    className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
+    style={{ position: "relative" }} // חובה בשביל הצמדה לפנים
+  >
+    <div className="gallery-item">
+      <img
+        src={
+          // אם זה URL מהשרת
+          typeof item === "string"
+            ? item
+            // אחרת אובייקט File עם preview
+            : item.preview
+        }
+        alt={`gallery-${i}`}
+        className="gallery-img"
+        style={{
+          objectFit:
             typeof item === "string"
-              ? item
-              // אחרת אובייקט File עם preview
-              : item.preview
-          }
-          alt={`gallery-${i}`}
-          className="gallery-img"
-          style={{
-            objectFit:
-              typeof item === "string"
-                ? businessDetails.galleryFits[item] || "cover"
-                : businessDetails.galleryFits[item.name] || "cover",
-          }}
-        />
-      </div>
-
-      <button
-        className="edit-btn"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setEditIndex(i);
+              ? businessDetails.galleryFits[item] || "cover"
+              : businessDetails.galleryFits[item.name] || "cover",
         }}
-      >
-        ✏️
-      </button>
+      />
+    </div>
 
     <button
-      className="delete-btn"
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        handleDeleteImage(i);
-      }}
-    >
-      🗑️
-    </button>
-
-    {/* ✅ כאן מוצג הפופאפ מעל התמונה */}
-    {editIndex === i && (
-      <div
-        className="fit-select-popup global"
-        style={{
-          position: "absolute",
-          bottom: "100%", // מעלה את הפופאפ
-          left: 0,
-          marginBottom: "8px",
-          zIndex: 10,
-        }}
-      >
-        <select
-  value={
-    typeof item === "string"
-      ? businessDetails.galleryFits[item] || "cover"
-      : businessDetails.galleryFits[item.name] || "cover"
-  }
-  onChange={(e) => handleFitChange(i, e.target.value)}
+  className="edit-btn"
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditIndex(i);
+  }}
 >
-  <option value="cover">חתוך (cover)</option>
-  <option value="contain">מותאם (contain)</option>
-</select>
-<button className="confirm-btn" onClick={() => setEditIndex(null)}>
-  ✔ שמור
+  ✏️
 </button>
 
-      </div>
-    )}
+<button
+  className="delete-btn"
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleDeleteImage(i);
+  }}
+>
+  🗑️
+</button>
+
+{/* ✅ כאן מוצג הפופאפ מעל התמונה */}
+{editIndex === i && (
+  <div
+    className="fit-select-popup global"
+    style={{
+      position: "absolute",
+      bottom: "100%", // מעלה את הפופאפ
+      left: 0,
+      marginBottom: "8px",
+      zIndex: 10,
+    }}
+  >
+    <select
+      value={
+        typeof item === "string"
+          ? businessDetails.galleryFits[item] || "cover"
+          : businessDetails.galleryFits[item.name] || "cover"
+      }
+      onChange={(e) => handleFitChange(i, e.target.value)}
+    >
+      <option value="cover">חתוך (cover)</option>
+      <option value="contain">מותאם (contain)</option>
+    </select>
+    <button className="confirm-btn" onClick={() => setEditIndex(null)}>
+      ✔ שמור
+    </button>
+  </div>
+)}
+
   </div>
 ))}
 
