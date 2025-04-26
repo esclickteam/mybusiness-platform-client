@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "@api";
 import "./BusinessProfileView.css";
 
@@ -72,11 +72,12 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
+          {/* כפתור עריכה */}
           <button
             className="edit-profile-btn"
             onClick={() => navigate(`/business/${businessId}/edit`)}
           >
-            ערוך עמוד עסקי ✏️
+            ✏️ ערוך עמוד עסקי
           </button>
 
           <h1 className="business-name">{name}</h1>
@@ -169,14 +170,14 @@ export default function BusinessProfileView() {
               <textarea
                 placeholder="כתוב הודעה..."
                 value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
+                onChange={e => setChatMessage(e.target.value)}
                 rows={4}
               />
               <input
                 type="text"
                 placeholder="השם שלך"
                 value={chatName}
-                onChange={(e) => setChatName(e.target.value)}
+                onChange={e => setChatName(e.target.value)}
               />
               <button onClick={sendChatMessage}>שלח</button>
             </div>
