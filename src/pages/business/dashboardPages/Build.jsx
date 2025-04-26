@@ -203,11 +203,12 @@ const handleSave = async () => {
     }));
   
     const formData = new FormData();
-    formData.append("logo", file);
+    formData.append("logo", file);   // ← שימו לב: "logo"
   
     try {
       const res = await API.put("/business/my/logo", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+        withCredentials: true,        // ← אם אתם שולחים cookie
+        // *** אל תגידו כאן Content-Type ***
       });
   
       if (res.status === 200) {
@@ -221,10 +222,11 @@ const handleSave = async () => {
         alert("❌ לא הצלחנו להעלות את הלוגו");
       }
     } catch (err) {
-      console.error("🔥 Error uploading logo:", err);
+      console.error("🔥 Error uploading logo:", err.response || err);
       alert("❌ שגיאה בהעלאת הלוגו. נסה שנית מאוחר יותר.");
     }
   };
+  
   
   
   
@@ -246,8 +248,9 @@ const handleSave = async () => {
 
   const handleGalleryChange = async (e) => {
     const files = Array.from(e.target.files);
-    if (files.length === 0) return;
+    if (!files.length) return;
   
+    // הכנת ה־preview
     const previewFiles = files.map(file => {
       file.preview = URL.createObjectURL(file);
       return file;
@@ -259,13 +262,15 @@ const handleSave = async () => {
     }));
   
     const formData = new FormData();
-    previewFiles.forEach((file, idx) => {
-      formData.append("gallery", file);
-      console.log(`🔸 appended gallery[${idx}]:`, file.name, file.type);
+    previewFiles.forEach((file) => {
+      formData.append("gallery", file);  // ← "gallery"
     });
   
     try {
-      const res = await API.put("/business/my/gallery", formData, { headers: { "Content-Type": "multipart/form-data" } });
+      const res = await API.put("/business/my/gallery", formData, {
+        withCredentials: true,           // ← אם אתם משתמשים ב־cookies
+        // *** אל תגידו כאן Content-Type ***
+      });
   
       if (res.status === 200) {
         setBusinessDetails(prev => ({
@@ -278,10 +283,11 @@ const handleSave = async () => {
         alert("❌ לא הצלחנו להעלות את הגלריה");
       }
     } catch (err) {
-      console.error("🔥 Error uploading gallery:", err);
+      console.error("🔥 Error uploading gallery:", err.response || err);
       alert("❌ שגיאה בהעלאת הגלריה. נסה שנית מאוחר יותר.");
     }
   };
+  
   
   
   
