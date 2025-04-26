@@ -196,45 +196,49 @@ const handleSave = async () => {
     const file = e.target.files[0];
     if (!file) return;
   
-    // 1) פריוויו מקומי
+    // 1. פריוויו מקומי
     file.preview = URL.createObjectURL(file);
-    setBusinessDetails(prev => ({ ...prev, logo: file }));
+    setBusinessDetails(prev => ({
+      ...prev,
+      logo: file,
+    }));
   
-    // 2) צור FormData
+    // 2. בנה FormData
     const formData = new FormData();
     formData.append("logo", file);
+    console.log("🔸 appended logo:", file.name, file.type);
   
-    // 🔥 debug: וידוא שהתוכן FormData
-    console.log([...formData.entries()]);
-    // -> צריך להדפיס: [ ["logo", File { name: "...", … }] ]
+    // Debug: רשימת entries של FormData
+    const entries = [...formData.entries()].map(
+      ([key, val]) => [key, val instanceof File ? val.name : val]
+    );
+    console.log("🔥 formData entries:", entries);
+    // => [ ["logo", "my-photo.png"] ]
   
     try {
+      // 3. שלח את ה־FormData
       const res = await API.put(
         "/business/my/logo",
         formData,
         {
-          headers: {
-            // תן ל-axios להוסיף את ה-boundary אוטומטית
-            "Content-Type": "multipart/form-data"
-          },
-          transformRequest: [(data) => {
-            // מבטל stringify אוטומטי
-            return data;
-          }]
+          headers: { "Content-Type": "multipart/form-data" },
+          transformRequest: [(data) => data],
         }
       );
+      console.log("✅ Logo upload response:", res.status, res.data);
   
       if (res.status === 200) {
+        // 4. עדכן state ל־URL מהשרת
         setBusinessDetails(prev => ({
           ...prev,
-          logo: res.data.logo
+          logo: res.data.logo,
         }));
         URL.revokeObjectURL(file.preview);
       } else {
-        console.error("Upload failed, status:", res.status);
+        console.error("❌ Upload failed, status:", res.status);
       }
     } catch (err) {
-      console.error("Error uploading logo:", err);
+      console.error("🔥 Error uploading logo:", err);
     }
   };
   
@@ -272,11 +276,18 @@ const handleSave = async () => {
   
     // 2. בנה FormData אמיתי
     const formData = new FormData();
-    previewFiles.forEach(file => formData.append("gallery", file));
+    previewFiles.forEach((file, idx) => {
+      formData.append("gallery", file);
+      console.log(`🔸 appended gallery[${idx}]:`, file.name, file.type);
+    });
   
     // 🔥 Debug: וידא שהתוכן FormData
-    console.log([...formData.entries()]);
-    // -> צריך להדפיס: [ ["gallery", File {...}], ["gallery", File {...}], ... ]
+    const entries = [...formData.entries()].map(
+      ([key, value]) => [key, value instanceof File ? value.name : value]
+    );
+    console.log("🔥 formData entries:", entries);
+    // -> צריך להדפיס משהו כמו:
+    //    [ ["gallery", "photo1.jpg"], ["gallery", "photo2.png"], ... ]
   
     try {
       // 3. שלח את ה־FormData בלי stringify אוטומטי
@@ -285,25 +296,29 @@ const handleSave = async () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-          transformRequest: [(data) => data],
+          transformRequest: [(data) => data], // מבטל stringify של axios
         }
       );
+  
+      // 🔥 Debug: התשובה מהשרת
+      console.log("✅ Gallery upload response:", res.status, res.data);
   
       if (res.status === 200) {
         // 4. עדכן את ה־state עם URL-ים מהשרת
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: res.data.gallery,  // מערך URL-ים מ-Cloudinary
+          gallery: res.data.gallery,
         }));
         // 5. שחרר את ה־blob URLs
         previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
       } else {
-        console.error("Gallery upload failed, status:", res.status);
+        console.error("❌ Gallery upload failed, status:", res.status);
       }
     } catch (err) {
-      console.error("Error uploading gallery:", err);
+      console.error("🔥 Error uploading gallery:", err);
     }
   };
+  
   
   
 
@@ -411,18 +426,24 @@ const handleSave = async () => {
     placeholder="050-1234567"
   />
 
-  <label>לוגו:</label>
+<label className="upload-logo-wrapper">
   <input
-  type="file"
-  name="logo"
-  ref={logoInputRef}
-  onChange={handleLogoChange}
-  style={{ display: "none" }}
-/>
-
-  <button onClick={handleLogoClick} className="upload-logo-btn">
+    type="file"
+    name="logo"
+    accept="image/*"
+    ref={logoInputRef}
+    onChange={handleLogoChange}
+    style={{ display: "none" }}
+  />
+  <button
+    type="button"
+    onClick={handleLogoClick}
+    className="upload-logo-btn"
+  >
     העלאת לוגו
   </button>
+</label>
+
 
   <label>סטורי:</label>
   <input type="file" multiple onChange={handleStoryUpload} />
