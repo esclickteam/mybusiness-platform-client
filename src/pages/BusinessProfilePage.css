@@ -73,10 +73,10 @@
   }
   
   .business-profile__description,
+  .business-profile__category,
   .business-profile__contact p,
   .business-profile__address,
-  .business-profile__hours,
-  .business-profile__category {
+  .business-profile__hours {
     font-size: 1rem;
     color: var(--text-secondary);
     margin: 8px 0;
@@ -92,7 +92,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: var(--gap-sm);
-    margin-top: var(--gap-sm);
   }
   .gallery-images img {
     width: 100%;
@@ -101,25 +100,25 @@
     object-fit: cover;
   }
   
-  /* טאב-בר ציבורי – פריסה ב-3 עמודות */
+  /* טאב-בר ציבורי – פריסה ב-3 עמודות, מרווח מצומצם */
   .profile-tabs,
   .public-tabs {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--gap-sm);
-    margin: var(--gap-lg) 0 0;
+    margin: var(--gap-md) 0 0; /* צמצום המרווח מעל הטאבים */
     direction: ltr;
   }
   
   .profile-tabs .tab,
   .public-tabs .tab {
+    justify-self: center;
     padding: 8px 20px;
     border-radius: 20px;
     background: #f0eaff;
     color: #333;
     text-decoration: none;
     transition: background 0.2s;
-    justify-self: center;
   }
   
   .profile-tabs .tab:hover,
