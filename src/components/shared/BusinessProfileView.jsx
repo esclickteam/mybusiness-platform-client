@@ -29,7 +29,7 @@ export default function BusinessProfileView() {
     async function fetchData() {
       setLoading(true);
       try {
-        const res = await API.get(`/api/business/${businessId}`);
+        const res = await API.get(`/business/${businessId}`);
         const data = res.data.business || res.data;
         setProfileData(data);
       } catch (err) {

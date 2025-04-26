@@ -9,7 +9,7 @@ export default function EmployeeDashboard() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const res = await API.get("/api/employees");
+        const res = await API.get("/employees");
         setEmployees(res.data);
       } catch (err) {
         console.error("Error fetching employees:", err);

@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
 
   const refreshUserData = async () => {
     try {
-      const res = await API.get("/api/auth/me");
+      const res = await API.get("/auth/me");
       const data = res.data;
       const u = {
         userId: data.userId,

@@ -21,7 +21,7 @@ export default function BusinessProfilePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await API.get(`/api/business/${businessId}`);
+        const res = await API.get(`/business/${businessId}`);
         setBusinessData(res.data.business || res.data);
       } catch (error) {
         console.error('Error fetching business data:', error);
