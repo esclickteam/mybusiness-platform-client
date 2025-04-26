@@ -71,14 +71,25 @@ const [businessDetails, setBusinessDetails] = useState({
   messages: []
 });
 
-// טען נתוני העסק בעת העלאה
 useEffect(() => {
-  API.get("/business/my").then(res => {
-    if (res.status === 200) {
-      setBusinessDetails(res.data.business || res.data);
-    }
-  });
+  API.get("/business/my")
+    .then(res => {
+      if (res.status === 200) {
+        // הקובץ שהשרת מחזיר, יכול להיות ב־res.data או ב־res.data.business
+        const data = res.data.business || res.data;
+
+        // merge של המצב הישן עם המידע החדש
+        setBusinessDetails(prev => ({
+          ...prev,
+          ...data
+        }));
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching business:", err);
+    });
 }, []);
+
 
 const handleSave = async () => {
   try {
