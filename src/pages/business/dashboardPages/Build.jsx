@@ -193,54 +193,38 @@ const handleSave = async () => {
   };
 
   const handleLogoChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  // 1. פריוויו מקומי
-  file.preview = URL.createObjectURL(file);
-  setBusinessDetails(prev => ({
-    ...prev,
-    logo: file,
-  }));
-
-  // 2. בנה FormData
-  const formData = new FormData();
-  formData.append("logo", file);
-  console.log("🔸 appended logo:", file.name, file.type);
-
-  // Debug: רשימת entries של FormData
-  const entries = [...formData.entries()].map(
-    ([key, val]) => [key, val instanceof File ? val.name : val]
-  );
-  console.log("🔥 formData entries:", entries);
-  // => [ ["logo", "my-photo.png"] ]
-
-  try {
-    // 3. שלח את ה־FormData
-    const res = await API.put(
-      "/business/my/logo",
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-        transformRequest: [(data) => data],
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    file.preview = URL.createObjectURL(file);
+    setBusinessDetails(prev => ({
+      ...prev,
+      logo: file,
+    }));
+  
+    const formData = new FormData();
+    formData.append("logo", file);
+  
+    try {
+      const res = await API.put("/business/my/logo", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+  
+      if (res.status === 200) {
+        setBusinessDetails(prev => ({
+          ...prev,
+          logo: res.data.logo,
+        }));
+        URL.revokeObjectURL(file.preview);
+      } else {
+        console.error("❌ Error uploading logo: Status", res.status);
+        alert("❌ לא הצלחנו להעלות את הלוגו");
       }
-    );
-    console.log("✅ Logo upload response:", res.status, res.data);
-
-    if (res.status === 200) {
-      // 4. עדכן state ל־URL מהשרת
-      setBusinessDetails(prev => ({
-        ...prev,
-        logo: res.data.logo,
-      }));
-      URL.revokeObjectURL(file.preview);
-    } else {
-      console.error("❌ Upload failed, status:", res.status);
+    } catch (err) {
+      console.error("🔥 Error uploading logo:", err);
+      alert("❌ שגיאה בהעלאת הלוגו. נסה שנית מאוחר יותר.");
     }
-  } catch (err) {
-    console.error("🔥 Error uploading logo:", err);
-  }
-};
+  };
   
   
   
@@ -264,58 +248,38 @@ const handleSave = async () => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
   
-    // 1. צור preview מקומי לתצוגה מיידית
     const previewFiles = files.map(file => {
       file.preview = URL.createObjectURL(file);
       return file;
     });
+  
     setBusinessDetails(prev => ({
       ...prev,
       gallery: [...prev.gallery, ...previewFiles].slice(0, 5),
     }));
   
-    // 2. בנה FormData אמיתי
     const formData = new FormData();
     previewFiles.forEach((file, idx) => {
       formData.append("gallery", file);
       console.log(`🔸 appended gallery[${idx}]:`, file.name, file.type);
     });
   
-    // 🔥 Debug: וידא שהתוכן FormData
-    const entries = [...formData.entries()].map(
-      ([key, value]) => [key, value instanceof File ? value.name : value]
-    );
-    console.log("🔥 formData entries:", entries);
-    // -> צריך להדפיס משהו כמו:
-    //    [ ["gallery", "photo1.jpg"], ["gallery", "photo2.png"], ... ]
-  
     try {
-      // 3. שלח את ה־FormData בלי stringify אוטומטי
-      const res = await API.put(
-        "/business/my/gallery",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          transformRequest: [(data) => data], // מבטל stringify של axios
-        }
-      );
-  
-      // 🔥 Debug: התשובה מהשרת
-      console.log("✅ Gallery upload response:", res.status, res.data);
+      const res = await API.put("/business/my/gallery", formData, { headers: { "Content-Type": "multipart/form-data" } });
   
       if (res.status === 200) {
-        // 4. עדכן את ה־state עם URL-ים מהשרת
         setBusinessDetails(prev => ({
           ...prev,
           gallery: res.data.gallery,
         }));
-        // 5. שחרר את ה־blob URLs
         previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
       } else {
-        console.error("❌ Gallery upload failed, status:", res.status);
+        console.error("❌ Error uploading gallery: Status", res.status);
+        alert("❌ לא הצלחנו להעלות את הגלריה");
       }
     } catch (err) {
       console.error("🔥 Error uploading gallery:", err);
+      alert("❌ שגיאה בהעלאת הגלריה. נסה שנית מאוחר יותר.");
     }
   };
   
