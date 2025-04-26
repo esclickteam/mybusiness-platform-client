@@ -1,5 +1,3 @@
-/* src/styles/BusinessDashboardLayout.css */
-
 /* גרדיאנט גלובלי כבר ב־index.css, אין צורך ברקעים מקומיים */
 .rtl-wrapper {
   direction: rtl;
@@ -51,7 +49,10 @@
 
 /* קישורים: שבירת טקסט במקום חיתוך */
 .sidebar a {
-  display: block !important;
+  display: flex !important;
+  align-items: center !important; /* מרכז את התוכן אנכית */
+  justify-content: flex-start !important;
+  min-height: 40px !important; /* מינימום גובה לכל קישור */
   padding: 0.5rem !important;
   border-radius: 6px !important;
   color: var(--text-secondary) !important;
@@ -73,6 +74,8 @@
 .sidebar a.active {
   background: var(--primary) !important;
   color: #fff !important;
+  padding-top: 8px !important; /* הדגשה על הטאב הפעיל */
+  padding-bottom: 8px !important; /* הדגשה על הטאב הפעיל */
 }
 
 /* תוכן הדשבורד */
