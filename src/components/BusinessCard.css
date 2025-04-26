@@ -1,49 +1,59 @@
-/* src/components/BusinessCard.css */
-
-/* וידא שכל הכרטיס קליקבילי מלמטה ועד למעלה */
 .business-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  padding: 16px;
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-
-  /* התנהגות לינק */
-  cursor: pointer;
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .business-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-.business-card__logo {
-  width: 40px;
-  height: 40px;
+.business-card__media {
+  width: 100%;
+  height: 140px;
+  background: #f0f0f0;
+}
+.business-card__media img {
   object-fit: cover;
-  border-radius: 4px;
+  width: 100%;
+  height: 100%;
 }
 
-.business-card__name {
-  font-size: 1.2rem;
-  margin: 0;
+.business-card__content {
+  padding: var(--gap-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
-
-.business-card__description {
-  font-size: 0.95rem;
-  color: #555;
-  margin: 0;
+.business-card__title {
+  font-size: 1.25rem;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
 }
-
-.business-card__phone {
+.business-card__subtitle {
   font-size: 0.9rem;
-  color: #333;
-  margin: 0;
+  color: var(--text-secondary);
+  margin-bottom: var(--gap-md);
 }
-
-/* הסרנו את קומפוננטת ה-link הפנימית, כי הכרטיס עצמו הוא לינק */
+.business-card__phone {
+  color: var(--text-secondary);
+  margin-bottom: auto;
+}
+.business-card__btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--primary);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 0.2s ease;
+}
+.business-card__btn:hover {
+  background-color: var(--primary-hover);
+}

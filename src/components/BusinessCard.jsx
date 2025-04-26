@@ -1,31 +1,24 @@
-// src/components/BusinessCard.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './BusinessCard.css';
+import React from "react";
+import "./BusinessCard.css";
 
-const BusinessCard = ({ business }) => {
-  const { _id, name, description, phone, logo } = business;
-
-  return (
-    <Link to={`/business/${_id}`} className="business-card">
-      {logo && (
-        <img
-          src={logo}
-          alt={name}
-          className="business-card__logo"
-        />
+const BusinessCard = ({ business }) => (
+  <div className="business-card">
+    {business.logoUrl && (
+      <div className="business-card__media">
+        <img src={business.logoUrl} alt={`${business.name} logo`} />
+      </div>
+    )}
+    <div className="business-card__content">
+      <h2 className="business-card__title">{business.name}</h2>
+      {business.category && (
+        <p className="business-card__subtitle">{business.category}</p>
       )}
-      <h2 className="business-card__name">{name}</h2>
-      {description && (
-        <p className="business-card__description">
-          {description.length > 60
-            ? description.slice(0, 60) + '…'
-            : description}
-        </p>
+      {business.phone && (
+        <p className="business-card__phone">📞 {business.phone}</p>
       )}
-      {phone && <p className="business-card__phone">טלפון: {phone}</p>}
-    </Link>
-  );
-};
+      <button className="business-card__btn">צפה בפרופיל</button>
+    </div>
+  </div>
+);
 
 export default BusinessCard;
