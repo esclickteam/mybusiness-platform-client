@@ -1,5 +1,5 @@
 .business-card {
-  background: var(--card-bg);
+  background: var(--primary);
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   overflow: hidden;
