@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import API from "@api";
 import "./BusinessProfileView.css";
 
@@ -15,6 +15,7 @@ const TABS = [
 export default function BusinessProfileView() {
   const { businessId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
@@ -23,12 +24,12 @@ export default function BusinessProfileView() {
   const [chatMessage, setChatMessage] = useState("");
   const [chatName, setChatName] = useState("");
 
-  // fetch בכל שינוי של businessId או currentTab
+  // fetch בכל שינוי של businessId, currentTab או location.pathname
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
       try {
-        const res = await API.get(`/business/${businessId}`);
+        const res = await API.get(`/api/business/${businessId}`);
         const data = res.data.business || res.data;
         setProfileData(data);
       } catch (err) {
@@ -38,7 +39,7 @@ export default function BusinessProfileView() {
       }
     }
     fetchData();
-  }, [businessId, currentTab]);
+  }, [businessId, currentTab, location.pathname]);
 
   const sendChatMessage = async () => {
     if (!chatMessage.trim() || !chatName.trim()) {
@@ -47,14 +48,14 @@ export default function BusinessProfileView() {
     }
 
     try {
-      await API.post(`/business/${businessId}/chat`, {
+      await API.post(`/api/business/${businessId}/chat`, {
         name: chatName,
         text: chatMessage,
       });
       alert("✅ ההודעה נשלחה!");
       setChatMessage("");
       setChatName("");
-      // לאחר שליחת ההודעה, ייתכן שנרצה לרענן הצגת צ'אט
+      // לאחר שליחת ההודעה, נניח שהצ'אט יתעדכן
       setCurrentTab("צ'אט עם העסק");
     } catch (err) {
       console.error("❌ שגיאה בשליחת ההודעה:", err);
@@ -127,6 +128,7 @@ export default function BusinessProfileView() {
             <div className="gallery-preview no-actions">
               {gallery.map((item, i) => {
                 const src = typeof item === "string" ? item : item.url || item.preview;
+                console.log(src); // הדפסת URL של התמונות
                 return (
                   src && (
                     <div key={i} className="gallery-item-wrapper">
