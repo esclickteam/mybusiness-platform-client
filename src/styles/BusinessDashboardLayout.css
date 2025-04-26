@@ -19,19 +19,23 @@
 
 /* סיידבר (עכשיו בצד ימין דרך rtl) */
 .sidebar {
-  width: 240px;                  /* רוחב קבוע */
+  width: 240px;                   /* רוחב קבוע */
   padding: 1rem;
-  background-color: #d1b3ff9a;   /* רקע חדש – חצי־שקוף ורוד */
+  background-color: #d1b3ff9a;    /* רקע חצי־שקוף ורוד */
   box-shadow: none;
   border-radius: 0;
 
-  /* תיקון: גלילה אנכית כשיש overflow */
+  /* גלילה אנכית במקרה שיש יותר מדי פריטים */
   max-height: 100vh;
   overflow-y: auto;
+
+  /* נקודת עיגון לחישוב רוחב נכון */
+  box-sizing: border-box;
 }
 
 .sidebar h2 {
   margin-top: 0;
+  margin-bottom: 1rem;
   font-size: 1.2rem;
   color: var(--text-main);
 }
@@ -43,15 +47,17 @@
 }
 
 .sidebar a {
+  display: block;
   padding: 0.5rem;
   border-radius: 6px;
   color: var(--text-secondary);
   text-decoration: none;
   transition: background 0.2s;
 
-  /* מתיר שבירת שורות בתוך הקישור במקום חיתוך */
-  white-space: normal;
-  word-wrap: break-word;
+  /* התכונות שמבטיחות שבירת טקסט ולא חיתוך */
+  white-space: normal;            /* מאפשר שורות חדשות */
+  word-break: break-all;          /* שובר מילים ארוכות בתוך התוכן */
+  overflow-wrap: break-word;      /* מחלק מילים לפי הצורך */
 }
 
 .sidebar a:hover {
