@@ -1,11 +1,11 @@
 /* src/styles/BusinessDashboardLayout.css */
 
-/* הגדרת רקע גלובלי כבר ב-index.css (gradient) */
+/* גרדיאנט גלובלי כבר ב-index.css, אין צורך ברקעים מקומיים */
 
-/* עוטף הגדר RTL */
+/* עוטף בכיוון ימין-לשמאל */
 .rtl-wrapper {
   direction: rtl;
-  background: none;         /* מסיר כל רקע מקומי */
+  background: none;
   min-height: 100vh;
 }
 
@@ -14,14 +14,14 @@
   display: flex;
   width: 100%;
   margin: 0;
-  background: none;         /* gradient גלובלי ברקע */
+  background: none;
 }
 
-/* סיידבר */
+/* סיידבר (עכשיו בצד ימין דרך rtl) */
 .sidebar {
   width: 240px;
   padding: 1rem;
-  background: none;         /* אין צבע רקע לבן */
+  background-color: #d1b3ff9a;  /* רקע חדש – חצי־שקוף ורוד */
   box-shadow: none;
   border-radius: 0;
 }
@@ -43,16 +43,16 @@
   transition: background 0.2s;
 }
 .sidebar a:hover {
-  background: rgba(138,43,226,0.1);
+  background: rgba(138, 43, 226, 0.1);
 }
 .sidebar a.active {
   background: var(--primary);
   color: #fff;
 }
 
-/* אזור התוכן המרכזי */
+/* תוכן הדשבורד */
 .dashboard-content {
   flex: 1;
   padding: 1rem;
-  background: none;         /* אין רקע לבן */
+  background: none;
 }
