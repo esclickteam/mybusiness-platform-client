@@ -28,7 +28,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
       }
 
       try {
-        const res = await API.get(`/chat/${partnerId}`);
+        const res = await API.get(`/api/chat/${partnerId}`);
         setMessages(res.data || []);
       } catch (err) {
         console.error("❌ שגיאה בטעינת שיחה", err);
