@@ -1,4 +1,3 @@
-// src/pages/BusinessProfilePage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import API from '@api';
@@ -13,26 +12,27 @@ const TABS = [
   { path: 'shop', label: 'חנות / יומן' },
 ];
 
-const BusinessProfilePage = () => {
+export default function BusinessProfilePage() {
   const { businessId } = useParams();
   const navigate = useNavigate();
   const [businessData, setBusinessData] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
         const res = await API.get(`/business/${businessId}`);
         setBusinessData(res.data.business || res.data);
-      } catch (err) {
-        console.error('Error fetching business data:', err);
+      } catch (error) {
+        console.error('Error fetching business data:', error);
       }
-    };
+    }
     fetchData();
   }, [businessId]);
 
   if (!businessData) return <div>טוען...</div>;
 
   const {
+    logo,
     name,
     description,
     category,
@@ -44,75 +44,43 @@ const BusinessProfilePage = () => {
 
   return (
     <div className="profile-page">
-      <div className="business-profile-view full-style">
-        {/* כפתור חזור */}
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← חזור
-        </button>
+      {/* כפתור חזרה */}
+      <button className="back-btn" onClick={() => navigate(-1)}>
+        ← חזור
+      </button>
 
-        <div className="profile-inner">
-          {businessData.logo && (
-            <img
-              src={businessData.logo}
-              alt={name}
-              className="business-profile__logo"
-            />
-          )}
-
-          <h1 className="business-profile__name">{name}</h1>
-
-          {description && (
-            <p className="business-profile__description">
-              <strong>תיאור:</strong> {description}
-            </p>
-          )}
-
-          {category && (
-            <p className="business-profile__category">
-              <strong>קטגוריה:</strong> {category}
-            </p>
-          )}
-
-          <div className="business-profile__contact">
-            {phone && <p><strong>טלפון:</strong> {phone}</p>}
-            {email && <p><strong>אימייל:</strong> {email}</p>}
-            {address && (
-              <p><strong>כתובת:</strong> {address.street}, {address.city}</p>
-            )}
-            {openingHours && (
-              <p><strong>שעות פתיחה:</strong> {openingHours}</p>
-            )}
-          </div>
+      {/* תוכן ראשי ללא כרטיס */}
+      <div className="profile-inner">
+        {logo && <img src={logo} alt={name} className="business-profile__logo" />}
+        <h1 className="business-profile__name">{name}</h1>
+        {description && <p className="business-profile__description"><strong>תיאור:</strong> {description}</p>}
+        {category && <p className="business-profile__category"><strong>קטגוריה:</strong> {category}</p>}
+        <div className="business-profile__contact">
+          {phone && <p><strong>טלפון:</strong> {phone}</p>}
+          {email && <p><strong>אימייל:</strong> {email}</p>}
         </div>
+        {address && <p className="business-profile__address"><strong>כתובת:</strong> {address.street}, {address.city}</p>}
+        {openingHours && <p className="business-profile__hours"><strong>שעות פתיחה:</strong> {openingHours}</p>}
+      </div>
 
-        {/* רצועת טאבים ציבורית ב-3 עמודות */}
-        <nav
-          className="profile-tabs"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 'var(--gap-sm)'
-          }}
-        >
-          {TABS.map(tab => (
-            <NavLink
-              key={tab.path}
-              to={tab.path}
-              end={tab.path === ''}
-              className={({ isActive }) => `tab ${isActive ? 'active' : ''}`}
-            >
-              {tab.label}
-            </NavLink>
-          ))}
-        </nav>
+      {/* רצועת טאבים מתחת לתוכן הראשי */}
+      <nav className="profile-tabs public-tabs">
+        {TABS.map(tab => (
+          <NavLink
+            key={tab.path}
+            to={tab.path}
+            end={tab.path === ''}
+            className={({ isActive }) => `tab ${isActive ? 'active' : ''}`}
+          >
+            {tab.label}
+          </NavLink>
+        ))}
+      </nav>
 
-        {/* כאן נטען תוכן הטאב */}
-        <div className="outlet-wrapper">
-          <Outlet />
-        </div>
+      {/* תוכן הטאב */}
+      <div className="outlet-wrapper">
+        <Outlet />
       </div>
     </div>
   );
-};
-
-export default BusinessProfilePage;
+}
