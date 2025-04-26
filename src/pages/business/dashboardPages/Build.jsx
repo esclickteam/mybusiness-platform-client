@@ -242,15 +242,42 @@ const handleSave = async () => {
     }));
   };
 
-  const handleGalleryChange = (e) => {
+  const handleGalleryChange = async (e) => {
     const files = Array.from(e.target.files);
-    const existingKeys = businessDetails.gallery.map((f) => f.name + f.size);
-    const newFiles = files.filter((f) => !existingKeys.includes(f.name + f.size));
-    setBusinessDetails((prev) => ({
+    if (files.length === 0) return;
+  
+    // 1. צור preview מקומי לתצוגה מיידית
+    const previewFiles = files.map(file => {
+      file.preview = URL.createObjectURL(file);
+      return file;
+    });
+    setBusinessDetails(prev => ({
       ...prev,
-      gallery: [...prev.gallery, ...newFiles].slice(0, 5),
+      gallery: [...prev.gallery, ...previewFiles].slice(0, 5),
     }));
+  
+    // 2. העלה את הקבצים לשרת
+    const formData = new FormData();
+    previewFiles.forEach(file => formData.append("gallery", file));
+  
+    try {
+      const res = await API.put("/business/my/gallery", formData);
+      if (res.status === 200) {
+        // 3. עדכן את ה־state עם ה־URL-ים מהשרת
+        setBusinessDetails(prev => ({
+          ...prev,
+          gallery: res.data.gallery,  // מערך URL-ים
+        }));
+        // 4. שחרר את ה־blob URLs של ה־previews
+        previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
+      } else {
+        console.error("Gallery upload failed, status:", res.status);
+      }
+    } catch (err) {
+      console.error("Error uploading gallery:", err);
+    }
   };
+  
 
   const handleDeleteImage = (index) => {
     const updatedGallery = [...businessDetails.gallery];
