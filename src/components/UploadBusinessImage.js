@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-const UploadBusinessImage = () => {
+const UploadBusinessImage = ({ businessId }) => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
 
-  // פונקציה לשינוי קובץ
+  // פונקציה לשינוי קובץ (לוגו או גלריה)
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -31,8 +31,11 @@ const UploadBusinessImage = () => {
 
       const data = await res.json();
       if (data.secure_url) {
-        setImageUrl(data.secure_url); // מציג את התמונה המועלת
+        setImageUrl(data.secure_url); // עדכון ה-URL של התמונה
         alert("התמונה הועלתה בהצלחה!");
+
+        // שליחה לעדכון במסד הנתונים
+        await updateLogo(data.secure_url); // עדכון הלוגו ב-Backend
       }
     } catch (error) {
       console.error("שגיאה בהעלאת הקובץ:", error);
@@ -42,4 +45,42 @@ const UploadBusinessImage = () => {
     }
   };
 
- 
+  // שליחה של ה-URL לעדכון הלוגו במסד הנתונים
+  const updateLogo = async (url) => {
+    try {
+      const res = await fetch(`/api/business/my/logo`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ secure_url: url }),
+      });
+
+      const data = await res.json();
+      if (data.logo) {
+        alert("הלוגו עודכן בהצלחה!");
+      }
+    } catch (error) {
+      console.error("שגיאה בעדכון הלוגו:", error);
+      alert("הייתה שגיאה בעדכון הלוגו");
+    }
+  };
+
+  return (
+    <div>
+      <input type="file" onChange={handleFileChange} />
+      <button onClick={handleUpload} disabled={loading}>
+        {loading ? "טוען..." : "העלה תמונה"}
+      </button>
+
+      {imageUrl && (
+        <div>
+          <h3>התמונה שהועלתה:</h3>
+          <img src={imageUrl} alt="Uploaded Business Image" style={{ width: "300px" }} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default UploadBusinessImage;
