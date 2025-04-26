@@ -1,125 +1,111 @@
-/* src/pages/BusinessProfilePage.css */
+/* src/components/shared/BusinessProfileView.css */
 
-:root {
-  /* משתני צבעים גלובליים */
-  --bg-start:        #fdfcff;
-  --bg-end:          #e4e8ff;
+/* משתני צבעים גלובליים מוזנים מ־index.css (אין צורך להגדיר כאן שוב) */
 
-  --card-bg:         #ffffff;
-  --card-radius:     24px;
-  --card-shadow:     0 4px 12px rgba(0,0,0,0.05);
-
-  --primary:         #8a2be2;
-  --primary-hover:   #7a23d0;
-
-  --text-main:       #222222;
-  --text-secondary:  #555555;
-
-  --gap-sm:          12px;
-  --gap-md:          16px;
-  --gap-lg:          24px;
-}
-
-/* עמוד כללי ללא רקע מקומי - רק padding  */
+/* עמוד כללי – אין רקע מקומי, רק padding */
 .profile-page {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: var(--gap-lg) 0;
+  align-items: flex-start;   /* מתחיל מלמעלה */
+  min-height: 100vh;
+  background: none;           /* הגרדיאנט הגלובלי ב־index.css מטפל ברקע */
+  padding: 24px 0;            /* var(--gap-lg) */
   text-align: center;
 }
 
-/* סגנון כללי לתצוגת העמוד (ללא כרטיס) */
-.business-profile-view {
-  background: none;
-  border-radius: 0;
-  max-width: 100%;
+/* המכולה המרכזית – בלי 'כרטיס' לבן, מצמקד את התוכן */
+.business-profile-view.full-style {
+  width: 100%;
+  max-width: 700px;
   margin: 0 auto;
-  padding: var(--gap-lg) 0;
-  box-shadow: none;
+  padding: 0;                 /* אם רוצים ריווח פנימי, מוסיפים כאן */
+  background: none;           /* מסיר רקע לבן */
+  box-shadow: none;           /* מסיר צל */
+  border-radius: 0;           /* פינות חדות */
   position: relative;
 }
 
-/* כפתור חזור */
-.back-btn {
-  background: none;
-  border: none;
-  color: var(--primary);
-  font-size: 0.95rem;
-  cursor: pointer;
-  margin-bottom: var(--gap-md);
-  padding: 0;
-}
-.back-btn:hover {
-  text-decoration: underline;
-}
-
+/* הכותרת ותוכן פנימי */
 .profile-inner {
-  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--gap-md);
-  text-align: center;
+  gap: 16px;                  /* var(--gap-md) */
+  padding: 0;
 }
 
-.business-profile__logo {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 50%;
+/* כפתור עריכה */
+.edit-profile-btn {
+  align-self: flex-end;
+  margin-bottom: 16px;        /* var(--gap-md) */
+  padding: 0.4rem 1rem;
+  background-color: #8a2be2;  /* var(--primary) */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.edit-profile-btn:hover {
+  background-color: #7a23d0;  /* var(--primary-hover) */
 }
 
-.business-profile__name {
+/* שם העסק */
+.business-name {
   font-size: 2rem;
+  font-weight: bold;
+  color: #222;                /* var(--text-main) */
   margin: 0;
-  color: var(--text-main);
 }
 
-.business-profile__description,
-.business-profile__category,
-.business-profile__contact p,
-.business-profile__address,
-.business-profile__hours {
+/* תיאור ופרטי קשר */
+.about-section,
+.phone-section {
   font-size: 1rem;
-  color: var(--text-secondary);
-  margin: 8px 0;
+  color: #555;                /* var(--text-secondary) */
+  margin: 4px 0;
 }
 
-/* טאב-בר ציבורי – פריסה ב-3 עמודות, מרווח מצומצם */
-.profile-tabs,
-.public-tabs {
+/* קו מפריד בין התוכן לטאבים */
+.profile-divider {
+  width: 100%;
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 16px 0;             /* var(--gap-md) */
+}
+
+/* טאבים – grid של 3 עמודות, מצומצם וצמוד יותר */
+.profile-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--gap-sm);
-  margin: var(--gap-md) auto 0;
-  max-width: 700px;
-  direction: ltr;
+  gap: 12px;                  /* var(--gap-sm) */
+  margin: 16px auto 0;        /* var(--gap-md) */
+  width: 100%;
+  justify-items: center;
 }
 
-.profile-tabs .tab,
-.public-tabs .tab {
-  justify-self: center;
-  padding: 8px 20px;
+.profile-tabs .tab {
+  padding: 0.6rem 1rem;
   border-radius: 20px;
   background: #f0eaff;
   color: #333;
-  text-decoration: none;
+  border: none;
+  font-size: 0.95rem;
+  width: 100%;
+  max-width: 200px;
   transition: background 0.2s;
+  cursor: pointer;
 }
-
-.profile-tabs .tab:hover,
-.public-tabs .tab:hover {
+.profile-tabs .tab:hover {
   background: #e4d6ff;
 }
-
-.profile-tabs .tab.active,
-.public-tabs .tab.active {
-  background: var(--primary);
+.profile-tabs .tab.active {
+  background: #8a2be2;        /* var(--primary) */
   color: #fff;
 }
 
 /* אזור הטאב הנבחר */
 .outlet-wrapper {
-  margin-top: var(--gap-lg);
+  margin-top: 24px;           /* var(--gap-lg) */
 }
