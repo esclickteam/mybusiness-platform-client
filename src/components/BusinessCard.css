@@ -5,16 +5,19 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.business-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* הרמת הכרטיס במעבר עכבר */
+.business-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+}
+
+/* מדיה: תמונת כיסוי בגובה קבוע עם יחס רוחב/גובה */
 .business-card__media {
   width: 100%;
-  height: 140px;
+  aspect-ratio: 16 / 9;
   background: #f0f0f0;
 }
 .business-card__media img {
@@ -23,35 +26,56 @@
   height: 100%;
 }
 
+/* תוכן: גמיש ועם חלל פנימי אחיד */
 .business-card__content {
-  padding: var(--gap-md);
-  flex: 1;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  padding: var(--gap-md);
+  gap: var(--gap-sm);
 }
+
+/* כותרת ותת-כותרת */
 .business-card__title {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   color: var(--text-main);
-  margin-bottom: 0.25rem;
+  margin: 0;
 }
 .business-card__subtitle {
   font-size: 0.9rem;
   color: var(--text-secondary);
-  margin-bottom: var(--gap-md);
 }
-.business-card__phone {
+
+/* תיאור העסק (אם קיים) */
+.business-card__description {
+  font-size: 0.95rem;
   color: var(--text-secondary);
-  margin-bottom: auto;
+  line-height: 1.4;
+  margin: 0;
 }
+
+/* פרטי קשר */
+.business-card__phone {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* דוחף את הכפתור לסוף התוכן */
+.business-card__spacer {
+  flex: 1;
+}
+
+/* כפתור לינק לפרופיל */
 .business-card__btn {
+  display: inline-block;
   padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 0.5rem;
   background-color: var(--primary);
   color: #fff;
+  text-decoration: none;
   font-size: 0.9rem;
-  cursor: pointer;
-  align-self: flex-start;
+  text-align: center;
   transition: background-color 0.2s ease;
 }
 .business-card__btn:hover {
