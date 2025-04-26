@@ -1,5 +1,16 @@
+:root {
+  /* משתני נושא גלובליים (אם לא מוגדרים במיקום אחר) */
+  --bg-end:          #e4e8ff; /* צבע פסטל להחזרת הרקע */
+  --card-radius:     24px;
+  --card-shadow:     0 4px 12px rgba(0,0,0,0.05);
+  --text-main:       #222222;
+  --text-secondary:  #555555;
+  --gap-sm:          12px;
+  --gap-md:          16px;
+}
+
 .business-card {
-  background: var(--primary);
+  background: var(--bg-end);
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   overflow: hidden;
@@ -26,19 +37,19 @@
   height: 100%;
 }
 
-/* תוכן: גמיש ועם חלל פנימי אחיד */
+/* תוכן: גמיש ועם חלל פנימי אחיד, צבע טקסט כהה לקריאה */
 .business-card__content {
   display: flex;
   flex-direction: column;
   flex: 1;
   padding: var(--gap-md);
   gap: var(--gap-sm);
+  color: var(--text-main);
 }
 
 /* כותרת ותת-כותרת */
 .business-card__title {
   font-size: 1.3rem;
-  color: var(--text-main);
   margin: 0;
 }
 .business-card__subtitle {
@@ -60,11 +71,6 @@
   color: var(--text-secondary);
 }
 
-/* דוחף את הכפתור לסוף התוכן */
-.business-card__spacer {
-  flex: 1;
-}
-
 /* כפתור לינק לפרופיל */
 .business-card__btn {
   display: inline-block;
@@ -76,6 +82,7 @@
   text-decoration: none;
   font-size: 0.9rem;
   text-align: center;
+  margin-top: auto;
   transition: background-color 0.2s ease;
 }
 .business-card__btn:hover {
