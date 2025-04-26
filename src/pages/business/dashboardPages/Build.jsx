@@ -193,47 +193,54 @@ const handleSave = async () => {
   };
 
   const handleLogoChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-  
-    // 1. פריוויו מקומי
-    file.preview = URL.createObjectURL(file);
-    setBusinessDetails(prev => ({
-      ...prev,
-      logo: file,
-    }));
-  
-    // 2. בנה FormData
-    const formData = new FormData();
-    formData.append("logo", file);
-    console.log("🔸 appended logo:", file.name, file.type);
-  
-    // Debug: רשימת entries של FormData
-    const entries = [...formData.entries()].map(
-      ([key, val]) => [key, val instanceof File ? val.name : val]
-    );
-    console.log("🔥 formData entries:", entries);
-    // => [ ["logo", "my-photo.png"] ]
-  
-    try {
-      // 3. שלח את ה־FormData
-      const res = await API.put("/business/my/logo", formData);
-      console.log("✅ Logo upload response:", res.status, res.data);
-  
-      if (res.status === 200) {
-        // 4. עדכן state ל־URL מהשרת
-        setBusinessDetails(prev => ({
-          ...prev,
-          logo: res.data.logo,
-        }));
-        URL.revokeObjectURL(file.preview);
-      } else {
-        console.error("❌ Upload failed, status:", res.status);
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // 1. פריוויו מקומי
+  file.preview = URL.createObjectURL(file);
+  setBusinessDetails(prev => ({
+    ...prev,
+    logo: file,
+  }));
+
+  // 2. בנה FormData
+  const formData = new FormData();
+  formData.append("logo", file);
+  console.log("🔸 appended logo:", file.name, file.type);
+
+  // Debug: רשימת entries של FormData
+  const entries = [...formData.entries()].map(
+    ([key, val]) => [key, val instanceof File ? val.name : val]
+  );
+  console.log("🔥 formData entries:", entries);
+  // => [ ["logo", "my-photo.png"] ]
+
+  try {
+    // 3. שלח את ה־FormData
+    const res = await API.put(
+      "/business/my/logo",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        transformRequest: [(data) => data],
       }
-    } catch (err) {
-      console.error("🔥 Error uploading logo:", err);
+    );
+    console.log("✅ Logo upload response:", res.status, res.data);
+
+    if (res.status === 200) {
+      // 4. עדכן state ל־URL מהשרת
+      setBusinessDetails(prev => ({
+        ...prev,
+        logo: res.data.logo,
+      }));
+      URL.revokeObjectURL(file.preview);
+    } else {
+      console.error("❌ Upload failed, status:", res.status);
     }
-  };
+  } catch (err) {
+    console.error("🔥 Error uploading logo:", err);
+  }
+};
   
   
   
@@ -284,7 +291,14 @@ const handleSave = async () => {
   
     try {
       // 3. שלח את ה־FormData בלי stringify אוטומטי
-      const res = await API.put("/business/my/gallery", formData);
+      const res = await API.put(
+        "/business/my/gallery",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          transformRequest: [(data) => data], // מבטל stringify של axios
+        }
+      );
   
       // 🔥 Debug: התשובה מהשרת
       console.log("✅ Gallery upload response:", res.status, res.data);
@@ -412,24 +426,18 @@ const handleSave = async () => {
     placeholder="050-1234567"
   />
 
-  <label className="upload-logo-wrapper">
+  <label>לוגו:</label>
   <input
-    type="file"
-    name="logo"
-    accept="image/*"
-    ref={logoInputRef}
-    onChange={handleLogoChange}
-    style={{ display: "none" }}
-  />
-  <button
-    type="button"
-    onClick={handleLogoClick}
-    className="upload-logo-btn"
-  >
+  type="file"
+  name="logo"
+  ref={logoInputRef}
+  onChange={handleLogoChange}
+  style={{ display: "none" }}
+/>
+
+  <button onClick={handleLogoClick} className="upload-logo-btn">
     העלאת לוגו
   </button>
-</label>
-
 
   <label>סטורי:</label>
   <input type="file" multiple onChange={handleStoryUpload} />
