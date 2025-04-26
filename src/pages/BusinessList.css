@@ -1,7 +1,28 @@
-.list-page {
+:root {
+    /* משתני נושא גלובליים */
+    --bg-start:        #fdfcff;
+    --bg-end:          #e4e8ff;
+  
+    --card-bg:         #ffffff;
+    --card-radius:     24px;
+    --card-shadow:     0 4px 12px rgba(0,0,0,0.05);
+  
+    --primary:         #8a2be2;
+    --primary-hover:   #7a23d0;
+  
+    --text-main:       #222222;
+    --text-secondary:  #555555;
+  
+    --gap-sm:          12px;
+    --gap-md:          16px;
+    --gap-lg:          24px;
+  }
+  
+  /* רקע לבן נקי לרשימת העסקים */
+  .list-page {
     background: #fff;
     min-height: 100vh;
-    padding: 2rem 1rem;
+    padding: var(--gap-lg) 1rem;
     box-sizing: border-box;
   }
   
