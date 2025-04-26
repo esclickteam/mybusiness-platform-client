@@ -17,6 +17,8 @@ const BusinessMessagesPage = () => {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
+    console.log("Current Path in Messages Page:", location.pathname); // יציג את הנתיב הנוכחי
+
     const fetchMessages = async () => {
       try {
         const storedUser = JSON.parse(localStorage.getItem("user"));
