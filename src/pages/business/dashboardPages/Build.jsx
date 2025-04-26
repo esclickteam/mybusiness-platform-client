@@ -113,9 +113,10 @@ const handleSave = async () => {
 
     console.log("📤 שולח JSON ל־API:", payload);
 
-    const res = await API.put("/business/my", payload, {
+    const res = await API.patch("/business/my", payload, {
       headers: { "Content-Type": "application/json" }
     });
+    
 
     if (res.status === 200) {
       alert("✅ נשמר בהצלחה!");
