@@ -17,7 +17,6 @@
 /* סיידבר (עכשיו בצד ימין דרך rtl) */
 .sidebar {
   min-width: 240px !important;
-  width: auto !important;
   max-width: 100% !important;
   padding: 1rem !important;
   background-color: #d1b3ff9a !important; /* רקע חצי־שקוף ורוד */
@@ -25,7 +24,7 @@
   border-radius: 0 !important;
   box-sizing: border-box !important;
   height: 100vh !important;
-  overflow-y: auto;
+  overflow-y: auto !important;
 }
 
 /* כותרת הסיידבר */
@@ -45,20 +44,19 @@
 
 /* קישורים: שבירת טקסט במקום חיתוך */
 .sidebar a {
-  display: flex !important;
-  align-items: center !important; /* מרכז את התוכן אנכית */
+  display: inline-flex !important;
+  align-items: center !important;   /* מרכז אנכי גם לאימוג'י */
   justify-content: flex-start !important;
-  min-height: 50px !important; /* גובה מינימלי */
-  padding: 0.5rem 1rem !important; /* הוספתי padding אחיד */
+  min-height: 60px !important;      /* גובה מינימלי גבוה יותר */
+  padding: 0.75rem 1rem !important; /* עוד padding אנכי כדי למנוע חיתוך */
   border-radius: 6px !important;
   color: var(--text-secondary) !important;
   text-decoration: none !important;
   transition: background 0.2s !important;
   box-sizing: border-box !important;
-
-  white-space: normal !important;       /* מאפשר לשבור שורות */
-  word-break: break-word !important;    /* שובר מילים ארוכות */
-  overflow-wrap: break-word !important; /* תמיכה בשבירה במיקום מתאים */
+  line-height: 1.4 !important;      /* גובה שורה מוגדל */
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
 }
 
 /* מצביע על הוראה בעמידה על הקישור */
@@ -70,20 +68,13 @@
 .sidebar a.active {
   background: var(--primary) !important;
   color: #fff !important;
-  padding-top: 8px !important; /* הדגשה על הטאב הפעיל */
-  padding-bottom: 8px !important; /* הדגשה על הטאב הפעיל */
 }
 
-/* עיצוב מיוחד לטאב "יועץ עסקליק" - אם יש לו מזהה או כיתה */
+/* עיצוב מיוחד לטאב "יועץ עסקליק" */
 .sidebar a[href*="esclick"] {
-  background: rgba(138, 43, 226, 0.2) !important; /* רקע דמוי-טאב פעיל */
-  color: #fff !important; /* צבע טקסט לבן */
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-  min-height: 50px !important; /* להבטיח גובה אחיד */
-  display: flex !important;
-  align-items: center !important; /* ממורכז אנכית */
-  justify-content: flex-start !important;
+  background: rgba(138, 43, 226, 0.2) !important;
+  color: #fff !important;
+  /* padding ו-min-height מבוססים על הסגנון הכללי */
 }
 
 /* תוכן הדשבורד */
