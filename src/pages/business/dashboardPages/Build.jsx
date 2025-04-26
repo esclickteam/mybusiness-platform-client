@@ -413,11 +413,13 @@ const handleSave = async () => {
 
   <label>לוגו:</label>
   <input
-    type="file"
-    ref={logoInputRef}
-    onChange={handleLogoChange}
-    style={{ display: "none" }}
-  />
+  type="file"
+  name="logo"
+  ref={logoInputRef}
+  onChange={handleLogoChange}
+  style={{ display: "none" }}
+/>
+
   <button onClick={handleLogoClick} className="upload-logo-btn">
     העלאת לוגו
   </button>
@@ -429,11 +431,13 @@ const handleSave = async () => {
 <label>תמונות לעמוד הראשי (עד 5):</label>
 <input
   type="file"
+  name="gallery"
   multiple
   style={{ display: "none" }}
   ref={galleryInputRef}
   onChange={handleGalleryChange}
 />
+
 
 <div className="gallery-preview">
 {businessDetails.gallery.map((item, i) => (
