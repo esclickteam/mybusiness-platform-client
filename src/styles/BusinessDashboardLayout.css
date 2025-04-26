@@ -16,7 +16,6 @@
 
 /* סיידבר (עכשיו בצד ימין דרך rtl) */
 .sidebar {
-  /* כעת: תופס לפחות 240px, אבל מתרחב לפי תוכן */
   min-width: 240px !important;
   width: auto !important;
   max-width: 100% !important;
@@ -27,8 +26,8 @@
   border-radius: 0 !important;
   box-sizing: border-box !important;
 
-  /* גלילה אנכית אם צריך */
-  max-height: 100vh;
+  /* הגבהה אוטומטית לסיידבר */
+  height: 100vh !important;
   overflow-y: auto;
 }
 
