@@ -50,7 +50,7 @@ const UploadBusinessImage = ({ businessId }) => {
   // שליחה של ה-URL לעדכון הלוגו במסד הנתונים
   const updateLogo = async (url) => {
     try {
-      const res = await fetch(`/api/business/my/logo`, {
+      const res = await fetch(`/api/business/${businessId}/logo`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const UploadBusinessImage = ({ businessId }) => {
     <div>
       <input type="file" onChange={handleFileChange} />
       <button onClick={handleUpload} disabled={loading}>
-        {loading ? "טוען..." : "העלה תמונה"}
+        {loading ? "ממתין להעלאה..." : "העלה תמונה"}
       </button>
 
       {imageUrl && (
