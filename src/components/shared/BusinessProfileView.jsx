@@ -19,20 +19,26 @@ export default function BusinessProfileView() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
-  // צ'אט
+  // נתונים ל-צ'אט
   const [chatMessage, setChatMessage] = useState("");
   const [chatName, setChatName] = useState("");
 
+  // fetch בכל שינוי של businessId או currentTab
   useEffect(() => {
-    setLoading(true);
-    API.get(`/business/${businessId}`)
-      .then(res => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const res = await API.get(`/business/${businessId}`);
         const data = res.data.business || res.data;
         setProfileData(data);
-      })
-      .catch(err => console.error("Error loading business:", err))
-      .finally(() => setLoading(false));
-  }, [businessId]);
+      } catch (err) {
+        console.error("Error loading business:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [businessId, currentTab]);
 
   const sendChatMessage = async () => {
     if (!chatMessage.trim() || !chatName.trim()) {
@@ -48,6 +54,8 @@ export default function BusinessProfileView() {
       alert("✅ ההודעה נשלחה!");
       setChatMessage("");
       setChatName("");
+      // לאחר שליחת ההודעה, ייתכן שנרצה לרענן הצגת צ'אט
+      setCurrentTab("צ'אט עם העסק");
     } catch (err) {
       console.error("❌ שגיאה בשליחת ההודעה:", err);
       alert("❌ שגיאה בשליחה");
@@ -63,7 +71,7 @@ export default function BusinessProfileView() {
     phone = "",
     gallery = [],
     reviews = [],
-    faqs = []
+    faqs = [],
   } = profileData;
 
   const realReviews = reviews.filter(r => typeof r.rating === "number");
@@ -118,8 +126,7 @@ export default function BusinessProfileView() {
           {currentTab === "גלריה" && gallery.length > 0 && (
             <div className="gallery-preview no-actions">
               {gallery.map((item, i) => {
-                const src =
-                  typeof item === "string" ? item : item.url || item.preview;
+                const src = typeof item === "string" ? item : item.url || item.preview;
                 return (
                   src && (
                     <div key={i} className="gallery-item-wrapper">
@@ -185,7 +192,6 @@ export default function BusinessProfileView() {
 
           {currentTab === "חנות / יומן" && (
             <div className="shop-tab-placeholder">
-              <p>🚧 תכונה זו תיבנה בקרוב…</p>
             </div>
           )}
         </div>
