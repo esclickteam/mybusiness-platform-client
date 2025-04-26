@@ -4,13 +4,13 @@ import API from '@api';
 import './BusinessProfilePage.css';
 
 const TABS = [
-  { path: '', label: 'ראשי' },
-  { path: 'gallery', label: 'גלריה' },
-  { path: 'reviews', label: 'ביקורות' },
-  { path: 'faq', label: 'שאלות ותשובות' },
-  { path: 'chat', label: "צ'אט עם העסק" },
-  { path: 'shop', label: 'חנות / יומן' },
-];
+    { path: 'gallery', label: 'גלריה' },
+    { path: 'reviews', label: 'ביקורות' },
+    { path: '', label: 'ראשי' },
+    { path: 'faq', label: 'שאלות ותשובות' },
+    { path: 'chat', label: "צ'אט עם העסק" },
+    { path: 'shop', label: 'חנות / יומן' },
+  ];
 
 export default function BusinessProfilePage() {
   const { businessId } = useParams();
