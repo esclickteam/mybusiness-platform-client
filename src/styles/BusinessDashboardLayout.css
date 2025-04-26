@@ -74,7 +74,17 @@
 .sidebar a[href*="esclick"] {
   background: rgba(138, 43, 226, 0.2) !important;
   color: #fff !important;
-  /* padding ו-min-height מבוססים על הסגנון הכללי */
+}
+
+/* קונטיינר תפריט CRM */
+.crm-submenu {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-self: flex-start !important;
+  background: rgba(138, 43, 226, 0.15) !important;
+  padding: 0.5rem !important;
+  border-radius: 0.5rem !important;
+  gap: 0.5rem !important;
 }
 
 /* תוכן הדשבורד */
