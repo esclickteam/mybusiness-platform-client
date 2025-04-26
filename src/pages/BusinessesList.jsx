@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
-import "./BusinessList.css";          // רק CSS של הרשימה בלבד
+import "./BusinessList.css"; // רק CSS של הרשימה בלבד
 
 const BusinessesList = () => {
   const [businesses, setBusinesses] = useState([]);
@@ -20,7 +20,7 @@ const BusinessesList = () => {
   }, []);
 
   return (
-    <div className="list-page">      {/* רקע לבן נקי */}
+    <div className="list-page"> {/* רקע לבן נקי */}
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
         <div className="business-list">
