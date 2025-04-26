@@ -116,12 +116,14 @@ const handleSave = async () => {
     const res = await API.patch("/business/my", payload, {
       headers: { "Content-Type": "application/json" }
     });
-    
 
     if (res.status === 200) {
       alert("✅ נשמר בהצלחה!");
-      // תחליף לגמרי את ה-state באובייקט החדש שהשרת החזיר
-      setBusinessDetails(res.data.business);
+      // מיזוג ה־state הקודם עם האובייקט החדש שהשרת החזיר
+      setBusinessDetails(prev => ({
+        ...prev,
+        ...(res.data.business || res.data)
+      }));
       setShowViewProfile(true);
     } else {
       alert("❌ שמירה נכשלה");
@@ -131,6 +133,7 @@ const handleSave = async () => {
     alert("❌ שגיאה בשמירה");
   }
 };
+
 
 
 
@@ -434,31 +437,31 @@ const handleSave = async () => {
 
 
 <div className="gallery-preview">
-{businessDetails.gallery.map((item, i) => (
-  <div
-    key={i}
-    className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
-    style={{ position: "relative" }} // חובה בשביל הצמדה לפנים
-  >
-    <div className="gallery-item">
-      <img
-        src={
-          // אם זה URL מהשרת
-          typeof item === "string"
-            ? item
-            // אחרת אובייקט File עם preview
-            : item.preview
-        }
-        alt={`gallery-${i}`}
-        className="gallery-img"
-        style={{
-          objectFit:
+  {businessDetails.gallery.map((item, i) => (
+    <div
+      key={i}
+      className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
+      style={{ position: "relative" }} // חובה בשביל הצמדה לפנים
+    >
+      <div className="gallery-item">
+        <img
+          src={
+            // אם זה URL מהשרת
             typeof item === "string"
-              ? businessDetails.galleryFits[item] || "cover"
-              : businessDetails.galleryFits[item.name] || "cover",
-        }}
-      />
-    </div>
+              ? item
+              // אחרת אובייקט File עם preview
+              : item.preview
+          }
+          alt={`gallery-${i}`}
+          className="gallery-img"
+          style={{
+            objectFit:
+              typeof item === "string"
+                ? businessDetails.galleryFits?.[item] || "cover"
+                : businessDetails.galleryFits?.[item.name] || "cover",
+          }}
+        />
+      </div>
 
     <button
   className="edit-btn"
