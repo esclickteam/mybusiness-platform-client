@@ -90,8 +90,11 @@ const BusinessProfilePage = () => {
 
         {/* רצועת טאבים ציבורית */}
         <PublicBusinessTabs />
+
         {/* כאן נטען תוכן הטאב שנבחר */}
-        <Outlet />
+        <div className="outlet-wrapper">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

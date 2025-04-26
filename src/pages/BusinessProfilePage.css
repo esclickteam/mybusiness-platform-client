@@ -1,80 +1,98 @@
 /* src/pages/BusinessProfilePage.css */
 
-/* עוטף כל העמוד ברקע סגול וב-padding */
 .profile-page {
-    background-color: #f2e6ff;
+    background: linear-gradient(to bottom, #fdfcff 0%, #e4e8ff 100%);
+    padding: 40px 16px;
     min-height: 100vh;
-    padding: 2rem 0;
     box-sizing: border-box;
   }
   
-  /* הכרטיס הלבן המעוצב עם פינות עגולות וצל */
-  .business-profile-view.full-style {
-    background-color: #ffffff;
-    border-radius: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  .business-profile-view {
+    background: #fff;
+    border-radius: 24px;
     max-width: 800px;
     margin: 0 auto;
-    overflow: hidden;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
   
-  /* Padding פנימי לכל התוכן */
   .profile-inner {
-    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    text-align: center;
   }
   
-  /* לוגו העסק במרכז הכרטיס */
   .business-profile__logo {
-    display: block;
-    max-width: 200px;
-    max-height: 200px;
-    object-fit: contain;
-    margin: 0 auto 16px;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
   }
   
-  /* כותרת שם העסק במרכז */
   .business-profile__name {
     font-size: 2rem;
-    text-align: center;
-    margin-bottom: 16px;
+    margin: 0;
   }
   
-  /* תיאור העסק בפונט קריא */
-  .business-profile__description {
-    font-size: 1.125rem;
-    margin-bottom: 16px;
-    line-height: 1.6;
-  }
-  
-  /* פרטי קשר, כתובת ושעות */
+  .business-profile__description,
   .business-profile__contact p,
   .business-profile__address,
   .business-profile__hours {
-    margin-bottom: 8px;
     font-size: 1rem;
-    color: #333;
+    color: #555;
+    margin: 8px 0;
   }
   
-  /* גלריה של תמונות העסק */
   .business-profile__gallery {
-    margin-top: 24px;
-  }
-  
-  .business-profile__gallery h2 {
-    font-size: 1.5rem;
-    margin-bottom: 12px;
+    width: 100%;
+    text-align: left;
   }
   
   .gallery-images {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px;
+    margin-top: 12px;
   }
   
   .gallery-images img {
     width: 100%;
-    height: 150px;
+    height: auto;
+    border-radius: 8px;
     object-fit: cover;
-    border-radius: 4px;
+  }
+  
+  /* טאב-בר ציבורי */
+  .public-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0 0;
+  }
+  
+  .public-tabs .tab {
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: #f0eaff;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  
+  .public-tabs .tab:hover {
+    background: #e4d6ff;
+  }
+  
+  .public-tabs .tab.active {
+    background: #8a2be2;
+    color: #fff;
+  }
+  
+  /* אזור הטאב הנבחר */
+  .outlet-wrapper {
+    margin-top: 24px;
   }
   
