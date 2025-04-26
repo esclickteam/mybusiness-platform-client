@@ -217,14 +217,7 @@ const handleSave = async () => {
   
     try {
       // 3. שלח את ה־FormData
-      const res = await API.put(
-        "/business/my/logo",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          transformRequest: [(data) => data],
-        }
-      );
+      const res = await API.put("/business/my/logo", formData);
       console.log("✅ Logo upload response:", res.status, res.data);
   
       if (res.status === 200) {
@@ -291,14 +284,7 @@ const handleSave = async () => {
   
     try {
       // 3. שלח את ה־FormData בלי stringify אוטומטי
-      const res = await API.put(
-        "/business/my/gallery",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          transformRequest: [(data) => data], // מבטל stringify של axios
-        }
-      );
+      const res = await API.put("/business/my/gallery", formData);
   
       // 🔥 Debug: התשובה מהשרת
       console.log("✅ Gallery upload response:", res.status, res.data);
@@ -426,7 +412,7 @@ const handleSave = async () => {
     placeholder="050-1234567"
   />
 
-<label className="upload-logo-wrapper">
+  <label className="upload-logo-wrapper">
   <input
     type="file"
     name="logo"
