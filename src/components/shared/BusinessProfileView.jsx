@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "@api";
 import "./BusinessProfileView.css";
@@ -192,8 +191,7 @@ export default function BusinessProfileView() {
           )}
 
           {currentTab === "חנות / יומן" && (
-            <div className="shop-tab-placeholder">
-            </div>
+            <div className="shop-tab-placeholder"></div>
           )}
         </div>
       </div>
