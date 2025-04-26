@@ -13,22 +13,26 @@ const BusinessCard = ({ business }) => (
     <div className="business-card__content">
       <h2 className="business-card__title">{business.name}</h2>
 
-      {/* תיאור העסק */}
+      {/* תיאור */}
       {business.description && (
         <p className="business-card__description">
           {business.description}
         </p>
       )}
 
+      {/* קטגוריה – רק אם קיימת */}
       {business.category && (
-        <p className="business-card__subtitle">{business.category}</p>
+        <p className="business-card__subtitle">
+          {business.category}
+        </p>
       )}
 
+      {/* טלפון */}
       {business.phone && (
         <p className="business-card__phone">📞 {business.phone}</p>
       )}
 
-      {/* כפתור קישור לפרופיל */}
+      {/* כפתור לפרופיל */}
       <Link
         to={`/business/${business._id}`}
         className="business-card__btn"

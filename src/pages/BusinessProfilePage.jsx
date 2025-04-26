@@ -1,3 +1,4 @@
+// src/pages/BusinessProfilePage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, Outlet, useNavigate } from 'react-router-dom';
 import API from '@api';
@@ -27,6 +28,7 @@ const BusinessProfilePage = () => {
   const {
     name,
     description,
+    category,       // הוספתי
     phone,
     email,
     logo,
@@ -57,6 +59,13 @@ const BusinessProfilePage = () => {
           {description && (
             <p className="business-profile__description">
               <strong>תיאור:</strong> {description}
+            </p>
+          )}
+
+          {/* קטגוריה רק אם קיימת */}
+          {category && (
+            <p className="business-profile__category">
+              <strong>קטגוריה:</strong> {category}
             </p>
           )}
 
@@ -96,7 +105,7 @@ const BusinessProfilePage = () => {
         {/* רצועת טאבים ציבורית */}
         <PublicBusinessTabs />
 
-        {/* כאן נטען תוכן הטאב שנבחר */}
+        {/* כאן נטען תוכן הטאב הנבחר */}
         <div className="outlet-wrapper">
           <Outlet />
         </div>
