@@ -20,7 +20,7 @@ export default function BusinessProfileView() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
-  // נתונים ל-צ'אט
+  // נתונים לצ'אט
   const [chatMessage, setChatMessage] = useState("");
   const [chatName, setChatName] = useState("");
 
@@ -48,14 +48,13 @@ export default function BusinessProfileView() {
     }
 
     try {
-      await API.post(`/api/business/${businessId}/chat`, {
+      await API.post(`/business/${businessId}/chat`, {
         name: chatName,
         text: chatMessage,
       });
       alert("✅ ההודעה נשלחה!");
       setChatMessage("");
       setChatName("");
-      // לאחר שליחת ההודעה, נניח שהצ'אט יתעדכן
       setCurrentTab("צ'אט עם העסק");
     } catch (err) {
       console.error("❌ שגיאה בשליחת ההודעה:", err);
@@ -68,6 +67,7 @@ export default function BusinessProfileView() {
 
   const {
     name,
+    logo,
     description = "",
     phone = "",
     gallery = [],
@@ -88,6 +88,17 @@ export default function BusinessProfileView() {
           >
             ✏️ ערוך עמוד עסקי
           </Link>
+
+          {/* לוגו */}
+          {logo && (
+            <div className="logo-wrapper">
+              <img
+                src={logo}
+                alt={`${name} logo`}
+                className="profile-logo"
+              />
+            </div>
+          )}
 
           <h1 className="business-name">{name}</h1>
 
@@ -124,11 +135,11 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
+          {/* גלריה */}
           {currentTab === "גלריה" && gallery.length > 0 && (
             <div className="gallery-preview no-actions">
               {gallery.map((item, i) => {
                 const src = typeof item === "string" ? item : item.url || item.preview;
-                console.log(src); // הדפסת URL של התמונות
                 return (
                   src && (
                     <div key={i} className="gallery-item-wrapper">
@@ -144,6 +155,7 @@ export default function BusinessProfileView() {
             </div>
           )}
 
+          {/* ביקורות */}
           {currentTab === "ביקורות" && realReviews.length > 0 && (
             <div className="reviews">
               <h3>⭐ ביקורות אחרונות</h3>
@@ -161,6 +173,7 @@ export default function BusinessProfileView() {
             </div>
           )}
 
+          {/* שאלות ותשובות */}
           {currentTab === "שאלות ותשובות" && faqs.length > 0 && (
             <div className="faqs">
               <h3>❓ שאלות ותשובות</h3>
@@ -173,6 +186,7 @@ export default function BusinessProfileView() {
             </div>
           )}
 
+          {/* צ'אט */}
           {currentTab === "צ'אט עם העסק" && (
             <div className="chat-tab">
               <h3>💬 שלח הודעה לעסק</h3>
@@ -192,6 +206,7 @@ export default function BusinessProfileView() {
             </div>
           )}
 
+          {/* חנות / יומן */}
           {currentTab === "חנות / יומן" && (
             <div className="shop-tab-placeholder"></div>
           )}
