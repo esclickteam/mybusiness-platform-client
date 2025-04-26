@@ -196,22 +196,25 @@ const handleSave = async () => {
     const file = e.target.files[0];
     if (!file) return;
   
+    // הוסף preview כדי להציג מיד
     file.preview = URL.createObjectURL(file);
     setBusinessDetails(prev => ({
       ...prev,
       logo: file,
     }));
   
+    // בנה את ה-FormData עם המפתח "logo"
     const formData = new FormData();
-    formData.append("logo", file);   // ← שימו לב: "logo"
+    formData.append("logo", file);
   
     try {
+      // שליחת הבקשה ללא Content-Type ידני
       const res = await API.put("/business/my/logo", formData, {
-        withCredentials: true,        // ← אם אתם שולחים cookie
-        // *** אל תגידו כאן Content-Type ***
+        withCredentials: true,   // במידה ומשתמשים בעוגיות לאימות
       });
   
       if (res.status === 200) {
+        // עדכן את ה־state ל-URL שמתקבל מ-Cloudinary
         setBusinessDetails(prev => ({
           ...prev,
           logo: res.data.logo,
@@ -226,6 +229,7 @@ const handleSave = async () => {
       alert("❌ שגיאה בהעלאת הלוגו. נסה שנית מאוחר יותר.");
     }
   };
+  
   
   
   
@@ -248,35 +252,39 @@ const handleSave = async () => {
 
   const handleGalleryChange = async (e) => {
     const files = Array.from(e.target.files);
-    if (!files.length) return;
+    if (files.length === 0) return;
   
-    // הכנת ה־preview
+    // צרו preview לכל קובץ
     const previewFiles = files.map(file => {
       file.preview = URL.createObjectURL(file);
       return file;
     });
   
+    // עדכנו state להצגת התצוגה
     setBusinessDetails(prev => ({
       ...prev,
       gallery: [...prev.gallery, ...previewFiles].slice(0, 5),
     }));
   
+    // בנו את ה-FormData עם המפתח "gallery"
     const formData = new FormData();
-    previewFiles.forEach((file) => {
-      formData.append("gallery", file);  // ← "gallery"
+    previewFiles.forEach(file => {
+      formData.append("gallery", file);
     });
   
     try {
+      // שלחו את הבקשה ללא Content-Type ידני
       const res = await API.put("/business/my/gallery", formData, {
-        withCredentials: true,           // ← אם אתם משתמשים ב־cookies
-        // *** אל תגידו כאן Content-Type ***
+        withCredentials: true,  // רק אם אתם שולחים cookies
       });
   
       if (res.status === 200) {
+        // עדכנו את ה-gallery ל-URLs מהשרת
         setBusinessDetails(prev => ({
           ...prev,
           gallery: res.data.gallery,
         }));
+        // שחררו את ה-object URLs של ה-previews
         previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
       } else {
         console.error("❌ Error uploading gallery: Status", res.status);
@@ -287,6 +295,7 @@ const handleSave = async () => {
       alert("❌ שגיאה בהעלאת הגלריה. נסה שנית מאוחר יותר.");
     }
   };
+  
   
   
   
