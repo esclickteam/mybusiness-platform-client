@@ -137,3 +137,14 @@
     margin-top: var(--gap-lg);
   }
   
+  /* התאמת רוחב והצמדת הטאבים */
+/* התאמת רוחב והצמדת הטאבים */
+.profile-tabs,
+.public-tabs {
+  display: grid;                                  /* הפוך לגריד */
+  grid-template-columns: repeat(3, 1fr);          /* 3 עמודות */
+  gap: var(--gap-sm);                             /* ריווח ביניהם */
+  max-width: 700px;                               /* רוחב מקסימלי משורשר לכרטיס */
+  margin: var(--gap-md) auto 0;                   /* מרכוז וצמצום מרווח למעלה */
+}
+
