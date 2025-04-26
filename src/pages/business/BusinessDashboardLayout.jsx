@@ -34,7 +34,14 @@ export default function BusinessDashboardLayout() {
   return (
     <div className="rtl-wrapper">
       <div className="business-dashboard-layout">
-        <aside className="sidebar">
+        <aside
+          className="sidebar"
+          style={{
+            minWidth: "240px",
+            width: "auto",
+            maxWidth: "100%",
+          }}
+        >
           <h2>ניהול העסק</h2>
           <nav>
             {user?.role === "business" && (
@@ -56,6 +63,7 @@ export default function BusinessDashboardLayout() {
             ))}
           </nav>
         </aside>
+
         <main className="dashboard-content">
           <Outlet />
         </main>
