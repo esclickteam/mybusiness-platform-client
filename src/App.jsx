@@ -107,15 +107,7 @@ export default function App() {
      </ProtectedRoute>
    }
  />
-          {/* 🔹 דשבורד העסק — מסך הודעות */}
-          <Route
-            path="/business/:businessId/dashboard/messages"
-            element={
-              <ProtectedRoute roles={["business"]}>
-                <BusinessMessagesPage />
-              </ProtectedRoute>
-            }
-          />
+          
 
           {/* 🔹 דשבורד לקוח */}
           <Route
