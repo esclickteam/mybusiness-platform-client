@@ -26,17 +26,7 @@
     box-sizing: border-box;
   }
   
-  /* תצוגת הכרטיס הראשי */
-  .business-profile-view {
-    background: var(--card-bg);
-    border-radius: var(--card-radius);
-    max-width: 800px;
-    margin: 0 auto;
-    padding: var(--gap-lg);
-    box-shadow: var(--card-shadow);
-    position: relative;
-  }
-  
+   
   /* כפתור חזור */
   .back-btn {
     background: none;
