@@ -1,3 +1,4 @@
+// src/pages/BusinessProfilePage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import API from '@api';
@@ -20,10 +21,10 @@ const BusinessProfilePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await API.get(`/business/${businessId}`);
-        setBusinessData(response.data.business || response.data);
-      } catch (error) {
-        console.error('Error fetching business data:', error);
+        const res = await API.get(`/business/${businessId}`);
+        setBusinessData(res.data.business || res.data);
+      } catch (err) {
+        console.error('Error fetching business data:', err);
       }
     };
     fetchData();
@@ -38,19 +39,18 @@ const BusinessProfilePage = () => {
     phone,
     email,
     address,
-    openingHours
+    openingHours,
   } = businessData;
 
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
-        {/* כפתור חזרה */}
+        {/* כפתור חזור */}
         <button className="back-btn" onClick={() => navigate(-1)}>
           ← חזור
         </button>
 
         <div className="profile-inner">
-          {/* לוגו אם קיים */}
           {businessData.logo && (
             <img
               src={businessData.logo}
@@ -59,42 +59,41 @@ const BusinessProfilePage = () => {
             />
           )}
 
-          {/* שם העסק */}
           <h1 className="business-profile__name">{name}</h1>
 
-          {/* תיאור, קטגוריה */}
           {description && (
             <p className="business-profile__description">
               <strong>תיאור:</strong> {description}
             </p>
           )}
+
           {category && (
             <p className="business-profile__category">
               <strong>קטגוריה:</strong> {category}
             </p>
           )}
 
-          {/* פרטי קשר */}
           <div className="business-profile__contact">
             {phone && <p><strong>טלפון:</strong> {phone}</p>}
             {email && <p><strong>אימייל:</strong> {email}</p>}
+            {address && (
+              <p><strong>כתובת:</strong> {address.street}, {address.city}</p>
+            )}
+            {openingHours && (
+              <p><strong>שעות פתיחה:</strong> {openingHours}</p>
+            )}
           </div>
-
-          {/* כתובת ושעות */}
-          {address && (
-            <p className="business-profile__address">
-              <strong>כתובת:</strong> {address.street}, {address.city}
-            </p>
-          )}
-          {openingHours && (
-            <p className="business-profile__hours">
-              <strong>שעות פתיחה:</strong> {openingHours}
-            </p>
-          )}
         </div>
 
-        {/* רצועת טאבים ציבורית */}
-        <nav className="profile-tabs" style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem'}}>
+        {/* רצועת טאבים ציבורית ב-3 עמודות */}
+        <nav
+          className="profile-tabs"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 'var(--gap-sm)'
+          }}
+        >
           {TABS.map(tab => (
             <NavLink
               key={tab.path}
@@ -107,7 +106,7 @@ const BusinessProfilePage = () => {
           ))}
         </nav>
 
-        {/* תצוגת התוכן של הטאב */}
+        {/* כאן נטען תוכן הטאב */}
         <div className="outlet-wrapper">
           <Outlet />
         </div>
