@@ -12,36 +12,9 @@ const EmptyState = () => (
   </div>
 );
 
-// Placeholder for loading a demo conversation in development
-const DemoPlaceholder = ({ onLoadDemo }) => (
-  <div className="empty-chat demo-placeholder">
-    <h3>אין שיחות עדיין</h3>
-    <p>אתה יכול לטעון שיחת דמו כדי לראות איך זה נראה:</p>
-    <button className="load-demo-btn" onClick={onLoadDemo}>
-      הצג שיחת דמו
-    </button>
-  </div>
-);
-
 const BusinessMessagesPage = () => {
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState(null);
-
-  // Loads a single demo conversation
-  const loadDemoConversation = () => {
-    const demo = {
-      clientId: "demo123",
-      name: "דנה כהן",
-      messages: [
-        { text: "שלום, רציתי לבדוק אם יש משלוחים גם לראשון לציון?", sender: "client" },
-        { text: "היי דנה, כן! אנחנו שולחים לראשון לציון בימים ראשון–חמישי.", sender: "business" },
-        { text: "תוך כמה זמן מגיע בערך?", sender: "client" },
-        { text: "עד 2 ימי עסקים, ואם תזמיני היום לפני 14:00 – זה יישלח היום!", sender: "business" },
-      ],
-    };
-    setConversations([demo]);
-    setSelected(demo);
-  };
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -62,14 +35,8 @@ const BusinessMessagesPage = () => {
           setConversations(data);
           setSelected(data[0]);
         } else {
-          // No real conversations
-          if (process.env.NODE_ENV === "development") {
-            // In dev, offer demo automatically
-            loadDemoConversation();
-          } else {
-            // In production, show empty state
-            setConversations([]);
-          }
+          // No real conversations in production
+          setConversations([]);
         }
       } catch (error) {
         console.error("❌ שגיאה בטעינת השיחות:", error);
@@ -81,9 +48,6 @@ const BusinessMessagesPage = () => {
 
   // If no conversations loaded yet
   if (conversations.length === 0) {
-    if (process.env.NODE_ENV === "development") {
-      return <DemoPlaceholder onLoadDemo={loadDemoConversation} />;
-    }
     return <EmptyState />;
   }
 
