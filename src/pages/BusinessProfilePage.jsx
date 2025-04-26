@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import API from '@api';
 import './BusinessProfilePage.css';
 
 const TABS = [
-    { path: 'gallery', label: 'גלריה' },
-    { path: 'reviews', label: 'ביקורות' },
-    { path: '', label: 'ראשי' },
-    { path: 'faq', label: 'שאלות ותשובות' },
-    { path: 'chat', label: "צ'אט עם העסק" },
-    { path: 'shop', label: 'חנות / יומן' },
-  ];
+  { path: 'gallery', label: 'גלריה' },
+  { path: 'reviews', label: 'ביקורות' },
+  { path: '', label: 'ראשי' },
+  { path: 'faq', label: 'שאלות ותשובות' },
+  { path: 'chat', label: "צ'אט עם העסק" },
+  { path: 'shop', label: 'חנות / יומן' },
+];
 
 export default function BusinessProfilePage() {
   const { businessId } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [businessData, setBusinessData] = useState(null);
 
@@ -27,7 +28,7 @@ export default function BusinessProfilePage() {
       }
     }
     fetchData();
-  }, [businessId]);
+  }, [businessId, location.pathname]); // נוסיף את location.pathname לתלות
 
   if (!businessData) return <div>טוען...</div>;
 
@@ -49,7 +50,7 @@ export default function BusinessProfilePage() {
             {phone && <p><strong>טלפון:</strong> {phone}</p>}
             {email && <p><strong>אימייל:</strong> {email}</p>}
           </div>
-          {address && <p className="business-profile__address"><strong>כתובת:</strong> {address.street}, {address.city}</p>}
+          {address && typeof address === 'string' && <p className="business-profile__address"><strong>כתובת:</strong> {address}</p>}
           {openingHours && <p className="business-profile__hours"><strong>שעות פתיחה:</strong> {openingHours}</p>}
         </div>
 
@@ -69,7 +70,7 @@ export default function BusinessProfilePage() {
 
         {/* תוכן הטאב הנבחר */}
         <div className="outlet-wrapper">
-          <Outlet />
+          <Outlet context={{ businessData }} />
         </div>
       </div>
     </div>
