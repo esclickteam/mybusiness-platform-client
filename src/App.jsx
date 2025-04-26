@@ -99,13 +99,13 @@ export default function App() {
           </Route>
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
-          <Route
-  path="/business/:businessId/dashboard/*"
-  element={
-    <ProtectedRoute roles={["business"]}>
-      <BusinessDashboardLayout /> {/* הצגת הסיידבר לכל דפי הדשבורד */}
-    </ProtectedRoute>
-  }
+ <Route
+   path="/business/:businessId/dashboard/*"
+   element={
+     <ProtectedRoute roles={["business"]}>
+       <BusinessDashboardRoutes />
+     </ProtectedRoute>
+   }
  />
           {/* 🔹 דשבורד העסק — מסך הודעות */}
           <Route
