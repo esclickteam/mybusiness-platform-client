@@ -196,26 +196,39 @@ const handleSave = async () => {
     const file = e.target.files[0];
     if (!file) return;
   
-    // 1. צור פריוויו מקומי לצורך התצוגה המיידית
+    // 1) פריוויו מקומי
     file.preview = URL.createObjectURL(file);
-    setBusinessDetails(prev => ({
-      ...prev,
-      logo: file,
-    }));
+    setBusinessDetails(prev => ({ ...prev, logo: file }));
   
-    // 2. העלה את הקובץ באמצעות FormData
+    // 2) צור FormData
     const formData = new FormData();
     formData.append("logo", file);
   
+    // 🔥 debug: וידוא שהתוכן FormData
+    console.log([...formData.entries()]);
+    // -> צריך להדפיס: [ ["logo", File { name: "...", … }] ]
+  
     try {
-      const res = await API.put("/business/my/logo", formData);
+      const res = await API.put(
+        "/business/my/logo",
+        formData,
+        {
+          headers: {
+            // תן ל-axios להוסיף את ה-boundary אוטומטית
+            "Content-Type": "multipart/form-data"
+          },
+          transformRequest: [(data) => {
+            // מבטל stringify אוטומטי
+            return data;
+          }]
+        }
+      );
+  
       if (res.status === 200) {
-        // 3. לאחר ההעלאה – עדכן את ה־state ל־URL החוזר מהשרת
         setBusinessDetails(prev => ({
           ...prev,
           logo: res.data.logo
         }));
-        // 4. שחרור ה־blob URL אם רוצים לחסוך זיכרון
         URL.revokeObjectURL(file.preview);
       } else {
         console.error("Upload failed, status:", res.status);
@@ -224,6 +237,7 @@ const handleSave = async () => {
       console.error("Error uploading logo:", err);
     }
   };
+  
   
   
   
@@ -256,19 +270,32 @@ const handleSave = async () => {
       gallery: [...prev.gallery, ...previewFiles].slice(0, 5),
     }));
   
-    // 2. העלה את הקבצים לשרת
+    // 2. בנה FormData אמיתי
     const formData = new FormData();
     previewFiles.forEach(file => formData.append("gallery", file));
   
+    // 🔥 Debug: וידא שהתוכן FormData
+    console.log([...formData.entries()]);
+    // -> צריך להדפיס: [ ["gallery", File {...}], ["gallery", File {...}], ... ]
+  
     try {
-      const res = await API.put("/business/my/gallery", formData);
+      // 3. שלח את ה־FormData בלי stringify אוטומטי
+      const res = await API.put(
+        "/business/my/gallery",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          transformRequest: [(data) => data],
+        }
+      );
+  
       if (res.status === 200) {
-        // 3. עדכן את ה־state עם ה־URL-ים מהשרת
+        // 4. עדכן את ה־state עם URL-ים מהשרת
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: res.data.gallery,  // מערך URL-ים
+          gallery: res.data.gallery,  // מערך URL-ים מ-Cloudinary
         }));
-        // 4. שחרר את ה־blob URLs של ה־previews
+        // 5. שחרר את ה־blob URLs
         previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
       } else {
         console.error("Gallery upload failed, status:", res.status);
@@ -277,6 +304,7 @@ const handleSave = async () => {
       console.error("Error uploading gallery:", err);
     }
   };
+  
   
 
   const handleDeleteImage = (index) => {
