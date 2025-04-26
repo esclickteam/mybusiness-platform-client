@@ -9,14 +9,7 @@
   text-align: center;
 }
 
-/* הקופסה המרכזית */
-.business-profile-view.full-style {
-  background-color: #d1b3ff9a;
-  border-radius: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 700px;
-  width: 100%;
-}
+
 
 /* תוכן בפנים */
 .profile-inner {
