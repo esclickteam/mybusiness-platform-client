@@ -101,14 +101,17 @@
     object-fit: cover;
   }
   
-  /* טאב-בר ציבורי */
+  /* טאב-בר ציבורי – פריסה ב-3 עמודות */
+  .profile-tabs,
   .public-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--gap-sm);
     margin: var(--gap-lg) 0 0;
+    direction: ltr;
   }
+  
+  .profile-tabs .tab,
   .public-tabs .tab {
     padding: 8px 20px;
     border-radius: 20px;
@@ -116,10 +119,15 @@
     color: #333;
     text-decoration: none;
     transition: background 0.2s;
+    justify-self: center;
   }
+  
+  .profile-tabs .tab:hover,
   .public-tabs .tab:hover {
     background: #e4d6ff;
   }
+  
+  .profile-tabs .tab.active,
   .public-tabs .tab.active {
     background: var(--primary);
     color: #fff;
@@ -129,3 +137,4 @@
   .outlet-wrapper {
     margin-top: var(--gap-lg);
   }
+  
