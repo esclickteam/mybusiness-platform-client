@@ -98,20 +98,23 @@ export default function App() {
           </Route>
 
           {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
-<Route
-  path="/business/:businessId/dashboard/*"
-  element={
-    <ProtectedRoute roles={["business"]}>
-      <BusinessDashboardRoutes />
-    </ProtectedRoute>
-  }
->
-  {/* מסלולים פנימיים של הדשבורד */}
-  <Route index element={<DashboardPage />} />
-  <Route path="build" element={<BuildBusinessPage />} />
-  {/* ... שאר הטאבים ... */}
-  <Route path="messages" element={<BusinessMessagesPage />} />
-</Route>
+ <Route
+   path="/business/:businessId/dashboard/*"
+   element={
+     <ProtectedRoute roles={["business"]}>
+       <BusinessDashboardRoutes />
+     </ProtectedRoute>
+   }
+ />
+          {/* 🔹 דשבורד העסק — מסך הודעות */}
+          <Route
+            path="/business/:businessId/dashboard/messages"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BusinessMessagesPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 🔹 דשבורד לקוח */}
           <Route
