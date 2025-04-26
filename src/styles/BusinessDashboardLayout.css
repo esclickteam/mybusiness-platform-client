@@ -19,14 +19,11 @@
   min-width: 240px !important;
   width: auto !important;
   max-width: 100% !important;
-
   padding: 1rem !important;
   background-color: #d1b3ff9a !important; /* רקע חצי־שקוף ורוד */
   box-shadow: none !important;
   border-radius: 0 !important;
   box-sizing: border-box !important;
-
-  /* הגבהה אוטומטית לסיידבר */
   height: 100vh !important;
   overflow-y: auto;
 }
@@ -83,6 +80,10 @@
   color: #fff !important; /* צבע טקסט לבן */
   padding-top: 8px !important;
   padding-bottom: 8px !important;
+  min-height: 50px !important; /* להבטיח גובה אחיד */
+  display: flex !important;
+  align-items: center !important; /* ממורכז אנכית */
+  justify-content: flex-start !important;
 }
 
 /* תוכן הדשבורד */
