@@ -1,8 +1,6 @@
 /* src/styles/BusinessDashboardLayout.css */
 
 /* גרדיאנט גלובלי כבר ב־index.css, אין צורך ברקעים מקומיים */
-
-/* עוטף בכיוון ימין־לשמאל */
 .rtl-wrapper {
   direction: rtl;
   background: none;
@@ -19,54 +17,55 @@
 
 /* סיידבר (עכשיו בצד ימין דרך rtl) */
 .sidebar {
-  width: 240px;                   /* רוחב קבוע */
-  padding: 1rem;
-  background-color: #d1b3ff9a;    /* רקע חצי־שקוף ורוד */
-  box-shadow: none;
-  border-radius: 0;
+  width: 240px !important;                /* רוחב קבוע */
+  padding: 1rem !important;
+  background-color: #d1b3ff9a !important; /* רקע חצי־שקוף ורוד */
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  box-sizing: border-box;
 
-  /* גלילה אנכית במקרה שיש יותר מדי פריטים */
+  /* גלילה אנכית במקרה של overflow */
   max-height: 100vh;
   overflow-y: auto;
-
-  /* נקודת עיגון לחישוב רוחב נכון */
-  box-sizing: border-box;
 }
 
 .sidebar h2 {
-  margin-top: 0;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem 0;
   font-size: 1.2rem;
   color: var(--text-main);
 }
 
+/* nav מתפזר לאורך כל הרוחב של הסיידבר */
 .sidebar nav {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100% !important;
 }
 
+/* קישורים מתירים שבירת טקסט במקום חיתוך */
 .sidebar a {
   display: block;
-  padding: 0.5rem;
-  border-radius: 6px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: background 0.2s;
+  width: 100% !important;
+  padding: 0.5rem !important;
+  border-radius: 6px !important;
+  color: var(--text-secondary) !important;
+  text-decoration: none !important;
+  transition: background 0.2s !important;
+  box-sizing: border-box !important;
 
-  /* התכונות שמבטיחות שבירת טקסט ולא חיתוך */
-  white-space: normal;            /* מאפשר שורות חדשות */
-  word-break: break-all;          /* שובר מילים ארוכות בתוך התוכן */
-  overflow-wrap: break-word;      /* מחלק מילים לפי הצורך */
+  white-space: normal !important;       /* מאפשר שורות חדשות */
+  word-break: break-word !important;     /* שובר מילים ארוכות */
+  overflow-wrap: anywhere !important;    /* תומך בשבירה במקומות מתאימים */
 }
 
 .sidebar a:hover {
-  background: rgba(138, 43, 226, 0.1);
+  background: rgba(138, 43, 226, 0.1) !important;
 }
 
 .sidebar a.active {
-  background: var(--primary);
-  color: #fff;
+  background: var(--primary) !important;
+  color: #fff !important;
 }
 
 /* תוכן הדשבורד */

@@ -37,18 +37,14 @@ export default function BusinessDashboardLayout() {
         <aside className="sidebar">
           <h2>ניהול העסק</h2>
           <nav>
-            {/* לינק לצפייה בפרופיל הציבורי */}
             {user?.role === "business" && (
               <NavLink
-              to="profile"
-              className={({ isActive }) => (isActive ? "active" : undefined)}
-            >
-              👀 צפייה בפרופיל
-            </NavLink>
-            
-            
+                to="profile"
+                className={({ isActive }) => (isActive ? "active" : undefined)}
+              >
+                👀 צפייה בפרופיל
+              </NavLink>
             )}
-            {/* שאר הלשוניות */}
             {tabs.map(({ path, label }) => (
               <NavLink
                 key={path}
@@ -60,7 +56,6 @@ export default function BusinessDashboardLayout() {
             ))}
           </nav>
         </aside>
-
         <main className="dashboard-content">
           <Outlet />
         </main>
