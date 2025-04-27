@@ -8,7 +8,7 @@ import "./Build.css";
 // Section components
 import MainSection    from "../buildTabs/buildSections/MainSection";
 import GallerySection from "../buildTabs/buildSections/GallerySection";
-import ReviewsSection from "../buildTabs/buildTabs/buildSections/ReviewsSection";
+import ReviewsSection from "../buildTabs/buildSections/ReviewsSection";
 import ShopSection    from "../buildTabs/buildSections/ShopSection";
 import ChatSection    from "../buildTabs/buildSections/ChatSection";
 import FaqSection     from "../buildTabs/buildSections/FaqSection";
