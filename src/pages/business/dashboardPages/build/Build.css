@@ -3,19 +3,25 @@
 /* מיכל כל העמוד */
 .build-wrapper {
   display: flex;
-  flex-direction: column;
+  flex-direction: row-reverse; /* תצוגה מקדימה מצד ימין */
+  justify-content: space-between;
+  padding: 2rem;
+  background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
   min-height: 100vh;
+  flex-wrap: wrap;
+  gap: 2rem;
+  direction: rtl; /* תצוגת טקסט ואלמנטים בעברית */
 }
 
 /* שורת הטאבים */
-.build-wrapper .tabs {
+.tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
-/* כל לחצן טאב */
-.build-wrapper .tab {
+/* לחצן טאב */
+.tab {
   padding: 0.75rem 1rem;
   background: #6b00ff;
   border-radius: 0.5rem;
@@ -24,19 +30,19 @@
   cursor: pointer;
 }
 
-/* טאב נבחר */
-.build-wrapper .tab.active {
+/* לחצן טאב פעיל */
+.tab.active {
   background: #4a00d4;
 }
 
 /* טור העיצוב (טופס) */
-.build-wrapper .form-column {
+.form-column {
   flex: 1;
   padding: 2rem;
 }
 
 /* טור התצוגה המקדימה */
-.build-wrapper .preview-column {
+.preview-column {
   flex: 1;
   padding: 2rem;
   background: #f5eafe;
@@ -45,10 +51,10 @@
 }
 
 /* לחצני העלאה */
-.build-wrapper .upload-logo-btn,
-.build-wrapper .upload-story-btn,
-.build-wrapper .upload-main-images-btn,
-.build-wrapper .upload-gallery-btn {
+.upload-logo-btn,
+.upload-story-btn,
+.upload-main-images-btn,
+.upload-gallery-btn {
   display: inline-block;
   margin: 0.5rem 0;
   padding: 0.5rem 1rem;
@@ -60,8 +66,8 @@
 }
 
 /* לחצן שמירה */
-.build-wrapper .save-btn,
-.build-wrapper .save-button {
+.save-btn,
+.save-button {
   margin-top: 1.5rem;
   padding: 0.75rem 1.5rem;
   background: #c15eff;
@@ -71,30 +77,30 @@
   cursor: pointer;
 }
 
-/* גלריה – מיכל */
-.build-wrapper .gallery-preview {
+/* תצוגת גלריה */
+.gallery-preview {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
 /* פריט בגלריה */
-.build-wrapper .gallery-item-wrapper {
+.gallery-item-wrapper {
   position: relative;
   width: 100px;
   height: 100px;
 }
 
 /* תמונת גלריה */
-.build-wrapper .gallery-img {
+.gallery-img {
   width: 100%;
   height: 100%;
   border-radius: 0.5rem;
   object-fit: cover;
 }
 
-/* פלייסהולדר לתמונה חדשה */
-.build-wrapper .gallery-placeholder.clickable {
+/* פלייסהולדר + button ל־“+” */
+.gallery-placeholder.clickable {
   width: 100px;
   height: 100px;
   border: 2px dashed #c15eff;
@@ -105,8 +111,8 @@
 }
 
 /* כפתורי עריכה ומחיקה בתוך פריט גלריה */
-.build-wrapper .edit-btn,
-.build-wrapper .delete-btn {
+.edit-btn,
+.delete-btn {
   position: absolute;
   top: 4px;
   width: 24px;
@@ -117,5 +123,5 @@
   border-radius: 50%;
   cursor: pointer;
 }
-.build-wrapper .edit-btn { left: 4px; }
-.build-wrapper .delete-btn { right: 4px; }
+.edit-btn { left: 4px; }
+.delete-btn { right: 4px; }
