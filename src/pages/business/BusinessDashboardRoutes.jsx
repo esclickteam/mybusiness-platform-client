@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 
-import Build from "./dashboardPages/build/Build";
+import BuildBusinessPage from "./dashboardPages/build";
 import DashboardPage from "./dashboardPages/DashboardPage";
 import Collab from "./dashboardPages/Collab";
 import Upgrade from "./dashboardPages/Upgrade";
