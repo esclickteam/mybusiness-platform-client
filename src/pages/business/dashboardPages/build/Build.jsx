@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom";
 import "./Build.css";
 
 // Section components
-import MainSection    from "../buildTabs/buildSections/MainSection.jsx";
-import GallerySection from "../buildTabs/buildSections/GallerySection.jsx";
-import ReviewsSection from "../buildTabs/buildTabs/buildSections/ReviewsSection.jsx";
-import ShopSection    from "../buildTabs/buildTabs/buildSections/ShopSection.jsx";
-import ChatSection    from "../buildTabs/buildTabs/buildSections/ChatSection.jsx";
-import FaqSection     from "../buildTabs/buildTabs/buildSections/FaqSection.jsx";
+import MainSection    from "./buildTabs/buildSections/MainSection.jsx";
+import GallerySection from "./buildTabs/buildSections/GallerySection.jsx";
+import ReviewsSection from "./buildTabs/buildSections/ReviewsSection.jsx";
+import ShopSection    from "./buildTabs/buildSections/ShopSection.jsx";
+import ChatSection    from "./buildTabs/buildSections/ChatSection.jsx";
+import FaqSection     from "./buildTabs/buildSections/FaqSection.jsx";
+
 
 import { useAuth } from "../../../../context/AuthContext";
 
