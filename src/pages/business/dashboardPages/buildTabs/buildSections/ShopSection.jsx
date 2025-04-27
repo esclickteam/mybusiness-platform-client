@@ -1,6 +1,6 @@
 import React from "react";
 import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar.jsx";
-import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
+import { BusinessServicesProvider } from "../../../../../context/BusinessServicesContext";
 
 export default function ShopSection({ shopMode, setShopMode, setBusinessDetails, handleSave, renderTopBar }) {
   return (
