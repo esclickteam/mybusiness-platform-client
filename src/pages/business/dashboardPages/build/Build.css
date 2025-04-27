@@ -3,14 +3,14 @@
 /* מבנה עמוד כללי */
 .build-wrapper {
   display: flex;
-  flex-direction: row-reverse; /* ✅ תצוגה מקדימה בצד ימין */
+  flex-direction: row-reverse; /* תצוגה מקדימה בצד ימין */
   justify-content: space-between;
   padding: 2rem;
   background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
   min-height: 100vh;
   flex-wrap: wrap;
   gap: 2rem;
-  direction: rtl; /* ✅ תצוגת טקסט ואלמנטים בעברית */
+  direction: rtl; /* טקסט בעברית */
 }
 
 /* צד ימין - תצוגה */
@@ -20,13 +20,13 @@
   border: 8px solid black;
   border-radius: 40px;
   padding: 1.5rem;
-  position: relative; /* מאפשר למקם popup בתוך העמודה */
+  position: relative;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
   margin: 0 auto;
   flex-shrink: 0;
 }
 
-/* צד שמאל - טופס / עיצוב */
+/* צד שמאל - טופס */
 .form-column {
   width: 520px;
   background-color: white;
@@ -81,21 +81,20 @@
 .tabs {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.4rem 0.4rem;
+  gap: 0.4rem;
   margin-top: 1.2rem;
 }
 
 .tab {
-  width: 100%;
   border: none;
   padding: 0.5rem 0.8rem;
   border-radius: 20px;
   background-color: #d6cadf;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s ease;
   text-align: center;
   font-size: 0.85rem;
+  transition: all 0.3s ease;
 }
 
 .tab.active {
@@ -151,7 +150,7 @@
   margin-right: 0.3rem;
 }
 
-/* תצוגת גלריה (preview only) */
+/* Preview gallery בתוך הטלפון */
 .gallery-preview-wrapper {
   width: 100%;
   padding: 0;
@@ -185,47 +184,48 @@
   border-radius: 10px;
 }
 
-/* תצוגת + ותמונות בעמוד הראשי (MainSection) */
+/* ==== MainSection gallery (+ ו־תמונות) ==== */
 .gallery-preview {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow-x: auto;    /* גלילה אופקית */
+  overflow-y: hidden;  /* חיתוך אנכי */
 }
 
-.gallery-item-wrapper {
-  width: 70px;
-  height: 70px;
-  border: 2px dashed #b46af1;
-  border-radius: 10px;
-  overflow: hidden;
+/* עגלת תמונות בעמוד הראשי - הגדלנו ל־120px כדי להתאים לצד ימין */
+.gallery-preview .gallery-item-wrapper {
+  width: 120px !important;
+  height: 120px !important;
+  overflow: hidden !important;
   flex: 0 0 auto;
+  border: 2px dashed #b46af1;
+  border-radius: 12px;
 }
 
-.gallery-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.gallery-preview .gallery-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
   display: block;
 }
 
-.gallery-placeholder {
-  width: 70px;
-  height: 70px;
+.gallery-preview .gallery-placeholder {
+  width: 120px !important;
+  height: 120px !important;
   border: 2px dashed #b46af1;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #b46af1;
-  font-size: 1.5rem;
+  font-size: 2rem;
   cursor: pointer;
   flex: 0 0 auto;
   transition: transform 0.2s;
 }
 
-.gallery-placeholder:hover {
+.gallery-preview .gallery-placeholder:hover {
   transform: scale(1.05);
   background-color: #f3e5ff;
 }
@@ -264,46 +264,4 @@
     gap: 6px;
     padding: 0 8px;
   }
-}
-
-/* ==== Override לפריטי ה־MainSection בלבד ==== */
-.form-column .gallery-preview {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
-.form-column .gallery-preview .gallery-item-wrapper {
-  width: 70px !important;
-  height: 70px !important;
-  overflow: hidden !important;
-  flex: 0 0 auto;
-}
-
-.form-column .gallery-preview .gallery-img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-.form-column .gallery-preview .gallery-placeholder {
-  width: 70px !important;
-  height: 70px !important;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #b46af1;
-  font-size: 1.5rem;
-  cursor: pointer;
-  flex: 0 0 auto;
-  transition: transform 0.2s;
-}
-
-.form-column .gallery-preview .gallery-placeholder:hover {
-  transform: scale(1.05);
-  background-color: #f3e5ff;
 }
