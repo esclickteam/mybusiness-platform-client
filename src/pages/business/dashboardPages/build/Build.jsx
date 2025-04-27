@@ -8,10 +8,10 @@ import "./Build.css";
 // Section components
 import MainSection    from "../buildTabs/buildSections/MainSection.jsx";
 import GallerySection from "../buildTabs/buildSections/GallerySection.jsx";
-import ReviewsSection from "../buildTabs/buildSections/ReviewsSection.jsx";
-import ShopSection    from "../buildTabs/buildSections/ShopSection.jsx";
-import ChatSection    from "../buildTabs/buildSections/ChatSection.jsx";
-import FaqSection     from "../buildTabs/buildSections/FaqSection.jsx";
+import ReviewsSection from "../buildTabs/buildTabs/buildSections/ReviewsSection.jsx";
+import ShopSection    from "../buildTabs/buildTabs/buildSections/ShopSection.jsx";
+import ChatSection    from "../buildTabs/buildTabs/buildSections/ChatSection.jsx";
+import FaqSection     from "../buildTabs/buildTabs/buildSections/FaqSection.jsx";
 
 import { useAuth } from "../../../../context/AuthContext";
 
@@ -31,11 +31,22 @@ export default function Build() {
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
-    name: "", description: "", phone: "",
-    logo: null, story: [], gallery: [], services: [],
-    galleryFits: {}, galleryTabImages: [], galleryTabFits: {},
-    galleryCategories: [], fullGallery: [], storyFits: {},
-    reviews: [], faqs: [], messages: []
+    name: "",
+    description: "",
+    phone: "",
+    logo: null,
+    story: [],
+    gallery: [],
+    services: [],
+    galleryFits: {},
+    galleryTabImages: [],
+    galleryTabFits: {},
+    galleryCategories: [],
+    fullGallery: [],
+    storyFits: {},
+    reviews: [],
+    faqs: [],
+    messages: []
   });
 
   const logoInputRef       = useRef();
@@ -58,38 +69,65 @@ export default function Build() {
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  const handleSave = async () => { /* … שלך פה */ };
-  const handleMainImagesChange = async e => { /* … שלך פה */ };
-  const handleLogoClick = () => logoInputRef.current?.click();
-  const handleLogoChange = async e => { /* … שלך פה */ };
-  const handleStoryUpload = e => { /* … שלך פה */ };
-  const handleGalleryChange = async e => { /* … שלך פה */ };
-  const handleDeleteImage = i => { /* … שלך פה */ };
-  const handleFitChange = (i, fit) => { /* … שלך פה */ };
-  const handleConfirmEdit = () => console.log("שמירת הגלריה");
+  const handleSave               = async () => { /* … שלך פה */ };
+  const handleMainImagesChange   = async e   => { /* … שלך פה */ };
+  const handleLogoClick          = ()          => logoInputRef.current?.click();
+  const handleLogoChange         = async e   => { /* … שלך פה */ };
+  const handleStoryUpload        = e           => { /* … שלך פה */ };
+  const handleGalleryChange      = async e   => { /* … שלך פה */ };
+  const handleDeleteImage        = i           => { /* … שלך פה */ };
+  const handleFitChange          = (i, fit)    => { /* … שלך פה */ };
+  const handleConfirmEdit        = ()          => console.log("שמירת הגלריה");
 
-  const renderTopBar = () => (
-    <>
-      {/* פה לוגו, שם העסק, דירוג ושורת טאבים עליונה */}
-    </>
-  );
+  // הפונקציה שמציירת את הלוגו/שם/דירוג/טאבים בעמודת ה־PREVIEW
+  const renderTopBar = () => {
+    // ממוצע דירוג:
+    const avgRating =
+      businessDetails.reviews.length > 0
+        ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
+        : 0;
+
+    return (
+      <>
+        {/* לוגו ועיגול */}
+        <div className="logo-circle" onClick={handleLogoClick}>
+          {typeof businessDetails.logo === "string"
+            ? <img src={businessDetails.logo} className="logo-img" />
+            : businessDetails.logo?.preview
+              ? <img src={businessDetails.logo.preview} className="logo-img" />
+              : <span>לוגו</span>
+          }
+        </div>
+
+        {/* שם העסק ודירוג */}
+        <div className="name-rating">
+          <h2>{businessDetails.name || "שם העסק"}</h2>
+          <div className="rating-badge">
+            <span className="star">★</span>
+            <span>{avgRating.toFixed(1)} / 5</span>
+          </div>
+        </div>
+
+        <hr className="divider" />
+
+        {/* שורת הטאבים בתוך ה־preview-column */}
+        <div className="tabs">
+          {TABS.map(tab => (
+            <button
+              key={tab}
+              className={`tab ${tab === currentTab ? "active" : ""}`}
+              onClick={() => setCurrentTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  };
 
   return (
     <div className="build-wrapper">
-      {/* שורת הטאבים */}
-      <div className="tabs">
-        {TABS.map(tab => (
-          <button
-            key={tab}
-            className={`tab ${tab === currentTab ? "active" : ""}`}
-            onClick={() => setCurrentTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {/* ראשי */}
       {currentTab === "ראשי" && (
         <MainSection
           businessDetails={businessDetails}
@@ -106,7 +144,6 @@ export default function Build() {
         />
       )}
 
-      {/* גלריה */}
       {currentTab === "גלריה" && (
         <GallerySection
           businessDetails={businessDetails}
@@ -120,7 +157,6 @@ export default function Build() {
         />
       )}
 
-      {/* ביקורות */}
       {currentTab === "ביקורות" && (
         <ReviewsSection
           reviews={businessDetails.reviews}
@@ -130,7 +166,6 @@ export default function Build() {
         />
       )}
 
-      {/* חנות / יומן */}
       {currentTab === "חנות / יומן" && (
         <ShopSection
           shopMode={businessDetails.services}
@@ -141,7 +176,6 @@ export default function Build() {
         />
       )}
 
-      {/* צ'אט עם העסק */}
       {currentTab === "צ'אט עם העסק" && (
         <ChatSection
           businessDetails={businessDetails}
@@ -150,11 +184,15 @@ export default function Build() {
         />
       )}
 
-      {/* שאלות ותשובות */}
       {currentTab === "שאלות ותשובות" && (
         <FaqSection
           faqs={businessDetails.faqs}
-          setFaqs={updated => setBusinessDetails(prev => ({ ...prev, faqs: Array.isArray(updated) ? updated : [] }))}
+          setFaqs={updated =>
+            setBusinessDetails(prev => ({
+              ...prev,
+              faqs: Array.isArray(updated) ? updated : []
+            }))
+          }
           currentUser={currentUser}
           renderTopBar={renderTopBar}
         />
