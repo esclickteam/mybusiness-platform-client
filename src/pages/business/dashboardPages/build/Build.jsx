@@ -1,3 +1,5 @@
+// src/pages/business/dashboardPages/build/Build.jsx
+
 import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
@@ -47,10 +49,9 @@ export default function Build() {
     messages: []
   });
 
+  // create refs once and pass down to MainSection
   const logoInputRef       = useRef();
   const storyInputRef      = useRef();
-  const galleryInputRef    = useRef();
-  const galleryTabInputRef = useRef();
   const mainImagesInputRef = useRef();
 
   useEffect(() => {
@@ -71,7 +72,7 @@ export default function Build() {
   const handleMainImagesChange   = async e   => { /* … */ };
   const handleLogoClick          = ()          => logoInputRef.current?.click();
   const handleLogoChange         = async e   => { /* … */ };
-  const handleStoryUpload        = e           => { /* … */ };
+  const handleStoryUpload        = e           => storyInputRef.current?.click() /* or your logic */;
   const handleGalleryChange      = async e   => { /* … */ };
   const handleDeleteImage        = i           => { /* … */ };
   const handleFitChange          = (i, fit)    => { /* … */ };
@@ -131,12 +132,15 @@ export default function Build() {
           handleLogoClick={handleLogoClick}
           handleLogoChange={handleLogoChange}
           handleStoryUpload={handleStoryUpload}
+          handleMainImagesChange={handleMainImagesChange}
           handleSave={handleSave}
           showViewProfile={showViewProfile}
           navigate={navigate}
           currentUser={currentUser}
-          handleMainImagesChange={handleMainImagesChange}
           renderTopBar={renderTopBar}
+          logoInputRef={logoInputRef}
+          storyInputRef={storyInputRef}
+          mainImagesInputRef={mainImagesInputRef}
         />
       )}
 
@@ -144,7 +148,7 @@ export default function Build() {
         <GallerySection
           businessDetails={businessDetails}
           setBusinessDetails={setBusinessDetails}
-          galleryInputRef={galleryInputRef}
+          galleryInputRef={useRef()}
           handleGalleryChange={handleGalleryChange}
           handleDeleteImage={handleDeleteImage}
           handleFitChange={handleFitChange}
