@@ -15,26 +15,9 @@ export default function GallerySection({
     <>
       {/* ==== צד שמאל: הטופס ==== */}
       <div className="form-column">
-        {/* שורת הלוגו/שם/טאבים */}
-        {renderTopBar()}
-
-        {/* כותרת הטופס */}
         <h2>🎨 עיצוב הגלריה</h2>
 
-        {/* כפתור העלאת תמונות גלריה */}
-        <input
-          type="file"
-          multiple
-          style={{ display: "none" }}
-          ref={galleryInputRef}
-          onChange={handleGalleryChange}
-          accept="image/*"
-        />
-        <button onClick={() => galleryInputRef.current.click()}>
-          העלאת תמונות גלריה
-        </button>
-
-        {/* קומפוננטת העריכה עצמה */}
+        {/* קומפוננטת העריכה עצמה (כוללת את הפלוסים ל־placeholders) */}
         <GalleryTab
           isForm
           businessDetails={businessDetails}
@@ -43,15 +26,13 @@ export default function GallerySection({
           handleDeleteGalleryTabImage={handleDeleteImage}
           handleFitChange={handleFitChange}
           handleConfirmEdit={handleConfirmEdit}
+          handleGalleryChange={handleGalleryChange}
         />
       </div>
 
       {/* ==== צד ימין: תצוגה (Preview) ==== */}
       <div className="preview-column">
-        {/* רק renderTopBar */}
-        {renderTopBar()}
-
-        {/* התצוגה של הגלריה, ללא כפתורים וכותרות נוספות */}
+        <h3 className="section-title">הגלריה שלנו</h3>
         <GalleryTab
           isForm={false}
           businessDetails={businessDetails}
