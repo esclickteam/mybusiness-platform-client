@@ -1,5 +1,3 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
-
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
@@ -7,8 +5,6 @@ import MainTab from "../MainTab.jsx";
 export default function MainSection({
   businessDetails,
   handleInputChange,
-  handleLogoClick,
-  handleLogoChange,
   handleStoryUpload,
   handleMainImagesChange,
   handleSave,
@@ -51,17 +47,23 @@ export default function MainSection({
           onChange={handleInputChange}
         />
 
-        {/* לוגו */}
+        {/* Logo */}
         <label>לוגו:</label>
+        <input
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          ref={logoInputRef}
+          onChange={e => {
+            /* handled in topBar input */
+          }}
+        />
         <button onClick={() => logoInputRef.current?.click()}>
           העלאת לוגו
         </button>
 
-        {/* סטורי */}
+        {/* Story */}
         <label>סטורי:</label>
-        <button onClick={() => storyInputRef.current?.click()}>
-          העלאת סטורי
-        </button>
         <input
           type="file"
           multiple
@@ -70,8 +72,12 @@ export default function MainSection({
           ref={storyInputRef}
           onChange={handleStoryUpload}
         />
+        <button onClick={() => storyInputRef.current?.click()}>
+          העלאת סטורי
+        </button>
+
         <div className="gallery-preview">
-          {story.map((item, i) => (
+          {story.map((item,i) => (
             <div key={i} className="gallery-item-wrapper">
               {item.preview.match(/\.(mp4|webm)$/) ? (
                 <video
@@ -90,11 +96,8 @@ export default function MainSection({
           ))}
         </div>
 
-        {/* תמונות ראשיות */}
+        {/* Main Images */}
         <label>תמונות ראשיות:</label>
-        <button onClick={() => mainImagesInputRef.current?.click()}>
-          העלאת תמונות
-        </button>
         <input
           type="file"
           multiple
@@ -104,7 +107,7 @@ export default function MainSection({
           onChange={handleMainImagesChange}
         />
         <div className="gallery-preview">
-          {mainImages.map((img, i) => (
+          {mainImages.map((img,i) => (
             <div key={i} className="gallery-item-wrapper">
               <img
                 src={img.preview}
@@ -124,6 +127,7 @@ export default function MainSection({
           ))}
         </div>
 
+        {/* Actions */}
         <button onClick={handleSave} className="save-btn">
           💾 שמור
         </button>
