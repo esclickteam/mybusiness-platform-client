@@ -1,4 +1,4 @@
-// src/pages/business/dashboardPages/Build.jsx
+// src/pages/business/dashboardPages/build/Build.jsx
 
 import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
@@ -10,7 +10,7 @@ import MainSection    from "../buildTabs/buildSections/MainSection";
 import GallerySection from "../buildTabs/buildSections/GallerySection";
 import ReviewsSection from "../buildTabs/buildSections/ReviewsSection";
 import ShopSection    from "../buildTabs/buildSections/ShopSection";
-import ChatSection    from "../buildTabs/buildTabs/ChatSection";
+import ChatSection    from "../buildTabs/buildSections/ChatSection";
 import FaqSection     from "../buildTabs/buildSections/FaqSection";
 
 import { useAuth } from "../../../../context/AuthContext";
@@ -28,24 +28,24 @@ export default function Build() {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [currentTab, setCurrentTab]         = useState("ראשי");
+  const [currentTab, setCurrentTab]           = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
-    name: "",
+    name:        "",
     description: "",
-    phone: "",
-    logo: null,
-    story: [],
-    gallery: [],      // כאן יאוחסן מערך ה-URLs של התמונות
-    reviews: [],
-    faqs: [],
-    // שדות נוספים…
+    phone:       "",
+    logo:        null,
+    story:       [],
+    gallery:     [],
+    reviews:     [],
+    faqs:        [],
+    // כל שאר השדות לפי הצורך…
   });
 
   // refs
-  const logoInputRef   = useRef();
-  const storyInputRef  = useRef();
-  const galleryInputRef= useRef();
+  const logoInputRef    = useRef();
+  const storyInputRef   = useRef();
+  const galleryInputRef = useRef();
 
   // initial load
   useEffect(() => {
@@ -53,23 +53,21 @@ export default function Build() {
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
-          setBusinessDetails(prev => ({
-            ...prev,
+          setBusinessDetails({
             ...data,
-            // עטיפה כדי שנוכל להראות preview לפני העלאה
             story:   (data.story   || []).map(url => ({ preview: url })),
             gallery: (data.gallery || []).map(url => ({ preview: url }))
-          }));
+          });
         }
       })
       .catch(console.error);
   }, []);
 
-  // handle input text changes
+  // input change handler
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  // save name/desc/phone then navigate
+  // save basic info then redirect
   const handleSave = async () => {
     try {
       await API.patch("/business/my", {
@@ -83,24 +81,55 @@ export default function Build() {
     }
   };
 
-  // logo upload (כמופיע אצלך)
+  // logo upload (לא שונה)
   const handleLogoClick = () => logoInputRef.current?.click();
   const handleLogoChange = async e => {
-    // … הקוד שלך בלי שינוי
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = null;
+    const preview = URL.createObjectURL(file);
+    setBusinessDetails(prev => ({ ...prev, logo: { file, preview } }));
+    try {
+      const fd = new FormData();
+      fd.append("logo", file);
+      const res = await API.put("/business/my/logo", fd);
+      if (res.status === 200) {
+        setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
+      }
+    } catch (err) {
+      console.error("❌ Failed to upload logo:", err);
+    } finally {
+      URL.revokeObjectURL(preview);
+    }
   };
 
-  // story upload (כמופיע אצלך)
+  // story upload (לא שונה)
   const handleStoryUpload = async e => {
-    // … הקוד שלך בלי שינוי
+    const files = Array.from(e.target.files || []).slice(0, 5);
+    if (!files.length) return;
+    e.target.value = null;
+    const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
+    setBusinessDetails(prev => ({ ...prev, story: previews }));
+    try {
+      const fd = new FormData();
+      files.forEach(f => fd.append("story", f));
+      const res = await API.put("/business/my/story", fd);
+      if (res.status === 200) {
+        const wrapped = res.data.story.map(url => ({ preview: url }));
+        setBusinessDetails(prev => ({ ...prev, story: wrapped }));
+      }
+    } catch (err) {
+      console.error("❌ Failed to upload story:", err);
+    } finally {
+      previews.forEach(p => URL.revokeObjectURL(p.preview));
+    }
   };
 
-  // *** gallery upload ***
+  // gallery upload
   const handleGalleryChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
     e.target.value = null;
-
-    // מיידי עדכון תצוגה מקומי (preview)
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({
       ...prev,
@@ -112,26 +141,60 @@ export default function Build() {
       files.forEach(f => fd.append("gallery", f));
       const res = await API.put("/business/my/gallery", fd);
       if (res.status === 200) {
-        // השרת מחזיר מערך URL מלא
         const wrapped = res.data.gallery.map(url => ({ preview: url }));
         setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
       }
     } catch (err) {
       console.error("❌ Failed to upload gallery images:", err);
     } finally {
-      // שחרור זכרון
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
 
-  // render top bar (tabs, logo, rating…)
+  // render top bar (logo, name, tabs…)
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
-      ? businessDetails.reviews.reduce((s,r) => s + r.rating, 0) / businessDetails.reviews.length
+      ? businessDetails.reviews.reduce((s, r) => s + r.rating, 0) /
+        businessDetails.reviews.length
       : 0;
+
     return (
       <>
-        {/* … כל הקוד שלך ללא שינוי … */}
+        <div className="logo-circle" onClick={handleLogoClick}>
+          {typeof businessDetails.logo === "string" ? (
+            <img src={businessDetails.logo} className="logo-img" />
+          ) : businessDetails.logo?.preview ? (
+            <img src={businessDetails.logo.preview} className="logo-img" />
+          ) : (
+            <span>לוגו</span>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            ref={logoInputRef}
+            onChange={handleLogoChange}
+          />
+        </div>
+        <div className="name-rating">
+          <h2>{businessDetails.name || "שם העסק"}</h2>
+          <div className="rating-badge">
+            <span className="star">★</span>
+            <span>{avg.toFixed(1)} / 5</span>
+          </div>
+        </div>
+        <hr className="divider" />
+        <div className="tabs">
+          {TABS.map(tab => (
+            <button
+              key={tab}
+              className={`tab ${tab === currentTab ? "active" : ""}`}
+              onClick={() => setCurrentTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </>
     );
   };
@@ -157,7 +220,6 @@ export default function Build() {
           setBusinessDetails={setBusinessDetails}
           galleryInputRef={galleryInputRef}
           handleGalleryChange={handleGalleryChange}
-          // אם תרצי – handleDeleteImage, handleFitChange, handleConfirmEdit
           renderTopBar={renderTopBar}
         />
       )}
