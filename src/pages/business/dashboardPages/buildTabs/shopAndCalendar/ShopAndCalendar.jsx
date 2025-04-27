@@ -1,7 +1,7 @@
 // src/pages/business/dashboardPages/build/buildTabs/ShopAndCalendar.jsx
 import React, { useState, useEffect } from 'react';
 // סגנונות כלליים של עמוד הבניה
-import '../build/Build.css';
+import '../../build/Build.css';
 // סגנונות ספציפיים לטאב החנות/יומן
 import './ShopAndCalendar.css';
 
