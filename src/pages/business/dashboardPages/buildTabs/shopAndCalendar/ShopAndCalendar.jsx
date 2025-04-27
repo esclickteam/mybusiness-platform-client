@@ -72,7 +72,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      {/* בחירת מצב עריכה */}
+      {/* הצגת בחירת שירות רק כאשר אין מצב */}
       {!isPreview && !mode && (
         <div className="mode-select-wrapper">
           <h2 className="centered-title">איזה סוג שירות ברצונך לעצב?</h2>
@@ -83,14 +83,14 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
         </div>
       )}
 
-      {/* כפתור חזרה */}
+      {/* כפתור חזרה לבחירת השירות */}
       {!isPreview && mode && (
         <button onClick={() => setMode(null)} className="back-button">
           🔙 חזרה לבחירת שירות
         </button>
       )}
 
-      {/* טאב יומן עיצוב */}
+      {/* אם בחרו "יומן" */}
       {!isPreview && mode === 'appointments' && (
         <AppointmentsMain
           isPreview={false}
@@ -103,21 +103,10 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
         />
       )}
 
-      {/* טאב הגדרת יומן */}
-      {!isPreview && mode === 'calendar' && (
-        <div>
-          <h3>🗕️ הגדרת יומן</h3>
-          <CalendarSetup selectedService={selectedService} isPreview={false} />
-          <button onClick={() => setMode('appointments')} className="back-button">
-            🔙 חזרה לשירות
-          </button>
-        </div>
-      )}
-
-      {/* טאב חנות עיצוב */}
+      {/* אם בחרו "חנות" */}
       {!isPreview && mode === 'store' && <ShopTab isPreview={false} />}
 
-      {/* תצוגה מוקדמת של החנות */}
+      {/* תצוגה מוקדמת של חנות */}
       {isPreview && mode === 'store' && !showPayment && (
         <ShopPreview
           products={products}
@@ -136,7 +125,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
         />
       )}
 
-      {/* תצוגת תשלום מוקדמת */}
+      {/* תצוגת תשלום */}
       {isPreview && mode === 'store' && showPayment && (
         <PaymentSection
           paymentMethod="both"
