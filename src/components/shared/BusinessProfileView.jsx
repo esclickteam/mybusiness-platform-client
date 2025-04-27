@@ -27,7 +27,14 @@ export default function BusinessProfileView() {
       .then(res => {
         const data = res.data.business || res.data;
         console.log("📦 profileData from server:", data);
-        setProfileData(data);
+        // אם השרת מחזיר מערכים של URL-ים ב-gallery, mainImages או story
+        const wrappedMain  = (data.mainImages || []).map(url => ({ preview: url }));
+        const wrappedStory = (data.story      || []).map(url => ({ preview: url }));
+        setProfileData({
+          ...data,
+          mainImages: wrappedMain,
+          story:      wrappedStory
+        });
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -44,11 +51,11 @@ export default function BusinessProfileView() {
     gallery = [],
     reviews = [],
     faqs = [],
-    mainImages = [],  // אםAPI מחזיר
-    story      = []   // אםAPI מחזיר
+    mainImages = [],
+    story      = []
   } = profileData;
 
-  // פה העיקר: קודם מנסים mainImages, אחר־כך story, ולבסוף gallery
+  // בראשי: mainImages קודם, אם אין אז story, ואם אין אז gallery
   const primaryImages =
     (Array.isArray(mainImages) && mainImages.length > 0 && mainImages) ||
     (Array.isArray(story)      && story.length      > 0 && story)      ||
@@ -112,9 +119,10 @@ export default function BusinessProfileView() {
                 {primaryImages.length > 0 && (
                   <div className="gallery-preview no-actions">
                     {primaryImages.map((item, i) => {
-                      const src = typeof item === "string"
-                        ? item
-                        : item.url || item.preview;
+                      const src =
+                        typeof item === "string"
+                          ? item
+                          : item.preview || item.url;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
@@ -139,7 +147,7 @@ export default function BusinessProfileView() {
                       const src =
                         typeof item === "string"
                           ? item
-                          : item.url || item.preview;
+                          : item.preview || item.url;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
