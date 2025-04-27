@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import MainTab from "../MainTab.jsx";
-import "../Build.css"; // וודא שב־Build.css כבר מיובא ברכיב האב או כאן
+import "../../build/Build.css";
 
 export default function MainSection({
   businessDetails,
