@@ -1,7 +1,7 @@
 // src/pages/business/dashboardPages/BusinessProfileView.jsx
 
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import API from "@api";
 import "./BusinessProfileView.css";
 
@@ -16,56 +16,26 @@ const TABS = [
 
 export default function BusinessProfileView() {
   const { businessId } = useParams();
-  const location = useLocation();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
   useEffect(() => {
-    console.log("🛠️ BusinessProfileView render", businessId, location.pathname);
     setLoading(true);
     API.get(`/business/${businessId}`)
       .then(res => {
         const data = res.data.business || res.data;
-        console.log("📦 profileData from server:", data);
-        console.log("→ raw mainImages:", data.mainImages);
-
-        // עטיפה של mainImages לכל צורה (string או אובייקט)
-        const wrappedMain = (data.mainImages || []).map(item => {
-          if (typeof item === "string") {
-            return { preview: item };
-          } else if (item.url || item.preview) {
-            return { preview: item.url || item.preview };
-          } else {
-            // במקרה חריג – נדפיס את כל האובייקט
-            console.warn("Unexpected mainImages item:", item);
-            return { preview: "" };
-          }
-        });
-
-        // עטיפה של ה-story (במקרה שמשתמשים בהם)
-        const wrappedStory = (data.story || []).map(item => {
-          if (typeof item === "string") {
-            return { preview: item };
-          } else if (item.url || item.preview) {
-            return { preview: item.url || item.preview };
-          } else {
-            console.warn("Unexpected story item:", item);
-            return { preview: "" };
-          }
-        });
-
+        // נניח data.gallery הוא מערך של מחרוזות URL
         setProfileData({
           ...data,
-          mainImages: wrappedMain,
-          story: wrappedStory
+          gallery: data.gallery || []
         });
       })
       .catch(err => {
         console.error("❌ Error fetching business profile:", err);
       })
       .finally(() => setLoading(false));
-  }, [businessId, location.pathname]);
+  }, [businessId]);
 
   if (loading) return <div>טוען…</div>;
   if (!profileData) return <div>העסק לא נמצא</div>;
@@ -75,23 +45,10 @@ export default function BusinessProfileView() {
     logo,
     description = "",
     phone = "",
-    gallery = [],
+    gallery,
     reviews = [],
-    faqs = [],
-    mainImages = [],
-    story = []
+    faqs = []
   } = profileData;
-
-  // בחירת תמונות ראשיות לפי עדיפות
-  const primaryImages =
-    (mainImages.length > 0 && mainImages) ||
-    (story.length > 0 && story) ||
-    (gallery.length > 0 && gallery.map(item =>
-      typeof item === "string" ? { preview: item } : item
-    )) ||
-    [];
-
-  const realReviews = reviews.filter(r => typeof r.rating === "number");
 
   return (
     <div className="profile-page">
@@ -153,23 +110,17 @@ export default function BusinessProfileView() {
                   </div>
                 )}
 
-                {primaryImages.length > 0 && (
+                {gallery.length > 0 && (
                   <div className="gallery-preview no-actions">
-                    {primaryImages.map((item, i) => {
-                      const src = item.preview || "";
-                      console.log(`🖼️ image ${i} src:`, src);
-
-                      return (
-                        <div key={i} className="gallery-item-wrapper">
-                          <img
-                            src={src}
-                            alt={`main-img-${i}`}
-                            className="gallery-img"
-                            style={{ width: 120, height: 120 }}
-                          />
-                        </div>
-                      );
-                    })}
+                    {gallery.slice(0, 5).map((url, i) => (
+                      <div key={i} className="gallery-item-wrapper">
+                        <img
+                          src={url}
+                          alt={`main-img-${i}`}
+                          className="gallery-img"
+                        />
+                      </div>
+                    ))}
                   </div>
                 )}
               </>
@@ -180,20 +131,15 @@ export default function BusinessProfileView() {
               <>
                 {gallery.length > 0 ? (
                   <div className="gallery-preview no-actions">
-                    {gallery.map((item, i) => {
-                      const src = typeof item === "string"
-                        ? item
-                        : item.preview || item.url;
-                      return (
-                        <div key={i} className="gallery-item-wrapper">
-                          <img
-                            src={src}
-                            alt={`gallery-${i}`}
-                            className="gallery-img"
-                          />
-                        </div>
-                      );
-                    })}
+                    {gallery.map((url, i) => (
+                      <div key={i} className="gallery-item-wrapper">
+                        <img
+                          src={url}
+                          alt={`gallery-${i}`}
+                          className="gallery-img"
+                        />
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <p>אין תמונות בגלריה</p>
@@ -204,10 +150,10 @@ export default function BusinessProfileView() {
             {/* ====== ביקורות ====== */}
             {currentTab === "ביקורות" && (
               <>
-                {realReviews.length > 0 ? (
+                {reviews.length > 0 ? (
                   <div className="reviews">
                     <h3>⭐ ביקורות אחרונות</h3>
-                    {realReviews.map((r, i) => (
+                    {reviews.map((r, i) => (
                       <div key={i} className="review-card improved">
                         <div className="review-header">
                           <strong className="review-user">{r.user}</strong>
