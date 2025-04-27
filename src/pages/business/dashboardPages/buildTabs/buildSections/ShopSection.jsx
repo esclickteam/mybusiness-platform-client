@@ -1,30 +1,54 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar.jsx";
 import { BusinessServicesProvider } from "../../../../../context/BusinessServicesContext";
 
-export default function ShopSection({ shopMode, setShopMode, setBusinessDetails, handleSave, renderTopBar }) {
+export default function ShopSection({
+  shopMode,               // הערך מה–API: מערך/אובייקט של שירותים
+  setShopMode: setParentMode,
+  setBusinessDetails,
+  handleSave,
+  renderTopBar
+}) {
+  // UI-mode מקומי שנשאר null עד שהמשתמש יבחר חנות/יומן
+  const [mode, setMode] = useState(null);
+
+  // אופציונלי: אם shopMode שמגיע מה–API מייצג בעצם חנות (למשל מערך non-empty),
+  // אפשר לסנכרן אליו
+  useEffect(() => {
+    if (Array.isArray(shopMode) && shopMode.length > 0) {
+      setMode("store");
+    }
+  }, [shopMode]);
+
+  // כשרוצים לשנות מצב – מעדכנים גם בלוקאל וגם אצבע ההורה
+  const handleModeChange = newMode => {
+    setMode(newMode);
+    setParentMode(newMode);
+  };
+
   return (
     <BusinessServicesProvider>
       <div className="form-column">
-        {/* הצגת רכיב ShopAndCalendar כשהמשתמש לא במצב preview */}
-        <ShopAndCalendar 
-          isPreview={false} 
-          shopMode={shopMode} 
-          setShopMode={setShopMode} 
-          setBusinessDetails={setBusinessDetails} 
+        {/* הפורם בו המשתמש בוחר ועורך */}
+        <ShopAndCalendar
+          isPreview={false}
+          shopMode={mode}
+          setShopMode={handleModeChange}
+          setBusinessDetails={setBusinessDetails}
         />
         <button onClick={handleSave}>💾 שמור</button>
       </div>
-      
+
       <div className="preview-column">
         {renderTopBar()}
         <div className="phone-preview-wrapper">
           <div className="phone-frame">
             <div className="phone-body">
-              {/* הצגת תצוגה מקדימה */}
-              <ShopAndCalendar 
-                isPreview 
-                shopMode={shopMode} 
+              {/* תצוגת Preview */}
+              <ShopAndCalendar
+                isPreview={true}
+                shopMode={mode}
+                setShopMode={handleModeChange}
               />
             </div>
           </div>
