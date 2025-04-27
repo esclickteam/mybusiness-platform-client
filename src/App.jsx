@@ -37,7 +37,7 @@ const ChatTab             = lazy(() => import("./pages/business/dashboardPages/b
 const ShopAndCalendar     = lazy(() => import("./pages/business/dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar"));
 
 // Lazy-loaded edit & dashboard routes
-const BuildBusinessPage       = lazy(() => import("./pages/business/dashboardPages/build/Build"));
+const BuildBusinessPage = lazy(() => import("./pages/business/dashboardPages/build/Build.jsx"));
 const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
 const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
