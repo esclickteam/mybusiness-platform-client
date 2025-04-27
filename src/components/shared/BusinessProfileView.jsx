@@ -18,12 +18,13 @@ export default function BusinessProfileView() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
+  /* ─── fetch once ───────────────────────────────────────────── */
   useEffect(() => {
     setLoading(true);
     API.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-        console.log("📦 נתוני העסק מהשרת:", biz); // ← בדיקת נתונים מהשרת
+        console.log("📦 נתוני העסק מהשרת:", biz);
 
         setData({
           ...biz,
@@ -37,29 +38,36 @@ export default function BusinessProfileView() {
   }, [businessId]);
 
   if (loading) return <div>טוען…</div>;
-  if (!data) return <div>העסק לא נמצא</div>;
+  if (!data)   return <div>העסק לא נמצא</div>;
 
-  const { name, logo, description = "", phone = "", mainImages, story, gallery, reviews = [], faqs = [] } = data;
+  /* ─── destructure ──────────────────────────────────────────── */
+  const {
+    name,
+    logo,
+    description = "",
+    phone       = "",
+    mainImages,
+    story,
+    gallery,
+    reviews = [],
+    faqs    = []
+  } = data;
 
-  // תמונות ראשיות: קודם mainImages, אחר כך story, ואז gallery
+  /* תמונות ראשיות: mainImages ← story ← gallery */
   const primary =
-  mainImages.length > 0 ? mainImages :
-  story.length      > 0 ? story :
-  gallery.length    > 0 ? gallery :
-  [];
+    mainImages.length ? mainImages :
+    story.length      ? story      :
+    gallery.length    ? gallery    : [];
 
-console.log("🖼️ primary אחרי תיקון:", primary)
-
-  // הדפסות לבדיקה
-  console.log("🖼️ mainImages:", mainImages);
-  console.log("🖼️ primary (לתצוגה):", primary);
-
+  /* ─── render ───────────────────────────────────────────────── */
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
 
-          <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+          <Link
+            to={`/business/${businessId}/dashboard/edit`}
+            className="edit-profile-btn">
             ✏️ ערוך פרטי העסק
           </Link>
 
@@ -72,41 +80,50 @@ console.log("🖼️ primary אחרי תיקון:", primary)
           <h1 className="business-name">{name}</h1>
           <hr className="profile-divider" />
 
+          {/* ─── טאבים ─────────────────────── */}
           <div className="profile-tabs">
             {TABS.map(tab => (
-              <button key={tab}
-                className={`tab ${tab===currentTab?"active":""}`}
-                onClick={()=>setCurrentTab(tab)}>{tab}
+              <button
+                key={tab}
+                className={`tab ${tab === currentTab ? "active" : ""}`}
+                onClick={() => setCurrentTab(tab)}>
+                {tab}
               </button>
             ))}
           </div>
 
+          {/* ─── תוכן הטאב ──────────────────── */}
           <div className="tab-content">
             {/* ראשי */}
             {currentTab === "ראשי" && (
               <>
-                {description && <div className="about-section"><p>{description}</p></div>}
-                {phone       && <div className="phone-section"><strong>טלפון:</strong> {phone}</div>}
+                {description && (
+                  <div className="about-section"><p>{description}</p></div>
+                )}
+                {phone && (
+                  <div className="phone-section">
+                    <strong>טלפון:</strong> {phone}
+                  </div>
+                )}
                 {primary.length > 0 && (
-  <div className="gallery-preview no-actions">
-    {primary.map((img, i) => (
-      <div key={i} className="gallery-item-wrapper">
-        <img src={img} alt={`img-${i}`} className="gallery-img" />
-      </div>
-    ))}
-  </div>
-)}
-
+                  <div className="gallery-preview no-actions">
+                    {primary.map((img, i) => (
+                      <div key={i} className="profile-gallery-item">
+                        <img src={img} alt={`main-${i}`} className="gallery-img" />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
 
             {/* גלריה */}
             {currentTab === "גלריה" && (
               <>
-                {gallery.length>0 ? (
+                {gallery.length ? (
                   <div className="gallery-preview no-actions">
-                    {gallery.map((url,i)=>( 
-                      <div key={i} className="gallery-item-wrapper">
+                    {gallery.map((url, i) => (
+                      <div key={i} className="profile-gallery-item">
                         <img src={url} alt={`gal-${i}`} className="gallery-img" />
                       </div>
                     ))}
@@ -118,12 +135,13 @@ console.log("🖼️ primary אחרי תיקון:", primary)
             {/* ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {reviews.length>0 ? reviews.map((r,i)=>( 
+                {reviews.length ? reviews.map((r, i) => (
                   <div key={i} className="review-card improved">
                     <div className="review-header">
-                      <strong>{r.user}</strong><span>★ {r.rating}/5</span>
+                      <strong>{r.user}</strong>
+                      <span>★ {r.rating}/5</span>
                     </div>
-                    <p>{r.comment||r.text}</p>
+                    <p>{r.comment || r.text}</p>
                   </div>
                 )) : <p>אין ביקורות</p>}
               </div>
@@ -132,20 +150,27 @@ console.log("🖼️ primary אחרי תיקון:", primary)
             {/* שאלות ותשובות */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
-                {faqs.length>0 ? faqs.map((f,i)=>( 
-                  <div key={i} className="faq-item"><strong>{f.question}</strong><p>{f.answer}</p></div>
+                {faqs.length ? faqs.map((f, i) => (
+                  <div key={i} className="faq-item">
+                    <strong>{f.question}</strong>
+                    <p>{f.answer}</p>
+                  </div>
                 )) : <p>אין שאלות</p>}
               </div>
             )}
 
             {/* צ'אט עם העסק */}
             {currentTab === "צ'אט עם העסק" && (
-              <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
+              <div className="chat-tab">
+                <h3>שלח הודעה לעסק</h3>
+              </div>
             )}
 
             {/* חנות / יומן */}
             {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
+              <div className="shop-tab-placeholder">
+                <p>פיתוח בהמשך…</p>
+              </div>
             )}
           </div>
         </div>

@@ -128,7 +128,7 @@
   margin-top: 1rem;
 }
 
-/* גלריה */
+/* גלריה (מאפשר גם שימוש למחלקה הישנה אם קיימת) */
 .gallery-preview {
   display: flex;
   flex-wrap: wrap;
@@ -153,4 +153,19 @@
   border-radius: 8px;
 }
 
+/* === בידוד עבור BusinessProfileView בלבד (לא נוגע ב-Build) === */
+.profile-gallery-item {
+  flex: 1 0 45%;
+  max-width: 45%;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+.profile-gallery-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
