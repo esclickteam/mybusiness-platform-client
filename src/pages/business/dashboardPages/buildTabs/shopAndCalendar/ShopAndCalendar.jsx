@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/build/buildTabs/ShopAndCalendar.jsx
 import React, { useState, useEffect } from 'react';
 // סגנונות כלליים של עמוד הבניה
 import '../../build/Build.css';
@@ -73,7 +72,6 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-
       {/* בחירת מצב עריכה */}
       {!isPreview && !mode && (
         <div className="mode-select-wrapper">
