@@ -28,16 +28,16 @@ export default function Build() {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [currentTab, setCurrentTab]       = useState("ראשי");
+  const [currentTab, setCurrentTab] = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
     name: "",
     description: "",
     phone: "",
-    logo: null,
+    logo: null,         // { file, preview } or string URL
     story: [],
     gallery: [],
-    mainImages: [],
+    mainImages: [],     // array of { file?, preview }
     services: null,
     galleryFits: {},
     galleryTabImages: [],
@@ -50,7 +50,7 @@ export default function Build() {
     messages: []
   });
 
-  // refs for file inputs
+  // refs for hidden file inputs
   const logoInputRef       = useRef();
   const storyInputRef      = useRef();
   const mainImagesInputRef = useRef();
@@ -60,7 +60,13 @@ export default function Build() {
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
-          setBusinessDetails(prev => ({ ...prev, ...data }));
+          // wrap existing mainImages URLs into { preview }
+          const wrappedMainImages = (data.mainImages || []).map(url => ({ preview: url }));
+          setBusinessDetails(prev => ({
+            ...prev,
+            ...data,
+            mainImages: wrappedMainImages
+          }));
         }
       })
       .catch(console.error);
@@ -70,7 +76,7 @@ export default function Build() {
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
   const handleSave = async () => {
-    // … your save logic here
+    // … your save logic here …
   };
 
   const handleLogoClick = () =>
@@ -79,25 +85,25 @@ export default function Build() {
   const handleLogoChange = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
+    e.target.value = null;
 
-    // immediate preview
+    // 1) Immediate preview
     const previewUrl = URL.createObjectURL(file);
     setBusinessDetails(prev => ({
       ...prev,
       logo: { file, preview: previewUrl }
     }));
 
-    e.target.value = null;
-
-    // upload to server
+    // 2) Upload to server
     try {
       const formData = new FormData();
       formData.append("logo", file);
       const res = await API.put("/business/my/logo", formData);
       if (res.status === 200) {
+        // server returns the URL string
         setBusinessDetails(prev => ({
           ...prev,
-          logo: res.data.logo
+          logo: res.data.logo  // now string URL
         }));
       }
     } catch (err) {
@@ -111,53 +117,44 @@ export default function Build() {
     storyInputRef.current?.click();
 
   const handleMainImagesChange = async e => {
-    const files = Array.from(e.target.files).slice(0, 5);
+    const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
+    e.target.value = null;
 
-    // build lists of files to upload
-    const existingFiles = businessDetails.mainImages
-      .filter(img => img.file instanceof File)
-      .map(img => img.file);
-
-    // take up to remaining slots
-    const slotsLeft = 5 - existingFiles.length;
-    const newFiles = files.slice(0, slotsLeft);
-
-    // prepare previews
-    const newPreviews = newFiles.map(file => ({
+    // Build previews for new files
+    const newPreviews = files.map(file => ({
       file,
       preview: URL.createObjectURL(file)
     }));
 
-    // update state immediately
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: [
-        ...prev.mainImages,
-        ...newPreviews
-      ].slice(0, 5)
-    }));
+    // Merge with existing previews/URLs
+    setBusinessDetails(prev => {
+      const existing = prev.mainImages || [];
+      // ensure all existing are objects with preview
+      const existingObjs = existing.map(img =>
+        typeof img === "string" ? { preview: img } : img
+      );
+      const combined = [...existingObjs, ...newPreviews].slice(0, 5);
+      return { ...prev, mainImages: combined };
+    });
 
-    e.target.value = null;
-
-    // upload all files
+    // Upload files to server
     try {
       const formData = new FormData();
-      [...existingFiles, ...newFiles].forEach(file =>
-        formData.append("mainImages", file)
-      );
+      files.forEach(file => formData.append("mainImages", file));
       const res = await API.put("/business/my/main-images", formData);
       if (res.status === 200) {
         // server returns array of URLs
+        const serverPreviews = res.data.mainImages.map(url => ({ preview: url }));
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages: res.data.mainImages
+          mainImages: serverPreviews
         }));
       }
     } catch (err) {
       console.error("❌ Failed to upload main images:", err);
     } finally {
-      // revoke only the object URLs we created
+      // revoke only object URLs we created
       newPreviews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
@@ -176,6 +173,7 @@ export default function Build() {
 
     return (
       <>
+        {/* Logo */}
         <div className="logo-circle" onClick={handleLogoClick}>
           {typeof businessDetails.logo === "string" ? (
             <img src={businessDetails.logo} className="logo-img" />
@@ -186,6 +184,7 @@ export default function Build() {
           )}
         </div>
 
+        {/* Name & rating */}
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
@@ -196,6 +195,7 @@ export default function Build() {
 
         <hr className="divider" />
 
+        {/* Tabs */}
         <div className="tabs">
           {TABS.map(tab => (
             <button
@@ -248,7 +248,9 @@ export default function Build() {
       {currentTab === "ביקורות" && (
         <ReviewsSection
           reviews={businessDetails.reviews}
-          setReviews={updated => setBusinessDetails(prev => ({ ...prev, reviews: updated }))}
+          setReviews={updated =>
+            setBusinessDetails(prev => ({ ...prev, reviews: updated }))
+          }
           currentUser={currentUser}
           renderTopBar={renderTopBar}
         />
