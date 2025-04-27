@@ -8,7 +8,7 @@ import "./Build.css";
 // Section components
 import MainSection    from "../buildTabs/buildSections/MainSection";
 import GallerySection from "../buildTabs/buildSections/GallerySection";
-import ReviewsSection from "../buildTabs/buildSections/ReviewsSection";
+import ReviewsSection from "../buildTabs/buildTabs/buildSections/ReviewsSection";
 import ShopSection    from "../buildTabs/buildSections/ShopSection";
 import ChatSection    from "../buildTabs/buildSections/ChatSection";
 import FaqSection     from "../buildTabs/buildSections/FaqSection";
@@ -28,16 +28,16 @@ export default function Build() {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [currentTab, setCurrentTab]       = useState("ראשי");
+  const [currentTab, setCurrentTab] = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
     name: "",
     description: "",
     phone: "",
-    logo: null,         // { file, preview } or string URL
+    logo: null,
     story: [],
     gallery: [],
-    mainImages: [],     // array of { file?, preview }
+    mainImages: [],
     services: null,
     galleryFits: {},
     galleryTabImages: [],
@@ -50,7 +50,6 @@ export default function Build() {
     messages: []
   });
 
-  // refs for file inputs
   const logoInputRef       = useRef();
   const storyInputRef      = useRef();
   const mainImagesInputRef = useRef();
@@ -76,20 +75,14 @@ export default function Build() {
 
   const handleSave = async () => {
     try {
-      // שמירת השדות בטקסט (שם, תיאור, טלפון) למשל:
-      const payload = {
+      await API.patch("/business/my", {
         name: businessDetails.name,
         description: businessDetails.description,
-        phone: businessDetails.phone,
-        // אפשר להוסיף עוד שדות אם צריך
-      };
-      await API.put("/business/my", payload);
-
-      // לאחר שמירה, נווט לעמוד הפרופיל
+        phone: businessDetails.phone
+      });
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
       console.error("❌ Failed to save business details:", err);
-      // כאן אפשר להציג הודעת שגיאה למשתמש
     }
   };
 
