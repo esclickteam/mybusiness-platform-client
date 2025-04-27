@@ -28,7 +28,7 @@ export default function Build() {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [currentTab, setCurrentTab]           = useState("ראשי");
+  const [currentTab, setCurrentTab] = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
     name:        "",
@@ -37,15 +37,16 @@ export default function Build() {
     logo:        null,
     story:       [],
     gallery:     [],
+    mainImages:  [],
     reviews:     [],
     faqs:        [],
-    // כל שאר השדות לפי הצורך…
   });
 
   // refs
-  const logoInputRef    = useRef();
-  const storyInputRef   = useRef();
-  const galleryInputRef = useRef();
+  const logoInputRef       = useRef();
+  const storyInputRef      = useRef();
+  const mainImagesInputRef = useRef();
+  const galleryInputRef    = useRef();
 
   // initial load
   useEffect(() => {
@@ -55,33 +56,33 @@ export default function Build() {
           const data = res.data.business || res.data;
           setBusinessDetails({
             ...data,
-            story:   (data.story   || []).map(url => ({ preview: url })),
-            gallery: (data.gallery || []).map(url => ({ preview: url }))
+            story:      (data.story      || []).map(url => ({ preview: url })),
+            gallery:    (data.gallery    || []).map(url => ({ preview: url })),
+            mainImages: (data.mainImages || []).map(url => ({ preview: url })),
           });
         }
       })
       .catch(console.error);
   }, []);
 
-  // input change handler
+  // handlers
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  // save basic info then redirect
   const handleSave = async () => {
     try {
       await API.patch("/business/my", {
         name:        businessDetails.name,
         description: businessDetails.description,
-        phone:       businessDetails.phone
+        phone:       businessDetails.phone,
       });
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
-      console.error("❌ Failed to save business details:", err);
+      console.error(err);
     }
   };
 
-  // logo upload (לא שונה)
+  // logo upload
   const handleLogoClick = () => logoInputRef.current?.click();
   const handleLogoChange = async e => {
     const file = e.target.files?.[0];
@@ -97,13 +98,13 @@ export default function Build() {
         setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
       }
     } catch (err) {
-      console.error("❌ Failed to upload logo:", err);
+      console.error(err);
     } finally {
       URL.revokeObjectURL(preview);
     }
   };
 
-  // story upload (לא שונה)
+  // story upload
   const handleStoryUpload = async e => {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
@@ -119,7 +120,32 @@ export default function Build() {
         setBusinessDetails(prev => ({ ...prev, story: wrapped }));
       }
     } catch (err) {
-      console.error("❌ Failed to upload story:", err);
+      console.error(err);
+    } finally {
+      previews.forEach(p => URL.revokeObjectURL(p.preview));
+    }
+  };
+
+  // main images upload
+  const handleMainImagesChange = async e => {
+    const files = Array.from(e.target.files || []).slice(0, 5);
+    if (!files.length) return;
+    e.target.value = null;
+    const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: [...previews, ...prev.mainImages].slice(0, 5)
+    }));
+    try {
+      const fd = new FormData();
+      files.forEach(f => fd.append("mainImages", f));
+      const res = await API.put("/business/my/main-images", fd);
+      if (res.status === 200) {
+        const wrapped = res.data.mainImages.map(url => ({ preview: url }));
+        setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
+      }
+    } catch (err) {
+      console.error(err);
     } finally {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
@@ -135,7 +161,6 @@ export default function Build() {
       ...prev,
       gallery: [...previews, ...prev.gallery].slice(0, 10)
     }));
-
     try {
       const fd = new FormData();
       files.forEach(f => fd.append("gallery", f));
@@ -145,19 +170,17 @@ export default function Build() {
         setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
       }
     } catch (err) {
-      console.error("❌ Failed to upload gallery images:", err);
+      console.error(err);
     } finally {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
 
-  // render top bar (logo, name, tabs…)
+  // render top bar
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
-      ? businessDetails.reviews.reduce((s, r) => s + r.rating, 0) /
-        businessDetails.reviews.length
+      ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
       : 0;
-
     return (
       <>
         <div className="logo-circle" onClick={handleLogoClick}>
@@ -169,11 +192,8 @@ export default function Build() {
             <span>לוגו</span>
           )}
           <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            ref={logoInputRef}
-            onChange={handleLogoChange}
+            type="file" accept="image/*" style={{ display: "none" }}
+            ref={logoInputRef} onChange={handleLogoChange}
           />
         </div>
         <div className="name-rating">
@@ -190,9 +210,7 @@ export default function Build() {
               key={tab}
               className={`tab ${tab === currentTab ? "active" : ""}`}
               onClick={() => setCurrentTab(tab)}
-            >
-              {tab}
-            </button>
+            >{tab}</button>
           ))}
         </div>
       </>
@@ -206,11 +224,15 @@ export default function Build() {
           businessDetails={businessDetails}
           handleInputChange={handleInputChange}
           handleStoryUpload={handleStoryUpload}
+          handleMainImagesChange={handleMainImagesChange}
           handleSave={handleSave}
           showViewProfile={showViewProfile}
           navigate={navigate}
           currentUser={currentUser}
           renderTopBar={renderTopBar}
+          logoInputRef={logoInputRef}
+          storyInputRef={storyInputRef}
+          mainImagesInputRef={mainImagesInputRef}
         />
       )}
 
@@ -227,7 +249,7 @@ export default function Build() {
       {currentTab === "ביקורות" && (
         <ReviewsSection
           reviews={businessDetails.reviews}
-          setReviews={r => setBusinessDetails(p => ({ ...p, reviews: r }))}
+          setReviews={r => setBusinessDetails(prev => ({ ...prev, reviews: r }))}
           currentUser={currentUser}
           renderTopBar={renderTopBar}
         />
@@ -252,7 +274,7 @@ export default function Build() {
       {currentTab === "שאלות ותשובות" && (
         <FaqSection
           faqs={businessDetails.faqs}
-          setFaqs={f => setBusinessDetails(p => ({ ...p, faqs: f }))}
+          setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
           currentUser={currentUser}
           renderTopBar={renderTopBar}
         />
