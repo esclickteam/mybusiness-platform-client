@@ -37,7 +37,8 @@ export default function Build() {
     logo: null,
     story: [],
     gallery: [],
-    services: null,      // נשאר null עד שהמשתמש יבחר
+    mainImages: [],
+    services: null,
     galleryFits: {},
     galleryTabImages: [],
     galleryTabFits: {},
@@ -68,15 +69,82 @@ export default function Build() {
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  const handleSave               = async () => { /* … */ };
-  const handleMainImagesChange   = async e   => { /* … */ };
-  const handleLogoClick          = ()          => logoInputRef.current?.click();
-  const handleLogoChange         = async e   => { /* … */ };
-  const handleStoryUpload        = e           => storyInputRef.current?.click() /* or your logic */;
-  const handleGalleryChange      = async e   => { /* … */ };
-  const handleDeleteImage        = i           => { /* … */ };
-  const handleFitChange          = (i, fit)    => { /* … */ };
-  const handleConfirmEdit        = ()          => console.log("שמירת הגלריה");
+  const handleSave = async () => {
+    // … your save logic here
+  };
+
+  const handleLogoClick = () =>
+    logoInputRef.current?.click();
+
+  const handleLogoChange = async e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 1. מיידית Preview
+    const previewUrl = URL.createObjectURL(file);
+    setBusinessDetails(prev => ({
+      ...prev,
+      logo: { file, preview: previewUrl }
+    }));
+
+    // 2. שליחה לשרת
+    try {
+      const formData = new FormData();
+      formData.append("logo", file);
+      const res = await API.put("/business/my/logo", formData);
+      if (res.status === 200) {
+        // עדכון ל־URL שהשרת החזיר
+        setBusinessDetails(prev => ({
+          ...prev,
+          logo: res.data.logo
+        }));
+        URL.revokeObjectURL(previewUrl);
+      }
+    } catch (err) {
+      console.error("❌ Failed to upload logo:", err);
+    }
+  };
+
+  const handleStoryUpload = e => {
+    storyInputRef.current?.click();
+  };
+
+  const handleMainImagesChange = async e => {
+    const files = Array.from(e.target.files).slice(0, 5);
+    if (!files.length) return;
+
+    // 1. מיידית Preview
+    const previews = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }));
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: previews
+    }));
+
+    // 2. שליחה לשרת
+    try {
+      const formData = new FormData();
+      files.forEach(file => formData.append("mainImages", file));
+      const res = await API.put("/business/my/main-images", formData);
+      if (res.status === 200) {
+        // עדכון למערך URL שהשרת החזיר
+        setBusinessDetails(prev => ({
+          ...prev,
+          mainImages: res.data.mainImages
+        }));
+        previews.forEach(p => URL.revokeObjectURL(p.preview));
+      }
+    } catch (err) {
+      console.error("❌ Failed to upload main images:", err);
+    }
+  };
+
+  const handleGalleryChange   = async e => { /* … */ };
+  const handleDeleteImage     = i     => { /* … */ };
+  const handleFitChange       = (i, f) => { /* … */ };
+  const handleConfirmEdit     = ()    => console.log("שמירת הגלריה");
 
   const renderTopBar = () => {
     const avgRating =
@@ -86,17 +154,16 @@ export default function Build() {
 
     return (
       <>
-        {/* לוגו */}
         <div className="logo-circle" onClick={handleLogoClick}>
-          {typeof businessDetails.logo === "string"
-            ? <img src={businessDetails.logo} className="logo-img" />
-            : businessDetails.logo?.preview
-              ? <img src={businessDetails.logo.preview} className="logo-img" />
-              : <span>לוגו</span>
-          }
+          {typeof businessDetails.logo === "string" ? (
+            <img src={businessDetails.logo} className="logo-img" />
+          ) : businessDetails.logo?.preview ? (
+            <img src={businessDetails.logo.preview} className="logo-img" />
+          ) : (
+            <span>לוגו</span>
+          )}
         </div>
 
-        {/* שם ודירוג */}
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
@@ -107,7 +174,6 @@ export default function Build() {
 
         <hr className="divider" />
 
-        {/* טאבים עליונים */}
         <div className="tabs">
           {TABS.map(tab => (
             <button
