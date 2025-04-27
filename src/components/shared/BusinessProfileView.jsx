@@ -43,10 +43,12 @@ export default function BusinessProfileView() {
 
   // תמונות ראשיות: קודם mainImages, אחר כך story, ואז gallery
   const primary =
-    mainImages.length > 0 ? mainImages.map(u => ({ url: u })) :
-    story.length      > 0 ? story.map(u => ({ url: u })) :
-    gallery.length    > 0 ? gallery.map(u => ({ url: u })) :
-    [];
+  mainImages.length > 0 ? mainImages :
+  story.length      > 0 ? story :
+  gallery.length    > 0 ? gallery :
+  [];
+
+console.log("🖼️ primary אחרי תיקון:", primary)
 
   // הדפסות לבדיקה
   console.log("🖼️ mainImages:", mainImages);
@@ -85,15 +87,16 @@ export default function BusinessProfileView() {
               <>
                 {description && <div className="about-section"><p>{description}</p></div>}
                 {phone       && <div className="phone-section"><strong>טלפון:</strong> {phone}</div>}
-                {primary.length>0 && (
-                  <div className="gallery-preview no-actions">
-                    {primary.map((img,i)=>( 
-                      <div key={i} className="gallery-item-wrapper">
-                        <img src={img.url} alt={`img-${i}`} className="gallery-img" />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {primary.length > 0 && (
+  <div className="gallery-preview no-actions">
+    {primary.map((img, i) => (
+      <div key={i} className="gallery-item-wrapper">
+        <img src={img} alt={`img-${i}`} className="gallery-img" />
+      </div>
+    ))}
+  </div>
+)}
+
               </>
             )}
 
