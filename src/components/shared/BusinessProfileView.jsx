@@ -25,7 +25,6 @@ export default function BusinessProfileView() {
     API.get(`/business/${businessId}`)
       .then(res => {
         const data = res.data.business || res.data;
-        // וודא שהשדה gallery קיים כמערך של URL-ים
         setProfileData({
           ...data,
           gallery: Array.isArray(data.gallery) ? data.gallery : []
@@ -53,10 +52,7 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
 
-          <Link
-            to={`/business/${businessId}/dashboard/edit`}
-            className="edit-profile-btn"
-          >
+          <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
             ✏️ ערוך עמוד עסקי
           </Link>
 
@@ -69,7 +65,6 @@ export default function BusinessProfileView() {
           <h1 className="business-name">{name}</h1>
           <hr className="profile-divider" />
 
-          {/* Tabs */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
@@ -82,18 +77,14 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
-          {/* Content */}
           <div className="tab-content">
 
-            {/* ===== ראשי ===== */}
             {currentTab === "ראשי" && (
               <>
                 {description && (
                   <div className="about-section">
                     <p className="about-snippet">
-                      {description.length > 200
-                        ? description.slice(0, 200) + "…"
-                        : description}
+                      {description.length > 200 ? description.slice(0, 200) + "…" : description}
                     </p>
                   </div>
                 )}
@@ -111,29 +102,15 @@ export default function BusinessProfileView() {
                         <img
                           src={url}
                           alt={`main-img-${i}`}
-                          style={{
-                            width: '150px',
-                            height: '150px',
-                            objectFit: 'cover',
-                            border: '2px solid red'
-                          }}
+                          className="gallery-img"
                         />
                       </div>
                     ))}
                   </div>
                 )}
-
-                {/* DEBUG: raw gallery array */}
-                <div style={{ padding: 8, background: '#fff', color: '#000', marginTop: 16 }}>
-                  <strong>DEBUG gallery:</strong>
-                  <pre style={{ whiteSpace: 'pre-wrap' }}>
-                    {JSON.stringify(gallery, null, 2)}
-                  </pre>
-                </div>
               </>
             )}
 
-            {/* ===== גלריה ===== */}
             {currentTab === "גלריה" && (
               <>
                 {gallery.length > 0 ? (
@@ -143,12 +120,7 @@ export default function BusinessProfileView() {
                         <img
                           src={url}
                           alt={`gallery-${i}`}
-                          style={{
-                            width: '120px',
-                            height: '120px',
-                            objectFit: 'cover',
-                            border: '2px solid blue'
-                          }}
+                          className="gallery-img"
                         />
                       </div>
                     ))}
@@ -159,7 +131,6 @@ export default function BusinessProfileView() {
               </>
             )}
 
-            {/* ===== ביקורות ===== */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {reviews.length > 0 ? (
@@ -178,7 +149,6 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* ===== שאלות ותשובות ===== */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
@@ -194,14 +164,12 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* ===== צ'אט ===== */}
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab">
                 <h3>💬 שלח הודעה לעסק</h3>
               </div>
             )}
 
-            {/* ===== חנות / יומן ===== */}
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder"></div>
             )}
