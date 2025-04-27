@@ -10,7 +10,6 @@ export default function GallerySection({
   handleDeleteImage,
   handleFitChange,
   handleConfirmEdit,
-  renderTopBar
 }) {
   return (
     <>
