@@ -1,4 +1,5 @@
 // src/pages/business/dashboardPages/BusinessProfileView.jsx
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import API from "@api";
@@ -24,6 +25,7 @@ export default function BusinessProfileView() {
     setLoading(true);
     API.get(`/business/${businessId}`)
       .then(res => {
+        // הנתונים שמגיעים מה־API
         const data = res.data.business || res.data;
         setProfileData(data);
       })
@@ -34,16 +36,25 @@ export default function BusinessProfileView() {
   if (loading) return <div>טוען…</div>;
   if (!profileData) return <div>העסק לא נמצא</div>;
 
+  // בחרו את השדות
   const {
     name,
     logo,
     description = "",
     phone = "",
-    mainImages = [],
     gallery = [],
     reviews = [],
     faqs = [],
+    mainImages,   // השדה החדש
+    story         // fallback
   } = profileData;
+
+  // אם אין שדה mainImages, נשתמש ב־story
+  const primaryImages = Array.isArray(mainImages) && mainImages.length > 0
+    ? mainImages
+    : Array.isArray(story)
+      ? story
+      : [];
 
   const realReviews = reviews.filter(r => typeof r.rating === "number");
 
@@ -104,13 +115,13 @@ export default function BusinessProfileView() {
                     <strong>טלפון:</strong> {phone}
                   </div>
                 )}
-                {mainImages.length > 0 && (
+                {primaryImages.length > 0 && (
                   <div className="gallery-preview no-actions">
-                    {mainImages.map((item, i) => {
-                      const src =
-                        typeof item === "string"
-                          ? item
-                          : item.url || item.preview;
+                    {primaryImages.map((item, i) => {
+                      // item יכול להיות מחרוזת URL או אובייקט עם preview/url
+                      const src = typeof item === "string"
+                        ? item
+                        : item.url || item.preview;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
