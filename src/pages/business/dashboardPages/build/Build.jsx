@@ -35,7 +35,7 @@ export default function Build() {
     logo: null,
     story: [],
     gallery: [],
-    services: null, // מצב ראשוני שאין שירות נבחר
+    services: 'shop', // מצב ראשוני שאין שירות נבחר
     galleryFits: {},
     galleryTabImages: [],
     galleryTabFits: {},

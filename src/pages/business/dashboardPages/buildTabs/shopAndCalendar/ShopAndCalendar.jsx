@@ -14,10 +14,10 @@ import { useBusinessServices } from '../../../../../context/BusinessServicesCont
 const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusinessDetails }) => {
   const { services, setServices, products } = useBusinessServices();
 
-  const mode = shopMode;
+  // ברירת מחדל ל־store אם shopMode ריק
+  const mode = shopMode || 'store';
   const setMode = setShopMode;
 
-  const [selectedService, setSelectedService] = useState(null);
   const [cart, setCart] = useState([]);
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -25,7 +25,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
   const [showPayment, setShowPayment] = useState(false);
   const [demoHours, setDemoHours] = useState({});
 
-  // שולח את השירותים והמוצרים חזרה ל-BuildBusinessPage
+  // סנכרון עם ה־Build
   useEffect(() => {
     if (!isPreview && setBusinessDetails) {
       setBusinessDetails(prev => ({
@@ -36,34 +36,24 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
     }
   }, [services, products, isPreview, setBusinessDetails]);
 
-  // טעינת שעות עבודה לדמו
+  // טעינת שעות לדמו
   useEffect(() => {
     if (isPreview) {
       const saved = localStorage.getItem("demoWorkHours");
       if (saved) {
         try {
           setDemoHours(JSON.parse(saved));
-        } catch (e) {
+        } catch {
           console.error("⚠️ demoWorkHours is not valid JSON");
         }
       }
     }
   }, [isPreview]);
 
-  // פונקציה לבחירת המצב (חנות או יומן)
-  const handleSelectMode = selectedMode => {
-    setMode(selectedMode); // הגדרת המצב של חנות/יומן
-  };
-
-  const handleRemoveFromCart = index => {
-    const updated = [...cart];
-    updated.splice(index, 1);
-    setCart(updated);
-  };
-
-  const totalBeforeDiscount = cart.reduce((sum, item) => sum + Number(item.price), 0);
-  const discount = appliedCoupon ? (totalBeforeDiscount * (appliedCoupon.discount / 100)) : 0;
-  const total = (totalBeforeDiscount - discount).toFixed(2);
+  // חישובי עגלת קניות
+  const totalBefore = cart.reduce((sum, i) => sum + Number(i.price), 0);
+  const discount = appliedCoupon ? totalBefore * (appliedCoupon.discount / 100) : 0;
+  const total = (totalBefore - discount).toFixed(2);
 
   const handleApplyCoupon = () => {
     if (!appliedCoupon && couponCode === 'SUMMER10') {
@@ -73,41 +63,41 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      {/* הצגת בחירת שירות רק כאשר אין מצב */}
-      {!isPreview && !mode && (
-        <div className="mode-select-wrapper">
-          <h2 className="centered-title">איזה סוג שירות ברצונך לעצב?</h2>
-          <div className="mode-options">
-            <button onClick={() => handleSelectMode('store')}>🛒 חנות</button>
-            <button onClick={() => handleSelectMode('appointments')}>🗕️ יומן</button>
-          </div>
+      {/* Toggle חנות / יומן */}
+      {!isPreview && (
+        <div className="mode-toggle-wrapper">
+          <button
+            className={mode === 'store' ? 'active' : ''}
+            onClick={() => setMode('store')}
+          >
+            🛒 חנות
+          </button>
+          <button
+            className={mode === 'appointments' ? 'active' : ''}
+            onClick={() => setMode('appointments')}
+          >
+            🗕️ יומן
+          </button>
         </div>
       )}
 
-      {/* כפתור חזרה לבחירת השירות */}
-      {!isPreview && mode && (
-        <button onClick={() => setMode(null)} className="back-button">
-          🔙 חזרה לבחירת שירות
-        </button>
-      )}
-
-      {/* אם בחרו "יומן" */}
+      {/* NON-PREVIEW */}
       {!isPreview && mode === 'appointments' && (
         <AppointmentsMain
           isPreview={false}
           services={services}
           setServices={setServices}
-          onNext={service => {
-            setSelectedService(service);
+          onNext={svc => {
+            // אם מגיעים מ־AppointmentsMain ישירות ל־calendar
             setMode('calendar');
           }}
         />
       )}
+      {!isPreview && mode === 'store' && (
+        <ShopTab isPreview={false} />
+      )}
 
-      {/* אם בחרו "חנות" */}
-      {!isPreview && mode === 'store' && <ShopTab isPreview={false} />}
-
-      {/* תצוגה מוקדמת של חנות */}
+      {/* PREVIEW */}
       {isPreview && mode === 'store' && !showPayment && (
         <ShopPreview
           products={products}
@@ -125,8 +115,6 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
           business={{ name: 'העסק שלך', shippingType: 'paid', shippingCost: 20 }}
         />
       )}
-
-      {/* תצוגת תשלום */}
       {isPreview && mode === 'store' && showPayment && (
         <PaymentSection
           paymentMethod="both"
@@ -135,8 +123,6 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
           onBack={() => setShowPayment(false)}
         />
       )}
-
-      {/* תצוגת דמו יומן */}
       {isPreview && (mode === 'appointments' || mode === 'calendar') && (
         <AppointmentsMain
           isPreview={true}
