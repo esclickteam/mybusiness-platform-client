@@ -286,41 +286,40 @@ const handleMainImagesChange = async (e) => {
       return file;
     });
   
-    // 2. עדכן state מיד לתצוגה (בלי הגבלה)
+    // 2. עדכן state מיד לגלריה שמיועדת לטאב הגלריה
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: [...prev.gallery, ...previewFiles],
+      galleryTabImages: [...prev.galleryTabImages, ...previewFiles],
     }));
   
     // 3. בנה את ה-FormData עם המפתח "gallery"
     const formData = new FormData();
-    previewFiles.forEach(file => {
-      formData.append("gallery", file);
-    });
+    previewFiles.forEach(file => formData.append("gallery", file));
   
     try {
-      // 4. שלח את הבקשה ללא Content-Type ידני, עם cookies אם צריך
+      // 4. שלח את הבקשה
       const res = await API.put("/business/my/gallery", formData, {
         withCredentials: true,
       });
   
       if (res.status === 200) {
-        // 5. עדכן את ה-gallery לפי מה שהשרת החזיר
+        // 5. עדכן את galleryTabImages לפי מה שהשרת החזיר
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: res.data.gallery,
+          galleryTabImages: res.data.gallery, // מניח שהשרת מחזיר את המערך תחת key "gallery"
         }));
         // 6. שחרר את ה-previews
         previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
       } else {
-        console.error("❌ Error uploading gallery: Status", res.status);
         alert("❌ לא הצלחנו להעלות את הגלריה");
       }
     } catch (err) {
-      console.error("🔥 Error uploading gallery:", err.response || err);
+      console.error("🔥 Error uploading gallery:", err);
       alert("❌ שגיאה בהעלאת הגלריה. נסה שנית מאוחר יותר.");
     }
   };
+  
+  
   
           
 
@@ -467,50 +466,46 @@ const handleMainImagesChange = async (e) => {
   
             {/* תמונות ראשיות */}
             <label>תמונות לעמוד הראשי (עד 5):</label>
-            <input
-              type="file"
-              multiple
-              style={{ display: "none" }}
-              ref={mainImagesInputRef}
-              onChange={handleMainImagesChange}
-              accept="image/*"
-            />
-            <button
-              type="button"
-              onClick={() => mainImagesInputRef.current.click()}
-              className="upload-main-images-btn"
-            >
-              העלאת תמונות לעמוד הראשי
-            </button>
+<input
+  type="file"
+  multiple
+  style={{ display: "none" }}
+  ref={mainImagesInputRef}
+  onChange={handleMainImagesChange}
+  accept="image/*"
+/>
+<button
+  type="button"
+  onClick={() => mainImagesInputRef.current.click()}
+  className="upload-main-images-btn"
+>
+  העלאת תמונות לעמוד הראשי
+</button>
 
 
 
 
 
             <div className="gallery-preview">
-  {businessDetails.gallery.map((item, i) => (
-    <div
-      key={i}
-      className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
-      style={{ position: "relative" }}
-    >
-      <div className="gallery-item">
-        <img
-          src={
-            typeof item === "string"
-              ? item
-              : item.preview
-          }
-          alt={`gallery-${i}`}
-          className="gallery-img"
-          style={{
-            objectFit:
-              typeof item === "string"
-                ? businessDetails.galleryFits?.[item] || "cover"
-                : businessDetails.galleryFits?.[item.name] || "cover"
-          }}
-        />
-      </div>
+      {businessDetails.mainImages?.map((item, i) => (
+        <div
+          key={i}
+          className="gallery-item-wrapper"
+          style={{ position: "relative" }}
+        >
+          <div className="gallery-item">
+            <img
+              src={typeof item === "string" ? item : item.preview}
+              alt={`mainImage-${i}`}
+              className="gallery-img"
+              style={{
+                objectFit:
+                  typeof item === "string"
+                    ? businessDetails.galleryFits?.[item] || "cover"
+                    : businessDetails.galleryFits?.[item.name] || "cover"
+              }}
+            />
+          </div>
 
     {/* עריכה */}
     <button
@@ -613,7 +608,7 @@ const handleMainImagesChange = async (e) => {
 
     <div className="preview-column">
       {renderTopBar()}
-      {/* כאן אנחנו שולחים ל־MainTab גם את ה־handleSave */}
+      {/* כאן שולחים גם את ה־handleSave */}
       <MainTab
         businessDetails={businessDetails}
         handleSave={handleSave}
@@ -621,7 +616,6 @@ const handleMainImagesChange = async (e) => {
     </div>
   </>
 )}
-
 
 {currentTab === "גלריה" && (
   <>
@@ -642,7 +636,14 @@ const handleMainImagesChange = async (e) => {
 
     <div className="preview-column">
       {renderTopBar()}
-      <GalleryTab isForm={false} businessDetails={businessDetails} />
+      {/* כאן אנחנו מציגים בגלריה את המערך galleryTabImages */}
+      <GalleryTab
+        isForm={false}
+        businessDetails={{
+          ...businessDetails,
+          gallery: businessDetails.galleryTabImages
+        }}
+      />
     </div>
   </>
 )}
