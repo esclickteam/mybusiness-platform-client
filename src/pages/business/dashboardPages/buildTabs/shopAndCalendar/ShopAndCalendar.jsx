@@ -50,10 +50,9 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
     }
   }, [isPreview]);
 
-  // הדפסת המצב שנבחר בקונסול
+  // פונקציה לבחירת המצב (חנות או יומן)
   const handleSelectMode = selectedMode => {
-    console.log("Selected Mode:", selectedMode); // הדפסת המצב שנבחר
-    setMode(selectedMode);
+    setMode(selectedMode); // הגדרת המצב של חנות/יומן
   };
 
   const handleRemoveFromCart = index => {
