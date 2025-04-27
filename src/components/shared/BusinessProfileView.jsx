@@ -26,8 +26,6 @@ export default function BusinessProfileView() {
     API.get(`/business/${businessId}`)
       .then(res => {
         const data = res.data.business || res.data;
-        console.log("📦 profileData from server:", data);
-        // עטיפת כל URL ב־mainImages/story
         const wrappedMain  = (data.mainImages || []).map(url => ({ preview: url }));
         const wrappedStory = (data.story      || []).map(url => ({ preview: url }));
         setProfileData({
@@ -55,11 +53,10 @@ export default function BusinessProfileView() {
     story      = []
   } = profileData;
 
-  // fallback: mainImages → story → gallery
   const primaryImages =
-    (mainImages.length  > 0 && mainImages) ||
-    (story.length       > 0 && story)      ||
-    (gallery.length     > 0 && gallery.map(item => typeof item==="string" ? { preview: item } : item)) ||
+    (mainImages.length > 0 && mainImages) ||
+    (story.length      > 0 && story)      ||
+    (gallery.length    > 0 && gallery.map(u => ({ preview: typeof u === "string" ? u : u.preview || u.url }))) ||
     [];
 
   const realReviews = reviews.filter(r => typeof r.rating === "number");
@@ -68,28 +65,19 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-
-          <Link
-            to={`/business/${businessId}/dashboard/edit`}
-            className="edit-profile-btn"
-          >
+          <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
             ✏️ ערוך עמוד עסקי
           </Link>
 
           {logo && (
             <div className="logo-wrapper">
-              <img
-                src={logo}
-                alt={`${name} logo`}
-                className="profile-logo"
-              />
+              <img src={logo} alt={`${name} logo`} className="profile-logo" />
             </div>
           )}
 
           <h1 className="business-name">{name}</h1>
           <hr className="profile-divider" />
 
-          {/* ==== שורת הטאבים ==== */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
@@ -102,10 +90,7 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
-          {/* ==== תוכן הטאב ==== */}
           <div className="tab-content">
-
-            {/* ====== ראשי ====== */}
             {currentTab === "ראשי" && (
               <>
                 {description && (
@@ -117,117 +102,82 @@ export default function BusinessProfileView() {
                     </p>
                   </div>
                 )}
-
                 {phone && (
                   <div className="phone-section">
                     <strong>טלפון:</strong> {phone}
                   </div>
                 )}
-
                 {primaryImages.length > 0 && (
                   <div className="gallery-preview no-actions">
-                    {primaryImages.map((item, i) => {
-                      const src = typeof item === "string"
-                        ? item
-                        : item.preview || item.url;
-                      return (
-                        <div key={i} className="gallery-item-wrapper">
-                          <img
-                            src={src}
-                            alt={`main-img-${i}`}
-                            className="gallery-img"
-                          />
-                        </div>
-                      );
-                    })}
+                    {primaryImages.map((item, i) => (
+                      <div key={i} className="gallery-item-wrapper">
+                        <img
+                          src={item.preview}
+                          alt={`main-img-${i}`}
+                          className="gallery-img"
+                        />
+                      </div>
+                    ))}
                   </div>
                 )}
               </>
             )}
 
-            {/* ====== גלריה ====== */}
             {currentTab === "גלריה" && (
-              <>
-                {gallery.length > 0 ? (
-                  <div className="gallery-preview no-actions">
-                    {gallery.map((item, i) => {
-                      const src = typeof item === "string"
-                        ? item
-                        : item.preview || item.url;
-                      return (
-                        <div key={i} className="gallery-item-wrapper">
-                          <img
-                            src={src}
-                            alt={`gallery-${i}`}
-                            className="gallery-img"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p>אין תמונות בגלריה</p>
-                )}
-              </>
+              gallery.length > 0 ? (
+                <div className="gallery-preview no-actions">
+                  {gallery.map((u,i) => {
+                    const src = typeof u === "string" ? u : u.preview || u.url;
+                    return (
+                      <div key={i} className="gallery-item-wrapper">
+                        <img src={src} alt={`gallery-${i}`} className="gallery-img" />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : <p>אין תמונות בגלריה</p>
             )}
 
-            {/* ====== ביקורות ====== */}
             {currentTab === "ביקורות" && (
-              <>
-                {realReviews.length > 0 ? (
-                  <div className="reviews">
-                    <h3>⭐ ביקורות אחרונות</h3>
-                    {realReviews.map((r, i) => (
-                      <div key={i} className="review-card improved">
-                        <div className="review-header">
-                          <strong className="review-user">{r.user}</strong>
-                          <span className="star-text">
-                            ★ {r.rating} / 5
-                          </span>
-                        </div>
-                        <p className="review-text">
-                          {r.comment || r.text || "אין תוכן לביקורת."}
-                        </p>
+              realReviews.length > 0 ? (
+                <div className="reviews">
+                  <h3>⭐ ביקורות אחרונות</h3>
+                  {realReviews.map((r,i) => (
+                    <div key={i} className="review-card improved">
+                      <div className="review-header">
+                        <strong className="review-user">{r.user}</strong>
+                        <span className="star-text">★ {r.rating} / 5</span>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p>אין ביקורות להצגה.</p>
-                )}
-              </>
+                      <p className="review-text">{r.comment || r.text || "אין תוכן לביקורת."}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : <p>אין ביקורות להצגה.</p>
             )}
 
-            {/* ====== שאלות ותשובות ====== */}
             {currentTab === "שאלות ותשובות" && (
-              <>
-                {faqs.length > 0 ? (
-                  <div className="faqs">
-                    <h3>❓ שאלות ותשובות</h3>
-                    {faqs.map((f, i) => (
-                      <div key={i} className="faq-item">
-                        <strong>{f.question}</strong>
-                        <p>{f.answer}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p>אין שאלות ותשובות להצגה.</p>
-                )}
-              </>
+              faqs.length > 0 ? (
+                <div className="faqs">
+                  <h3>❓ שאלות ותשובות</h3>
+                  {faqs.map((f,i) => (
+                    <div key={i} className="faq-item">
+                      <strong>{f.question}</strong>
+                      <p>{f.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : <p>אין שאלות ותשובות להצגה.</p>
             )}
 
-            {/* ====== צ'אט ====== */}
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab">
                 <h3>💬 שלח הודעה לעסק</h3>
               </div>
             )}
 
-            {/* ====== חנות / יומן ====== */}
             {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder"></div>
+              <div className="shop-tab-placeholder" />
             )}
-
           </div>
         </div>
       </div>

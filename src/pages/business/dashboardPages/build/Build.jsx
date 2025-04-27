@@ -1,3 +1,5 @@
+// src/pages/business/dashboardPages/build/Build.jsx
+
 import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
@@ -37,18 +39,12 @@ export default function Build() {
     gallery: [],
     mainImages: [],
     services: null,
-    galleryFits: {},
-    galleryTabImages: [],
-    galleryTabFits: {},
-    galleryCategories: [],
-    fullGallery: [],
-    storyFits: {},
     reviews: [],
     faqs: [],
     messages: []
   });
 
-  // refs
+  // refs for file inputs
   const logoInputRef       = useRef();
   const storyInputRef      = useRef();
   const mainImagesInputRef = useRef();
@@ -57,17 +53,14 @@ export default function Build() {
   useEffect(() => {
     API.get("/business/my")
       .then(res => {
-        if (res.status === 200) {
-          const data = res.data.business || res.data;
-          const wrappedMain = (data.mainImages || []).map(url => ({ preview: url }));
-          const wrappedStory = (data.story      || []).map(url => ({ preview: url }));
-          setBusinessDetails(prev => ({
-            ...prev,
-            ...data,
-            mainImages: wrappedMain,
-            story:      wrappedStory
-          }));
-        }
+        const data = res.data.business || res.data;
+        const wrappedMain  = (data.mainImages || []).map(url => ({ preview: url }));
+        const wrappedStory = (data.story      || []).map(url => ({ preview: url }));
+        setBusinessDetails({
+          ...data,
+          mainImages: wrappedMain,
+          story:      wrappedStory
+        });
       })
       .catch(console.error);
   }, []);
@@ -75,10 +68,10 @@ export default function Build() {
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  // save name/desc/phone then navigate
+  // save text fields and navigate to profile
   const handleSave = async () => {
     try {
-      await API.patch("/business/my", {
+      await API.put("/business/my", {
         name: businessDetails.name,
         description: businessDetails.description,
         phone: businessDetails.phone
@@ -86,6 +79,7 @@ export default function Build() {
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
       console.error("❌ Failed to save business details:", err);
+      alert("שגיאה בשמירת הנתונים, נסה שוב");
     }
   };
 
@@ -96,19 +90,16 @@ export default function Build() {
     if (!file) return;
     e.target.value = null;
     const previewUrl = URL.createObjectURL(file);
-    setBusinessDetails(prev => ({
-      ...prev,
-      logo: { file, preview: previewUrl }
-    }));
+    setBusinessDetails(prev => ({ ...prev, logo: { file, preview: previewUrl } }));
     try {
       const fd = new FormData();
       fd.append("logo", file);
-      const res = await API.put("/business/my/logo", fd);
-      if (res.status === 200) {
-        setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
+      const r = await API.put("/business/my/logo", fd);
+      if (r.status === 200) {
+        setBusinessDetails(prev => ({ ...prev, logo: r.data.logo }));
       }
-    } catch (err) {
-      console.error("❌ Failed to upload logo:", err);
+    } catch (e) {
+      console.error(e);
     } finally {
       URL.revokeObjectURL(previewUrl);
     }
@@ -124,13 +115,13 @@ export default function Build() {
     try {
       const fd = new FormData();
       files.forEach(f => fd.append("story", f));
-      const res = await API.put("/business/my/story", fd);
-      if (res.status === 200) {
-        const wrapped = res.data.story.map(url => ({ preview: url }));
+      const r = await API.put("/business/my/story", fd);
+      if (r.status === 200) {
+        const wrapped = r.data.story.map(url => ({ preview: url }));
         setBusinessDetails(prev => ({ ...prev, story: wrapped }));
       }
-    } catch (err) {
-      console.error("❌ Failed to upload story:", err);
+    } catch (e) {
+      console.error(e);
     } finally {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
@@ -142,28 +133,23 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-    setBusinessDetails(prev => {
-      const existing = prev.mainImages.map(img =>
-        typeof img === "string" ? { preview: img } : img
-      );
-      return { ...prev, mainImages: [...previews, ...existing].slice(0, 5) };
-    });
+    setBusinessDetails(prev => ({ ...prev, mainImages: previews }));
     try {
       const fd = new FormData();
       files.forEach(f => fd.append("mainImages", f));
-      const res = await API.put("/business/my/main-images", fd);
-      if (res.status === 200) {
-        const wrapped = res.data.mainImages.map(url => ({ preview: url }));
+      const r = await API.put("/business/my/main-images", fd);
+      if (r.status === 200) {
+        const wrapped = r.data.mainImages.map(url => ({ preview: url }));
         setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
       }
-    } catch (err) {
-      console.error("❌ Failed to upload main images:", err);
+    } catch (e) {
+      console.error(e);
     } finally {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
 
-  // render top bar (tabs, logo, rating…)
+  // render top bar (logo, name, tabs, rating)
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((s,r) => s + r.rating, 0) / businessDetails.reviews.length
@@ -186,6 +172,7 @@ export default function Build() {
             onChange={handleLogoChange}
           />
         </div>
+
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
@@ -193,14 +180,18 @@ export default function Build() {
             <span>{avg.toFixed(1)} / 5</span>
           </div>
         </div>
+
         <hr className="divider" />
+
         <div className="tabs">
           {TABS.map(tab => (
             <button
               key={tab}
-              className={`tab ${tab===currentTab?"active":""}`}
-              onClick={()=>setCurrentTab(tab)}
-            >{tab}</button>
+              className={`tab ${tab === currentTab ? "active" : ""}`}
+              onClick={() => setCurrentTab(tab)}
+            >
+              {tab}
+            </button>
           ))}
         </div>
       </>
@@ -209,10 +200,11 @@ export default function Build() {
 
   return (
     <div className="build-wrapper">
-      {currentTab==="ראשי" && (
+      {currentTab === "ראשי" && (
         <MainSection
           businessDetails={businessDetails}
           handleInputChange={handleInputChange}
+          handleLogoChange={handleLogoChange}
           handleStoryUpload={handleStoryUpload}
           handleMainImagesChange={handleMainImagesChange}
           handleSave={handleSave}
@@ -225,44 +217,49 @@ export default function Build() {
           mainImagesInputRef={mainImagesInputRef}
         />
       )}
-      {currentTab==="גלריה" && (
+
+      {currentTab === "גלריה" && (
         <GallerySection
           businessDetails={businessDetails}
           setBusinessDetails={setBusinessDetails}
           galleryInputRef={useRef()}
-          handleGalleryChange={()=>{}}
-          handleDeleteImage={()=>{}}
-          handleFitChange={()=>{}}
-          handleConfirmEdit={()=>{}}
+          handleGalleryChange={() => {}}
+          handleDeleteImage={() => {}}
+          handleFitChange={() => {}}
+          handleConfirmEdit={() => {}}
           renderTopBar={renderTopBar}
         />
       )}
-      {currentTab==="ביקורות" && (
+
+      {currentTab === "ביקורות" && (
         <ReviewsSection
           reviews={businessDetails.reviews}
-          setReviews={r=>setBusinessDetails(p=>({...p,reviews:r}))}
+          setReviews={r => setBusinessDetails(p => ({ ...p, reviews: r }))}
           currentUser={currentUser}
           renderTopBar={renderTopBar}
         />
       )}
-      {currentTab==="חנות / יומן" && (
+
+      {currentTab === "חנות / יומן" && (
         <ShopSection
           setBusinessDetails={setBusinessDetails}
           handleSave={handleSave}
           renderTopBar={renderTopBar}
         />
       )}
-      {currentTab==="צ'אט עם העסק" && (
+
+      {currentTab === "צ'אט עם העסק" && (
         <ChatSection
           businessDetails={businessDetails}
           setBusinessDetails={setBusinessDetails}
           renderTopBar={renderTopBar}
         />
       )}
-      {currentTab==="שאלות ותשובות" && (
+
+      {currentTab === "שאלות ותשובות" && (
         <FaqSection
           faqs={businessDetails.faqs}
-          setFaqs={f=>setBusinessDetails(p=>({...p,faqs:f}))}
+          setFaqs={f => setBusinessDetails(p => ({ ...p, faqs: f }))}
           currentUser={currentUser}
           renderTopBar={renderTopBar}
         />
