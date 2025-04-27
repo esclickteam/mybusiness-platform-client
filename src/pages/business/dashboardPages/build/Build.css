@@ -185,13 +185,13 @@
   border-radius: 10px;
 }
 
-/* ==== תצוגת + ותמונות בעמוד הראשי (MainSection) ==== */
+/* תצוגת + ותמונות בעמוד הראשי (MainSection) */
 .gallery-preview {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
-  overflow-x: auto;    /* גלילה אופקית אם צריך */
-  overflow-y: hidden;  /* חיתוך אנכי */
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .gallery-item-wrapper {
@@ -199,14 +199,14 @@
   height: 70px;
   border: 2px dashed #b46af1;
   border-radius: 10px;
-  overflow: hidden;    /* חיתוך כל מה שמחוץ */
+  overflow: hidden;
   flex: 0 0 auto;
 }
 
 .gallery-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;   /* תמלא מבלי לעוות */
+  object-fit: cover;
   display: block;
 }
 
@@ -264,4 +264,46 @@
     gap: 6px;
     padding: 0 8px;
   }
+}
+
+/* ==== Override לפריטי ה־MainSection בלבד ==== */
+.form-column .gallery-preview {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.form-column .gallery-preview .gallery-item-wrapper {
+  width: 70px !important;
+  height: 70px !important;
+  overflow: hidden !important;
+  flex: 0 0 auto;
+}
+
+.form-column .gallery-preview .gallery-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+.form-column .gallery-preview .gallery-placeholder {
+  width: 70px !important;
+  height: 70px !important;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b46af1;
+  font-size: 1.5rem;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: transform 0.2s;
+}
+
+.form-column .gallery-preview .gallery-placeholder:hover {
+  transform: scale(1.05);
+  background-color: #f3e5ff;
 }
