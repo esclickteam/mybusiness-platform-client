@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../Build.css';
+import '../build/Build.css';
 import './FaqTab.css';
 import { v4 as uuidv4 } from 'uuid';
 import API from '@api';

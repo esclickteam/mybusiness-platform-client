@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 // ייבוא סגנונות גלובליים של העמוד
-import "../Build.css";
+import '../build/Build.css';
 // סגנונות ספציפיים לטאב הגלריה
 import "./GalleryTab.css";
 

@@ -1,6 +1,6 @@
 // src/pages/business/dashboardPages/build/buildTabs/MainTab.jsx
 import React, { useRef } from "react";
-import "../Build.css";
+import '../build/Build.css';
 import "./MainTab.css";
 
 const MainTab = ({ businessDetails, setBusinessDetails, handleSave }) => {

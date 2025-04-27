@@ -1,8 +1,7 @@
 // src/pages/business/dashboardPages/build/buildTabs/ChatTab.jsx
 import React from 'react';
 // סגנונות כלליים של עמוד הבניה
-import '../Build.css';
-// סגנונות ספציפיים לטאב הצ'אט
+import '../build/Build.css';// סגנונות ספציפיים לטאב הצ'אט
 import './ChatTab.css';
 
 import { useNavigate } from 'react-router-dom';
