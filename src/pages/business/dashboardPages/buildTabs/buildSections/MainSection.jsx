@@ -1,6 +1,6 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
 import React, { useRef } from "react";
 import MainTab from "../MainTab.jsx";
+import "../Build.css"; // וודא שב־Build.css כבר מיובא ברכיב האב או כאן
 
 export default function MainSection({
   businessDetails,
@@ -17,11 +17,15 @@ export default function MainSection({
 }) {
   const logoRef = useRef();
   const storyRef = useRef();
+  const mainImagesRef = useRef();
+
+  const mainImages = businessDetails.mainImages || [];
 
   return (
     <>
       {/* ==== צד שמאל: הטופס ==== */}
       <div className="form-column">
+        {renderTopBar()}
         <h2>🎨 עיצוב הכרטיס</h2>
 
         <label>שם העסק:</label>
@@ -55,9 +59,7 @@ export default function MainSection({
           onChange={handleLogoChange}
           accept="image/*"
         />
-        <button onClick={() => logoRef.current.click()}>
-          העלאת לוגו
-        </button>
+        <button onClick={() => logoRef.current.click()}>העלאת לוגו</button>
 
         <label>סטורי:</label>
         <input
@@ -68,16 +70,49 @@ export default function MainSection({
           onChange={handleStoryUpload}
           accept="image/*,video/*"
         />
-        <button onClick={() => storyRef.current.click()}>
-          העלאת סטורי
-        </button>
+        <button onClick={() => storyRef.current.click()}>העלאת סטורי</button>
 
-        <button onClick={handleSave}>💾 שמור</button>
+        {/* ==== תמונות לעמוד הראשי + placeholders ==== */}
+        <label>תמונות לעמוד הראשי (עד 5):</label>
+        <input
+          type="file"
+          multiple
+          style={{ display: "none" }}
+          ref={mainImagesRef}
+          onChange={handleMainImagesChange}
+          accept="image/*"
+        />
+        <button onClick={() => mainImagesRef.current.click()}>
+          העלאת תמונות לעמוד הראשי
+        </button>
+        <div className="gallery-preview">
+          {mainImages.map((img, i) => (
+            <div key={i} className="gallery-item-wrapper">
+              <img
+                src={img.preview || img}
+                alt={`main-${i}`}
+                className="gallery-img"
+              />
+            </div>
+          ))}
+
+          {Array.from({ length: 5 - mainImages.length }).map((_, i) => (
+            <div
+              key={i}
+              className="gallery-placeholder clickable"
+              onClick={() => mainImagesRef.current.click()}
+            >
+              +
+            </div>
+          ))}
+        </div>
+
+        <button onClick={handleSave} className="save-btn">
+          💾 שמור
+        </button>
         {showViewProfile && (
           <button
-            onClick={() =>
-              navigate(`/business/${currentUser.businessId}`)
-            }
+            onClick={() => navigate(`/business/${currentUser.businessId}`)}
           >
             👀 צפה בפרופיל
           </button>
@@ -87,8 +122,6 @@ export default function MainSection({
       {/* ==== צד ימין: תצוגה (Preview) ==== */}
       <div className="preview-column">
         {renderTopBar()}
-
-        {/* כאן תיבת התצוגה הראשית */}
         <MainTab
           businessDetails={businessDetails}
           handleMainImagesChange={handleMainImagesChange}

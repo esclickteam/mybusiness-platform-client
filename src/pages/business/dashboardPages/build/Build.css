@@ -188,6 +188,40 @@
   border-radius: 10px;
 }
 
+/* תצוגת + ותמונות בעמוד הראשי (MainSection) */
+.gallery-preview {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.gallery-item-wrapper {
+  width: 70px;
+  height: 70px;
+  border: 2px dashed #b46af1;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-placeholder {
+  width: 70px;
+  height: 70px;
+  border: 2px dashed #b46af1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b46af1;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
 /* רספונסיביות */
 @media (max-width: 768px) {
   .build-wrapper {
