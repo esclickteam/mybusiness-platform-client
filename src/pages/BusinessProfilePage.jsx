@@ -1,9 +1,9 @@
-// src/pages/business/dashboardPages/BusinessProfileView.jsx
+// src/pages/business/BusinessProfilePage.jsx
 
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
-import "./BusinessProfileView.css";
+import "../../components/shared/BusinessProfileView.css"; // ייבוא ה-CSS הנכון
 
 const TABS = [
   "ראשי",
@@ -14,7 +14,7 @@ const TABS = [
   "חנות / יומן",
 ];
 
-export default function BusinessProfileView() {
+export default function BusinessProfilePage() {
   const { businessId } = useParams();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,9 @@ export default function BusinessProfileView() {
         const data = res.data.business || res.data;
         setProfileData({
           ...data,
-          gallery: Array.isArray(data.gallery) ? data.gallery : []
+          gallery: Array.isArray(data.gallery) ? data.gallery : [],
+          reviews: Array.isArray(data.reviews) ? data.reviews : [],
+          faqs:    Array.isArray(data.faqs)    ? data.faqs    : []
         });
       })
       .catch(err => console.error("❌ Fetch error:", err))
@@ -37,14 +39,17 @@ export default function BusinessProfileView() {
   if (loading) return <div>טוען…</div>;
   if (!profileData) return <div>העסק לא נמצא</div>;
 
-  const { name, logo, description = "", phone = "", gallery, reviews = [], faqs = [] } = profileData;
+  const { name, logo, description = "", phone = "", gallery, reviews, faqs } = profileData;
 
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
 
-          <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+          <Link
+            to={`/business/${businessId}/dashboard/edit`}
+            className="edit-profile-btn"
+          >
             ✏️ ערוך עמוד עסקי
           </Link>
 
@@ -57,21 +62,21 @@ export default function BusinessProfileView() {
           <h1 className="business-name">{name}</h1>
           <hr className="profile-divider" />
 
+          {/* Tabs */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
                 key={tab}
                 className={`tab ${currentTab === tab ? "active" : ""}`}
                 onClick={() => setCurrentTab(tab)}
-              >
-                {tab}
-              </button>
+              >{tab}</button>
             ))}
           </div>
 
+          {/* Tab Content */}
           <div className="tab-content">
 
-            {/* ראשי */}
+            {/* ====== ראשי ====== */}
             {currentTab === "ראשי" && (
               <>
                 {description && (
@@ -89,7 +94,7 @@ export default function BusinessProfileView() {
                   </div>
                 )}
                 {gallery.length > 0 && (
-                  <div className="gallery-preview no-actions">
+                  <div className="gallery-preview">
                     {gallery.slice(0, 5).map((url, i) => (
                       <div key={i} className="gallery-item-wrapper">
                         <img
@@ -104,10 +109,10 @@ export default function BusinessProfileView() {
               </>
             )}
 
-            {/* גלריה */}
+            {/* ====== גלריה ====== */}
             {currentTab === "גלריה" && (
               gallery.length > 0 ? (
-                <div className="gallery-preview no-actions">
+                <div className="gallery-preview">
                   {gallery.map((url, i) => (
                     <div key={i} className="gallery-item-wrapper">
                       <img
@@ -123,7 +128,7 @@ export default function BusinessProfileView() {
               )
             )}
 
-            {/* ביקורות */}
+            {/* ====== ביקורות ====== */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {reviews.length > 0 ? (
@@ -133,9 +138,7 @@ export default function BusinessProfileView() {
                         <strong className="review-user">{r.user}</strong>
                         <span className="star-text">★ {r.rating} / 5</span>
                       </div>
-                      <p className="review-text">
-                        {r.comment || r.text || "אין תוכן לביקורת."}
-                      </p>
+                      <p className="review-text">{r.comment || r.text || "אין תוכן"}</p>
                     </div>
                   ))
                 ) : (
@@ -144,7 +147,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* שאלות ותשובות */}
+            {/* ====== שאלות ותשובות ====== */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
@@ -160,16 +163,24 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* צ'אט */}
+            {/* ====== צ'אט עם העסק ====== */}
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab">
                 <h3>💬 שלח הודעה לעסק</h3>
+                <form className="chat-form">
+                  <input type="text" placeholder="הקלידו את שמכם" className="chat-input" />
+                  <textarea placeholder="הודעתכם" className="chat-textarea"></textarea>
+                  <button type="submit" className="chat-send-btn">שלח</button>
+                </form>
               </div>
             )}
 
-            {/* חנות / יומן */}
+            {/* ====== חנות / יומן ====== */}
             {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder"></div>
+              <div className="shop-tab">
+                <h3>🛒 חנות / 📅 יומן תורים</h3>
+                <p>רכיב זה יכנס בהמשך.</p>
+              </div>
             )}
 
           </div>
