@@ -1,5 +1,3 @@
-// src/pages/business/dashboardPages/build/Build.jsx
-
 import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +10,6 @@ import ReviewsSection from "../buildTabs/buildSections/ReviewsSection";
 import ShopSection    from "../buildTabs/buildSections/ShopSection";
 import ChatSection    from "../buildTabs/buildSections/ChatSection";
 import FaqSection     from "../buildTabs/buildSections/FaqSection";
-
 
 import { useAuth } from "../../../../context/AuthContext";
 
@@ -38,7 +35,7 @@ export default function Build() {
     logo: null,
     story: [],
     gallery: [],
-    services: [],
+    services: null, // מצב ראשוני שאין שירות נבחר
     galleryFits: {},
     galleryTabImages: [],
     galleryTabFits: {},
@@ -80,7 +77,6 @@ export default function Build() {
   const handleFitChange          = (i, fit)    => { /* … שלך פה */ };
   const handleConfirmEdit        = ()          => console.log("שמירת הגלריה");
 
-  // הפונקציה שמציירת את הלוגו/שם/דירוג/טאבים בעמודת ה־PREVIEW
   const renderTopBar = () => {
     // ממוצע דירוג:
     const avgRating =
@@ -111,7 +107,6 @@ export default function Build() {
 
         <hr className="divider" />
 
-        {/* שורת הטאבים בתוך ה־preview-column */}
         <div className="tabs">
           {TABS.map(tab => (
             <button
@@ -170,7 +165,7 @@ export default function Build() {
       {currentTab === "חנות / יומן" && (
         <ShopSection
           shopMode={businessDetails.services}
-          setShopMode={mode => setBusinessDetails(prev => ({ ...prev, services: mode }))}
+          setShopMode={mode => setBusinessDetails(prev => ({ ...prev, services: mode }))} // עדכון סטייט
           setBusinessDetails={setBusinessDetails}
           handleSave={handleSave}
           renderTopBar={renderTopBar}
