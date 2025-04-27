@@ -27,7 +27,7 @@ export default function BusinessProfileView() {
       .then(res => {
         const data = res.data.business || res.data;
         console.log("📦 profileData from server:", data);
-        // אם השרת מחזיר מערכים של URL-ים ב-gallery, mainImages או story
+        // עטיפת כל URL ב־mainImages/story
         const wrappedMain  = (data.mainImages || []).map(url => ({ preview: url }));
         const wrappedStory = (data.story      || []).map(url => ({ preview: url }));
         setProfileData({
@@ -55,11 +55,11 @@ export default function BusinessProfileView() {
     story      = []
   } = profileData;
 
-  // בראשי: mainImages קודם, אם אין אז story, ואם אין אז gallery
+  // fallback: mainImages → story → gallery
   const primaryImages =
-    (Array.isArray(mainImages) && mainImages.length > 0 && mainImages) ||
-    (Array.isArray(story)      && story.length      > 0 && story)      ||
-    (Array.isArray(gallery)    && gallery.length    > 0 && gallery)    ||
+    (mainImages.length  > 0 && mainImages) ||
+    (story.length       > 0 && story)      ||
+    (gallery.length     > 0 && gallery.map(item => typeof item==="string" ? { preview: item } : item)) ||
     [];
 
   const realReviews = reviews.filter(r => typeof r.rating === "number");
@@ -68,6 +68,7 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
+
           <Link
             to={`/business/${businessId}/dashboard/edit`}
             className="edit-profile-btn"
@@ -77,7 +78,11 @@ export default function BusinessProfileView() {
 
           {logo && (
             <div className="logo-wrapper">
-              <img src={logo} alt={`${name} logo`} className="profile-logo" />
+              <img
+                src={logo}
+                alt={`${name} logo`}
+                className="profile-logo"
+              />
             </div>
           )}
 
@@ -99,6 +104,7 @@ export default function BusinessProfileView() {
 
           {/* ==== תוכן הטאב ==== */}
           <div className="tab-content">
+
             {/* ====== ראשי ====== */}
             {currentTab === "ראשי" && (
               <>
@@ -111,18 +117,19 @@ export default function BusinessProfileView() {
                     </p>
                   </div>
                 )}
+
                 {phone && (
                   <div className="phone-section">
                     <strong>טלפון:</strong> {phone}
                   </div>
                 )}
+
                 {primaryImages.length > 0 && (
                   <div className="gallery-preview no-actions">
                     {primaryImages.map((item, i) => {
-                      const src =
-                        typeof item === "string"
-                          ? item
-                          : item.preview || item.url;
+                      const src = typeof item === "string"
+                        ? item
+                        : item.preview || item.url;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
@@ -144,10 +151,9 @@ export default function BusinessProfileView() {
                 {gallery.length > 0 ? (
                   <div className="gallery-preview no-actions">
                     {gallery.map((item, i) => {
-                      const src =
-                        typeof item === "string"
-                          ? item
-                          : item.preview || item.url;
+                      const src = typeof item === "string"
+                        ? item
+                        : item.preview || item.url;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
@@ -214,16 +220,14 @@ export default function BusinessProfileView() {
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab">
                 <h3>💬 שלח הודעה לעסק</h3>
-                {/* … */}
               </div>
             )}
 
             {/* ====== חנות / יומן ====== */}
             {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder">
-                {/* … */}
-              </div>
+              <div className="shop-tab-placeholder"></div>
             )}
+
           </div>
         </div>
       </div>
