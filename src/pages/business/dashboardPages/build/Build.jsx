@@ -28,16 +28,16 @@ export default function Build() {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [currentTab, setCurrentTab] = useState("ראשי");
+  const [currentTab, setCurrentTab]       = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
     name: "",
     description: "",
     phone: "",
-    logo: null,      // { file, preview } or string URL
+    logo: null,         // { file, preview } or string URL
     story: [],
     gallery: [],
-    mainImages: [],  // array of { file?, preview }
+    mainImages: [],     // array of { file?, preview }
     services: null,
     galleryFits: {},
     galleryTabImages: [],
@@ -50,7 +50,7 @@ export default function Build() {
     messages: []
   });
 
-  // refs for hidden file inputs
+  // refs for file inputs
   const logoInputRef       = useRef();
   const storyInputRef      = useRef();
   const mainImagesInputRef = useRef();
@@ -60,12 +60,11 @@ export default function Build() {
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
-          // wrap existing URLs into { preview }
-          const wrapped = (data.mainImages || []).map(url => ({ preview: url }));
+          const wrappedMainImages = (data.mainImages || []).map(url => ({ preview: url }));
           setBusinessDetails(prev => ({
             ...prev,
             ...data,
-            mainImages: wrapped
+            mainImages: wrappedMainImages
           }));
         }
       })
@@ -76,7 +75,22 @@ export default function Build() {
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
   const handleSave = async () => {
-    // … your save logic here …
+    try {
+      // שמירת השדות בטקסט (שם, תיאור, טלפון) למשל:
+      const payload = {
+        name: businessDetails.name,
+        description: businessDetails.description,
+        phone: businessDetails.phone,
+        // אפשר להוסיף עוד שדות אם צריך
+      };
+      await API.put("/business/my", payload);
+
+      // לאחר שמירה, נווט לעמוד הפרופיל
+      navigate(`/business/${currentUser.businessId}`);
+    } catch (err) {
+      console.error("❌ Failed to save business details:", err);
+      // כאן אפשר להציג הודעת שגיאה למשתמש
+    }
   };
 
   const handleLogoClick = () =>
@@ -87,7 +101,6 @@ export default function Build() {
     if (!file) return;
     e.target.value = null;
 
-    // immediate preview
     const previewUrl = URL.createObjectURL(file);
     setBusinessDetails(prev => ({
       ...prev,
@@ -99,7 +112,6 @@ export default function Build() {
       formData.append("logo", file);
       const res = await API.put("/business/my/logo", formData);
       if (res.status === 200) {
-        // server returns a URL string
         setBusinessDetails(prev => ({
           ...prev,
           logo: res.data.logo
@@ -120,13 +132,11 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
 
-    // create previews for the new files
     const newPreviews = files.map(file => ({
       file,
       preview: URL.createObjectURL(file)
     }));
 
-    // merge with existing URLs/previews, cap at 5
     setBusinessDetails(prev => {
       const existing = prev.mainImages.map(img =>
         typeof img === "string" ? { preview: img } : img
@@ -135,14 +145,12 @@ export default function Build() {
       return { ...prev, mainImages: combined };
     });
 
-    // upload only the new files
     try {
       const formData = new FormData();
       files.forEach(file => formData.append("mainImages", file));
       const res = await API.put("/business/my/main-images", formData);
       if (res.status === 200) {
-        const serverUrls = res.data.mainImages; // array of URL strings
-        // replace only the file-based previews with server URLs
+        const serverUrls = res.data.mainImages;
         setBusinessDetails(prev => {
           let idx = 0;
           const updated = prev.mainImages.map(img => {
@@ -158,7 +166,6 @@ export default function Build() {
     } catch (err) {
       console.error("❌ Failed to upload main images:", err);
     } finally {
-      // revoke only the object URLs we created
       newPreviews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
