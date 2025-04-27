@@ -1,2 +1,2 @@
 // src/pages/business/dashboardPages/build/index.js
-export { default } from "./Build.jsx";
+export { default } from "./Build";
