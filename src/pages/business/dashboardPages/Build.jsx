@@ -35,7 +35,6 @@ const Build = () => {
 // רשימת השדות המותרת לעדכון
 const ALLOWED_KEYS = [
   "name",
-  "about",        // so we can map it to description
   "description",  // just in case
   "phone",
   "logo",
@@ -99,17 +98,7 @@ const handleSave = async () => {
     Object.entries(businessDetails)
       .filter(([key]) => ALLOWED_KEYS.includes(key))
       .forEach(([key, value]) => {
-        if (key === "about") {
-          // מיפוי about → description
-          payload.description = value;
-        } else if (key === "description") {
-          payload.description = value;
-        } else if (key === "phone") {
-          payload.phone = value;
-        } else if (key === "name") {
-          payload.name = value;
-        }
-        // אם בעתיד נוסיף עוד שדות טקסט פשוטים – נטפל גם בהם כאן
+        payload[key] = value;
       });
 
     console.log("📤 שולח JSON ל־API:", payload);
@@ -134,13 +123,7 @@ const handleSave = async () => {
     alert("❌ שגיאה בשמירה");
   }
 };
-
-
-
-
-  
-      
-        
+                
   console.log("🔁 שינוי כפוי לבנייה מחדש");
   console.log("💥 שינוי כפוי כדי לנקות את Vercel");
 
@@ -157,6 +140,46 @@ const handleSave = async () => {
   const mainImagesInputRef = useRef(null);
 
   const [shopMode, setShopMode] = useState(null);
+
+  // ⬇️ הגדר כאן, ישר אחרי ה-refs:
+const handleMainImagesChange = async (e) => {
+  // קוצץ עד 5 קבצים
+  const files = Array.from(e.target.files).slice(0, 5);
+  if (!files.length) return;
+
+  // צור פריווי
+  const previewFiles = files.map(file => {
+    file.preview = URL.createObjectURL(file);
+    return file;
+  });
+
+  // עדכן מיידית state כדי שתראה את התצוגה
+  setBusinessDetails(prev => ({
+    ...prev,
+    mainImages: previewFiles,
+  }));
+
+  // שלח ל־API
+  const formData = new FormData();
+  previewFiles.forEach(f => formData.append("mainImages", f));
+  try {
+    const res = await API.put("/business/my/main-images", formData, {
+      withCredentials: true,
+    });
+    if (res.status === 200) {
+      setBusinessDetails(prev => ({
+        ...prev,
+        mainImages: res.data.mainImages
+      }));
+      // שחרר previews
+      previewFiles.forEach(f => URL.revokeObjectURL(f.preview));
+    }
+  } catch (err) {
+    console.error("Error uploading main images:", err);
+    alert("❌ שגיאה בהעלאת תמונות ראשיות");
+  }
+};
+
   
   const avgRating =
     Array.isArray(businessDetails.reviews) && businessDetails.reviews.length > 0
@@ -307,6 +330,7 @@ const handleSave = async () => {
   
   
   
+  
 
   const handleDeleteImage = (index) => {
     const updatedGallery = [...businessDetails.gallery];
@@ -384,82 +408,120 @@ const handleSave = async () => {
   return (
     <div className="build-wrapper">
       {currentTab === "ראשי" && (
-  <>
-    <div className="form-column">
-  <h2>🎨 עיצוב הכרטיס</h2>
+        <>
+          <div className="form-column">
+            <h2>🎨 עיצוב הכרטיס</h2>
+  
+            {/* שם */}
+            <label>שם העסק:</label>
+            <input
+              type="text"
+              name="name"
+              value={businessDetails.name}
+              onChange={handleInputChange}
+            />
+  
+            {/* תיאור */}
+            <label>תיאור:</label>
+            <textarea
+              name="description"
+              value={businessDetails.description}
+              onChange={handleInputChange}
+            />
+  
+            {/* טלפון */}
+            <label>מספר טלפון:</label>
+            <input
+              type="text"
+              name="phone"
+              value={businessDetails.phone}
+              onChange={handleInputChange}
+              placeholder="050-1234567"
+            />
+  
+            {/* לוגו */}
+            <label>לוגו:</label>
+            <input
+              type="file"
+              style={{ display: "none" }}
+              ref={logoInputRef}
+              onChange={handleLogoChange}
+              accept="image/*"
+            />
+            <button onClick={handleLogoClick} className="upload-logo-btn">
+              העלאת לוגו
+            </button>
+  
+            {/* סטורי */}
+            <label>סטורי:</label>
+            <input
+              type="file"
+              multiple
+              style={{ display: "none" }}
+              ref={storyInputRef}
+              onChange={handleStoryUpload}
+              accept="image/*,video/*"
+            />
+            <button
+              type="button"
+              onClick={() => storyInputRef.current.click()}
+              className="upload-story-btn"
+            >
+              העלאת סטורי
+            </button>
+  
+            {/* תמונות ראשיות */}
+            <label>תמונות לעמוד הראשי (עד 5):</label>
+            <input
+              type="file"
+              multiple
+              style={{ display: "none" }}
+              ref={mainImagesInputRef}
+              onChange={handleMainImagesChange}
+              accept="image/*"
+            />
+            <button
+              type="button"
+              onClick={() => mainImagesInputRef.current.click()}
+              className="upload-main-images-btn"
+            >
+              העלאת תמונות לעמוד הראשי
+            </button>
+  
+            {/* גלריה */}
+            <label>גלריה:</label>
+            <input
+              type="file"
+              multiple
+              style={{ display: "none" }}
+              ref={galleryInputRef}
+              onChange={handleGalleryChange}
+              accept="image/*"
+            />
+            <button
+              type="button"
+              onClick={() => galleryInputRef.current.click()}
+              className="upload-gallery-btn"
+            >
+              העלאת תמונות גלריה
+            </button>
 
-  <label>שם העסק:</label>
-  <input
-    type="text"
-    name="name"
-    value={businessDetails.name}
-    onChange={handleInputChange}
-  />
-
-  <label>תיאור:</label>
-  <textarea
-    name="description"
-    value={businessDetails.description}
-    onChange={handleInputChange}
-  />
-
-  <label>מספר טלפון:</label>
-  <input
-    type="text"
-    name="phone"
-    value={businessDetails.phone}
-    onChange={handleInputChange}
-    placeholder="050-1234567"
-  />
-
-<label>לוגו:</label>
-<input
-  type="file"
-  name="logo"
-  ref={logoInputRef}
-  onChange={handleLogoChange}
-  style={{ display: "none" }}
-/>
-<button onClick={handleLogoClick} className="upload-logo-btn">
-  העלאת לוגו
-</button>
-
-<label>סטורי:</label>
-<input type="file" multiple onChange={handleStoryUpload} />
-
-{/* תמונות ראשיות לטאב “ראשי” (עד 5) */}
-<label>תמונות לעמוד הראשי (עד 5):</label>
-<input
-  type="file"
-  name="mainImages"
-  multiple
-  style={{ display: "none" }}
-  ref={mainImagesInputRef}
-  onChange={handleMainImagesChange}
-/>
-<button
-  onClick={() => mainImagesInputRef.current.click()}
-  className="upload-main-images-btn"
->
-  העלאת תמונות לעמוד הראשי
-</button>
 
 
 
-<div className="gallery-preview">
+
+            <div className="gallery-preview">
   {businessDetails.gallery.map((item, i) => (
     <div
       key={i}
       className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
-      style={{ position: "relative" }} // חובה בשביל הצמדה לפנים
+      style={{ position: "relative" }}
     >
       <div className="gallery-item">
         <img
           src={
-            // אם זה URL מהשרת
             typeof item === "string"
               ? item
-              // אחרת אובייקט File עם preview
               : item.preview
           }
           alt={`gallery-${i}`}
@@ -468,70 +530,78 @@ const handleSave = async () => {
             objectFit:
               typeof item === "string"
                 ? businessDetails.galleryFits?.[item] || "cover"
-                : businessDetails.galleryFits?.[item.name] || "cover",
+                : businessDetails.galleryFits?.[item.name] || "cover"
           }}
         />
       </div>
 
+    {/* עריכה */}
     <button
-  className="edit-btn"
-  onClick={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setEditIndex(i);
-  }}
->
-  ✏️
-</button>
+        className="edit-btn"
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          setEditIndex(i);
+        }}
+      >
+        ✏️
+      </button>
 
-<button
-  className="delete-btn"
-  onClick={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleDeleteImage(i);
-  }}
->
-  🗑️
-</button>
+ {/* מחיקה */}
+ <button
+        className="delete-btn"
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleDeleteImage(i);
+        }}
+      >
+        🗑️
+      </button>
 
-{/* ✅ כאן מוצג הפופאפ מעל התמונה */}
-{editIndex === i && (
-  <div
-    className="fit-select-popup global"
-    style={{
-      position: "absolute",
-      bottom: "100%", // מעלה את הפופאפ
-      left: 0,
-      marginBottom: "8px",
-      zIndex: 10,
-    }}
-  >
+ {/* פופאפ לשינוי object-fit */}
+ {editIndex === i && (
+        <div
+          className="fit-select-popup global"
+          style={{
+            position: "absolute",
+            bottom: "100%",
+            left: 0,
+            marginBottom: "8px",
+            zIndex: 10,
+          }}
+        >
     <select
-      value={
-        typeof item === "string"
-          ? businessDetails.galleryFits[item] || "cover"
-          : businessDetails.galleryFits[item.name] || "cover"
-      }
-      onChange={(e) => handleFitChange(i, e.target.value)}
-    >
+            value={
+              typeof item === "string"
+                ? businessDetails.galleryFits[item] || "cover"
+                : businessDetails.galleryFits[item.name] || "cover"
+            }
+            onChange={e => handleFitChange(i, e.target.value)}
+          >
       <option value="cover">חתוך (cover)</option>
-      <option value="contain">מותאם (contain)</option>
-    </select>
-    <button className="confirm-btn" onClick={() => setEditIndex(null)}>
-      ✔ שמור
-    </button>
-  </div>
-)}
+            <option value="contain">מותאם (contain)</option>
+          </select>
+          <button
+            className="confirm-btn"
+            onClick={e => {
+              e.preventDefault();
+              setEditIndex(null);
+            }}
+          >
+            ✔ שמור
+          </button>
+        </div>
+      )}
+    </div>
+  ))}
 
-  </div>
-))}
 
-
+  {/* פלייסהולדרים ל־“+” */}
   {[...Array(5 - businessDetails.gallery.length)].map((_, i) => (
     <div
+      key={i}
       className="gallery-placeholder clickable"
-      key={`placeholder-${i}`}
       onClick={() => galleryInputRef.current.click()}
     >
       +
@@ -539,27 +609,28 @@ const handleSave = async () => {
   ))}
 </div>
 
+{/* כפתורי שמירה וצפייה */}
 <button onClick={handleSave} className="save-button">
-        💾 שמור
-      </button>
+  💾 שמור
+</button>
 
-      {showViewProfile && (
-        <button
-          onClick={() => navigate(`/business/${currentUser.businessId}`)}
-          className="view-profile-button"
-          style={{
-            marginTop: "1rem",
-            padding: "8px 16px",
-            background: "#00aaff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          👀 צפה בפרופיל
-        </button>
-      )}
+{showViewProfile && (
+  <button
+    onClick={() => navigate(`/business/${currentUser.businessId}`)}
+    className="view-profile-button"
+    style={{
+      marginTop: "1rem",
+      padding: "8px 16px",
+      background: "#00aaff",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+    }}
+  >
+    👀 צפה בפרופיל
+  </button>
+)}
 
     </div>
 
