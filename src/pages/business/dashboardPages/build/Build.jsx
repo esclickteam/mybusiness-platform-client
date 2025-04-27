@@ -35,7 +35,7 @@ export default function Build() {
     logo: null,
     story: [],
     gallery: [],
-    services: null, // מצב ראשוני שאין שירות נבחר
+    services: null,      // נשאר null עד שהמשתמש יבחר
     galleryFits: {},
     galleryTabImages: [],
     galleryTabFits: {},
@@ -67,18 +67,17 @@ export default function Build() {
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  const handleSave               = async () => { /* … שלך פה */ };
-  const handleMainImagesChange   = async e   => { /* … שלך פה */ };
+  const handleSave               = async () => { /* … */ };
+  const handleMainImagesChange   = async e   => { /* … */ };
   const handleLogoClick          = ()          => logoInputRef.current?.click();
-  const handleLogoChange         = async e   => { /* … שלך פה */ };
-  const handleStoryUpload        = e           => { /* … שלך פה */ };
-  const handleGalleryChange      = async e   => { /* … שלך פה */ };
-  const handleDeleteImage        = i           => { /* … שלך פה */ };
-  const handleFitChange          = (i, fit)    => { /* … שלך פה */ };
+  const handleLogoChange         = async e   => { /* … */ };
+  const handleStoryUpload        = e           => { /* … */ };
+  const handleGalleryChange      = async e   => { /* … */ };
+  const handleDeleteImage        = i           => { /* … */ };
+  const handleFitChange          = (i, fit)    => { /* … */ };
   const handleConfirmEdit        = ()          => console.log("שמירת הגלריה");
 
   const renderTopBar = () => {
-    // ממוצע דירוג:
     const avgRating =
       businessDetails.reviews.length > 0
         ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
@@ -86,7 +85,7 @@ export default function Build() {
 
     return (
       <>
-        {/* לוגו ועיגול */}
+        {/* לוגו */}
         <div className="logo-circle" onClick={handleLogoClick}>
           {typeof businessDetails.logo === "string"
             ? <img src={businessDetails.logo} className="logo-img" />
@@ -96,7 +95,7 @@ export default function Build() {
           }
         </div>
 
-        {/* שם העסק ודירוג */}
+        {/* שם ודירוג */}
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
@@ -107,6 +106,7 @@ export default function Build() {
 
         <hr className="divider" />
 
+        {/* טאבים עליונים */}
         <div className="tabs">
           {TABS.map(tab => (
             <button
@@ -164,8 +164,6 @@ export default function Build() {
 
       {currentTab === "חנות / יומן" && (
         <ShopSection
-          shopMode={businessDetails.services}
-          setShopMode={mode => setBusinessDetails(prev => ({ ...prev, services: mode }))} // עדכון סטייט
           setBusinessDetails={setBusinessDetails}
           handleSave={handleSave}
           renderTopBar={renderTopBar}

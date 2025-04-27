@@ -5,16 +5,22 @@ import '../../build/Build.css';
 import './ShopAndCalendar.css';
 
 import AppointmentsMain from './Appointments/AppointmentsMain';
-import ShopTab         from './Appointments/ShopTab';
-import ShopPreview     from './Appointments/ShopPreview';
-import PaymentSection  from './Appointments/PaymentSection';
+import CalendarSetup    from './Appointments/CalendarSetup';
+import ShopTab          from './Appointments/ShopTab';
+import ShopPreview      from './Appointments/ShopPreview';
+import PaymentSection   from './Appointments/PaymentSection';
 import { useBusinessServices } from '../../../../../context/BusinessServicesContext';
 
-const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusinessDetails }) => {
+const ShopAndCalendar = ({
+  isPreview = false,
+  shopMode,
+  setShopMode,
+  setBusinessDetails
+}) => {
   const { services, setServices, products } = useBusinessServices();
 
-  // פה כבר לא עושים ברירת-מחדל ל-'store'
-  const mode = shopMode;           
+  // mode נשאר null עד לחיצה על חנות/יומן, אחר כך 'store' / 'appointments' / 'calendar'
+  const mode = shopMode;
   const setMode = setShopMode;
 
   const [cart, setCart] = useState([]);
@@ -24,7 +30,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
   const [showPayment, setShowPayment] = useState(false);
   const [demoHours, setDemoHours] = useState({});
 
-  // סנכרון עם ה־Build
+  // סנכרון עם Build: שמירת services ו־products
   useEffect(() => {
     if (!isPreview && setBusinessDetails) {
       setBusinessDetails(prev => ({
@@ -35,7 +41,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
     }
   }, [services, products, isPreview, setBusinessDetails]);
 
-  // טעינת שעות לדמו
+  // טעינת שעות לדמו ב־preview
   useEffect(() => {
     if (isPreview) {
       const saved = localStorage.getItem("demoWorkHours");
@@ -49,7 +55,7 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
     }
   }, [isPreview]);
 
-  // אם עדיין לא נבחר מצב – הצג את מסך הבחירה
+  // 1) מסך בחירה ראשוני
   if (!isPreview && !mode) {
     return (
       <div className="mode-select-wrapper">
@@ -79,17 +85,14 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      {/* כפתור חזרה לבחירת שירות */}
+      {/* 2) כפתור חזרה */}
       {!isPreview && (
-        <button
-          className="back-button"
-          onClick={() => setMode(null)}
-        >
+        <button className="back-button" onClick={() => setMode(null)}>
           🔙 חזרה לבחירת שירות
         </button>
       )}
 
-      {/* FORM (לא Preview) */}
+      {/* 3) FORM – לא Preview */}
       {!isPreview && mode === 'appointments' && (
         <AppointmentsMain
           isPreview={false}
@@ -98,11 +101,17 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
           onNext={() => setMode('calendar')}
         />
       )}
+      {!isPreview && mode === 'calendar' && (
+        <CalendarSetup
+          services={services}
+          setServices={setServices}
+        />
+      )}
       {!isPreview && mode === 'store' && (
         <ShopTab isPreview={false} />
       )}
 
-      {/* PREVIEW */}
+      {/* 4) PREVIEW */}
       {isPreview && mode === 'store' && !showPayment && (
         <ShopPreview
           products={products}
