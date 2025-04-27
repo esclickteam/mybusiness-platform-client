@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
@@ -6,8 +5,6 @@ import MainTab from "../MainTab.jsx";
 export default function MainSection({
   businessDetails,
   handleInputChange,
-  handleLogoClick,
-  handleLogoChange,
   handleStoryUpload,
   handleMainImagesChange,
   handleSave,
@@ -15,16 +12,15 @@ export default function MainSection({
   navigate,
   currentUser,
   renderTopBar,
-  // אלה הפרופס שהעברנו מ-Build.jsx
   logoInputRef,
   storyInputRef,
   mainImagesInputRef
 }) {
   const mainImages = businessDetails.mainImages || [];
+  const story      = businessDetails.story      || [];
 
   return (
     <>
-      {/* ==== צד שמאל: הטופס ==== */}
       <div className="form-column">
         <h2>🎨 עיצוב הכרטיס</h2>
 
@@ -51,54 +47,75 @@ export default function MainSection({
           onChange={handleInputChange}
         />
 
-        {/* ==== העלאת לוגו ==== */}
+        {/* Logo */}
         <label>לוגו:</label>
         <input
           type="file"
+          accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
-          onChange={handleLogoChange}
-          accept="image/*"
+          onChange={e => {
+            /* handled in topBar input */
+          }}
         />
         <button onClick={() => logoInputRef.current?.click()}>
           העלאת לוגו
         </button>
 
-        {/* ==== העלאת סטורי ==== */}
+        {/* Story */}
         <label>סטורי:</label>
         <input
           type="file"
           multiple
+          accept="image/*,video/*"
           style={{ display: "none" }}
           ref={storyInputRef}
           onChange={handleStoryUpload}
-          accept="image/*,video/*"
         />
         <button onClick={() => storyInputRef.current?.click()}>
           העלאת סטורי
         </button>
 
-        {/* ==== העלאת תמונות ראשיות ==== */}
+        <div className="gallery-preview">
+          {story.map((item,i) => (
+            <div key={i} className="gallery-item-wrapper">
+              {item.preview.match(/\.(mp4|webm)$/) ? (
+                <video
+                  src={item.preview}
+                  controls
+                  className="gallery-img"
+                />
+              ) : (
+                <img
+                  src={item.preview}
+                  alt={`story-${i}`}
+                  className="gallery-img"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Main Images */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
           multiple
+          accept="image/*"
           style={{ display: "none" }}
           ref={mainImagesInputRef}
           onChange={handleMainImagesChange}
-          accept="image/*"
         />
         <div className="gallery-preview">
-          {mainImages.map((img, i) => (
+          {mainImages.map((img,i) => (
             <div key={i} className="gallery-item-wrapper">
               <img
-                src={img.preview || img}
+                src={img.preview}
                 alt={`main-${i}`}
                 className="gallery-img"
               />
             </div>
           ))}
-
           {Array.from({ length: 5 - mainImages.length }).map((_, i) => (
             <div
               key={i}
@@ -110,20 +127,21 @@ export default function MainSection({
           ))}
         </div>
 
-        {/* ==== כפתורי פעולה ==== */}
+        {/* Actions */}
         <button onClick={handleSave} className="save-btn">
           💾 שמור
         </button>
         {showViewProfile && (
           <button
             onClick={() => navigate(`/business/${currentUser.businessId}`)}
+            className="save-btn"
+            style={{ marginTop: "0.5rem" }}
           >
             👀 צפה בפרופיל
           </button>
         )}
       </div>
 
-      {/* ==== צד ימין: תצוגה (Preview) ==== */}
       <div className="preview-column">
         {renderTopBar()}
         <MainTab

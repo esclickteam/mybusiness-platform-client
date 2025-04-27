@@ -25,9 +25,15 @@ export default function BusinessProfileView() {
     setLoading(true);
     API.get(`/business/${businessId}`)
       .then(res => {
-        // הנתונים שמגיעים מה־API
         const data = res.data.business || res.data;
-        setProfileData(data);
+        // עטיפת URL-ים ל־{ preview }
+        const wrappedMain   = (data.mainImages || []).map(url => ({ preview: url }));
+        const wrappedStory  = (data.story      || []).map(url => ({ preview: url }));
+        setProfileData({
+          ...data,
+          mainImages: wrappedMain,
+          story:      wrappedStory
+        });
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -36,7 +42,6 @@ export default function BusinessProfileView() {
   if (loading) return <div>טוען…</div>;
   if (!profileData) return <div>העסק לא נמצא</div>;
 
-  // בחרו את השדות
   const {
     name,
     logo,
@@ -45,11 +50,11 @@ export default function BusinessProfileView() {
     gallery = [],
     reviews = [],
     faqs = [],
-    mainImages,   // השדה החדש
-    story         // fallback
+    mainImages,
+    story
   } = profileData;
 
-  // אם אין שדה mainImages, נשתמש ב־story
+  // אם אין mainImages, נשתמש ב־story
   const primaryImages = Array.isArray(mainImages) && mainImages.length > 0
     ? mainImages
     : Array.isArray(story)
@@ -80,7 +85,6 @@ export default function BusinessProfileView() {
           )}
 
           <h1 className="business-name">{name}</h1>
-
           <hr className="profile-divider" />
 
           {/* ==== שורת הטאבים ==== */}
@@ -118,10 +122,7 @@ export default function BusinessProfileView() {
                 {primaryImages.length > 0 && (
                   <div className="gallery-preview no-actions">
                     {primaryImages.map((item, i) => {
-                      // item יכול להיות מחרוזת URL או אובייקט עם preview/url
-                      const src = typeof item === "string"
-                        ? item
-                        : item.url || item.preview;
+                      const src = item.preview || item.url || item;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
@@ -143,10 +144,7 @@ export default function BusinessProfileView() {
                 {gallery.length > 0 ? (
                   <div className="gallery-preview no-actions">
                     {gallery.map((item, i) => {
-                      const src =
-                        typeof item === "string"
-                          ? item
-                          : item.url || item.preview;
+                      const src = item.preview || item.url || item;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
@@ -213,14 +211,14 @@ export default function BusinessProfileView() {
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab">
                 <h3>💬 שלח הודעה לעסק</h3>
-                {/* … קלטים וכפתור שליחה … */}
+                {/* … */}
               </div>
             )}
 
             {/* ====== חנות / יומן ====== */}
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder">
-                {/* … תוכן החנות / יומן … */}
+                {/* … */}
               </div>
             )}
           </div>
