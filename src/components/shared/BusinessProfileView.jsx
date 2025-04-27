@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
-import "./BusinessProfileView.css";
+import "../../../../components/shared/BusinessProfileView.css"; // עמוד עריכת העסק
 
 const TABS = [
   "ראשי",
@@ -16,7 +16,7 @@ const TABS = [
 
 export default function BusinessProfileView() {
   const { businessId } = useParams();
-  const [profileData, setProfileData] = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
@@ -24,28 +24,30 @@ export default function BusinessProfileView() {
     setLoading(true);
     API.get(`/business/${businessId}`)
       .then(res => {
-        const data = res.data.business || res.data;
-        setProfileData({
-          ...data,
-          gallery: Array.isArray(data.gallery) ? data.gallery : []
+        const biz = res.data.business || res.data;
+        // ודאו שכל השדות קיימים
+        setData({
+          ...biz,
+          mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
+          story:      Array.isArray(biz.story)      ? biz.story      : [],
+          gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : []
         });
       })
-      .catch(err => console.error("❌ Fetch error:", err))
+      .catch(err => console.error("❌ fetch business for edit:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
 
   if (loading) return <div>טוען…</div>;
-  if (!profileData) return <div>העסק לא נמצא</div>;
+  if (!data) return <div>העסק לא נמצא</div>;
 
-  const {
-    name,
-    logo,
-    description = "",
-    phone = "",
-    gallery = [],
-    reviews = [],
-    faqs = []
-  } = profileData;
+  const { name, logo, description = "", phone = "", mainImages, story, gallery, reviews = [], faqs = [] } = data;
+
+  // תמונות ראשיות: קודם mainImages, אחר כך story, ואז gallery
+  const primary =
+    mainImages.length > 0 ? mainImages.map(u => ({ url: u })) :
+    story.length      > 0 ? story.map(u => ({ url: u })) :
+    gallery.length    > 0 ? gallery.map(u => ({ url: u })) :
+    [];
 
   return (
     <div className="profile-page">
@@ -53,12 +55,12 @@ export default function BusinessProfileView() {
         <div className="profile-inner">
 
           <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
-            ✏️ ערוך עמוד עסקי
+            ✏️ ערוך פרטי העסק
           </Link>
 
           {logo && (
             <div className="logo-wrapper">
-              <img src={logo} alt={`${name} logo`} className="profile-logo" />
+              <img src={logo} alt="logo" className="profile-logo" />
             </div>
           )}
 
@@ -67,43 +69,24 @@ export default function BusinessProfileView() {
 
           <div className="profile-tabs">
             {TABS.map(tab => (
-              <button
-                key={tab}
-                className={`tab ${currentTab === tab ? "active" : ""}`}
-                onClick={() => setCurrentTab(tab)}
-              >
-                {tab}
+              <button key={tab}
+                className={`tab ${tab===currentTab?"active":""}`}
+                onClick={()=>setCurrentTab(tab)}>{tab}
               </button>
             ))}
           </div>
 
           <div className="tab-content">
-
+            {/* ראשי */}
             {currentTab === "ראשי" && (
               <>
-                {description && (
-                  <div className="about-section">
-                    <p className="about-snippet">
-                      {description.length > 200 ? description.slice(0, 200) + "…" : description}
-                    </p>
-                  </div>
-                )}
-
-                {phone && (
-                  <div className="phone-section">
-                    <strong>טלפון:</strong> {phone}
-                  </div>
-                )}
-
-                {gallery.length > 0 && (
+                {description && <div className="about-section"><p>{description}</p></div>}
+                {phone       && <div className="phone-section"><strong>טלפון:</strong> {phone}</div>}
+                {primary.length>0 && (
                   <div className="gallery-preview no-actions">
-                    {gallery.slice(0, 5).map((url, i) => (
+                    {primary.map((img,i)=>(
                       <div key={i} className="gallery-item-wrapper">
-                        <img
-                          src={url}
-                          alt={`main-img-${i}`}
-                          className="gallery-img"
-                        />
+                        <img src={img.url} alt={`img-${i}`} className="gallery-img" />
                       </div>
                     ))}
                   </div>
@@ -111,69 +94,53 @@ export default function BusinessProfileView() {
               </>
             )}
 
+            {/* גלריה */}
             {currentTab === "גלריה" && (
               <>
-                {gallery.length > 0 ? (
+                {gallery.length>0 ? (
                   <div className="gallery-preview no-actions">
-                    {gallery.map((url, i) => (
+                    {gallery.map((url,i)=>(
                       <div key={i} className="gallery-item-wrapper">
-                        <img
-                          src={url}
-                          alt={`gallery-${i}`}
-                          className="gallery-img"
-                        />
+                        <img src={url} alt={`gal-${i}`} className="gallery-img" />
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <p>אין תמונות בגלריה</p>
-                )}
+                ) : <p>אין תמונות בגלריה</p>}
               </>
             )}
 
+            {/* ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {reviews.length > 0 ? (
-                  reviews.map((r, i) => (
-                    <div key={i} className="review-card improved">
-                      <div className="review-header">
-                        <strong className="review-user">{r.user}</strong>
-                        <span className="star-text">★ {r.rating} / 5</span>
-                      </div>
-                      <p className="review-text">{r.comment || r.text || "אין תוכן"}</p>
+                {reviews.length>0 ? reviews.map((r,i)=>(
+                  <div key={i} className="review-card improved">
+                    <div className="review-header">
+                      <strong>{r.user}</strong><span>★ {r.rating}/5</span>
                     </div>
-                  ))
-                ) : (
-                  <p>אין ביקורות להצגה.</p>
-                )}
+                    <p>{r.comment||r.text}</p>
+                  </div>
+                )) : <p>אין ביקורות</p>}
               </div>
             )}
 
+            {/* שאלות ותשובות */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
-                {faqs.length > 0 ? (
-                  faqs.map((f, i) => (
-                    <div key={i} className="faq-item">
-                      <strong>{f.question}</strong>
-                      <p>{f.answer}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p>אין שאלות להצגה.</p>
-                )}
+                {faqs.length>0 ? faqs.map((f,i)=>(
+                  <div key={i} className="faq-item"><strong>{f.question}</strong><p>{f.answer}</p></div>
+                )) : <p>אין שאלות</p>}
               </div>
             )}
 
+            {/* צ'אט עם העסק */}
             {currentTab === "צ'אט עם העסק" && (
-              <div className="chat-tab">
-                <h3>💬 שלח הודעה לעסק</h3>
-              </div>
+              <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
 
+            {/* חנות / יומן */}
             {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder"></div>
+              <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}
-
           </div>
         </div>
       </div>
