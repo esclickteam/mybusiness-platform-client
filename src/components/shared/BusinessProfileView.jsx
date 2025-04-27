@@ -1,9 +1,7 @@
-// src/pages/business/dashboardPages/BusinessProfileView.jsx
-
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
-import "./BusinessProfileView.css"; // עמוד עריכת העסק
+import "./BusinessProfileView.css";
 
 const TABS = [
   "ראשי",
@@ -25,7 +23,8 @@ export default function BusinessProfileView() {
     API.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-        // ודאו שכל השדות קיימים
+        console.log("📦 נתוני העסק מהשרת:", biz); // ← בדיקת נתונים מהשרת
+
         setData({
           ...biz,
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
@@ -48,6 +47,10 @@ export default function BusinessProfileView() {
     story.length      > 0 ? story.map(u => ({ url: u })) :
     gallery.length    > 0 ? gallery.map(u => ({ url: u })) :
     [];
+
+  // הדפסות לבדיקה
+  console.log("🖼️ mainImages:", mainImages);
+  console.log("🖼️ primary (לתצוגה):", primary);
 
   return (
     <div className="profile-page">
@@ -84,7 +87,7 @@ export default function BusinessProfileView() {
                 {phone       && <div className="phone-section"><strong>טלפון:</strong> {phone}</div>}
                 {primary.length>0 && (
                   <div className="gallery-preview no-actions">
-                    {primary.map((img,i)=>(
+                    {primary.map((img,i)=>( 
                       <div key={i} className="gallery-item-wrapper">
                         <img src={img.url} alt={`img-${i}`} className="gallery-img" />
                       </div>
@@ -99,7 +102,7 @@ export default function BusinessProfileView() {
               <>
                 {gallery.length>0 ? (
                   <div className="gallery-preview no-actions">
-                    {gallery.map((url,i)=>(
+                    {gallery.map((url,i)=>( 
                       <div key={i} className="gallery-item-wrapper">
                         <img src={url} alt={`gal-${i}`} className="gallery-img" />
                       </div>
@@ -112,7 +115,7 @@ export default function BusinessProfileView() {
             {/* ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {reviews.length>0 ? reviews.map((r,i)=>(
+                {reviews.length>0 ? reviews.map((r,i)=>( 
                   <div key={i} className="review-card improved">
                     <div className="review-header">
                       <strong>{r.user}</strong><span>★ {r.rating}/5</span>
@@ -126,7 +129,7 @@ export default function BusinessProfileView() {
             {/* שאלות ותשובות */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
-                {faqs.length>0 ? faqs.map((f,i)=>(
+                {faqs.length>0 ? faqs.map((f,i)=>( 
                   <div key={i} className="faq-item"><strong>{f.question}</strong><p>{f.answer}</p></div>
                 )) : <p>אין שאלות</p>}
               </div>
