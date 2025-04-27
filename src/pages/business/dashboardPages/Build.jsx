@@ -39,6 +39,7 @@ const ALLOWED_KEYS = [
   "description",  // just in case
   "phone",
   "logo",
+  "mainImages",   // תמונות לעמוד הראשי
   "gallery",
   "story",
   "services",
@@ -257,16 +258,16 @@ const handleSave = async () => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
   
-    // צרו preview לכל קובץ
+    // הכנת ה־preview לכל קובץ
     const previewFiles = files.map(file => {
       file.preview = URL.createObjectURL(file);
       return file;
     });
   
-    // עדכנו state להצגת התצוגה
+    // עדכנו state להצגת התצוגה (ללא הגבלה של 5)
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: [...prev.gallery, ...previewFiles].slice(0, 5),
+      gallery: [...prev.gallery, ...previewFiles],
     }));
   
     // בנו את ה-FormData עם המפתח "gallery"
@@ -278,11 +279,11 @@ const handleSave = async () => {
     try {
       // שלחו את הבקשה ללא Content-Type ידני
       const res = await API.put("/business/my/gallery", formData, {
-        withCredentials: true,  // רק אם אתם שולחים cookies
+        withCredentials: true,
       });
   
       if (res.status === 200) {
-        // עדכנו את ה-gallery ל-URLs מהשרת
+        // העדכון של ה-gallery מתבצע לפי מה שהשרת מחזיר
         setBusinessDetails(prev => ({
           ...prev,
           gallery: res.data.gallery,
@@ -298,6 +299,7 @@ const handleSave = async () => {
       alert("❌ שגיאה בהעלאת הגלריה. נסה שנית מאוחר יותר.");
     }
   };
+  
   
   
   
@@ -408,32 +410,38 @@ const handleSave = async () => {
     placeholder="050-1234567"
   />
 
-  <label>לוגו:</label>
-  <input
+<label>לוגו:</label>
+<input
   type="file"
   name="logo"
   ref={logoInputRef}
   onChange={handleLogoChange}
   style={{ display: "none" }}
 />
+<button onClick={handleLogoClick} className="upload-logo-btn">
+  העלאת לוגו
+</button>
 
-  <button onClick={handleLogoClick} className="upload-logo-btn">
-    העלאת לוגו
-  </button>
+<label>סטורי:</label>
+<input type="file" multiple onChange={handleStoryUpload} />
 
-  <label>סטורי:</label>
-  <input type="file" multiple onChange={handleStoryUpload} />
-
-      {/* גלריה ראשית */}
+{/* תמונות ראשיות לטאב “ראשי” (עד 5) */}
 <label>תמונות לעמוד הראשי (עד 5):</label>
 <input
   type="file"
-  name="gallery"
+  name="mainImages"
   multiple
   style={{ display: "none" }}
-  ref={galleryInputRef}
-  onChange={handleGalleryChange}
+  ref={mainImagesInputRef}
+  onChange={handleMainImagesChange}
 />
+<button
+  onClick={() => mainImagesInputRef.current.click()}
+  className="upload-main-images-btn"
+>
+  העלאת תמונות לעמוד הראשי
+</button>
+
 
 
 <div className="gallery-preview">
