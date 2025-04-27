@@ -34,10 +34,10 @@ export default function Build() {
     name: "",
     description: "",
     phone: "",
-    logo: null,         // { file, preview } or string URL
+    logo: null,      // { file, preview } or string URL
     story: [],
     gallery: [],
-    mainImages: [],     // array of { file?, preview }
+    mainImages: [],  // array of { file?, preview }
     services: null,
     galleryFits: {},
     galleryTabImages: [],
@@ -60,12 +60,12 @@ export default function Build() {
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
-          // wrap existing mainImages URLs into { preview }
-          const wrappedMainImages = (data.mainImages || []).map(url => ({ preview: url }));
+          // wrap existing URLs into { preview }
+          const wrapped = (data.mainImages || []).map(url => ({ preview: url }));
           setBusinessDetails(prev => ({
             ...prev,
             ...data,
-            mainImages: wrappedMainImages
+            mainImages: wrapped
           }));
         }
       })
@@ -87,23 +87,22 @@ export default function Build() {
     if (!file) return;
     e.target.value = null;
 
-    // 1) Immediate preview
+    // immediate preview
     const previewUrl = URL.createObjectURL(file);
     setBusinessDetails(prev => ({
       ...prev,
       logo: { file, preview: previewUrl }
     }));
 
-    // 2) Upload to server
     try {
       const formData = new FormData();
       formData.append("logo", file);
       const res = await API.put("/business/my/logo", formData);
       if (res.status === 200) {
-        // server returns the URL string
+        // server returns a URL string
         setBusinessDetails(prev => ({
           ...prev,
-          logo: res.data.logo  // now string URL
+          logo: res.data.logo
         }));
       }
     } catch (err) {
@@ -121,40 +120,45 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
 
-    // Build previews for new files
+    // create previews for the new files
     const newPreviews = files.map(file => ({
       file,
       preview: URL.createObjectURL(file)
     }));
 
-    // Merge with existing previews/URLs
+    // merge with existing URLs/previews, cap at 5
     setBusinessDetails(prev => {
-      const existing = prev.mainImages || [];
-      // ensure all existing are objects with preview
-      const existingObjs = existing.map(img =>
+      const existing = prev.mainImages.map(img =>
         typeof img === "string" ? { preview: img } : img
       );
-      const combined = [...existingObjs, ...newPreviews].slice(0, 5);
+      const combined = [...newPreviews, ...existing].slice(0, 5);
       return { ...prev, mainImages: combined };
     });
 
-    // Upload files to server
+    // upload only the new files
     try {
       const formData = new FormData();
       files.forEach(file => formData.append("mainImages", file));
       const res = await API.put("/business/my/main-images", formData);
       if (res.status === 200) {
-        // server returns array of URLs
-        const serverPreviews = res.data.mainImages.map(url => ({ preview: url }));
-        setBusinessDetails(prev => ({
-          ...prev,
-          mainImages: serverPreviews
-        }));
+        const serverUrls = res.data.mainImages; // array of URL strings
+        // replace only the file-based previews with server URLs
+        setBusinessDetails(prev => {
+          let idx = 0;
+          const updated = prev.mainImages.map(img => {
+            if (img.file) {
+              const url = serverUrls[idx++];
+              return { preview: url };
+            }
+            return img;
+          });
+          return { ...prev, mainImages: updated };
+        });
       }
     } catch (err) {
       console.error("❌ Failed to upload main images:", err);
     } finally {
-      // revoke only object URLs we created
+      // revoke only the object URLs we created
       newPreviews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
@@ -173,7 +177,6 @@ export default function Build() {
 
     return (
       <>
-        {/* Logo */}
         <div className="logo-circle" onClick={handleLogoClick}>
           {typeof businessDetails.logo === "string" ? (
             <img src={businessDetails.logo} className="logo-img" />
@@ -184,7 +187,6 @@ export default function Build() {
           )}
         </div>
 
-        {/* Name & rating */}
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
@@ -195,7 +197,6 @@ export default function Build() {
 
         <hr className="divider" />
 
-        {/* Tabs */}
         <div className="tabs">
           {TABS.map(tab => (
             <button
