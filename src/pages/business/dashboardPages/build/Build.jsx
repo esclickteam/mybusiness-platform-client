@@ -8,7 +8,7 @@ import "./Build.css";
 // Section components
 import MainSection    from "../buildTabs/buildSections/MainSection";
 import GallerySection from "../buildTabs/buildSections/GallerySection";
-import ReviewsSection from "../buildTabs/buildSections/ReviewsSection";
+import ReviewsSection from "../buildTabs/buildTabs/buildSections/ReviewsSection";
 import ShopSection    from "../buildTabs/buildSections/ShopSection";
 import ChatSection    from "../buildTabs/buildSections/ChatSection";
 import FaqSection     from "../buildTabs/buildSections/FaqSection";
@@ -28,7 +28,7 @@ export default function Build() {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [currentTab, setCurrentTab] = useState("ראשי");
+  const [currentTab, setCurrentTab]       = useState("ראשי");
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
     name: "",
@@ -50,7 +50,7 @@ export default function Build() {
     messages: []
   });
 
-  // create refs once and pass down to MainSection
+  // refs for file inputs
   const logoInputRef       = useRef();
   const storyInputRef      = useRef();
   const mainImagesInputRef = useRef();
@@ -80,76 +80,98 @@ export default function Build() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 1. מיידית Preview
+    // immediate preview
     const previewUrl = URL.createObjectURL(file);
     setBusinessDetails(prev => ({
       ...prev,
       logo: { file, preview: previewUrl }
     }));
 
-    // 2. שליחה לשרת
+    e.target.value = null;
+
+    // upload to server
     try {
       const formData = new FormData();
       formData.append("logo", file);
       const res = await API.put("/business/my/logo", formData);
       if (res.status === 200) {
-        // עדכון ל־URL שהשרת החזיר
         setBusinessDetails(prev => ({
           ...prev,
           logo: res.data.logo
         }));
-        URL.revokeObjectURL(previewUrl);
       }
     } catch (err) {
       console.error("❌ Failed to upload logo:", err);
+    } finally {
+      URL.revokeObjectURL(previewUrl);
     }
   };
 
-  const handleStoryUpload = e => {
+  const handleStoryUpload = () =>
     storyInputRef.current?.click();
-  };
 
   const handleMainImagesChange = async e => {
     const files = Array.from(e.target.files).slice(0, 5);
     if (!files.length) return;
 
-    // 1. מיידית Preview
-    const previews = files.map(file => ({
+    // build lists of files to upload
+    const existingFiles = businessDetails.mainImages
+      .filter(img => img.file instanceof File)
+      .map(img => img.file);
+
+    // take up to remaining slots
+    const slotsLeft = 5 - existingFiles.length;
+    const newFiles = files.slice(0, slotsLeft);
+
+    // prepare previews
+    const newPreviews = newFiles.map(file => ({
       file,
       preview: URL.createObjectURL(file)
     }));
+
+    // update state immediately
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: previews
+      mainImages: [
+        ...prev.mainImages,
+        ...newPreviews
+      ].slice(0, 5)
     }));
 
-    // 2. שליחה לשרת
+    e.target.value = null;
+
+    // upload all files
     try {
       const formData = new FormData();
-      files.forEach(file => formData.append("mainImages", file));
+      [...existingFiles, ...newFiles].forEach(file =>
+        formData.append("mainImages", file)
+      );
       const res = await API.put("/business/my/main-images", formData);
       if (res.status === 200) {
-        // עדכון למערך URL שהשרת החזיר
+        // server returns array of URLs
         setBusinessDetails(prev => ({
           ...prev,
           mainImages: res.data.mainImages
         }));
-        previews.forEach(p => URL.revokeObjectURL(p.preview));
       }
     } catch (err) {
       console.error("❌ Failed to upload main images:", err);
+    } finally {
+      // revoke only the object URLs we created
+      newPreviews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
 
-  const handleGalleryChange   = async e => { /* … */ };
-  const handleDeleteImage     = i     => { /* … */ };
-  const handleFitChange       = (i, f) => { /* … */ };
-  const handleConfirmEdit     = ()    => console.log("שמירת הגלריה");
+  const handleGalleryChange = async e => { /* … */ };
+  const handleDeleteImage   = i     => { /* … */ };
+  const handleFitChange     = (i,f) => { /* … */ };
+  const handleConfirmEdit   = ()    => console.log("שמירת הגלריה");
 
   const renderTopBar = () => {
     const avgRating =
       businessDetails.reviews.length > 0
-        ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
+        ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) /
+          businessDetails.reviews.length
         : 0;
 
     return (
