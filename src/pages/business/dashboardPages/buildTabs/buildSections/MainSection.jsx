@@ -1,3 +1,5 @@
+// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
+
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
@@ -17,7 +19,7 @@ export default function MainSection({
   mainImagesInputRef
 }) {
   const mainImages = businessDetails.mainImages || [];
-  const story      = businessDetails.story      || [];
+  const story      = businessDetails.story || [];
 
   return (
     <>
@@ -54,9 +56,7 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
-          onChange={e => {
-            /* handled in topBar input */
-          }}
+          onChange={() => {/* handled in top bar */}}
         />
         <button onClick={() => logoInputRef.current?.click()}>
           העלאת לוגו
@@ -77,20 +77,12 @@ export default function MainSection({
         </button>
 
         <div className="gallery-preview">
-          {story.map((item,i) => (
+          {story.map((item, i) => (
             <div key={i} className="gallery-item-wrapper">
-              {item.preview.match(/\.(mp4|webm)$/) ? (
-                <video
-                  src={item.preview}
-                  controls
-                  className="gallery-img"
-                />
+              {item.preview.match(/\.(mp4|webm)$/i) ? (
+                <video src={item.preview} controls className="gallery-img" />
               ) : (
-                <img
-                  src={item.preview}
-                  alt={`story-${i}`}
-                  className="gallery-img"
-                />
+                <img src={item.preview} alt={`story-${i}`} className="gallery-img" />
               )}
             </div>
           ))}
@@ -107,13 +99,9 @@ export default function MainSection({
           onChange={handleMainImagesChange}
         />
         <div className="gallery-preview">
-          {mainImages.map((img,i) => (
+          {mainImages.map((img, i) => (
             <div key={i} className="gallery-item-wrapper">
-              <img
-                src={img.preview}
-                alt={`main-${i}`}
-                className="gallery-img"
-              />
+              <img src={img.preview} alt={`main-${i}`} className="gallery-img" />
             </div>
           ))}
           {Array.from({ length: 5 - mainImages.length }).map((_, i) => (

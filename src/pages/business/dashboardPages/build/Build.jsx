@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
+import "../../../../components/shared/BusinessProfileView.css";
 
 // Section components
 import MainSection    from "../buildTabs/buildSections/MainSection";
@@ -42,13 +43,11 @@ export default function Build() {
     faqs:        [],
   });
 
-  // refs
   const logoInputRef       = useRef();
   const storyInputRef      = useRef();
   const mainImagesInputRef = useRef();
   const galleryInputRef    = useRef();
 
-  // initial load
   useEffect(() => {
     API.get("/business/my")
       .then(res => {
@@ -65,7 +64,6 @@ export default function Build() {
       .catch(console.error);
   }, []);
 
-  // handlers
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
@@ -82,7 +80,6 @@ export default function Build() {
     }
   };
 
-  // logo upload
   const handleLogoClick = () => logoInputRef.current?.click();
   const handleLogoChange = async e => {
     const file = e.target.files?.[0];
@@ -104,7 +101,6 @@ export default function Build() {
     }
   };
 
-  // story upload
   const handleStoryUpload = async e => {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
@@ -126,7 +122,6 @@ export default function Build() {
     }
   };
 
-  // main images upload
   const handleMainImagesChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
@@ -151,7 +146,6 @@ export default function Build() {
     }
   };
 
-  // gallery upload
   const handleGalleryChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
@@ -176,7 +170,6 @@ export default function Build() {
     }
   };
 
-  // render top bar
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
