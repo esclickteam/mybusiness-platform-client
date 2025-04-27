@@ -5,24 +5,15 @@ import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
 
-// אלו ה־Section components שלך
-import MainSection      from "../buildTabs/buildSections/MainSection.jsx";
-import GallerySection   from "../buildTabs/buildSections/GallerySection.jsx";
-import ReviewsSection   from "../buildTabs/buildSections/ReviewsSection.jsx";
-import ShopSection      from "../buildTabs/buildSections/ShopSection.jsx";
-import ChatSection      from "../buildTabs/buildSections/ChatSection.jsx";
-import FaqSection       from "../buildTabs/buildSections/FaqSection.jsx";
-
-// אלו ה־Preview components המקוריים
-import MainTab          from "../buildTabs/MainTab.jsx";
-import GalleryTab       from "../buildTabs/GalleryTab.jsx";
-import ReviewsModule    from "../buildTabs/ReviewsModule.jsx";
-import ShopAndCalendar  from "../buildTabs/shopAndCalendar/ShopAndCalendar.jsx";
-import ChatTab          from "../buildTabs/ChatTab.jsx";
-import FaqTab           from "../buildTabs/FaqTab.jsx";
+// Section components
+import MainSection    from "../buildTabs/buildSections/MainSection.jsx";
+import GallerySection from "../buildTabs/buildSections/GallerySection.jsx";
+import ReviewsSection from "../buildTabs/buildSections/ReviewsSection.jsx";
+import ShopSection    from "../buildTabs/buildSections/ShopSection.jsx";
+import ChatSection    from "../buildTabs/buildSections/ChatSection.jsx";
+import FaqSection     from "../buildTabs/buildSections/FaqSection.jsx";
 
 import { useAuth } from "../../../../context/AuthContext";
-import { BusinessServicesProvider } from "../../../../context/BusinessServicesContext";
 
 const TABS = [
   "ראשי",
@@ -38,51 +29,54 @@ export default function Build() {
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState("ראשי");
+  const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
-    name: "", description: "", phone: "", logo: null,
-    story: [], mainImages: [], gallery: [],
-    reviews: [], faqs: [], services: [], messages: [],
-    galleryFits: {}, /* … וכו' … */
+    name: "", description: "", phone: "",
+    logo: null, story: [], gallery: [], services: [],
+    galleryFits: {}, galleryTabImages: [], galleryTabFits: {},
+    galleryCategories: [], fullGallery: [], storyFits: {},
+    reviews: [], faqs: [], messages: []
   });
 
-  // Refs ל־file inputs
   const logoInputRef       = useRef();
   const storyInputRef      = useRef();
-  const mainImagesInputRef = useRef();
   const galleryInputRef    = useRef();
+  const galleryTabInputRef = useRef();
+  const mainImagesInputRef = useRef();
 
   useEffect(() => {
     API.get("/business/my")
       .then(res => {
         if (res.status === 200) {
-          setBusinessDetails(prev => ({ ...prev, ...(res.data.business || res.data) }));
+          const data = res.data.business || res.data;
+          setBusinessDetails(prev => ({ ...prev, ...data }));
         }
       })
       .catch(console.error);
   }, []);
 
-  // כל ה־handlers שלך כאן (קיצרתי להצגה)
-  const handleInputChange         = ({ target: { name, value } }) => setBusinessDetails(p => ({ ...p, [name]: value }));
-  const handleSave                = async () => { /* … */ };
-  const handleMainImagesChange    = async e => { /* … */ };
-  const handleLogoClick           = () => logoInputRef.current.click();
-  const handleLogoChange          = async e => { /* … */ };
-  const handleStoryUpload         = e => { /* … */ };
-  const handleGalleryChange       = async e => { /* … */ };
-  const handleDeleteImage         = i => { /* … */ };
-  const handleFitChange           = (i,fit) => { /* … */ };
-  const handleConfirmEdit         = () => console.log("שמרתי גלריה");
+  const handleInputChange = ({ target: { name, value } }) =>
+    setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  // שורת הלוגו + כותרת + rating + טאבים עליונים
+  const handleSave = async () => { /* … שלך פה */ };
+  const handleMainImagesChange = async e => { /* … שלך פה */ };
+  const handleLogoClick = () => logoInputRef.current?.click();
+  const handleLogoChange = async e => { /* … שלך פה */ };
+  const handleStoryUpload = e => { /* … שלך פה */ };
+  const handleGalleryChange = async e => { /* … שלך פה */ };
+  const handleDeleteImage = i => { /* … שלך פה */ };
+  const handleFitChange = (i, fit) => { /* … שלך פה */ };
+  const handleConfirmEdit = () => console.log("שמירת הגלריה");
+
   const renderTopBar = () => (
-    <div>
-      {/* כאן תדביק את הלוגו, שם העסק, דירוג וכפתורי ה־Tabs */}
-    </div>
+    <>
+      {/* פה לוגו, שם העסק, דירוג ושורת טאבים עליונה */}
+    </>
   );
 
   return (
     <div className="build-wrapper">
-      {/* ====== שורת הטאבים ====== */}
+      {/* שורת הטאבים */}
       <div className="tabs">
         {TABS.map(tab => (
           <button
@@ -95,121 +89,75 @@ export default function Build() {
         ))}
       </div>
 
-      {/* ====== ראשי ====== */}
+      {/* ראשי */}
       {currentTab === "ראשי" && (
-        <>
-          <div className="form-column">
-            <MainSection
-              businessDetails={businessDetails}
-              handleInputChange={handleInputChange}
-              handleLogoClick={handleLogoClick}
-              handleLogoChange={handleLogoChange}
-              handleStoryUpload={handleStoryUpload}
-              handleSave={handleSave}
-              showViewProfile={false}
-              navigate={navigate}
-              currentUser={currentUser}
-              handleMainImagesChange={handleMainImagesChange}
-            />
-          </div>
-          <div className="preview-column">
-            {renderTopBar()}
-            <MainTab businessDetails={businessDetails} />
-          </div>
-        </>
+        <MainSection
+          businessDetails={businessDetails}
+          handleInputChange={handleInputChange}
+          handleLogoClick={handleLogoClick}
+          handleLogoChange={handleLogoChange}
+          handleStoryUpload={handleStoryUpload}
+          handleSave={handleSave}
+          showViewProfile={showViewProfile}
+          navigate={navigate}
+          currentUser={currentUser}
+          handleMainImagesChange={handleMainImagesChange}
+          renderTopBar={renderTopBar}
+        />
       )}
 
-      {/* ====== גלריה ====== */}
+      {/* גלריה */}
       {currentTab === "גלריה" && (
-        <>
-          <div className="form-column">
-            <GallerySection
-              businessDetails={businessDetails}
-              setBusinessDetails={setBusinessDetails}
-              galleryInputRef={galleryInputRef}
-              handleGalleryChange={handleGalleryChange}
-              handleDeleteImage={handleDeleteImage}
-              handleFitChange={handleFitChange}
-              handleConfirmEdit={handleConfirmEdit}
-            />
-          </div>
-          <div className="preview-column">
-            {renderTopBar()}
-            <GalleryTab isForm={false} businessDetails={businessDetails} />
-          </div>
-        </>
+        <GallerySection
+          businessDetails={businessDetails}
+          setBusinessDetails={setBusinessDetails}
+          galleryInputRef={galleryInputRef}
+          handleGalleryChange={handleGalleryChange}
+          handleDeleteImage={handleDeleteImage}
+          handleFitChange={handleFitChange}
+          handleConfirmEdit={handleConfirmEdit}
+          renderTopBar={renderTopBar}
+        />
       )}
 
-      {/* ====== ביקורות ====== */}
+      {/* ביקורות */}
       {currentTab === "ביקורות" && (
-        <>
-          <div className="form-column">
-            <ReviewsSection
-              reviews={businessDetails.reviews}
-              setReviews={u => setBusinessDetails(p => ({ ...p, reviews: u }))}
-            />
-          </div>
-          <div className="preview-column">
-            {renderTopBar()}
-            <ReviewsModule
-              reviews={businessDetails.reviews}
-              setReviews={u => setBusinessDetails(p => ({ ...p, reviews: u }))}
-              isPreview
-            />
-          </div>
-        </>
+        <ReviewsSection
+          reviews={businessDetails.reviews}
+          setReviews={updated => setBusinessDetails(prev => ({ ...prev, reviews: updated }))}
+          currentUser={currentUser}
+          renderTopBar={renderTopBar}
+        />
       )}
 
-      {/* ====== חנות / יומן ====== */}
+      {/* חנות / יומן */}
       {currentTab === "חנות / יומן" && (
-        <BusinessServicesProvider>
-          <div className="form-column">
-            <ShopSection
-              services={businessDetails.services}
-              setServices={s => setBusinessDetails(p => ({ ...p, services: s }))}
-              handleSave={handleSave}
-            />
-          </div>
-          <div className="preview-column">
-            {renderTopBar()}
-            <ShopAndCalendar
-              isPreview
-              shopMode={businessDetails.services}
-            />
-          </div>
-        </BusinessServicesProvider>
+        <ShopSection
+          shopMode={businessDetails.services}
+          setShopMode={mode => setBusinessDetails(prev => ({ ...prev, services: mode }))}
+          setBusinessDetails={setBusinessDetails}
+          handleSave={handleSave}
+          renderTopBar={renderTopBar}
+        />
       )}
 
-      {/* ====== צ'אט ====== */}
+      {/* צ'אט עם העסק */}
       {currentTab === "צ'אט עם העסק" && (
-        <>
-          <div className="form-column">
-            <ChatSection
-              businessDetails={businessDetails}
-              setBusinessDetails={setBusinessDetails}
-            />
-          </div>
-          <div className="preview-column">
-            {renderTopBar()}
-            <ChatTab isPreview businessDetails={businessDetails} />
-          </div>
-        </>
+        <ChatSection
+          businessDetails={businessDetails}
+          setBusinessDetails={setBusinessDetails}
+          renderTopBar={renderTopBar}
+        />
       )}
 
-      {/* ====== שאלות ותשובות ====== */}
+      {/* שאלות ותשובות */}
       {currentTab === "שאלות ותשובות" && (
-        <>
-          <div className="form-column">
-            <FaqSection
-              faqs={businessDetails.faqs}
-              setFaqs={u => setBusinessDetails(p => ({ ...p, faqs: u }))}
-            />
-          </div>
-          <div className="preview-column">
-            {renderTopBar()}
-            <FaqTab isPreview faqs={businessDetails.faqs} />
-          </div>
-        </>
+        <FaqSection
+          faqs={businessDetails.faqs}
+          setFaqs={updated => setBusinessDetails(prev => ({ ...prev, faqs: Array.isArray(updated) ? updated : [] }))}
+          currentUser={currentUser}
+          renderTopBar={renderTopBar}
+        />
       )}
     </div>
   );
