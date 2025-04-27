@@ -154,6 +154,7 @@ const handleSave = async () => {
   const galleryInputRef = useRef(null);
   const galleryTabInputRef = useRef(null);
   const logoInputRef = useRef(null);
+  const mainImagesInputRef = useRef(null);
 
   const [shopMode, setShopMode] = useState(null);
   
@@ -258,37 +259,37 @@ const handleSave = async () => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
   
-    // הכנת ה־preview לכל קובץ
+    // 1. צור פריווי לכל קובץ
     const previewFiles = files.map(file => {
       file.preview = URL.createObjectURL(file);
       return file;
     });
   
-    // עדכנו state להצגת התצוגה (ללא הגבלה של 5)
+    // 2. עדכן state מיד לתצוגה (בלי הגבלה)
     setBusinessDetails(prev => ({
       ...prev,
       gallery: [...prev.gallery, ...previewFiles],
     }));
   
-    // בנו את ה-FormData עם המפתח "gallery"
+    // 3. בנה את ה-FormData עם המפתח "gallery"
     const formData = new FormData();
     previewFiles.forEach(file => {
       formData.append("gallery", file);
     });
   
     try {
-      // שלחו את הבקשה ללא Content-Type ידני
+      // 4. שלח את הבקשה ללא Content-Type ידני, עם cookies אם צריך
       const res = await API.put("/business/my/gallery", formData, {
         withCredentials: true,
       });
   
       if (res.status === 200) {
-        // העדכון של ה-gallery מתבצע לפי מה שהשרת מחזיר
+        // 5. עדכן את ה-gallery לפי מה שהשרת החזיר
         setBusinessDetails(prev => ({
           ...prev,
           gallery: res.data.gallery,
         }));
-        // שחררו את ה-object URLs של ה-previews
+        // 6. שחרר את ה-previews
         previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
       } else {
         console.error("❌ Error uploading gallery: Status", res.status);
@@ -299,6 +300,7 @@ const handleSave = async () => {
       alert("❌ שגיאה בהעלאת הגלריה. נסה שנית מאוחר יותר.");
     }
   };
+  
   
   
   
