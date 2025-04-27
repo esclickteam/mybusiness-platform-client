@@ -5,17 +5,16 @@ import '../../build/Build.css';
 import './ShopAndCalendar.css';
 
 import AppointmentsMain from './Appointments/AppointmentsMain';
-import CalendarSetup from './Appointments/CalendarSetup';
-import ShopTab from './Appointments/ShopTab';
-import ShopPreview from './Appointments/ShopPreview';
-import PaymentSection from './Appointments/PaymentSection';
+import ShopTab         from './Appointments/ShopTab';
+import ShopPreview     from './Appointments/ShopPreview';
+import PaymentSection  from './Appointments/PaymentSection';
 import { useBusinessServices } from '../../../../../context/BusinessServicesContext';
 
 const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusinessDetails }) => {
   const { services, setServices, products } = useBusinessServices();
 
-  // ברירת מחדל ל־store אם shopMode ריק
-  const mode = shopMode || 'store';
+  // פה כבר לא עושים ברירת-מחדל ל-'store'
+  const mode = shopMode;           
   const setMode = setShopMode;
 
   const [cart, setCart] = useState([]);
@@ -50,47 +49,53 @@ const ShopAndCalendar = ({ isPreview = false, shopMode, setShopMode, setBusiness
     }
   }, [isPreview]);
 
-  // חישובי עגלת קניות
-  const totalBefore = cart.reduce((sum, i) => sum + Number(i.price), 0);
-  const discount = appliedCoupon ? totalBefore * (appliedCoupon.discount / 100) : 0;
-  const total = (totalBefore - discount).toFixed(2);
-
-  const handleApplyCoupon = () => {
-    if (!appliedCoupon && couponCode === 'SUMMER10') {
-      setAppliedCoupon({ code: 'SUMMER10', discount: 10 });
-    }
-  };
-
-  return (
-    <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      {/* Toggle חנות / יומן */}
-      {!isPreview && (
-        <div className="mode-toggle-wrapper">
+  // אם עדיין לא נבחר מצב – הצג את מסך הבחירה
+  if (!isPreview && !mode) {
+    return (
+      <div className="mode-select-wrapper">
+        <h2 className="centered-title">איזה סוג שירות ברצונך לעצב?</h2>
+        <div className="mode-options">
           <button
-            className={mode === 'store' ? 'active' : ''}
+            className="gradient-btn"
             onClick={() => setMode('store')}
           >
             🛒 חנות
           </button>
           <button
-            className={mode === 'appointments' ? 'active' : ''}
+            className="gradient-btn"
             onClick={() => setMode('appointments')}
           >
             🗕️ יומן
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // חישובי עגלת קניות
+  const totalBefore = cart.reduce((sum, i) => sum + Number(i.price), 0);
+  const discount    = appliedCoupon ? totalBefore * (appliedCoupon.discount / 100) : 0;
+  const total       = (totalBefore - discount).toFixed(2);
+
+  return (
+    <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
+      {/* כפתור חזרה לבחירת שירות */}
+      {!isPreview && (
+        <button
+          className="back-button"
+          onClick={() => setMode(null)}
+        >
+          🔙 חזרה לבחירת שירות
+        </button>
       )}
 
-      {/* NON-PREVIEW */}
+      {/* FORM (לא Preview) */}
       {!isPreview && mode === 'appointments' && (
         <AppointmentsMain
           isPreview={false}
           services={services}
           setServices={setServices}
-          onNext={svc => {
-            // אם מגיעים מ־AppointmentsMain ישירות ל־calendar
-            setMode('calendar');
-          }}
+          onNext={() => setMode('calendar')}
         />
       )}
       {!isPreview && mode === 'store' && (
