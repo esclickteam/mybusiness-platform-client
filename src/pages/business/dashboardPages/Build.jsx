@@ -35,10 +35,10 @@ const Build = () => {
 // רשימת השדות המותרת לעדכון
 const ALLOWED_KEYS = [
   "name",
-  "description",  // just in case
+  "description",    // just in case
   "phone",
   "logo",
-  "mainImages",   // תמונות לעמוד הראשי
+  "mainImages",     // תמונות לעמוד הראשי
   "gallery",
   "story",
   "services",
@@ -613,7 +613,11 @@ const handleMainImagesChange = async (e) => {
 
     <div className="preview-column">
       {renderTopBar()}
-      <MainTab businessDetails={businessDetails} handleSave={handleSave} />
+      {/* כאן אנחנו שולחים ל־MainTab גם את ה־handleSave */}
+      <MainTab
+        businessDetails={businessDetails}
+        handleSave={handleSave}
+      />
     </div>
   </>
 )}

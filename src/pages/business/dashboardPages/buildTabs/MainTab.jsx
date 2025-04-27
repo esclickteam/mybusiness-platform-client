@@ -14,12 +14,15 @@ const MainTab = ({ businessDetails, handleSave }) => {
   };
 
   const getImageFit = (file) => {
+    // אם רוצים לשמור התאמות חיתוך שונות ל־mainImages,
+    // אפשר להחליף כאן את המיפוי מ־galleryFits ל־mainImagesFits
     const key = file?.name || file?.url || "";
     return businessDetails.galleryFits?.[key] || "cover";
   };
 
   return (
     <>
+      {/* תצוגת התמונות של העמוד הראשי */}
       <div className="gallery-preview no-actions">
         {businessDetails.mainImages?.map((file, i) => (
           <div key={i} className="gallery-item-wrapper">
@@ -35,6 +38,7 @@ const MainTab = ({ businessDetails, handleSave }) => {
         ))}
       </div>
 
+      {/* תצוגת ביקורות אם יש */}
       {businessDetails.reviews?.length > 0 && (
         <div className="reviews">
           <h3>⭐ ביקורות אחרונות</h3>
@@ -50,6 +54,7 @@ const MainTab = ({ businessDetails, handleSave }) => {
         </div>
       )}
 
+      {/* כפתור שמירה */}
       <button
         className="save-btn"
         onClick={handleSave}
