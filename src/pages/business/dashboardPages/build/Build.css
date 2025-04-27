@@ -129,6 +129,7 @@
   object-fit: cover;
 }
 
+/* דירוג */
 .name-rating {
   text-align: center;
   margin-top: 1rem;
@@ -148,10 +149,6 @@
 
 .star {
   margin-right: 0.3rem;
-}
-
-.about-text.center-text {
-  text-align: center;
 }
 
 /* תצוגת גלריה (preview only) */
@@ -188,11 +185,13 @@
   border-radius: 10px;
 }
 
-/* תצוגת + ותמונות בעמוד הראשי (MainSection) */
+/* ==== תצוגת + ותמונות בעמוד הראשי (MainSection) ==== */
 .gallery-preview {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  overflow-x: auto;    /* גלילה אופקית אם צריך */
+  overflow-y: hidden;  /* חיתוך אנכי */
 }
 
 .gallery-item-wrapper {
@@ -200,13 +199,15 @@
   height: 70px;
   border: 2px dashed #b46af1;
   border-radius: 10px;
-  overflow: hidden;
+  overflow: hidden;    /* חיתוך כל מה שמחוץ */
+  flex: 0 0 auto;
 }
 
 .gallery-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover;   /* תמלא מבלי לעוות */
+  display: block;
 }
 
 .gallery-placeholder {
@@ -220,6 +221,13 @@
   color: #b46af1;
   font-size: 1.5rem;
   cursor: pointer;
+  flex: 0 0 auto;
+  transition: transform 0.2s;
+}
+
+.gallery-placeholder:hover {
+  transform: scale(1.05);
+  background-color: #f3e5ff;
 }
 
 /* רספונסיביות */
