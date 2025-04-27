@@ -1,5 +1,5 @@
 import React from "react";
-import GalleryTab from "../buildTabs/GalleryTab";
+import GalleryTab from "../GalleryTab.jsx";
 
 export default function GallerySection({
   businessDetails,
@@ -15,24 +15,10 @@ export default function GallerySection({
     <>
       <div className="form-column">
         {renderTopBar()}
-
         <h2>🎨 עיצוב הגלריה</h2>
 
-        <input
-          type="file"
-          multiple
-          style={{ display: "none" }}
-          ref={galleryInputRef}
-          onChange={handleGalleryChange}
-          accept="image/*"
-        />
-        <button
-          type="button"
-          className="upload-gallery-btn"
-          onClick={() => galleryInputRef.current.click()}
-        >
-          העלאת תמונות גלריה
-        </button>
+        <input type="file" multiple style={{display:"none"}} ref={galleryInputRef} onChange={handleGalleryChange} accept="image/*" />
+        <button onClick={() => galleryInputRef.current.click()}>העלאת תמונות גלריה</button>
 
         <GalleryTab
           isForm
@@ -44,7 +30,6 @@ export default function GallerySection({
           handleConfirmEdit={handleConfirmEdit}
         />
       </div>
-
       <div className="preview-column">
         <GalleryTab isForm={false} businessDetails={businessDetails} />
       </div>

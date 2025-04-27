@@ -1,26 +1,13 @@
 import React from "react";
+import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar.jsx";
 import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
-import ShopAndCalendar from "../buildTabs/shopAndCalendar/ShopAndCalendar";
 
-export default function ShopSection({
-  shopMode,
-  setShopMode,
-  setBusinessDetails,
-  handleSave,
-  renderTopBar
-}) {
+export default function ShopSection({ shopMode, setShopMode, setBusinessDetails, handleSave, renderTopBar }) {
   return (
     <BusinessServicesProvider>
       <div className="form-column">
-        <ShopAndCalendar
-          isPreview={false}
-          shopMode={shopMode}
-          setShopMode={setShopMode}
-          setBusinessDetails={setBusinessDetails}
-        />
-        <button onClick={handleSave} className="save-btn">
-          💾 שמור
-        </button>
+        <ShopAndCalendar isPreview={false} shopMode={shopMode} setShopMode={setShopMode} setBusinessDetails={setBusinessDetails} />
+        <button onClick={handleSave}>💾 שמור</button>
       </div>
       <div className="preview-column">
         {renderTopBar()}

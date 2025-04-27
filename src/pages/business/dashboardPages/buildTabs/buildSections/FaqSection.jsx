@@ -1,12 +1,7 @@
 import React from "react";
-import FaqTab from "../buildTabs/FaqTab";
+import FaqTab from "../FaqTab.jsx";
 
-export default function FaqSection({
-  faqs,
-  setFaqs,
-  currentUser,
-  renderTopBar
-}) {
+export default function FaqSection({ faqs, setFaqs, currentUser, renderTopBar }) {
   return (
     <>
       <div className="form-column">

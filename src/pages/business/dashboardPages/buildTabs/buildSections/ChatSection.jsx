@@ -1,27 +1,15 @@
 import React from "react";
-import ChatTab from "../buildTabs/ChatTab";
+import ChatTab from "../ChatTab.jsx";
 
-export default function ChatSection({
-  businessDetails,
-  setBusinessDetails,
-  renderTopBar
-}) {
+export default function ChatSection({ businessDetails, setBusinessDetails, renderTopBar }) {
   return (
     <>
       <div className="form-column">
-        <ChatTab
-          businessDetails={businessDetails}
-          setBusinessDetails={setBusinessDetails}
-          isPreview={false}
-        />
+        <ChatTab businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} isPreview={false} />
       </div>
       <div className="preview-column">
         {renderTopBar()}
-        <ChatTab
-          businessDetails={businessDetails}
-          setBusinessDetails={setBusinessDetails}
-          isPreview
-        />
+        <ChatTab businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} isPreview />
       </div>
     </>
   );
