@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
-import "../../../../components/shared/BusinessProfileView.css"; // עמוד עריכת העסק
+import "./BusinessProfileView.css"; // עמוד עריכת העסק
 
 const TABS = [
   "ראשי",
