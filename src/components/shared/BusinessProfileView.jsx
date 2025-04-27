@@ -22,23 +22,48 @@ export default function BusinessProfileView() {
   const [currentTab, setCurrentTab] = useState("ראשי");
 
   useEffect(() => {
+    console.log("🛠️ BusinessProfileView render", businessId, location.pathname);
     setLoading(true);
     API.get(`/business/${businessId}`)
       .then(res => {
         const data = res.data.business || res.data;
         console.log("📦 profileData from server:", data);
-        console.log("→ mainImages:", data.mainImages);
+        console.log("→ raw mainImages:", data.mainImages);
 
-        // עטיפת כל URL ב־mainImages/story
-        const wrappedMain  = (data.mainImages || []).map(url => ({ preview: url }));
-        const wrappedStory = (data.story      || []).map(url => ({ preview: url }));
+        // עטיפה של mainImages לכל צורה (string או אובייקט)
+        const wrappedMain = (data.mainImages || []).map(item => {
+          if (typeof item === "string") {
+            return { preview: item };
+          } else if (item.url || item.preview) {
+            return { preview: item.url || item.preview };
+          } else {
+            // במקרה חריג – נדפיס את כל האובייקט
+            console.warn("Unexpected mainImages item:", item);
+            return { preview: "" };
+          }
+        });
+
+        // עטיפה של ה-story (במקרה שמשתמשים בהם)
+        const wrappedStory = (data.story || []).map(item => {
+          if (typeof item === "string") {
+            return { preview: item };
+          } else if (item.url || item.preview) {
+            return { preview: item.url || item.preview };
+          } else {
+            console.warn("Unexpected story item:", item);
+            return { preview: "" };
+          }
+        });
+
         setProfileData({
           ...data,
           mainImages: wrappedMain,
-          story:      wrappedStory
+          story: wrappedStory
         });
       })
-      .catch(console.error)
+      .catch(err => {
+        console.error("❌ Error fetching business profile:", err);
+      })
       .finally(() => setLoading(false));
   }, [businessId, location.pathname]);
 
@@ -54,14 +79,16 @@ export default function BusinessProfileView() {
     reviews = [],
     faqs = [],
     mainImages = [],
-    story      = []
+    story = []
   } = profileData;
 
-  // fallback: mainImages → story → gallery
+  // בחירת תמונות ראשיות לפי עדיפות
   const primaryImages =
-    (mainImages.length  > 0 && mainImages) ||
-    (story.length       > 0 && story)      ||
-    (gallery.length     > 0 && gallery.map(item => typeof item==="string" ? { preview: item } : item)) ||
+    (mainImages.length > 0 && mainImages) ||
+    (story.length > 0 && story) ||
+    (gallery.length > 0 && gallery.map(item =>
+      typeof item === "string" ? { preview: item } : item
+    )) ||
     [];
 
   const realReviews = reviews.filter(r => typeof r.rating === "number");
@@ -129,12 +156,8 @@ export default function BusinessProfileView() {
                 {primaryImages.length > 0 && (
                   <div className="gallery-preview no-actions">
                     {primaryImages.map((item, i) => {
-                      const src = typeof item === "string"
-                        ? item
-                        : item.preview || item.url;
-
-                        console.log(`🖼️ image ${i} src:`, src);
-
+                      const src = item.preview || "";
+                      console.log(`🖼️ image ${i} src:`, src);
 
                       return (
                         <div key={i} className="gallery-item-wrapper">
@@ -142,6 +165,7 @@ export default function BusinessProfileView() {
                             src={src}
                             alt={`main-img-${i}`}
                             className="gallery-img"
+                            style={{ width: 120, height: 120 }}
                           />
                         </div>
                       );
