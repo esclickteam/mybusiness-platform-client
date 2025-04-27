@@ -128,7 +128,7 @@
   margin-top: 1rem;
 }
 
-/* גלריה (מאפשר גם שימוש למחלקה הישנה אם קיימת) */
+/* גלריה כללית (גם ל-Build) */
 .gallery-preview {
   display: flex;
   flex-wrap: wrap;
@@ -144,6 +144,8 @@
   justify-content: center;
   align-items: center;
   min-height: 200px; /* גובה מינימלי */
+  border: 2px dashed #b46af1; /* דרוש לבילד – אל תיגעי */
+  border-radius: 12px;
 }
 
 .gallery-img {
@@ -153,7 +155,7 @@
   border-radius: 8px;
 }
 
-/* === בידוד עבור BusinessProfileView בלבד (לא נוגע ב-Build) === */
+/* === בידוד עבור BusinessProfileView בלבד === */
 .profile-gallery-item {
   flex: 1 0 45%;
   max-width: 45%;
@@ -161,11 +163,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 200px;
+  border: none !important;   /* מבטל מסגרת סגולה */
 }
 
 .profile-gallery-item img {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  border: none !important;   /* שלא יירש גם בעתיד */
   border-radius: 8px;
 }
