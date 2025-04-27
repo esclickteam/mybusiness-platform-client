@@ -27,6 +27,8 @@ export default function BusinessProfileView() {
       .then(res => {
         const data = res.data.business || res.data;
         console.log("📦 profileData from server:", data);
+        console.log("→ mainImages:", data.mainImages);
+
         // עטיפת כל URL ב־mainImages/story
         const wrappedMain  = (data.mainImages || []).map(url => ({ preview: url }));
         const wrappedStory = (data.story      || []).map(url => ({ preview: url }));
@@ -130,6 +132,10 @@ export default function BusinessProfileView() {
                       const src = typeof item === "string"
                         ? item
                         : item.preview || item.url;
+
+                        console.log(`🖼️ image ${i} src:`, src);
+
+
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
