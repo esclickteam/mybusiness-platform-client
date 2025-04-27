@@ -1,137 +1,150 @@
-:root {
-    /* צבעים ומרווחים גלובליים */
-    --bg-start:        #fdfcff;
-    --bg-end:          #e4e8ff;
-  
-    --card-bg:         #ffffff;
-    --card-radius:     24px;
-    --card-shadow:     0 4px 12px rgba(0,0,0,0.05);
-  
-    --primary:         #8a2be2;
-    --primary-hover:   #7a23d0;
-  
-    --text-main:       #222222;
-    --text-secondary:  #555555;
-  
-    --gap-sm:          12px;
-    --gap-md:          16px;
-    --gap-lg:          24px;
-  }
-  
-  /* רקע העמוד */
-  .profile-page {
-    padding: var(--gap-lg) 0;
-  }
-  
-   
-  /* כפתור חזור */
-  .back-btn {
-    background: none;
-    border: none;
-    color: var(--primary);
-    font-size: 0.95rem;
-    cursor: pointer;
-    margin-bottom: var(--gap-md);
-    padding: 0;
-  }
-  .back-btn:hover {
-    text-decoration: underline;
-  }
-  
-  .profile-inner {
+/* src/components/shared/BusinessProfileView.css */
+
+/* עמוד כללי – ללא רקע מקומי, רק padding בלבד */
+.profile-page {
     display: flex;
-    flex-direction: column;
-    gap: var(--gap-md);
-    align-items: center;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background: none;         /* הגרדיאנט הגלובלי מטפל ברקע */
+    padding: 2rem 0;
     text-align: center;
   }
   
-  .business-profile__logo {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-  
-  .business-profile__name {
-    font-size: 2rem;
+  /* הסרת 'כרטיס' לבן – אין רקע, עיגול או צל */
+  .business-profile-view.full-style {
+    width: 100%;
+    max-width: 800px;
     margin: 0;
-    color: var(--text-main);
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+    position: relative;
   }
   
-  .business-profile__description,
-  .business-profile__category,
-  .business-profile__contact p,
-  .business-profile__address,
-  .business-profile__hours {
+  /* תוכן פנימי – מצומצם למרכז */
+  .profile-inner {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* לוגו העסק */
+  .logo-wrapper {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .profile-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  /* כפתור עריכה */
+  .edit-profile-btn {
+    align-self: flex-end;
+    margin-bottom: 1rem;
+    padding: 0.4rem 1rem;
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .edit-profile-btn:hover {
+    background-color: var(--primary-hover);
+  }
+  
+  /* שם העסק */
+  .business-name {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--text-main);
+    margin: 0;
+  }
+  
+  /* תיאור העסק, כתובת ועוד */
+  .about-section,
+  .phone-section {
     font-size: 1rem;
     color: var(--text-secondary);
-    margin: 8px 0;
+    margin: 4px 0;
   }
   
-  /* גלריה */
-  .business-profile__gallery {
+  /* קו מפריד בין התוכן לטאבים */
+  .profile-divider {
     width: 100%;
-    text-align: left;
-    margin-top: var(--gap-lg);
-  }
-  .gallery-images {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--gap-sm);
-  }
-  .gallery-images img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    object-fit: cover;
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 1rem 0;
   }
   
-  /* טאב-בר ציבורי – פריסה ב-3 עמודות, מרווח מצומצם */
+  /* טאב-בר – פריסה ב-3 עמודות */
   .profile-tabs,
   .public-tabs {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--gap-sm);
-    margin: var(--gap-md) 0 0; /* צמצום המרווח מעל הטאבים */
-    direction: ltr;
+    gap: 0.75rem;
+    margin: 1rem auto 0;
+    width: 100%;
+    max-width: 700px;
+    justify-items: center;
   }
   
   .profile-tabs .tab,
   .public-tabs .tab {
-    justify-self: center;
-    padding: 8px 20px;
+    padding: 0.6rem 1rem;
     border-radius: 20px;
-    background: #f0eaff;
+    background-color: #f0eaff;
     color: #333;
-    text-decoration: none;
-    transition: background 0.2s;
+    border: none;
+    font-size: 0.95rem;
+    width: 100%;
+    max-width: 200px;
+    transition: background-color 0.2s;
+    cursor: pointer;
   }
-  
   .profile-tabs .tab:hover,
   .public-tabs .tab:hover {
-    background: #e4d6ff;
+    background-color: #e4d6ff;
   }
-  
   .profile-tabs .tab.active,
   .public-tabs .tab.active {
-    background: var(--primary);
+    background-color: var(--primary);
     color: #fff;
   }
   
   /* אזור הטאב הנבחר */
   .outlet-wrapper {
-    margin-top: var(--gap-lg);
+    margin-top: 1rem;
   }
   
-  /* התאמת רוחב והצמדת הטאבים */
-/* התאמת רוחב והצמדת הטאבים */
-.profile-tabs,
-.public-tabs {
-  display: grid;                                  /* הפוך לגריד */
-  grid-template-columns: repeat(3, 1fr);          /* 3 עמודות */
-  gap: var(--gap-sm);                             /* ריווח ביניהם */
-  max-width: 700px;                               /* רוחב מקסימלי משורשר לכרטיס */
-  margin: var(--gap-md) auto 0;                   /* מרכוז וצמצום מרווח למעלה */
-}
-
+  /* גלריה */
+  .gallery-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .gallery-item-wrapper {
+    flex: 1 0 30%;
+    max-width: 30%;
+    padding: 5px;
+  }
+  
+  .gallery-img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  
