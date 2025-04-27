@@ -26,14 +26,8 @@ export default function BusinessProfileView() {
     API.get(`/business/${businessId}`)
       .then(res => {
         const data = res.data.business || res.data;
-        // עטיפת URL-ים ל־{ preview }
-        const wrappedMain   = (data.mainImages || []).map(url => ({ preview: url }));
-        const wrappedStory  = (data.story      || []).map(url => ({ preview: url }));
-        setProfileData({
-          ...data,
-          mainImages: wrappedMain,
-          story:      wrappedStory
-        });
+        console.log("📦 profileData from server:", data);
+        setProfileData(data);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -50,16 +44,16 @@ export default function BusinessProfileView() {
     gallery = [],
     reviews = [],
     faqs = [],
-    mainImages,
-    story
+    mainImages = [],  // אםAPI מחזיר
+    story      = []   // אםAPI מחזיר
   } = profileData;
 
-  // אם אין mainImages, נשתמש ב־story
-  const primaryImages = Array.isArray(mainImages) && mainImages.length > 0
-    ? mainImages
-    : Array.isArray(story)
-      ? story
-      : [];
+  // פה העיקר: קודם מנסים mainImages, אחר־כך story, ולבסוף gallery
+  const primaryImages =
+    (Array.isArray(mainImages) && mainImages.length > 0 && mainImages) ||
+    (Array.isArray(story)      && story.length      > 0 && story)      ||
+    (Array.isArray(gallery)    && gallery.length    > 0 && gallery)    ||
+    [];
 
   const realReviews = reviews.filter(r => typeof r.rating === "number");
 
@@ -76,11 +70,7 @@ export default function BusinessProfileView() {
 
           {logo && (
             <div className="logo-wrapper">
-              <img
-                src={logo}
-                alt={`${name} logo`}
-                className="profile-logo"
-              />
+              <img src={logo} alt={`${name} logo`} className="profile-logo" />
             </div>
           )}
 
@@ -122,7 +112,9 @@ export default function BusinessProfileView() {
                 {primaryImages.length > 0 && (
                   <div className="gallery-preview no-actions">
                     {primaryImages.map((item, i) => {
-                      const src = item.preview || item.url || item;
+                      const src = typeof item === "string"
+                        ? item
+                        : item.url || item.preview;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
@@ -144,7 +136,10 @@ export default function BusinessProfileView() {
                 {gallery.length > 0 ? (
                   <div className="gallery-preview no-actions">
                     {gallery.map((item, i) => {
-                      const src = item.preview || item.url || item;
+                      const src =
+                        typeof item === "string"
+                          ? item
+                          : item.url || item.preview;
                       return (
                         <div key={i} className="gallery-item-wrapper">
                           <img
