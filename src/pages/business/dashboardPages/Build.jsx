@@ -258,11 +258,7 @@ const handleMainImagesChange = async (e) => {
     }
   };
   
-  
-  
-  
-  
-  
+         
 
   const handleStoryUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -324,13 +320,7 @@ const handleMainImagesChange = async (e) => {
     }
   };
   
-  
-  
-  
-  
-  
-  
-  
+          
 
   const handleDeleteImage = (index) => {
     const updatedGallery = [...businessDetails.gallery];
@@ -448,7 +438,10 @@ const handleMainImagesChange = async (e) => {
               onChange={handleLogoChange}
               accept="image/*"
             />
-            <button onClick={handleLogoClick} className="upload-logo-btn">
+            <button
+              onClick={handleLogoClick}
+              className="upload-logo-btn"
+            >
               העלאת לוגו
             </button>
   
@@ -486,24 +479,6 @@ const handleMainImagesChange = async (e) => {
               className="upload-main-images-btn"
             >
               העלאת תמונות לעמוד הראשי
-            </button>
-  
-            {/* גלריה */}
-            <label>גלריה:</label>
-            <input
-              type="file"
-              multiple
-              style={{ display: "none" }}
-              ref={galleryInputRef}
-              onChange={handleGalleryChange}
-              accept="image/*"
-            />
-            <button
-              type="button"
-              onClick={() => galleryInputRef.current.click()}
-              className="upload-gallery-btn"
-            >
-              העלאת תמונות גלריה
             </button>
 
 
@@ -642,28 +617,31 @@ const handleMainImagesChange = async (e) => {
 )}
 
 
-      {currentTab === "גלריה" && (
-        <>
-          <div className="form-column">
-            <h2>🎨 עיצוב הגלריה</h2>
-            <GalleryTab
-              isForm={true}
-              businessDetails={businessDetails}
-              setBusinessDetails={setBusinessDetails}
-              galleryTabInputRef={galleryTabInputRef}
-              editGalleryTabIndex={editGalleryTabIndex}
-              setEditGalleryTabIndex={setEditGalleryTabIndex}
-              handleDeleteGalleryTabImage={(i) => handleDeleteImage(i)}
-              handleFitChange={(i, fit) => handleFitChange(i, fit)}
-              handleConfirmEdit={handleConfirmEdit}
-            />
-          </div>
-          <div className="preview-column">
-            {renderTopBar()}
-            <GalleryTab isForm={false} businessDetails={businessDetails} />
-          </div>
-        </>
-      )}
+{currentTab === "גלריה" && (
+  <>
+    <div className="form-column">
+      <h2>🎨 עיצוב הגלריה</h2>
+      <GalleryTab
+        isForm={true}
+        businessDetails={businessDetails}
+        setBusinessDetails={setBusinessDetails}
+        galleryTabInputRef={galleryTabInputRef}
+        editGalleryTabIndex={editGalleryTabIndex}
+        setEditGalleryTabIndex={setEditGalleryTabIndex}
+        handleDeleteGalleryTabImage={handleDeleteImage}
+        handleFitChange={handleFitChange}
+        handleConfirmEdit={handleConfirmEdit}
+      />
+    </div>
+
+    <div className="preview-column">
+      {renderTopBar()}
+      <GalleryTab isForm={false} businessDetails={businessDetails} />
+    </div>
+  </>
+)}
+
+
 
       {currentTab === "ביקורות" && (
         <>
