@@ -21,12 +21,12 @@ const MainTab = ({ businessDetails, handleSave }) => {
   return (
     <>
       <div className="gallery-preview no-actions">
-        {businessDetails.gallery?.map((file, i) => (
+        {businessDetails.mainImages?.map((file, i) => (
           <div key={i} className="gallery-item-wrapper">
             <div className="gallery-item">
               <img
                 src={getImageUrl(file) || "/images/placeholder.jpg"}
-                alt={`preview-${i}`}
+                alt={`main-${i}`}
                 className="gallery-img"
                 style={{ objectFit: getImageFit(file) }}
               />

@@ -57,6 +57,7 @@ const [businessDetails, setBusinessDetails] = useState({
   description: "",
   phone: "",
   logo: null,
+  mainImages: [],           // ← הוספנו את השדה הזה
   story: [],
   gallery: [],
   services: [],
@@ -70,6 +71,7 @@ const [businessDetails, setBusinessDetails] = useState({
   faqs: [],
   messages: []
 });
+
 
 useEffect(() => {
   API.get("/business/my")
@@ -611,7 +613,7 @@ const handleMainImagesChange = async (e) => {
 
     <div className="preview-column">
       {renderTopBar()}
-      <MainTab businessDetails={businessDetails} />
+      <MainTab businessDetails={businessDetails} handleSave={handleSave} />
     </div>
   </>
 )}
