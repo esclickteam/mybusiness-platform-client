@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
-import "../../components/shared/BusinessProfileView.css"; // ייבוא ה-CSS הנכון
+import "./BusinessProfilePage.css"; // ייבוא CSS של ה-Page
 
 const TABS = [
   "ראשי",
