@@ -80,10 +80,11 @@ useEffect(() => {
         // הקובץ שהשרת מחזיר, יכול להיות ב־res.data או ב־res.data.business
         const data = res.data.business || res.data;
 
-        // merge של המצב הישן עם המידע החדש
+        // merge של המצב הישן עם המידע החדש, + סנכרון התמונות לטאב הגלריה
         setBusinessDetails(prev => ({
           ...prev,
-          ...data
+          ...data,
+          galleryTabImages: data.gallery || [],
         }));
       }
     })

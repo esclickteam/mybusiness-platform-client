@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/build/buildTabs/GalleryTab.jsx
 import React, { useState, useRef, useEffect } from "react";
 // ייבוא סגנונות גלובליים של העמוד
 import "../Build.css";
@@ -14,29 +13,52 @@ const GalleryTab = ({
   galleryTabInputRef,
   editGalleryTabIndex,
   setEditGalleryTabIndex,
+  handleDeleteGalleryTabImage,
+  handleFitChange,
   handleConfirmEdit,
 }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(null);
   const popupRef = useRef(null);
 
-  const galleryTabImages = businessDetails?.galleryTabImages || [];
-  const galleryTabFits = businessDetails?.galleryTabFits || {};
+  const galleryTabImages = businessDetails.galleryTabImages || [];
+  const galleryTabFits = businessDetails.galleryTabFits || {};
 
-  // פונקציית מחיקה
-  const handleDeleteGalleryTabImage = (indexToRemove) => {
+  // סגירת הפופאפ בלחיצה מחוץ
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(e.target) &&
+        !e.target.closest(".edit-btn")
+      ) {
+        setEditGalleryTabIndex(null);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
+  }, [setEditGalleryTabIndex]);
+
+  // הוספת קבצים חדשים
+  const handleUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const existingIds = galleryTabImages.map((img) => img.id);
+    const newImages = files
+      .map((file) => {
+        const isVideo = file.type.startsWith("video");
+        const id = `${file.name}-${file.size}-${Date.now()}`;
+        return {
+          id,
+          file,
+          url: URL.createObjectURL(file),
+          type: isVideo ? "video" : "image",
+        };
+      })
+      .filter((img) => !existingIds.includes(img.id));
+
     setBusinessDetails((prev) => ({
       ...prev,
-      galleryTabImages: prev.galleryTabImages.filter((_, i) => i !== indexToRemove),
-    }));
-  };
-
-  const handleFitChange = (index, fit) => {
-    setBusinessDetails((prev) => ({
-      ...prev,
-      galleryTabFits: {
-        ...prev.galleryTabFits,
-        [index]: fit,
-      },
+      galleryTabImages: [...(prev.galleryTabImages || []), ...newImages],
     }));
   };
 
@@ -49,7 +71,7 @@ const GalleryTab = ({
           {galleryTabImages.map((item, index) => (
             <div
               className="gallery-item-square"
-              key={item.id || index}
+              key={item.id}
               onClick={() => setActiveImageIndex(index)}
             >
               {item.type === "image" ? (
@@ -78,8 +100,7 @@ const GalleryTab = ({
                 className="nav-btn left"
                 onClick={() =>
                   setActiveImageIndex(
-                    (prev) =>
-                      (prev - 1 + galleryTabImages.length) % galleryTabImages.length
+                    (prev) => (prev - 1 + galleryTabImages.length) % galleryTabImages.length
                   )
                 }
               >
@@ -91,18 +112,14 @@ const GalleryTab = ({
                   src={galleryTabImages[activeImageIndex].url}
                   alt=""
                   className="modal-media"
-                  style={{
-                    objectFit: galleryTabFits[activeImageIndex] || "cover",
-                  }}
+                  style={{ objectFit: galleryTabFits[activeImageIndex] || "cover" }}
                 />
               ) : (
                 <video
                   src={galleryTabImages[activeImageIndex].url}
                   controls
                   className="modal-media"
-                  style={{
-                    objectFit: galleryTabFits[activeImageIndex] || "cover",
-                  }}
+                  style={{ objectFit: galleryTabFits[activeImageIndex] || "cover" }}
                 />
               )}
 
@@ -122,45 +139,6 @@ const GalleryTab = ({
   }
 
   // מצב עריכה
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(e.target) &&
-        !e.target.closest(".edit-btn")
-      ) {
-        setEditGalleryTabIndex?.(null);
-      }
-    };
-
-    document.addEventListener("pointerdown", handleClickOutside);
-    return () => {
-      document.removeEventListener("pointerdown", handleClickOutside);
-    };
-  }, [setEditGalleryTabIndex]);
-
-  const handleUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const existingKeys = galleryTabImages.map((img) => img.id);
-    const newImages = files
-      .filter((file) => !existingKeys.includes(`${file.name}-${file.size}`))
-      .map((file) => {
-        const isVideo = file.type.startsWith("video");
-        const id = `${file.name}-${file.size}-${Date.now()}`;
-        return {
-          id,
-          file,
-          url: URL.createObjectURL(file),
-          type: isVideo ? "video" : "image",
-        };
-      });
-
-    setBusinessDetails((prev) => ({
-      ...prev,
-      galleryTabImages: [...(prev.galleryTabImages || []), ...newImages],
-    }));
-  };
-
   return (
     <div className="gallery-form-wrapper edit-mode">
       <h2>🎨 עיצוב הגלריה</h2>
@@ -173,10 +151,7 @@ const GalleryTab = ({
         style={{ display: "none" }}
         onChange={handleUpload}
       />
-      <button
-        onClick={() => galleryTabInputRef.current.click()}
-        className="upload-btn"
-      >
+      <button onClick={() => galleryTabInputRef.current.click()} className="upload-btn">
         ➕ הוספת מדיה
       </button>
       <p className="info-note">ניתן לגרור ולשנות את הסדר</p>
@@ -184,13 +159,10 @@ const GalleryTab = ({
       <GalleryDndKit
         images={galleryTabImages}
         setImages={(newImages) =>
-          setBusinessDetails((prev) => ({
-            ...prev,
-            galleryTabImages: newImages,
-          }))
+          setBusinessDetails((prev) => ({ ...prev, galleryTabImages: newImages }))
         }
         setActiveImageIndex={setActiveImageIndex}
-        isForm={true}
+        isForm
         onDelete={handleDeleteGalleryTabImage}
         setEditIndex={setEditGalleryTabIndex}
         editIndex={editGalleryTabIndex}
