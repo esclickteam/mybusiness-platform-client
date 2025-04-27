@@ -25,15 +25,13 @@ export default function BusinessProfileView() {
     API.get(`/business/${businessId}`)
       .then(res => {
         const data = res.data.business || res.data;
-        // נניח data.gallery הוא מערך של מחרוזות URL
+        // וודא שהשדה gallery קיים כמערך של URL-ים
         setProfileData({
           ...data,
-          gallery: data.gallery || []
+          gallery: Array.isArray(data.gallery) ? data.gallery : []
         });
       })
-      .catch(err => {
-        console.error("❌ Error fetching business profile:", err);
-      })
+      .catch(err => console.error("❌ Fetch error:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
 
@@ -45,7 +43,7 @@ export default function BusinessProfileView() {
     logo,
     description = "",
     phone = "",
-    gallery,
+    gallery = [],
     reviews = [],
     faqs = []
   } = profileData;
@@ -64,18 +62,14 @@ export default function BusinessProfileView() {
 
           {logo && (
             <div className="logo-wrapper">
-              <img
-                src={logo}
-                alt={`${name} logo`}
-                className="profile-logo"
-              />
+              <img src={logo} alt={`${name} logo`} className="profile-logo" />
             </div>
           )}
 
           <h1 className="business-name">{name}</h1>
           <hr className="profile-divider" />
 
-          {/* ==== שורת הטאבים ==== */}
+          {/* Tabs */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
@@ -88,10 +82,10 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
-          {/* ==== תוכן הטאב ==== */}
+          {/* Content */}
           <div className="tab-content">
 
-            {/* ====== ראשי ====== */}
+            {/* ===== ראשי ===== */}
             {currentTab === "ראשי" && (
               <>
                 {description && (
@@ -117,16 +111,29 @@ export default function BusinessProfileView() {
                         <img
                           src={url}
                           alt={`main-img-${i}`}
-                          className="gallery-img"
+                          style={{
+                            width: '150px',
+                            height: '150px',
+                            objectFit: 'cover',
+                            border: '2px solid red'
+                          }}
                         />
                       </div>
                     ))}
                   </div>
                 )}
+
+                {/* DEBUG: raw gallery array */}
+                <div style={{ padding: 8, background: '#fff', color: '#000', marginTop: 16 }}>
+                  <strong>DEBUG gallery:</strong>
+                  <pre style={{ whiteSpace: 'pre-wrap' }}>
+                    {JSON.stringify(gallery, null, 2)}
+                  </pre>
+                </div>
               </>
             )}
 
-            {/* ====== גלריה ====== */}
+            {/* ===== גלריה ===== */}
             {currentTab === "גלריה" && (
               <>
                 {gallery.length > 0 ? (
@@ -136,7 +143,12 @@ export default function BusinessProfileView() {
                         <img
                           src={url}
                           alt={`gallery-${i}`}
-                          className="gallery-img"
+                          style={{
+                            width: '120px',
+                            height: '120px',
+                            objectFit: 'cover',
+                            border: '2px solid blue'
+                          }}
                         />
                       </div>
                     ))}
@@ -147,59 +159,49 @@ export default function BusinessProfileView() {
               </>
             )}
 
-            {/* ====== ביקורות ====== */}
+            {/* ===== ביקורות ===== */}
             {currentTab === "ביקורות" && (
-              <>
+              <div className="reviews">
                 {reviews.length > 0 ? (
-                  <div className="reviews">
-                    <h3>⭐ ביקורות אחרונות</h3>
-                    {reviews.map((r, i) => (
-                      <div key={i} className="review-card improved">
-                        <div className="review-header">
-                          <strong className="review-user">{r.user}</strong>
-                          <span className="star-text">
-                            ★ {r.rating} / 5
-                          </span>
-                        </div>
-                        <p className="review-text">
-                          {r.comment || r.text || "אין תוכן לביקורת."}
-                        </p>
+                  reviews.map((r, i) => (
+                    <div key={i} className="review-card improved">
+                      <div className="review-header">
+                        <strong className="review-user">{r.user}</strong>
+                        <span className="star-text">★ {r.rating} / 5</span>
                       </div>
-                    ))}
-                  </div>
+                      <p className="review-text">{r.comment || r.text || "אין תוכן"}</p>
+                    </div>
+                  ))
                 ) : (
                   <p>אין ביקורות להצגה.</p>
                 )}
-              </>
+              </div>
             )}
 
-            {/* ====== שאלות ותשובות ====== */}
+            {/* ===== שאלות ותשובות ===== */}
             {currentTab === "שאלות ותשובות" && (
-              <>
+              <div className="faqs">
                 {faqs.length > 0 ? (
-                  <div className="faqs">
-                    <h3>❓ שאלות ותשובות</h3>
-                    {faqs.map((f, i) => (
-                      <div key={i} className="faq-item">
-                        <strong>{f.question}</strong>
-                        <p>{f.answer}</p>
-                      </div>
-                    ))}
-                  </div>
+                  faqs.map((f, i) => (
+                    <div key={i} className="faq-item">
+                      <strong>{f.question}</strong>
+                      <p>{f.answer}</p>
+                    </div>
+                  ))
                 ) : (
-                  <p>אין שאלות ותשובות להצגה.</p>
+                  <p>אין שאלות להצגה.</p>
                 )}
-              </>
+              </div>
             )}
 
-            {/* ====== צ'אט ====== */}
+            {/* ===== צ'אט ===== */}
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab">
                 <h3>💬 שלח הודעה לעסק</h3>
               </div>
             )}
 
-            {/* ====== חנות / יומן ====== */}
+            {/* ===== חנות / יומן ===== */}
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder"></div>
             )}
