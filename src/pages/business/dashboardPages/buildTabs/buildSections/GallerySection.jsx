@@ -10,14 +10,19 @@ export default function GallerySection({
   handleDeleteImage,
   handleFitChange,
   handleConfirmEdit,
+  renderTopBar            // <-- ודא שצריך לקבל פה גם את renderTopBar
 }) {
   return (
     <>
       {/* ==== צד שמאל: הטופס ==== */}
       <div className="form-column">
+        {/* שורת הלוגו/שם/טאבים */}
+        {renderTopBar()}
+
         <h2>🎨 עיצוב הגלריה</h2>
 
-        {/* קומפוננטת העריכה עצמה (כוללת את הפלוסים ל־placeholders) */}
+        {/* כבר אין כפתור "העלאת תמונות" כאן */}
+        {/* הקומפוננטה עצמה ידאג להציג פלוסים + תמונות */}
         <GalleryTab
           isForm
           businessDetails={businessDetails}
@@ -32,7 +37,13 @@ export default function GallerySection({
 
       {/* ==== צד ימין: תצוגה (Preview) ==== */}
       <div className="preview-column">
+        {/* מוודאים שגם כאן נקרא renderTopBar */}
+        {renderTopBar()}
+
+        {/* אפשר להציג כותרת קטנה או להשאיר רק את הגלריה */}
         <h3 className="section-title">הגלריה שלנו</h3>
+
+        {/* התצוגה של הגלריה בלבד */}
         <GalleryTab
           isForm={false}
           businessDetails={businessDetails}
