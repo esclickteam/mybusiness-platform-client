@@ -35,10 +35,10 @@ const Build = () => {
 // רשימת השדות המותרת לעדכון
 const ALLOWED_KEYS = [
   "name",
-  "description",    // just in case
+  "description",  // just in case
   "phone",
   "logo",
-  "mainImages",     // תמונות לעמוד הראשי
+  "mainImages",   // תמונות לעמוד הראשי
   "gallery",
   "story",
   "services",
@@ -57,7 +57,6 @@ const [businessDetails, setBusinessDetails] = useState({
   description: "",
   phone: "",
   logo: null,
-  mainImages: [],           // ← הוספנו את השדה הזה
   story: [],
   gallery: [],
   services: [],
@@ -72,7 +71,6 @@ const [businessDetails, setBusinessDetails] = useState({
   messages: []
 });
 
-
 useEffect(() => {
   API.get("/business/my")
     .then(res => {
@@ -80,11 +78,10 @@ useEffect(() => {
         // הקובץ שהשרת מחזיר, יכול להיות ב־res.data או ב־res.data.business
         const data = res.data.business || res.data;
 
-        // merge של המצב הישן עם המידע החדש, + סנכרון התמונות לטאב הגלריה
+        // merge של המצב הישן עם המידע החדש
         setBusinessDetails(prev => ({
           ...prev,
-          ...data,
-          galleryTabImages: data.gallery || [],
+          ...data
         }));
       }
     })
@@ -261,7 +258,11 @@ const handleMainImagesChange = async (e) => {
     }
   };
   
-         
+  
+  
+  
+  
+  
 
   const handleStoryUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -287,42 +288,49 @@ const handleMainImagesChange = async (e) => {
       return file;
     });
   
-    // 2. עדכן state מיד לגלריה שמיועדת לטאב הגלריה
+    // 2. עדכן state מיד לתצוגה (בלי הגבלה)
     setBusinessDetails(prev => ({
       ...prev,
-      galleryTabImages: [...prev.galleryTabImages, ...previewFiles],
+      gallery: [...prev.gallery, ...previewFiles],
     }));
   
     // 3. בנה את ה-FormData עם המפתח "gallery"
     const formData = new FormData();
-    previewFiles.forEach(file => formData.append("gallery", file));
+    previewFiles.forEach(file => {
+      formData.append("gallery", file);
+    });
   
     try {
-      // 4. שלח את הבקשה
+      // 4. שלח את הבקשה ללא Content-Type ידני, עם cookies אם צריך
       const res = await API.put("/business/my/gallery", formData, {
         withCredentials: true,
       });
   
       if (res.status === 200) {
-        // 5. עדכן את galleryTabImages לפי מה שהשרת החזיר
+        // 5. עדכן את ה-gallery לפי מה שהשרת החזיר
         setBusinessDetails(prev => ({
           ...prev,
-          galleryTabImages: res.data.gallery, // מניח שהשרת מחזיר את המערך תחת key "gallery"
+          gallery: res.data.gallery,
         }));
         // 6. שחרר את ה-previews
         previewFiles.forEach(file => URL.revokeObjectURL(file.preview));
       } else {
+        console.error("❌ Error uploading gallery: Status", res.status);
         alert("❌ לא הצלחנו להעלות את הגלריה");
       }
     } catch (err) {
-      console.error("🔥 Error uploading gallery:", err);
+      console.error("🔥 Error uploading gallery:", err.response || err);
       alert("❌ שגיאה בהעלאת הגלריה. נסה שנית מאוחר יותר.");
     }
   };
   
   
   
-          
+  
+  
+  
+  
+  
 
   const handleDeleteImage = (index) => {
     const updatedGallery = [...businessDetails.gallery];
@@ -440,10 +448,7 @@ const handleMainImagesChange = async (e) => {
               onChange={handleLogoChange}
               accept="image/*"
             />
-            <button
-              onClick={handleLogoClick}
-              className="upload-logo-btn"
-            >
+            <button onClick={handleLogoClick} className="upload-logo-btn">
               העלאת לוגו
             </button>
   
@@ -467,46 +472,50 @@ const handleMainImagesChange = async (e) => {
   
             {/* תמונות ראשיות */}
             <label>תמונות לעמוד הראשי (עד 5):</label>
-<input
-  type="file"
-  multiple
-  style={{ display: "none" }}
-  ref={mainImagesInputRef}
-  onChange={handleMainImagesChange}
-  accept="image/*"
-/>
-<button
-  type="button"
-  onClick={() => mainImagesInputRef.current.click()}
-  className="upload-main-images-btn"
->
-  העלאת תמונות לעמוד הראשי
-</button>
+            <input
+              type="file"
+              multiple
+              style={{ display: "none" }}
+              ref={mainImagesInputRef}
+              onChange={handleMainImagesChange}
+              accept="image/*"
+            />
+            <button
+              type="button"
+              onClick={() => mainImagesInputRef.current.click()}
+              className="upload-main-images-btn"
+            >
+              העלאת תמונות לעמוד הראשי
+            </button>
 
 
 
 
 
             <div className="gallery-preview">
-      {businessDetails.mainImages?.map((item, i) => (
-        <div
-          key={i}
-          className="gallery-item-wrapper"
-          style={{ position: "relative" }}
-        >
-          <div className="gallery-item">
-            <img
-              src={typeof item === "string" ? item : item.preview}
-              alt={`mainImage-${i}`}
-              className="gallery-img"
-              style={{
-                objectFit:
-                  typeof item === "string"
-                    ? businessDetails.galleryFits?.[item] || "cover"
-                    : businessDetails.galleryFits?.[item.name] || "cover"
-              }}
-            />
-          </div>
+  {businessDetails.gallery.map((item, i) => (
+    <div
+      key={i}
+      className={`gallery-item-wrapper ${editIndex === i ? "editing" : ""}`}
+      style={{ position: "relative" }}
+    >
+      <div className="gallery-item">
+        <img
+          src={
+            typeof item === "string"
+              ? item
+              : item.preview
+          }
+          alt={`gallery-${i}`}
+          className="gallery-img"
+          style={{
+            objectFit:
+              typeof item === "string"
+                ? businessDetails.galleryFits?.[item] || "cover"
+                : businessDetails.galleryFits?.[item.name] || "cover"
+          }}
+        />
+      </div>
 
     {/* עריכה */}
     <button
@@ -609,19 +618,37 @@ const handleMainImagesChange = async (e) => {
 
     <div className="preview-column">
       {renderTopBar()}
-      {/* כאן שולחים גם את ה־handleSave */}
-      <MainTab
-        businessDetails={businessDetails}
-        handleSave={handleSave}
-      />
+      <MainTab businessDetails={businessDetails} />
     </div>
   </>
 )}
+
 
 {currentTab === "גלריה" && (
   <>
     <div className="form-column">
       <h2>🎨 עיצוב הגלריה</h2>
+
+      {/* 1. input מוסתר לגלריה */}
+      <input
+        type="file"
+        multiple
+        style={{ display: "none" }}
+        ref={galleryInputRef}
+        onChange={handleGalleryChange}
+        accept="image/*"
+      />
+
+      {/* 2. כפתור לפתיחת בורר הקבצים */}
+      <button
+        type="button"
+        className="upload-gallery-btn"
+        onClick={() => galleryInputRef.current.click()}
+      >
+        העלאת תמונות גלריה
+      </button>
+
+      {/* 3. קומפוננטת הטופס של הגלריה */}
       <GalleryTab
         isForm={true}
         businessDetails={businessDetails}
@@ -629,26 +656,18 @@ const handleMainImagesChange = async (e) => {
         galleryTabInputRef={galleryTabInputRef}
         editGalleryTabIndex={editGalleryTabIndex}
         setEditGalleryTabIndex={setEditGalleryTabIndex}
-        handleDeleteGalleryTabImage={handleDeleteImage}
-        handleFitChange={handleFitChange}
+        handleDeleteGalleryTabImage={(i) => handleDeleteImage(i)}
+        handleFitChange={(i, fit) => handleFitChange(i, fit)}
         handleConfirmEdit={handleConfirmEdit}
       />
     </div>
 
     <div className="preview-column">
       {renderTopBar()}
-      {/* כאן אנחנו מציגים בגלריה את המערך galleryTabImages */}
-      <GalleryTab
-        isForm={false}
-        businessDetails={{
-          ...businessDetails,
-          gallery: businessDetails.galleryTabImages
-        }}
-      />
+      <GalleryTab isForm={false} businessDetails={businessDetails} />
     </div>
   </>
 )}
-
 
 
       {currentTab === "ביקורות" && (
