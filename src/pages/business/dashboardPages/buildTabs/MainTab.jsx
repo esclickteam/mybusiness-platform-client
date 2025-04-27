@@ -1,11 +1,12 @@
 // src/pages/business/dashboardPages/build/buildTabs/MainTab.jsx
-import React from "react";
-// Build.css נמצא בתיקיית האב של buildTabs
+import React, { useRef } from "react";
 import "../Build.css";
-// MainTab.css נמצא באותה תיקייה
 import "./MainTab.css";
 
-const MainTab = ({ businessDetails, handleSave }) => {
+const MainTab = ({ businessDetails, setBusinessDetails, handleSave }) => {
+  const inputRef = useRef(null);
+
+  // מייצר URL לתצוגה מקומית של ה־File או מחזיר URL קיים
   const getImageUrl = (item) => {
     if (!item) return "";
     if (item instanceof File) return URL.createObjectURL(item);
@@ -13,17 +14,43 @@ const MainTab = ({ businessDetails, handleSave }) => {
     return item.url || item.preview || "";
   };
 
-  const getImageFit = (file) => {
-    // אם רוצים לשמור התאמות חיתוך שונות ל־mainImages,
-    // אפשר להחליף כאן את המיפוי מ־galleryFits ל־mainImagesFits
-    const key = file?.name || file?.url || "";
-    return businessDetails.galleryFits?.[key] || "cover";
+  // במקום כפתור, כשאף תמונה לא קיימת מראים “פלוס”
+  const renderPlaceholder = () => (
+    <div
+      className="gallery-item-wrapper placeholder"
+      onClick={() => inputRef.current.click()}
+    >
+      <div className="gallery-item plus-icon">+</div>
+    </div>
+  );
+
+  // כשמעלים קובץ – שומרים אותו ב־state
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setBusinessDetails((prev) => ({
+      ...prev,
+      mainImages: [file],
+    }));
   };
 
   return (
     <>
-      {/* תצוגת התמונות של העמוד הראשי */}
+      {/* הקלט המוסתר */}
+      <input
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        ref={inputRef}
+        onChange={handleFileChange}
+      />
+
+      {/* תצוגת הפלוס או התמונה */}
       <div className="gallery-preview no-actions">
+        {(!businessDetails.mainImages ||
+          businessDetails.mainImages.length === 0) &&
+          renderPlaceholder()}
+
         {businessDetails.mainImages?.map((file, i) => (
           <div key={i} className="gallery-item-wrapper">
             <div className="gallery-item">
@@ -31,14 +58,14 @@ const MainTab = ({ businessDetails, handleSave }) => {
                 src={getImageUrl(file) || "/images/placeholder.jpg"}
                 alt={`main-${i}`}
                 className="gallery-img"
-                style={{ objectFit: getImageFit(file) }}
+                style={{ objectFit: "cover" }}
               />
             </div>
           </div>
         ))}
       </div>
 
-      {/* תצוגת ביקורות אם יש */}
+      {/* אם יש ביקורות – נשאיר כמו שהייתה אצלך */}
       {businessDetails.reviews?.length > 0 && (
         <div className="reviews">
           <h3>⭐ ביקורות אחרונות</h3>
