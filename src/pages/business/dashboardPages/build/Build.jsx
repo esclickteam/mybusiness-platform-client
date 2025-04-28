@@ -121,25 +121,27 @@ export default function Build() {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
+  
+    // יצירת preview לכל תמונה חדשה
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-
+  
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: previews,
+      mainImages: [...prev.mainImages, ...previews], // מוסיף את התמונות החדשות לתמונות הישנות
     }));
     console.log("📸 MainImages - לפני שליחה:", previews);
-
+  
     try {
       const fd = new FormData();
       files.forEach(f => fd.append("mainImages", f));
-
+  
       const res = await API.put("/business/my/main-images", fd);
       if (res.status === 200) {
         const wrapped = res.data.mainImages.map(url => ({ preview: url }));
         console.log("📸 MainImages מהשרת:", wrapped);
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages: wrapped,
+          mainImages: [...prev.mainImages, ...wrapped], // מוסיף את התמונות החדשות לתמונות הישנות
         }));
       }
     } catch (err) {
@@ -148,31 +150,31 @@ export default function Build() {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
+  
 
   const handleGalleryChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
     e.target.value = null;
-
+  
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: previews,
+      gallery: [...prev.gallery, ...previews], // מוסיף את התמונות החדשות לתמונות הישנות
     }));
     console.log("🖼️ Gallery - לפני שליחה:", previews);
-
+  
     try {
       const fd = new FormData();
       files.forEach(f => fd.append("gallery", f));
-
+  
       const res = await API.put("/business/my/gallery", fd);
-
       if (res.status === 200) {
         const wrapped = res.data.gallery.map(url => ({ preview: url }));
         console.log("🖼️ Gallery מהשרת:", wrapped);
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: wrapped,
+          gallery: [...prev.gallery, ...wrapped], // מוסיף את התמונות החדשות לתמונות הישנות
         }));
       }
     } catch (err) {
@@ -181,6 +183,7 @@ export default function Build() {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
+  
 
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
