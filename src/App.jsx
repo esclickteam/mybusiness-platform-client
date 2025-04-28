@@ -24,7 +24,7 @@ const ResetPassword    = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword   = lazy(() => import("./pages/ChangePassword"));
 const BusinessesList   = lazy(() => import("./pages/BusinessesList"));
 
-// Public profile view
+// Public business profile (no sidebar)
 const BusinessProfileView = lazy(() => import(
   "./pages/business/dashboardPages/profile/BusinessProfileView"
 ));
@@ -60,7 +60,7 @@ export default function App() {
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
-          {/* 🔹 עמודים ציבוריים */}
+          {/* Public pages */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/search" element={<SearchBusinesses />} />
@@ -79,10 +79,10 @@ export default function App() {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/businesses" element={<BusinessesList />} />
 
-          {/* 🔹 דף פרופיל ציבורי של עסק (public) */}
+          {/* Public business profile (clean) */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-          {/* 🔹 דשבורד עסקים עם סיידבר + טאבים (protected) */}
+          {/* Protected business dashboard */}
           <Route
             path="/business/:businessId/dashboard/*"
             element={
@@ -92,7 +92,7 @@ export default function App() {
             }
           />
 
-          {/* 🔹 דשבורד לקוח (protected) */}
+          {/* Protected client dashboard */}
           <Route
             path="/client/dashboard"
             element={
@@ -102,7 +102,7 @@ export default function App() {
             }
           />
 
-          {/* 🔹 דשבורד עובדים (protected) */}
+          {/* Protected staff dashboards */}
           <Route
             path="/staff/dashboard"
             element={
@@ -144,7 +144,7 @@ export default function App() {
             }
           />
 
-          {/* 🔹 דשבורד מנהל (protected) */}
+          {/* Protected manager dashboard */}
           <Route
             path="/manager/dashboard"
             element={
@@ -154,7 +154,7 @@ export default function App() {
             }
           />
 
-          {/* 🔹 דשבורד אדמין (protected) */}
+          {/* Protected admin dashboards */}
           <Route
             path="/admin/dashboard"
             element={
@@ -220,11 +220,11 @@ export default function App() {
             }
           />
 
-          {/* 🔹 ברירות מחדל נוספות */}
-          <Route path="/dashboard/calendar" element={<Navigate to="/business/dashboard" replace />} />
+          {/* Additional routes */}
+          <Route path="/dashboard/calendar" element={<Navigate to="/business/:businessId/dashboard" replace />} />
           <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
-          {/* 🔹 ברירת מחדל לכל שאר הכתובות */}
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
