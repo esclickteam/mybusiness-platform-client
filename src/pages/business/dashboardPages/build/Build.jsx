@@ -21,6 +21,9 @@ const TABS = [
   "שאלות ותשובות",
 ];
 
+// המקסימום המותרים בגלריה
+const GALLERY_MAX = 5;
+
 export default function Build() {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
@@ -32,13 +35,13 @@ export default function Build() {
     phone:       "",
     logo:        null,
     gallery:     [],
-    mainImages:  [],       // { preview, size }
+    mainImages:  [],
     reviews:     [],
     faqs:        [],
   });
 
-  const [isSaving, setIsSaving]     = useState(false);
-  const [editIndex, setEditIndex]   = useState(null);
+  const [isSaving, setIsSaving]       = useState(false);
+  const [editIndex, setEditIndex]     = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const logoInputRef       = useRef();
@@ -46,7 +49,7 @@ export default function Build() {
   const galleryInputRef    = useRef();
   const pendingUploadsRef  = useRef([]);
 
-  // משמש ל-track של upload ל־API
+  // עוזר ל-track עליות אסינכרוניות
   const track = p => {
     pendingUploadsRef.current.push(p);
     p.finally(() => {
@@ -75,13 +78,14 @@ export default function Build() {
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
   // ===== LOGO =====
-  const handleLogoClick   = () => logoInputRef.current?.click();
-  const handleLogoChange  = e => {
+  const handleLogoClick  = () => logoInputRef.current?.click();
+  const handleLogoChange = e => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = null;
     const preview = URL.createObjectURL(file);
     setBusinessDetails(prev => ({ ...prev, logo: { file, preview } }));
+
     const fd = new FormData();
     fd.append("logo", file);
     track(
@@ -101,15 +105,19 @@ export default function Build() {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
+
     const newItems = files.map(file => ({
       file,
       preview: URL.createObjectURL(file),
       size: "full"
     }));
+
+    // עדכון מיידי לפריוויו
     setBusinessDetails(prev => ({
       ...prev,
       mainImages: [...prev.mainImages, ...newItems].slice(0, 5)
     }));
+
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
     track(
@@ -154,16 +162,26 @@ export default function Build() {
 
   // ===== GALLERY =====
   const handleGalleryChange = e => {
-    const files = Array.from(e.target.files || []).slice(0, 10);
+    const availableSlots = GALLERY_MAX - businessDetails.gallery.length;
+    const files = Array.from(e.target.files || []).slice(0, availableSlots);
     if (!files.length) return;
     e.target.value = null;
+
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({ ...prev, gallery: [...prev.gallery, ...previews] }));
+
     const fd = new FormData();
-    previews.forEach(p => fd.append("gallery", p.file));
-    track(API.put("/business/my/gallery", fd)
-      .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
-      .catch(console.error)
+    files.forEach(f => fd.append("gallery", f));
+    track(
+      API.put("/business/my/gallery", fd)
+        .then(res => {
+          if (res.status === 200) {
+            const wrapped = res.data.gallery.map(url => ({ preview: url }));
+            setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
+          }
+        })
+        .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
+        .catch(console.error)
     );
   };
 
@@ -174,14 +192,15 @@ export default function Build() {
     }));
   };
 
+  const handleEditImage = idx => {
+    console.log("Edit gallery image:", idx);
+  };
+
   // ===== SAVE =====
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // חכה לסיום כל ההעלאות
       await Promise.all(pendingUploadsRef.current);
-
-      // שמור הכול בפעם אחת
       await API.patch("/business/my", {
         name:        businessDetails.name,
         description: businessDetails.description,
@@ -189,7 +208,6 @@ export default function Build() {
         mainImages:  businessDetails.mainImages.map(img => ({ url: img.preview, size: img.size })),
         gallery:     businessDetails.gallery.map(img => img.preview),
       });
-
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
       console.error(err);
@@ -199,6 +217,7 @@ export default function Build() {
     }
   };
 
+  // ===== TOP BAR =====
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
@@ -257,15 +276,18 @@ export default function Build() {
           isSaving={isSaving}
         />
       )}
+
       {currentTab === "גלריה" && (
         <GallerySection
           businessDetails={businessDetails}
           galleryInputRef={galleryInputRef}
           handleGalleryChange={handleGalleryChange}
           handleDeleteImage={handleDeleteGalleryImage}
+          handleEditImage={handleEditImage}
           renderTopBar={renderTopBar}
         />
       )}
+
       {currentTab === "ביקורות" && (
         <ReviewsSection
           reviews={businessDetails.reviews}
@@ -274,9 +296,15 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
+
       {currentTab === "חנות / יומן" && (
-        <ShopSection setBusinessDetails={setBusinessDetails} handleSave={handleSave} renderTopBar={renderTopBar} />
+        <ShopSection
+          setBusinessDetails={setBusinessDetails}
+          handleSave={handleSave}
+          renderTopBar={renderTopBar}
+        />
       )}
+
       {currentTab === "צ'אט עם העסק" && (
         <ChatSection
           businessDetails={businessDetails}
@@ -284,6 +312,7 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
+
       {currentTab === "שאלות ותשובות" && (
         <FaqSection
           faqs={businessDetails.faqs}
@@ -292,6 +321,7 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
+
       {isPopupOpen && (
         <div className="popup-overlay">
           <div className="popup-content">
