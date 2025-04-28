@@ -28,7 +28,7 @@ export default function BusinessProfileView() {
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
           gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
           reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
-          faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : []
+          faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : [],
         });
       })
       .catch(err => console.error("❌ fetch business:", err))
@@ -49,7 +49,6 @@ export default function BusinessProfileView() {
     faqs
   } = data;
 
-  // רק mainImages → אם אין, gallery
   const primary = mainImages.length ? mainImages : gallery;
 
   return (
@@ -71,6 +70,19 @@ export default function BusinessProfileView() {
           )}
 
           <h1 className="business-name">{name}</h1>
+
+          {/* Description & Phone under title */}
+          {!!description && (
+            <div className="about-section">
+              <p>{description}</p>
+            </div>
+          )}
+          {!!phone && (
+            <div className="phone-section">
+              <strong>טלפון:</strong> {phone}
+            </div>
+          )}
+
           <hr className="profile-divider" />
 
           <div className="profile-tabs">
@@ -79,35 +91,19 @@ export default function BusinessProfileView() {
                 key={tab}
                 className={`tab ${tab === currentTab ? "active" : ""}`}
                 onClick={() => setCurrentTab(tab)}
-              >
-                {tab}
-              </button>
+              >{tab}</button>
             ))}
           </div>
 
           <div className="tab-content">
             {currentTab === "ראשי" && (
-              <>
-                {!!description && (
-                  <div className="about-section">
-                    <p>{description}</p>
+              <div className="main-images">
+                {primary.map((url, i) => (
+                  <div key={i} className="profile-gallery-item">
+                    <img src={url} alt={`main-${i}`} className="gallery-img" />
                   </div>
-                )}
-                {!!phone && (
-                  <div className="phone-section">
-                    <strong>טלפון:</strong> {phone}
-                  </div>
-                )}
-                {primary.length > 0 && (
-                  <div className="main-images">
-                    {primary.map((url, i) => (
-                      <div key={i} className="profile-gallery-item">
-                        <img src={url} alt={`main-${i}`} className="gallery-img" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
+                ))}
+              </div>
             )}
 
             {currentTab === "גלריה" && (
@@ -127,8 +123,7 @@ export default function BusinessProfileView() {
                 {reviews.length ? reviews.map((r, i) => (
                   <div key={i} className="review-card improved">
                     <div className="review-header">
-                      <strong>{r.user}</strong>
-                      <span>★ {r.rating}/5</span>
+                      <strong>{r.user}</strong> <span>★ {r.rating}/5</span>
                     </div>
                     <p>{r.comment || r.text}</p>
                   </div>
@@ -148,15 +143,11 @@ export default function BusinessProfileView() {
             )}
 
             {currentTab === "צ'אט עם העסק" && (
-              <div className="chat-tab">
-                <h3>שלח הודעה לעסק</h3>
-              </div>
+              <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
 
             {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder">
-                <p>פיתוח בהמשך…</p>
-              </div>
+              <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}
           </div>
         </div>
