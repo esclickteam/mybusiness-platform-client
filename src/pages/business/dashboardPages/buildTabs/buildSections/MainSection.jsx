@@ -14,10 +14,11 @@ export default function MainSection({
   logoInputRef,
   mainImagesInputRef,
   handleDeleteImage,
-  handleEditImage,
   isSaving
 }) {
   const mainImages = businessDetails.mainImages || [];
+  // הגבלה ל-5 תמונות ראשיות בלבד
+  const limitedMainImages = mainImages.slice(0, 5);
 
   return (
     <>
@@ -77,7 +78,7 @@ export default function MainSection({
           onChange={handleMainImagesChange}
         />
         <div className="gallery-preview">
-          {mainImages.map((img, i) => (
+          {limitedMainImages.map((img, i) => (
             <div key={i} className="gallery-item-wrapper image-wrapper">
               <img
                 src={img.preview}
@@ -92,17 +93,9 @@ export default function MainSection({
               >
                 🗑️
               </button>
-              <button
-                className="edit-btn"
-                onClick={() => handleEditImage(i)}
-                type="button"
-                title="עריכה"
-              >
-                ✏️
-              </button>
             </div>
           ))}
-          {mainImages.length < 5 && (
+          {limitedMainImages.length < 5 && (
             <div
               className="gallery-placeholder clickable"
               onClick={() => mainImagesInputRef.current?.click()}

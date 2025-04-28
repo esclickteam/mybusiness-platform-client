@@ -1,5 +1,3 @@
-// src/components/buildTabs/buildSections/GallerySection.jsx
-
 import React from "react";
 import "../../build/Build.css";
 
@@ -8,19 +6,15 @@ export default function GallerySection({
   galleryInputRef,
   handleGalleryChange,
   handleDeleteImage,
-  handleEditImage,
   renderTopBar
 }) {
-  const maxItems = 5;
   const gallery = businessDetails.gallery || [];
-  const limitedGallery = gallery.slice(0, maxItems);
 
   return (
-    <>
-      {/* צד שמאל: טופס העלאה בלבד */}
+    <div className="gallery-section-wrapper">
+      {/* כפתור העלאה */}
       <div className="form-column">
         <h3>העלאת תמונות לגלריה</h3>
-
         <input
           type="file"
           name="gallery"
@@ -33,28 +27,21 @@ export default function GallerySection({
         <button
           className="save-btn"
           onClick={() => galleryInputRef.current?.click()}
-          disabled={gallery.length >= maxItems}
         >
-          {gallery.length >= maxItems ? "הגעת למקסימום" : "הוספת תמונות"}
+          הוספת תמונות
         </button>
       </div>
 
-      {/* צד ימין: תצוגת גלריה גלילה אופקית */}
+      {/* תצוגה מוקדמת בגלריה */}
       <div className="preview-column">
         {renderTopBar && renderTopBar()}
-
         <h3 className="section-title">הגלריה שלנו</h3>
         <div
           className="gallery-scroll-container"
-          style={{
-            display: 'flex',
-            gap: '1rem',
-            overflowX: 'auto',
-            padding: '1rem 0'
-          }}
+          style={{ display: 'flex', gap: '1rem', overflowX: 'auto', padding: '1rem 0' }}
         >
-          {limitedGallery.length > 0 ? (
-            limitedGallery.map((item, i) => (
+          {gallery.length > 0 ? (
+            gallery.map((item, i) => (
               <div
                 key={i}
                 className="gallery-item-wrapper"
@@ -71,18 +58,7 @@ export default function GallerySection({
                   type="button"
                   title="מחיקה"
                   style={{ position: 'absolute', top: 4, right: 4 }}
-                >
-                  🗑️
-                </button>
-                <button
-                  className="edit-btn"
-                  onClick={() => handleEditImage(i)}
-                  type="button"
-                  title="עריכה"
-                  style={{ position: 'absolute', top: 4, left: 4 }}
-                >
-                  ✏️
-                </button>
+                >🗑️</button>
               </div>
             ))
           ) : (
@@ -90,6 +66,6 @@ export default function GallerySection({
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
