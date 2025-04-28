@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
@@ -70,13 +69,12 @@ export default function BusinessProfileView() {
           )}
 
           <h1 className="business-name">{name}</h1>
-          <div className="rating"><strong>{rating}</strong> / 5 ★</div>
-          <hr className="profile-divider" />
-
           <div className="about-phone">
             {description && <p><strong>תיאור:</strong> {description}</p>}
-            {phone       && <p><strong>טלפון:</strong> {phone}</p>}
+            {phone && <p><strong>טלפון:</strong> {phone}</p>}
           </div>
+          <div className="rating"><strong>{rating}</strong> / 5 ★</div>
+          <hr className="profile-divider" />
 
           <div className="profile-tabs">
             {TABS.map(tab => (
