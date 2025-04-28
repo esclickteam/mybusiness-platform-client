@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
+import { dedupeByPreview } from "../../../utils/dedupe";
 
 import MainSection    from "../buildTabs/buildSections/MainSection";
 import GallerySection from "../buildTabs/buildSections/GallerySection";
@@ -101,36 +102,52 @@ export default function Build() {
   };
 
   // ===== MAIN IMAGES =====
-  const handleMainImagesChange = e => {
+  const handleMainImagesChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
-
+  
+    // 1) הכנת אובייקטים לפריוויו
     const newItems = files.map(file => ({
       file,
       preview: URL.createObjectURL(file),
       size: "full"
     }));
-
-    // עדכון מיידי לפריוויו
+  
+    // 2) עדכון מיידי של הפריוויו (כולל תמונות קיימות) עם הסרת כפילויות
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: [...prev.mainImages, ...newItems].slice(0, 5)
+      mainImages: dedupeByPreview([
+        ...prev.mainImages,
+        ...newItems
+      ]).slice(0, 5)
     }));
-
+  
+    // 3) שליחת הקבצים לשרת
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
-    track(
-      API.put("/business/my/main-images", fd)
-        .then(res => {
-          if (res.status === 200) {
-            const wrapped = res.data.mainImages.map(url => ({ preview: url, size: "full" }));
-            setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
-          }
-        })
-        .finally(() => newItems.forEach(i => URL.revokeObjectURL(i.preview)))
-        .catch(console.error)
-    );
+    try {
+      const res = await API.put("/business/my/main-images", fd);
+      if (res.status === 200) {
+        // 4) עטיפת ה-URL שהשרת החזיר
+        const wrapped = res.data.mainImages.map(url => ({
+          preview: url,
+          size: "full"
+        }));
+        // 5) החלפה מלאה של ה-mainImages + הסרת כפילויות סופית
+        setBusinessDetails(prev => ({
+          ...prev,
+          mainImages: dedupeByPreview(wrapped)
+        }));
+      } else {
+        console.warn("העלאת תמונות נכשלה:", res);
+      }
+    } catch (err) {
+      console.error("שגיאה בהעלאה:", err);
+    } finally {
+      // 6) ניקוי הזכרון של ה-blob URLs
+      newItems.forEach(i => URL.revokeObjectURL(i.preview));
+    }
   };
 
   const handleDeleteMainImage = idx => {
