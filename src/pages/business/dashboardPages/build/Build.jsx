@@ -105,64 +105,90 @@ export default function Build() {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
-
+  
     setBusinessDetails(prev => {
-      // צור אובייקטים חדשים עם file+preview
+      // 1) צור אובייקטי preview חדשים
       const newItems = files.map(file => ({
         file,
-        preview: URL.createObjectURL(file),
+        preview: URL.createObjectURL(file)
       }));
-
-      // חבר רק את החדשים (עד 5 פריטים)
-      const updated = newItems.slice(0, 5);
-
-      // בניית FormData ושליחה ל-API
+  
+      // 2) הוסף אותם על למה שהיה קודם, וחתוך עד 5
+      const updated = [...prev.mainImages, ...newItems].slice(0, 5);
+  
+      // 3) בניית FormData (שם השדה נשאר "main-images")
       const fd = new FormData();
-      updated.forEach(item => fd.append("main-images", item.file));
-
+      updated.forEach(item => {
+        if (item.file) fd.append("main-images", item.file);
+      });
+  
+      // 4) שליחה אופטימיסטית
       track(
         API.put("/business/my/main-images", fd)
           .then(res => {
             if (res.status === 200) {
+              // העדכון הרשמי מהשרת כולל כל ה-URLs הישנים + חדשים
               const wrapped = res.data.mainImages.map(url => ({ preview: url }));
               setBusinessDetails(p => ({ ...p, mainImages: wrapped }));
             }
           })
           .catch(console.error)
-          .finally(() => updated.forEach(item => URL.revokeObjectURL(item.preview)))
+          .finally(() => {
+            // תשחרר מקום בזיכרון
+            newItems.forEach(item => URL.revokeObjectURL(item.preview));
+          })
       );
-
+  
+      // 5) עדכון אופטימיסטי של ה-state
       return { ...prev, mainImages: updated };
     });
   };
+  
 
   /* gallery upload */
   const handleGalleryChange = e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
     e.target.value = null;
-
-    const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-    setBusinessDetails(prev => ({ ...prev, gallery: [...prev.gallery, ...previews] }));
-
+  
+    // יצירת פריוויים זמניים
+    const previews = files.map(f => ({
+      file: f,
+      preview: URL.createObjectURL(f)
+    }));
+  
+    // עדכון אופטימיסטי: מציג את היעד הנוכחי + החדשים
+    setBusinessDetails(prev => ({
+      ...prev,
+      gallery: [...prev.gallery, ...previews]
+    }));
+  
+    // בניית FormData
     const fd = new FormData();
     files.forEach(f => fd.append("gallery", f));
-
+  
+    // שליחה ל-API
     track(
       API.put("/business/my/gallery", fd)
         .then(res => {
           if (res.status === 200) {
+            // עטיפת ה-URLs שהשרת החזיר
             const wrapped = res.data.gallery.map(url => ({ preview: url }));
+            // החלפה מלאה של הגלריה בנתונים מהשרת
             setBusinessDetails(prev => ({
               ...prev,
-              gallery: [...prev.gallery.filter(i => !i.file), ...wrapped],
+              gallery: wrapped
             }));
           }
         })
-        .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
         .catch(console.error)
+        .finally(() => {
+          // שחרור זיכרון של ה-Object URLs הזמניים
+          previews.forEach(p => URL.revokeObjectURL(p.preview));
+        })
     );
   };
+  
 
   /* save profile */
   const handleSave = async () => {
