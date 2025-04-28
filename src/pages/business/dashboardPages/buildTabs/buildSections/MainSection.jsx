@@ -21,27 +21,23 @@ export default function MainSection({
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const mainImages = businessDetails.mainImages || [];
 
-  // עדכון גודל התמונה
-  const updateImageSize = (sizeType) => {
-    if (editIndex === null) return;
+  // open popup for editing size
+  const openEditPopup = index => {
+    setEditIndex(index);
+    setIsPopupOpen(true);
+  };
 
-    setBusinessDetails(prev => {
-      const updated = [...prev.mainImages];
-      updated[editIndex].size = sizeType;
-      return { ...prev, mainImages: updated };
-    });
-
+  const closePopup = () => {
     setIsPopupOpen(false);
     setEditIndex(null);
   };
 
-  // פונקציה למחיקת תמונה
-  // (אם מעבירים handleDeleteImage מ-Build, ניתן להסיר הגדרה מקומית)
-
   return (
     <>
-      {/* ----- עמודת הטופס ----- */}
+      {/* ----- Form column ----- */}
       <div className="form-column">
+        {renderTopBar && renderTopBar()}
+
         <h2>🎨 עיצוב הכרטיס</h2>
 
         <label>שם העסק:</label>
@@ -71,7 +67,6 @@ export default function MainSection({
         <label>לוגו:</label>
         <input
           type="file"
-          name="logo"
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
@@ -88,9 +83,8 @@ export default function MainSection({
         <label>תמונות ראשיות:</label>
         <input
           type="file"
-          name="main-images"
-          multiple
           accept="image/*"
+          multiple
           style={{ display: "none" }}
           ref={mainImagesInputRef}
           onChange={handleMainImagesChange}
@@ -104,20 +98,20 @@ export default function MainSection({
                 className="gallery-img"
               />
               <button
+                className="edit-btn"
+                onClick={() => openEditPopup(i)}
+                type="button"
+                title="עריכה"
+              >
+                ✏️
+              </button>
+              <button
                 className="delete-btn"
                 onClick={() => handleDeleteImage(i)}
                 type="button"
                 title="מחיקה"
               >
                 🗑️
-              </button>
-              <button
-                className="edit-btn"
-                onClick={() => handleEditImage(i)}
-                type="button"
-                title="עריכה"
-              >
-                ✏️
               </button>
             </div>
           ))}
@@ -151,34 +145,23 @@ export default function MainSection({
         )}
       </div>
 
-      {/* ----- עמודת התצוגה המקדימה ----- */}
+      {/* ----- Preview column ----- */}
       <div className="preview-column">
-        {renderTopBar && renderTopBar()}
-
-        <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
-          {businessDetails.description && (
-            <p className="preview-description">
-              <strong>תיאור:</strong> {businessDetails.description}
-            </p>
-          )}
-          {businessDetails.phone && (
-            <p className="preview-phone">
-              <strong>טלפון:</strong> {businessDetails.phone}
-            </p>
-          )}
-        </div>
-
         <MainTab businessDetails={businessDetails} />
       </div>
 
-      {/* פופאפ גודל תמונה */}
+      {/* Edit size popup */}
       {isPopupOpen && (
         <div className="popup-overlay">
           <div className="popup-content">
             <h3>בחר גודל תמונה</h3>
-            <button onClick={() => updateImageSize('full')}>גודל מלא</button>
-            <button onClick={() => updateImageSize('custom')}>גודל מותאם</button>
-            <button onClick={() => setIsPopupOpen(false)}>ביטול</button>
+            <button onClick={() => { handleEditImage(editIndex, 'full'); closePopup(); }}>
+              גודל מלא
+            </button>
+            <button onClick={() => { handleEditImage(editIndex, 'custom'); closePopup(); }}>
+              גודל מותאם
+            </button>
+            <button onClick={closePopup}>ביטול</button>
           </div>
         </div>
       )}
