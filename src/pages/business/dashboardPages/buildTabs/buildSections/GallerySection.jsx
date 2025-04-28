@@ -43,15 +43,17 @@ export default function GallerySection({
                   className="delete-btn"
                   onClick={() => handleDeleteImage(i)}
                   type="button"
+                  title="מחיקה"
                 >
-                  <img src="/assets/delete.svg" alt="מחיקה" />
+                  🗑️
                 </button>
                 <button
                   className="edit-btn"
                   onClick={() => handleEditImage(i)}
                   type="button"
+                  title="עריכה"
                 >
-                  <img src="/assets/edit.svg" alt="עריכה" />
+                  ✏️
                 </button>
               </div>
             ))
@@ -79,15 +81,17 @@ export default function GallerySection({
                   className="delete-btn"
                   onClick={() => handleDeleteImage(i)}
                   type="button"
+                  title="מחיקה"
                 >
-                  <img src="/assets/delete.svg" alt="מחיקה" />
+                  🗑️
                 </button>
                 <button
                   className="edit-btn"
                   onClick={() => handleEditImage(i)}
                   type="button"
+                  title="עריכה"
                 >
-                  <img src="/assets/edit.svg" alt="עריכה" />
+                  ✏️
                 </button>
               </div>
             ))
