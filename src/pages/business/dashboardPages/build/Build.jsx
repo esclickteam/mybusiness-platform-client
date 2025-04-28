@@ -153,11 +153,11 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
   
-    // מציג זמנית את התמונות שבחר המשתמש
+    // מציג זמנית את התמונות שהמשתמש העלה
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: previews,
+      gallery: previews, // מציג רק את החדשות
     }));
   
     try {
@@ -165,11 +165,12 @@ export default function Build() {
       files.forEach(f => fd.append("gallery", f));
   
       const res = await API.put("/business/my/gallery", fd);
+  
       if (res.status === 200) {
         const wrapped = res.data.gallery.map(url => ({ preview: url }));
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: wrapped, // מחליף לגמרי את התמונות
+          gallery: wrapped, // שומר רק את התמונות מהשרת
         }));
       }
     } catch (err) {
@@ -178,6 +179,7 @@ export default function Build() {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
+  
   
   
 
