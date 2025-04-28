@@ -124,8 +124,8 @@ export default function Build() {
         API.put("/business/my/main-images", fd)
           .then(res => {
             if (res.status === 200) {
-              const wrapped = res.data.mainImages.map(url => ({ preview: url }));
               // עדכון הגלריה עם התמונות שהתקבלו מהשרת
+              const wrapped = res.data.mainImages.map(url => ({ preview: url }));
               setBusinessDetails(p => ({
                 ...p,
                 mainImages: wrapped,
@@ -139,6 +139,7 @@ export default function Build() {
       return { ...prev, mainImages: updated };
     });
   };
+  
   
 
   /* gallery upload */
