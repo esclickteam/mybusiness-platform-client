@@ -1,6 +1,9 @@
+// src/buildTabs/buildSections/GallerySection.jsx
+
 import React from "react";
 import "../../build/Build.css";
-import { dedupeByPreview } from "../../../../../utils/dedupe";
+import API from "@api";                                  // הוספתי import ל־API
+import { dedupeByPreview } from "../../utils/dedupe";   // שני שלבים למעלה – buildSections → buildTabs → src → utils
 
 export default function GallerySection({
   businessDetails,
@@ -10,47 +13,50 @@ export default function GallerySection({
   handleEditImage,
   renderTopBar
 }) {
-  const maxItems    = 5;
-  const gallery     = businessDetails.gallery || [];
-  const limitedList = gallery.slice(0, maxItems);
+  const maxItems = 5;
+  const gallery  = businessDetails.gallery || [];
 
   /* ---- העלאת תמונות ---- */
   const handleGalleryChange = async e => {
-    const files = Array.from(e.target.files || []).slice(0, maxItems - gallery.length);
+    const files = Array.from(e.target.files || []).slice(0, maxItems);
     if (!files.length) return;
-    e.target.value = null;                      // איפוס input
+    e.target.value = null;
 
-    // שלב 1 – תצוגה מוקדמת
+    // 1) הכנת blob-preview
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
+
+    // 2) עדכון מיידי + סינון כפילויות + חיתוך למקסימום
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: dedupeByPreview([...prev.gallery, ...previews]),
+      gallery: dedupeByPreview([ ...prev.gallery, ...previews ]).slice(0, maxItems)
     }));
 
-    // שלב 2 – שליחת הקבצים לשרת
+    // 3) שליחה ל־API
+    const fd = new FormData();
+    files.forEach(f => fd.append("gallery", f));
     try {
-      const fd = new FormData();
-      files.forEach(f => fd.append("gallery", f));
-
       const res = await API.put("/business/my/gallery", fd);
       if (res.status === 200) {
-        // עטוף כל URL לאובייקט אחד ואפס את הרשימה לגמרי
+        // 4) עטיפת ה־URLs שהשרת החזיר
         const wrapped = res.data.gallery.map(url => ({ preview: url }));
+        // 5) החלפה מלאה + חיתוך + סינון כפילויות סופית
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: wrapped,                     // ⬅️  מחליף, לא ממזג
+          gallery: dedupeByPreview(wrapped).slice(0, maxItems)
         }));
       } else {
-        alert("העלאה נכשלה");
+        alert("❌ העלאה נכשלה");
       }
     } catch (err) {
-      console.error(err);
-      alert("שגיאה בהעלאה");
+      console.error("שגיאה בהעלאה:", err);
+      alert("❌ שגיאה בהעלאה");
     } finally {
+      // 6) שחרור זכרון של blob URLs
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
 
+  // render
   return (
     <>
       {renderTopBar()}
@@ -76,7 +82,7 @@ export default function GallerySection({
         </button>
 
         <div className="thumbs">
-          {limitedList.map((img, i) => (
+          {gallery.map((img, i) => (
             <div className="thumb" key={img.preview}>
               <img src={img.preview} alt={`gallery-${i}`} />
               <button onClick={() => handleEditImage(i)}>✏️</button>

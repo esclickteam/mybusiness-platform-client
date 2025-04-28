@@ -67,13 +67,16 @@ export default function Build() {
           const data = res.data.business || res.data;
           setBusinessDetails({
             ...data,
-            gallery:    (data.gallery    || []).map(url => ({ preview: url })),
-            mainImages: (data.mainImages || []).map(url => ({ preview: url, size: "full" })),
+            gallery: (data.gallery    || []).map(url => ({ preview: url })),
+            mainImages: dedupeByPreview(
+              (data.mainImages || []).map(url => ({ preview: url, size: "full" }))
+            ).slice(0, 5),
           });
         }
       })
       .catch(console.error);
   }, []);
+  
 
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
@@ -103,41 +106,39 @@ export default function Build() {
 
   // ===== MAIN IMAGES =====
   const handleMainImagesChange = async e => {
+    // 1) בחר עד 5 קבצים
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
   
-    // 1) הכנת אובייקטים לפריוויו
+    // 2) הכנת אובייקטים לפריוויו
     const newItems = files.map(file => ({
       file,
       preview: URL.createObjectURL(file),
       size: "full"
     }));
   
-    // 2) עדכון מיידי של הפריוויו (כולל תמונות קיימות) עם הסרת כפילויות
+    // 3) הצגת ה-preview מידית (החלפה, לא מיזוג)
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: dedupeByPreview([
-        ...prev.mainImages,
-        ...newItems
-      ]).slice(0, 5)
+      mainImages: newItems
     }));
   
-    // 3) שליחת הקבצים לשרת
+    // 4) שליחת הקבצים לשרת
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
     try {
       const res = await API.put("/business/my/main-images", fd);
       if (res.status === 200) {
-        // 4) עטיפת ה-URL שהשרת החזיר
+        // 5) עטיפת ה-URLs שחזרו מהשרת
         const wrapped = res.data.mainImages.map(url => ({
           preview: url,
           size: "full"
         }));
-        // 5) החלפה מלאה של ה-mainImages + הסרת כפילויות סופית
+        // 6) החלפה מלאה + חיתוך ל-5 + סינון כפילויות סופית
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages: dedupeByPreview(wrapped)
+          mainImages: dedupeByPreview(wrapped).slice(0, 5)
         }));
       } else {
         console.warn("העלאת תמונות נכשלה:", res);
@@ -145,10 +146,11 @@ export default function Build() {
     } catch (err) {
       console.error("שגיאה בהעלאה:", err);
     } finally {
-      // 6) ניקוי הזכרון של ה-blob URLs
+      // 7) שחרור זכרון ה-blob URLs
       newItems.forEach(i => URL.revokeObjectURL(i.preview));
     }
   };
+  
 
   const handleDeleteMainImage = idx => {
     setBusinessDetails(prev => ({
