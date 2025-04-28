@@ -3,7 +3,7 @@
 import React from "react";
 import "../../build/Build.css";
 import API from "@api";                                  // הוספתי import ל־API
-import { dedupeByPreview } from "../../utils/dedupe";   // שני שלבים למעלה – buildSections → buildTabs → src → utils
+import { dedupeByPreview } from "../../../../../utils/dedupe";
 
 export default function GallerySection({
   businessDetails,
