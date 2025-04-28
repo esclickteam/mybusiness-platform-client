@@ -193,6 +193,8 @@ const handleMainImagesChange = async e => {
       preview: URL.createObjectURL(f)
     }));
   
+    console.log("Uploading new images:", previews); // לוג תמונות חדשות
+
     // סינון התמונות הכפולות
     const newGallery = [
       ...businessDetails.gallery.filter(
@@ -201,6 +203,9 @@ const handleMainImagesChange = async e => {
       ...previews
     ];
   
+    console.log("Filtered gallery:", newGallery); // לוג לאחר סינון כפילויות
+
+
     setBusinessDetails(prev => ({
       ...prev,
       gallery: newGallery
@@ -224,6 +229,7 @@ const handleMainImagesChange = async e => {
         .catch(console.error)
     );
   };
+  
   
   
   
