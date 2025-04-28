@@ -121,18 +121,22 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
+  
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: [...prev.mainImages, ...previews],
+      mainImages: previews, // ← מציג זמנית את התמונות החדשות
     }));
+  
     try {
-      const fd = new FormData(); files.forEach(f => fd.append("mainImages", f));
+      const fd = new FormData();
+      files.forEach(f => fd.append("mainImages", f));
+  
       const res = await API.put("/business/my/main-images", fd);
       if (res.status === 200) {
         const wrapped = res.data.mainImages.map(url => ({ preview: url }));
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages: [...prev.mainImages, ...wrapped],
+          mainImages: wrapped, // ← מחליף את כל התמונות לפי השרת
         }));
       }
     } catch (err) {
@@ -142,24 +146,30 @@ export default function Build() {
     }
   };
   
+  
 
   const handleGalleryChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
     e.target.value = null;
+  
+    // מציג זמנית את התמונות שבחר המשתמש
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: [...prev.gallery, ...previews],
+      gallery: previews,
     }));
+  
     try {
-      const fd = new FormData(); files.forEach(f => fd.append("gallery", f));
+      const fd = new FormData();
+      files.forEach(f => fd.append("gallery", f));
+  
       const res = await API.put("/business/my/gallery", fd);
       if (res.status === 200) {
         const wrapped = res.data.gallery.map(url => ({ preview: url }));
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: [...prev.gallery, ...wrapped],
+          gallery: wrapped, // מחליף לגמרי את התמונות
         }));
       }
     } catch (err) {
@@ -168,6 +178,7 @@ export default function Build() {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
+  
   
 
   const renderTopBar = () => {

@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
@@ -107,14 +106,11 @@ export default function MainSection({
 
       {/* ----- עמודת התצוגה המקדימה ----- */}
       <div className="preview-column">
-        {/* Top bar: לוגו, שם העסק, דירוג וטאבס (ללא סטורי) */}
+        {/* Top bar: לוגו, שם העסק, דירוג וטאבס */}
         {renderTopBar()}
 
-        {/* תיאור וטלפון בתצוגה מקדימה – ממורכז עכשיו */}
-        <div
-          className="preview-details"
-          style={{ padding: "1rem", textAlign: "center" }}
-        >
+        {/* תיאור וטלפון אחרי שם העסק */}
+        <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
           {businessDetails.description && (
             <p className="preview-description">
               <strong>תיאור:</strong> {businessDetails.description}
