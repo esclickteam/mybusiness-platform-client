@@ -1,7 +1,7 @@
 import React from "react";
 import "../../build/Build.css";
-import { ReactComponent as DeleteIcon } from "../../../../../assets/delete.svg";
-import { ReactComponent as EditIcon } from "../../../../../assets/edit.svg";
+import deleteIcon from "../../../../../assets/delete.svg";
+import editIcon   from "../../../../../assets/edit.svg";
 
 export default function GallerySection({
   businessDetails,
@@ -46,14 +46,14 @@ export default function GallerySection({
                   onClick={() => handleDeleteImage(i)}
                   type="button"
                 >
-                  <DeleteIcon />
+                  <img src={deleteIcon} alt="Delete" />
                 </button>
                 <button
                   className="edit-btn"
                   onClick={() => handleEditImage(i)}
                   type="button"
                 >
-                  <EditIcon />
+                  <img src={editIcon} alt="Edit" />
                 </button>
               </div>
             ))
@@ -82,14 +82,14 @@ export default function GallerySection({
                   onClick={() => handleDeleteImage(i)}
                   type="button"
                 >
-                  <DeleteIcon />
+                  <img src={deleteIcon} alt="Delete" />
                 </button>
                 <button
                   className="edit-btn"
                   onClick={() => handleEditImage(i)}
                   type="button"
                 >
-                  <EditIcon />
+                  <img src={editIcon} alt="Edit" />
                 </button>
               </div>
             ))
