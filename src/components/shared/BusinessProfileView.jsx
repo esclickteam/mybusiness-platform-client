@@ -51,8 +51,6 @@ export default function BusinessProfileView() {
     faqs
   } = data;
 
-  const primary = mainImages.length ? mainImages : gallery;
-
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
@@ -87,10 +85,11 @@ export default function BusinessProfileView() {
           </div>
 
           <div className="tab-content">
+            {/* טאב ראשי - תמונות ראשיות */}
             {currentTab === "ראשי" && (
               <div className="main-images">
-                {primary.length > 0 ? (
-                  primary.map((url, i) => (
+                {mainImages.length > 0 ? (
+                  mainImages.map((url, i) => (
                     <div key={i} className="profile-gallery-item">
                       <img src={url} alt={`main-${i}`} className="gallery-img" />
                     </div>
@@ -101,6 +100,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* טאב גלריה - תמונות מהגלריה */}
             {currentTab === "גלריה" && (
               gallery.length > 0 ? (
                 <div className="gallery-preview">
@@ -115,6 +115,7 @@ export default function BusinessProfileView() {
               )
             )}
 
+            {/* טאב ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {reviews.length > 0 ? (
@@ -132,6 +133,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* טאב שאלות ותשובות */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
@@ -147,10 +149,12 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* טאב צ'אט */}
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
 
+            {/* טאב חנות / יומן */}
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}
