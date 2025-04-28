@@ -32,27 +32,25 @@ export default function Build() {
     description: "",
     phone:       "",
     logo:        null,
-    story:       [],
     gallery:     [],
     mainImages:  [],
     reviews:     [],
     faqs:        [],
   });
 
+  // refs
   const logoInputRef       = useRef();
-  const storyInputRef      = useRef();
   const mainImagesInputRef = useRef();
   const galleryInputRef    = useRef();
 
+  /* ───────────────  load data once  ─────────────── */
   useEffect(() => {
     API.get("/business/my")
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
-          console.log("🚀 useEffect data:", data);
           setBusinessDetails({
             ...data,
-            story:      (data.story      || []).map(url => ({ preview: url })),
             gallery:    (data.gallery    || []).map(url => ({ preview: url })),
             mainImages: (data.mainImages || []).map(url => ({ preview: url })),
           });
@@ -61,6 +59,7 @@ export default function Build() {
       .catch(console.error);
   }, []);
 
+  /* ───────────────  handlers  ─────────────── */
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
@@ -78,14 +77,18 @@ export default function Build() {
   };
 
   const handleLogoClick = () => logoInputRef.current?.click();
+
   const handleLogoChange = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = null;
+
     const preview = URL.createObjectURL(file);
     setBusinessDetails(prev => ({ ...prev, logo: { file, preview } }));
+
     try {
-      const fd = new FormData(); fd.append("logo", file);
+      const fd = new FormData();
+      fd.append("logo", file);
       const res = await API.put("/business/my/logo", fd);
       if (res.status === 200) {
         setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
@@ -97,70 +100,47 @@ export default function Build() {
     }
   };
 
-  
+  const handleMainImagesChange = async e => {
+    const files = Array.from(e.target.files || []).slice(0, 5);
+    if (!files.length) return;
+    e.target.value = null;
 
-  // פונקציה בצד הלקוח לעדכון התמונות
-const handleMainImagesChange = async (e) => {
-  const files = Array.from(e.target.files || []).slice(0, 5);
-  if (!files.length) return;
-  e.target.value = null;
+    const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
+    setBusinessDetails(prev => ({ ...prev, mainImages: previews }));
 
-  // יצירת preview לכל תמונה חדשה
-  const previews = files.map((f) => ({
-    file: f,
-    preview: URL.createObjectURL(f),
-  }));
-
-  setBusinessDetails((prev) => ({
-    ...prev,
-    mainImages: previews, // עדכון רק עם התמונות החדשות
-  }));
-
-  try {
-    const fd = new FormData();
-    files.forEach((f) => fd.append("mainImages", f));
-
-    const res = await API.put("/business/my/main-images", fd);
-    if (res.status === 200) {
-      const wrapped = res.data.mainImages.map((url) => ({
-        preview: url,
-      }));
-      setBusinessDetails((prev) => ({
-        ...prev,
-        mainImages: wrapped, // עדכון התמונות ב-state עם ה-URLs החדשים
-      }));
+    try {
+      const fd = new FormData();
+      files.forEach(f => fd.append("mainImages", f));
+      const res = await API.put("/business/my/main-images", fd);
+      if (res.status === 200) {
+        const wrapped = res.data.mainImages.map(url => ({ preview: url }));
+        setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
+      }
+    } catch (err) {
+      console.error(err);
     }
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-  
-  
+  };
 
   const handleGalleryChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
     e.target.value = null;
-  
+
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: [...prev.gallery, ...previews], // מוסיף את התמונות החדשות לתמונות הישנות
+      gallery: [...prev.gallery, ...previews],
     }));
-    console.log("🖼️ Gallery - לפני שליחה:", previews);
-  
+
     try {
       const fd = new FormData();
       files.forEach(f => fd.append("gallery", f));
-  
       const res = await API.put("/business/my/gallery", fd);
       if (res.status === 200) {
         const wrapped = res.data.gallery.map(url => ({ preview: url }));
-        console.log("🖼️ Gallery מהשרת:", wrapped);
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: [...prev.gallery, ...wrapped], // מוסיף את התמונות החדשות לתמונות הישנות
+          gallery: [...prev.gallery, ...wrapped],
         }));
       }
     } catch (err) {
@@ -169,14 +149,17 @@ const handleMainImagesChange = async (e) => {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
-  
 
+  /* ───────────────  UI helpers  ─────────────── */
   const renderTopBar = () => {
-    const avg = businessDetails.reviews.length
-      ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
-      : 0;
+    const avg =
+      businessDetails.reviews.length
+        ? businessDetails.reviews.reduce((s, r) => s + r.rating, 0) /
+          businessDetails.reviews.length
+        : 0;
+
     return (
-      <>        
+      <>
         <div className="logo-circle" onClick={handleLogoClick}>
           {typeof businessDetails.logo === "string" ? (
             <img src={businessDetails.logo} className="logo-img" />
@@ -193,6 +176,7 @@ const handleMainImagesChange = async (e) => {
             onChange={handleLogoChange}
           />
         </div>
+
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
@@ -200,32 +184,35 @@ const handleMainImagesChange = async (e) => {
             <span>{avg.toFixed(1)} / 5</span>
           </div>
         </div>
+
         <hr className="divider" />
+
         <div className="tabs">
           {TABS.map(tab => (
             <button
               key={tab}
               className={`tab ${tab === currentTab ? "active" : ""}`}
               onClick={() => setCurrentTab(tab)}
-            >{tab}</button>
+            >
+              {tab}
+            </button>
           ))}
         </div>
       </>
     );
   };
 
+  /* ───────────────  render  ─────────────── */
   return (
     <div className="build-wrapper">
       {currentTab === "ראשי" && (
         <MainSection
           businessDetails={businessDetails}
           handleInputChange={handleInputChange}
-          handleStoryUpload={handleStoryUpload}
           handleMainImagesChange={handleMainImagesChange}
           handleSave={handleSave}
           renderTopBar={renderTopBar}
           logoInputRef={logoInputRef}
-          storyInputRef={storyInputRef}
           mainImagesInputRef={mainImagesInputRef}
         />
       )}
