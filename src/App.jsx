@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
@@ -30,21 +30,21 @@ const BusinessProfileView = lazy(() => import(
 ));
 
 // Lazy-loaded protected dashboards
-const ClientDashboard       = lazy(() => import("./pages/client/ClientDashboard"));
-const StaffDashboard        = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession           = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile          = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks               = lazy(() => import("./pages/staff/MyTasks"));
-const MySales               = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard      = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard        = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs             = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans            = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings         = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers            = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent       = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles           = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage       = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
+const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks             = lazy(() => import("./pages/staff/MyTasks"));
+const MySales             = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard    = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard      = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs           = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans          = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings       = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -54,7 +54,7 @@ function ScrollToTop() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <>
       <Header />
       <ScrollToTop />
 
@@ -227,6 +227,6 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </>
   );
 }
