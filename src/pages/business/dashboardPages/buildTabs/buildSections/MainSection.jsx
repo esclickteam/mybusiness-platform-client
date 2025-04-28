@@ -1,9 +1,10 @@
-// src/buildTabs/buildSections/MainSection.jsx
+// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
 
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
-import { dedupeByPreview } from "../../../utils/dedupe"; // תיקןתי את הנתיב היחסי
+// תיקון: חמש רמות מעלה מ‐buildSections עד ל‐src/utils
+import { dedupeByPreview } from "../../../../../utils/dedupe";
 
 export default function MainSection({
   businessDetails,
@@ -25,7 +26,7 @@ export default function MainSection({
   // 2) הסרת כפילויות (blob vs URL)
   const uniqueImages = dedupeByPreview(mainImages);
 
-  // 3) חיתוך לחמש תמונות ראשיות
+  // 3) חיתוך ל־5 תמונות ראשיות
   const limitedMainImages = uniqueImages.slice(0, 5);
 
   return (
