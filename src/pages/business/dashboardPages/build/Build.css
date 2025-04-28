@@ -153,21 +153,20 @@
   margin-right: 0.3rem;
 }
 
-/* Gallery preview */
+/* Gallery preview בתוך הטופס (3 תמונות בשורה) */
 .gallery-preview {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin-top: 1rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 0.5rem;
+  overflow: visible;
+  padding-bottom: 0;
 }
 
 .gallery-preview .gallery-item-wrapper {
-  width: 120px;
+  width: 100%;
   height: 120px;
   overflow: hidden;
-  flex: 0 0 auto;
   border: 2px dashed #b46af1;
   border-radius: 12px;
   position: relative;
@@ -181,7 +180,7 @@
 }
 
 .gallery-preview .gallery-placeholder {
-  width: 120px;
+  width: 100%;
   height: 120px;
   border: 2px dashed #b46af1;
   border-radius: 12px;
@@ -191,7 +190,6 @@
   color: #b46af1;
   font-size: 2rem;
   cursor: pointer;
-  flex: 0 0 auto;
   transition: transform 0.2s;
 }
 
@@ -201,7 +199,8 @@
 }
 
 /* כפתורי מחיקה ועריכה עם SVG */
-.delete-btn, .edit-btn {
+.delete-btn,
+.edit-btn {
   position: absolute;
   top: 5px;
   background: rgba(255, 255, 255, 0.9);
@@ -218,14 +217,16 @@
   transition: transform 0.2s ease;
 }
 
-.delete-btn:hover, .edit-btn:hover {
+.delete-btn:hover,
+.edit-btn:hover {
   transform: scale(1.1);
 }
 
 .delete-btn { right: 5px; }
-.edit-btn { left: 5px; }
+.edit-btn  { left: 5px; }
 
-.delete-btn svg, .edit-btn svg {
+.delete-btn svg,
+.edit-btn svg {
   width: 14px;
   height: 14px;
 }
@@ -273,17 +274,16 @@
   color: black;
 }
 
-/* Public profile main images */
+/* תצוגה ציבורית של תמונות ראשיות (3 בשורה) */
 .public-main-images {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  justify-content: center;
   margin-top: 1rem;
 }
 
 .public-main-images img {
-  width: 100px;
+  width: 100%;
   height: 100px;
   object-fit: cover;
   border-radius: 8px;
@@ -319,18 +319,20 @@
     padding: 1rem 2rem;
   }
 
+  /* gallery-preview בתוך הטופס */
   .gallery-preview {
     gap: 8px;
   }
-
   .gallery-preview .gallery-item-wrapper,
   .gallery-preview .gallery-placeholder {
-    width: 80px;
     height: 80px;
   }
 
+  /* public-main-images */
+  .public-main-images {
+    gap: 8px;
+  }
   .public-main-images img {
-    width: 80px;
     height: 80px;
   }
 }
