@@ -6,7 +6,6 @@ import MainTab from "../MainTab.jsx";
 export default function MainSection({
   businessDetails,
   handleInputChange,
-  handleStoryUpload,
   handleMainImagesChange,
   handleSave,
   showViewProfile,
@@ -14,15 +13,13 @@ export default function MainSection({
   currentUser,
   renderTopBar,
   logoInputRef,
-  storyInputRef,
   mainImagesInputRef
 }) {
   const mainImages = businessDetails.mainImages || [];
-  const story      = businessDetails.story || [];
 
   return (
     <>
-      {/* ----- form column ----- */}
+      {/* ----- עמודת הטופס ----- */}
       <div className="form-column">
         <h2>🎨 עיצוב הכרטיס</h2>
 
@@ -56,37 +53,11 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
-          onChange={() => {/* handled in top bar */}}
+          onChange={() => {/* handled in TopBar */}}
         />
         <button onClick={() => logoInputRef.current?.click()}>
           העלאת לוגו
         </button>
-
-        {/* Story */}
-        <label>סטורי:</label>
-        <input
-          type="file"
-          multiple
-          accept="image/*,video/*"
-          style={{ display: "none" }}
-          ref={storyInputRef}
-          onChange={handleStoryUpload}
-        />
-        <button onClick={() => storyInputRef.current?.click()}>
-          העלאת סטורי
-        </button>
-
-        <div className="gallery-preview">
-          {story.map((item, i) => (
-            <div key={i} className="gallery-item-wrapper">
-              {item.preview.match(/\.(mp4|webm)$/i) ? (
-                <video src={item.preview} controls className="gallery-img" />
-              ) : (
-                <img src={item.preview} alt={`story-${i}`} className="gallery-img" />
-              )}
-            </div>
-          ))}
-        </div>
 
         {/* Main Images */}
         <label>תמונות ראשיות:</label>
@@ -130,25 +101,22 @@ export default function MainSection({
         )}
       </div>
 
-      {/* ----- preview column ----- */}
+      {/* ----- עמודת התצוגה המקדימה ----- */}
       <div className="preview-column">
+        {/* Top bar: לוגו, שם, דירוג, טאבס (ללא סטורי) */}
         {renderTopBar()}
 
         {/* תיאור וטלפון בתצוגה מקדימה */}
         <div className="preview-details" style={{ padding: "0 1rem", textAlign: "right" }}>
           {businessDetails.description && (
-            <p className="preview-description">
-              {businessDetails.description}
-            </p>
+            <p className="preview-description">{businessDetails.description}</p>
           )}
           {businessDetails.phone && (
-            <p className="preview-phone">
-              📞 {businessDetails.phone}
-            </p>
+            <p className="preview-phone">📞 {businessDetails.phone}</p>
           )}
         </div>
 
-        {/* MainTab – רק הכרטיס עצמו, ללא סטורי או כפתור שמירה */}
+        {/* MainTab – רק גלריה וביקורות */}
         <MainTab businessDetails={businessDetails} />
       </div>
     </>
