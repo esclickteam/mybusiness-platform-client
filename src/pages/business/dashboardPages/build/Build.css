@@ -1,16 +1,14 @@
-/* src/pages/business/dashboardPages/build/Build.css */
-
 /* מבנה עמוד כללי */
 .build-wrapper {
   display: flex;
-  flex-direction: row-reverse; /* תצוגה מקדימה בצד ימין */
+  flex-direction: row-reverse;
   justify-content: space-between;
   padding: 2rem;
   background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
   min-height: 100vh;
   flex-wrap: wrap;
   gap: 2rem;
-  direction: rtl; /* טקסט בעברית */
+  direction: rtl;
 }
 
 /* צד ימין - תצוגה */
@@ -24,10 +22,9 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
   margin: 0 auto;
   flex-shrink: 0;
-  overflow: visible; /* הסרת כל חיתוכים/Overlay */
+  overflow: visible;
 }
 
-/* הסרת overlay כהה על preview */
 .preview-column::after {
   content: none;
 }
@@ -156,7 +153,7 @@
   margin-right: 0.3rem;
 }
 
-/* Gallery preview בתוך הטופס */
+/* Gallery preview */
 .gallery-preview {
   display: flex;
   gap: 1rem;
@@ -173,6 +170,7 @@
   flex: 0 0 auto;
   border: 2px dashed #b46af1;
   border-radius: 12px;
+  position: relative;
 }
 
 .gallery-preview .gallery-img {
@@ -200,6 +198,79 @@
 .gallery-preview .gallery-placeholder:hover {
   transform: scale(1.05);
   background-color: #f3e5ff;
+}
+
+/* כפתורי מחיקה ועריכה עם SVG */
+.delete-btn, .edit-btn {
+  position: absolute;
+  top: 5px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.delete-btn:hover, .edit-btn:hover {
+  transform: scale(1.1);
+}
+
+.delete-btn { right: 5px; }
+.edit-btn { left: 5px; }
+
+.delete-btn svg, .edit-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* פופאפ */
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.popup-content button {
+  margin: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.popup-content button:nth-child(2) {
+  background-color: #b46af1;
+  color: white;
+}
+
+.popup-content button:nth-child(3) {
+  background-color: #d6cadf;
+  color: black;
+}
+
+.popup-content button:nth-child(4) {
+  background-color: #ccc;
+  color: black;
 }
 
 /* Public profile main images */
