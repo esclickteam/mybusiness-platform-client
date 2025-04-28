@@ -194,12 +194,12 @@ const handleMainImagesChange = async e => {
     }));
   
     // סינון התמונות הכפולות
-    const newGallery = [...businessDetails.gallery];
-    previews.forEach(newImage => {
-      if (!newGallery.some(existingImage => existingImage.preview === newImage.preview)) {
-        newGallery.push(newImage);
-      }
-    });
+    const newGallery = [
+      ...businessDetails.gallery.filter(
+        existingImage => !previews.some(newImage => newImage.preview === existingImage.preview)
+      ),
+      ...previews
+    ];
   
     setBusinessDetails(prev => ({
       ...prev,
@@ -224,6 +224,7 @@ const handleMainImagesChange = async e => {
         .catch(console.error)
     );
   };
+  
   
 
 
