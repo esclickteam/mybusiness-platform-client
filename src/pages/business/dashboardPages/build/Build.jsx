@@ -109,10 +109,9 @@ export default function Build() {
     // עדכון המצב עם התמונות החדשות בלבד (לא להוסיף את הישנות!)
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: newItems,  // ← מחליפים את התמונות הישנות עם החדשות בלבד
+      mainImages: [...prev.mainImages, ...newItems].slice(0, 5),  // שמירה על 5 תמונות מקסימום
     }));
   
-    // בניית FormData להעלאה לשרת
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
   
@@ -133,6 +132,7 @@ export default function Build() {
         .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview))) // שחרור ה-URLs הזמניים
     );
   };
+  
   
   
   
