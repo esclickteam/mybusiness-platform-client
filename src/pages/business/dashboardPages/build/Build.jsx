@@ -1,10 +1,7 @@
-// src/pages/business/dashboardPages/build/Build.jsx
-
 import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
-import "../../../../components/shared/BusinessProfileView.css";
 
 // Section components
 import MainSection    from "../buildTabs/buildSections/MainSection";
@@ -30,7 +27,6 @@ export default function Build() {
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState("ראשי");
-  const [showViewProfile, setShowViewProfile] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({
     name:        "",
     description: "",
@@ -88,8 +84,7 @@ export default function Build() {
     const preview = URL.createObjectURL(file);
     setBusinessDetails(prev => ({ ...prev, logo: { file, preview } }));
     try {
-      const fd = new FormData();
-      fd.append("logo", file);
+      const fd = new FormData(); fd.append("logo", file);
       const res = await API.put("/business/my/logo", fd);
       if (res.status === 200) {
         setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
@@ -108,8 +103,7 @@ export default function Build() {
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({ ...prev, story: previews }));
     try {
-      const fd = new FormData();
-      files.forEach(f => fd.append("story", f));
+      const fd = new FormData(); files.forEach(f => fd.append("story", f));
       const res = await API.put("/business/my/story", fd);
       if (res.status === 200) {
         const wrapped = res.data.story.map(url => ({ preview: url }));
@@ -129,11 +123,10 @@ export default function Build() {
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: [...previews, ...prev.mainImages].slice(0, 5)
+      mainImages: previews,
     }));
     try {
-      const fd = new FormData();
-      files.forEach(f => fd.append("mainImages", f));
+      const fd = new FormData(); files.forEach(f => fd.append("mainImages", f));
       const res = await API.put("/business/my/main-images", fd);
       if (res.status === 200) {
         const wrapped = res.data.mainImages.map(url => ({ preview: url }));
@@ -151,13 +144,9 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-    setBusinessDetails(prev => ({
-      ...prev,
-      gallery: [...previews, ...prev.gallery].slice(0, 10)
-    }));
+    setBusinessDetails(prev => ({ ...prev, gallery: previews }));
     try {
-      const fd = new FormData();
-      files.forEach(f => fd.append("gallery", f));
+      const fd = new FormData(); files.forEach(f => fd.append("gallery", f));
       const res = await API.put("/business/my/gallery", fd);
       if (res.status === 200) {
         const wrapped = res.data.gallery.map(url => ({ preview: url }));
@@ -175,7 +164,7 @@ export default function Build() {
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
       : 0;
     return (
-      <>
+      <>        
         <div className="logo-circle" onClick={handleLogoClick}>
           {typeof businessDetails.logo === "string" ? (
             <img src={businessDetails.logo} className="logo-img" />
@@ -185,8 +174,11 @@ export default function Build() {
             <span>לוגו</span>
           )}
           <input
-            type="file" accept="image/*" style={{ display: "none" }}
-            ref={logoInputRef} onChange={handleLogoChange}
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            ref={logoInputRef}
+            onChange={handleLogoChange}
           />
         </div>
         <div className="name-rating">
@@ -219,9 +211,6 @@ export default function Build() {
           handleStoryUpload={handleStoryUpload}
           handleMainImagesChange={handleMainImagesChange}
           handleSave={handleSave}
-          showViewProfile={showViewProfile}
-          navigate={navigate}
-          currentUser={currentUser}
           renderTopBar={renderTopBar}
           logoInputRef={logoInputRef}
           storyInputRef={storyInputRef}

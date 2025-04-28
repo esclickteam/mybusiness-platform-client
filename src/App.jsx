@@ -1,59 +1,50 @@
-// src/App.jsx
 import React, { Suspense, lazy, useEffect } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
-import BusinessDashboardLayout from "./pages/business/BusinessDashboardLayout";
+import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
-import BusinessMessagesPage from "./pages/business/dashboardPages/BusinessMessagesPage";
-import QuickJobsBoard from "./pages/QuickJobsBoard";
-import QuickJobForm from "./pages/QuickJobForm";
-import ResetPassword from "./pages/ResetPassword";
-import ChangePassword from "./pages/ChangePassword";
-import BusinessesList from "./pages/BusinessesList";
 
 // Lazy-loaded public pages
-const HomePage           = lazy(() => import("./pages/Home"));
-const About              = lazy(() => import("./pages/About"));
-const SearchBusinesses   = lazy(() => import("./pages/SearchBusinesses"));
-const HowItWorks         = lazy(() => import("./pages/HowItWorks"));
-const FAQ                = lazy(() => import("./pages/FAQ"));
-const Terms              = lazy(() => import("./pages/Terms"));
-const Contact            = lazy(() => import("./pages/Contact"));
-const BusinessOverview   = lazy(() => import("./pages/business/Business"));
-const Plans              = lazy(() => import("./pages/business/Plans"));
-const Checkout           = lazy(() => import("./pages/Checkout"));
-const Login              = lazy(() => import("./pages/Login"));
-const Register           = lazy(() => import("./pages/Register"));
+const HomePage         = lazy(() => import("./pages/Home"));
+const About            = lazy(() => import("./pages/About"));
+const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
+const HowItWorks       = lazy(() => import("./pages/HowItWorks"));
+const FAQ              = lazy(() => import("./pages/FAQ"));
+const Terms            = lazy(() => import("./pages/Terms"));
+const Contact          = lazy(() => import("./pages/Contact"));
+const BusinessOverview = lazy(() => import("./pages/business/Business"));
+const Plans            = lazy(() => import("./pages/business/Plans"));
+const Checkout         = lazy(() => import("./pages/Checkout"));
+const Login            = lazy(() => import("./pages/Login"));
+const Register         = lazy(() => import("./pages/Register"));
+const QuickJobsBoard   = lazy(() => import("./pages/QuickJobsBoard"));
+const QuickJobForm     = lazy(() => import("./pages/QuickJobForm"));
+const ResetPassword    = lazy(() => import("./pages/ResetPassword"));
+const ChangePassword   = lazy(() => import("./pages/ChangePassword"));
+const BusinessesList   = lazy(() => import("./pages/BusinessesList"));
 
-// Lazy-loaded public profile with nested tabs
-const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
+// Public profile view
+const BusinessProfileView = lazy(() => import(
+  "./pages/business/dashboardPages/profile/BusinessProfileView"
+));
 
-// Lazy-loaded public tab content
-const GalleryTab          = lazy(() => import("./pages/business/dashboardPages/buildTabs/GalleryTab"));
-const ReviewsModule       = lazy(() => import("./pages/business/dashboardPages/buildTabs/ReviewsModule"));
-const FaqTab              = lazy(() => import("./pages/business/dashboardPages/buildTabs/FaqTab"));
-const ChatTab             = lazy(() => import("./pages/business/dashboardPages/buildTabs/ChatTab"));
-const ShopAndCalendar     = lazy(() => import("./pages/business/dashboardPages/buildTabs/shopAndCalendar/ShopAndCalendar"));
-
-// Lazy-loaded edit & dashboard routes
-const BuildBusinessPage = lazy(() => import("./pages/business/dashboardPages/build"));
-const BusinessDashboardRoutes = lazy(() => import("./pages/business/BusinessDashboardRoutes"));
-const ClientDashboard         = lazy(() => import("./pages/client/ClientDashboard"));
-const StaffDashboard          = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession             = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile            = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks                 = lazy(() => import("./pages/staff/MyTasks"));
-const MySales                 = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard        = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard          = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs               = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans              = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings           = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers              = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent         = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles             = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage         = lazy(() => import("./pages/admin/AdminPayoutPage"));
+// Lazy-loaded protected dashboards
+const ClientDashboard       = lazy(() => import("./pages/client/ClientDashboard"));
+const StaffDashboard        = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession           = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile          = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks               = lazy(() => import("./pages/staff/MyTasks"));
+const MySales               = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard      = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard        = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs             = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans            = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings         = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers            = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent       = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles           = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage       = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -63,7 +54,7 @@ function ScrollToTop() {
 
 export default function App() {
   return (
-    <>
+    <BrowserRouter>
       <Header />
       <ScrollToTop />
 
@@ -88,28 +79,20 @@ export default function App() {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/businesses" element={<BusinessesList />} />
 
-          {/* 🔹 דף פרופיל ציבורי של עסק עם nested tabs */}
-          <Route path="/business/:businessId" element={<BusinessProfilePage />}>
-            <Route index element={null} />
-            <Route path="gallery" element={<GalleryTab />} />
-            <Route path="reviews" element={<ReviewsModule />} />
-            <Route path="faq" element={<FaqTab />} />
-            <Route path="chat" element={<ChatTab />} />
-            <Route path="shop" element={<ShopAndCalendar />} />
-          </Route>
+          {/* 🔹 דף פרופיל ציבורי של עסק (public) */}
+          <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-          {/* 🔹 דשבורד עסקים עם סיידבר + טאבים */}
- <Route
-   path="/business/:businessId/dashboard/*"
-   element={
-     <ProtectedRoute roles={["business"]}>
-       <BusinessDashboardRoutes />
-     </ProtectedRoute>
-   }
- />
-          
+          {/* 🔹 דשבורד עסקים עם סיידבר + טאבים (protected) */}
+          <Route
+            path="/business/:businessId/dashboard/*"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BusinessDashboardRoutes />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* 🔹 דשבורד לקוח */}
+          {/* 🔹 דשבורד לקוח (protected) */}
           <Route
             path="/client/dashboard"
             element={
@@ -119,7 +102,7 @@ export default function App() {
             }
           />
 
-          {/* 🔹 דשבורד עובדים */}
+          {/* 🔹 דשבורד עובדים (protected) */}
           <Route
             path="/staff/dashboard"
             element={
@@ -161,7 +144,7 @@ export default function App() {
             }
           />
 
-          {/* 🔹 דשבורד מנהל */}
+          {/* 🔹 דשבורד מנהל (protected) */}
           <Route
             path="/manager/dashboard"
             element={
@@ -171,7 +154,7 @@ export default function App() {
             }
           />
 
-          {/* 🔹 דשבורד אדמין */}
+          {/* 🔹 דשבורד אדמין (protected) */}
           <Route
             path="/admin/dashboard"
             element={
@@ -238,13 +221,13 @@ export default function App() {
           />
 
           {/* 🔹 ברירות מחדל נוספות */}
-          <Route path="/dashboard/calendar" element={<Navigate to="/business/dashboard" />} />
+          <Route path="/dashboard/calendar" element={<Navigate to="/business/dashboard" replace />} />
           <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
           {/* 🔹 ברירת מחדל לכל שאר הכתובות */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </>
+    </BrowserRouter>
   );
 }

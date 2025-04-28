@@ -1,4 +1,3 @@
-// src/pages/business/BusinessDashboardLayout.jsx
 import React, { useEffect } from "react";
 import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -34,24 +33,20 @@ export default function BusinessDashboardLayout() {
   return (
     <div className="rtl-wrapper">
       <div className="business-dashboard-layout">
-        <aside
-          className="sidebar"
-          style={{
-            minWidth: "240px",
-            width: "auto",
-            maxWidth: "100%",
-          }}
-        >
+        <aside className="sidebar">
           <h2>ניהול העסק</h2>
           <nav>
+            {/* כפתור צפייה בפרופיל ציבורי */}
             {user?.role === "business" && (
               <NavLink
-                to="profile"
+                to={`/business/${businessId}`}
                 className={({ isActive }) => (isActive ? "active" : undefined)}
               >
                 👀 צפייה בפרופיל
               </NavLink>
             )}
+
+            {/* כפתורי הטאבים בדשבורד */}
             {tabs.map(({ path, label }) => (
               <NavLink
                 key={path}

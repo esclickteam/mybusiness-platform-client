@@ -14,7 +14,7 @@ const TABS = [
 
 export default function BusinessProfileView() {
   const { businessId } = useParams();
-  const [data, setData]       = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
@@ -28,15 +28,15 @@ export default function BusinessProfileView() {
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
           gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
           reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
-          faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : [],
+          faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : []
         });
       })
       .catch(err => console.error("❌ fetch business:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  if (loading) return <div>טוען…</div>;
-  if (!data)   return <div>העסק לא נמצא</div>;
+  if (loading) return <div className="loading">טוען…</div>;
+  if (!data)   return <div className="error">העסק לא נמצא</div>;
 
   const {
     name,
@@ -50,9 +50,7 @@ export default function BusinessProfileView() {
   } = data;
 
   // רק mainImages → אם אין, gallery
-  const primary =
-    mainImages.length ? mainImages :
-    gallery.length    ? gallery    : [];
+  const primary = mainImages.length ? mainImages : gallery;
 
   return (
     <div className="profile-page">
@@ -61,7 +59,8 @@ export default function BusinessProfileView() {
 
           <Link
             to={`/business/${businessId}/dashboard/edit`}
-            className="edit-profile-btn">
+            className="edit-profile-btn"
+          >
             ✏️ ערוך פרטי העסק
           </Link>
 
@@ -79,7 +78,8 @@ export default function BusinessProfileView() {
               <button
                 key={tab}
                 className={`tab ${tab === currentTab ? "active" : ""}`}
-                onClick={() => setCurrentTab(tab)}>
+                onClick={() => setCurrentTab(tab)}
+              >
                 {tab}
               </button>
             ))}
