@@ -1,11 +1,11 @@
-// src/pages/business/dashboardPages/BusinessProfileView.jsx
+// src/components/shared/BusinessProfileView.jsx
 
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
 import "./BusinessProfileView.css";
-// נייבא את הפילטר לכפילויות
-import { dedupeByPreview } from "../../../utils/dedupe";
+// נתיב מתוקן ל־dedupe: שתי רמות מעלה מ־components/shared → src/utils
+import { dedupeByPreview } from "../../utils/dedupe";
 
 const TABS = [
   "ראשי",
@@ -55,7 +55,7 @@ export default function BusinessProfileView() {
     faqs
   } = data;
 
-  // נרמל ומסננים כפילויות ומגבילים ל-5
+  // נרמל וסינן כפילויות בחמש תמונות ראשיות
   const normalizedMain = mainImages.map(url => ({ preview: url }));
   const uniqueMain    = dedupeByPreview(normalizedMain)
                           .slice(0, 5)
@@ -108,7 +108,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* שאר הטאבים נשארים ללא שינוי */}
+            {/* טאב גלריה */}
             {currentTab === "גלריה" && (
               gallery.length > 0 ? (
                 <div className="public-main-images">
@@ -121,6 +121,7 @@ export default function BusinessProfileView() {
               )
             )}
 
+            {/* טאב ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {reviews.length > 0 ? (
@@ -138,6 +139,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* טאב שאלות ותשובות */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
@@ -153,10 +155,12 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* טאב צ'אט */}
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
 
+            {/* טאב חנות / יומן */}
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}
