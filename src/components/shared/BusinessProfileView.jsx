@@ -1,3 +1,4 @@
+// src/pages/business/dashboardPages/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
@@ -25,6 +26,7 @@ export default function BusinessProfileView() {
         const biz = res.data.business || res.data;
         setData({
           ...biz,
+          rating: biz.rating ?? 0,
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
           gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
           reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
@@ -41,6 +43,7 @@ export default function BusinessProfileView() {
   const {
     name,
     logo,
+    rating,
     description = "",
     phone       = "",
     mainImages,
@@ -49,6 +52,7 @@ export default function BusinessProfileView() {
     faqs
   } = data;
 
+  // primary images are either mainImages or fallback to gallery
   const primary = mainImages.length ? mainImages : gallery;
 
   return (
@@ -56,7 +60,10 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
 
-          <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+          <Link
+            to={`/business/${businessId}/dashboard/edit`}
+            className="edit-profile-btn"
+          >
             ✏️ ערוך פרטי העסק
           </Link>
 
@@ -68,21 +75,26 @@ export default function BusinessProfileView() {
 
           <h1 className="business-name">{name}</h1>
 
-          {/* תיאור העסק */}
-          {description && (
-            <div className="about-section">
-              <p>{description}</p>
-            </div>
-          )}
-
-          {/* פרטי התקשרות */}
-          {phone && (
-            <div className="phone-section">
-              <strong>טלפון:</strong> {phone}
-            </div>
-          )}
+          {/* דירוג */}
+          <div className="rating">
+            <strong>{rating}</strong> / 5 ★
+          </div>
 
           <hr className="profile-divider" />
+
+          {/* תיאור וטלפון – ממורכז, תיאור קודם, טלפון אחרי */}
+          <div className="about-phone" style={{ textAlign: "center", margin: "1rem 0" }}>
+            {description && (
+              <p className="business-description">
+                <strong>תיאור:</strong> {description}
+              </p>
+            )}
+            {phone && (
+              <p className="business-phone">
+                <strong>טלפון:</strong> {phone}
+              </p>
+            )}
+          </div>
 
           {/* טאבים */}
           <div className="profile-tabs">
@@ -91,66 +103,96 @@ export default function BusinessProfileView() {
                 key={tab}
                 className={`tab ${tab === currentTab ? "active" : ""}`}
                 onClick={() => setCurrentTab(tab)}
-              >{tab}</button>
+              >
+                {tab}
+              </button>
             ))}
           </div>
 
           {/* תוכן הטאב */}
           <div className="tab-content">
+            {/* --- ראשי --- */}
             {currentTab === "ראשי" && (
-              <div className="main-images">
-                {primary.map((url,i) => (
-                  <div key={i} className="profile-gallery-item">
+              <div
+                className="main-images"
+                style={{ display: "flex", justifyContent: "center", gap: "1rem" }}
+              >
+                {primary.map((url, i) => (
+                  <div
+                    key={i}
+                    className="profile-gallery-item"
+                    style={{ background: "none", boxShadow: "none" }}
+                  >
                     <img src={url} alt={`main-${i}`} className="gallery-img" />
                   </div>
                 ))}
+                {primary.length === 0 && (
+                  <p>אין תמונות להצגה</p>
+                )}
               </div>
             )}
 
+            {/* --- גלריה --- */}
             {currentTab === "גלריה" && (
               gallery.length ? (
-                <div className="gallery-preview no-actions">
-                  {gallery.map((url,i) => (
-                    <div key={i} className="profile-gallery-item">
+                <div
+                  className="gallery-preview no-actions"
+                  style={{ display: "flex", justifyContent: "center", gap: "1rem" }}
+                >
+                  {gallery.map((url, i) => (
+                    <div
+                      key={i}
+                      className="profile-gallery-item"
+                      style={{ background: "none", boxShadow: "none" }}
+                    >
                       <img src={url} alt={`gal-${i}`} className="gallery-img" />
                     </div>
                   ))}
                 </div>
-              ) : <p>אין תמונות בגלריה</p>
+              ) : <p style={{ textAlign: "center" }}>אין תמונות בגלריה</p>
             )}
 
+            {/* --- ביקורות --- */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {reviews.length ? reviews.map((r,i) => (
+                {reviews.length ? reviews.map((r, i) => (
                   <div key={i} className="review-card improved">
                     <div className="review-header">
                       <strong>{r.user}</strong> <span>★ {r.rating}/5</span>
                     </div>
                     <p>{r.comment || r.text}</p>
                   </div>
-                )) : <p>אין ביקורות</p>}
+                )) : <p style={{ textAlign: "center" }}>אין ביקורות</p>}
               </div>
             )}
 
+            {/* --- שאלות ותשובות --- */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
-                {faqs.length ? faqs.map((f,i) => (
+                {faqs.length ? faqs.map((f, i) => (
                   <div key={i} className="faq-item">
                     <strong>{f.question}</strong>
                     <p>{f.answer}</p>
                   </div>
-                )) : <p>אין שאלות</p>}
+                )) : <p style={{ textAlign: "center" }}>אין שאלות ותשובות</p>}
               </div>
             )}
 
+            {/* --- צ'אט עם העסק --- */}
             {currentTab === "צ'אט עם העסק" && (
-              <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
+              <div className="chat-tab" style={{ textAlign: "center" }}>
+                <h3>שלח הודעה לעסק</h3>
+              </div>
             )}
 
+            {/* --- חנות / יומן --- */}
             {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
+              <div className="shop-tab-placeholder" style={{ textAlign: "center" }}>
+                <p>פיתוח בהמשך…</p>
+              </div>
             )}
           </div>
+
         </div>
       </div>
     </div>
