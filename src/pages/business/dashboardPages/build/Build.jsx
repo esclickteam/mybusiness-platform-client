@@ -193,8 +193,8 @@ const handleMainImagesChange = async e => {
       preview: URL.createObjectURL(f)
     }));
   
-    console.log("Uploading new images:", previews); // לוג תמונות חדשות
-
+    console.log("New images to upload:", previews); // לוג תמונות חדשות
+  
     // סינון התמונות הכפולות
     const newGallery = [
       ...businessDetails.gallery.filter(
@@ -203,9 +203,8 @@ const handleMainImagesChange = async e => {
       ...previews
     ];
   
-    console.log("Filtered gallery:", newGallery); // לוג לאחר סינון כפילויות
-
-
+    console.log("Filtered gallery:", newGallery); // לוג הגלריה אחרי הסינון
+  
     setBusinessDetails(prev => ({
       ...prev,
       gallery: newGallery
@@ -214,6 +213,7 @@ const handleMainImagesChange = async e => {
     // העלאה ל-API וסנכרון
     const fd = new FormData();
     files.forEach(f => fd.append("gallery", f));
+  
     track(
       API.put("/business/my/gallery", fd)
         .then(res => {
@@ -226,9 +226,11 @@ const handleMainImagesChange = async e => {
           }
         })
         .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
-        .catch(console.error)
+        .catch(err => console.error("Error during gallery upload:", err)) // הוספתי את ההתמודדות עם השגיאה
     );
   };
+  
+  
   
   
   
