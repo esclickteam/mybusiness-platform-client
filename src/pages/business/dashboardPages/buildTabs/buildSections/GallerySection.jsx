@@ -1,6 +1,6 @@
 import React from "react";
 import "../../build/Build.css";
-import { dedupeByPreview } from "../../../utils/dedupe";
+import { dedupeByPreview } from "../../../../../utils/dedupe";
 
 export default function GallerySection({
   businessDetails,

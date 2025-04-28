@@ -3,7 +3,7 @@
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
-import { dedupeByPreview } from "../../../utils/dedupe";
+import { dedupeByPreview } from "../../../../../utils/dedupe";
 
 export default function MainSection({
   businessDetails,
