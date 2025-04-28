@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
 
@@ -6,8 +6,6 @@ export default function MainSection({
   businessDetails,
   handleInputChange,
   handleMainImagesChange,
-  handleDeleteImage,
-  handleEditImage,
   handleSave,
   showViewProfile,
   navigate,
@@ -16,7 +14,54 @@ export default function MainSection({
   logoInputRef,
   mainImagesInputRef
 }) {
+  const [editIndex, setEditIndex] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const mainImages = businessDetails.mainImages || [];
+
+  // פונקציה למחיקת תמונה
+  const handleDeleteImage = (index) => {
+    // מחיקת התמונה מהממשק
+    const updatedMainImages = [...businessDetails.mainImages];
+    updatedMainImages.splice(index, 1);
+
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: updatedMainImages
+    }));
+
+    // שליחה לשרת
+    track(
+      API.put("/business/my/main-images", { mainImages: updatedMainImages.map(item => item.preview) })
+        .then(res => {
+          if (res.status === 200) {
+            const wrapped = res.data.mainImages.map(url => ({ preview: url }));
+            setBusinessDetails(prev => ({
+              ...prev,
+              mainImages: wrapped
+            }));
+          }
+        })
+        .catch(console.error)
+    );
+  };
+
+  // פתיחת פופאפ לעריכת גודל התמונה
+  const handleEditImage = (index) => {
+    setEditIndex(index);
+    setIsPopupOpen(true);
+  };
+
+  // עדכון גודל התמונה
+  const updateImageSize = (sizeType) => {
+    setBusinessDetails(prev => {
+      const updated = [...prev.mainImages];
+      updated[editIndex].size = sizeType; // 'full' או 'custom'
+      return { ...prev, mainImages: updated };
+    });
+
+    setIsPopupOpen(false);
+    setEditIndex(null);
+  };
 
   return (
     <>
@@ -141,6 +186,18 @@ export default function MainSection({
 
         <MainTab businessDetails={businessDetails} />
       </div>
+
+      {/* פופאפ גודל תמונה */}
+      {isPopupOpen && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h3>בחר גודל תמונה</h3>
+            <button onClick={() => updateImageSize('full')}>גודל מלא</button>
+            <button onClick={() => updateImageSize('custom')}>גודל מותאם</button>
+            <button onClick={() => setIsPopupOpen(false)}>ביטול</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
