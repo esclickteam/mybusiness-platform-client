@@ -1,7 +1,7 @@
 import React from "react";
 import "../../build/Build.css";
-import { ReactComponent as DeleteIcon } from "../../assets/delete.svg";
-import { ReactComponent as EditIcon } from "../../assets/edit.svg";
+import { ReactComponent as DeleteIcon } from "../../../../../assets/delete.svg";
+import { ReactComponent as EditIcon } from "../../../../../assets/edit.svg";
 
 export default function GallerySection({
   businessDetails,
