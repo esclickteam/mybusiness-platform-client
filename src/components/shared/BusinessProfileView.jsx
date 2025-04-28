@@ -91,62 +91,68 @@ export default function BusinessProfileView() {
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="main-images">
-                {primary.length > 0
-                  ? primary.map((url,i) => (
-                      <div key={i} className="plain-gallery-item">
-                        <img src={url} alt={`main-${i}`} className="gallery-img"/>
-                      </div>
-                    ))
-                  : <p>אין תמונות להצגה</p>
-                }
+                {primary.length > 0 ? (
+                  primary.map((url, i) => (
+                    <div key={i} className="profile-gallery-item">
+                      <img src={url} alt={`main-${i}`} className="gallery-img" />
+                    </div>
+                  ))
+                ) : (
+                  <p>אין תמונות להצגה</p>
+                )}
               </div>
             )}
 
             {currentTab === "גלריה" && (
-              gallery.length > 0
-                ? <div className="gallery-preview">
-                    {gallery.map((url,i) => (
-                      <div key={i} className="plain-gallery-item">
-                        <img src={url} alt={`gal-${i}`} className="gallery-img"/>
-                      </div>
-                    ))}
-                  </div>
-                : <p className="no-data">אין תמונות בגלריה</p>
+              gallery.length > 0 ? (
+                <div className="gallery-preview">
+                  {gallery.map((url, i) => (
+                    <div key={i} className="profile-gallery-item">
+                      <img src={url} alt={`gal-${i}`} className="gallery-img" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="no-data">אין תמונות בגלריה</p>
+              )
             )}
 
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {reviews.length > 0
-                  ? reviews.map((r,i) => (
-                      <div key={i} className="review-card improved">
-                        <div className="review-header">
-                          <strong>{r.user}</strong> <span>★ {r.rating}/5</span>
-                        </div>
-                        <p>{r.comment || r.text}</p>
+                {reviews.length > 0 ? (
+                  reviews.map((r, i) => (
+                    <div key={i} className="review-card improved">
+                      <div className="review-header">
+                        <strong>{r.user}</strong> <span>★ {r.rating}/5</span>
                       </div>
-                    ))
-                  : <p className="no-data">אין ביקורות</p>
-                }
+                      <p>{r.comment || r.text}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-data">אין ביקורות</p>
+                )}
               </div>
             )}
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
-                {faqs.length > 0
-                  ? faqs.map((f,i) => (
-                      <div key={i} className="faq-item">
-                        <strong>{f.question}</strong>
-                        <p>{f.answer}</p>
-                      </div>
-                    ))
-                  : <p className="no-data">אין שאלות ותשובות</p>
-                }
+                {faqs.length > 0 ? (
+                  faqs.map((f, i) => (
+                    <div key={i} className="faq-item">
+                      <strong>{f.question}</strong>
+                      <p>{f.answer}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-data">אין שאלות ותשובות</p>
+                )}
               </div>
             )}
 
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
+
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}
