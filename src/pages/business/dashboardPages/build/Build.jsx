@@ -182,33 +182,49 @@ const handleMainImagesChange = async e => {
   // ===== GALLERY =====
   // בתוך Build.jsx
 
-const handleGalleryChange = e => {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
-  e.target.value = null;
-
-  // הצגה מיידית
-  const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-  setBusinessDetails(prev => ({
-    ...prev,
-    gallery: [...prev.gallery, ...previews]
-  }));
-
-  // העלאה ל־API וסנכרון סופי
-  const fd = new FormData();
-  files.forEach(f => fd.append("gallery", f));
-  track(
-    API.put("/business/my/gallery", fd)
-      .then(res => {
-        if (res.status === 200) {
-          const wrapped = res.data.gallery.map(url => ({ preview: url }));
-          setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
-        }
-      })
-      .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
-      .catch(console.error)
-  );
-};
+  const handleGalleryChange = e => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    e.target.value = null;
+  
+    // הצגת תמונות ללא כפילויות
+    const previews = files.map(f => ({
+      file: f,
+      preview: URL.createObjectURL(f)
+    }));
+  
+    // סינון התמונות הכפולות
+    const newGallery = [...businessDetails.gallery];
+    previews.forEach(newImage => {
+      if (!newGallery.some(existingImage => existingImage.preview === newImage.preview)) {
+        newGallery.push(newImage);
+      }
+    });
+  
+    setBusinessDetails(prev => ({
+      ...prev,
+      gallery: newGallery
+    }));
+  
+    // העלאה ל-API וסנכרון
+    const fd = new FormData();
+    files.forEach(f => fd.append("gallery", f));
+    track(
+      API.put("/business/my/gallery", fd)
+        .then(res => {
+          if (res.status === 200) {
+            const wrapped = res.data.gallery.map(url => ({ preview: url }));
+            setBusinessDetails(prev => ({
+              ...prev,
+              gallery: wrapped
+            }));
+          }
+        })
+        .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
+        .catch(console.error)
+    );
+  };
+  
 
 
   const handleDeleteGalleryImage = idx => {
