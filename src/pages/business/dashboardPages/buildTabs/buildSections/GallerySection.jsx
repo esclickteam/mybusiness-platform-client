@@ -26,7 +26,7 @@ export default function GallerySection({
           ref={galleryInputRef}
           onChange={handleGalleryChange}
         />
-        <button onClick={() => galleryInputRef.current?.click()} type="button">
+        <button onClick={() => galleryInputRef.current?.click()} type="button" className="save-btn">
           הוספת תמונות
         </button>
 
