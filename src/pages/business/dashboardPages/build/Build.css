@@ -153,26 +153,26 @@
   margin-right: 0.3rem;
 }
 
-/* Gallery preview בתוך הטופס (3 תמונות בשורה) */
+/* Gallery preview */
 .gallery-preview {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 1rem;
   margin-top: 1rem;
-  overflow: visible;    /* וידאו שאין גלילה אופקית */
-  padding-bottom: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.5rem;
 }
 
 .gallery-preview .gallery-item-wrapper {
-  position: relative;
-  width: 100%;
+  width: 120px;
   height: 120px;
+  overflow: hidden;
+  flex: 0 0 auto;
   border: 2px dashed #b46af1;
   border-radius: 12px;
-  overflow: hidden;
+  position: relative;
 }
 
-/* תמונה בתוך הפריט */
 .gallery-preview .gallery-img {
   width: 100%;
   height: 100%;
@@ -180,9 +180,8 @@
   display: block;
 }
 
-/* Placeholder של + */
 .gallery-preview .gallery-placeholder {
-  width: 100%;
+  width: 120px;
   height: 120px;
   border: 2px dashed #b46af1;
   border-radius: 12px;
@@ -192,6 +191,7 @@
   color: #b46af1;
   font-size: 2rem;
   cursor: pointer;
+  flex: 0 0 auto;
   transition: transform 0.2s;
 }
 
@@ -200,31 +200,35 @@
   background-color: #f3e5ff;
 }
 
-/* כפתורי מחיקה ועריכה */
-.delete-btn,
-.edit-btn {
+/* כפתורי מחיקה ועריכה עם SVG */
+.delete-btn, .edit-btn {
   position: absolute;
-  top: 8px;
+  top: 5px;
   background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
+  cursor: pointer;
   width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 10;         /* חשוב כדי שיוכלו לקבל קליקים מעל התמונה */
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  padding: 0;
   transition: transform 0.2s ease;
 }
 
-.delete-btn:hover,
-.edit-btn:hover {
+.delete-btn:hover, .edit-btn:hover {
   transform: scale(1.1);
 }
 
-.delete-btn { right: 8px; }
-.edit-btn  { left: 8px; }
+.delete-btn { right: 5px; }
+.edit-btn { left: 5px; }
+
+.delete-btn svg, .edit-btn svg {
+  width: 14px;
+  height: 14px;
+}
 
 /* פופאפ */
 .popup-overlay {
@@ -254,12 +258,27 @@
   font-weight: bold;
 }
 
-/* Public profile main images (3 תמונות בשורה) */
+.popup-content button:nth-child(2) {
+  background-color: #b46af1;
+  color: white;
+}
+
+.popup-content button:nth-child(3) {
+  background-color: #d6cadf;
+  color: black;
+}
+
+.popup-content button:nth-child(4) {
+  background-color: #ccc;
+  color: black;
+}
+
+/* Public profile main images */
 .public-main-images {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  justify-items: center;
+  justify-content: center;
   margin-top: 1rem;
 }
 
@@ -301,18 +320,15 @@
   }
 
   .gallery-preview {
-    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
+
   .gallery-preview .gallery-item-wrapper,
   .gallery-preview .gallery-placeholder {
+    width: 80px;
     height: 80px;
   }
 
-  .public-main-images {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
   .public-main-images img {
     width: 80px;
     height: 80px;
