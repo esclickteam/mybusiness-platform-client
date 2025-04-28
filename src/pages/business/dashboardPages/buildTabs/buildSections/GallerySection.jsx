@@ -1,10 +1,14 @@
 import React from "react";
 import "../../build/Build.css";
+import { ReactComponent as DeleteIcon } from "../../assets/delete.svg";
+import { ReactComponent as EditIcon } from "../../assets/edit.svg";
 
 export default function GallerySection({
   businessDetails,
   galleryInputRef,
   handleGalleryChange,
+  handleDeleteImage,
+  handleEditImage,
   renderTopBar
 }) {
   const gallery = businessDetails.gallery || [];
@@ -17,14 +21,14 @@ export default function GallerySection({
 
         <input
           type="file"
-          name="gallery"                     // התאמת השדה בשרת
+          name="gallery"
           multiple
           accept="image/*"
           style={{ display: "none" }}
           ref={galleryInputRef}
           onChange={handleGalleryChange}
         />
-        <button onClick={() => galleryInputRef.current?.click()}>
+        <button onClick={() => galleryInputRef.current?.click()} type="button">
           הוספת תמונות
         </button>
 
@@ -37,6 +41,20 @@ export default function GallerySection({
                   alt={`תמונת גלריה ${i + 1}`}
                   className="gallery-img"
                 />
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteImage(i)}
+                  type="button"
+                >
+                  <DeleteIcon />
+                </button>
+                <button
+                  className="edit-btn"
+                  onClick={() => handleEditImage(i)}
+                  type="button"
+                >
+                  <EditIcon />
+                </button>
               </div>
             ))
           ) : (
@@ -45,9 +63,10 @@ export default function GallerySection({
         </div>
       </div>
 
-      {/* צד ימין: Preview כולל Top Bar */}
+      {/* צד ימין: תצוגה מקדימה עם ה־Top Bar */}
       <div className="preview-column">
         {renderTopBar && renderTopBar()}
+
         <h3 className="section-title">הגלריה שלנו</h3>
         <div className="gallery-preview">
           {gallery.length > 0 ? (
@@ -58,6 +77,20 @@ export default function GallerySection({
                   alt={`תמונת גלריה ${i + 1}`}
                   className="gallery-img"
                 />
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteImage(i)}
+                  type="button"
+                >
+                  <DeleteIcon />
+                </button>
+                <button
+                  className="edit-btn"
+                  onClick={() => handleEditImage(i)}
+                  type="button"
+                >
+                  <EditIcon />
+                </button>
               </div>
             ))
           ) : (

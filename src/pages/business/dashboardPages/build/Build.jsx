@@ -133,25 +133,54 @@ export default function Build() {
     );
   };
   
-  
+  // ===== Gallery handlers =====
+const handleGalleryChange = e => {
+  const files = Array.from(e.target.files || []).slice(0, 10);
+  if (!files.length) return;
+  e.target.value = null;
+
+  // Create preview objects
+  const previews = files.map(file => ({ file, preview: URL.createObjectURL(file) }));
+  setBusinessDetails(prev => ({
+    ...prev,
+    gallery: [...(prev.gallery || []), ...previews],
+  }));
+
+  // Upload to server
+  const fd = new FormData();
+  files.forEach(f => fd.append("gallery", f));
+  track(
+    API.put("/business/my/gallery", fd)
+      .then(res => {
+        if (res.status === 200) {
+          const wrapped = res.data.gallery.map(url => ({ preview: url }));
+          setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
+        }
+      })
+      .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
+      .catch(console.error)
+  );
+};
+
   
   
 
-  const handleDeleteImage = (index) => {
-    const updated = businessDetails.mainImages.filter((_, i) => i !== index);
-    setBusinessDetails(prev => ({ ...prev, mainImages: updated }));
+const handleDeleteImage = index => {
+  const updated = businessDetails.gallery.filter((_, i) => i !== index);
+  setBusinessDetails(prev => ({ ...prev, gallery: updated }));
 
-    track(
-      API.put("/business/my/main-images", { mainImages: updated.map(item => item.preview) })
-        .then(res => {
-          if (res.status === 200) {
-            const wrapped = res.data.mainImages.map(url => ({ preview: url }));
-            setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
-          }
-        })
-        .catch(console.error)
-    );
-  };
+  track(
+    API.put("/business/my/gallery", { gallery: updated.map(item => item.preview) })
+      .then(res => {
+        if (res.status === 200) {
+          const wrapped = res.data.gallery.map(url => ({ preview: url }));
+          setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
+        }
+      })
+      .catch(console.error)
+  );
+};
+
 
   const handleEditImage = (index) => {
     setEditIndex(index);
@@ -253,15 +282,17 @@ export default function Build() {
         />
       )}
   
-      {currentTab === "גלריה" && (
-        <GallerySection
-          businessDetails={businessDetails}
-          setBusinessDetails={setBusinessDetails}
-          galleryInputRef={galleryInputRef}
-          handleGalleryChange={handleGalleryChange}
-          renderTopBar={renderTopBar}
-        />
-      )}
+  {currentTab === "גלריה" && (
+  <GallerySection
+    businessDetails={businessDetails}
+    galleryInputRef={galleryInputRef}
+    handleGalleryChange={handleGalleryChange}
+    handleDeleteImage={handleDeleteImage}
+    handleEditImage={handleEditImage}
+    renderTopBar={renderTopBar}
+  />
+)}
+
   
       {currentTab === "ביקורות" && (
         <ReviewsSection
