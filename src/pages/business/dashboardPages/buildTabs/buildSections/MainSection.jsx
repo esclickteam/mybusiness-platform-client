@@ -110,10 +110,10 @@ export default function MainSection({
         {/* Top bar: לוגו, שם העסק, דירוג וטאבס (ללא סטורי) */}
         {renderTopBar()}
 
-        {/* תיאור וטלפון בתצוגה מקדימה */}
+        {/* תיאור וטלפון בתצוגה מקדימה – ממורכז עכשיו */}
         <div
           className="preview-details"
-          style={{ padding: "0 1rem", textAlign: "right" }}
+          style={{ padding: "1rem", textAlign: "center" }}
         >
           {businessDetails.description && (
             <p className="preview-description">
