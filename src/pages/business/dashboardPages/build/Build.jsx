@@ -32,13 +32,13 @@ export default function Build() {
     phone:       "",
     logo:        null,
     gallery:     [],
-    mainImages:  [],       // { preview, size }
+    mainImages:  [],
     reviews:     [],
     faqs:        [],
   });
 
-  const [isSaving, setIsSaving]     = useState(false);
-  const [editIndex, setEditIndex]   = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const logoInputRef       = useRef();
@@ -46,16 +46,16 @@ export default function Build() {
   const galleryInputRef    = useRef();
   const pendingUploadsRef  = useRef([]);
 
-  // משמש ל-track של upload ל־API
-  const track = p => {
-    pendingUploadsRef.current.push(p);
-    p.finally(() => {
-      pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
+  // Track upload promises
+  const track = promise => {
+    pendingUploadsRef.current.push(promise);
+    promise.finally(() => {
+      pendingUploadsRef.current = pendingUploadsRef.current.filter(p => p !== promise);
     });
-    return p;
+    return promise;
   };
 
-  // טעינת הנתונים הראשונית
+  // Load business details once
   useEffect(() => {
     API.get("/business/my")
       .then(res => {
@@ -64,59 +64,52 @@ export default function Build() {
           setBusinessDetails({
             ...data,
             gallery:    (data.gallery    || []).map(url => ({ preview: url })),
-            mainImages: (data.mainImages || []).map(url => ({ preview: url, size: "full" })),
+            mainImages: (data.mainImages || []).map(url => ({ preview: url, size: 'full' })),
           });
         }
       })
       .catch(console.error);
   }, []);
 
+  // Handle text inputs
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  // ===== LOGO =====
-  const handleLogoClick   = () => logoInputRef.current?.click();
-  const handleLogoChange  = e => {
+  // Logo handlers
+  const handleLogoClick = () => logoInputRef.current?.click();
+  const handleLogoChange = e => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = null;
     const preview = URL.createObjectURL(file);
     setBusinessDetails(prev => ({ ...prev, logo: { file, preview } }));
-    const fd = new FormData();
-    fd.append("logo", file);
+    const fd = new FormData(); fd.append("logo", file);
     track(
       API.put("/business/my/logo", fd)
-        .then(res => {
-          if (res.status === 200) {
-            setBusinessDetails(prev => ({ ...prev, logo: { preview: res.data.logo } }));
-          }
-        })
+        .then(res => res.status === 200 &&
+          setBusinessDetails(prev => ({ ...prev, logo: { preview: res.data.logo } }))
+        )
         .finally(() => URL.revokeObjectURL(preview))
         .catch(console.error)
     );
   };
 
-  // ===== MAIN IMAGES =====
+  // Main images handlers
   const handleMainImagesChange = e => {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
-    const newItems = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file),
-      size: "full"
-    }));
+    const newItems = files.map(file => ({ file, preview: URL.createObjectURL(file), size: 'full' }));
     setBusinessDetails(prev => ({
       ...prev,
       mainImages: [...prev.mainImages, ...newItems].slice(0, 5)
     }));
-    const fd = new FormData();
-    files.forEach(f => fd.append("main-images", f));
+    const fd = new FormData(); files.forEach(f => fd.append("main-images", f));
     track(
       API.put("/business/my/main-images", fd)
         .then(res => {
           if (res.status === 200) {
-            const wrapped = res.data.mainImages.map(url => ({ preview: url, size: "full" }));
+            const wrapped = res.data.mainImages.map(url => ({ preview: url, size: 'full' }));
             setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
           }
         })
@@ -133,37 +126,30 @@ export default function Build() {
     if (editIndex === idx) closePopup();
   };
 
-  const openMainImageEdit = idx => {
-    setEditIndex(idx);
-    setIsPopupOpen(true);
-  };
-  const closePopup = () => {
-    setEditIndex(null);
-    setIsPopupOpen(false);
-  };
+  // Popup for editing image size
+  const openMainImageEdit = idx => { setEditIndex(idx); setIsPopupOpen(true); };
+  const closePopup = () => { setEditIndex(null); setIsPopupOpen(false); };
   const updateImageSize = sizeType => {
     if (editIndex === null) return;
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: prev.mainImages.map((img, i) =>
-        i === editIndex ? { ...img, size: sizeType } : img
-      )
+      mainImages: prev.mainImages.map((img, i) => i === editIndex ? { ...img, size: sizeType } : img)
     }));
     closePopup();
   };
 
-  // ===== GALLERY =====
+  // Gallery handlers
   const handleGalleryChange = e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
     e.target.value = null;
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({ ...prev, gallery: [...prev.gallery, ...previews] }));
-    const fd = new FormData();
-    previews.forEach(p => fd.append("gallery", p.file));
-    track(API.put("/business/my/gallery", fd)
-      .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
-      .catch(console.error)
+    const fd = new FormData(); previews.forEach(p => fd.append("gallery", p.file));
+    track(
+      API.put("/business/my/gallery", fd)
+        .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
+        .catch(console.error)
     );
   };
 
@@ -174,14 +160,11 @@ export default function Build() {
     }));
   };
 
-  // ===== SAVE =====
+  // Save all changes
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // חכה לסיום כל ההעלאות
       await Promise.all(pendingUploadsRef.current);
-
-      // שמור הכול בפעם אחת
       await API.patch("/business/my", {
         name:        businessDetails.name,
         description: businessDetails.description,
@@ -189,7 +172,6 @@ export default function Build() {
         mainImages:  businessDetails.mainImages.map(img => ({ url: img.preview, size: img.size })),
         gallery:     businessDetails.gallery.map(img => img.preview),
       });
-
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
       console.error(err);
@@ -199,6 +181,7 @@ export default function Build() {
     }
   };
 
+  // Top bar render
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
@@ -209,30 +192,18 @@ export default function Build() {
           {businessDetails.logo?.preview
             ? <img src={businessDetails.logo.preview} className="logo-img" />
             : <span>לוגו</span>}
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            ref={logoInputRef}
-            onChange={handleLogoChange}
-          />
+          <input type="file" accept="image/*" style={{ display: "none" }} ref={logoInputRef} onChange={handleLogoChange} />
         </div>
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
-            <span className="star">★</span>
-            <span>{avg.toFixed(1)} / 5</span>
+            <span className="star">★</span><span>{avg.toFixed(1)} / 5</span>
           </div>
         </div>
         <hr className="divider" />
         <div className="tabs">
           {TABS.map(tab => (
-            <button
-              key={tab}
-              type="button"
-              className={`tab ${tab === currentTab ? "active" : ""}`}
-              onClick={() => setCurrentTab(tab)}
-            >
+            <button key={tab} type="button" className={`tab ${tab === currentTab ? "active" : ""}`} onClick={() => setCurrentTab(tab)}>
               {tab}
             </button>
           ))}
