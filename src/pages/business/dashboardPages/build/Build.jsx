@@ -99,32 +99,37 @@ export default function Build() {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
-
+  
     const newItems = files.map(file => ({
       file,
       preview: URL.createObjectURL(file),
     }));
-
+  
+    // ← במקום להוסיף את החדשים לישן, תראה רק את החדשים זמנית:
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: [...prev.mainImages, ...newItems].slice(0, 5),
+      mainImages: newItems,  // ← הצגת התמונות החדשות בלבד עד שהשרת מחזיר
     }));
-
+  
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
-
+  
     track(
       API.put("/business/my/main-images", fd)
         .then(res => {
           if (res.status === 200) {
             const wrapped = res.data.mainImages.map(url => ({ preview: url }));
-            setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
+            setBusinessDetails(prev => ({
+              ...prev,
+              mainImages: wrapped,  // ← רשימת התמונות המעודכנת מהשרת
+            }));
           }
         })
         .catch(console.error)
         .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview)))
     );
   };
+  
 
   const handleDeleteImage = (index) => {
     const updated = businessDetails.mainImages.filter((_, i) => i !== index);
