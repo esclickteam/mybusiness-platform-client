@@ -153,7 +153,7 @@
   margin-right: 0.3rem;
 }
 
-/* Gallery preview */
+/* Gallery preview - תצוגת פרופייל (flex) */
 .gallery-preview {
   display: flex;
   gap: 1rem;
@@ -163,10 +163,20 @@
   padding-bottom: 0.5rem;
 }
 
+/* Gallery preview בתוך הטופס (3 תמונות בשורה) */
+.form-column .gallery-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+  overflow: visible;
+  padding-bottom: 0;
+}
+
 .gallery-preview .gallery-item-wrapper {
   width: 120px;
   height: 120px;
-  overflow: hidden;
+  overflow: visible;
   flex: 0 0 auto;
   border: 2px dashed #b46af1;
   border-radius: 12px;
@@ -200,8 +210,9 @@
   background-color: #f3e5ff;
 }
 
-/* כפתורי מחיקה ועריכה עם SVG */
-.delete-btn, .edit-btn {
+/* כפתורי מחיקה ועריכה */
+.delete-btn,
+.edit-btn {
   position: absolute;
   top: 5px;
   background: rgba(255, 255, 255, 0.9);
@@ -216,16 +227,19 @@
   box-shadow: 0 0 4px rgba(0,0,0,0.2);
   padding: 0;
   transition: transform 0.2s ease;
+  z-index: 10;
 }
 
-.delete-btn:hover, .edit-btn:hover {
+.delete-btn:hover,
+.edit-btn:hover {
   transform: scale(1.1);
 }
 
 .delete-btn { right: 5px; }
-.edit-btn { left: 5px; }
+.edit-btn  { left: 5px; }
 
-.delete-btn svg, .edit-btn svg {
+.delete-btn svg,
+.edit-btn svg {
   width: 14px;
   height: 14px;
 }
