@@ -1,6 +1,9 @@
+// src/buildTabs/buildSections/MainSection.jsx
+
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
+import { dedupeByPreview } from "../../../utils/dedupe";
 
 export default function MainSection({
   businessDetails,
@@ -16,9 +19,14 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
+  // הוצאת המערך המקורי
   const mainImages = businessDetails.mainImages || [];
-  // הגבלה ל-5 תמונות ראשיות בלבד
-  const limitedMainImages = mainImages.slice(0, 5);
+
+  // 1) הסרת כפילויות (blob + URL)
+  const uniqueImages = dedupeByPreview(mainImages);
+
+  // 2) הגבלה ל-5 תמונות ראשיות
+  const limitedMainImages = uniqueImages.slice(0, 5);
 
   return (
     <>
@@ -79,7 +87,7 @@ export default function MainSection({
         />
         <div className="gallery-preview">
           {limitedMainImages.map((img, i) => (
-            <div key={i} className="gallery-item-wrapper image-wrapper">
+            <div key={img.preview} className="gallery-item-wrapper image-wrapper">
               <img
                 src={img.preview}
                 alt={`תמונה ראשית ${i + 1}`}
