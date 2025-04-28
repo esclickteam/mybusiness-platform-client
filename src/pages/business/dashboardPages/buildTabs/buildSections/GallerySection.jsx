@@ -29,15 +29,18 @@ export default function GallerySection({
           onChange={handleGalleryChange}
         />
         <button
-          onClick={() => galleryInputRef.current?.click()}
-          type="button"
           className="save-btn"
+          onClick={() => galleryInputRef.current?.click()}
           disabled={gallery.length >= maxItems}
         >
           {gallery.length >= maxItems ? "הגעת למקסימום" : "הוספת תמונות"}
         </button>
 
-        <div className="gallery-preview">
+        {/* גריד 3 בעמודת הטופס */}
+        <div
+          className="gallery-preview"
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}
+        >
           {limitedGallery.length > 0 ? (
             limitedGallery.map((item, i) => (
               <div key={i} className="gallery-item-wrapper">
@@ -75,6 +78,7 @@ export default function GallerySection({
         {renderTopBar && renderTopBar()}
 
         <h3 className="section-title">הגלריה שלנו</h3>
+        {/* גריד 3 בפריוויו */}
         <div
           className="gallery-preview"
           style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}
