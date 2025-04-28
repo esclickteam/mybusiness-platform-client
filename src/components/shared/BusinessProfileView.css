@@ -22,7 +22,7 @@
   position: relative;
 }
 
-/* ← הוספת override להסרת הכרטיס הלבן מכל התוכן */
+/* הסרת הרקע/צל של ה־profile-inner */
 .business-profile-view.full-style .profile-inner {
   background: transparent !important;
   box-shadow:   none        !important;
@@ -144,12 +144,14 @@
   margin: 1rem 0;
 }
 
+/* ← כאן, מתחת לסוגר של .gallery-preview, תדביקו את ה־override הבא: */
+
 /* Remove white card around gallery items */
 .profile-gallery-item {
   flex: 1 0 45%;
   max-width: 45%;
-  padding: 0;
-  border: none;
+  padding: 0 !important;
+  border: none !important;
   background: transparent !important;
   box-shadow: none !important;
   display: flex;
