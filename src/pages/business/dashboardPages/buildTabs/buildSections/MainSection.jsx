@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
 
@@ -17,26 +17,7 @@ export default function MainSection({
   handleEditImage,
   isSaving
 }) {
-  const [editIndex, setEditIndex] = useState(null);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const mainImages = businessDetails.mainImages || [];
-
-  // עדכון גודל התמונה
-  const updateImageSize = (sizeType) => {
-    if (editIndex === null) return;
-
-    setBusinessDetails(prev => {
-      const updated = [...prev.mainImages];
-      updated[editIndex].size = sizeType;
-      return { ...prev, mainImages: updated };
-    });
-
-    setIsPopupOpen(false);
-    setEditIndex(null);
-  };
-
-  // פונקציה למחיקת תמונה
-  // (אם מעבירים handleDeleteImage מ-Build, ניתן להסיר הגדרה מקומית)
 
   return (
     <>
@@ -170,18 +151,6 @@ export default function MainSection({
 
         <MainTab businessDetails={businessDetails} />
       </div>
-
-      {/* פופאפ גודל תמונה */}
-      {isPopupOpen && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <h3>בחר גודל תמונה</h3>
-            <button onClick={() => updateImageSize('full')}>גודל מלא</button>
-            <button onClick={() => updateImageSize('custom')}>גודל מותאם</button>
-            <button onClick={() => setIsPopupOpen(false)}>ביטול</button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
