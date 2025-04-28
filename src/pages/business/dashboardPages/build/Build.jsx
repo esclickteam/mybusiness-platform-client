@@ -38,12 +38,15 @@ export default function Build() {
     faqs:        [],
   });
 
+  const [isSaving, setIsSaving] = useState(false);
+
   // refs
   const logoInputRef       = useRef();
   const mainImagesInputRef = useRef();
   const galleryInputRef    = useRef();
+  const pendingUploadsRef  = useRef([]);
 
-  /* ───────────────  load data once  ─────────────── */
+  /* ─────── fetch once ─────── */
   useEffect(() => {
     API.get("/business/my")
       .then(res => {
@@ -59,26 +62,20 @@ export default function Build() {
       .catch(console.error);
   }, []);
 
-  /* ───────────────  handlers  ─────────────── */
+  const track = p => {
+    pendingUploadsRef.current.push(p);
+    p.finally(() => {
+      pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
+    });
+    return p;
+  };
+
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  const handleSave = async () => {
-    try {
-      await API.patch("/business/my", {
-        name:        businessDetails.name,
-        description: businessDetails.description,
-        phone:       businessDetails.phone,
-      });
-      navigate(`/business/${currentUser.businessId}`);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+  /* logo upload */
   const handleLogoClick = () => logoInputRef.current?.click();
-
-  const handleLogoChange = async e => {
+  const handleLogoChange = e => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = null;
@@ -86,21 +83,19 @@ export default function Build() {
     const preview = URL.createObjectURL(file);
     setBusinessDetails(prev => ({ ...prev, logo: { file, preview } }));
 
-    try {
-      const fd = new FormData();
-      fd.append("logo", file);
-      const res = await API.put("/business/my/logo", fd);
-      if (res.status === 200) {
-        setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      URL.revokeObjectURL(preview);
-    }
+    const fd = new FormData(); fd.append("logo", file);
+    track(
+      API.put("/business/my/logo", fd)
+        .then(res => {
+          if (res.status === 200) setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
+        })
+        .finally(() => URL.revokeObjectURL(preview))
+        .catch(console.error)
+    );
   };
 
-  const handleMainImagesChange = async e => {
+  /* main images */
+  const handleMainImagesChange = e => {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
@@ -108,55 +103,70 @@ export default function Build() {
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({ ...prev, mainImages: previews }));
 
-    try {
-      const fd = new FormData();
-      files.forEach(f => fd.append("mainImages", f));
-      const res = await API.put("/business/my/main-images", fd);
-      if (res.status === 200) {
-        const wrapped = res.data.mainImages.map(url => ({ preview: url }));
-        setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    const fd = new FormData(); files.forEach(f => fd.append("mainImages", f));
+    track(
+      API.put("/business/my/main-images", fd)
+        .then(res => {
+          if (res.status === 200) {
+            const wrapped = res.data.mainImages.map(url => ({ preview: url }));
+            setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
+          }
+        })
+        .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
+        .catch(console.error)
+    );
   };
 
-  const handleGalleryChange = async e => {
+  /* gallery */
+  const handleGalleryChange = e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
     e.target.value = null;
 
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-    setBusinessDetails(prev => ({
-      ...prev,
-      gallery: [...prev.gallery, ...previews],
-    }));
+    setBusinessDetails(prev => ({ ...prev, gallery: [...prev.gallery, ...previews] }));
 
+    const fd = new FormData(); files.forEach(f => fd.append("gallery", f));
+    track(
+      API.put("/business/my/gallery", fd)
+        .then(res => {
+          if (res.status === 200) {
+            const wrapped = res.data.gallery.map(url => ({ preview: url }));
+            setBusinessDetails(prev => ({
+              ...prev,
+              gallery: [...prev.gallery.filter(it => !it.file), ...wrapped],
+            }));
+          }
+        })
+        .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
+        .catch(console.error)
+    );
+  };
+
+  /* save */
+  const handleSave = async () => {
+    setIsSaving(true);
     try {
-      const fd = new FormData();
-      files.forEach(f => fd.append("gallery", f));
-      const res = await API.put("/business/my/gallery", fd);
-      if (res.status === 200) {
-        const wrapped = res.data.gallery.map(url => ({ preview: url }));
-        setBusinessDetails(prev => ({
-          ...prev,
-          gallery: [...prev.gallery, ...wrapped],
-        }));
-      }
+      await Promise.all(pendingUploadsRef.current);
+      await API.patch("/business/my", {
+        name: businessDetails.name,
+        description: businessDetails.description,
+        phone: businessDetails.phone,
+      });
+      navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
       console.error(err);
+      alert("❌ שגיאה בשמירה");
     } finally {
-      previews.forEach(p => URL.revokeObjectURL(p.preview));
+      setIsSaving(false);
     }
   };
 
-  /* ───────────────  UI helpers  ─────────────── */
+  /* top‑bar */
   const renderTopBar = () => {
-    const avg =
-      businessDetails.reviews.length
-        ? businessDetails.reviews.reduce((s, r) => s + r.rating, 0) /
-          businessDetails.reviews.length
-        : 0;
+    const avg = businessDetails.reviews.length
+      ? businessDetails.reviews.reduce((s, r) => s + r.rating, 0) / businessDetails.reviews.length
+      : 0;
 
     return (
       <>
@@ -202,7 +212,7 @@ export default function Build() {
     );
   };
 
-  /* ───────────────  render  ─────────────── */
+  /* render */
   return (
     <div className="build-wrapper">
       {currentTab === "ראשי" && (
@@ -214,6 +224,7 @@ export default function Build() {
           renderTopBar={renderTopBar}
           logoInputRef={logoInputRef}
           mainImagesInputRef={mainImagesInputRef}
+          isSaving={isSaving}
         />
       )}
 
@@ -252,14 +263,17 @@ export default function Build() {
         />
       )}
 
-      {currentTab === "שאלות ותשובות" && (
-        <FaqSection
-          faqs={businessDetails.faqs}
-          setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
-        />
-      )}
-    </div>
-  );
+{currentTab === "שאלות ותשובות" && (
+  <FaqSection
+    faqs={businessDetails.faqs}
+    setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
+    currentUser={currentUser}
+    renderTopBar={renderTopBar}
+  />
+)}
+
+</div>
+);
 }
+
+
