@@ -1,5 +1,6 @@
 import React from "react";
 import "../../build/Build.css";
+import MainTab from "../MainTab.jsx";
 
 export default function MainSection({
   businessDetails,
@@ -21,7 +22,7 @@ export default function MainSection({
 
   return (
     <>
-      {/* ----- עמודת הטופס (עריכה) ----- */}
+      {/* ----- עמודת הטופס ----- */}
       <div className="form-column">
         <h2>🎨 עיצוב הכרטיס</h2>
 
@@ -65,7 +66,7 @@ export default function MainSection({
           העלאת לוגו
         </button>
 
-        {/* Main Images Upload */}
+        {/* Main Images */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
@@ -76,6 +77,33 @@ export default function MainSection({
           ref={mainImagesInputRef}
           onChange={handleMainImagesChange}
         />
+        <div className="gallery-preview">
+          {limitedMainImages.map((img, i) => (
+            <div key={i} className="gallery-item-wrapper image-wrapper">
+              <img
+                src={img.preview}
+                alt={`תמונה ראשית ${i + 1}`}
+                className="gallery-img"
+              />
+              <button
+                className="delete-btn"
+                onClick={() => handleDeleteImage(i)}
+                type="button"
+                title="מחיקה"
+              >
+                🗑️
+              </button>
+            </div>
+          ))}
+          {limitedMainImages.length < 5 && (
+            <div
+              className="gallery-placeholder clickable"
+              onClick={() => mainImagesInputRef.current?.click()}
+            >
+              +
+            </div>
+          )}
+        </div>
 
         {/* Actions */}
         <button
@@ -114,44 +142,7 @@ export default function MainSection({
           )}
         </div>
 
-        {/* Main Images Preview */}
-        <h3 className="section-title">תמונות ראשיות</h3>
-        <div
-          className="gallery-scroll-container"
-          style={{
-            display: 'flex',
-            gap: '1rem',
-            overflowX: 'auto',
-            padding: '1rem 0'
-          }}
-        >
-          {limitedMainImages.length > 0 ? (
-            limitedMainImages.map((img, i) => (
-              <div
-                key={i}
-                className="gallery-item-wrapper"
-                style={{ position: 'relative', minWidth: '150px' }}
-              >
-                <img
-                  src={img.preview}
-                  alt={`תמונה ראשית ${i + 1}`}
-                  className="gallery-img"
-                />
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDeleteImage(i)}
-                  type="button"
-                  title="מחיקה"
-                  style={{ position: 'absolute', top: 4, right: 4 }}
-                >
-                  🗑️
-                </button>
-              </div>
-            ))
-          ) : (
-            <p className="no-data">אין תמונות ראשיות</p>
-          )}
-        </div>
+        <MainTab businessDetails={businessDetails} />
       </div>
     </>
   );
