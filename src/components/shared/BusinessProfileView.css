@@ -1,6 +1,6 @@
 /* בסיס הדף – הכל שקוף */
 html, body, #root {
-  background: transparent !important;
+  background: #f5e1ff !important; /* רקע סגול בהיר */
   margin: 0;
   padding: 0;
 }
