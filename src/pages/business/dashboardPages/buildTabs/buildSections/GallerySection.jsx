@@ -1,3 +1,5 @@
+// src/components/buildTabs/buildSections/GallerySection.jsx
+
 import React from "react";
 import "../../build/Build.css";
 
@@ -12,10 +14,11 @@ export default function GallerySection({
   const gallery = businessDetails.gallery || [];
 
   return (
-    <div className="gallery-section-wrapper">
-      {/* כפתור העלאה */}
+    <>
+      {/* צד שמאל: טופס העלאה */}
       <div className="form-column">
         <h3>העלאת תמונות לגלריה</h3>
+
         <input
           type="file"
           name="gallery"
@@ -33,13 +36,19 @@ export default function GallerySection({
         </button>
       </div>
 
-      {/* תצוגה מוקדמת בגלריה */}
+      {/* צד ימין: תצוגת גלריה */}
       <div className="preview-column">
         {renderTopBar && renderTopBar()}
+
         <h3 className="section-title">הגלריה שלנו</h3>
         <div
           className="gallery-scroll-container"
-          style={{ display: 'flex', gap: '1rem', overflowX: 'auto', padding: '1rem 0' }}
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            overflowX: 'auto',
+            padding: '1rem 0'
+          }}
         >
           {gallery.length > 0 ? (
             gallery.map((item, i) => (
@@ -59,14 +68,18 @@ export default function GallerySection({
                   type="button"
                   title="מחיקה"
                   style={{ position: 'absolute', top: 4, right: 4 }}
-                >🗑️</button>
+                >
+                  🗑️
+                </button>
                 <button
                   className="edit-btn"
                   onClick={() => handleEditImage(i)}
                   type="button"
                   title="עריכה"
                   style={{ position: 'absolute', top: 4, left: 4 }}
-                >✏️</button>
+                >
+                  ✏️
+                </button>
               </div>
             ))
           ) : (
@@ -74,6 +87,6 @@ export default function GallerySection({
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
