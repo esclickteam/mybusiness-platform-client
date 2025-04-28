@@ -1,6 +1,5 @@
 import React from "react";
 import "../../build/Build.css";
-import "./GallerySection.css";
 
 export default function GallerySection({
   businessDetails,
