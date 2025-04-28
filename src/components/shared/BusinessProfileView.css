@@ -1,6 +1,6 @@
-/* src/pages/business/dashboardPages/profile/BusinessProfileView.css */
+/* src/components/shared/BusinessProfileView.css */
 
-/* Container is transparent – no white card */
+/* Container has no card background or shadow */
 .profile-page {
   display: flex;
   justify-content: center;
@@ -11,15 +11,15 @@
   text-align: center;
 }
 
-/* Remove any white background, shadow or radius */
 .business-profile-view.full-style {
   width: 100%;
   max-width: 800px;
   margin: 0;
   padding: 0;
-  background: none;
-  box-shadow: none;
-  border-radius: 0;
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  position: relative;
 }
 
 .profile-inner {
@@ -33,7 +33,7 @@
   gap: 1rem;
 }
 
-/* Logo & heading */
+/* Logo */
 .logo-wrapper {
   margin-bottom: 1rem;
   text-align: center;
@@ -44,9 +44,29 @@
   border-radius: 50%;
   object-fit: cover;
 }
+
+/* Edit button */
+.edit-profile-btn {
+  align-self: flex-end;
+  margin-bottom: 1rem;
+  padding: 0.4rem 1rem;
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.edit-profile-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Business name and divider */
 .business-name {
   font-size: 2rem;
   font-weight: bold;
+  color: var(--text-main);
   margin: 0;
 }
 .profile-divider {
@@ -56,7 +76,7 @@
   margin: 1rem 0;
 }
 
-/* Description & contact shown above images */
+/* Description & contact */
 .about-section,
 .phone-section {
   width: 100%;
@@ -80,16 +100,23 @@
   padding: 0.6rem 1rem;
   border-radius: 20px;
   background-color: #f0eaff;
+  color: #333;
   border: none;
-  cursor: pointer;
   font-size: 0.95rem;
+  width: 100%;
+  max-width: 200px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+.tab:hover {
+  background-color: #e4d6ff;
 }
 .tab.active {
   background-color: var(--primary);
   color: #fff;
 }
 
-/* Image grid no card */
+/* Images grid without white card */
 .main-images,
 .gallery-preview {
   display: flex;
