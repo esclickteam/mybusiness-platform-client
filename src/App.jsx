@@ -24,9 +24,9 @@ const ResetPassword    = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword   = lazy(() => import("./pages/ChangePassword"));
 const BusinessesList   = lazy(() => import("./pages/BusinessesList"));
 
-// Public business profile (no sidebar)
+// Public business profile (clean)
 const BusinessProfileView = lazy(() => import(
-  "./pages/business/dashboardPages/profile/BusinessProfileView"
+  "./components/shared/BusinessProfileView"
 ));
 
 // Lazy-loaded protected dashboards
@@ -79,7 +79,7 @@ export default function App() {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/businesses" element={<BusinessesList />} />
 
-          {/* Public business profile (clean) */}
+          {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
           {/* Protected business dashboard */}
@@ -221,7 +221,6 @@ export default function App() {
           />
 
           {/* Additional routes */}
-          <Route path="/dashboard/calendar" element={<Navigate to="/business/:businessId/dashboard" replace />} />
           <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
           {/* Fallback */}
