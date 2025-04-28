@@ -226,18 +226,31 @@ const handleMainImagesChange = async e => {
   };
   
   
-
-
-  const handleDeleteGalleryImage = idx => {
-    setBusinessDetails(prev => ({
-      ...prev,
-      gallery: prev.gallery.filter((_, i) => i !== idx)
-    }));
+  
+  const handleDeleteGalleryImage = async (idx) => {
+    try {
+      // סינון התמונות אחרי מחיקת התמונה לפי אינדקס
+      const updatedGallery = businessDetails.gallery.filter((_, i) => i !== idx);
+  
+      // עדכון המערך בצד הלקוח
+      setBusinessDetails(prev => ({
+        ...prev,
+        gallery: updatedGallery
+      }));
+  
+      // שליחה ל־API לעדכון הגלריה בשרת
+      const response = await API.put("/business/my/gallery", updatedGallery);
+      console.log("Gallery updated:", response.data.gallery);
+  
+    } catch (err) {
+      console.error("Error deleting image:", err);
+    }
   };
-
+  
   const handleEditImage = idx => {
     console.log("Edit gallery image:", idx);
   };
+  
 
   // ===== SAVE =====
   const handleSave = async () => {
