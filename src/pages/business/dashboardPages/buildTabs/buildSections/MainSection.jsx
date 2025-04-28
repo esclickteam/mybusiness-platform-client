@@ -16,6 +16,7 @@ export default function MainSection({
   isSaving
 }) {
   const mainImages = businessDetails.mainImages || [];
+  // הגבלה ל-5 תמונות ראשיות בלבד
   const limitedMainImages = mainImages.slice(0, 5);
 
   return (
@@ -117,7 +118,12 @@ export default function MainSection({
         <h3 className="section-title">תמונות ראשיות</h3>
         <div
           className="gallery-scroll-container"
-          style={{ display: 'flex', gap: '1rem', overflowX: 'auto', padding: '1rem 0' }}
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            overflowX: 'auto',
+            padding: '1rem 0'
+          }}
         >
           {limitedMainImages.length > 0 ? (
             limitedMainImages.map((img, i) => (
