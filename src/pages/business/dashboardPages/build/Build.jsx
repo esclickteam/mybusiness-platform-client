@@ -126,6 +126,10 @@ export default function Build() {
       mainImages: prev.mainImages.filter((_, i) => i !== idx)
     }));
     if (editIndex === idx) closePopup();
+    track(
+      API.put("/business/my/main-images", { mainImages: businessDetails.mainImages.filter((_, i) => i !== idx).map(img => img.preview) })
+        .catch(console.error)
+    );
   };
 
   // ===== EDIT MAIN IMAGE SIZE =====
@@ -133,13 +137,15 @@ export default function Build() {
   const closePopup = () => { setEditIndex(null); setIsPopupOpen(false); };
   const updateImageSize = sizeType => {
     if (editIndex === null) return;
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: prev.mainImages.map((img, i) =>
-        i === editIndex ? { ...img, size: sizeType } : img
-      )
-    }));
+    const updated = businessDetails.mainImages.map((img, i) =>
+      i === editIndex ? { ...img, size: sizeType } : img
+    );
+    setBusinessDetails(prev => ({ ...prev, mainImages: updated }));
     closePopup();
+    track(
+      API.put("/business/my/main-images", { mainImages: updated.map(img => img.preview), sizes: updated.map(img => img.size) })
+        .catch(console.error)
+    );
   };
 
   // ===== GALLERY =====
@@ -160,6 +166,10 @@ export default function Build() {
       ...prev,
       gallery: prev.gallery.filter((_, i) => i !== idx)
     }));
+    track(
+      API.put("/business/my/gallery", { gallery: businessDetails.gallery.filter((_, i) => i !== idx).map(img => img.preview) })
+        .catch(console.error)
+    );
   };
 
   // ===== SAVE =====
@@ -171,8 +181,6 @@ export default function Build() {
         name:        businessDetails.name,
         description: businessDetails.description,
         phone:       businessDetails.phone,
-        mainImages:  businessDetails.mainImages.map(img => ({ url: img.preview, size: img.size })),
-        gallery:     businessDetails.gallery.map(img => img.preview),
       });
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
@@ -221,7 +229,7 @@ export default function Build() {
           businessDetails={businessDetails}
           handleInputChange={handleInputChange}
           handleMainImagesChange={handleMainImagesChange}
-          handleDeleteImage={handleDeleteMainImage}
+          handleDeleteMainImage={handleDeleteMainImage}
           handleEditImage={openMainImageEdit}
           handleSave={handleSave}
           renderTopBar={renderTopBar}
