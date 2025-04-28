@@ -11,15 +11,15 @@
   text-align: center;
 }
 
-/* הסרת 'כרטיס' לבן – מתוקן: רקע לבן, צל ועיגול עדין */
+/* הסרת 'כרטיס' לבן – רקע שקוף, ללא צל ולעיגול */
 .business-profile-view.full-style {
   width: 100%;
   max-width: 800px;
   margin: 0;
-  padding: 1.5rem;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
   position: relative;
 }
 
@@ -155,9 +155,7 @@
   border-radius: 8px;
 }
 
-/* ================================
-   סגנון התמונות בטאב "ראשי"
-   ================================ */
+/* סגנון התמונות בטאב "ראשי" */
 .main-images {
   display: flex;
   flex-wrap: wrap;
@@ -167,8 +165,8 @@
 }
 
 .main-images .profile-gallery-item {
-  padding: 0;      /* אין מרווח פנימי נוסף */
-  border: none;    /* מבטלים כל גבול */
+  padding: 0;
+  border: none;
 }
 
 .main-images .gallery-img {
