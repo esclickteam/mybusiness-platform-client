@@ -18,6 +18,20 @@ export default function MainSection({
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const mainImages = businessDetails.mainImages || [];
 
+  // עדכון גודל התמונה
+  const updateImageSize = (sizeType) => {
+    if (editIndex === null) return;
+
+    setBusinessDetails(prev => {
+      const updated = [...prev.mainImages];
+      updated[editIndex].size = sizeType; // עדכון הגודל
+      return { ...prev, mainImages: updated };
+    });
+
+    setIsPopupOpen(false);
+    setEditIndex(null);  // איפוס האינדקס לאחר השינוי
+  };
+
   // פונקציה למחיקת תמונה
   const handleDeleteImage = (index) => {
     // מחיקת התמונה מהממשק
@@ -49,18 +63,6 @@ export default function MainSection({
   const handleEditImage = (index) => {
     setEditIndex(index);
     setIsPopupOpen(true);
-  };
-
-  // עדכון גודל התמונה
-  const updateImageSize = (sizeType) => {
-    setBusinessDetails(prev => {
-      const updated = [...prev.mainImages];
-      updated[editIndex].size = sizeType; // 'full' או 'custom'
-      return { ...prev, mainImages: updated };
-    });
-
-    setIsPopupOpen(false);
-    setEditIndex(null);
   };
 
   return (
