@@ -9,7 +9,9 @@ export default function GallerySection({
   handleEditImage,
   renderTopBar
 }) {
+  const maxItems = 5;
   const gallery = businessDetails.gallery || [];
+  const limitedGallery = gallery.slice(0, maxItems);
 
   return (
     <>
@@ -26,13 +28,18 @@ export default function GallerySection({
           ref={galleryInputRef}
           onChange={handleGalleryChange}
         />
-        <button onClick={() => galleryInputRef.current?.click()} type="button" className="save-btn">
-          הוספת תמונות
+        <button
+          onClick={() => galleryInputRef.current?.click()}
+          type="button"
+          className="save-btn"
+          disabled={gallery.length >= maxItems}
+        >
+          {gallery.length >= maxItems ? "הגעת למקסימום" : "הוספת תמונות"}
         </button>
 
         <div className="gallery-preview">
-          {gallery.length > 0 ? (
-            gallery.map((item, i) => (
+          {limitedGallery.length > 0 ? (
+            limitedGallery.map((item, i) => (
               <div key={i} className="gallery-item-wrapper">
                 <img
                   src={item.preview}
@@ -68,9 +75,12 @@ export default function GallerySection({
         {renderTopBar && renderTopBar()}
 
         <h3 className="section-title">הגלריה שלנו</h3>
-        <div className="gallery-preview">
-          {gallery.length > 0 ? (
-            gallery.map((item, i) => (
+        <div
+          className="gallery-preview"
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}
+        >
+          {limitedGallery.length > 0 ? (
+            limitedGallery.map((item, i) => (
               <div key={i} className="gallery-item-wrapper">
                 <img
                   src={item.preview}
