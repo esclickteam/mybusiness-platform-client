@@ -62,7 +62,7 @@ export default function Build() {
           setBusinessDetails({
             ...data,
             gallery:    (data.gallery    || []).map(url => ({ preview: url })),
-            mainImages: (data.mainImages || []).map(url => ({ preview: url, size: "full" })),
+            mainImages: (data.mainImages || []).map(url => ({ preview: url, size: 'full' })),
           });
         }
       })
@@ -99,16 +99,18 @@ export default function Build() {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
-    const newItems = files.map(file => ({ file, preview: URL.createObjectURL(file), size: "full" }));
-    const updated = [...businessDetails.mainImages, ...newItems].slice(0, 5);
-    setBusinessDetails(prev => ({ ...prev, mainImages: updated }));
+    const newItems = files.map(file => ({ file, preview: URL.createObjectURL(file), size: 'full' }));
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: [...prev.mainImages, ...newItems].slice(0, 5)
+    }));
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
     track(
       API.put("/business/my/main-images", fd)
         .then(res => {
           if (res.status === 200) {
-            const wrapped = res.data.mainImages.map(url => ({ preview: url, size: "full" }));
+            const wrapped = res.data.mainImages.map(url => ({ preview: url, size: 'full' }));
             setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
           }
         })
@@ -117,27 +119,27 @@ export default function Build() {
     );
   };
 
+  // ===== DELETE MAIN IMAGE =====
   const handleDeleteMainImage = idx => {
-    const updated = businessDetails.mainImages.filter((_, i) => i !== idx);
-    setBusinessDetails(prev => ({ ...prev, mainImages: updated }));
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: prev.mainImages.filter((_, i) => i !== idx)
+    }));
     if (editIndex === idx) closePopup();
-    API.put("/business/my/main-images", { mainImages: updated.map(img => img.preview) })
-      .catch(console.error);
   };
 
+  // ===== EDIT MAIN IMAGE SIZE =====
   const openMainImageEdit = idx => { setEditIndex(idx); setIsPopupOpen(true); };
   const closePopup = () => { setEditIndex(null); setIsPopupOpen(false); };
   const updateImageSize = sizeType => {
     if (editIndex === null) return;
-    const updated = businessDetails.mainImages.map((img, i) =>
-      i === editIndex ? { ...img, size: sizeType } : img
-    );
-    setBusinessDetails(prev => ({ ...prev, mainImages: updated }));
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: prev.mainImages.map((img, i) =>
+        i === editIndex ? { ...img, size: sizeType } : img
+      )
+    }));
     closePopup();
-    API.put("/business/my/main-images", {
-      mainImages: updated.map(img => img.preview),
-      sizes: updated.map(img => img.size)
-    }).catch(console.error);
   };
 
   // ===== GALLERY =====
@@ -146,8 +148,7 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-    const updated = [...businessDetails.gallery, ...previews];
-    setBusinessDetails(prev => ({ ...prev, gallery: updated }));
+    setBusinessDetails(prev => ({ ...prev, gallery: [...prev.gallery, ...previews] }));
     const fd = new FormData();
     previews.forEach(p => fd.append("gallery", p.file));
     track(API.put("/business/my/gallery", fd));
@@ -155,10 +156,10 @@ export default function Build() {
   };
 
   const handleDeleteGalleryImage = idx => {
-    const updated = businessDetails.gallery.filter((_, i) => i !== idx);
-    setBusinessDetails(prev => ({ ...prev, gallery: updated }));
-    API.put("/business/my/gallery", { gallery: updated.map(x => x.preview) })
-      .catch(console.error);
+    setBusinessDetails(prev => ({
+      ...prev,
+      gallery: prev.gallery.filter((_, i) => i !== idx)
+    }));
   };
 
   // ===== SAVE =====
@@ -170,6 +171,8 @@ export default function Build() {
         name:        businessDetails.name,
         description: businessDetails.description,
         phone:       businessDetails.phone,
+        mainImages:  businessDetails.mainImages.map(img => ({ url: img.preview, size: img.size })),
+        gallery:     businessDetails.gallery.map(img => img.preview),
       });
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
