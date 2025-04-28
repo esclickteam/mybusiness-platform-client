@@ -106,40 +106,36 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
   
-    setBusinessDetails(prev => {
-      // 1) צור אובייקטי preview חדשים
-      const newItems = files.map(file => ({
-        file,
-        preview: URL.createObjectURL(file)
-      }));
+    // צור אובייקטים חדשים עם file+preview
+    const newItems = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
   
-      // 2) הוסף אותם על למה שהיה קודם, וחתוך עד 5
+    // עדכון אופטימיסטי: חבר את התמונות החדשות למערך הקיים
+    setBusinessDetails(prev => {
       const updated = [...prev.mainImages, ...newItems].slice(0, 5);
   
-      // 3) בניית FormData (שם השדה נשאר "main-images")
+      // בניית FormData ושליחה ל-API
       const fd = new FormData();
-      updated.forEach(item => {
-        if (item.file) fd.append("main-images", item.file);
-      });
+      updated.forEach(item => fd.append("main-images", item.file));
   
-      // 4) שליחה אופטימיסטית
       track(
         API.put("/business/my/main-images", fd)
           .then(res => {
             if (res.status === 200) {
-              // העדכון הרשמי מהשרת כולל כל ה-URLs הישנים + חדשים
               const wrapped = res.data.mainImages.map(url => ({ preview: url }));
-              setBusinessDetails(p => ({ ...p, mainImages: wrapped }));
+              // עדכון הגלריה עם התמונות שהתקבלו מהשרת
+              setBusinessDetails(p => ({
+                ...p,
+                mainImages: wrapped,
+              }));
             }
           })
           .catch(console.error)
-          .finally(() => {
-            // תשחרר מקום בזיכרון
-            newItems.forEach(item => URL.revokeObjectURL(item.preview));
-          })
+          .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview)))
       );
   
-      // 5) עדכון אופטימיסטי של ה-state
       return { ...prev, mainImages: updated };
     });
   };
