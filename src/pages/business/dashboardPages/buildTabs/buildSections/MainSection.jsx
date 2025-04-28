@@ -24,35 +24,27 @@ export default function MainSection({
 
     setBusinessDetails(prev => {
       const updated = [...prev.mainImages];
-      updated[editIndex].size = sizeType; // עדכון הגודל
+      updated[editIndex].size = sizeType;
       return { ...prev, mainImages: updated };
     });
 
     setIsPopupOpen(false);
-    setEditIndex(null);  // איפוס האינדקס לאחר השינוי
+    setEditIndex(null);
   };
 
   // פונקציה למחיקת תמונה
   const handleDeleteImage = (index) => {
-    // מחיקת התמונה מהממשק
     const updatedMainImages = [...businessDetails.mainImages];
     updatedMainImages.splice(index, 1);
 
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: updatedMainImages
-    }));
+    setBusinessDetails(prev => ({ ...prev, mainImages: updatedMainImages }));
 
-    // שליחה לשרת
     track(
       API.put("/business/my/main-images", { mainImages: updatedMainImages.map(item => item.preview) })
         .then(res => {
           if (res.status === 200) {
             const wrapped = res.data.mainImages.map(url => ({ preview: url }));
-            setBusinessDetails(prev => ({
-              ...prev,
-              mainImages: wrapped
-            }));
+            setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
           }
         })
         .catch(console.error)
@@ -102,9 +94,11 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
-          onChange={() => {/* handled in TopBar */}}
+          onChange={() => {/* handled in Build.jsx */}}
         />
-        <button onClick={() => logoInputRef.current?.click()}>העלאת לוגו</button>
+        <button onClick={() => logoInputRef.current?.click()} type="button" className="save-btn">
+          העלאת לוגו
+        </button>
 
         {/* Main Images */}
         <label>תמונות ראשיות:</label>
@@ -125,22 +119,23 @@ export default function MainSection({
                 alt={`תמונה ראשית ${i + 1}`}
                 className="gallery-img"
               />
-              {/* כפתור מחיקה עם SVG */}
-              <button className="delete-btn" onClick={() => handleDeleteImage(i)}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6l-1 14H6L5 6" />
-                  <path d="M10 11v6" />
-                  <path d="M14 11v6" />
-                  <path d="M9 6V4h6v2" />
-                </svg>
+              {/* כפתור מחיקה עם אימוג'י */}
+              <button
+                className="delete-btn"
+                onClick={() => handleDeleteImage(i)}
+                type="button"
+                title="מחיקה"
+              >
+                🗑️
               </button>
-              {/* כפתור עריכה עם SVG */}
-              <button className="edit-btn" onClick={() => handleEditImage(i)}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-                </svg>
+              {/* כפתור עריכה עם אימוג'י */}
+              <button
+                className="edit-btn"
+                onClick={() => handleEditImage(i)}
+                type="button"
+                title="עריכה"
+              >
+                ✏️
               </button>
             </div>
           ))}
@@ -155,8 +150,8 @@ export default function MainSection({
         </div>
 
         {/* Actions */}
-        <button onClick={handleSave} className="save-btn">
-          💾 שמור
+        <button onClick={handleSave} className="save-btn" disabled={isSaving}>
+          {isSaving ? "שומר..." : "💾 שמור"}
         </button>
         {showViewProfile && (
           <button
