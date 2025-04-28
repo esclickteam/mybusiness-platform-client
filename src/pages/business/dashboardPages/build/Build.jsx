@@ -96,41 +96,44 @@ export default function Build() {
   };
 
   const handleMainImagesChange = e => {
-    const files = Array.from(e.target.files || []).slice(0, 5);
+    const files = Array.from(e.target.files || []).slice(0, 5); // עד 5 תמונות
     if (!files.length) return;
     e.target.value = null;
   
-    // יצירת אובייקטי פריוואו עבור התמונות החדשות
+    // יצירת אובייקטי preview עבור התמונות החדשות
     const newItems = files.map(file => ({
       file,
       preview: URL.createObjectURL(file),
     }));
   
-    // הצגת התמונות החדשות בלבד זמנית
+    // עדכון המצב עם התמונות החדשות בלבד (לא להוסיף את הישנות!)
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: [...prev.mainImages, ...newItems].slice(0, 5), // שמירת התמונות הקיימות ועם החדשות
+      mainImages: newItems,  // ← מחליפים את התמונות הישנות עם החדשות בלבד
     }));
   
+    // בניית FormData להעלאה לשרת
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
   
+    // שליחה לשרת
     track(
       API.put("/business/my/main-images", fd)
         .then(res => {
           if (res.status === 200) {
-            // עידכון התמונות עם הנתונים שהתקבלו מהשרת
+            // לאחר שהשרת מחזיר את התמונות החדשות, מעדכנים את ה-state עם התמונות
             const wrapped = res.data.mainImages.map(url => ({ preview: url }));
             setBusinessDetails(prev => ({
               ...prev,
-              mainImages: [...prev.mainImages, ...wrapped], // מוסיף את כל התמונות החדשות לצד הישנות
+              mainImages: wrapped,  // עדכון ה-state עם התמונות החדשות מהשרת
             }));
           }
         })
         .catch(console.error)
-        .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview))) // ניקוי ה-URLs הזמניים
+        .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview))) // שחרור ה-URLs הזמניים
     );
   };
+  
   
   
 
