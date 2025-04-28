@@ -1,15 +1,17 @@
 // src/pages/business/dashboardPages/buildTabs/MainTab.jsx
 
 import React from "react";
-import "../build/Build.css";              // נתיב מתוקן אל Build.css שבתיקיית build
-import "./MainTab.css";                   // סגנונות ספציפיים ל־MainTab
-import { dedupeByPreview } from "../../../../utils/dedupe";  // ארבע רמות מעלה לתיקיית src/utils
+// הנתיב אל Build.css שבתיקיית build (מתוך buildTabs → ../build)
+import "../build/Build.css";
+import "./MainTab.css";
+// הנתיב אל dedupe.js בתיקיית src/utils (4 רמות מעלה מ-buildTabs)
+import { dedupeByPreview } from "../../../../utils/dedupe";
 
 export default function MainTab({ businessDetails }) {
-  // 1) קבלת המערך הגולמי
+  // 1) קבל את המערך הגולמי
   const raw = businessDetails.mainImages || [];
 
-  // 2) נורמליזציה לכל פריט למבנה { preview: string }
+  // 2) נרמל כל פריט למבנה { preview: string }
   const normalized = raw
     .map(item => {
       if (typeof item === "string") {
@@ -25,13 +27,13 @@ export default function MainTab({ businessDetails }) {
     })
     .filter(Boolean);
 
-  // 3) הסרת כפילויות (blob vs URL)
+  // 3) הסר כפילויות (blob vs URL)
   const unique = dedupeByPreview(normalized);
 
-  // 4) הגבלת התצוגה לחמש תמונות ראשיות
+  // 4) הגבל ל־5 תמונות ראשיות
   const toShow = unique.slice(0, 5);
 
-  // 5) אם אין תמונות להצגה, להציג טקסט חלופי
+  // 5) אם אין תמונות – הצג הודעה
   if (toShow.length === 0) {
     return (
       <div className="gallery-preview no-actions">
@@ -40,7 +42,7 @@ export default function MainTab({ businessDetails }) {
     );
   }
 
-  // 6) רינדור התמונות
+  // 6) רנדר התמונות הנקיות
   return (
     <div className="gallery-preview no-actions">
       {toShow.map((item, i) => (
