@@ -32,13 +32,13 @@ export default function Build() {
     phone:       "",
     logo:        null,
     gallery:     [],
-    mainImages:  [],
+    mainImages:  [],       // { preview, size }
     reviews:     [],
     faqs:        [],
   });
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [isSaving, setIsSaving]     = useState(false);
+  const [editIndex, setEditIndex]   = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const logoInputRef       = useRef();
@@ -46,6 +46,7 @@ export default function Build() {
   const galleryInputRef    = useRef();
   const pendingUploadsRef  = useRef([]);
 
+  // משמש ל-track של upload ל־API
   const track = p => {
     pendingUploadsRef.current.push(p);
     p.finally(() => {
@@ -54,6 +55,7 @@ export default function Build() {
     return p;
   };
 
+  // טעינת הנתונים הראשונית
   useEffect(() => {
     API.get("/business/my")
       .then(res => {
@@ -62,7 +64,7 @@ export default function Build() {
           setBusinessDetails({
             ...data,
             gallery:    (data.gallery    || []).map(url => ({ preview: url })),
-            mainImages: (data.mainImages || []).map(url => ({ preview: url, size: 'full' })),
+            mainImages: (data.mainImages || []).map(url => ({ preview: url, size: "full" })),
           });
         }
       })
@@ -73,8 +75,8 @@ export default function Build() {
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
   // ===== LOGO =====
-  const handleLogoClick = () => logoInputRef.current?.click();
-  const handleLogoChange = e => {
+  const handleLogoClick   = () => logoInputRef.current?.click();
+  const handleLogoChange  = e => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = null;
@@ -99,7 +101,11 @@ export default function Build() {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
-    const newItems = files.map(file => ({ file, preview: URL.createObjectURL(file), size: 'full' }));
+    const newItems = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+      size: "full"
+    }));
     setBusinessDetails(prev => ({
       ...prev,
       mainImages: [...prev.mainImages, ...newItems].slice(0, 5)
@@ -110,7 +116,7 @@ export default function Build() {
       API.put("/business/my/main-images", fd)
         .then(res => {
           if (res.status === 200) {
-            const wrapped = res.data.mainImages.map(url => ({ preview: url, size: 'full' }));
+            const wrapped = res.data.mainImages.map(url => ({ preview: url, size: "full" }));
             setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
           }
         })
@@ -119,33 +125,31 @@ export default function Build() {
     );
   };
 
-  // ===== DELETE MAIN IMAGE =====
   const handleDeleteMainImage = idx => {
     setBusinessDetails(prev => ({
       ...prev,
       mainImages: prev.mainImages.filter((_, i) => i !== idx)
     }));
     if (editIndex === idx) closePopup();
-    track(
-      API.put("/business/my/main-images", { mainImages: businessDetails.mainImages.filter((_, i) => i !== idx).map(img => img.preview) })
-        .catch(console.error)
-    );
   };
 
-  // ===== EDIT MAIN IMAGE SIZE =====
-  const openMainImageEdit = idx => { setEditIndex(idx); setIsPopupOpen(true); };
-  const closePopup = () => { setEditIndex(null); setIsPopupOpen(false); };
+  const openMainImageEdit = idx => {
+    setEditIndex(idx);
+    setIsPopupOpen(true);
+  };
+  const closePopup = () => {
+    setEditIndex(null);
+    setIsPopupOpen(false);
+  };
   const updateImageSize = sizeType => {
     if (editIndex === null) return;
-    const updated = businessDetails.mainImages.map((img, i) =>
-      i === editIndex ? { ...img, size: sizeType } : img
-    );
-    setBusinessDetails(prev => ({ ...prev, mainImages: updated }));
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: prev.mainImages.map((img, i) =>
+        i === editIndex ? { ...img, size: sizeType } : img
+      )
+    }));
     closePopup();
-    track(
-      API.put("/business/my/main-images", { mainImages: updated.map(img => img.preview), sizes: updated.map(img => img.size) })
-        .catch(console.error)
-    );
   };
 
   // ===== GALLERY =====
@@ -157,8 +161,10 @@ export default function Build() {
     setBusinessDetails(prev => ({ ...prev, gallery: [...prev.gallery, ...previews] }));
     const fd = new FormData();
     previews.forEach(p => fd.append("gallery", p.file));
-    track(API.put("/business/my/gallery", fd));
-    previews.forEach(p => URL.revokeObjectURL(p.preview));
+    track(API.put("/business/my/gallery", fd)
+      .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
+      .catch(console.error)
+    );
   };
 
   const handleDeleteGalleryImage = idx => {
@@ -166,22 +172,24 @@ export default function Build() {
       ...prev,
       gallery: prev.gallery.filter((_, i) => i !== idx)
     }));
-    track(
-      API.put("/business/my/gallery", { gallery: businessDetails.gallery.filter((_, i) => i !== idx).map(img => img.preview) })
-        .catch(console.error)
-    );
   };
 
   // ===== SAVE =====
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // חכה לסיום כל ההעלאות
       await Promise.all(pendingUploadsRef.current);
+
+      // שמור הכול בפעם אחת
       await API.patch("/business/my", {
         name:        businessDetails.name,
         description: businessDetails.description,
         phone:       businessDetails.phone,
+        mainImages:  businessDetails.mainImages.map(img => ({ url: img.preview, size: img.size })),
+        gallery:     businessDetails.gallery.map(img => img.preview),
       });
+
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
       console.error(err);
@@ -201,7 +209,13 @@ export default function Build() {
           {businessDetails.logo?.preview
             ? <img src={businessDetails.logo.preview} className="logo-img" />
             : <span>לוגו</span>}
-          <input type="file" accept="image/*" style={{ display: "none" }} ref={logoInputRef} onChange={handleLogoChange} />
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            ref={logoInputRef}
+            onChange={handleLogoChange}
+          />
         </div>
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
@@ -213,7 +227,12 @@ export default function Build() {
         <hr className="divider" />
         <div className="tabs">
           {TABS.map(tab => (
-            <button key={tab} type="button" className={`tab ${tab === currentTab ? "active" : ""}`} onClick={() => setCurrentTab(tab)}>
+            <button
+              key={tab}
+              type="button"
+              className={`tab ${tab === currentTab ? "active" : ""}`}
+              onClick={() => setCurrentTab(tab)}
+            >
               {tab}
             </button>
           ))}
@@ -229,7 +248,7 @@ export default function Build() {
           businessDetails={businessDetails}
           handleInputChange={handleInputChange}
           handleMainImagesChange={handleMainImagesChange}
-          handleDeleteMainImage={handleDeleteMainImage}
+          handleDeleteImage={handleDeleteMainImage}
           handleEditImage={openMainImageEdit}
           handleSave={handleSave}
           renderTopBar={renderTopBar}
@@ -256,11 +275,7 @@ export default function Build() {
         />
       )}
       {currentTab === "חנות / יומן" && (
-        <ShopSection
-          setBusinessDetails={setBusinessDetails}
-          handleSave={handleSave}
-          renderTopBar={renderTopBar}
-        />
+        <ShopSection setBusinessDetails={setBusinessDetails} handleSave={handleSave} renderTopBar={renderTopBar} />
       )}
       {currentTab === "צ'אט עם העסק" && (
         <ChatSection
