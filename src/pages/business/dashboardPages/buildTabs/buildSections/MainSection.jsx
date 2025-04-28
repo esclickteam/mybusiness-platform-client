@@ -12,7 +12,10 @@ export default function MainSection({
   currentUser,
   renderTopBar,
   logoInputRef,
-  mainImagesInputRef
+  mainImagesInputRef,
+  handleDeleteImage,
+  handleEditImage,
+  isSaving
 }) {
   const [editIndex, setEditIndex] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -33,29 +36,7 @@ export default function MainSection({
   };
 
   // פונקציה למחיקת תמונה
-  const handleDeleteImage = (index) => {
-    const updatedMainImages = [...businessDetails.mainImages];
-    updatedMainImages.splice(index, 1);
-
-    setBusinessDetails(prev => ({ ...prev, mainImages: updatedMainImages }));
-
-    track(
-      API.put("/business/my/main-images", { mainImages: updatedMainImages.map(item => item.preview) })
-        .then(res => {
-          if (res.status === 200) {
-            const wrapped = res.data.mainImages.map(url => ({ preview: url }));
-            setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
-          }
-        })
-        .catch(console.error)
-    );
-  };
-
-  // פתיחת פופאפ לעריכת גודל התמונה
-  const handleEditImage = (index) => {
-    setEditIndex(index);
-    setIsPopupOpen(true);
-  };
+  // (אם מעבירים handleDeleteImage מ-Build, ניתן להסיר הגדרה מקומית)
 
   return (
     <>
@@ -94,9 +75,12 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
-          onChange={() => {/* handled in Build.jsx */}}
         />
-        <button onClick={() => logoInputRef.current?.click()} type="button" className="save-btn">
+        <button
+          type="button"
+          className="save-btn"
+          onClick={() => logoInputRef.current?.click()}
+        >
           העלאת לוגו
         </button>
 
@@ -119,7 +103,6 @@ export default function MainSection({
                 alt={`תמונה ראשית ${i + 1}`}
                 className="gallery-img"
               />
-              {/* כפתור מחיקה עם אימוג'י */}
               <button
                 className="delete-btn"
                 onClick={() => handleDeleteImage(i)}
@@ -128,7 +111,6 @@ export default function MainSection({
               >
                 🗑️
               </button>
-              {/* כפתור עריכה עם אימוג'י */}
               <button
                 className="edit-btn"
                 onClick={() => handleEditImage(i)}
@@ -150,14 +132,19 @@ export default function MainSection({
         </div>
 
         {/* Actions */}
-        <button onClick={handleSave} className="save-btn" disabled={isSaving}>
+        <button
+          className="save-btn"
+          onClick={handleSave}
+          disabled={isSaving}
+        >
           {isSaving ? "שומר..." : "💾 שמור"}
         </button>
         {showViewProfile && (
           <button
-            onClick={() => navigate(`/business/${currentUser.businessId}`)}
+            type="button"
             className="save-btn"
             style={{ marginTop: "0.5rem" }}
+            onClick={() => navigate(`/business/${currentUser.businessId}`)}
           >
             👀 צפה בפרופיל
           </button>
@@ -166,7 +153,7 @@ export default function MainSection({
 
       {/* ----- עמודת התצוגה המקדימה ----- */}
       <div className="preview-column">
-        {renderTopBar()}
+        {renderTopBar && renderTopBar()}
 
         <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
           {businessDetails.description && (
