@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import BusinessDashboardLayout from "../BusinessDashboardLayout";
+import BusinessDashboardLayout from "./BusinessDashboardLayout";
 
 import BuildBusinessPage    from "./dashboardPages/build/Build";
 import DashboardPage        from "./dashboardPages/DashboardPage";
