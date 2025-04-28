@@ -72,7 +72,11 @@ export default function MainSection({
         <div className="gallery-preview">
           {mainImages.map((img, i) => (
             <div key={i} className="gallery-item-wrapper">
-              <img src={img.preview} alt={`main-${i}`} className="gallery-img" />
+              <img
+                src={img.preview}
+                alt={`main-${i}`}
+                className="gallery-img"
+              />
             </div>
           ))}
           {Array.from({ length: 5 - mainImages.length }).map((_, i) => (
@@ -103,16 +107,23 @@ export default function MainSection({
 
       {/* ----- עמודת התצוגה המקדימה ----- */}
       <div className="preview-column">
-        {/* Top bar: לוגו, שם, דירוג, טאבס (ללא סטורי) */}
+        {/* Top bar: לוגו, שם העסק, דירוג וטאבס (ללא סטורי) */}
         {renderTopBar()}
 
         {/* תיאור וטלפון בתצוגה מקדימה */}
-        <div className="preview-details" style={{ padding: "0 1rem", textAlign: "right" }}>
+        <div
+          className="preview-details"
+          style={{ padding: "0 1rem", textAlign: "right" }}
+        >
           {businessDetails.description && (
-            <p className="preview-description">{businessDetails.description}</p>
+            <p className="preview-description">
+              <strong>תיאור:</strong> {businessDetails.description}
+            </p>
           )}
           {businessDetails.phone && (
-            <p className="preview-phone">📞 {businessDetails.phone}</p>
+            <p className="preview-phone">
+              <strong>טלפון:</strong> {businessDetails.phone}
+            </p>
           )}
         </div>
 
