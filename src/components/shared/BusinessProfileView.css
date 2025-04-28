@@ -174,3 +174,14 @@ html, body, #root {
   border: none !important;
   border-radius: 0 !important;
 }
+
+/* גם התוכן של הטאב ללא רקע */
+.tab-content {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+}
