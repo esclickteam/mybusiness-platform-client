@@ -13,34 +13,34 @@ export default function MainSection({
   renderTopBar,
   logoInputRef,
   mainImagesInputRef,
-  handleDeleteImage,          // פונקציה למחיקה (Prop מ-Build.jsx)
-  handleEditImage,            // פונקציה לעריכה (Prop מ-Build.jsx)
+  handleDeleteImage,
+  handleEditImage,
   isSaving
 }) {
   const [editIndex, setEditIndex] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const mainImages = businessDetails.mainImages || [];
 
-  // פותח את הפופאפ עם האינדקס לעריכה
-  const openEdit = (idx) => {
-    setEditIndex(idx);
-    setIsPopupOpen(true);
-  };
-  const closeEdit = () => {
-    setEditIndex(null);
-    setIsPopupOpen(false);
-  };
-
-  // מעביר את הגודל הנבחר חזרה ל-Build.jsx
+  // עדכון גודל התמונה
   const updateImageSize = (sizeType) => {
     if (editIndex === null) return;
-    handleEditImage(editIndex, sizeType);
-    closeEdit();
+
+    setBusinessDetails(prev => {
+      const updated = [...prev.mainImages];
+      updated[editIndex].size = sizeType;
+      return { ...prev, mainImages: updated };
+    });
+
+    setIsPopupOpen(false);
+    setEditIndex(null);
   };
+
+  // פונקציה למחיקת תמונה
+  // (אם מעבירים handleDeleteImage מ-Build, ניתן להסיר הגדרה מקומית)
 
   return (
     <>
-      {/* ====== עמודת הטופס ====== */}
+      {/* ----- עמודת הטופס ----- */}
       <div className="form-column">
         <h2>🎨 עיצוב הכרטיס</h2>
 
@@ -67,7 +67,7 @@ export default function MainSection({
           onChange={handleInputChange}
         />
 
-        {/* ====== Logo ====== */}
+        {/* Logo */}
         <label>לוגו:</label>
         <input
           type="file"
@@ -84,7 +84,7 @@ export default function MainSection({
           העלאת לוגו
         </button>
 
-        {/* ====== Main Images ====== */}
+        {/* Main Images */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
@@ -97,7 +97,7 @@ export default function MainSection({
         />
         <div className="gallery-preview">
           {mainImages.map((img, i) => (
-            <div key={i} className="image-wrapper">
+            <div key={i} className="gallery-item-wrapper image-wrapper">
               <img
                 src={img.preview}
                 alt={`תמונה ראשית ${i + 1}`}
@@ -113,7 +113,7 @@ export default function MainSection({
               </button>
               <button
                 className="edit-btn"
-                onClick={() => openEdit(i)}
+                onClick={() => handleEditImage(i)}
                 type="button"
                 title="עריכה"
               >
@@ -121,7 +121,6 @@ export default function MainSection({
               </button>
             </div>
           ))}
-
           {mainImages.length < 5 && (
             <div
               className="gallery-placeholder clickable"
@@ -132,7 +131,7 @@ export default function MainSection({
           )}
         </div>
 
-        {/* ====== פעולות שמירה ====== */}
+        {/* Actions */}
         <button
           className="save-btn"
           onClick={handleSave}
@@ -140,7 +139,6 @@ export default function MainSection({
         >
           {isSaving ? "שומר..." : "💾 שמור"}
         </button>
-
         {showViewProfile && (
           <button
             type="button"
@@ -153,7 +151,7 @@ export default function MainSection({
         )}
       </div>
 
-      {/* ====== עמודת התצוגה המקדימה ====== */}
+      {/* ----- עמודת התצוגה המקדימה ----- */}
       <div className="preview-column">
         {renderTopBar && renderTopBar()}
 
@@ -173,16 +171,14 @@ export default function MainSection({
         <MainTab businessDetails={businessDetails} />
       </div>
 
-      {/* ====== פופאפ לעריכת גודל תמונה ====== */}
+      {/* פופאפ גודל תמונה */}
       {isPopupOpen && (
         <div className="popup-overlay">
           <div className="popup-content">
             <h3>בחר גודל תמונה</h3>
-            <button onClick={() => updateImageSize("full")}>גודל מלא</button>
-            <button onClick={() => updateImageSize("custom")}>
-              גודל מותאם
-            </button>
-            <button onClick={closeEdit}>ביטול</button>
+            <button onClick={() => updateImageSize('full')}>גודל מלא</button>
+            <button onClick={() => updateImageSize('custom')}>גודל מותאם</button>
+            <button onClick={() => setIsPopupOpen(false)}>ביטול</button>
           </div>
         </div>
       )}
