@@ -159,20 +159,20 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin-top: 1rem;
-  /* הסרנו overflow-x כדי שכל השורה תופיע יחד */
-  overflow: visible;
+  overflow: visible;    /* וידאו שאין גלילה אופקית */
   padding-bottom: 0;
 }
 
 .gallery-preview .gallery-item-wrapper {
+  position: relative;
   width: 100%;
   height: 120px;
-  overflow: hidden;
   border: 2px dashed #b46af1;
   border-radius: 12px;
-  position: relative;
+  overflow: hidden;
 }
 
+/* תמונה בתוך הפריט */
 .gallery-preview .gallery-img {
   width: 100%;
   height: 100%;
@@ -180,6 +180,7 @@
   display: block;
 }
 
+/* Placeholder של + */
 .gallery-preview .gallery-placeholder {
   width: 100%;
   height: 120px;
@@ -199,22 +200,21 @@
   background-color: #f3e5ff;
 }
 
-/* כפתורי מחיקה ועריכה עם SVG */
+/* כפתורי מחיקה ועריכה */
 .delete-btn,
 .edit-btn {
   position: absolute;
-  top: 5px;
+  top: 8px;
   background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
-  cursor: pointer;
   width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 4px rgba(0,0,0,0.2);
-  padding: 0;
+  cursor: pointer;
+  z-index: 10;         /* חשוב כדי שיוכלו לקבל קליקים מעל התמונה */
   transition: transform 0.2s ease;
 }
 
@@ -223,14 +223,8 @@
   transform: scale(1.1);
 }
 
-.delete-btn { right: 5px; }
-.edit-btn  { left: 5px; }
-
-.delete-btn svg,
-.edit-btn svg {
-  width: 14px;
-  height: 14px;
-}
+.delete-btn { right: 8px; }
+.edit-btn  { left: 8px; }
 
 /* פופאפ */
 .popup-overlay {
@@ -258,21 +252,6 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-}
-
-.popup-content button:nth-child(2) {
-  background-color: #b46af1;
-  color: white;
-}
-
-.popup-content button:nth-child(3) {
-  background-color: #d6cadf;
-  color: black;
-}
-
-.popup-content button:nth-child(4) {
-  background-color: #ccc;
-  color: black;
 }
 
 /* Public profile main images (3 תמונות בשורה) */

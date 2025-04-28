@@ -37,8 +37,8 @@ export default function Build() {
     faqs:        [],
   });
 
-  const [isSaving, setIsSaving]     = useState(false);
-  const [editIndex, setEditIndex]   = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const logoInputRef       = useRef();
@@ -72,7 +72,6 @@ export default function Build() {
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  // ======== handlers ללוגו ========
   const handleLogoClick = () => logoInputRef.current?.click();
   const handleLogoChange = e => {
     const file = e.target.files?.[0];
@@ -88,7 +87,7 @@ export default function Build() {
       API.put("/business/my/logo", fd)
         .then(res => {
           if (res.status === 200) {
-            setBusinessDetails(prev => ({ ...prev, logo: { preview: res.data.logo } }));
+            setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
           }
         })
         .finally(() => URL.revokeObjectURL(preview))
@@ -96,109 +95,109 @@ export default function Build() {
     );
   };
 
-  // ======== handlers לתמונות ראשיות ========
   const handleMainImagesChange = e => {
-    const files = Array.from(e.target.files || []).slice(0, 5);
+    const files = Array.from(e.target.files || []).slice(0, 5); // עד 5 תמונות
     if (!files.length) return;
     e.target.value = null;
-
+  
+    // יצירת אובייקטי preview עבור התמונות החדשות
     const newItems = files.map(file => ({
       file,
       preview: URL.createObjectURL(file),
-      size: "full"
     }));
-
+  
+    // עדכון המצב עם התמונות החדשות בלבד (לא להוסיף את הישנות!)
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: [...prev.mainImages, ...newItems].slice(0, 5)
+      mainImages: [...prev.mainImages, ...newItems].slice(0, 5),  // שמירה על 5 תמונות מקסימום
     }));
-
+  
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
+  
+    // שליחה לשרת
     track(
       API.put("/business/my/main-images", fd)
         .then(res => {
           if (res.status === 200) {
-            const wrapped = res.data.mainImages.map(url => ({ preview: url, size: "full" }));
-            setBusinessDetails(prev => ({ ...prev, mainImages: wrapped }));
+            // לאחר שהשרת מחזיר את התמונות החדשות, מעדכנים את ה-state עם התמונות
+            const wrapped = res.data.mainImages.map(url => ({ preview: url }));
+            setBusinessDetails(prev => ({
+              ...prev,
+              mainImages: wrapped,  // עדכון ה-state עם התמונות החדשות מהשרת
+            }));
           }
         })
-        .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview)))
         .catch(console.error)
+        .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview))) // שחרור ה-URLs הזמניים
     );
   };
+  
+  // ===== Gallery handlers =====
+const handleGalleryChange = e => {
+  const files = Array.from(e.target.files || []).slice(0, 10);
+  if (!files.length) return;
+  e.target.value = null;
 
-  // מחיקה של תמונה ראשית בלבד
-  const handleDeleteMainImage = idx => {
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: prev.mainImages.filter((_, i) => i !== idx)
-    }));
-    // במקרה ומשנה גודל הייתה פתוחה על אותה תמונה
-    if (editIndex === idx) closePopup();
-  };
+  // Create preview objects
+  const previews = files.map(file => ({ file, preview: URL.createObjectURL(file) }));
+  setBusinessDetails(prev => ({
+    ...prev,
+    gallery: [...(prev.gallery || []), ...previews],
+  }));
 
-  // פתיחה של הפופ־אפ לעריכת תמונה ראשית
-  const openMainImageEdit = idx => {
-    setEditIndex(idx);
+  // Upload to server
+  const fd = new FormData();
+  files.forEach(f => fd.append("gallery", f));
+  track(
+    API.put("/business/my/gallery", fd)
+      .then(res => {
+        if (res.status === 200) {
+          const wrapped = res.data.gallery.map(url => ({ preview: url }));
+          setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
+        }
+      })
+      .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
+      .catch(console.error)
+  );
+};
+
+  
+  
+
+const handleDeleteImage = index => {
+  const updated = businessDetails.gallery.filter((_, i) => i !== index);
+  setBusinessDetails(prev => ({ ...prev, gallery: updated }));
+
+  track(
+    API.put("/business/my/gallery", { gallery: updated.map(item => item.preview) })
+      .then(res => {
+        if (res.status === 200) {
+          const wrapped = res.data.gallery.map(url => ({ preview: url }));
+          setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
+        }
+      })
+      .catch(console.error)
+  );
+};
+
+
+  const handleEditImage = (index) => {
+    setEditIndex(index);
     setIsPopupOpen(true);
   };
-  const closePopup = () => {
-    setEditIndex(null);
-    setIsPopupOpen(false);
-  };
-  const updateImageSize = sizeType => {
-    if (editIndex === null) return;
+
+  const updateImageSize = (sizeType) => {
     setBusinessDetails(prev => {
-      const imgs = [...prev.mainImages];
-      imgs[editIndex].size = sizeType;
-      return { ...prev, mainImages: imgs };
+      const updated = [...prev.mainImages];
+      updated[editIndex].size = sizeType; // 'full' או 'custom'
+      return { ...prev, mainImages: updated };
     });
-    closePopup();
+
+    setIsPopupOpen(false);
+    setEditIndex(null);
   };
 
-  // ======== handlers לגלריה ========
-  const handleGalleryChange = e => {
-    const files = Array.from(e.target.files || []).slice(0, 10);
-    if (!files.length) return;
-    e.target.value = null;
-
-    const previews = files.map(file => ({ file, preview: URL.createObjectURL(file) }));
-    setBusinessDetails(prev => ({ ...prev, gallery: [...prev.gallery, ...previews] }));
-
-    const fd = new FormData();
-    files.forEach(f => fd.append("gallery", f));
-    track(
-      API.put("/business/my/gallery", fd)
-        .then(res => {
-          if (res.status === 200) {
-            const wrapped = res.data.gallery.map(url => ({ preview: url }));
-            setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
-          }
-        })
-        .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
-        .catch(console.error)
-    );
-  };
-
-  // מחיקה של פריט גלריה בלבד
-  const handleDeleteGalleryImage = idx => {
-    const updated = businessDetails.gallery.filter((_, i) => i !== idx);
-    setBusinessDetails(prev => ({ ...prev, gallery: updated }));
-
-    track(
-      API.put("/business/my/gallery", { gallery: updated.map(x => x.preview) })
-        .then(res => {
-          if (res.status === 200) {
-            const wrapped = res.data.gallery.map(url => ({ preview: url }));
-            setBusinessDetails(prev => ({ ...prev, gallery: wrapped }));
-          }
-        })
-        .catch(console.error)
-    );
-  };
-
-  // ======== שמירה סופית ========
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -221,12 +220,17 @@ export default function Build() {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((s, r) => s + r.rating, 0) / businessDetails.reviews.length
       : 0;
+
     return (
       <>
         <div className="logo-circle" onClick={handleLogoClick}>
-          {businessDetails.logo?.preview
-            ? <img src={businessDetails.logo.preview} className="logo-img" />
-            : <span>לוגו</span>}
+          {typeof businessDetails.logo === "string" ? (
+            <img src={businessDetails.logo} className="logo-img" />
+          ) : businessDetails.logo?.preview ? (
+            <img src={businessDetails.logo.preview} className="logo-img" />
+          ) : (
+            <span>לוגו</span>
+          )}
           <input
             type="file"
             accept="image/*"
@@ -251,7 +255,6 @@ export default function Build() {
             <button
               key={tab}
               className={`tab ${tab === currentTab ? "active" : ""}`}
-              type="button"
               onClick={() => setCurrentTab(tab)}
             >
               {tab}
@@ -269,8 +272,8 @@ export default function Build() {
           businessDetails={businessDetails}
           handleInputChange={handleInputChange}
           handleMainImagesChange={handleMainImagesChange}
-          handleDeleteImage={handleDeleteMainImage}
-          handleEditImage={openMainImageEdit}
+          handleDeleteImage={handleDeleteImage}
+          handleEditImage={handleEditImage}
           handleSave={handleSave}
           renderTopBar={renderTopBar}
           logoInputRef={logoInputRef}
@@ -278,17 +281,19 @@ export default function Build() {
           isSaving={isSaving}
         />
       )}
+  
+  {currentTab === "גלריה" && (
+  <GallerySection
+    businessDetails={businessDetails}
+    galleryInputRef={galleryInputRef}
+    handleGalleryChange={handleGalleryChange}
+    handleDeleteImage={handleDeleteImage}
+    handleEditImage={handleEditImage}
+    renderTopBar={renderTopBar}
+  />
+)}
 
-      {currentTab === "גלריה" && (
-        <GallerySection
-          businessDetails={businessDetails}
-          galleryInputRef={galleryInputRef}
-          handleGalleryChange={handleGalleryChange}
-          handleDeleteImage={handleDeleteGalleryImage}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
+  
       {currentTab === "ביקורות" && (
         <ReviewsSection
           reviews={businessDetails.reviews}
@@ -297,7 +302,7 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
+  
       {currentTab === "חנות / יומן" && (
         <ShopSection
           setBusinessDetails={setBusinessDetails}
@@ -305,7 +310,7 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
+  
       {currentTab === "צ'אט עם העסק" && (
         <ChatSection
           businessDetails={businessDetails}
@@ -313,7 +318,7 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
+  
       {currentTab === "שאלות ותשובות" && (
         <FaqSection
           faqs={businessDetails.faqs}
@@ -322,23 +327,18 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
+  
       {isPopupOpen && (
         <div className="popup-overlay">
           <div className="popup-content">
             <h3>בחר גודל תמונה</h3>
-            <button type="button" onClick={() => updateImageSize("full")}>
-              גודל מלא
-            </button>
-            <button type="button" onClick={() => updateImageSize("custom")}>
-              גודל מותאם
-            </button>
-            <button type="button" onClick={closePopup}>
-              ביטול
-            </button>
+            <button onClick={() => updateImageSize('full')}>גודל מלא</button>
+            <button onClick={() => updateImageSize('custom')}>גודל מותאם</button>
+            <button onClick={() => setIsPopupOpen(false)}>ביטול</button>
           </div>
         </div>
       )}
     </div>
   );
+
 }
