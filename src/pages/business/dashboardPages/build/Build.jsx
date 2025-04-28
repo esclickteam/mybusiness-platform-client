@@ -15,7 +15,14 @@ import FaqSection     from "../buildTabs/buildSections/FaqSection";
 
 import { useAuth } from "../../../../context/AuthContext";
 
-const TABS = ["ראשי", "גלריה", "ביקורות", "חנות / יומן", "צ'אט עם העסק", "שאלות ותשובות"];
+const TABS = [
+  "ראשי",
+  "גלריה",
+  "ביקורות",
+  "חנות / יומן",
+  "צ'אט עם העסק",
+  "שאלות ותשובות",
+];
 
 export default function Build() {
   const { user: currentUser } = useAuth();
@@ -93,27 +100,25 @@ export default function Build() {
     );
   };
 
-  /* main images upload – sends all files (no duplicate filter) */
+  /* main images upload */
   const handleMainImagesChange = e => {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
 
     setBusinessDetails(prev => {
-      const existingUrls = prev.mainImages
-        .filter(i => typeof i.preview === "string")
-        .map(i => i.preview);
+      // צור אובייקטים חדשים עם file+preview
+      const newItems = files.map(file => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
 
-      const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
+      // חבר רק את החדשים (עד 5 פריטים)
+      const updated = newItems.slice(0, 5);
 
-      const optimistic = {
-        ...prev,
-        mainImages: [...prev.mainImages, ...previews],
-      };
-
+      // בניית FormData ושליחה ל-API
       const fd = new FormData();
-      files.forEach(f => fd.append("mainImages", f));
-      existingUrls.forEach(url => fd.append("existing[]", url));
+      updated.forEach(item => fd.append("main-images", item.file));
 
       track(
         API.put("/business/my/main-images", fd)
@@ -123,11 +128,11 @@ export default function Build() {
               setBusinessDetails(p => ({ ...p, mainImages: wrapped }));
             }
           })
-          .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
           .catch(console.error)
+          .finally(() => updated.forEach(item => URL.revokeObjectURL(item.preview)))
       );
 
-      return optimistic;
+      return { ...prev, mainImages: updated };
     });
   };
 
@@ -165,9 +170,9 @@ export default function Build() {
     try {
       await Promise.all(pendingUploadsRef.current);
       await API.patch("/business/my", {
-        name: businessDetails.name,
+        name:        businessDetails.name,
         description: businessDetails.description,
-        phone: businessDetails.phone,
+        phone:       businessDetails.phone,
       });
       navigate(`/business/${currentUser.businessId}`);
     } catch (err) {
@@ -178,7 +183,7 @@ export default function Build() {
     }
   };
 
-  /* top bar */
+  /* top bar rendering */
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((s, r) => s + r.rating, 0) / businessDetails.reviews.length
@@ -243,7 +248,6 @@ export default function Build() {
           isSaving={isSaving}
         />
       )}
-
       {currentTab === "גלריה" && (
         <GallerySection
           businessDetails={businessDetails}
@@ -253,7 +257,6 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
       {currentTab === "ביקורות" && (
         <ReviewsSection
           reviews={businessDetails.reviews}
@@ -262,7 +265,6 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
       {currentTab === "חנות / יומן" && (
         <ShopSection
           setBusinessDetails={setBusinessDetails}
@@ -270,7 +272,6 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
       {currentTab === "צ'אט עם העסק" && (
         <ChatSection
           businessDetails={businessDetails}
@@ -278,7 +279,6 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
       {currentTab === "שאלות ותשובות" && (
         <FaqSection
           faqs={businessDetails.faqs}

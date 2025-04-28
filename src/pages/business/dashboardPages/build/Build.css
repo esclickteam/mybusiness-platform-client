@@ -24,6 +24,12 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
   margin: 0 auto;
   flex-shrink: 0;
+  overflow: visible; /* הסרת כל חיתוכים/Overlay */
+}
+
+/* הסרת overlay כהה על preview */
+.preview-column::after {
+  content: none;
 }
 
 /* צד שמאל - טופס */
@@ -150,69 +156,35 @@
   margin-right: 0.3rem;
 }
 
-/* Preview gallery בתוך הטלפון */
-.gallery-preview-wrapper {
-  width: 100%;
-  padding: 0;
-  margin: 0 auto;
-}
-
-.gallery-preview-wrapper .gallery-instagram-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 1rem;
-  padding: 0 6px;
-}
-
-.gallery-preview-wrapper .gallery-item-square {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  position: relative;
-}
-
-.gallery-preview-wrapper .gallery-item-square img,
-.gallery-preview-wrapper .gallery-item-square video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 10px;
-}
-
-/* ==== MainSection gallery (+ ו־תמונות) ==== */
+/* Gallery preview בתוך הטופס */
 .gallery-preview {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
-  overflow-x: auto;    /* גלילה אופקית */
-  overflow-y: hidden;  /* חיתוך אנכי */
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.5rem;
 }
 
-/* עגלת תמונות בעמוד הראשי - הגדלנו ל־120px כדי להתאים לצד ימין */
 .gallery-preview .gallery-item-wrapper {
-  width: 120px !important;
-  height: 120px !important;
-  overflow: hidden !important;
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
   flex: 0 0 auto;
   border: 2px dashed #b46af1;
   border-radius: 12px;
 }
 
 .gallery-preview .gallery-img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
 .gallery-preview .gallery-placeholder {
-  width: 120px !important;
-  height: 120px !important;
+  width: 120px;
+  height: 120px;
   border: 2px dashed #b46af1;
   border-radius: 12px;
   display: flex;
@@ -228,6 +200,23 @@
 .gallery-preview .gallery-placeholder:hover {
   transform: scale(1.05);
   background-color: #f3e5ff;
+}
+
+/* Public profile main images */
+.public-main-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.public-main-images img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 /* רספונסיביות */
@@ -259,9 +248,18 @@
     padding: 1rem 2rem;
   }
 
-  .gallery-preview-wrapper .gallery-instagram-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    padding: 0 8px;
+  .gallery-preview {
+    gap: 8px;
+  }
+
+  .gallery-preview .gallery-item-wrapper,
+  .gallery-preview .gallery-placeholder {
+    width: 80px;
+    height: 80px;
+  }
+
+  .public-main-images img {
+    width: 80px;
+    height: 80px;
   }
 }

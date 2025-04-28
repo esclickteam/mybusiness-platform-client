@@ -62,7 +62,7 @@ export default function BusinessProfileView() {
 
           {logo && (
             <div className="logo-wrapper">
-              <img src={logo} alt="logo" className="profile-logo" />
+              <img src={logo} alt="לוגו העסק" className="profile-logo" />
             </div>
           )}
 
@@ -87,15 +87,13 @@ export default function BusinessProfileView() {
           <div className="tab-content">
             {/* טאב ראשי - תמונות ראשיות */}
             {currentTab === "ראשי" && (
-              <div className="main-images">
+              <div className="public-main-images">
                 {mainImages.length > 0 ? (
                   mainImages.map((url, i) => (
-                    <div key={i} className="profile-gallery-item">
-                      <img src={url} alt={`main-${i}`} className="gallery-img" />
-                    </div>
+                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
                   ))
                 ) : (
-                  <p>אין תמונות להצגה</p>
+                  <p className="no-data">אין תמונות להצגה</p>
                 )}
               </div>
             )}
@@ -103,11 +101,9 @@ export default function BusinessProfileView() {
             {/* טאב גלריה - תמונות מהגלריה */}
             {currentTab === "גלריה" && (
               gallery.length > 0 ? (
-                <div className="gallery-preview">
+                <div className="public-main-images">
                   {gallery.map((url, i) => (
-                    <div key={i} className="profile-gallery-item">
-                      <img src={url} alt={`gal-${i}`} className="gallery-img" />
-                    </div>
+                    <img key={i} src={url} alt={`גלריה ${i + 1}`} />
                   ))}
                 </div>
               ) : (

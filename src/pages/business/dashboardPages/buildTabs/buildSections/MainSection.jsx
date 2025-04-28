@@ -49,19 +49,19 @@ export default function MainSection({
         <label>לוגו:</label>
         <input
           type="file"
+          name="logo"
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
           onChange={() => {/* handled in TopBar */}}
         />
-        <button onClick={() => logoInputRef.current?.click()}>
-          העלאת לוגו
-        </button>
+        <button onClick={() => logoInputRef.current?.click()}>העלאת לוגו</button>
 
         {/* Main Images */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
+          name="main-images"           // התאמת השדה בשרת
           multiple
           accept="image/*"
           style={{ display: "none" }}
@@ -73,7 +73,7 @@ export default function MainSection({
             <div key={i} className="gallery-item-wrapper">
               <img
                 src={img.preview}
-                alt={`main-${i}`}
+                alt={`תמונה ראשית ${i + 1}`}
                 className="gallery-img"
               />
             </div>

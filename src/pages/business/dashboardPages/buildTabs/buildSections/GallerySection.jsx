@@ -1,10 +1,9 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/GallerySection.jsx
-
 import React from "react";
+import "../../build/Build.css";
+import "./GallerySection.css";
 
 export default function GallerySection({
   businessDetails,
-  setBusinessDetails,
   galleryInputRef,
   handleGalleryChange,
   renderTopBar
@@ -19,6 +18,7 @@ export default function GallerySection({
 
         <input
           type="file"
+          name="gallery"                     // התאמת השדה בשרת
           multiple
           accept="image/*"
           style={{ display: "none" }}
@@ -29,33 +29,41 @@ export default function GallerySection({
           הוספת תמונות
         </button>
 
-        <div className="gallery-preview no-actions">
-          {gallery.map((item, i) => (
-            <div key={i} className="gallery-item-wrapper">
-              <img
-                src={item.preview}
-                alt={`gallery-${i}`}
-                className="gallery-img"
-              />
-            </div>
-          ))}
+        <div className="gallery-preview">
+          {gallery.length > 0 ? (
+            gallery.map((item, i) => (
+              <div key={i} className="gallery-item-wrapper">
+                <img
+                  src={item.preview}
+                  alt={`תמונת גלריה ${i + 1}`}
+                  className="gallery-img"
+                />
+              </div>
+            ))
+          ) : (
+            <p className="no-data">אין תמונות בגלריה</p>
+          )}
         </div>
       </div>
 
       {/* צד ימין: Preview כולל Top Bar */}
       <div className="preview-column">
-        {renderTopBar()}
+        {renderTopBar && renderTopBar()}
         <h3 className="section-title">הגלריה שלנו</h3>
-        <div className="gallery-preview no-actions">
-          {gallery.map((item, i) => (
-            <div key={i} className="gallery-item-wrapper">
-              <img
-                src={item.preview}
-                alt={`gallery-${i}`}
-                className="gallery-img"
-              />
-            </div>
-          ))}
+        <div className="gallery-preview">
+          {gallery.length > 0 ? (
+            gallery.map((item, i) => (
+              <div key={i} className="gallery-item-wrapper">
+                <img
+                  src={item.preview}
+                  alt={`תמונת גלריה ${i + 1}`}
+                  className="gallery-img"
+                />
+              </div>
+            ))
+          ) : (
+            <p className="no-data">אין תמונות בגלריה</p>
+          )}
         </div>
       </div>
     </>
