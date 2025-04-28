@@ -76,7 +76,7 @@ export default function GallerySection({
                   onClick={() => handleEditImage(i)}
                   type="button"
                   title="עריכה"
-                  style={{ position: 'absolute', top: 4, left: 4 }}
+                  style={{ position: 'absolute',  top: 4, left: 4 }}
                 >
                   ✏️
                 </button>
