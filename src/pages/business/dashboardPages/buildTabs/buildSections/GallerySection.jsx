@@ -6,20 +6,17 @@ export default function GallerySection({
   galleryInputRef,
   handleGalleryChange,
   handleDeleteImage,
+  handleEditImage,
   renderTopBar
 }) {
   const gallery = businessDetails.gallery || [];
 
   return (
-    <div className="preview-column">
-      {/* Top bar and tabs */}
-      {renderTopBar && renderTopBar()}
-
-      {/* כותרת וכפתור העלאה בתוך הקיצור */}
-      <div className="gallery-upload-wrapper" style={{ textAlign: 'right', margin: '1rem 0' }}>
-        <label style={{ display: 'none' }} htmlFor="gallery-upload-input">העלאת תמונות לגלריה</label>
+    <div className="gallery-section-wrapper">
+      {/* כפתור העלאה */}
+      <div className="form-column">
+        <h3>העלאת תמונות לגלריה</h3>
         <input
-          id="gallery-upload-input"
           type="file"
           name="gallery"
           multiple
@@ -36,36 +33,46 @@ export default function GallerySection({
         </button>
       </div>
 
-      {/* תצוגת הגלריה */}
-      <h3 className="section-title">הגלריה שלנו</h3>
-      <div
-        className="gallery-scroll-container"
-        style={{ display: 'flex', gap: '1rem', overflowX: 'auto', padding: '1rem 0' }}
-      >
-        {gallery.length > 0 ? (
-          gallery.map((item, i) => (
-            <div
-              key={i}
-              className="gallery-item-wrapper"
-              style={{ position: 'relative', minWidth: '150px' }}
-            >
-              <img
-                src={item.preview}
-                alt={`תמונת גלריה ${i + 1}`}
-                className="gallery-img"
-              />
-              <button
-                className="delete-btn"
-                onClick={() => handleDeleteImage(i)}
-                type="button"
-                title="מחיקה"
-                style={{ position: 'absolute', top: 4, right: 4 }}
-              >🗑️</button>
-            </div>
-          ))
-        ) : (
-          <p className="no-data">אין תמונות בגלריה</p>
-        )}
+      {/* תצוגה מוקדמת בגלריה */}
+      <div className="preview-column">
+        {renderTopBar && renderTopBar()}
+        <h3 className="section-title">הגלריה שלנו</h3>
+        <div
+          className="gallery-scroll-container"
+          style={{ display: 'flex', gap: '1rem', overflowX: 'auto', padding: '1rem 0' }}
+        >
+          {gallery.length > 0 ? (
+            gallery.map((item, i) => (
+              <div
+                key={i}
+                className="gallery-item-wrapper"
+                style={{ position: 'relative', minWidth: '150px' }}
+              >
+                <img
+                  src={item.preview}
+                  alt={`תמונת גלריה ${i + 1}`}
+                  className="gallery-img"
+                />
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteImage(i)}
+                  type="button"
+                  title="מחיקה"
+                  style={{ position: 'absolute', top: 4, right: 4 }}
+                >🗑️</button>
+                <button
+                  className="edit-btn"
+                  onClick={() => handleEditImage(i)}
+                  type="button"
+                  title="עריכה"
+                  style={{ position: 'absolute', top: 4, left: 4 }}
+                >✏️</button>
+              </div>
+            ))
+          ) : (
+            <p className="no-data">אין תמונות בגלריה</p>
+          )}
+        </div>
       </div>
     </div>
   );
