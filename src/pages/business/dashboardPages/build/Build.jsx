@@ -100,15 +100,16 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
   
+    // יצירת אובייקטי פריוואו עבור התמונות החדשות
     const newItems = files.map(file => ({
       file,
       preview: URL.createObjectURL(file),
     }));
   
-    // ← במקום להוסיף את החדשים לישן, תראה רק את החדשים זמנית:
+    // הצגת התמונות החדשות בלבד זמנית
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: newItems,  // ← הצגת התמונות החדשות בלבד עד שהשרת מחזיר
+      mainImages: [...prev.mainImages, ...newItems].slice(0, 5), // שמירת התמונות הקיימות ועם החדשות
     }));
   
     const fd = new FormData();
@@ -118,17 +119,19 @@ export default function Build() {
       API.put("/business/my/main-images", fd)
         .then(res => {
           if (res.status === 200) {
+            // עידכון התמונות עם הנתונים שהתקבלו מהשרת
             const wrapped = res.data.mainImages.map(url => ({ preview: url }));
             setBusinessDetails(prev => ({
               ...prev,
-              mainImages: wrapped,  // ← רשימת התמונות המעודכנת מהשרת
+              mainImages: [...prev.mainImages, ...wrapped], // מוסיף את כל התמונות החדשות לצד הישנות
             }));
           }
         })
         .catch(console.error)
-        .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview)))
+        .finally(() => newItems.forEach(item => URL.revokeObjectURL(item.preview))) // ניקוי ה-URLs הזמניים
     );
   };
+  
   
 
   const handleDeleteImage = (index) => {
