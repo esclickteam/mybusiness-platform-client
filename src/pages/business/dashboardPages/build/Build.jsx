@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
-import { dedupeByPreview } from "../../../utils/dedupe";
+import { dedupeByPreview } from "../../../../utils/dedupe";
 
 import MainSection    from "../buildTabs/buildSections/MainSection";
 import GallerySection from "../buildTabs/buildSections/GallerySection";
