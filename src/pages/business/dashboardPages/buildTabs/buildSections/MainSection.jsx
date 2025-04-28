@@ -3,7 +3,7 @@
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
-import { dedupeByPreview } from "../../../../../utils/dedupe";
+import { dedupeByPreview } from "../../../utils/dedupe"; // תיקןתי את הנתיב היחסי
 
 export default function MainSection({
   businessDetails,
@@ -19,13 +19,13 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
-  // הוצאת המערך המקורי
+  // 1) המערך הגולמי
   const mainImages = businessDetails.mainImages || [];
 
-  // 1) הסרת כפילויות (blob + URL)
+  // 2) הסרת כפילויות (blob vs URL)
   const uniqueImages = dedupeByPreview(mainImages);
 
-  // 2) הגבלה ל-5 תמונות ראשיות
+  // 3) חיתוך לחמש תמונות ראשיות
   const limitedMainImages = uniqueImages.slice(0, 5);
 
   return (

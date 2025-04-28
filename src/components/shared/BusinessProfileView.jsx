@@ -1,7 +1,11 @@
+// src/pages/business/dashboardPages/BusinessProfileView.jsx
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "@api";
 import "./BusinessProfileView.css";
+// נייבא את הפילטר לכפילויות
+import { dedupeByPreview } from "../../../utils/dedupe";
 
 const TABS = [
   "ראשי",
@@ -14,7 +18,7 @@ const TABS = [
 
 export default function BusinessProfileView() {
   const { businessId } = useParams();
-  const [data, setData] = useState(null);
+  const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
@@ -51,6 +55,12 @@ export default function BusinessProfileView() {
     faqs
   } = data;
 
+  // נרמל ומסננים כפילויות ומגבילים ל-5
+  const normalizedMain = mainImages.map(url => ({ preview: url }));
+  const uniqueMain    = dedupeByPreview(normalizedMain)
+                          .slice(0, 5)
+                          .map(obj => obj.preview);
+
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
@@ -69,7 +79,7 @@ export default function BusinessProfileView() {
           <h1 className="business-name">{name}</h1>
           <div className="about-phone">
             {description && <p><strong>תיאור:</strong> {description}</p>}
-            {phone && <p><strong>טלפון:</strong> {phone}</p>}
+            {phone       && <p><strong>טלפון:</strong> {phone}</p>}
           </div>
           <div className="rating"><strong>{rating}</strong> / 5 ★</div>
           <hr className="profile-divider" />
@@ -88,9 +98,9 @@ export default function BusinessProfileView() {
             {/* טאב ראשי - תמונות ראשיות */}
             {currentTab === "ראשי" && (
               <div className="public-main-images">
-                {mainImages.length > 0 ? (
-                  mainImages.map((url, i) => (
-                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
+                {uniqueMain.length > 0 ? (
+                  uniqueMain.map((url, i) => (
+                    <img key={url} src={url} alt={`תמונה ראשית ${i + 1}`} />
                   ))
                 ) : (
                   <p className="no-data">אין תמונות להצגה</p>
@@ -98,7 +108,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* טאב גלריה - תמונות מהגלריה */}
+            {/* שאר הטאבים נשארים ללא שינוי */}
             {currentTab === "גלריה" && (
               gallery.length > 0 ? (
                 <div className="public-main-images">
@@ -111,7 +121,6 @@ export default function BusinessProfileView() {
               )
             )}
 
-            {/* טאב ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {reviews.length > 0 ? (
@@ -129,7 +138,6 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* טאב שאלות ותשובות */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
@@ -145,12 +153,10 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* טאב צ'אט */}
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
 
-            {/* טאב חנות / יומן */}
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}

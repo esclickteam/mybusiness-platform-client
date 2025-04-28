@@ -105,51 +105,51 @@ export default function Build() {
   };
 
   // ===== MAIN IMAGES =====
-  const handleMainImagesChange = async e => {
-    // 1) בחר עד 5 קבצים
-    const files = Array.from(e.target.files || []).slice(0, 5);
-    if (!files.length) return;
-    e.target.value = null;
-  
-    // 2) הכנת אובייקטים לפריוויו
-    const newItems = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file),
-      size: "full"
-    }));
-  
-    // 3) הצגת ה-preview מידית (החלפה, לא מיזוג)
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: newItems
-    }));
-  
-    // 4) שליחת הקבצים לשרת
-    const fd = new FormData();
-    files.forEach(f => fd.append("main-images", f));
-    try {
-      const res = await API.put("/business/my/main-images", fd);
-      if (res.status === 200) {
-        // 5) עטיפת ה-URLs שחזרו מהשרת
-        const wrapped = res.data.mainImages.map(url => ({
-          preview: url,
-          size: "full"
-        }));
-        // 6) החלפה מלאה + חיתוך ל-5 + סינון כפילויות סופית
-        setBusinessDetails(prev => ({
-          ...prev,
-          mainImages: dedupeByPreview(wrapped).slice(0, 5)
-        }));
-      } else {
-        console.warn("העלאת תמונות נכשלה:", res);
-      }
-    } catch (err) {
-      console.error("שגיאה בהעלאה:", err);
-    } finally {
-      // 7) שחרור זכרון ה-blob URLs
-      newItems.forEach(i => URL.revokeObjectURL(i.preview));
+  // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
+
+const handleMainImagesChange = async e => {
+  // 1) בוחרים עד 5 קבצים
+  const files = Array.from(e.target.files || []).slice(0, 5);
+  if (!files.length) return;
+  e.target.value = null;
+
+  // 2) הכנת פריוויו לשלב ההעלאה
+  const previews = files.map(f => ({
+    preview: URL.createObjectURL(f),
+    file: f
+  }));
+
+  // 3) **החלפה מלאה** של mainImages לפריוויו בלבד (blob)
+  setBusinessDetails(prev => ({
+    ...prev,
+    mainImages: previews
+  }));
+
+  // 4) שליחה ל־API
+  const fd = new FormData();
+  files.forEach(f => fd.append("main-images", f));
+  try {
+    const res = await API.put("/business/my/main-images", fd);
+    if (res.status === 200) {
+      // 5) עטיפת ה־URLs שהשרת החזיר ➞ החלפה מלאה + חיתוך ל-5
+      const wrapped = res.data.mainImages
+        .slice(0, 5)
+        .map(url => ({ preview: url }));
+      setBusinessDetails(prev => ({
+        ...prev,
+        mainImages: wrapped
+      }));
+    } else {
+      console.warn("העלאת תמונות נכשלה:", res);
     }
-  };
+  } catch (err) {
+    console.error("שגיאה בהעלאה:", err);
+  } finally {
+    // 6) ניקוי זיכרון של blob-URLs
+    previews.forEach(p => URL.revokeObjectURL(p.preview));
+  }
+};
+
   
 
   const handleDeleteMainImage = idx => {

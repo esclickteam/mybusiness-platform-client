@@ -1,17 +1,18 @@
 // src/pages/business/dashboardPages/buildTabs/MainTab.jsx
 
 import React from "react";
-// הנתיב אל Build.css שבתיקיית build (מתוך buildTabs → ../build)
+// CSS של ה־Build (מתיקיית build המקבילה ל־buildTabs)
 import "../build/Build.css";
+// CSS ספציפי ל־MainTab
 import "./MainTab.css";
-// הנתיב אל dedupe.js בתיקיית src/utils (4 רמות מעלה מ-buildTabs)
+// נתיב נכון אל ה-utils: ארבע רמות מעלה מ-buildTabs → src/utils
 import { dedupeByPreview } from "../../../../utils/dedupe";
 
 export default function MainTab({ businessDetails }) {
-  // 1) קבל את המערך הגולמי
+  // 1) קח את מערך התמונות לבד
   const raw = businessDetails.mainImages || [];
 
-  // 2) נרמל כל פריט למבנה { preview: string }
+  // 2) נרמל כל פריט למבנה { preview }
   const normalized = raw
     .map(item => {
       if (typeof item === "string") {
@@ -27,10 +28,10 @@ export default function MainTab({ businessDetails }) {
     })
     .filter(Boolean);
 
-  // 3) הסר כפילויות (blob vs URL)
+  // 3) הסר כפילויות blob vs URL
   const unique = dedupeByPreview(normalized);
 
-  // 4) הגבל ל־5 תמונות ראשיות
+  // 4) וחתוך ל-5 פריטים
   const toShow = unique.slice(0, 5);
 
   // 5) אם אין תמונות – הצג הודעה
@@ -42,7 +43,7 @@ export default function MainTab({ businessDetails }) {
     );
   }
 
-  // 6) רנדר התמונות הנקיות
+  // 6) רנדר התמונות הייחודיות
   return (
     <div className="gallery-preview no-actions">
       {toShow.map((item, i) => (
