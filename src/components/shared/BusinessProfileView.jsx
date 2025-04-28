@@ -49,7 +49,6 @@ export default function BusinessProfileView() {
     faqs
   } = data;
 
-  // בחירה בין mainImages ל-gallery
   const primary = mainImages.length ? mainImages : gallery;
 
   return (
@@ -75,11 +74,6 @@ export default function BusinessProfileView() {
               <p>{description}</p>
             </div>
           )}
-
-          {/* חישוב כמויות */}
-          <div className="about-section">
-            <p>חישוב כמויות</p>
-          </div>
 
           {/* פרטי התקשרות */}
           {phone && (

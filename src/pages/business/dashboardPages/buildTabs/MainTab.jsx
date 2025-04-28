@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import '../build/Build.css';
 import "./MainTab.css";
 
-const MainTab = ({ businessDetails, setBusinessDetails, handleSave }) => {
+const MainTab = ({ businessDetails, setBusinessDetails }) => {
   const inputRef = useRef(null);
 
   // מייצר URL לתצוגה מקומית של ה־File או מחזיר URL קיים
@@ -14,7 +14,7 @@ const MainTab = ({ businessDetails, setBusinessDetails, handleSave }) => {
     return item.url || item.preview || "";
   };
 
-  // במקום כפתור, כשאף תמונה לא קיימת מראים “פלוס”
+  // placeholder “פלוס” כשאין תמונה
   const renderPlaceholder = () => (
     <div
       className="gallery-item-wrapper placeholder"
@@ -24,7 +24,7 @@ const MainTab = ({ businessDetails, setBusinessDetails, handleSave }) => {
     </div>
   );
 
-  // כשמעלים קובץ – שומרים אותו ב־state
+  // שמירת הקובץ ב־state
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -36,6 +36,20 @@ const MainTab = ({ businessDetails, setBusinessDetails, handleSave }) => {
 
   return (
     <>
+      {/* תיאור וטלפון */}
+      <div className="maintab-details" style={{ textAlign: "right", padding: "0 1rem" }}>
+        {businessDetails.description && (
+          <p className="maintab-description">
+            {businessDetails.description}
+          </p>
+        )}
+        {businessDetails.phone && (
+          <p className="maintab-phone">
+            📞 {businessDetails.phone}
+          </p>
+        )}
+      </div>
+
       {/* הקלט המוסתר */}
       <input
         type="file"
@@ -47,25 +61,24 @@ const MainTab = ({ businessDetails, setBusinessDetails, handleSave }) => {
 
       {/* תצוגת הפלוס או התמונה */}
       <div className="gallery-preview no-actions">
-        {(!businessDetails.mainImages ||
-          businessDetails.mainImages.length === 0) &&
-          renderPlaceholder()}
-
-        {businessDetails.mainImages?.map((file, i) => (
-          <div key={i} className="gallery-item-wrapper">
-            <div className="gallery-item">
-              <img
-                src={getImageUrl(file) || "/images/placeholder.jpg"}
-                alt={`main-${i}`}
-                className="gallery-img"
-                style={{ objectFit: "cover" }}
-              />
-            </div>
-          </div>
-        ))}
+        {(!businessDetails.mainImages || businessDetails.mainImages.length === 0)
+          ? renderPlaceholder()
+          : businessDetails.mainImages.map((file, i) => (
+              <div key={i} className="gallery-item-wrapper">
+                <div className="gallery-item">
+                  <img
+                    src={getImageUrl(file) || "/images/placeholder.jpg"}
+                    alt={`main-${i}`}
+                    className="gallery-img"
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+              </div>
+            ))
+        }
       </div>
 
-      {/* אם יש ביקורות – נשאיר כמו שהייתה אצלך */}
+      {/* ביקורות (לא השתנה) */}
       {businessDetails.reviews?.length > 0 && (
         <div className="reviews">
           <h3>⭐ ביקורות אחרונות</h3>
@@ -80,15 +93,6 @@ const MainTab = ({ businessDetails, setBusinessDetails, handleSave }) => {
           ))}
         </div>
       )}
-
-      {/* כפתור שמירה */}
-      <button
-        className="save-btn"
-        onClick={handleSave}
-        style={{ marginTop: "1.5rem" }}
-      >
-        💾 שמור
-      </button>
     </>
   );
 };

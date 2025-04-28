@@ -1,5 +1,4 @@
 // src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
-
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
@@ -23,6 +22,7 @@ export default function MainSection({
 
   return (
     <>
+      {/* ----- form column ----- */}
       <div className="form-column">
         <h2>🎨 עיצוב הכרטיס</h2>
 
@@ -130,12 +130,26 @@ export default function MainSection({
         )}
       </div>
 
+      {/* ----- preview column ----- */}
       <div className="preview-column">
         {renderTopBar()}
-        <MainTab
-          businessDetails={businessDetails}
-          handleMainImagesChange={handleMainImagesChange}
-        />
+
+        {/* תיאור וטלפון בתצוגה מקדימה */}
+        <div className="preview-details" style={{ padding: "0 1rem", textAlign: "right" }}>
+          {businessDetails.description && (
+            <p className="preview-description">
+              {businessDetails.description}
+            </p>
+          )}
+          {businessDetails.phone && (
+            <p className="preview-phone">
+              📞 {businessDetails.phone}
+            </p>
+          )}
+        </div>
+
+        {/* MainTab – רק הכרטיס עצמו, ללא סטורי או כפתור שמירה */}
+        <MainTab businessDetails={businessDetails} />
       </div>
     </>
   );
