@@ -49,6 +49,7 @@ export default function Build() {
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
+          console.log("🚀 useEffect data:", data);
           setBusinessDetails({
             ...data,
             story:      (data.story      || []).map(url => ({ preview: url })),
@@ -121,22 +122,24 @@ export default function Build() {
     if (!files.length) return;
     e.target.value = null;
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-  
+
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: previews, // ← מציג זמנית את התמונות החדשות
+      mainImages: previews,
     }));
-  
+    console.log("📸 MainImages - לפני שליחה:", previews);
+
     try {
       const fd = new FormData();
       files.forEach(f => fd.append("mainImages", f));
-  
+
       const res = await API.put("/business/my/main-images", fd);
       if (res.status === 200) {
         const wrapped = res.data.mainImages.map(url => ({ preview: url }));
+        console.log("📸 MainImages מהשרת:", wrapped);
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages: wrapped, // ← מחליף את כל התמונות לפי השרת
+          mainImages: wrapped,
         }));
       }
     } catch (err) {
@@ -145,32 +148,31 @@ export default function Build() {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
-  
-  
 
   const handleGalleryChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
     e.target.value = null;
-  
-    // מציג זמנית את התמונות שהמשתמש העלה
+
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: previews, // מציג רק את החדשות
+      gallery: previews,
     }));
-  
+    console.log("🖼️ Gallery - לפני שליחה:", previews);
+
     try {
       const fd = new FormData();
       files.forEach(f => fd.append("gallery", f));
-  
+
       const res = await API.put("/business/my/gallery", fd);
-  
+
       if (res.status === 200) {
         const wrapped = res.data.gallery.map(url => ({ preview: url }));
+        console.log("🖼️ Gallery מהשרת:", wrapped);
         setBusinessDetails(prev => ({
           ...prev,
-          gallery: wrapped, // שומר רק את התמונות מהשרת
+          gallery: wrapped,
         }));
       }
     } catch (err) {
@@ -179,9 +181,6 @@ export default function Build() {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
-  
-  
-  
 
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
