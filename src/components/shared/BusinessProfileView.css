@@ -1,31 +1,40 @@
-/* src/components/shared/BusinessProfileView.css */
+/* בסיס הדף – הכל שקוף */
+html, body, #root {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
 
-/* Container has no card background or shadow */
+/* Container שקוף */
 .profile-page {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  background: none;
+  background: transparent !important;
   padding: 2rem 0;
   text-align: center;
+  box-shadow: none !important;
 }
 
+/* הסרה מוחלטת של רקע/צל */
 .business-profile-view.full-style {
   width: 100%;
   max-width: 800px;
   margin: 0;
   padding: 0;
-  background: none !important;
+  background: transparent !important;
   box-shadow: none !important;
   border-radius: 0 !important;
+  border: none !important;
   position: relative;
 }
 
-/* הסרת הרקע/צל של ה־profile-inner */
+/* גם הפנימי ללא רקע */
 .business-profile-view.full-style .profile-inner {
   background: transparent !important;
   box-shadow: none !important;
+  border: none !important;
 }
 
 .profile-inner {
@@ -39,7 +48,7 @@
   gap: 1rem;
 }
 
-/* Logo */
+/* לוגו */
 .logo-wrapper {
   margin-bottom: 1rem;
   text-align: center;
@@ -49,9 +58,10 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
+  border: none !important;
 }
 
-/* Edit button */
+/* כפתור עריכה */
 .edit-profile-btn {
   align-self: flex-end;
   margin-bottom: 1rem;
@@ -68,7 +78,7 @@
   background-color: var(--primary-hover);
 }
 
-/* Business name and divider */
+/* שם העסק וקו מפריד */
 .business-name {
   font-size: 2rem;
   font-weight: bold;
@@ -82,7 +92,7 @@
   margin: 1rem 0;
 }
 
-/* Description & contact centered under title */
+/* תיאור וטלפון */
 .about-phone {
   width: 100%;
   text-align: center;
@@ -94,7 +104,7 @@
   margin: 0.5rem 0;
 }
 
-/* Tabs */
+/* טאבים */
 .profile-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -103,6 +113,7 @@
   width: 100%;
   max-width: 700px;
   justify-items: center;
+  background: transparent !important;
 }
 .tab {
   padding: 0.6rem 1rem;
@@ -124,7 +135,7 @@
   color: #fff;
 }
 
-/* Images grid (no white wrapper) */
+/* גריד תמונות ללא רקע */
 .main-images,
 .gallery-preview {
   display: flex;
@@ -138,9 +149,9 @@
   border: none !important;
 }
 
-/* Remove white card around gallery items */
-.main-images .profile-gallery-item,
-.gallery-preview .profile-gallery-item {
+/* פריטי גלריה – שקופים */
+.business-profile-view.full-style .main-images .profile-gallery-item,
+.business-profile-view.full-style .gallery-preview .profile-gallery-item {
   flex: 1 0 45%;
   max-width: 45%;
   margin: 0 !important;
@@ -154,14 +165,12 @@
   justify-content: center;
 }
 
-/* Ensure image itself has no border or rounding */
-.main-images .profile-gallery-item img,
-.gallery-preview .profile-gallery-item img {
+/* התמונות עצמן – ללא גבולות */
+.business-profile-view.full-style .main-images .profile-gallery-item img,
+.business-profile-view.full-style .gallery-preview .profile-gallery-item img {
   width: 100%;
   height: 200px;
   object-fit: cover;
   border: none !important;
   border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
 }
