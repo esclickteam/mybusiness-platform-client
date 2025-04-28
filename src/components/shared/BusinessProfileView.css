@@ -76,14 +76,14 @@
   margin: 1rem 0;
 }
 
-/* Description & contact */
+/* Description & contact centered under title */
 .about-section,
 .phone-section {
   width: 100%;
   font-size: 1rem;
   color: var(--text-secondary);
   margin: 4px 0;
-  text-align: left;
+  text-align: center;
 }
 
 /* Tabs */
@@ -139,13 +139,4 @@
   height: 200px;
   object-fit: cover;
   border-radius: 8px;
-}
-
-/* Remove white card around description and images */
-.business-profile-view.full-style .tab-content,
-.business-profile-view.full-style .tab-content > * {
-  background: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
 }

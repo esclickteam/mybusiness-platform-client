@@ -49,6 +49,7 @@ export default function BusinessProfileView() {
     faqs
   } = data;
 
+  // בחירה בין mainImages ל-gallery
   const primary = mainImages.length ? mainImages : gallery;
 
   return (
@@ -56,10 +57,7 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
 
-          <Link
-            to={`/business/${businessId}/dashboard/edit`}
-            className="edit-profile-btn"
-          >
+          <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
             ✏️ ערוך פרטי העסק
           </Link>
 
@@ -71,13 +69,20 @@ export default function BusinessProfileView() {
 
           <h1 className="business-name">{name}</h1>
 
-          {/* Description & Phone under title */}
-          {!!description && (
+          {/* תיאור העסק */}
+          {description && (
             <div className="about-section">
               <p>{description}</p>
             </div>
           )}
-          {!!phone && (
+
+          {/* חישוב כמויות */}
+          <div className="about-section">
+            <p>חישוב כמויות</p>
+          </div>
+
+          {/* פרטי התקשרות */}
+          {phone && (
             <div className="phone-section">
               <strong>טלפון:</strong> {phone}
             </div>
@@ -85,6 +90,7 @@ export default function BusinessProfileView() {
 
           <hr className="profile-divider" />
 
+          {/* טאבים */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
@@ -95,10 +101,11 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
+          {/* תוכן הטאב */}
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="main-images">
-                {primary.map((url, i) => (
+                {primary.map((url,i) => (
                   <div key={i} className="profile-gallery-item">
                     <img src={url} alt={`main-${i}`} className="gallery-img" />
                   </div>
@@ -109,7 +116,7 @@ export default function BusinessProfileView() {
             {currentTab === "גלריה" && (
               gallery.length ? (
                 <div className="gallery-preview no-actions">
-                  {gallery.map((url, i) => (
+                  {gallery.map((url,i) => (
                     <div key={i} className="profile-gallery-item">
                       <img src={url} alt={`gal-${i}`} className="gallery-img" />
                     </div>
@@ -120,7 +127,7 @@ export default function BusinessProfileView() {
 
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {reviews.length ? reviews.map((r, i) => (
+                {reviews.length ? reviews.map((r,i) => (
                   <div key={i} className="review-card improved">
                     <div className="review-header">
                       <strong>{r.user}</strong> <span>★ {r.rating}/5</span>
@@ -133,7 +140,7 @@ export default function BusinessProfileView() {
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
-                {faqs.length ? faqs.map((f, i) => (
+                {faqs.length ? faqs.map((f,i) => (
                   <div key={i} className="faq-item">
                     <strong>{f.question}</strong>
                     <p>{f.answer}</p>
