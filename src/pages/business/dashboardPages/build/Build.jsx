@@ -1,4 +1,4 @@
-/* Build.jsx – full rewrite with improved handleMainImagesChange */
+/* Build.jsx – full, working version */
 
 import React, { useState, useRef, useEffect } from "react";
 import API from "@api";
@@ -23,22 +23,23 @@ export default function Build() {
 
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
-    name: "",
+    name:        "",
     description: "",
-    phone: "",
-    logo: null,
-    gallery: [],
-    mainImages: [],
-    reviews: [],
-    faqs: [],
+    phone:       "",
+    logo:        null,
+    gallery:     [],
+    mainImages:  [],
+    reviews:     [],
+    faqs:        [],
   });
+
   const [isSaving, setIsSaving] = useState(false);
 
-  /* ───────── refs & helpers ───────── */
-  const logoInputRef = useRef();
+  /* ───── refs & helpers ───── */
+  const logoInputRef       = useRef();
   const mainImagesInputRef = useRef();
-  const galleryInputRef = useRef();
-  const pendingUploadsRef = useRef([]);
+  const galleryInputRef    = useRef();
+  const pendingUploadsRef  = useRef([]);
 
   const track = p => {
     pendingUploadsRef.current.push(p);
@@ -48,7 +49,7 @@ export default function Build() {
     return p;
   };
 
-  /* ───────── initial load ───────── */
+  /* ───── initial data ───── */
   useEffect(() => {
     API.get("/business/my")
       .then(res => {
@@ -56,7 +57,7 @@ export default function Build() {
           const data = res.data.business || res.data;
           setBusinessDetails({
             ...data,
-            gallery: (data.gallery || []).map(url => ({ preview: url })),
+            gallery:    (data.gallery    || []).map(url => ({ preview: url })),
             mainImages: (data.mainImages || []).map(url => ({ preview: url })),
           });
         }
@@ -64,11 +65,11 @@ export default function Build() {
       .catch(console.error);
   }, []);
 
-  /* ───────── inputs ───────── */
+  /* ───── input handlers ───── */
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
-  /* logo upload (unchanged) */
+  /* logo upload */
   const handleLogoClick = () => logoInputRef.current?.click();
   const handleLogoChange = e => {
     const file = e.target.files?.[0];
@@ -78,42 +79,40 @@ export default function Build() {
     const preview = URL.createObjectURL(file);
     setBusinessDetails(prev => ({ ...prev, logo: { file, preview } }));
 
-    const fd = new FormData(); fd.append("logo", file);
+    const fd = new FormData();
+    fd.append("logo", file);
     track(
       API.put("/business/my/logo", fd)
-        .then(res => res.status === 200 && setBusinessDetails(prev => ({ ...prev, logo: res.data.logo })))
+        .then(res => {
+          if (res.status === 200) {
+            setBusinessDetails(prev => ({ ...prev, logo: res.data.logo }));
+          }
+        })
         .finally(() => URL.revokeObjectURL(preview))
         .catch(console.error)
     );
   };
 
-  /* ───────── UPDATED main-images upload ───────── */
+  /* main images upload – sends all files (no duplicate filter) */
   const handleMainImagesChange = e => {
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
 
     setBusinessDetails(prev => {
-      // URLs שכבר ב-DB
       const existingUrls = prev.mainImages
         .filter(i => typeof i.preview === "string")
         .map(i => i.preview);
 
-      // סינון קבצים שכבר קיימים לפי שם (prevent duplicates)
-      const newFiles = files.filter(f => !prev.mainImages.some(i => i.file?.name === f.name));
-      if (!newFiles.length) return prev; // nothing actually new
+      const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
 
-      const previews = newFiles.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
-
-      // Optimistic UI: מציג גם קודמים וגם חדשים
       const optimistic = {
         ...prev,
         mainImages: [...prev.mainImages, ...previews],
       };
 
-      /* prepare FormData */
       const fd = new FormData();
-      newFiles.forEach(f => fd.append("mainImages", f));
+      files.forEach(f => fd.append("mainImages", f));
       existingUrls.forEach(url => fd.append("existing[]", url));
 
       track(
@@ -121,7 +120,7 @@ export default function Build() {
           .then(res => {
             if (res.status === 200) {
               const wrapped = res.data.mainImages.map(url => ({ preview: url }));
-              setBusinessDetails(prev2 => ({ ...prev2, mainImages: wrapped }));
+              setBusinessDetails(p => ({ ...p, mainImages: wrapped }));
             }
           })
           .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
@@ -132,7 +131,7 @@ export default function Build() {
     });
   };
 
-  /* gallery upload (unchanged) */
+  /* gallery upload */
   const handleGalleryChange = e => {
     const files = Array.from(e.target.files || []).slice(0, 10);
     if (!files.length) return;
@@ -141,7 +140,9 @@ export default function Build() {
     const previews = files.map(f => ({ file: f, preview: URL.createObjectURL(f) }));
     setBusinessDetails(prev => ({ ...prev, gallery: [...prev.gallery, ...previews] }));
 
-    const fd = new FormData(); files.forEach(f => fd.append("gallery", f));
+    const fd = new FormData();
+    files.forEach(f => fd.append("gallery", f));
+
     track(
       API.put("/business/my/gallery", fd)
         .then(res => {
@@ -158,7 +159,7 @@ export default function Build() {
     );
   };
 
-  /* save */
+  /* save profile */
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -177,7 +178,7 @@ export default function Build() {
     }
   };
 
-  /* top-bar */
+  /* top bar */
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((s, r) => s + r.rating, 0) / businessDetails.reviews.length
@@ -243,7 +244,7 @@ export default function Build() {
         />
       )}
 
-{currentTab === "גלריה" && (
+      {currentTab === "גלריה" && (
         <GallerySection
           businessDetails={businessDetails}
           setBusinessDetails={setBusinessDetails}
@@ -252,7 +253,6 @@ export default function Build() {
           renderTopBar={renderTopBar}
         />
       )}
-
 
       {currentTab === "ביקורות" && (
         <ReviewsSection
