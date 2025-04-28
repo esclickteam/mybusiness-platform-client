@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
 
@@ -12,23 +12,65 @@ export default function MainSection({
   currentUser,
   renderTopBar,
   logoInputRef,
-  mainImagesInputRef,
-  handleDeleteImage,
-  handleEditImage,
-  isSaving
+  mainImagesInputRef
 }) {
+  const [editIndex, setEditIndex] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const mainImages = businessDetails.mainImages || [];
+
+  // עדכון גודל התמונה
+  const updateImageSize = (sizeType) => {
+    if (editIndex === null) return;
+
+    setBusinessDetails(prev => {
+      const updated = [...prev.mainImages];
+      updated[editIndex].size = sizeType; // עדכון הגודל
+      return { ...prev, mainImages: updated };
+    });
+
+    setIsPopupOpen(false);
+    setEditIndex(null);  // איפוס האינדקס לאחר השינוי
+  };
+
+  // פונקציה למחיקת תמונה
+  const handleDeleteImage = (index) => {
+    // מחיקת התמונה מהממשק
+    const updatedMainImages = [...businessDetails.mainImages];
+    updatedMainImages.splice(index, 1);
+
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: updatedMainImages
+    }));
+
+    // שליחה לשרת
+    track(
+      API.put("/business/my/main-images", { mainImages: updatedMainImages.map(item => item.preview) })
+        .then(res => {
+          if (res.status === 200) {
+            const wrapped = res.data.mainImages.map(url => ({ preview: url }));
+            setBusinessDetails(prev => ({
+              ...prev,
+              mainImages: wrapped
+            }));
+          }
+        })
+        .catch(console.error)
+    );
+  };
+
+  // פתיחת פופאפ לעריכת גודל התמונה
+  const handleEditImage = (index) => {
+    setEditIndex(index);
+    setIsPopupOpen(true);
+  };
 
   return (
     <>
-      {/* Top bar */}
-      {renderTopBar && renderTopBar()}
-
-      {/* ----- Form column ----- */}
+      {/* ----- עמודת הטופס ----- */}
       <div className="form-column">
         <h2>🎨 עיצוב הכרטיס</h2>
 
-        {/* Business name */}
         <label>שם העסק:</label>
         <input
           type="text"
@@ -37,7 +79,6 @@ export default function MainSection({
           onChange={handleInputChange}
         />
 
-        {/* Description */}
         <label>תיאור:</label>
         <textarea
           name="description"
@@ -45,7 +86,6 @@ export default function MainSection({
           onChange={handleInputChange}
         />
 
-        {/* Phone */}
         <label>טלפון:</label>
         <input
           type="text"
@@ -54,7 +94,7 @@ export default function MainSection({
           onChange={handleInputChange}
         />
 
-        {/* Logo upload */}
+        {/* Logo */}
         <label>לוגו:</label>
         <input
           type="file"
@@ -62,17 +102,11 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
-          onChange={() => {/* handled by Build.jsx */}}
+          onChange={() => {/* handled in TopBar */}}
         />
-        <button
-          type="button"
-          className="save-btn"
-          onClick={() => logoInputRef.current?.click()}
-        >
-          העלאת לוגו
-        </button>
+        <button onClick={() => logoInputRef.current?.click()}>העלאת לוגו</button>
 
-        {/* Main images upload & preview */}
+        {/* Main Images */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
@@ -91,21 +125,22 @@ export default function MainSection({
                 alt={`תמונה ראשית ${i + 1}`}
                 className="gallery-img"
               />
-              <button
-                type="button"
-                className="delete-btn"
-                title="מחיקה"
-                onClick={() => handleDeleteImage(i)}
-              >
-                🗑️
+              {/* כפתור מחיקה עם SVG */}
+              <button className="delete-btn" onClick={() => handleDeleteImage(i)}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14H6L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M9 6V4h6v2" />
+                </svg>
               </button>
-              <button
-                type="button"
-                className="edit-btn"
-                title="עריכה"
-                onClick={() => handleEditImage(i)}
-              >
-                ✏️
+              {/* כפתור עריכה עם SVG */}
+              <button className="edit-btn" onClick={() => handleEditImage(i)}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                </svg>
               </button>
             </div>
           ))}
@@ -119,41 +154,52 @@ export default function MainSection({
           )}
         </div>
 
-        {/* Save & View Profile buttons */}
-        <button
-          className="save-btn"
-          onClick={handleSave}
-          disabled={isSaving}
-        >
-          {isSaving ? "שומר..." : "💾 שמור"}
+        {/* Actions */}
+        <button onClick={handleSave} className="save-btn">
+          💾 שמור
         </button>
         {showViewProfile && (
           <button
-            type="button"
+            onClick={() => navigate(`/business/${currentUser.businessId}`)}
             className="save-btn"
             style={{ marginTop: "0.5rem" }}
-            onClick={() => navigate(`/business/${currentUser.businessId}`)}
           >
             👀 צפה בפרופיל
           </button>
         )}
       </div>
 
-      {/* ----- Preview column ----- */}
+      {/* ----- עמודת התצוגה המקדימה ----- */}
       <div className="preview-column">
-        {businessDetails.description && (
-          <p className="preview-description">
-            <strong>תיאור:</strong> {businessDetails.description}
-          </p>
-        )}
-        {businessDetails.phone && (
-          <p className="preview-phone">
-            <strong>טלפון:</strong> {businessDetails.phone}
-          </p>
-        )}
+        {renderTopBar()}
+
+        <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
+          {businessDetails.description && (
+            <p className="preview-description">
+              <strong>תיאור:</strong> {businessDetails.description}
+            </p>
+          )}
+          {businessDetails.phone && (
+            <p className="preview-phone">
+              <strong>טלפון:</strong> {businessDetails.phone}
+            </p>
+          )}
+        </div>
 
         <MainTab businessDetails={businessDetails} />
       </div>
+
+      {/* פופאפ גודל תמונה */}
+      {isPopupOpen && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h3>בחר גודל תמונה</h3>
+            <button onClick={() => updateImageSize('full')}>גודל מלא</button>
+            <button onClick={() => updateImageSize('custom')}>גודל מותאם</button>
+            <button onClick={() => setIsPopupOpen(false)}>ביטול</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
