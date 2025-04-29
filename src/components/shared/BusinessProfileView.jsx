@@ -30,14 +30,18 @@ export default function BusinessProfileView() {
     API.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
+        // גיבוי: city מתוך address או מתוך שדה על־טבעי biz.city
+        const city = biz.address?.city ?? biz.city ?? "";
+
         setData({
           ...biz,
+          city,
+          address: { city },
           rating: biz.rating ?? 0,
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
-          gallery: Array.isArray(biz.gallery) ? biz.gallery : [],
-          reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
-          faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
-          address: biz.address || { city: "" },
+          gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
+          reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
+          faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : [],
         });
       })
       .catch(err => console.error("❌ fetch business:", err))
@@ -45,20 +49,20 @@ export default function BusinessProfileView() {
   }, [businessId]);
 
   if (loading) return <div className="loading">טוען…</div>;
-  if (!data) return <div className="error">העסק לא נמצא</div>;
+  if (!data)   return <div className="error">העסק לא נמצא</div>;
 
   const {
     name,
     logo,
     rating,
     description = "",
-    phone = "",
-    category = "",
+    phone       = "",
+    category    = "",
     mainImages,
     gallery,
     reviews,
     faqs,
-    address = {},
+    city        = "",
   } = data;
 
   const normalizedMain = mainImages.map(url => ({ preview: url }));
@@ -110,9 +114,9 @@ export default function BusinessProfileView() {
                 <strong>📞 טלפון:</strong> {phone}
               </p>
             )}
-            {address.city && (
+            {city && (
               <p>
-                <strong>🏙️ עיר:</strong> {address.city}
+                <strong>🏙️ עיר:</strong> {city}
               </p>
             )}
           </div>
