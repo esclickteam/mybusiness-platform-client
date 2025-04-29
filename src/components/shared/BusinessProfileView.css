@@ -40,6 +40,14 @@ html, body, #root {
   gap: 1rem;
 }
 
+/* Override להסרת הרקע הלבן/הצל/ה‐padding מתחת לטאבים */
+.business-profile-view.full-style .tab-content {
+  background: transparent !important;
+  box-shadow: none         !important;
+  padding: 0               !important;
+  border-radius: 0         !important;
+}
+
 /* === כפתור עריכה === */
 .edit-profile-btn {
   align-self: flex-end;
