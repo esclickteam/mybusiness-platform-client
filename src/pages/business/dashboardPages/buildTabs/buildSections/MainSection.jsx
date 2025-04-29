@@ -133,14 +133,18 @@ export default function MainSection({
           ))}
         </select>
 
-        <label>אימייל:</label>
-        <input
-          type="email"
-          name="email"
-          value={businessDetails.email || ""}
-          onChange={handleInputChange}
-          placeholder="הכנס אימייל"
-        />
+        <label>
+  עיר: <span style={{ color: "red" }}>*</span>
+</label>
+<input
+  type="text"
+  name="city"
+  value={businessDetails.city || ""}
+  onChange={handleInputChange}
+  placeholder="לדוגמה: תל אביב"
+  required
+/>
+
 
         {/* לוגו */}
         <label>לוגו:</label>

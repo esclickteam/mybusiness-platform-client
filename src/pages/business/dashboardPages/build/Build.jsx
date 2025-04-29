@@ -34,12 +34,15 @@ export default function Build() {
     name:        "",
     description: "",
     phone:       "",
+    category:    "",
+    city:        "",       // ← חדש: עיר חובה
     logo:        null,
     gallery:     [],
     mainImages:  [],
     reviews:     [],
     faqs:        [],
   });
+  
 
   const [isSaving, setIsSaving]       = useState(false);
   const [showViewProfile, setShowViewProfile] = useState(false);

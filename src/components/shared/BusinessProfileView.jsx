@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "@api";
-import { useAuth } from "../../context/AuthContext"; // ← חיבור ל־AuthContext
+import { useAuth } from "../../context/AuthContext";
 import { dedupeByPreview } from "../../utils/dedupe";
 import "./BusinessProfileView.css";
 
@@ -19,7 +19,7 @@ const TABS = [
 export default function BusinessProfileView() {
   const { businessId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth(); // ← הוספנו
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
@@ -31,11 +31,11 @@ export default function BusinessProfileView() {
         const biz = res.data.business || res.data;
         setData({
           ...biz,
-          rating:     biz.rating ?? 0,
+          rating: biz.rating ?? 0,
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
-          gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
-          reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
-          faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : [],
+          gallery: Array.isArray(biz.gallery) ? biz.gallery : [],
+          reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
+          faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
         });
       })
       .catch(err => console.error("❌ fetch business:", err))
@@ -51,12 +51,12 @@ export default function BusinessProfileView() {
     rating,
     description = "",
     phone = "",
+    city = "",
     category = "",
     mainImages,
     gallery,
     reviews,
     faqs,
-    owner
   } = data;
 
   const normalizedMain = mainImages.map(url => ({ preview: url }));
@@ -68,36 +68,53 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          
-          {/* 🔹 כפתור חזור */}
+
+          {/* כפתור חזור */}
           <button className="back-btn" onClick={() => navigate(-1)}>← חזור</button>
 
-          {/* 🔹 הצגת כפתור עריכה רק לבעל העסק */}
+          {/* כפתור עריכה אם בעל העסק */}
           {isOwner && (
             <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
 
-          {logo && (
-            <div className="logo-wrapper">
-              <img src={logo} alt="לוגו העסק" className="profile-logo" />
-            </div>
-          )}
+{logo && (
+  <div className="logo-wrapper">
+    <img src={logo} alt="לוגו העסק" className="profile-logo" />
+  </div>
+)}
 
-          <h1 className="business-name">{name}</h1>
+<h1 className="business-name">{name}</h1>
 
-          {category && (
-            <div className="about-phone">
-              <p><strong>קטגוריה:</strong> {category}</p>
-              {description && <p><strong>תיאור:</strong> {description}</p>}
-              {phone && <p><strong>טלפון:</strong> {phone}</p>}
-            </div>
-          )}
+<div className="about-phone">
+  {category && (
+    <p>
+      <strong>🏷️ קטגוריה:</strong> {category}
+    </p>
+  )}
+  {description && (
+    <p>
+      <strong>📝 תיאור:</strong> {description}
+    </p>
+  )}
+  {phone && (
+    <p>
+      <strong>📞 טלפון:</strong> {phone}
+    </p>
+  )}
+  {data.address?.city && (
+    <p>
+      <strong>🏙️ עיר:</strong> {data.address.city}
+    </p>
+  )}
+</div>
+
 
           <div className="rating"><strong>{rating}</strong> / 5 ★</div>
           <hr className="profile-divider" />
 
+          {/* טאבים */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
@@ -110,8 +127,8 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
+          {/* תוכן טאבים */}
           <div className="tab-content">
-            {/* טאב תוכן */}
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {uniqueMain.length > 0 ? (
@@ -123,6 +140,7 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
+
             {currentTab === "גלריה" && (
               gallery.length > 0 ? (
                 <div className="public-main-images">
@@ -134,6 +152,7 @@ export default function BusinessProfileView() {
                 <p className="no-data">אין תמונות בגלריה</p>
               )
             )}
+
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {reviews.length > 0 ? (
@@ -150,6 +169,7 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
+
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
@@ -164,13 +184,16 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
+
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
+
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}
           </div>
+
         </div>
       </div>
     </div>
