@@ -97,49 +97,33 @@ export default function MainSection({
           placeholder="הכנס טלפון"
         />
 
-        {/* Category Autocomplete */}
-        <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
-        <div className="city-select-container">
-          <input
-            type="text"
-            name="category"
-            placeholder="בחר קטגוריה"
-            value={showCategoryDropdown ? categoryQuery : (businessDetails.category || "")}
-            onFocus={() => { setShowCategoryDropdown(true); setCategoryQuery(""); }}
-            onChange={e => { setCategoryQuery(e.target.value); setShowCategoryDropdown(true); }}
-            required
-          />
-          {showCategoryDropdown && (
-            <ul className="city-dropdown">
-              {filteredCategories.map(c => (
-                <li key={c} onClick={() => selectCategory(c)}>{c}</li>
-              ))}
-              {filteredCategories.length === 0 && <li className="no-results">לא נמצאו קטגוריות</li>}
-            </ul>
-          )}
-        </div>
+        {/* Category Select */}
+<label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
+<select
+  name="category"
+  value={businessDetails.category || ""}
+  onChange={handleInputChange}
+  required
+>
+  <option value="" disabled>בחר קטגוריה</option>
+  {CATEGORIES.map(cat => (
+    <option key={cat} value={cat}>{cat}</option>
+  ))}
+</select>
 
-        {/* City Autocomplete */}
-        <label>עיר: <span style={{ color: "red" }}>*</span></label>
-        <div className="city-select-container">
-          <input
-            type="text"
-            name="city"
-            placeholder="בחר עיר"
-            value={showCityDropdown ? cityQuery : (businessDetails.city || "")}
-            onFocus={() => { setShowCityDropdown(true); setCityQuery(""); }}
-            onChange={e => { setCityQuery(e.target.value); setShowCityDropdown(true); }}
-            required
-          />
-          {showCityDropdown && (
-            <ul className="city-dropdown">
-              {filteredCities.map(c => (
-                <li key={c} onClick={() => selectCity(c)}>{c}</li>
-              ))}
-              {filteredCities.length === 0 && <li className="no-results">לא נמצאו ערים</li>}
-            </ul>
-          )}
-        </div>
+        {/* City Select */}
+<label>עיר: <span style={{ color: "red" }}>*</span></label>
+<select
+  name="city"
+  value={businessDetails.city || ""}
+  onChange={handleInputChange}
+  required
+>
+  <option value="" disabled>בחר עיר</option>
+  {CITIES.map(city => (
+    <option key={city} value={city}>{city}</option>
+  ))}
+</select>
 
         {/* Logo Upload */}
         <label>לוגו:</label>
