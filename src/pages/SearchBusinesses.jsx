@@ -54,6 +54,7 @@ const ITEMS_PER_PAGE = 9;
 export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+
   const [all, setAll]           = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [q, setQ]               = useState(searchParams.get('search') || '');
@@ -62,36 +63,33 @@ export default function SearchBusinesses() {
   const [open, setOpen]         = useState(false);
   const wrapperRef              = useRef(null);
 
-  // Fetch all businesses once
+  // 1) Load all businesses once
   useEffect(() => {
     API.get('/business')
       .then(r => setAll(r.data.businesses || []))
       .catch(console.error);
   }, []);
 
-  // Filter whenever `all`, `q` or `cat` change
+  // 2) Filter businesses for the results area
   useEffect(() => {
-    const term = q.toLowerCase();
+    const term = cat; // filter only by category
     setFiltered(
       all.filter(b =>
-        (b.name?.toLowerCase().includes(term) ||
-         b.description?.toLowerCase().includes(term)) &&
-        (!cat || b.category === cat)
+        !term || b.category === term
       )
     );
     setPage(1);
-  }, [all, q, cat]);
+  }, [all, cat]);
 
-  // Sync URL params
+  // 3) Sync URL params
   useEffect(() => {
     const p = new URLSearchParams();
-    if (q)   p.set('search', q);
     if (cat) p.set('category', cat);
     if (page > 1) p.set('page', page);
     setSearchParams(p, { replace: true });
-  }, [q, cat, page]);
+  }, [cat, page]);
 
-  // Close dropdown when clicking outside
+  // 4) Close dropdown on outside click
   useEffect(() => {
     const handler = e => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -102,27 +100,21 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Pagination
+  // Pagination logic
   const start      = (page - 1) * ITEMS_PER_PAGE;
   const pageItems  = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  // Select a category
+  // When user picks a category
   const pickCat = c => {
+    setOpen(false);
+    setQ('');
     setSearchParams(ps => {
       const p = new URLSearchParams(ps);
       if (c === 'כל הקטגוריות') p.delete('category');
       else p.set('category', c);
       return p;
     });
-    setOpen(false);
-    setQ('');
-  };
-
-  // Navigate to business profile
-  const pickBiz = bizId => {
-    setOpen(false);
-    navigate(`/business/${bizId}`);
   };
 
   return (
@@ -130,50 +122,42 @@ export default function SearchBusinesses() {
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* Search + dropdown */}
+        {/* Search input + dropdown of categories */}
         <div className="search-wrapper" ref={wrapperRef}>
           <input
             className="search-input"
             type="text"
-            placeholder="חפש שם או תיאור..."
+            placeholder="חפש קטגוריה..."
             value={q}
             onChange={e => setQ(e.target.value)}
             onFocus={() => setOpen(true)}
           />
 
-          {/* Category list */}
-          {open && q === "" && (
+          {/* Always show matching categories */}
+          {open && (
             <ul className="suggestions-list">
-              {CATEGORIES.map((c, i) => (
-                <li key={i} onMouseDown={() => pickCat(c)}>
-                  {c === 'כל הקטגוריות' ? <em>{c}</em> : c}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {/* Business suggestions */}
-          {open && q !== "" && (
-            <ul className="suggestions-list">
-              {filtered.slice(0, 5).map(b => (
-                <li key={b._id} onMouseDown={() => pickBiz(b._id)}>
-                  {b.name} · <em>{b.category}</em>
-                </li>
-              ))}
-              {filtered.length === 0 && (
-                <li><em>לא נמצאו עסקים מתאימים</em></li>
-              )}
+              {CATEGORIES
+                .filter(c =>
+                  c === 'כל הקטגוריות' ||
+                  c.toLowerCase().includes(q.trim().toLowerCase())
+                )
+                .map((c, idx) => (
+                  <li key={idx} onMouseDown={() => pickCat(c)}>
+                    {c === 'כל הקטגוריות' ? <em>{c}</em> : c}
+                  </li>
+                ))
+              }
             </ul>
           )}
         </div>
 
-        {/* Results + pagination */}
+        {/* Results & pagination (hidden while dropdown open) */}
         {!open && (
           <>
             <div className="business-list">
-              {(!q && !cat) ? (
+              {(!cat) ? (
                 <p className="placeholder">
-                  🔍 הקש בחיפוש כדי להציג קטגוריות ותוצאות.
+                  🔍 בחר קטגוריה כדי לראות עסקים תואמים.
                 </p>
               ) : pageItems.length > 0 ? (
                 pageItems.map(b => (
@@ -184,7 +168,7 @@ export default function SearchBusinesses() {
                   />
                 ))
               ) : (
-                <p className="no-results">😕 לא נמצאו עסקים.</p>
+                <p className="no-results">😕 לא נמצאו עסקים בקטגוריה זו.</p>
               )}
             </div>
 
