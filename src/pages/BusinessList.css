@@ -1,3 +1,5 @@
+/* src/pages/BusinessList.css */
+
 :root {
   --bg-start: #fdfcff;
   --bg-end:   #e4e8ff;
@@ -9,19 +11,23 @@
   --primary:       #8a2be2;
   --primary-hover: #7a23d0;
 
-  --text-main:     #222222;
-  --text-secondary:#555555;
+  --text-main:      #222222;
+  --text-secondary: #555555;
 
-  --gap-sm:        12px;
-  --gap-md:        16px;
-  --gap-lg:        24px;
+  --gap-sm:  12px;
+  --gap-md:  16px;
+  --gap-lg:  24px;
 }
 
 /* רקע כללי */
 .list-page {
   padding: 0 1rem;
   min-height: 100vh;
-  background: linear-gradient(to bottom right, var(--bg-start), var(--bg-end));
+  background: linear-gradient(
+    to bottom right,
+    var(--bg-start),
+    var(--bg-end)
+  );
 }
 
 /* קונטיינר */
@@ -70,10 +76,10 @@
   scroll-behavior: smooth;
   gap: 0.5rem;
   padding: 0.5rem 0;
-  scrollbar-width: none; /* פיירפוקס */
+  scrollbar-width: none; /* Firefox */
 }
 .categories-scroll::-webkit-scrollbar {
-  display: none; /* כרום */
+  display: none; /* Chrome, Safari */
 }
 
 /* כפתורי החצים */
@@ -129,9 +135,21 @@
 /* רשימת עסקים */
 .business-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(300px, 1fr)
+  );
   gap: var(--gap-lg);
   margin-top: 2rem;
+}
+
+/* placeholder / no-results */
+.placeholder,
+.no-results {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  grid-column: 1 / -1; /* למרכז בשורה */
+  text-align: center;
 }
 
 /* פג'ינציה */

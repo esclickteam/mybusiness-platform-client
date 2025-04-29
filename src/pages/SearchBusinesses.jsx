@@ -5,7 +5,7 @@ import API from '@api';
 import BusinessCard from '../components/BusinessCard';
 import './BusinessList.css';
 
-const categories = [
+const CATEGORIES = [
   "כל הקטגוריות",
   "אולם אירועים", "אינסטלטור", "איפור קבוע", "בית קפה", "בניית אתרים", "ברברשופ",
   "גינון / הדברה", "גלריה / חנות אומנות", "חנויות טבע / בריאות", "חנות בגדים", "חשמלאי",
@@ -19,64 +19,79 @@ const categories = [
   "שירותים לקהילה / עמותות", "תזונאית / דיאטנית"
 ];
 
-const sortOptions = [
+const SORT_OPTIONS = [
   { value: "newest", label: "הכי חדש" },
   { value: "alphabetical", label: "לפי שם (א-ת)" },
 ];
 
 const ITEMS_PER_PAGE = 9;
 
-const SearchBusinesses = () => {
+export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [businesses, setBusinesses] = useState([]);
-  const [filteredBusinesses, setFilteredBusinesses] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [sortOption, setSortOption] = useState(searchParams.get('sort') || 'newest');
   const selectedCategory = searchParams.get('category') || "כל הקטגוריות";
-  const [sortOption, setSortOption] = useState('newest');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
   const scrollRef = useRef();
 
+  // fetch businesses once
   useEffect(() => {
-    const fetchBusinesses = async () => {
-      try {
-        const response = await API.get('/business');
-        const list = response.data.businesses || [];
-        setBusinesses(list);
-      } catch (error) {
-        console.error("Error fetching businesses:", error);
-      }
-    };
-    fetchBusinesses();
+    API.get('/business')
+      .then(res => setBusinesses(res.data.businesses || []))
+      .catch(console.error);
   }, []);
 
+  // apply filters & sort
   useEffect(() => {
-    const lowerSearch = searchTerm.toLowerCase();
-    let filtered = businesses.filter(business => {
-      const matchesSearch = (
-        business.name?.toLowerCase().includes(lowerSearch) ||
-        business.category?.toLowerCase().includes(lowerSearch) ||
-        business.description?.toLowerCase().includes(lowerSearch)
-      );
-      const matchesCategory = (
+    const term = searchTerm.toLowerCase();
+    let list = businesses.filter(b => {
+      const matchesText =
+        b.name?.toLowerCase().includes(term) ||
+        b.category?.toLowerCase().includes(term) ||
+        b.description?.toLowerCase().includes(term);
+      const matchesCat =
         selectedCategory === "כל הקטגוריות" ||
-        business.category === selectedCategory
-      );
-      return matchesSearch && matchesCategory;
+        b.category === selectedCategory;
+      return matchesText && matchesCat;
     });
-    if (sortOption === "alphabetical") {
-      filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortOption === "newest") {
-      filtered = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    if (sortOption === 'alphabetical') {
+      list.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
-    setFilteredBusinesses(filtered);
-    setCurrentPage(1);
-  }, [searchTerm, selectedCategory, sortOption, businesses]);
 
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentBusinesses = filteredBusinesses.slice(startIdx, startIdx + ITEMS_PER_PAGE);
-  const totalPages = Math.ceil(filteredBusinesses.length / ITEMS_PER_PAGE);
+    setFiltered(list);
+    setPage(1);
+  }, [businesses, searchTerm, selectedCategory, sortOption]);
 
-  const handleCategoryClick = (cat) => {
+  // sync URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('search', searchTerm);
+    if (selectedCategory !== "כל הקטגוריות") params.set('category', selectedCategory);
+    if (sortOption !== 'newest') params.set('sort', sortOption);
+    if (page > 1) params.set('page', page);
+    setSearchParams(params, { replace: true });
+  }, [searchTerm, selectedCategory, sortOption, page]);
+
+  const startIdx = (page - 1) * ITEMS_PER_PAGE;
+  const pageItems = filtered.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
+  const scrollCategories = dir => {
+    const amt = 200;
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: dir === 'left' ? -amt : amt,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleCategoryClick = cat => {
     const params = new URLSearchParams(searchParams);
     if (cat === "כל הקטגוריות") {
       params.delete('category');
@@ -86,54 +101,33 @@ const SearchBusinesses = () => {
     setSearchParams(params);
   };
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    const params = new URLSearchParams(searchParams);
-    if (e.target.value) {
-      params.set('search', e.target.value);
-    } else {
-      params.delete('search');
-    }
-    setSearchParams(params);
-  };
-
-  const scrollCategories = (direction) => {
-    const scrollAmount = 300;
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
   return (
     <div className="list-page">
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
         <input
+          className="search-input"
           type="text"
           placeholder="חפש לפי שם, קטגוריה או תיאור..."
           value={searchTerm}
-          onChange={handleSearchChange}
-          className="search-input"
+          onChange={e => setSearchTerm(e.target.value)}
         />
 
         <div className="categories-scroll-wrapper">
-          <button className="scroll-arrow left" onClick={() => scrollCategories("left")}>&#8678;</button>
+          <button className="scroll-arrow" onClick={() => scrollCategories('left')}>&#8678;</button>
           <div className="categories-scroll" ref={scrollRef}>
-            {categories.map(cat => (
+            {CATEGORIES.map(cat => (
               <button
                 key={cat}
-                className={`category-btn ${selectedCategory === cat ? "active" : ""}`}
+                className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
                 onClick={() => handleCategoryClick(cat)}
               >
                 {cat}
               </button>
             ))}
           </div>
-          <button className="scroll-arrow right" onClick={() => scrollCategories("right")}>&#8680;</button>
+          <button className="scroll-arrow" onClick={() => scrollCategories('right')}>&#8680;</button>
         </div>
 
         <div className="sort-options">
@@ -141,38 +135,29 @@ const SearchBusinesses = () => {
             value={sortOption}
             onChange={e => setSortOption(e.target.value)}
           >
-            {sortOptions.map(opt => (
+            {SORT_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
         </div>
 
         <div className="business-list">
-  {searchTerm === "" && selectedCategory === "כל הקטגוריות" ? (
-    <p className="placeholder-message">🔍 בחר קטגוריה או חפש מונח כדי להציג עסקים.</p>
-  ) : currentBusinesses.length > 0 ? (
-    currentBusinesses.map(business => (
-      <BusinessCard key={business._id} business={business} />
-    ))
-  ) : (
-    <p className="no-results-message">😕 לא נמצאו עסקים מתאימים.</p>
-  )}
-</div>
-
+          {searchTerm === '' && selectedCategory === "כל הקטגוריות" ? (
+            <p className="placeholder">🔍 בחר קטגוריה או חפש מונח כדי להציג עסקים.</p>
+          ) : pageItems.length > 0 ? (
+            pageItems.map(biz => <BusinessCard key={biz._id} business={biz} />)
+          ) : (
+            <p className="no-results">😕 לא נמצאו עסקים מתאימים.</p>
+          )}
+        </div>
 
         {totalPages > 1 && (
           <div className="pagination">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
+            <button onClick={() => setPage(p => Math.max(p - 1, 1))} disabled={page === 1}>
               הקודם
             </button>
-            <span>{currentPage} מתוך {totalPages}</span>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
+            <span>{page} מתוך {totalPages}</span>
+            <button onClick={() => setPage(p => Math.min(p + 1, totalPages))} disabled={page === totalPages}>
               הבא
             </button>
           </div>
@@ -180,6 +165,4 @@ const SearchBusinesses = () => {
       </div>
     </div>
   );
-};
-
-export default SearchBusinesses;
+}
