@@ -12,6 +12,7 @@ const BusinessCard = ({ business }) => {
     phone,
     address = {},
   } = business;
+  const { city } = address; // לחילוץ נוח של העיר
 
   return (
     <div className="business-card">
@@ -41,9 +42,9 @@ const BusinessCard = ({ business }) => {
         </p>
       )}
 
-      {address.city && (
-        <p className="business-card__phone">
-          <strong>עיר:</strong> {address.city}
+      {city && (
+        <p className="business-card__city">
+          <strong>עיר:</strong> {city}
         </p>
       )}
 

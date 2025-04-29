@@ -70,16 +70,20 @@ export default function Build() {
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
-  
+          
           setBusinessDetails({
+            // ← משיכה של city מתוך data.address
+            city: data.address?.city || "",
+            
+            // שאר השדות כפי שהיו
             ...data,
-  
+            
             // ✅ הכנת הלוגו לתצוגה
             logo: data.logo ? { preview: data.logo } : null,
-  
+            
             // ✅ גלריה
             gallery: (data.gallery || []).map(url => ({ preview: url })),
-  
+            
             // ✅ תמונות ראשיות עם הסרת כפילויות
             mainImages: dedupeByPreview(
               (data.mainImages || []).map(url => ({ preview: url, size: "full" }))
@@ -89,6 +93,7 @@ export default function Build() {
       })
       .catch(console.error);
   }, []);
+  
   
   
 
@@ -329,10 +334,12 @@ const handleDeleteMainImage = async idx => {
         category:    businessDetails.category,
         description: businessDetails.description,
         phone:       businessDetails.phone,
+        email:       businessDetails.email,
         address: {
-          city: businessDetails.city || "",
-        },
+          city: businessDetails.city // ← חובה להוסיף!
+        }
       });
+      
   
       alert("✅ נשמר בהצלחה!");
       setShowViewProfile(true);
@@ -386,17 +393,23 @@ const handleDeleteMainImage = async idx => {
   
         {/* תיאור וטלפון מתחת לשם */}
         {businessDetails.description && (
-          <p className="preview-description">
-            <strong>תיאור:</strong> {businessDetails.description}
-          </p>
-        )}
-        {businessDetails.phone && (
-          <p className="preview-phone">
-            <strong>טלפון:</strong> {businessDetails.phone}
-          </p>
-        )}
-  
-        <hr className="divider" />
+  <p className="preview-description">
+    <strong>תיאור:</strong> {businessDetails.description}
+  </p>
+)}
+{businessDetails.phone && (
+  <p className="preview-phone">
+    <strong>טלפון:</strong> {businessDetails.phone}
+  </p>
+)}
+{businessDetails.city && (
+  <p className="preview-city">
+    <strong>עיר:</strong> {businessDetails.city}
+  </p>
+)}
+
+<hr className="divider" />
+
   
         {/* כפתורי הטאבים */}
         <div className="tabs">
