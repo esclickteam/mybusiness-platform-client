@@ -189,20 +189,22 @@
   overflow: visible;
   padding-bottom: 0;
 }
-.form-column .gallery-preview .gallery-item-wrapper,
-.form-column .gallery-preview .gallery-placeholder {
+/* תוספת: מוודא שה-wrapper יהיה relative כדי שה-delete-btn יתמקם נכון */
+.form-column .gallery-preview .gallery-item-wrapper {
+  position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  border: none;
   border-radius: 12px;
   overflow: hidden;
 }
+/* הגדרת התמונה בפנים */
 .form-column .gallery-preview .gallery-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 12px;
 }
+/* Placeholder של תוספת תמונה */
 .form-column .gallery-preview .gallery-placeholder {
   display: flex;
   align-items: center;
@@ -219,40 +221,31 @@
 }
 
 /* כפתורי מחיקה ועריכה */
-.delete-btn,
-.edit-btn {
+.form-column .gallery-preview .delete-btn,
+.form-column .gallery-preview .edit-btn {
   position: absolute;
-  top: 5px;
-  background: rgba(255, 255, 255, 0.9);
+  width: 28px;
+  height: 28px;
+  top: 8px;
+  right: 8px;
+  background: rgba(255,255,255,0.9);
   border: none;
   border-radius: 50%;
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
   box-shadow: 0 0 4px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease;
+  z-index: 10;
 }
-.delete-btn:hover,
-.edit-btn:hover {
-  transform: scale(1.1);
+.form-column .gallery-preview .edit-btn {
+  right: auto;
+  left: 8px;
 }
-.delete-btn { right: 5px; }
-.edit-btn   { left: 5px; }
-.delete-btn svg,
-.edit-btn svg {
+.form-column .gallery-preview .delete-btn svg,
+.form-column .gallery-preview .edit-btn svg {
   width: 14px;
   height: 14px;
-}
-
-/* ✅ וידוא שה-delete-btn מוצג בצד שמאל */
-.form-column .gallery-item-wrapper .delete-btn {
-  display: flex !important;
-  top: 8px;
-  right: 8px;
-  z-index: 20;
 }
 
 /* === פופאפ בחירת גודל תמונה === */
