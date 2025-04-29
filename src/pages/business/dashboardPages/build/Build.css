@@ -333,5 +333,14 @@
   width: 100%; /* תוודא שהתפריט תופס את רוחב ה-container */
 }
 
+/* בקובץ src/pages/business/Build.css (או בכל קובץ ה-CSS שמשמש ל־preview) */
+
+.preview-city {
+  /* תופיע בדיוק באמצע השורה */
+  text-align: center;
+  width: 100%;
+  margin-top: 0.5rem; /* קצת ריווח מעל אם תרצה */
+  font-weight: bold;  /* אופציונלי, להבליט */
+}
 
 
