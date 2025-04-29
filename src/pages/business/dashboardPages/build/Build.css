@@ -336,3 +336,20 @@
   gap: 1rem;
   margin-top: 1rem;
 }
+
+/* Build.css (או בקובץ ה־CSS שבו הגדרת את ה־.preview-*) */
+
+/* 1. רק עיר */
+.preview-city {
+  text-align: center;
+  margin: 0.5rem 0; /* ריווח אנכי לפי הצורך */
+}
+
+/* 2. (אופציונלי) למרכז את כל שורות הפריוויו */
+.preview-category,
+.preview-description,
+.preview-phone,
+.preview-city {
+  text-align: center;
+  margin: 0.25rem 0;
+}

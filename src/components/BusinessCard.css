@@ -193,3 +193,8 @@
   background-color: var(--primary-hover);
   transform: scale(1.05);
 }
+
+.business-card__city {
+  text-align: center;
+  margin: 0.5rem 0;
+}
