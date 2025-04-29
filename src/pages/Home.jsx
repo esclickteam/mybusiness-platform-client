@@ -14,11 +14,11 @@ export default function Home() {
   const [city,     setCity]     = useState("");
   const [userCity, setUserCity] = useState("");
 
-  // build options
+  // build options for React-Select
   const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
   const cityOptions     = ALL_CITIES    .map(c => ({ value: c, label: c }));
 
-  // try to detect user's city
+  // detect user's city via geolocation
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(async pos => {
       try {
@@ -63,30 +63,7 @@ export default function Home() {
 
       {/* 🔍 שורת חיפוש */}
       <div className="search-section">
-        <button className="search-button" onClick={navigateToSearch}>
-          🔍 חפש
-        </button>
-
-        <div className="dropdown-wrapper">
-          <Select
-            options={cityOptions}
-            value={cityOptions.find(o => o.value === city) || null}
-            onChange={opt => setCity(opt?.value || "")}
-            placeholder="עיר (לדוגמה: תל אביב)"
-            isClearable
-            openMenuOnInput
-            openMenuOnClick={false}
-            openMenuOnFocus={false}
-            filterOption={({ label }, input) =>
-              label.toLowerCase().startsWith(input.toLowerCase())
-            }
-            noOptionsMessage={() => (city ? "אין ערים מתאימות" : null)}
-            menuPlacement="bottom"
-            menuPortalTarget={document.body}
-            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
-          />
-        </div>
-
+        {/* קודם – קטגוריה */}
         <div className="dropdown-wrapper">
           <Select
             options={categoryOptions}
@@ -108,6 +85,32 @@ export default function Home() {
             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
           />
         </div>
+
+        {/* אחר כך – עיר */}
+        <div className="dropdown-wrapper">
+          <Select
+            options={cityOptions}
+            value={cityOptions.find(o => o.value === city) || null}
+            onChange={opt => setCity(opt?.value || "")}
+            placeholder="עיר (לדוגמה: תל אביב)"
+            isClearable
+            openMenuOnInput
+            openMenuOnClick={false}
+            openMenuOnFocus={false}
+            filterOption={({ label }, input) =>
+              label.toLowerCase().startsWith(input.toLowerCase())
+            }
+            noOptionsMessage={() => (city ? "אין ערים מתאימות" : null)}
+            menuPlacement="bottom"
+            menuPortalTarget={document.body}
+            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+          />
+        </div>
+
+        {/* בסוף – כפתור חיפוש */}
+        <button className="search-button" onClick={navigateToSearch}>
+          🔍 חפש
+        </button>
       </div>
 
       <div className="quick-jobs-button-wrapper">
@@ -165,30 +168,14 @@ export default function Home() {
       {/* 🧭 תחתית */}
       <footer className="footer">
         <ul className="footer-links">
-          <li>
-            <Link to="/search">📋 חיפוש עסקים</Link>
-          </li>
-          <li>
-            <Link to="/about">📖 קצת עלינו</Link>
-          </li>
-          <li>
-            <Link to="/how-it-works">⚙️ איך זה עובד</Link>
-          </li>
-          <li>
-            <Link to="/business">💼 בעלי עסקים</Link>
-          </li>
-          <li>
-            <Link to="/join">✏️ הצטרפות עסקים</Link>
-          </li>
-          <li>
-            <Link to="/faq">❓ שאלות נפוצות</Link>
-          </li>
-          <li>
-            <Link to="/terms">📜 תקנון</Link>
-          </li>
-          <li>
-            <Link to="/contact">📞 יצירת קשר</Link>
-          </li>
+          <li><Link to="/search">📋 חיפוש עסקים</Link></li>
+          <li><Link to="/about">📖 קצת עלינו</Link></li>
+          <li><Link to="/how-it-works">⚙️ איך זה עובד</Link></li>
+          <li><Link to="/business">💼 בעלי עסקים</Link></li>
+          <li><Link to="/join">✏️ הצטרפות עסקים</Link></li>
+          <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
+          <li><Link to="/terms">📜 תקנון</Link></li>
+          <li><Link to="/contact">📞 יצירת קשר</Link></li>
         </ul>
         <p className="copyright">כל הזכויות שמורות © עסקליק</p>
       </footer>

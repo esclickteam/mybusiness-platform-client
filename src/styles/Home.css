@@ -1,3 +1,5 @@
+/* src/styles/Home.css */
+
 /* 🌟 רקע דף הבית */
 body {
   margin: 0;
@@ -60,7 +62,7 @@ body {
   font-weight: bold;
   color: #4a148c;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .quick-option-btn:hover {
@@ -100,10 +102,11 @@ body {
 /* 🌟 אזור החיפוש (react-select) */
 .search-section {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 10px;
   margin-bottom: 35px;
-  flex-wrap: wrap;
+  direction: rtl;
 }
 
 /* סגנון לדיב שסביב כל select */
@@ -114,10 +117,8 @@ body {
   width: 100%;
 }
 
-/* Override של ה-dropdown menu דרך portal */
-.css-1g6gooi-Menu {
-  z-index: 9999 !important;
-}
+/* Override של react-select dropdown דרך portal */
+.css-1g6gooi-Menu,
 .css-1g6gooi-MenuList {
   z-index: 9999 !important;
 }
@@ -132,11 +133,35 @@ body {
   cursor: pointer;
   font-weight: bold;
   font-size: 18px;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .search-button:hover {
   background: linear-gradient(90deg, #4c1d95, #7c3aed);
+  transform: translateY(-1px);
+}
+
+/* 🌟 כפתור לוח עבודות מהירות */
+.quick-jobs-button-wrapper {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.quick-jobs-button {
+  background: linear-gradient(90deg, #4c1d95, #7c3aed);
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.quick-jobs-button:hover {
+  background: linear-gradient(90deg, #7c3aed, #4c1d95);
+  transform: translateY(-1px);
 }
 
 /* 🌟 קטגוריות עם דפדוף */
@@ -233,11 +258,40 @@ body {
   margin-top: 1rem;
   cursor: pointer;
   font-weight: bold;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .bookmark-card button:hover {
   background-color: #8b5cf6;
+  transform: translateY(-1px);
+}
+
+/* 🌟 חיפושים חמים */
+.trending-box {
+  margin-bottom: 2rem;
+  background: #f4f1fd;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  max-width: 700px;
+  margin-inline: auto;
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+
+.trending-box h4 {
+  margin-bottom: 10px;
+  color: #4c1d95;
+}
+
+.trending-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trending-box li {
+  margin-bottom: 6px;
+  color: #555;
+  font-size: 15px;
 }
 
 /* 🌟 תחתית האתר */
@@ -268,7 +322,7 @@ body {
   text-decoration: underline;
 }
 
-copyright {
+footer p {
   font-size: 16px;
   color: #000;
 }
@@ -281,6 +335,11 @@ copyright {
 
   .subtitle {
     font-size: 18px;
+  }
+
+  .search-section {
+    flex-direction: column;
+    align-items: center;
   }
 
   .search-section .dropdown-wrapper {
@@ -301,25 +360,4 @@ copyright {
     flex-wrap: nowrap;
     justify-content: flex-start;
   }
-}
-
-.quick-jobs-button-wrapper {
-  margin-top: 20px;
-  margin-bottom: 30px;
-}
-
-.quick-jobs-button {
-  background: linear-gradient(90deg, #4c1d95, #7c3aed);
-  color: white;
-  border: none;
-  padding: 14px 30px;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.quick-jobs-button:hover {
-  background: linear-gradient(90deg, #7c3aed, #4c1d95);
 }
