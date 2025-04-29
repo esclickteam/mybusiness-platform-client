@@ -1,62 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
-import ALL_CITIES from "../../../../../data/cities"; // ייבוא כל הערים כייבוא ברירת מחדל // ייבוא כל הערים מתוך הנתיב הנכון
-const CITIES = ALL_CITIES; // רק מייבאים ערים
-import "../../build/Build.css";
-
-// נשחזר כאן את רשימת הקטגוריות בתוך הקובץ
-const CATEGORIES = [
-  "אולם אירועים",
-  "אינסטלטור",
-  "איפור קבוע",
-  "בניית אתרים",
-  "בית קפה",
-  "ברברשופ",
-  "גינון / הדברה",
-  "גלריה / חנות אומנות",
-  "חנות בגדים",
-  "חנויות טבע / בריאות",
-  "חשמלאי",
-  "טכנאי מחשבים",
-  "טכנאי מזגנים",
-  "טכנאי סלולר",
-  "יועץ מס / רואה חשבון",
-  "יוגה / פילאטיס",
-  "קייטרינג",
-  "כתיבת תוכן / קופירייטינג",
-  "מאמן אישי / עסקי",
-  "מאמן כושר",
-  "מטפלת רגשית / NLP",
-  "מדריך טיולים",
-  "מדיה / פרסום",
-  "מומחה שיווק דיגיטלי",
-  "מורה למוזיקה / אומנות",
-  "מורה פרטי",
-  "מטפל/ת הוליסטי",
-  "מזון / אוכל ביתי",
-  "מניקור-פדיקור",
-  "מסגר",
-  "מסעדה",
-  "מספרה",
-  "מעצב גרפי",
-  "מעצב פנים",
-  "מציל / מדריך שחייה",
-  "מכון יופי",
-  "מרצה / מנטור",
-  "משפחתון / צהרון / גן",
-  "מתווך נדל״ן",
-  "נהג / שליחויות",
-  "נגר",
-  "עורך דין",
-  "עיצוב גבות",
-  "פסיכולוג / יועץ",
-  "קוסמטיקאית",
-  "רפואה משלימה",
-  "צלם / סטודיו צילום",
-  "שיפוצניק",
-  "שירותים לקהילה / עמותות",
-  "תזונאית / דיאטנית"
-];
+import rawCities from "../../../../../../data/cities";
+// ננקה כפילויות בעזרת Set
+const CITIES = Array.from(new Set(rawCities));
+const CATEGORIES = ALL_CATEGORIES;
 
 export default function MainSection({
   businessDetails,
@@ -72,47 +19,52 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
-  // עיר - autocomplete dropdown
+  // autocomplete state
   const [cityQuery, setCityQuery] = useState("");
   const [showCityDropdown, setShowCityDropdown] = useState(false);
-  const cityRef = useRef();
+  const [categoryQuery, setCategoryQuery] = useState("");
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const containerRef = useRef();
 
-  // קטגוריה - dropdown רגיל
-  const [selectedCat, setSelectedCat] = useState(businessDetails.category || "");
-
-  // סגירת dropdown של העיר בלחיצה מחוץ
+  // close dropdowns on outside click
   useEffect(() => {
-    const onClickOutside = e => {
-      if (cityRef.current && !cityRef.current.contains(e.target)) {
+    const handleClickOutside = e => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
         setShowCityDropdown(false);
+        setShowCategoryDropdown(false);
       }
     };
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // סינון ערים
-  const filteredCities = CITIES.filter(c =>
-    c.toLowerCase().includes(cityQuery.toLowerCase())
-  );
+  // filter lists
+  const filteredCities = CITIES.filter(c => c.toLowerCase().includes(cityQuery.toLowerCase()));
+  const filteredCategories = CATEGORIES.filter(c => c.toLowerCase().includes(categoryQuery.toLowerCase()));
 
+  // images
+  const mainImages = businessDetails.mainImages || [];
+  const uniqueImages = dedupeByPreview(mainImages);
+  const limitedMainImages = uniqueImages.slice(0, 5);
+
+  // selection handlers
   const selectCity = c => {
     handleInputChange({ target: { name: "city", value: c } });
     setCityQuery("");
     setShowCityDropdown(false);
   };
-
-  // תמונות ראשיות
-  const mainImages = businessDetails.mainImages || [];
-  const uniqueImages = dedupeByPreview(mainImages);
-  const limitedMainImages = uniqueImages.slice(0, 5);
+  const selectCategory = c => {
+    handleInputChange({ target: { name: "category", value: c } });
+    setCategoryQuery("");
+    setShowCategoryDropdown(false);
+  };
 
   return (
     <>
-      <div className="form-column">
+      <div className="form-column" ref={containerRef}>
         <h2>🎨 עיצוב הכרטיס</h2>
 
-        {/* שם */}
+        {/* Name */}
         <label>שם העסק: <span style={{ color: "red" }}>*</span></label>
         <input
           type="text"
@@ -123,7 +75,7 @@ export default function MainSection({
           required
         />
 
-        {/* תיאור */}
+        {/* Description */}
         <label>תיאור:</label>
         <textarea
           name="description"
@@ -132,7 +84,7 @@ export default function MainSection({
           placeholder="הכנס תיאור קצר"
         />
 
-        {/* טלפון */}
+        {/* Phone */}
         <label>טלפון:</label>
         <input
           type="text"
@@ -142,50 +94,60 @@ export default function MainSection({
           placeholder="הכנס טלפון"
         />
 
-        {/* קטגוריה */}
+        {/* Category Autocomplete */}
         <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
-        <select
+        <input
+          type="text"
           name="category"
-          value={businessDetails.category || ""}
-          onChange={handleInputChange}
+          placeholder="בחר קטגוריה"
+          value={showCategoryDropdown ? categoryQuery : (businessDetails.category || "")}
+          onFocus={() => { setShowCategoryDropdown(true); setCategoryQuery(""); }}
+          onChange={e => { setCategoryQuery(e.target.value); setShowCategoryDropdown(true); }}
           required
-        >
-          <option value="" disabled>בחר קטגוריה</option>
-          {CATEGORIES.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+        />
+        {showCategoryDropdown && (
+          <ul className="city-dropdown">
+            {filteredCategories.map(c => (
+              <li key={c} onClick={() => selectCategory(c)}>{c}</li>
+            ))}
+            {filteredCategories.length === 0 && <li className="no-results">לא נמצאו קטגוריות</li>}
+          </ul>
+        )}
 
-        {/* עיר - autocomplete */}
+        {/* City Autocomplete */}
         <label>עיר: <span style={{ color: "red" }}>*</span></label>
-        <div className="city-select-container" ref={cityRef}>
-          <input
-            type="text"
-            name="city"
-            placeholder="בחר עיר"
-            value={showCityDropdown ? cityQuery : (businessDetails.city || "")}
-            onFocus={() => { setShowCityDropdown(true); setCityQuery(""); }}
-            onChange={e => { setCityQuery(e.target.value); setShowCityDropdown(true); }}
-            required
-          />
-          {showCityDropdown && (
-            <ul className="city-dropdown">
-              {filteredCities.map(c => (
-                <li key={c} onClick={() => selectCity(c)}>{c}</li>
-              ))}
-              {filteredCities.length === 0 && <li className="no-results">לא נמצאו ערים</li>}
-            </ul>
-          )}
-        </div>
+        <input
+          type="text"
+          name="city"
+          placeholder="בחר עיר"
+          value={showCityDropdown ? cityQuery : (businessDetails.city || "")}
+          onFocus={() => { setShowCityDropdown(true); setCityQuery(""); }}
+          onChange={e => { setCityQuery(e.target.value); setShowCityDropdown(true); }}
+          required
+        />
+        {showCityDropdown && (
+          <ul className="city-dropdown">
+            {filteredCities.map(c => (
+              <li key={c} onClick={() => selectCity(c)}>{c}</li>
+            ))}
+            {filteredCities.length === 0 && <li className="no-results">לא נמצאו ערים</li>}
+          </ul>
+        )}
 
-        {/* לוגו */}
+        {/* Logo Upload */}
         <label>לוגו:</label>
-        <input type="file" name="logo" accept="image/*" style={{ display: "none" }} ref={logoInputRef} />
+        <input
+          type="file"
+          name="logo"
+          accept="image/*"
+          style={{ display: "none" }}
+          ref={logoInputRef}
+        />
         <button type="button" className="save-btn" onClick={() => logoInputRef.current?.click()}>
           העלאת לוגו
         </button>
 
-        {/* תמונות ראשיות */}
+        {/* Main Images */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
@@ -208,7 +170,7 @@ export default function MainSection({
           )}
         </div>
 
-        {/* שמירה וצפייה */}
+        {/* Save & View */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
           {isSaving ? "שומר..." : "💾 שמור"}
         </button>
@@ -217,7 +179,7 @@ export default function MainSection({
         )}
       </div>
 
-      {/* תצוגה מקדימה */}
+      {/* Preview Column */}
       <div className="preview-column">
         {renderTopBar && renderTopBar()}
         <div className="preview-images">

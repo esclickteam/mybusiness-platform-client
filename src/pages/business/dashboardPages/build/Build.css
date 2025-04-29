@@ -353,3 +353,21 @@
   text-align: center;
   margin: 0.25rem 0;
 }
+
+/* גלילה ואוטוקומפליט */
+.city-select-container {
+  position: relative;
+}
+.city-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
