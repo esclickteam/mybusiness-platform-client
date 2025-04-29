@@ -103,7 +103,7 @@ body {
 .search-section {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;   /* שינינו למרכז */
   gap: 10px;
   margin-bottom: 35px;
   direction: rtl;
