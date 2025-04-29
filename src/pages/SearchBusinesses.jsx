@@ -22,9 +22,6 @@ function normalizeCity(str) {
     .toLowerCase();
 }
 
-// Hebrew letters for filtering by initial
-const HEBREW_LETTERS = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'];
-
 export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -33,41 +30,32 @@ export default function SearchBusinesses() {
   const [filtered, setFiltered] = useState([]);
   const [searched, setSearched] = useState(false);
 
-  // category
   const catParam = searchParams.get('category') || '';
   const [cat, setCat] = useState(catParam);
   const [openCat, setOpenCat] = useState(false);
   const wrapperCatRef = useRef(null);
 
-  // city & dynamic list
   const cityParam = searchParams.get('city') || '';
   const [city, setCity] = useState(cityParam);
   const [cities, setCities] = useState([]);
   const [openCity, setOpenCity] = useState(false);
   const wrapperCityRef = useRef(null);
 
-  // filter by initial letter
-  const [filterLetter, setFilterLetter] = useState('');
-
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // load businesses and extract cities
   useEffect(() => {
     API.get('/business')
       .then(r => {
         const list = r.data.businesses || [];
         setAll(list);
         const dynamicCities = Array.from(
-          new Set(
-            list.map(b => b.address?.city?.trim() || '').filter(c => c)
-          )
-        ).sort((a,b) => a.localeCompare(b,'he'));
+          new Set(list.map(b => b.address?.city?.trim() || '').filter(c => c))
+        ).sort((a, b) => a.localeCompare(b, 'he'));
         setCities(dynamicCities);
       })
       .catch(console.error);
   }, []);
 
-  // close dropdowns
   useEffect(() => {
     const handler = e => {
       if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) setOpenCat(false);
@@ -77,7 +65,6 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // update URL params
   useEffect(() => {
     const p = new URLSearchParams();
     if (cat) p.set('category', cat);
@@ -86,17 +73,12 @@ export default function SearchBusinesses() {
     setSearchParams(p, { replace: true });
   }, [cat, city, page]);
 
-  // search
   const handleSearch = () => {
     const normCity = normalizeCity(city);
     const res = all.filter(b => {
       if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) return false;
-      const cityNorm = normalizeCity(b.address?.city || '');
-      if (filterLetter) {
-        return cityNorm.startsWith(normalizeCity(filterLetter));
-      }
       if (city.trim()) {
-        return cityNorm.includes(normCity);
+        return normalizeCity(b.address?.city || '').startsWith(normCity);
       }
       return true;
     });
@@ -105,18 +87,13 @@ export default function SearchBusinesses() {
     setSearched(true);
   };
 
-  // pagination
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  // prepare displayed city suggestions
-  const citySuggestions =
-    filterLetter
-      ? cities.filter(c => normalizeCity(c).startsWith(normalizeCity(filterLetter)))
-      : city.trim()
-        ? cities.filter(c => normalizeCity(c).includes(normalizeCity(city)))
-        : [];
+  const citySuggestions = city.trim()
+    ? cities.filter(c => normalizeCity(c).startsWith(normalizeCity(city)))
+    : [];
 
   return (
     <div className="list-page">
@@ -124,8 +101,7 @@ export default function SearchBusinesses() {
         <h1>רשימת עסקים</h1>
 
         <div className="filters">
-          {/* category dropdown */}
-          <div className="dropdown-wrapper" ref={wrapperCatRef}>
+          <div className="dropdown-wrapper cat" ref={wrapperCatRef}>
             <button className="filter-button" onClick={() => setOpenCat(o => !o)}>
               {cat || 'בחר קטגוריה'} <span className="chevron">▾</span>
             </button>
@@ -138,31 +114,14 @@ export default function SearchBusinesses() {
             )}
           </div>
 
-          {/* letter filter */}
-          <div className="letter-filter">
-            {HEBREW_LETTERS.map(letter => (
-              <button
-                key={letter}
-                className={filterLetter === letter ? 'active-letter' : ''}
-                onClick={() => { setFilterLetter(letter); setCity(''); setOpenCity(true); }}
-              >{letter}</button>
-            ))}
-            <button
-              className={!filterLetter ? 'active-letter' : ''}
-              onClick={() => { setFilterLetter(''); setCity(''); }}
-            >הכל</button>
-          </div>
-
-          {/* city input/autocomplete */}
-          <div className="dropdown-wrapper" ref={wrapperCityRef}>
+          <div className="dropdown-wrapper city" ref={wrapperCityRef}>
             <input
               type="text"
               className="filter-input"
-              placeholder={filterLetter ? `ערים שמתחילות ב־${filterLetter}` : 'הקלד עיר לחיפוש'}
+              placeholder="הקלד עיר לחיפוש"
               value={city}
               onFocus={() => setOpenCity(true)}
-              onChange={e => { setCity(e.target.value); setFilterLetter(''); setOpenCity(true); }}
-              disabled={false}
+              onChange={e => { setCity(e.target.value); setOpenCity(true); }}
             />
             {openCity && citySuggestions.length > 0 && (
               <ul className="suggestions-list">
