@@ -51,7 +51,7 @@ const Header = () => {
 
       <div className="auth-controls">
         {/* כפתור חיפוש עכשיו מפנה לדף כל העסקים */}
-        <Link to="/businesses" className="icon-button">
+        <Link to="/search" className="icon-button">
           <FaSearch size={24} />
         </Link>
 

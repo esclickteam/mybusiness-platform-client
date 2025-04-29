@@ -59,7 +59,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* עיצוב עוטף לגלילת הקטגוריות */
+/* גלילת קטגוריות (לא בשימוש כאשר מחליפים ל-dropdown) */
 .categories-scroll-wrapper {
   display: flex;
   align-items: center;
@@ -68,8 +68,6 @@
   gap: 1rem;
   position: relative;
 }
-
-/* הקטגוריות עצמן בגלילה אופקית */
 .categories-scroll {
   display: flex;
   overflow-x: auto;
@@ -81,8 +79,6 @@
 .categories-scroll::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
-
-/* כפתורי החצים */
 .scroll-arrow {
   background-color: var(--primary);
   color: white;
@@ -97,8 +93,6 @@
 .scroll-arrow:hover {
   background-color: var(--primary-hover);
 }
-
-/* קטגוריה בודדת */
 .category-btn {
   flex: 0 0 auto;
   background-color: #f0f0f0;
@@ -119,7 +113,7 @@
   color: white;
 }
 
-/* מיון */
+/* מיון (אם אין צורך ניתן להסיר) */
 .sort-options {
   margin: 1rem 0;
   text-align: center;
@@ -185,8 +179,9 @@
   }
 }
 
-/* הוסף בסוף BusinessList.css */
-
+/* ===========================
+   תצוגת Dropdown של קטגוריות
+   =========================== */
 .search-wrapper {
   position: relative;
   max-width: 600px;
@@ -203,11 +198,11 @@
   background: white;
 }
 
-/* dropdown של קטגוריות */
 .suggestions-list {
   position: absolute;
   top: 110%;
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   background: white;
   box-shadow: var(--card-shadow);
   border-radius: 12px;

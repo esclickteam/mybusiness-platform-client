@@ -77,7 +77,8 @@ export default function App() {
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/businesses" element={<BusinessesList />} />
+          <Route path="/search" element={<SearchBusinesses />} />
+
 
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
