@@ -181,30 +181,49 @@ const handleMainImagesChange = async e => {
 
   
 
-  const handleDeleteMainImage = idx => {
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: prev.mainImages.filter((_, i) => i !== idx)
-    }));
-    if (editIndex === idx) closePopup();
-  };
+const handleDeleteMainImage = async idx => {
+  const url = businessDetails.mainImages[idx]?.preview;
+  if (!url) return;
+
+  // סגור את הפופאפ אם זה התמונה שנערכה
+  if (editIndex === idx) closePopup();
+
+  try {
+    const res = await API.delete(`/business/my/main-images/${encodeURIComponent(url)}`);
+    if (res.status === 200) {
+      // עדכון ה־state עם מערך חדש
+      setBusinessDetails(prev => ({
+        ...prev,
+        mainImages: res.data.mainImages.map(url => ({ preview: url }))
+      }));
+    }
+  } catch (err) {
+    console.error("❌ שגיאה במחיקת תמונה ראשית:", err);
+  }
+};
 
   const openMainImageEdit = idx => {
     setEditIndex(idx);
     setIsPopupOpen(true);
   };
+  
+  // סוגר את הפופאפ ומאפס את האינדקס
   const closePopup = () => {
     setEditIndex(null);
     setIsPopupOpen(false);
   };
+  
+  // עדכון גודל התמונה לפי סוג ('full' או 'custom')
   const updateImageSize = sizeType => {
     if (editIndex === null) return;
+  
     setBusinessDetails(prev => ({
       ...prev,
       mainImages: prev.mainImages.map((img, i) =>
         i === editIndex ? { ...img, size: sizeType } : img
       )
     }));
+  
     closePopup();
   };
 
@@ -267,19 +286,26 @@ const handleMainImagesChange = async e => {
   
     
     const handleDeleteGalleryImage = async idx => {
-      const url = businessDetails.gallery[idx].preview;
+      const url = businessDetails.gallery[idx]?.preview;
+      if (!url) return;
+    
       try {
-        const res = await API.delete(
-          `/business/my/gallery/${encodeURIComponent(url)}`
-        );
-        setBusinessDetails(prev => ({
-          ...prev,
-          gallery: res.data.gallery.map(u => ({ preview: u }))
-        }));
+        const res = await API.delete(`/business/my/gallery/${encodeURIComponent(url)}`);
+    
+        if (res.status === 200) {
+          // נעדכן את ה־gallery בתשובה מהשרת
+          setBusinessDetails(prev => ({
+            ...prev,
+            gallery: res.data.gallery.map(url => ({ preview: url }))
+          }));
+        } else {
+          console.warn("מחיקה נכשלה:", res);
+        }
       } catch (err) {
-        console.error("Error deleting gallery image:", err);
+        console.error("שגיאה במחיקת תמונה:", err);
       }
     };
+    
     
   
   const handleEditImage = idx => {
