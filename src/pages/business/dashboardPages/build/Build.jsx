@@ -289,8 +289,10 @@ const handleMainImagesChange = async e => {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
       : 0;
+  
     return (
-      <>
+      <div className="topbar-preview">
+        {/* לוגו */}
         <div className="logo-circle" onClick={handleLogoClick}>
           {businessDetails.logo?.preview
             ? <img src={businessDetails.logo.preview} className="logo-img" />
@@ -303,6 +305,8 @@ const handleMainImagesChange = async e => {
             onChange={handleLogoChange}
           />
         </div>
+  
+        {/* שם העסק + דירוג */}
         <div className="name-rating">
           <h2>{businessDetails.name || "שם העסק"}</h2>
           <div className="rating-badge">
@@ -310,7 +314,22 @@ const handleMainImagesChange = async e => {
             <span>{avg.toFixed(1)} / 5</span>
           </div>
         </div>
+  
+        {/* תיאור וטלפון מתחת לשם */}
+        {businessDetails.description && (
+          <p className="preview-description">
+            <strong>תיאור:</strong> {businessDetails.description}
+          </p>
+        )}
+        {businessDetails.phone && (
+          <p className="preview-phone">
+            <strong>טלפון:</strong> {businessDetails.phone}
+          </p>
+        )}
+  
         <hr className="divider" />
+  
+        {/* כפתורי הטאבים */}
         <div className="tabs">
           {TABS.map(tab => (
             <button
@@ -323,9 +342,10 @@ const handleMainImagesChange = async e => {
             </button>
           ))}
         </div>
-      </>
+      </div>
     );
   };
+  
 
   return (
     <div className="build-wrapper">

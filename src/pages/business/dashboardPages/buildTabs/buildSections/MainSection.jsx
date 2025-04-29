@@ -1,6 +1,5 @@
 import React from "react";
 import "../../build/Build.css";
-import MainTab from "../MainTab.jsx";
 // תיקון: חמש רמות מעלה מ‐buildSections עד ל‐src/utils
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 
@@ -122,7 +121,7 @@ export default function MainSection({
         />
         <div className="gallery-preview">
           {limitedMainImages.map((img, i) => (
-            <div key={img.preview} className="gallery-item-wrapper image-wrapper">
+            <div key={i} className="gallery-item-wrapper image-wrapper">
               <img
                 src={img.preview}
                 alt={`תמונה ראשית ${i + 1}`}
@@ -172,25 +171,13 @@ export default function MainSection({
       <div className="preview-column">
         {renderTopBar && renderTopBar()}
 
-        <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
-          {businessDetails.category && (
-            <p className="preview-category">
-              <strong>קטגוריה:</strong> {businessDetails.category}
-            </p>
-          )}
-          {businessDetails.description && (
-            <p className="preview-description">
-              <strong>תיאור:</strong> {businessDetails.description}
-            </p>
-          )}
-          {businessDetails.phone && (
-            <p className="preview-phone">
-              <strong>טלפון:</strong> {businessDetails.phone}
-            </p>
-          )}
+        <div className="preview-images">
+          {limitedMainImages.map((img, i) => (
+            <div key={i} className="image-wrapper">
+              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} />
+            </div>
+          ))}
         </div>
-
-        <MainTab businessDetails={businessDetails} />
       </div>
     </>
   );

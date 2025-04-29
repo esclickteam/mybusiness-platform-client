@@ -29,6 +29,28 @@
   content: none;
 }
 
+/* קטגוריה, תיאור וטלפון מתחת לכותרת */
+.preview-column .preview-category,
+.preview-column .preview-description,
+.preview-column .preview-phone {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* רשת תמונות ראשיות - 3 בעמודה */
+.preview-images {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 1rem;
+}
+.preview-images .image-wrapper img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 /* צד שמאל - טופס */
 .form-column {
   width: 520px;
@@ -153,7 +175,7 @@
   margin-right: 0.3rem;
 }
 
-/* Gallery preview */
+/* Gallery preview בתוך טופס */
 .gallery-preview {
   display: flex;
   gap: 1rem;
@@ -200,7 +222,7 @@
   background-color: #f3e5ff;
 }
 
-/* כפתורי מחיקה ועריכה עם SVG */
+/* כפתורי מחיקה ועריכה */
 .delete-btn, .edit-btn {
   position: absolute;
   top: 5px;
@@ -273,23 +295,6 @@
   color: black;
 }
 
-/* Public profile main images */
-.public-main-images {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.public-main-images img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
 /* רספונסיביות */
 @media (max-width: 768px) {
   .build-wrapper {
@@ -329,8 +334,11 @@
     height: 80px;
   }
 
-  .public-main-images img {
-    width: 80px;
-    height: 80px;
+  .preview-images {
+    gap: 8px;
+  }
+
+  .preview-images .image-wrapper img {
+    height: auto;
   }
 }
