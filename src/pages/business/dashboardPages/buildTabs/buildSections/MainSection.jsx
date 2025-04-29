@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
-import ALL_CATEGORIES from "../../../../../data/categories";
+import ALL_CATEGORIES from  "../../../../../data/categories";
 
 // Remove duplicates in cities
 const CITIES = Array.from(new Set(rawCities));
@@ -22,40 +22,22 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
-  const [cityQuery, setCityQuery] = useState("");
-  const [showCityDropdown, setShowCityDropdown] = useState(false);
-  const [categoryQuery, setCategoryQuery] = useState("");
-  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const containerRef = useRef();
-
-  useEffect(() => {
-    const handleClickOutside = e => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setShowCityDropdown(false);
-        setShowCategoryDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const filteredCities = CITIES.filter(c => c.toLowerCase().includes(cityQuery.toLowerCase()));
-  const filteredCategories = CATEGORIES.filter(c => c.toLowerCase().includes(categoryQuery.toLowerCase()));
 
   const mainImages = businessDetails.mainImages || [];
   const uniqueImages = dedupeByPreview(mainImages);
   const limitedMainImages = uniqueImages.slice(0, 5);
 
-  const selectCity = c => {
-    handleInputChange({ target: { name: "city", value: c } });
-    setCityQuery("");
-    setShowCityDropdown(false);
-  };
-  const selectCategory = c => {
-    handleInputChange({ target: { name: "category", value: c } });
-    setCategoryQuery("");
-    setShowCategoryDropdown(false);
-  };
+  // Handle clicks outside to close any open dropdowns
+  useEffect(() => {
+    const onClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        // no dropdowns here, using native selects
+      }
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
 
   return (
     <>
@@ -112,7 +94,6 @@ export default function MainSection({
           name="city"
           value={businessDetails.city || ""}
           onChange={handleInputChange}
-          size={5}
           required
         >
           <option value="" disabled>בחר עיר</option>
