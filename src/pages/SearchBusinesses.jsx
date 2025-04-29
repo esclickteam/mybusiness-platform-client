@@ -1,58 +1,58 @@
-/* src/pages/SearchBusinesses.jsx */
+// src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
 import BusinessCard from '../components/BusinessCard';
-import ALL_CITIES from '../data/cities';
 import './BusinessList.css';
 
 const CATEGORIES = [
-  "כל הקטגוריות",
-  "אולם אירועים",
-  "אינסטלטור",
-  "איפור קבוע",
-  "בניית אתרים",
-  "בית קפה",
-  "ברברשופ",
-  "גינון / הדברה",
-  "גלריה / חנות אומנות",
-  "חנויות טבע / בריאות",
-  "חנות בגדים",
-  "חשמלאי",
-  "טכנאי מחשבים",
-  "טכנאי מזגנים",
-  "טכנאי סלולר",
-  "יועץ מס / רואה חשבון",
-  "יוגה / פילאטיס",
-  "קייטרינג",
-  "כתיבת תוכן / קופירייטינג",
-  "מאמן אישי / עסקי",
-  "מאמן כושר",
-  "מטפלת רגשית / NLP",
-  "מטפל/ת הוליסטי",
-  "מדיה / פרסום",
-  "מדריך טיולים",
-  "מומחה שיווק דיגיטלי",
-  "מורה למוזיקה / אומנות",
-  "מורה פרטי",
-  "משפחתון / צהרון / גן",
-  "מתווך נדל\"ן",
-  "נהג / שליחויות",
-  "נגר",
-  "עורך דין",
-  "עיצוב גבות",
-  "פסיכולוג / יועץ",
-  "קוסמטיקאית",
-  "רפואה משלימה",
-  "שיפוצניק",
-  "מוסך",
-  "עורך דין משפחה"
+  'כל הקטגוריות',
+  'אולם אירועים',
+  'אינסטלטור',
+  'איפור קבוע',
+  'בניית אתרים',
+  'בית קפה',
+  'ברברשופ',
+  'גינון / הדברה',
+  'גלריה / חנות אומנות',
+  'חנויות טבע / בריאות',
+  'חנות בגדים',
+  'חשמלאי',
+  'טכנאי מחשבים',
+  'טכנאי מזגנים',
+  'טכנאי סלולר',
+  'יועץ מס / רואה חשבון',
+  'יוגה / פילאטיס',
+  'קייטרינג',
+  'כתיבת תוכן / קופירייטינג',
+  'מאמן אישי / עסקי',
+  'מאמן כושר',
+  'מטפלת רגשית / NLP',
+  'מטפל/ת הוליסטי',
+  'מדיה / פרסום',
+  'מדריך טיולים',
+  'מומחה שיווק דיגיטלי',
+  'מורה למוזיקה / אומנות',
+  'מורה פרטי',
+  'משפחתון / צהרון / גן',
+  'מתווך נדל"ן',
+  'נהג / שליחויות',
+  'נגר',
+  'עורך דין',
+  'עיצוב גבות',
+  'פסיכולוג / יועץ',
+  'קוסמטיקאית',
+  'רפואה משלימה',
+  'שיפוצניק',
+  'מוסך',
+  'עורך דין משפחה'
 ];
 
 const ITEMS_PER_PAGE = 9;
 
 function normalizeCity(str) {
-  return str.normalize('NFD')
+  return str
+    .normalize('NFD')
     .replace(/[\u0591-\u05C7]/g, '')
     .replace(/[-'" ]+/g, '')
     .trim()
@@ -67,44 +67,53 @@ export default function SearchBusinesses() {
   const [filtered, setFiltered] = useState([]);
   const [searched, setSearched] = useState(false);
 
+  // קטגוריה
   const catParam = searchParams.get('category') || '';
   const [cat, setCat] = useState(catParam);
   const [openCat, setOpenCat] = useState(false);
   const wrapperCatRef = useRef(null);
 
+  // עיר
   const cityParam = searchParams.get('city') || '';
   const [city, setCity] = useState(cityParam);
-  const [cities, setCities] = useState(['כל הערים', ...ALL_CITIES]);
+  const [cities, setCities] = useState(['כל הערים']);
   const [openCity, setOpenCity] = useState(false);
   const wrapperCityRef = useRef(null);
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
+  // טען כל העסקים ובנה רשימת ערים דינמית
   useEffect(() => {
     API.get('/business')
       .then(r => {
         const list = r.data.businesses || [];
         setAll(list);
 
-        // ערים מהעסקים
-        const dynamic = Array.from(new Set(
-          list
-            .map(b => b.address?.city?.trim() || '')
-            .filter(c => c)
-        ));
-
-        // מיזוג: קודם דינמי (לכיסוי כתיבים קודמים), ואז סטטי
-        const merged = Array.from(new Set([
-          'כל הערים',
-          ...dynamic,
-          ...ALL_CITIES.filter(c => !dynamic.includes(c))
-        ])).sort((a, b) => a.localeCompare(b, 'he'));
-
-        setCities(merged);
+        const dynamicCities = Array.from(
+          new Set(
+            list.map(b => b.address?.city?.trim() || '').filter(c => c)
+          )
+        ).sort((a, b) => a.localeCompare(b, 'he'));
+        setCities(['כל הערים', ...dynamicCities]);
       })
       .catch(console.error);
   }, []);
 
+  // סגור dropdowns בלחיצה מחוץ
+  useEffect(() => {
+    const handler = e => {
+      if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) {
+        setOpenCat(false);
+      }
+      if (wrapperCityRef.current && !wrapperCityRef.current.contains(e.target)) {
+        setOpenCity(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // עדכן פרמטרים ב-URL
   useEffect(() => {
     const p = new URLSearchParams();
     if (cat) p.set('category', cat);
@@ -113,20 +122,18 @@ export default function SearchBusinesses() {
     setSearchParams(p, { replace: true });
   }, [cat, city, page]);
 
-  useEffect(() => {
-    const handler = e => {
-      if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) setOpenCat(false);
-      if (wrapperCityRef.current && !wrapperCityRef.current.contains(e.target)) setOpenCity(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
+  // חיפוש
   const handleSearch = () => {
     const normCity = normalizeCity(city);
     const res = all.filter(b => {
       if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) return false;
-      if (normCity && normalizeCity(b.address?.city || '') !== normCity) return false;
+      if (
+        normCity &&
+        city !== 'כל הערים' &&
+        normalizeCity(b.address?.city || '') !== normCity
+      ) {
+        return false;
+      }
       return true;
     });
     setFiltered(res);
@@ -134,6 +141,7 @@ export default function SearchBusinesses() {
     setSearched(true);
   };
 
+  // פאג'ינציה
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
@@ -146,13 +154,22 @@ export default function SearchBusinesses() {
         <div className="filters">
           {/* קטגוריה */}
           <div className="dropdown-wrapper" ref={wrapperCatRef}>
-            <button className="filter-button" onClick={() => setOpenCat(o => !o)}>
+            <button
+              className="filter-button"
+              onClick={() => setOpenCat(o => !o)}
+            >
               {cat || 'בחר קטגוריה'} <span className="chevron">▾</span>
             </button>
             {openCat && (
               <ul className="suggestions-list">
-                {CATEGORIES.map((c,i) => (
-                  <li key={i} onClick={() => { setCat(c); setOpenCat(false); }} >
+                {CATEGORIES.map((c, i) => (
+                  <li
+                    key={i}
+                    onClick={() => {
+                      setCat(c);
+                      setOpenCat(false);
+                    }}
+                  >
                     {c === 'כל הקטגוריות' ? <em>{c}</em> : c}
                   </li>
                 ))}
@@ -168,16 +185,31 @@ export default function SearchBusinesses() {
               placeholder="עיר (לדוגמה: תל אביב)"
               value={city}
               onFocus={() => setOpenCity(true)}
-              onChange={e => { setCity(e.target.value); setOpenCity(true); }}
+              onChange={e => {
+                setCity(e.target.value);
+                setOpenCity(true);
+              }}
             />
-            {openCity && (
+            {openCity && city.trim().length > 0 && (
               <ul className="suggestions-list">
-                {cities.filter(c => normalizeCity(c).includes(normalizeCity(city))).map((c,i) => (
-                  <li key={i} onClick={() => { setCity(c); setOpenCity(false); }} >
-                    {c === 'כל הערים' ? <em>{c}</em> : c}
-                  </li>
-                ))}
-                {cities.filter(c => normalizeCity(c).includes(normalizeCity(city))).length === 0 && (
+                {cities
+                  .filter(c =>
+                    normalizeCity(c).includes(normalizeCity(city))
+                  )
+                  .map((c, i) => (
+                    <li
+                      key={i}
+                      onClick={() => {
+                        setCity(c);
+                        setOpenCity(false);
+                      }}
+                    >
+                      {c === 'כל הערים' ? <em>{c}</em> : c}
+                    </li>
+                  ))}
+                {cities.filter(c =>
+                    normalizeCity(c).includes(normalizeCity(city))
+                  ).length === 0 && (
                   <li className="no-match">אין ערים מתאימות</li>
                 )}
               </ul>
@@ -191,23 +223,42 @@ export default function SearchBusinesses() {
         </div>
 
         <div className="business-list">
-          {!searched && <p className="no-search">לחץ על “חפש” כדי לראות תוצאות</p>}
-          {searched && (pageItems.length > 0 ? (
-            pageItems.map(b => (
-              <BusinessCard key={b._id} business={b} onClick={() => navigate(`/business/${b._id}`)} />
-            ))
-          ) : (
-            <p className="no-results">
-              😕 לא נמצאו עסקים בקטגוריה “{cat || '–'}” ובעיר “{city || '–'}”.
-            </p>
-          ))}
+          {!searched && (
+            <p className="no-search">לחץ על “חפש” כדי לראות תוצאות</p>
+          )}
+          {searched &&
+            (pageItems.length > 0 ? (
+              pageItems.map(b => (
+                <BusinessCard
+                  key={b._id}
+                  business={b}
+                  onClick={() => navigate(`/business/${b._id}`)}
+                />
+              ))
+            ) : (
+              <p className="no-results">
+                😕 לא נמצאו עסקים בקטגוריה “{cat || '–'}” ובעיר “{city || '–'}”.
+              </p>
+            ))}
         </div>
 
         {searched && totalPages > 1 && (
           <div className="pagination">
-            <button onClick={() => setPage(p => Math.max(p-1,1))} disabled={page===1}>הקודם</button>
-            <span>{page} מתוך {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(p+1,totalPages))} disabled={page===totalPages}>הבא</button>
+            <button
+              onClick={() => setPage(p => Math.max(p - 1, 1))}
+              disabled={page === 1}
+            >
+              הקודם
+            </button>
+            <span>
+              {page} מתוך {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(p + 1, totalPages))}
+              disabled={page === totalPages}
+            >
+              הבא
+            </button>
           </div>
         )}
       </div>
