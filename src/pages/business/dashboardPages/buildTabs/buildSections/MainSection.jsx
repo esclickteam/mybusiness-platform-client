@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
-import { ALL_CITIES } from "../../../../../data/cities"; // ייבוא כל הערים מתוך הנתיב הנכון
+import ALL_CITIES from "../../../../../data/cities"; // ייבוא כל הערים כייבוא ברירת מחדל // ייבוא כל הערים מתוך הנתיב הנכון
 const CITIES = ALL_CITIES; // רק מייבאים ערים
 import "../../build/Build.css";
 
