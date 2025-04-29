@@ -315,6 +315,13 @@ const handleMainImagesChange = async e => {
           </div>
         </div>
   
+        {/* קטגוריה מתחת לשם */}
+        {businessDetails.category && (
+          <p className="preview-category">
+            <strong>קטגוריה:</strong> {businessDetails.category}
+          </p>
+        )}
+  
         {/* תיאור וטלפון מתחת לשם */}
         {businessDetails.description && (
           <p className="preview-description">
@@ -345,6 +352,7 @@ const handleMainImagesChange = async e => {
       </div>
     );
   };
+  
   
 
   return (

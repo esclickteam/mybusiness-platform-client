@@ -1,4 +1,4 @@
-/* מבנה עמוד כללי */
+/* === מבנה עמוד כללי === */
 .build-wrapper {
   display: flex;
   flex-direction: row-reverse;
@@ -11,47 +11,20 @@
   direction: rtl;
 }
 
-/* צד ימין - תצוגה */
+/* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
   width: 450px;
   background-color: #f0dbff;
   border: 8px solid black;
   border-radius: 40px;
   padding: 1.5rem;
-  position: relative;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
   margin: 0 auto;
   flex-shrink: 0;
   overflow: visible;
 }
 
-.preview-column::after {
-  content: none;
-}
-
-/* קטגוריה, תיאור וטלפון מתחת לכותרת */
-.preview-column .preview-category,
-.preview-column .preview-description,
-.preview-column .preview-phone {
-  text-align: center;
-  margin-top: 0.5rem;
-}
-
-/* רשת תמונות ראשיות - 3 בעמודה */
-.preview-images {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 1rem;
-}
-.preview-images .image-wrapper img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-/* צד שמאל - טופס */
+/* --- צד שמאל: טופס עריכה --- */
 .form-column {
   width: 520px;
   background-color: white;
@@ -79,7 +52,7 @@
   margin-top: 0.3rem;
 }
 
-/* כפתור שמירה */
+/* --- כפתור שמירה --- */
 .save-btn {
   margin: 2.5rem auto 0;
   background: linear-gradient(90deg, #b46af1 0%, #d19fff 100%);
@@ -102,7 +75,7 @@
   box-shadow: 0 4px 12px rgba(180, 106, 241, 0.4);
 }
 
-/* טאבים */
+/* --- טאבים --- */
 .tabs {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -127,7 +100,7 @@
   color: white;
 }
 
-/* לוגו */
+/* --- לוגו מעגלי --- */
 .logo-circle {
   width: 100px;
   height: 100px;
@@ -153,10 +126,14 @@
   object-fit: cover;
 }
 
-/* דירוג */
+/* --- שם + דירוג + תיאור + טלפון --- */
 .name-rating {
   text-align: center;
   margin-top: 1rem;
+}
+
+.name-rating h2 {
+  margin: 0;
 }
 
 .rating-badge {
@@ -175,45 +152,54 @@
   margin-right: 0.3rem;
 }
 
-/* Gallery preview בתוך טופס */
-.gallery-preview {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 0.5rem;
+.preview-description,
+.preview-phone,
+.preview-category {
+  text-align: center;
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
 }
 
-.gallery-preview .gallery-item-wrapper {
-  width: 120px;
-  height: 120px;
-  overflow: hidden;
-  flex: 0 0 auto;
+/* --- מחיצה בין עליון לתחתון --- */
+.divider {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+/* === GALLERY PREVIEW בצד עריכה === */
+/* מציג 3 תמונות בשורה, היבטי-1:1 */
+.gallery-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.gallery-preview .gallery-item-wrapper,
+.gallery-preview .gallery-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border: 2px dashed #b46af1;
   border-radius: 12px;
   position: relative;
+  overflow: hidden;
 }
 
 .gallery-preview .gallery-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .gallery-preview .gallery-placeholder {
-  width: 120px;
-  height: 120px;
-  border: 2px dashed #b46af1;
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #b46af1;
   font-size: 2rem;
   cursor: pointer;
-  flex: 0 0 auto;
+  background-color: white;
   transition: transform 0.2s;
 }
 
@@ -223,7 +209,8 @@
 }
 
 /* כפתורי מחיקה ועריכה */
-.delete-btn, .edit-btn {
+.delete-btn,
+.edit-btn {
   position: absolute;
   top: 5px;
   background: rgba(255, 255, 255, 0.9);
@@ -236,23 +223,46 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 4px rgba(0,0,0,0.2);
-  padding: 0;
   transition: transform 0.2s ease;
 }
 
-.delete-btn:hover, .edit-btn:hover {
+.delete-btn:hover,
+.edit-btn:hover {
   transform: scale(1.1);
 }
 
-.delete-btn { right: 5px; }
-.edit-btn { left: 5px; }
+.delete-btn {
+  right: 5px;
+}
 
-.delete-btn svg, .edit-btn svg {
+.edit-btn {
+  left: 5px;
+}
+
+.delete-btn svg,
+.edit-btn svg {
   width: 14px;
   height: 14px;
 }
 
-/* פופאפ */
+/* === תצוגת תמונות בפרופיל ציבורי === */
+/* גם כאן 3 תמונות בשורה, היבטי-1:1 */
+.public-main-images {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.public-main-images img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* === פופאפ (לבחירת גודל תמונה) === */
 .popup-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -280,65 +290,42 @@
   font-weight: bold;
 }
 
-.popup-content button:nth-child(2) {
-  background-color: #b46af1;
-  color: white;
-}
+.popup-content button:nth-child(2) { background-color: #b46af1; color: white; }
+.popup-content button:nth-child(3) { background-color: #d6cadf; color: black; }
+.popup-content button:nth-child(4) { background-color: #ccc;    color: black; }
 
-.popup-content button:nth-child(3) {
-  background-color: #d6cadf;
-  color: black;
-}
-
-.popup-content button:nth-child(4) {
-  background-color: #ccc;
-  color: black;
-}
-
-/* רספונסיביות */
+/* === רספונסיביות === */
 @media (max-width: 768px) {
   .build-wrapper {
     flex-direction: column;
     align-items: center;
     padding: 1rem;
   }
-
   .preview-column {
     width: 100%;
     max-width: 420px;
     border-width: 4px;
   }
-
   .form-column {
     width: 100%;
     max-width: 600px;
     padding: 1.5rem;
   }
-
   .tabs {
     grid-template-columns: 1fr 1fr;
   }
-
   .save-btn {
     font-size: 1rem;
     padding: 1rem 2rem;
   }
-
   .gallery-preview {
     gap: 8px;
   }
-
   .gallery-preview .gallery-item-wrapper,
   .gallery-preview .gallery-placeholder {
-    width: 80px;
-    height: 80px;
+    aspect-ratio: 1 / 1;
   }
-
-  .preview-images {
-    gap: 8px;
-  }
-
-  .preview-images .image-wrapper img {
-    height: auto;
+  .public-main-images img {
+    aspect-ratio: 1 / 1;
   }
 }
