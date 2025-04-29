@@ -22,7 +22,7 @@ function normalizeCity(str) {
     .toLowerCase();
 }
 
-// Hebrew letters A-T for filtering
+// Hebrew letters for filtering by initial
 const HEBREW_LETTERS = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'];
 
 export default function SearchBusinesses() {
@@ -46,7 +46,7 @@ export default function SearchBusinesses() {
   const [openCity, setOpenCity] = useState(false);
   const wrapperCityRef = useRef(null);
 
-  // filter by letter
+  // filter by initial letter
   const [filterLetter, setFilterLetter] = useState('');
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
@@ -91,12 +91,12 @@ export default function SearchBusinesses() {
     const normCity = normalizeCity(city);
     const res = all.filter(b => {
       if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) return false;
+      const cityNorm = normalizeCity(b.address?.city || '');
       if (filterLetter) {
-        // starts with selected letter
-        return normalizeCity(b.address?.city || '').startsWith(normalizeCity(filterLetter));
+        return cityNorm.startsWith(normalizeCity(filterLetter));
       }
-      if (normCity) {
-        return normalizeCity(b.address?.city || '') === normCity;
+      if (city.trim()) {
+        return cityNorm.includes(normCity);
       }
       return true;
     });
@@ -106,9 +106,17 @@ export default function SearchBusinesses() {
   };
 
   // pagination
-  const start = (page-1)*ITEMS_PER_PAGE;
-  const pageItems = filtered.slice(start, start+ITEMS_PER_PAGE);
-  const totalPages = Math.ceil(filtered.length/ITEMS_PER_PAGE);
+  const start = (page - 1) * ITEMS_PER_PAGE;
+  const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
+  // prepare displayed city suggestions
+  const citySuggestions =
+    filterLetter
+      ? cities.filter(c => normalizeCity(c).startsWith(normalizeCity(filterLetter)))
+      : city.trim()
+        ? cities.filter(c => normalizeCity(c).includes(normalizeCity(city)))
+        : [];
 
   return (
     <div className="list-page">
@@ -118,13 +126,13 @@ export default function SearchBusinesses() {
         <div className="filters">
           {/* category dropdown */}
           <div className="dropdown-wrapper" ref={wrapperCatRef}>
-            <button className="filter-button" onClick={()=>setOpenCat(o=>!o)}>
-              {cat||'בחר קטגוריה'} <span className="chevron">▾</span>
+            <button className="filter-button" onClick={() => setOpenCat(o => !o)}>
+              {cat || 'בחר קטגוריה'} <span className="chevron">▾</span>
             </button>
             {openCat && (
               <ul className="suggestions-list">
-                {CATEGORIES.map((c,i)=>(
-                  <li key={i} onClick={()=>{setCat(c);setOpenCat(false)}}>{c}</li>
+                {CATEGORIES.map((c, i) => (
+                  <li key={i} onClick={() => { setCat(c); setOpenCat(false); }}>{c}</li>
                 ))}
               </ul>
             )}
@@ -135,11 +143,14 @@ export default function SearchBusinesses() {
             {HEBREW_LETTERS.map(letter => (
               <button
                 key={letter}
-                className={filterLetter===letter?'active-letter':''}
-                onClick={()=>{ setFilterLetter(letter); setCity(''); setOpenCity(false); }}
+                className={filterLetter === letter ? 'active-letter' : ''}
+                onClick={() => { setFilterLetter(letter); setCity(''); setOpenCity(true); }}
               >{letter}</button>
             ))}
-            <button className={!filterLetter?'active-letter':''} onClick={()=>setFilterLetter('')}>הכל</button>
+            <button
+              className={!filterLetter ? 'active-letter' : ''}
+              onClick={() => { setFilterLetter(''); setCity(''); }}
+            >הכל</button>
           </div>
 
           {/* city input/autocomplete */}
@@ -147,17 +158,17 @@ export default function SearchBusinesses() {
             <input
               type="text"
               className="filter-input"
-              placeholder="הקלד עיר לחיפוש"
+              placeholder={filterLetter ? `ערים שמתחילות ב־${filterLetter}` : 'הקלד עיר לחיפוש'}
               value={city}
-              onFocus={()=>{setOpenCity(true); setFilterLetter('');}}
-              onChange={e=>{ setCity(e.target.value); setFilterLetter(''); setOpenCity(true); }}
-              disabled={Boolean(filterLetter)}
+              onFocus={() => setOpenCity(true)}
+              onChange={e => { setCity(e.target.value); setFilterLetter(''); setOpenCity(true); }}
+              disabled={false}
             />
-            {openCity && city.trim().length>0 && (
+            {openCity && citySuggestions.length > 0 && (
               <ul className="suggestions-list">
-                {cities
-                  .filter(c=>normalizeCity(c).includes(normalizeCity(city)))
-                  .map((c,i)=>(<li key={i} onClick={()=>{setCity(c);setOpenCity(false)}}>{c}</li>))}
+                {citySuggestions.map((c, i) => (
+                  <li key={i} onClick={() => { setCity(c); setOpenCity(false); }}>{c}</li>
+                ))}
               </ul>
             )}
           </div>
@@ -167,16 +178,22 @@ export default function SearchBusinesses() {
 
         <div className="business-list">
           {!searched && <p className="no-search">לחץ על חפש כדי לראות תוצאות</p>}
-          {searched && (pageItems.length>0 ? (
-            pageItems.map(b=>(<BusinessCard key={b._id} business={b} onClick={()=>navigate(`/business/${b._id}`)}/>))
-          ):(<p className="no-results">לא נמצאו עסקים</p>))}
+          {searched && (
+            pageItems.length > 0 ? (
+              pageItems.map(b => (
+                <BusinessCard key={b._id} business={b} onClick={() => navigate(`/business/${b._id}`)} />
+              ))
+            ) : (
+              <p className="no-results">לא נמצאו עסקים</p>
+            )
+          )}
         </div>
 
-        {searched && totalPages>1 && (
+        {searched && totalPages > 1 && (
           <div className="pagination">
-            <button onClick={()=>setPage(p=>Math.max(p-1,1))} disabled={page===1}>הקודם</button>
+            <button onClick={() => setPage(p => Math.max(p - 1, 1))} disabled={page === 1}>הקודם</button>
             <span>{page} מתוך {totalPages}</span>
-            <button onClick={()=>setPage(p=>Math.min(p+1,totalPages))} disabled={page===totalPages}>הבא</button>
+            <button onClick={() => setPage(p => Math.min(p + 1, totalPages))} disabled={page === totalPages}>הבא</button>
           </div>
         )}
       </div>
