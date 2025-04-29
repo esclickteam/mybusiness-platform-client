@@ -1,5 +1,3 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
-
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
@@ -55,6 +53,22 @@ export default function MainSection({
           type="text"
           name="phone"
           value={businessDetails.phone}
+          onChange={handleInputChange}
+        />
+
+        <label>קטגוריה:</label>
+        <input
+          type="text"
+          name="category"
+          value={businessDetails.category}
+          onChange={handleInputChange}
+        />
+
+        <label>אימייל:</label>
+        <input
+          type="email"
+          name="email"
+          value={businessDetails.email}
           onChange={handleInputChange}
         />
 

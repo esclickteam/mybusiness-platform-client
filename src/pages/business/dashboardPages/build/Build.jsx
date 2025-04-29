@@ -264,12 +264,15 @@ const handleMainImagesChange = async e => {
     try {
       await Promise.all(pendingUploadsRef.current);
       await API.patch("/business/my", {
-        name:       businessDetails.name,
-        description:businessDetails.description,
-        phone:      businessDetails.phone,
-        mainImages: businessDetails.mainImages.map(img=>({url:img.preview, size:img.size})),
-        gallery:    businessDetails.gallery.map(img=>img.preview)
+        name:        businessDetails.name,
+        category:    businessDetails.category,    // הוספת שדה החובה
+        description: businessDetails.description,
+        phone:       businessDetails.phone,
+        email:       businessDetails.email,       // אם יש שדה אימייל חובה
+        mainImages:  businessDetails.mainImages.map(img => ({ url: img.preview, size: img.size })),
+        gallery:     businessDetails.gallery.map(img => img.preview)
       });
+      
       navigate(`/business/${currentUser.businessId}`);
     } catch(err) {
       console.error(err);
