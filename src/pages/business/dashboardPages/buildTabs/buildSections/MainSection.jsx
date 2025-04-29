@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
-import ALL_CATEGORIES from  "../../../../../data/categories";
+import ALL_CATEGORIES from "../../../../../data/categories";
 
-// Remove duplicates in cities
+// Remove duplicates in cities once
 const CITIES = Array.from(new Set(rawCities));
-// Use categories array
+// Use full categories array
 const CATEGORIES = ALL_CATEGORIES;
 
 export default function MainSection({
@@ -24,15 +24,37 @@ export default function MainSection({
 }) {
   const containerRef = useRef();
 
+  // dedupe & limit images
   const mainImages = businessDetails.mainImages || [];
   const uniqueImages = dedupeByPreview(mainImages);
   const limitedMainImages = uniqueImages.slice(0, 5);
 
-  // Handle clicks outside to close any open dropdowns
+  // build options only once
+  const categoryOptions = useMemo(
+    () =>
+      CATEGORIES.map(cat => (
+        <option key={cat} value={cat}>
+          {cat}
+        </option>
+      )),
+    []
+  );
+
+  const cityOptions = useMemo(
+    () =>
+      CITIES.map(city => (
+        <option key={city} value={city}>
+          {city}
+        </option>
+      )),
+    []
+  );
+
+  // click-outside handler (לרוחב)
   useEffect(() => {
-    const onClickOutside = (e) => {
+    const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // no dropdowns here, using native selects
+        // אין dropdownים ננעלים כי משתמשים ב-native select
       }
     };
     document.addEventListener("mousedown", onClickOutside);
@@ -44,8 +66,10 @@ export default function MainSection({
       <div className="form-column" ref={containerRef}>
         <h2>🎨 עיצוב הכרטיס</h2>
 
-        {/* Name */}
-        <label>שם העסק: <span style={{ color: "red" }}>*</span></label>
+        {/* שם העסק */}
+        <label>
+          שם העסק: <span style={{ color: "red" }}>*</span>
+        </label>
         <input
           type="text"
           name="name"
@@ -53,18 +77,20 @@ export default function MainSection({
           onChange={handleInputChange}
           placeholder="הכנס שם העסק"
           required
+          disabled={isSaving}
         />
 
-        {/* Description */}
+        {/* תיאור */}
         <label>תיאור:</label>
         <textarea
           name="description"
           value={businessDetails.description || ""}
           onChange={handleInputChange}
           placeholder="הכנס תיאור קצר"
+          disabled={isSaving}
         />
 
-        {/* Phone */}
+        {/* טלפון */}
         <label>טלפון:</label>
         <input
           type="text"
@@ -72,37 +98,46 @@ export default function MainSection({
           value={businessDetails.phone || ""}
           onChange={handleInputChange}
           placeholder="הכנס טלפון"
+          disabled={isSaving}
         />
 
-        {/* Category Select */}
-        <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
+        {/* קטגוריה */}
+        <label>
+          קטגוריה: <span style={{ color: "red" }}>*</span>
+        </label>
         <select
           name="category"
           value={businessDetails.category || ""}
           onChange={handleInputChange}
           required
+          size={5}
+          disabled={isSaving}
         >
-          <option value="" disabled>בחר קטגוריה</option>
-          {CATEGORIES.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
+          <option value="" disabled>
+            בחר קטגוריה
+          </option>
+          {categoryOptions}
         </select>
 
-        {/* City Select */}
-        <label>עיר: <span style={{ color: "red" }}>*</span></label>
+        {/* עיר */}
+        <label>
+          עיר: <span style={{ color: "red" }}>*</span>
+        </label>
         <select
           name="city"
           value={businessDetails.city || ""}
           onChange={handleInputChange}
           required
+          size={5}
+          disabled={isSaving}
         >
-          <option value="" disabled>בחר עיר</option>
-          {CITIES.map(city => (
-            <option key={city} value={city}>{city}</option>
-          ))}
+          <option value="" disabled>
+            בחר עיר
+          </option>
+          {cityOptions}
         </select>
 
-        {/* Logo Upload */}
+        {/* לוגו */}
         <label>לוגו:</label>
         <input
           type="file"
@@ -110,12 +145,18 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
+          disabled={isSaving}
         />
-        <button type="button" className="save-btn" onClick={() => logoInputRef.current?.click()}>
+        <button
+          type="button"
+          className="save-btn"
+          onClick={() => logoInputRef.current?.click()}
+          disabled={isSaving}
+        >
           העלאת לוגו
         </button>
 
-        {/* Main Images */}
+        {/* תמונות ראשיות */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
@@ -125,25 +166,56 @@ export default function MainSection({
           style={{ display: "none" }}
           ref={mainImagesInputRef}
           onChange={handleMainImagesChange}
+          disabled={isSaving}
         />
         <div className="gallery-preview">
           {limitedMainImages.map((img, i) => (
             <div key={i} className="gallery-item-wrapper image-wrapper">
-              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} className="gallery-img" />
-              <button className="delete-btn" onClick={() => handleDeleteImage(i)} type="button" title="מחיקה">🗑️</button>
+              <img
+                src={img.preview}
+                alt={`תמונה ראשית ${i + 1}`}
+                className="gallery-img"
+              />
+              <button
+                className="delete-btn"
+                onClick={() => handleDeleteImage(i)}
+                type="button"
+                title="מחיקה"
+                disabled={isSaving}
+              >
+                🗑️
+              </button>
             </div>
           ))}
           {limitedMainImages.length < 5 && (
-            <div className="gallery-placeholder clickable" onClick={() => mainImagesInputRef.current?.click()}>+</div>
+            <div
+              className="gallery-placeholder clickable"
+              onClick={() => mainImagesInputRef.current?.click()}
+            >
+              +
+            </div>
           )}
         </div>
 
         {/* Save & View */}
-        <button className="save-btn" onClick={handleSave} disabled={isSaving}>
+        <button
+          className="save-btn"
+          onClick={handleSave}
+          disabled={isSaving}
+        >
           {isSaving ? "שומר..." : "💾 שמור"}
         </button>
         {showViewProfile && (
-          <button type="button" className="save-btn" style={{ marginTop: "0.5rem" }} onClick={() => navigate(`/business/${currentUser.businessId}`)}>👀 צפה בפרופיל</button>
+          <button
+            type="button"
+            className="save-btn"
+            style={{ marginTop: "0.5rem" }}
+            onClick={() =>
+              navigate(`/business/${currentUser.businessId}`)
+            }
+          >
+            👀 צפה בפרופיל
+          </button>
         )}
       </div>
 
@@ -152,7 +224,9 @@ export default function MainSection({
         {renderTopBar && renderTopBar()}
         <div className="preview-images">
           {limitedMainImages.map((img, i) => (
-            <div key={i} className="image-wrapper"><img src={img.preview} alt={`תמונה ראשית ${i + 1}`} /></div>
+            <div key={i} className="image-wrapper">
+              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} />
+            </div>
           ))}
         </div>
       </div>
