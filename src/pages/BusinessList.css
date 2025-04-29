@@ -1,21 +1,20 @@
 :root {
-  /* משתני נושא גלובליים */
-  --bg-start:        #fdfcff;
-  --bg-end:          #e4e8ff;
+  --bg-start: #fdfcff;
+  --bg-end:   #e4e8ff;
 
-  --card-bg:         #ffffff;
-  --card-radius:     24px;
-  --card-shadow:     0 4px 12px rgba(0,0,0,0.05);
+  --card-bg:       #ffffff;
+  --card-radius:   24px;
+  --card-shadow:   0 4px 12px rgba(0, 0, 0, 0.05);
 
-  --primary:         #8a2be2;
-  --primary-hover:   #7a23d0;
+  --primary:       #8a2be2;
+  --primary-hover: #7a23d0;
 
-  --text-main:       #222222;
-  --text-secondary:  #555555;
+  --text-main:     #222222;
+  --text-secondary:#555555;
 
-  --gap-sm:          12px;
-  --gap-md:          16px;
-  --gap-lg:          24px;
+  --gap-sm:        12px;
+  --gap-md:        16px;
+  --gap-lg:        24px;
 }
 
 /* רקע כללי */
@@ -40,14 +39,6 @@
   margin: 2rem 0;
 }
 
-/* רשימת כרטיסי עסקים */
-.business-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--gap-lg);
-  margin-top: 2rem;
-}
-
 /* שדה חיפוש */
 .search-input {
   width: 100%;
@@ -58,20 +49,52 @@
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* פילטר קטגוריות */
-.categories-filter {
+/* עיצוב עוטף לגלילת הקטגוריות */
+.categories-scroll-wrapper {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1rem 0 2rem;
+  align-items: center;
   justify-content: center;
+  margin: 1.5rem 0;
+  gap: 1rem;
+  position: relative;
 }
 
+/* הקטגוריות עצמן בגלילה אופקית */
+.categories-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  scrollbar-width: none; /* פיירפוקס */
+}
+.categories-scroll::-webkit-scrollbar {
+  display: none; /* כרום */
+}
+
+/* כפתורי החצים */
+.scroll-arrow {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.scroll-arrow:hover {
+  background-color: var(--primary-hover);
+}
+
+/* קטגוריה בודדת */
 .category-btn {
+  flex: 0 0 auto;
   background-color: #f0f0f0;
   color: #333;
   border: none;
@@ -79,13 +102,12 @@
   padding: 0.5rem 1.2rem;
   font-size: 0.9rem;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s ease;
 }
-
 .category-btn:hover {
   background-color: #d6d6d6;
 }
-
 .category-btn.active {
   background-color: var(--primary);
   color: white;
@@ -96,13 +118,20 @@
   margin: 1rem 0;
   text-align: center;
 }
-
 .sort-options select {
   padding: 0.5rem 1rem;
   border-radius: 12px;
   border: 1px solid #ccc;
   font-size: 1rem;
   background: white;
+}
+
+/* רשימת עסקים */
+.business-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--gap-lg);
+  margin-top: 2rem;
 }
 
 /* פג'ינציה */
@@ -113,7 +142,6 @@
   gap: 1rem;
   margin-top: 2rem;
 }
-
 .pagination button {
   padding: 0.5rem 1rem;
   border: none;
@@ -124,12 +152,17 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .pagination button:hover:not(:disabled) {
   background-color: var(--primary-hover);
 }
-
 .pagination button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .business-list {
+    grid-template-columns: 1fr;
+  }
 }

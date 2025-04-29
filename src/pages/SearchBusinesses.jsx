@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/SearchBusinesses.jsx
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import API from '@api';
 import BusinessCard from '../components/BusinessCard';
@@ -6,56 +7,16 @@ import './BusinessList.css';
 
 const categories = [
   "כל הקטגוריות",
-  "אולם אירועים",
-  "אינסטלטור",
-  "איפור קבוע",
-  "בית קפה",
-  "בניית אתרים",
-  "ברברשופ",
-  "גינון / הדברה",
-  "גלריה / חנות אומנות",
-  "חנויות טבע / בריאות",
-  "חנות בגדים",
-  "חשמלאי",
-  "טכנאי מזגנים",
-  "טכנאי מחשבים",
-  "טכנאי סלולר",
-  "יוגה / פילאטיס",
-  "יועץ מס / רואה חשבון",
-  "כתיבת תוכן / קופירייטינג",
-  "מאמן אישי / עסקי",
-  "מאמן כושר",
-  "מדיה / פרסום",
-  "מדריך טיולים",
-  "מומחה שיווק דיגיטלי",
-  "מורה למוזיקה / אומנות",
-  "מורה פרטי",
-  "מזון / אוכל ביתי",
-  "מטפל/ת הוליסטי",
-  "מטפלת רגשית / NLP",
-  "מכון יופי",
-  "מניקור-פדיקור",
-  "מסגר",
-  "מסעדה",
-  "מספרה",
-  "מעצב גרפי",
-  "מעצב פנים",
-  "מציל / מדריך שחייה",
-  "מרצה / מנטור",
-  "משפחתון / צהרון / גן",
-  "מתווך נדל״ן",
-  "נגר",
-  "נהג / שליחויות",
-  "עורך דין",
-  "עיצוב גבות",
-  "פסיכולוג / יועץ",
-  "צלם / סטודיו צילום",
-  "קוסמטיקאית",
-  "קייטרינג",
-  "רפואה משלימה",
-  "שיפוצניק",
-  "שירותים לקהילה / עמותות",
-  "תזונאית / דיאטנית"
+  "אולם אירועים", "אינסטלטור", "איפור קבוע", "בית קפה", "בניית אתרים", "ברברשופ",
+  "גינון / הדברה", "גלריה / חנות אומנות", "חנויות טבע / בריאות", "חנות בגדים", "חשמלאי",
+  "טכנאי מזגנים", "טכנאי מחשבים", "טכנאי סלולר", "יוגה / פילאטיס", "יועץ מס / רואה חשבון",
+  "כתיבת תוכן / קופירייטינג", "מאמן אישי / עסקי", "מאמן כושר", "מדיה / פרסום", "מדריך טיולים",
+  "מומחה שיווק דיגיטלי", "מורה למוזיקה / אומנות", "מורה פרטי", "מזון / אוכל ביתי", "מטפל/ת הוליסטי",
+  "מטפלת רגשית / NLP", "מכון יופי", "מניקור-פדיקור", "מסגר", "מסעדה", "מספרה",
+  "מעצב גרפי", "מעצב פנים", "מציל / מדריך שחייה", "מרצה / מנטור", "משפחתון / צהרון / גן",
+  "מתווך נדל״ן", "נגר", "נהג / שליחויות", "עורך דין", "עיצוב גבות", "פסיכולוג / יועץ",
+  "צלם / סטודיו צילום", "קוסמטיקאית", "קייטרינג", "רפואה משלימה", "שיפוצניק",
+  "שירותים לקהילה / עמותות", "תזונאית / דיאטנית"
 ];
 
 const sortOptions = [
@@ -73,6 +34,7 @@ const SearchBusinesses = () => {
   const selectedCategory = searchParams.get('category') || "כל הקטגוריות";
   const [sortOption, setSortOption] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
+  const scrollRef = useRef();
 
   useEffect(() => {
     const fetchBusinesses = async () => {
@@ -84,41 +46,34 @@ const SearchBusinesses = () => {
         console.error("Error fetching businesses:", error);
       }
     };
-
     fetchBusinesses();
   }, []);
 
   useEffect(() => {
     const lowerSearch = searchTerm.toLowerCase();
-
     let filtered = businesses.filter(business => {
       const matchesSearch = (
         business.name?.toLowerCase().includes(lowerSearch) ||
         business.category?.toLowerCase().includes(lowerSearch) ||
         business.description?.toLowerCase().includes(lowerSearch)
       );
-
       const matchesCategory = (
         selectedCategory === "כל הקטגוריות" ||
         business.category === selectedCategory
       );
-
       return matchesSearch && matchesCategory;
     });
-
     if (sortOption === "alphabetical") {
       filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
     } else if (sortOption === "newest") {
       filtered = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
-
     setFilteredBusinesses(filtered);
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, sortOption, businesses]);
 
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentBusinesses = filteredBusinesses.slice(startIdx, startIdx + ITEMS_PER_PAGE);
-
   const totalPages = Math.ceil(filteredBusinesses.length / ITEMS_PER_PAGE);
 
   const handleCategoryClick = (cat) => {
@@ -142,12 +97,21 @@ const SearchBusinesses = () => {
     setSearchParams(params);
   };
 
+  const scrollCategories = (direction) => {
+    const scrollAmount = 300;
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <div className="list-page">
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* חיפוש */}
         <input
           type="text"
           placeholder="חפש לפי שם, קטגוריה או תיאור..."
@@ -156,48 +120,43 @@ const SearchBusinesses = () => {
           className="search-input"
         />
 
-        {/* קטגוריות */}
-        <div className="categories-filter">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              className={`category-btn ${selectedCategory === cat ? "active" : ""}`}
-              onClick={() => handleCategoryClick(cat)}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="categories-scroll-wrapper">
+          <button className="scroll-arrow left" onClick={() => scrollCategories("left")}>&#8678;</button>
+          <div className="categories-scroll" ref={scrollRef}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                className={`category-btn ${selectedCategory === cat ? "active" : ""}`}
+                onClick={() => handleCategoryClick(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <button className="scroll-arrow right" onClick={() => scrollCategories("right")}>&#8680;</button>
         </div>
 
-        {/* אפשרות מיון */}
         <div className="sort-options">
           <select
             value={sortOption}
             onChange={e => setSortOption(e.target.value)}
           >
             {sortOptions.map(opt => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
         </div>
 
-        {/* רשימת עסקים */}
         <div className="business-list">
           {currentBusinesses.length > 0 ? (
             currentBusinesses.map((business) => (
-              <BusinessCard
-                key={business._id}
-                business={business}
-              />
+              <BusinessCard key={business._id} business={business} />
             ))
           ) : (
             <p>לא נמצאו עסקים מתאימים.</p>
           )}
         </div>
 
-        {/* פג'ינציה */}
         {totalPages > 1 && (
           <div className="pagination">
             <button
