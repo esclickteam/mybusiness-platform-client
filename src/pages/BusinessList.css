@@ -1,12 +1,14 @@
 /* src/pages/BusinessList.css */
 
 :root {
-  --bg-start: #fdfcff;
-  --bg-end:   #e4e8ff;
+  /* Pastel gradient colors */
+  --bg-start: #f0f4ff;  /* light periwinkle */
+  --bg-mid:   #f9f7ff;  /* subtle blush */
+  --bg-end:   #fffaf7;  /* warm ivory */
 
   --card-bg:       #ffffff;
-  --card-radius:   32px;
-  --card-shadow:   0 8px 24px rgba(0, 0, 0, 0.08);
+  --card-radius:   24px;             /* slightly tighter radius */
+  --card-shadow:   0 16px 48px rgba(0, 0, 0, 0.08);
 
   --primary:       #8a2be2;
   --primary-hover: #7a23d0;
@@ -19,14 +21,15 @@
   --gap-lg:  24px;
 }
 
-/* רקע כללי */
+/* רקע כללי – גרדיאנט פסטלי עדין */
 .list-page {
   padding: 0 1rem;
   min-height: 100vh;
   background: linear-gradient(
     135deg,
     var(--bg-start) 0%,
-    var(--bg-end) 100%
+    var(--bg-mid)   50%,
+    var(--bg-end)  100%
   );
 }
 
@@ -96,7 +99,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  width: auto;         /* חשוב! לא למלא 100% */
+  width: auto;
   min-width: 200px;
 }
 .filter-button:hover {
@@ -111,7 +114,7 @@
   color: var(--text-secondary);
 }
 
-/* ====== כפתור חפש ====== */
+/* כפתור חפש */
 .search-btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -123,7 +126,7 @@
   cursor: pointer;
   box-shadow: var(--card-shadow);
   transition: background-color 0.2s, box-shadow 0.2s;
-  width: auto;          /* גם כאן לא 100% */
+  width: auto;
   min-width: 200px;
 }
 .search-btn:hover:not(:disabled) {
@@ -131,7 +134,7 @@
   box-shadow: 0 12px 32px rgba(0,0,0,0.12);
 }
 
-/* ====== רשימת הצעות (autocomplete dropdown) ====== */
+/* רשימת הצעות (autocomplete dropdown) */
 .suggestions-list {
   position: absolute;
   top: 100%;
@@ -151,9 +154,6 @@
 }
 .suggestions-list::-webkit-scrollbar {
   width: 8px;
-}
-.suggestions-list::-webkit-scrollbar-track {
-  background: transparent;
 }
 .suggestions-list::-webkit-scrollbar-thumb {
   background-color: rgba(0,0,0,0.2);
@@ -177,7 +177,7 @@
   color: var(--primary);
 }
 .suggestions-list li:hover {
-  background: var(--bg-end);
+  background: var(--bg-mid);
 }
 .suggestions-list li em {
   font-style: normal;
@@ -190,7 +190,7 @@
   padding: 0.5rem 1rem;
 }
 
-/* ====== תוצאות ====== */
+/* תוצאות */
 .business-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -206,7 +206,7 @@
   text-align: center;
 }
 
-/* ====== כרטיס עסק ====== */
+/* כרטיס עסק – לבן עם הצללה רכה */
 .business-card {
   background: var(--card-bg);
   border-radius: var(--card-radius);
@@ -217,13 +217,13 @@
 }
 .business-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.12);
 }
 .business-card img {
   border-radius: 50%;
 }
 
-/* ====== Pagination ====== */
+/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
@@ -242,17 +242,15 @@
   cursor: pointer;
   transition: background-color 0.2s;
 }
-
 .pagination button:hover:not(:disabled) {
   background-color: var(--primary-hover);
 }
-
 .pagination button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-/* ====== Responsive ====== */
+/* Responsive */
 @media (max-width: 768px) {
   .filters {
     flex-direction: column;
