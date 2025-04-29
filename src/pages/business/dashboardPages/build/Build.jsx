@@ -215,10 +215,15 @@ const handleMainImagesChange = async e => {
     files.forEach(f => fd.append("gallery", f));
   
     track(
-      API.put("/business/my/gallery", fd)
+      API.put("/business/my/gallery", fd, {
+        headers: { "Content-Type": "multipart/form-data" }
+      })
         .then(res => {
           if (res.status === 200) {
-            const wrapped = res.data.gallery.map(url => ({ preview: url }));
+            // הגבלת מספר התמונות ל-GALLERY_MAX
+            const wrapped = res.data.gallery
+              .slice(0, GALLERY_MAX)
+              .map(url => ({ preview: url }));
             setBusinessDetails(prev => ({
               ...prev,
               gallery: wrapped
@@ -226,34 +231,27 @@ const handleMainImagesChange = async e => {
           }
         })
         .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
-        .catch(err => console.error("Error during gallery upload:", err)) // הוספתי את ההתמודדות עם השגיאה
+        .catch(err => console.error("Error during gallery upload:", err))
     );
-  };
+    };
   
   
-  
-  
-  
-  
-  const handleDeleteGalleryImage = async (idx) => {
-    try {
-      // סינון התמונות אחרי מחיקת התמונה לפי אינדקס
-      const updatedGallery = businessDetails.gallery.filter((_, i) => i !== idx);
-  
-      // עדכון המערך בצד הלקוח
-      setBusinessDetails(prev => ({
-        ...prev,
-        gallery: updatedGallery
-      }));
-  
-      // שליחה ל־API לעדכון הגלריה בשרת
-      const response = await API.put("/business/my/gallery", updatedGallery);
-      console.log("Gallery updated:", response.data.gallery);
-  
-    } catch (err) {
-      console.error("Error deleting image:", err);
-    }
-  };
+    
+    const handleDeleteGalleryImage = async idx => {
+      const url = businessDetails.gallery[idx].preview;
+      try {
+        const res = await API.delete(
+          `/business/my/gallery/${encodeURIComponent(url)}`
+        );
+        setBusinessDetails(prev => ({
+          ...prev,
+          gallery: res.data.gallery.map(u => ({ preview: u }))
+        }));
+      } catch (err) {
+        console.error("Error deleting gallery image:", err);
+      }
+    };
+    
   
   const handleEditImage = idx => {
     console.log("Edit gallery image:", idx);
@@ -266,14 +264,14 @@ const handleMainImagesChange = async e => {
     try {
       await Promise.all(pendingUploadsRef.current);
       await API.patch("/business/my", {
-        name:        businessDetails.name,
-        description: businessDetails.description,
-        phone:       businessDetails.phone,
-        mainImages:  businessDetails.mainImages.map(img => ({ url: img.preview, size: img.size })),
-        gallery:     businessDetails.gallery.map(img => img.preview),
+        name:       businessDetails.name,
+        description:businessDetails.description,
+        phone:      businessDetails.phone,
+        mainImages: businessDetails.mainImages.map(img=>({url:img.preview, size:img.size})),
+        gallery:    businessDetails.gallery.map(img=>img.preview)
       });
       navigate(`/business/${currentUser.businessId}`);
-    } catch (err) {
+    } catch(err) {
       console.error(err);
       alert("❌ שגיאה בשמירה");
     } finally {
