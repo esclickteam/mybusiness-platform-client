@@ -317,16 +317,18 @@
 .city-select-container {
   position: relative;
 }
+
 .city-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 4px); /* מוודא שהתפריט יוצג אחרי התיבה */
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 2000; /* הגדר z-index גבוה יותר */
   max-height: 200px;
-  overflow-y: auto;
+  overflow-y: auto; /* אפשר גלילה אם התפריט ארוך מדי */
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+
