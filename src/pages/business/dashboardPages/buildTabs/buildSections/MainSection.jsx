@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
-import rawCities from "../../../../../../data/cities";
-// ננקה כפילויות בעזרת Set
+import rawCities from "../../../../../data/cities";
+import ALL_CATEGORIES from "../../../../../data/categories";
+
+// Remove duplicates in cities
 const CITIES = Array.from(new Set(rawCities));
+// Use categories array
 const CATEGORIES = ALL_CATEGORIES;
 
 export default function MainSection({
@@ -96,43 +99,47 @@ export default function MainSection({
 
         {/* Category Autocomplete */}
         <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
-        <input
-          type="text"
-          name="category"
-          placeholder="בחר קטגוריה"
-          value={showCategoryDropdown ? categoryQuery : (businessDetails.category || "")}
-          onFocus={() => { setShowCategoryDropdown(true); setCategoryQuery(""); }}
-          onChange={e => { setCategoryQuery(e.target.value); setShowCategoryDropdown(true); }}
-          required
-        />
-        {showCategoryDropdown && (
-          <ul className="city-dropdown">
-            {filteredCategories.map(c => (
-              <li key={c} onClick={() => selectCategory(c)}>{c}</li>
-            ))}
-            {filteredCategories.length === 0 && <li className="no-results">לא נמצאו קטגוריות</li>}
-          </ul>
-        )}
+        <div className="city-select-container">
+          <input
+            type="text"
+            name="category"
+            placeholder="בחר קטגוריה"
+            value={showCategoryDropdown ? categoryQuery : (businessDetails.category || "")}
+            onFocus={() => { setShowCategoryDropdown(true); setCategoryQuery(""); }}
+            onChange={e => { setCategoryQuery(e.target.value); setShowCategoryDropdown(true); }}
+            required
+          />
+          {showCategoryDropdown && (
+            <ul className="city-dropdown">
+              {filteredCategories.map(c => (
+                <li key={c} onClick={() => selectCategory(c)}>{c}</li>
+              ))}
+              {filteredCategories.length === 0 && <li className="no-results">לא נמצאו קטגוריות</li>}
+            </ul>
+          )}
+        </div>
 
         {/* City Autocomplete */}
         <label>עיר: <span style={{ color: "red" }}>*</span></label>
-        <input
-          type="text"
-          name="city"
-          placeholder="בחר עיר"
-          value={showCityDropdown ? cityQuery : (businessDetails.city || "")}
-          onFocus={() => { setShowCityDropdown(true); setCityQuery(""); }}
-          onChange={e => { setCityQuery(e.target.value); setShowCityDropdown(true); }}
-          required
-        />
-        {showCityDropdown && (
-          <ul className="city-dropdown">
-            {filteredCities.map(c => (
-              <li key={c} onClick={() => selectCity(c)}>{c}</li>
-            ))}
-            {filteredCities.length === 0 && <li className="no-results">לא נמצאו ערים</li>}
-          </ul>
-        )}
+        <div className="city-select-container">
+          <input
+            type="text"
+            name="city"
+            placeholder="בחר עיר"
+            value={showCityDropdown ? cityQuery : (businessDetails.city || "")}
+            onFocus={() => { setShowCityDropdown(true); setCityQuery(""); }}
+            onChange={e => { setCityQuery(e.target.value); setShowCityDropdown(true); }}
+            required
+          />
+          {showCityDropdown && (
+            <ul className="city-dropdown">
+              {filteredCities.map(c => (
+                <li key={c} onClick={() => selectCity(c)}>{c}</li>
+              ))}
+              {filteredCities.length === 0 && <li className="no-results">לא נמצאו ערים</li>}
+            </ul>
+          )}
+        </div>
 
         {/* Logo Upload */}
         <label>לוגו:</label>
