@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
 import BusinessCard from '../components/BusinessCard';
+import ALL_CATEGORIES from '../data/categories';
+import ALL_CITIES from '../data/cities';
 import './BusinessList.css';
 
 const CATEGORIES = [
