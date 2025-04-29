@@ -132,9 +132,14 @@
   cursor: not-allowed;
 }
 
-/* כרטיס עסק – לבן עם צל רך */
 .business-card {
-  background: var(--card-bg);
+  /* רקע גרדיאנט תלת־צבעי במקום var(--card-bg) */
+  background: linear-gradient(
+    135deg,
+    var(--bg-start) 0%,
+    var(--bg-mid)   50%,
+    var(--bg-end)  100%
+  );
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   overflow: hidden;
@@ -146,6 +151,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   min-height: 380px;
 }
+
 .business-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 24px 64px rgba(0,0,0,0.12);
