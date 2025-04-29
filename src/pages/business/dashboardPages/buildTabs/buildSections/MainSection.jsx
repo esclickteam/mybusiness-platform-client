@@ -1,8 +1,20 @@
+// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
+
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
 // תיקון: חמש רמות מעלה מ‐buildSections עד ל‐src/utils
 import { dedupeByPreview } from "../../../../../utils/dedupe";
+
+const CATEGORIES = [
+  "מסעדה",
+  "מספרה",
+  "חנות",
+  "אינסטלטור",
+  "חשמלאי",
+  "מניקור-פדיקור",
+  // ... הוסף כאן עוד קטגוריות כרצונך
+];
 
 export default function MainSection({
   businessDetails,
@@ -37,39 +49,49 @@ export default function MainSection({
         <input
           type="text"
           name="name"
-          value={businessDetails.name}
+          value={businessDetails.name || ""}
           onChange={handleInputChange}
+          required
+          placeholder="הכנס שם העסק"
         />
 
         <label>תיאור:</label>
         <textarea
           name="description"
-          value={businessDetails.description}
+          value={businessDetails.description || ""}
           onChange={handleInputChange}
+          placeholder="הכנס תיאור קצר של העסק"
         />
 
         <label>טלפון:</label>
         <input
           type="text"
           name="phone"
-          value={businessDetails.phone}
+          value={businessDetails.phone || ""}
           onChange={handleInputChange}
+          placeholder="הכנס טלפון"
         />
 
         <label>קטגוריה:</label>
-        <input
-          type="text"
+        <select
           name="category"
-          value={businessDetails.category}
+          value={businessDetails.category || ""}
           onChange={handleInputChange}
-        />
+          required
+        >
+          <option value="" disabled>בחר קטגוריה</option>
+          {CATEGORIES.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
 
         <label>אימייל:</label>
         <input
           type="email"
           name="email"
-          value={businessDetails.email}
+          value={businessDetails.email || ""}
           onChange={handleInputChange}
+          placeholder="הכנס אימייל"
         />
 
         {/* Logo */}

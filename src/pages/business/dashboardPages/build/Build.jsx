@@ -262,25 +262,27 @@ const handleMainImagesChange = async e => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // מחכים שכל העלאות התמונה יסתיימו
       await Promise.all(pendingUploadsRef.current);
+  
+      // רק השדות שה־PATCH שלנו תומך בהם
       await API.patch("/business/my", {
         name:        businessDetails.name,
-        category:    businessDetails.category,    // הוספת שדה החובה
-        description: businessDetails.description,
+        category:    businessDetails.category,    // חובה
+        description: businessDetails.description, // חובה?
         phone:       businessDetails.phone,
-        email:       businessDetails.email,       // אם יש שדה אימייל חובה
-        mainImages:  businessDetails.mainImages.map(img => ({ url: img.preview, size: img.size })),
-        gallery:     businessDetails.gallery.map(img => img.preview)
+        email:       businessDetails.email,       // אם שמרת את זה כ-required
       });
-      
+  
       navigate(`/business/${currentUser.businessId}`);
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       alert("❌ שגיאה בשמירה");
     } finally {
       setIsSaving(false);
     }
   };
+  
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
