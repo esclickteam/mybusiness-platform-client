@@ -24,24 +24,24 @@ export default function SearchBusinesses() {
   const navigate = useNavigate();
 
   // --- State ראשי ---
-  const [all, setAll]           = useState([]);
+  const [all,      setAll]      = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [searched, setSearched] = useState(false);
 
   const catParam  = searchParams.get('category') || '';
-  const cityParam = searchParams.get('city')     || '';
   const [cat,  setCat]  = useState(catParam);
+  const [openCat, setOpenCat] = useState(false);
+  const wrapperCatRef = useRef(null);
+
+  const cityParam = searchParams.get('city') || '';
   const [city, setCity] = useState(cityParam);
-
   const [cities, setCities] = useState([]);
-
-  const [openCat, setOpenCat]   = useState(false);
   const [openCity, setOpenCity] = useState(false);
-  const wrapperCatRef           = useRef(null);
-  const wrapperCityRef          = useRef(null);
+  const wrapperCityRef = useRef(null);
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // --- 1) טען עסקים + הפק ערי ייחודיות ---
+  // 1) טען את כל העסקים + הפק רשימת ערים
   useEffect(() => {
     API.get('/business')
       .then(r => {
@@ -55,17 +55,7 @@ export default function SearchBusinesses() {
       .catch(console.error);
   }, []);
 
-  // --- 2) סינון על פי קטגוריה + עיר ---
-  useEffect(() => {
-    setFiltered(all.filter(b => {
-      if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) return false;
-      if (city && city !== 'כל הערים'       && b.address?.city !== city) return false;
-      return true;
-    }));
-    setPage(1);
-  }, [all, cat, city]);
-
-  // --- 3) סנכרון URL params ---
+  // 2) סנכרון פרמטרים ל־URL
   useEffect(() => {
     const p = new URLSearchParams();
     if (cat)  p.set('category', cat);
@@ -74,7 +64,7 @@ export default function SearchBusinesses() {
     setSearchParams(p, { replace: true });
   }, [cat, city, page]);
 
-  // --- 4) סגירת dropdown בלחיצה מחוץ ---
+  // 3) סגור dropdown בלחיצה מחוץ
   useEffect(() => {
     const handler = e => {
       if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) {
@@ -88,7 +78,19 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // --- Pagination ---
+  // 4) חיפוש וסינון
+  const handleSearch = () => {
+    const res = all.filter(b => {
+      if (cat && cat !== 'כל הקטגוריות' && b.category !== cat)      return false;
+      if (city && city !== 'כל הערים'       && b.address?.city !== city) return false;
+      return true;
+    });
+    setFiltered(res);
+    setPage(1);
+    setSearched(true);
+  };
+
+  // 5) Pagination
   const start      = (page - 1) * ITEMS_PER_PAGE;
   const pageItems  = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
@@ -98,7 +100,7 @@ export default function SearchBusinesses() {
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* ----- סינון: קטגוריה + עיר ----- */}
+        {/* ----- סינון: קטגוריה, עיר + כפתור חפש ----- */}
         <div className="filters">
           {/* קטגוריה */}
           <div className="dropdown-wrapper" ref={wrapperCatRef}>
@@ -106,13 +108,15 @@ export default function SearchBusinesses() {
               className="filter-button"
               onClick={() => setOpenCat(o => !o)}
             >
-              {cat || 'בחר קטגוריה'}
-              <span className="chevron">▾</span>
+              {cat || 'בחר קטגוריה'} <span className="chevron">▾</span>
             </button>
             {openCat && (
               <ul className="suggestions-list">
                 {CATEGORIES.map((c, i) => (
-                  <li key={i} onMouseDown={() => { setCat(c); setOpenCat(false); }}>
+                  <li key={i} onMouseDown={() => {
+                    setCat(c);
+                    setOpenCat(false);
+                  }}>
                     {c === 'כל הקטגוריות' ? <em>{c}</em> : c}
                   </li>
                 ))}
@@ -120,45 +124,79 @@ export default function SearchBusinesses() {
             )}
           </div>
 
-          {/* עיר */}
+          {/* עיר – input עם autocomplete */}
           <div className="dropdown-wrapper" ref={wrapperCityRef}>
-            <button
-              className="filter-button"
-              onClick={() => setOpenCity(o => !o)}
-            >
-              {city || 'עיר (לדוגמה: תל אביב)'}
-              <span className="chevron">▾</span>
-            </button>
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="עיר (לדוגמה: תל אביב)"
+              value={city}
+              onFocus={() => setOpenCity(true)}
+              onChange={e => {
+                setCity(e.target.value);
+                setOpenCity(true);
+              }}
+            />
             {openCity && (
               <ul className="suggestions-list">
-                {cities.map((c, i) => (
-                  <li key={i} onMouseDown={() => { setCity(c); setOpenCity(false); }}>
-                    {c === 'כל הערים' ? <em>{c}</em> : c}
-                  </li>
-                ))}
+                {cities
+                  .filter(c =>
+                    city === '' ||
+                    c.toLowerCase().includes(city.trim().toLowerCase())
+                  )
+                  .map((c, i) => (
+                    <li key={i} onMouseDown={() => {
+                      setCity(c);
+                      setOpenCity(false);
+                    }}>
+                      {c === 'כל הערים' ? <em>{c}</em> : c}
+                    </li>
+                  ))
+                }
+                {cities.filter(c =>
+                  city === '' ||
+                  c.toLowerCase().includes(city.trim().toLowerCase())
+                ).length === 0 && (
+                  <li className="no-match">אין ערים מתאימות</li>
+                )}
               </ul>
             )}
           </div>
+
+          {/* כפתור חפש */}
+          <button
+            type="button"
+            className="filter-button search-btn"
+            onClick={handleSearch}
+          >
+            חפש
+          </button>
         </div>
 
         {/* ----- תוצאות + pagination ----- */}
         <div className="business-list">
-          {pageItems.length > 0 ? (
-            pageItems.map(b => (
-              <BusinessCard
-                key={b._id}
-                business={b}
-                onClick={() => navigate(`/business/${b._id}`)}
-              />
-            ))
-          ) : (
-            <p className="no-results">
-              😕 לא נמצאו עסקים בקטגוריה “{cat || '–'}” ובעיר “{city || '–'}”.
-            </p>
+          {!searched && (
+            <p className="no-search">לחץ על “חפש” כדי לראות תוצאות</p>
+          )}
+
+          {searched && (
+            pageItems.length > 0 ? (
+              pageItems.map(b => (
+                <BusinessCard
+                  key={b._id}
+                  business={b}
+                  onClick={() => navigate(`/business/${b._id}`)}
+                />
+              ))
+            ) : (
+              <p className="no-results">
+                😕 לא נמצאו עסקים בקטגוריה “{cat || '–'}” ובעיר “{city || '–'}”.
+              </p>
+            )
           )}
         </div>
 
-        {totalPages > 1 && (
+        {searched && totalPages > 1 && (
           <div className="pagination">
             <button
               onClick={() => setPage(p => Math.max(p - 1, 1))}
