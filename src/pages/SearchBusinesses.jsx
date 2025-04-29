@@ -1,106 +1,76 @@
 // src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
-import BusinessCard from '../components/BusinessCard';
 import './BusinessList.css';
 
 const CATEGORIES = [
-  "כל הקטגוריות",
-  "אולם אירועים",
-  "אינסטלטור",
-  "איפור קבוע",
-  "בניית אתרים",
-  "בית קפה",
-  "ברברשופ",
-  "גינון / הדברה",
-  "גלריה / חנות אומנות",
-  "חנויות טבע / בריאות",
-  "חנות בגדים",
-  "חשמלאי",
-  "טכנאי מחשבים",
-  "טכנאי מזגנים",
-  "טכנאי סלולר",
-  "יועץ מס / רואה חשבון",
-  "יוגה / פילאטיס",
-  "קייטרינג",
-  "כתיבת תוכן / קופירייטינג",
-  "מאמן אישי / עסקי",
-  "מאמן כושר",
-  "מטפלת רגשית / NLP",
-  "מטפל/ת הוליסטי",
-  "מדיה / פרסום",
-  "מדריך טיולים",
-  "מומחה שיווק דיגיטלי",
-  "מורה למוזיקה / אומנות",
-  "מורה פרטי",
-  "משפחתון / צהרון / גן",
-  "מתווך נדל״ן",
-  "נהג / שליחויות",
-  "נגר",
-  "עורך דין",
-  "עיצוב גבות",
-  "פסיכולוג / יועץ",
-  "קוסמטיקאית",
-  "רפואה משלימה",
-  "שיפוצניק",
-  "מוסך",
-  "עורך דין משפחה"
+  "כל הקטגוריות","אולם אירועים","אינסטלטור","איפור קבוע","בניית אתרים","בית קפה",
+  "ברברשופ","גינון / הדברה","גלריה / חנות אומנות","חנויות טבע / בריאות","חנות בגדים",
+  "חשמלאי","טכנאי מחשבים","טכנאי מזגנים","טכנאי סלולר","יועץ מס / רואה חשבון",
+  "יוגה / פילאטיס","קייטרינג","כתיבת תוכן / קופירייטינג","מאמן אישי / עסקי","מאמן כושר",
+  "מטפלת רגשית / NLP","מטפל/ת הוליסטי","מדיה / פרסום","מדריך טיולים","מומחה שיווק דיגיטלי",
+  "מורה למוזיקה / אומנות","מורה פרטי","משפחתון / צהרון / גן","מתווך נדל״ן","נהג / שליחויות",
+  "נגר","עורך דין","עיצוב גבות","פסיכולוג / יועץ","קוסמטיקאית","רפואה משלימה","שיפוצניק",
+  "מוסך","עורך דין משפחה"
 ];
 
 const ITEMS_PER_PAGE = 9;
 
 export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [all, setAll]           = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [q, setQ]               = useState(searchParams.get('search') || '');
   const cat                     = searchParams.get('category') || '';
   const [page, setPage]         = useState(Number(searchParams.get('page')) || 1);
-  const [openCats, setOpenCats] = useState(false);
+  const [open, setOpen]         = useState(false);
   const wrapperRef              = useRef(null);
 
+  // Fetch
   useEffect(() => {
-    API.get('/business')
-      .then(r => setAll(r.data.businesses || []))
-      .catch(console.error);
+    API.get('/business').then(r => setAll(r.data.businesses || []));
   }, []);
 
+  // Filter
   useEffect(() => {
     const term = q.toLowerCase();
-    const list = all.filter(b => {
-      const matchText = 
-        b.name?.toLowerCase().includes(term) ||
-        b.description?.toLowerCase().includes(term);
-      const matchCat  = !cat || b.category === cat;
-      return matchText && matchCat;
-    });
+    const list = all.filter(b =>
+      (b.name?.toLowerCase().includes(term) ||
+       b.description?.toLowerCase().includes(term)) &&
+      (!cat || b.category === cat)
+    );
     setFiltered(list);
     setPage(1);
   }, [all, q, cat]);
 
+  // Sync URL
   useEffect(() => {
     const p = new URLSearchParams();
     if (q)   p.set('search', q);
     if (cat) p.set('category', cat);
-    if (page > 1) p.set('page', page);
+    if (page>1) p.set('page', page);
     setSearchParams(p, { replace: true });
   }, [q, cat, page]);
 
+  // Close on outside click
   useEffect(() => {
-    const handler = e => {
+    const h = e => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setOpenCats(false);
+        setOpen(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
   }, []);
 
+  // Pagination
   const start      = (page - 1) * ITEMS_PER_PAGE;
   const pageItems  = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
+  // Pick category
   const pickCat = c => {
     setSearchParams(ps => {
       const p = new URLSearchParams(ps);
@@ -108,8 +78,14 @@ export default function SearchBusinesses() {
       else   p.delete('category');
       return p;
     });
-    setOpenCats(false);
+    setOpen(false);
     setQ('');
+  };
+
+  // Pick business suggestion
+  const pickBiz = bizId => {
+    setOpen(false);
+    navigate(`/business/${bizId}`);
   };
 
   return (
@@ -124,21 +100,40 @@ export default function SearchBusinesses() {
             placeholder="חפש שם או תיאור..."
             value={q}
             onChange={e => setQ(e.target.value)}
-            onFocus={() => setOpenCats(true)}
+            onFocus={() => setOpen(true)}
           />
 
-          {openCats && !q && (
+          {open && !q && (
             <ul className="suggestions-list">
-              {CATEGORIES.map((c, idx) => (
-                <li key={idx} onMouseDown={() => pickCat(c === "כל הקטגוריות" ? "" : c)}>
+              {CATEGORIES.map((c, i) => (
+                <li
+                  key={i}
+                  onMouseDown={() => pickCat(c === "כל הקטגוריות" ? "" : c)}
+                >
                   {c === "כל הקטגוריות" ? <em>{c}</em> : c}
                 </li>
               ))}
             </ul>
           )}
+
+          {open && q && (
+            <ul className="suggestions-list">
+              {filtered.slice(0, 5).map(b => (
+                <li
+                  key={b._id}
+                  onMouseDown={() => pickBiz(b._id)}
+                >
+                  {b.name}
+                </li>
+              ))}
+              {filtered.length === 0 && (
+                <li><em>לא נמצאו תוצאות</em></li>
+              )}
+            </ul>
+          )}
         </div>
 
-        {!openCats && (
+        {!open && (
           <>
             <div className="business-list">
               {(!q && !cat) ? (
@@ -147,7 +142,13 @@ export default function SearchBusinesses() {
                 </p>
               ) : pageItems.length > 0 ? (
                 pageItems.map(b => (
-                  <BusinessCard key={b._id} business={b} showViewButton={false} />
+                  <div 
+                    key={b._id}
+                    onClick={() => navigate(`/business/${b._id}`)}
+                  >
+                    <h3>{b.name}</h3>
+                    <p>{b.category}</p>
+                  </div>
                 ))
               ) : (
                 <p className="no-results">😕 לא נמצאו עסקים מתאימים.</p>
@@ -162,7 +163,9 @@ export default function SearchBusinesses() {
                 >
                   הקודם
                 </button>
-                <span>{page} מתוך {totalPages}</span>
+                <span>
+                  {page} מתוך {totalPages}
+                </span>
                 <button
                   onClick={() => setPage(p => Math.min(p + 1, totalPages))}
                   disabled={page === totalPages}
