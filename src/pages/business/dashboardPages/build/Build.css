@@ -313,48 +313,7 @@
   }
 }
 
-.gallery-item-wrapper {
-  width: 120px;
-  height: 120px;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-  flex-shrink: 0;
-  background-color: #f9f9f9;
-}
-
-.gallery-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.gallery-grid-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-/* Build.css (או בקובץ ה־CSS שבו הגדרת את ה־.preview-*) */
-
-/* 1. רק עיר */
-.preview-city {
-  text-align: center;
-  margin: 0.5rem 0; /* ריווח אנכי לפי הצורך */
-}
-
-/* 2. (אופציונלי) למרכז את כל שורות הפריוויו */
-.preview-category,
-.preview-description,
-.preview-phone,
-.preview-city {
-  text-align: center;
-  margin: 0.25rem 0;
-}
-
-/* גלילה ואוטוקומפליט */
+/* === גלילה ודרופדאון של העיר === */
 .city-select-container {
   position: relative;
 }
