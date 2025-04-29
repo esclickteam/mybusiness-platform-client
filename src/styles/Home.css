@@ -111,9 +111,10 @@ body {
 }
 
 /* וודא שכל פריט לא מתאים את עצמו בגמיש */
-.dropdown-wrapper,
-.search-button {
-  flex: 0 0 auto;
+.dropdown-wrapper {
+  flex: 1 1 250px;    /* יגדל, יקצר, ובספר מינימום 250px */
+  min-width: 250px;   /* לא יתרסק מתחת ל־250px */
+  max-width: 350px;   /* אם תרצה, או אפשר להסיר כדי להיות גמיש יותר */
 }
 
 /* Override של react-select dropdown דרך portal */
