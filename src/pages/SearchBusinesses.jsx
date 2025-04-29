@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
 import BusinessCard from '../components/BusinessCard';
+import ALL_CITIES from '../data/cities';
 import './BusinessList.css';
 
 const CATEGORIES = [
@@ -41,16 +42,14 @@ export default function SearchBusinesses() {
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // 1) טען את כל העסקים + הפק רשימת ערים
+  // 1) אתחל את הערים מתוך ALL_CITIES (סטטי) ואז טען עסקים
   useEffect(() => {
+    setCities(['כל הערים', ...ALL_CITIES]);
+
     API.get('/business')
       .then(r => {
         const list = r.data.businesses || [];
         setAll(list);
-        const uniqCities = Array.from(new Set(
-          list.map(b => b.address?.city || '').filter(c => c)
-        )).sort();
-        setCities(['כל הערים', ...uniqCities]);
       })
       .catch(console.error);
   }, []);

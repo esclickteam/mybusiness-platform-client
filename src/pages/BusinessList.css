@@ -59,7 +59,9 @@
   min-width: 200px;
 }
 
-.filter-button {
+/* כפתורים וסелקט */
+.filter-button,
+.filter-input {
   width: 100%;
   padding: 0.6rem 1.2rem;
   border: 1px solid #ccc;
@@ -73,15 +75,26 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   color: var(--text-main);
 }
-.filter-button:hover {
+
+.filter-button:hover,
+.filter-input:hover {
   border-color: var(--primary);
 }
+
+/* כיון הצלבת הטקסט בתוך ה-input */
+.filter-input {
+  appearance: none;
+  justify-content: flex-start;
+}
+
+/* החץ בכפתור */
 .filter-button .chevron {
   margin-left: 0.5rem;
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
+/* ====== רשימת הצעות ====== */
 .suggestions-list {
   position: absolute;
   top: 110%;
@@ -95,6 +108,7 @@
   overflow-y: auto;
   z-index: 10;
 }
+
 .suggestions-list li {
   padding: 0.75rem 1rem;
   cursor: pointer;
@@ -113,6 +127,12 @@
 .suggestions-list li em {
   font-style: normal;
   color: var(--text-secondary);
+}
+.no-match {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
 }
 
 /* ====== תוצאות ====== */
