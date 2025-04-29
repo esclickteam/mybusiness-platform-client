@@ -42,45 +42,54 @@ export default function MainSection({
       <div className="form-column">
         <h2>🎨 עיצוב הכרטיס</h2>
 
-        <label>שם העסק:</label>
-        <input
-          type="text"
-          name="name"
-          value={businessDetails.name || ""}
-          onChange={handleInputChange}
-          required
-          placeholder="הכנס שם העסק"
-        />
+        <label>
+  שם העסק: <span style={{ color: "red" }}>*</span>
+</label>
+<input
+  type="text"
+  name="name"
+  value={businessDetails.name || ""}
+  onChange={handleInputChange}
+  placeholder="הכנס שם העסק"
+  required
+/>
 
-        <label>תיאור:</label>
-        <textarea
-          name="description"
-          value={businessDetails.description || ""}
-          onChange={handleInputChange}
-          placeholder="הכנס תיאור קצר של העסק"
-        />
+<label>
+  תיאור:
+</label>
+<textarea
+  name="description"
+  value={businessDetails.description || ""}
+  onChange={handleInputChange}
+  placeholder="הכנס תיאור קצר של העסק"
+/>
 
-        <label>טלפון:</label>
-        <input
-          type="text"
-          name="phone"
-          value={businessDetails.phone || ""}
-          onChange={handleInputChange}
-          placeholder="הכנס טלפון"
-        />
+<label>
+  טלפון:
+</label>
+<input
+  type="text"
+  name="phone"
+  value={businessDetails.phone || ""}
+  onChange={handleInputChange}
+  placeholder="הכנס טלפון"
+/>
 
-        <label>קטגוריה:</label>
-        <select
-          name="category"
-          value={businessDetails.category || ""}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="" disabled>בחר קטגוריה</option>
-          {CATEGORIES.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+<label>
+  קטגוריה: <span style={{ color: "red" }}>*</span>
+</label>
+<select
+  name="category"
+  value={businessDetails.category || ""}
+  onChange={handleInputChange}
+  required
+>
+  <option value="" disabled>בחר קטגוריה</option>
+  {CATEGORIES.map(cat => (
+    <option key={cat} value={cat}>{cat}</option>
+  ))}
+</select>
+
 
         <label>אימייל:</label>
         <input
