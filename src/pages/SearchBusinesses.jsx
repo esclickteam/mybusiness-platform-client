@@ -82,7 +82,26 @@ export default function SearchBusinesses() {
 
   useEffect(() => {
     API.get('/business')
-      .then(r => setAll(r.data.businesses || []))
+      .then(r => {
+        const list = r.data.businesses || [];
+        setAll(list);
+
+        // ערים מהעסקים
+        const dynamic = Array.from(new Set(
+          list
+            .map(b => b.address?.city?.trim() || '')
+            .filter(c => c)
+        ));
+
+        // מיזוג: קודם דינמי (לכיסוי כתיבים קודמים), ואז סטטי
+        const merged = Array.from(new Set([
+          'כל הערים',
+          ...dynamic,
+          ...ALL_CITIES.filter(c => !dynamic.includes(c))
+        ])).sort((a, b) => a.localeCompare(b, 'he'));
+
+        setCities(merged);
+      })
       .catch(console.error);
   }, []);
 
@@ -133,7 +152,7 @@ export default function SearchBusinesses() {
             {openCat && (
               <ul className="suggestions-list">
                 {CATEGORIES.map((c,i) => (
-                  <li key={i} onMouseDown={() => { setCat(c); setOpenCat(false); }}>
+                  <li key={i} onClick={() => { setCat(c); setOpenCat(false); }} >
                     {c === 'כל הקטגוריות' ? <em>{c}</em> : c}
                   </li>
                 ))}
@@ -154,7 +173,7 @@ export default function SearchBusinesses() {
             {openCity && (
               <ul className="suggestions-list">
                 {cities.filter(c => normalizeCity(c).includes(normalizeCity(city))).map((c,i) => (
-                  <li key={i} onMouseDown={() => { setCity(c); setOpenCity(false); }}>
+                  <li key={i} onClick={() => { setCity(c); setOpenCity(false); }} >
                     {c === 'כל הערים' ? <em>{c}</em> : c}
                   </li>
                 ))}
