@@ -95,10 +95,9 @@ export default function MainSection({
         {/* Category Select */}
         <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
         <select
-          name="category"
-          value={businessDetails.category || ""}
+          name="$1"
+          value={businessDetails.$1 || ""}
           onChange={handleInputChange}
-          size={5}
           required
         >
           <option value="" disabled>בחר קטגוריה</option>
