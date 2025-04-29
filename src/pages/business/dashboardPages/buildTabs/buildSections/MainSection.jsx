@@ -1,5 +1,3 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
-
 import React, { useState, useEffect, useRef } from "react";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
@@ -25,16 +23,16 @@ export default function MainSection({
 }) {
   const containerRef = useRef();
 
-  // gallery images
+  // prepare gallery images
   const mainImages = businessDetails.mainImages || [];
   const uniqueImages = dedupeByPreview(mainImages);
   const limitedMainImages = uniqueImages.slice(0, 5);
 
-  // click outside to close any custom dropdowns (not used here)
+  // close native datalist dropdowns on outside click (no-op)
   useEffect(() => {
-    const onClickOutside = e => {
+    const onClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // no-op, datalist is native
+        // datalist closes automatically
       }
     };
     document.addEventListener("mousedown", onClickOutside);
@@ -76,7 +74,7 @@ export default function MainSection({
           placeholder="הכנס טלפון"
         />
 
-        {/* Category using datalist */}
+        {/* Category with datalist */}
         <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
         <input
           type="text"
@@ -88,13 +86,12 @@ export default function MainSection({
           required
         />
         <datalist id="categories-list">
-          <option value="" disabled>בחר קטגוריה</option>
           {CATEGORIES.map(cat => (
             <option key={cat} value={cat} />
           ))}
         </datalist>
 
-        {/* City using datalist */}
+        {/* City with datalist */}
         <label>עיר: <span style={{ color: "red" }}>*</span></label>
         <input
           type="text"
@@ -106,7 +103,6 @@ export default function MainSection({
           required
         />
         <datalist id="cities-list">
-          <option value="" disabled>בחר עיר</option>
           {CITIES.map(city => (
             <option key={city} value={city} />
           ))}
@@ -121,11 +117,7 @@ export default function MainSection({
           style={{ display: "none" }}
           ref={logoInputRef}
         />
-        <button
-          type="button"
-          className="save-btn"
-          onClick={() => logoInputRef.current?.click()}
-        >
+        <button type="button" className="save-btn" onClick={() => logoInputRef.current?.click()}>
           העלאת לוגו
         </button>
 
@@ -169,11 +161,7 @@ export default function MainSection({
         </div>
 
         {/* Save & View */}
-        <button
-          className="save-btn"
-          onClick={handleSave}
-          disabled={isSaving}
-        >
+        <button className="save-btn" onClick={handleSave} disabled={isSaving}>
           {isSaving ? "שומר..." : "💾 שמור"}
         </button>
         {showViewProfile && (
