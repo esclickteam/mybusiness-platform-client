@@ -62,35 +62,41 @@ export default function BusinessProfileView() {
                           .slice(0, 5)
                           .map(obj => obj.preview);
 
-  return (
-    <div className="profile-page">
-      <div className="business-profile-view full-style">
-        <div className="profile-inner">
-
-          <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
-            ✏️ ערוך פרטי העסק
-          </Link>
-
-          {logo && (
-            <div className="logo-wrapper">
-              <img src={logo} alt="לוגו העסק" className="profile-logo" />
-            </div>
-          )}
-
-          <h1 className="business-name">{name}</h1>
-          <div className="about-phone">
-            {description && <p><strong>תיאור:</strong> {description}</p>}
-            {phone       && <p><strong>טלפון:</strong> {phone}</p>}
-          </div>
-          <div className="rating"><strong>{rating}</strong> / 5 ★</div>
-          <hr className="profile-divider" />
-
-          <div className="profile-tabs">
-            {TABS.map(tab => (
-              <button
-                key={tab}
-                className={`tab ${tab === currentTab ? "active" : ""}`}
-                onClick={() => setCurrentTab(tab)}
+                          return (
+                            <div className="profile-page">
+                              <div className="business-profile-view full-style">
+                                <div className="profile-inner">
+                          
+                                  <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+                                    ✏️ ערוך פרטי העסק
+                                  </Link>
+                          
+                                  {logo && (
+                                    <div className="logo-wrapper">
+                                      <img src={logo} alt="לוגו העסק" className="profile-logo" />
+                                    </div>
+                                  )}
+                          
+                                  <h1 className="business-name">{name}</h1>
+                          
+                                  {/* הוספת קטגוריה */}
+                                  {category && (
+                                    <div className="about-phone">
+                                      <p><strong>קטגוריה:</strong> {category}</p>
+                                      {description && <p><strong>תיאור:</strong> {description}</p>}
+                                      {phone       && <p><strong>טלפון:</strong> {phone}</p>}
+                                    </div>
+                                  )}
+                          
+                                  <div className="rating"><strong>{rating}</strong> / 5 ★</div>
+                                  <hr className="profile-divider" />
+                          
+                                  <div className="profile-tabs">
+                                    {TABS.map(tab => (
+                                      <button
+                                        key={tab}
+                                        className={`tab ${tab === currentTab ? "active" : ""}`}
+                                        onClick={() => setCurrentTab(tab)}
               >{tab}</button>
             ))}
           </div>
