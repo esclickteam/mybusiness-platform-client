@@ -113,11 +113,11 @@
 
 /* Business card */
 .business-card {
-  background-color: #ffffff;
+  background: linear-gradient(135deg, #d1b3ff, #f5e8ff); /* מעבר עדין של סגול */
   border: 1px solid #eee;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 14px rgba(138, 43, 226, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -126,6 +126,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   min-height: 380px;
 }
+
 
 .business-card:hover {
   transform: translateY(-6px);
