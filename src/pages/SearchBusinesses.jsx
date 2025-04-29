@@ -6,8 +6,46 @@ import BusinessCard from '../components/BusinessCard';
 import './BusinessList.css';
 
 const CATEGORIES = [
-  "אולם אירועים","אינסטלטור","איפור קבוע","בית קפה",
-  /* … שאר הקטגוריות … */
+  "כל הקטגוריות",
+  "אולם אירועים",
+  "אינסטלטור",
+  "איפור קבוע",
+  "בניית אתרים",
+  "בית קפה",
+  "ברברשופ",
+  "גינון / הדברה",
+  "גלריה / חנות אומנות",
+  "חנויות טבע / בריאות",
+  "חנות בגדים",
+  "חשמלאי",
+  "טכנאי מחשבים",
+  "טכנאי מזגנים",
+  "טכנאי סלולר",
+  "יועץ מס / רואה חשבון",
+  "יוגה / פילאטיס",
+  "קייטרינג",
+  "כתיבת תוכן / קופירייטינג",
+  "מאמן אישי / עסקי",
+  "מאמן כושר",
+  "מטפלת רגשית / NLP",
+  "מטפל/ת הוליסטי",
+  "מדיה / פרסום",
+  "מדריך טיולים",
+  "מומחה שיווק דיגיטלי",
+  "מורה למוזיקה / אומנות",
+  "מורה פרטי",
+  "משפחתון / צהרון / גן",
+  "מתווך נדל״ן",
+  "נהג / שליחויות",
+  "נגר",
+  "עורך דין",
+  "עיצוב גבות",
+  "פסיכולוג / יועץ",
+  "קוסמטיקאית",
+  "רפואה משלימה",
+  "שיפוצניק",
+  "מוסך",
+  "עורך דין משפחה"
 ];
 
 const ITEMS_PER_PAGE = 9;
@@ -22,14 +60,12 @@ export default function SearchBusinesses() {
   const [openCats, setOpenCats] = useState(false);
   const wrapperRef              = useRef(null);
 
-  // 1) מחפש את כל העסקים
   useEffect(() => {
     API.get('/business')
       .then(r => setAll(r.data.businesses || []))
       .catch(console.error);
   }, []);
 
-  // 2) מסנן על פי q ו-cat
   useEffect(() => {
     const term = q.toLowerCase();
     const list = all.filter(b => {
@@ -43,7 +79,6 @@ export default function SearchBusinesses() {
     setPage(1);
   }, [all, q, cat]);
 
-  // 3) מסנכרן URL
   useEffect(() => {
     const p = new URLSearchParams();
     if (q)   p.set('search', q);
@@ -52,7 +87,6 @@ export default function SearchBusinesses() {
     setSearchParams(p, { replace: true });
   }, [q, cat, page]);
 
-  // 4) סוגר את ה-dropdown בלחיצה מחוץ
   useEffect(() => {
     const handler = e => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -63,7 +97,6 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // חישוב pagination
   const start      = (page - 1) * ITEMS_PER_PAGE;
   const pageItems  = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
@@ -76,7 +109,7 @@ export default function SearchBusinesses() {
       return p;
     });
     setOpenCats(false);
-    setQ(''); // אופציונלי: מנקה את השדה
+    setQ('');
   };
 
   return (
@@ -84,7 +117,6 @@ export default function SearchBusinesses() {
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* שדה חיפוש + dropdown קטגוריות */}
         <div className="search-wrapper" ref={wrapperRef}>
           <input
             className="search-input"
@@ -97,19 +129,15 @@ export default function SearchBusinesses() {
 
           {openCats && !q && (
             <ul className="suggestions-list">
-              <li key="all" onMouseDown={() => pickCat('')}>
-                <em>כל הקטגוריות</em>
-              </li>
-              {CATEGORIES.map(c => (
-                <li key={c} onMouseDown={() => pickCat(c)}>
-                  {c}
+              {CATEGORIES.map((c, idx) => (
+                <li key={idx} onMouseDown={() => pickCat(c === "כל הקטגוריות" ? "" : c)}>
+                  {c === "כל הקטגוריות" ? <em>{c}</em> : c}
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        {/* ======= התוצאות (מוסתרות כש-dropdown פתוח) ======= */}
         {!openCats && (
           <>
             <div className="business-list">
@@ -119,7 +147,7 @@ export default function SearchBusinesses() {
                 </p>
               ) : pageItems.length > 0 ? (
                 pageItems.map(b => (
-                  <BusinessCard key={b._id} business={b} showViewButton={false}/>
+                  <BusinessCard key={b._id} business={b} showViewButton={false} />
                 ))
               ) : (
                 <p className="no-results">😕 לא נמצאו עסקים מתאימים.</p>
