@@ -49,6 +49,7 @@ export default function BusinessProfileView() {
     rating,
     description = "",
     phone       = "",
+    category    = "",    // <-- הוספנו פה
     mainImages,
     gallery,
     reviews,
