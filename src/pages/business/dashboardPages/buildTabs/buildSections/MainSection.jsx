@@ -99,15 +99,33 @@ export default function MainSection({
 
         {/* Category Select */}
 <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
+{/* Category Select */}
+<label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
 <select
   name="category"
   value={businessDetails.category || ""}
   onChange={handleInputChange}
+  size={CATEGORIES.length > 5 ? 5 : CATEGORIES.length}
   required
 >
   <option value="" disabled>בחר קטגוריה</option>
   {CATEGORIES.map(cat => (
     <option key={cat} value={cat}>{cat}</option>
+  ))}
+</select>
+
+{/* City Select */}
+<label>עיר: <span style={{ color: "red" }}>*</span></label>
+<select
+  name="city"
+  value={businessDetails.city || ""}
+  onChange={handleInputChange}
+  size={CITIES.length > 5 ? 5 : CITIES.length}
+  required
+>
+  <option value="" disabled>בחר עיר</option>
+  {CITIES.map(city => (
+    <option key={city} value={city}>{city}</option>
   ))}
 </select>
 
