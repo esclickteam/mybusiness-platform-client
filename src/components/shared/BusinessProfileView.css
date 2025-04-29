@@ -200,3 +200,21 @@ html, body, #root {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* === כפתור חזור === */
+.back-btn {
+  align-self: flex-start;
+  margin-bottom: 1rem;
+  background-color: transparent;
+  border: none;
+  color: #7a23d0;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.back-btn:hover {
+  color: #5a15a5;
+  transform: translateX(-4px);
+}

@@ -1,44 +1,135 @@
 :root {
-    /* משתני נושא גלובליים */
-    --bg-start:        #fdfcff;
-    --bg-end:          #e4e8ff;
-  
-    --card-bg:         #ffffff;
-    --card-radius:     24px;
-    --card-shadow:     0 4px 12px rgba(0,0,0,0.05);
-  
-    --primary:         #8a2be2;
-    --primary-hover:   #7a23d0;
-  
-    --text-main:       #222222;
-    --text-secondary:  #555555;
-  
-    --gap-sm:          12px;
-    --gap-md:          16px;
-    --gap-lg:          24px;
-  }
-  
-  /* רקע לבן נקי לרשימת העסקים */
-  .list-page {
-    padding: 0 1rem;
-  }
-  
-  .business-list-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-bottom: var(--gap-lg);
-  }
-  
-  .business-list-container h1 {
-    font-size: 2rem;
-    color: var(--text-main);
-    text-align: center;
-    margin-bottom: var(--gap-lg);
-  }
-  
-  .business-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: var(--gap-lg);
-  }
-  
+  /* משתני נושא גלובליים */
+  --bg-start:        #fdfcff;
+  --bg-end:          #e4e8ff;
+
+  --card-bg:         #ffffff;
+  --card-radius:     24px;
+  --card-shadow:     0 4px 12px rgba(0,0,0,0.05);
+
+  --primary:         #8a2be2;
+  --primary-hover:   #7a23d0;
+
+  --text-main:       #222222;
+  --text-secondary:  #555555;
+
+  --gap-sm:          12px;
+  --gap-md:          16px;
+  --gap-lg:          24px;
+}
+
+/* רקע כללי */
+.list-page {
+  padding: 0 1rem;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, var(--bg-start), var(--bg-end));
+}
+
+/* קונטיינר */
+.business-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: var(--gap-lg);
+}
+
+/* כותרת */
+.business-list-container h1 {
+  font-size: 2.2rem;
+  color: var(--text-main);
+  text-align: center;
+  margin: 2rem 0;
+}
+
+/* רשימת כרטיסי עסקים */
+.business-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--gap-lg);
+  margin-top: 2rem;
+}
+
+/* שדה חיפוש */
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  margin: 1rem auto 2rem;
+  display: block;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  background: white;
+}
+
+/* פילטר קטגוריות */
+.categories-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 2rem;
+  justify-content: center;
+}
+
+.category-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-btn:hover {
+  background-color: #d6d6d6;
+}
+
+.category-btn.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* מיון */
+.sort-options {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.sort-options select {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background: white;
+}
+
+/* פג'ינציה */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

@@ -13,25 +13,29 @@ const BusinessCard = ({ business }) => {
         </div>
       )}
 
-      <div className="business-card__content">
-        <h2 className="business-card__title">{name}</h2>
+      <h2 className="business-card__title">{name}</h2>
 
-        {description && (
-          <p className="business-card__description">{description}</p>
-        )}
+      {category && (
+        <p className="business-card__subtitle">
+          <strong>קטגוריה:</strong> {category}
+        </p>
+      )}
 
-        {category && (
-          <p className="business-card__subtitle">{category}</p>
-        )}
+      {description && (
+        <p className="business-card__description">
+          <strong>תיאור:</strong> {description}
+        </p>
+      )}
 
-        {phone && (
-          <p className="business-card__phone">📞 {phone}</p>
-        )}
+      {phone && (
+        <p className="business-card__phone">
+          <strong>טלפון:</strong> {phone}
+        </p>
+      )}
 
-        <Link to={`/business/${_id}`} className="business-card__btn">
-          צפה בפרופיל
-        </Link>
-      </div>
+      <Link to={`/business/${_id}`} className="business-card__btn">
+        צפה בפרופיל
+      </Link>
     </div>
   );
 };

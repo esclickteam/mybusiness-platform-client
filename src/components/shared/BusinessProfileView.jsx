@@ -1,11 +1,11 @@
 // src/components/shared/BusinessProfileView.jsx
 
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "@api";
-import "./BusinessProfileView.css";
-// נתיב מתוקן ל־dedupe: שתי רמות מעלה מ־components/shared → src/utils
+import { useAuth } from "../../context/AuthContext"; // ← חיבור ל־AuthContext
 import { dedupeByPreview } from "../../utils/dedupe";
+import "./BusinessProfileView.css";
 
 const TABS = [
   "ראשי",
@@ -18,7 +18,9 @@ const TABS = [
 
 export default function BusinessProfileView() {
   const { businessId } = useParams();
-  const [data, setData]       = useState(null);
+  const navigate = useNavigate();
+  const { user } = useAuth(); // ← הוספנו
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
@@ -41,68 +43,75 @@ export default function BusinessProfileView() {
   }, [businessId]);
 
   if (loading) return <div className="loading">טוען…</div>;
-  if (!data)   return <div className="error">העסק לא נמצא</div>;
+  if (!data) return <div className="error">העסק לא נמצא</div>;
 
   const {
     name,
     logo,
     rating,
     description = "",
-    phone       = "",
-    category    = "",    // <-- הוספנו פה
+    phone = "",
+    category = "",
     mainImages,
     gallery,
     reviews,
-    faqs
+    faqs,
+    owner
   } = data;
 
-  // נרמל וסינן כפילויות בחמש תמונות ראשיות
   const normalizedMain = mainImages.map(url => ({ preview: url }));
-  const uniqueMain    = dedupeByPreview(normalizedMain)
-                          .slice(0, 5)
-                          .map(obj => obj.preview);
+  const uniqueMain = dedupeByPreview(normalizedMain).slice(0, 5).map(obj => obj.preview);
 
-                          return (
-                            <div className="profile-page">
-                              <div className="business-profile-view full-style">
-                                <div className="profile-inner">
-                          
-                                  <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
-                                    ✏️ ערוך פרטי העסק
-                                  </Link>
-                          
-                                  {logo && (
-                                    <div className="logo-wrapper">
-                                      <img src={logo} alt="לוגו העסק" className="profile-logo" />
-                                    </div>
-                                  )}
-                          
-                                  <h1 className="business-name">{name}</h1>
-                          
-                                  {/* הוספת קטגוריה */}
-                                  {category && (
-                                    <div className="about-phone">
-                                      <p><strong>קטגוריה:</strong> {category}</p>
-                                      {description && <p><strong>תיאור:</strong> {description}</p>}
-                                      {phone       && <p><strong>טלפון:</strong> {phone}</p>}
-                                    </div>
-                                  )}
-                          
-                                  <div className="rating"><strong>{rating}</strong> / 5 ★</div>
-                                  <hr className="profile-divider" />
-                          
-                                  <div className="profile-tabs">
-                                    {TABS.map(tab => (
-                                      <button
-                                        key={tab}
-                                        className={`tab ${tab === currentTab ? "active" : ""}`}
-                                        onClick={() => setCurrentTab(tab)}
-              >{tab}</button>
+  const isOwner = user?.role === "business" && user.businessId === businessId;
+
+  return (
+    <div className="profile-page">
+      <div className="business-profile-view full-style">
+        <div className="profile-inner">
+          
+          {/* 🔹 כפתור חזור */}
+          <button className="back-btn" onClick={() => navigate(-1)}>← חזור</button>
+
+          {/* 🔹 הצגת כפתור עריכה רק לבעל העסק */}
+          {isOwner && (
+            <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+              ✏️ ערוך פרטי העסק
+            </Link>
+          )}
+
+          {logo && (
+            <div className="logo-wrapper">
+              <img src={logo} alt="לוגו העסק" className="profile-logo" />
+            </div>
+          )}
+
+          <h1 className="business-name">{name}</h1>
+
+          {category && (
+            <div className="about-phone">
+              <p><strong>קטגוריה:</strong> {category}</p>
+              {description && <p><strong>תיאור:</strong> {description}</p>}
+              {phone && <p><strong>טלפון:</strong> {phone}</p>}
+            </div>
+          )}
+
+          <div className="rating"><strong>{rating}</strong> / 5 ★</div>
+          <hr className="profile-divider" />
+
+          <div className="profile-tabs">
+            {TABS.map(tab => (
+              <button
+                key={tab}
+                className={`tab ${tab === currentTab ? "active" : ""}`}
+                onClick={() => setCurrentTab(tab)}
+              >
+                {tab}
+              </button>
             ))}
           </div>
 
           <div className="tab-content">
-            {/* טאב ראשי - תמונות ראשיות */}
+            {/* טאב תוכן */}
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {uniqueMain.length > 0 ? (
@@ -114,8 +123,6 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
-
-            {/* טאב גלריה */}
             {currentTab === "גלריה" && (
               gallery.length > 0 ? (
                 <div className="public-main-images">
@@ -127,8 +134,6 @@ export default function BusinessProfileView() {
                 <p className="no-data">אין תמונות בגלריה</p>
               )
             )}
-
-            {/* טאב ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {reviews.length > 0 ? (
@@ -145,8 +150,6 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
-
-            {/* טאב שאלות ותשובות */}
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
@@ -161,13 +164,9 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
-
-            {/* טאב צ'אט */}
             {currentTab === "צ'אט עם העסק" && (
               <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
-
-            {/* טאב חנות / יומן */}
             {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}
