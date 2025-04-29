@@ -262,19 +262,21 @@ const handleMainImagesChange = async e => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // מחכים שכל העלאות התמונה יסתיימו
+      // מחכים שכל ההעלאות בתור יסתיימו
       await Promise.all(pendingUploadsRef.current);
-  
-      // רק השדות שה־PATCH שלנו תומך בהם
+
+      // שולחים רק את השדות הנתמכים ב־PATCH
       await API.patch("/business/my", {
         name:        businessDetails.name,
-        category:    businessDetails.category,    // חובה
-        description: businessDetails.description, // חובה?
+        category:    businessDetails.category,
+        description: businessDetails.description,
         phone:       businessDetails.phone,
-        email:       businessDetails.email,       // אם שמרת את זה כ-required
+        email:       businessDetails.email,
       });
-  
-      navigate(`/business/${currentUser.businessId}`);
+
+      // במקום לנווט — נדליק את הכפתור
+      setShowViewProfile(true);
+
     } catch (err) {
       console.error(err);
       alert("❌ שגיאה בשמירה");
@@ -365,6 +367,9 @@ const handleMainImagesChange = async e => {
           handleDeleteImage={handleDeleteMainImage}
           handleEditImage={openMainImageEdit}
           handleSave={handleSave}
+          showViewProfile={showViewProfile}
+          navigate={navigate}
+          currentUser={currentUser}
           renderTopBar={renderTopBar}
           logoInputRef={logoInputRef}
           mainImagesInputRef={mainImagesInputRef}

@@ -1,3 +1,5 @@
+// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
+
 import React from "react";
 import "../../build/Build.css";
 // תיקון: חמש רמות מעלה מ‐buildSections עד ל‐src/utils
@@ -43,53 +45,48 @@ export default function MainSection({
         <h2>🎨 עיצוב הכרטיס</h2>
 
         <label>
-  שם העסק: <span style={{ color: "red" }}>*</span>
-</label>
-<input
-  type="text"
-  name="name"
-  value={businessDetails.name || ""}
-  onChange={handleInputChange}
-  placeholder="הכנס שם העסק"
-  required
-/>
+          שם העסק: <span style={{ color: "red" }}>*</span>
+        </label>
+        <input
+          type="text"
+          name="name"
+          value={businessDetails.name || ""}
+          onChange={handleInputChange}
+          placeholder="הכנס שם העסק"
+          required
+        />
 
-<label>
-  תיאור:
-</label>
-<textarea
-  name="description"
-  value={businessDetails.description || ""}
-  onChange={handleInputChange}
-  placeholder="הכנס תיאור קצר של העסק"
-/>
+        <label>תיאור:</label>
+        <textarea
+          name="description"
+          value={businessDetails.description || ""}
+          onChange={handleInputChange}
+          placeholder="הכנס תיאור קצר של העסק"
+        />
 
-<label>
-  טלפון:
-</label>
-<input
-  type="text"
-  name="phone"
-  value={businessDetails.phone || ""}
-  onChange={handleInputChange}
-  placeholder="הכנס טלפון"
-/>
+        <label>טלפון:</label>
+        <input
+          type="text"
+          name="phone"
+          value={businessDetails.phone || ""}
+          onChange={handleInputChange}
+          placeholder="הכנס טלפון"
+        />
 
-<label>
-  קטגוריה: <span style={{ color: "red" }}>*</span>
-</label>
-<select
-  name="category"
-  value={businessDetails.category || ""}
-  onChange={handleInputChange}
-  required
->
-  <option value="" disabled>בחר קטגוריה</option>
-  {CATEGORIES.map(cat => (
-    <option key={cat} value={cat}>{cat}</option>
-  ))}
-</select>
-
+        <label>
+          קטגוריה: <span style={{ color: "red" }}>*</span>
+        </label>
+        <select
+          name="category"
+          value={businessDetails.category || ""}
+          onChange={handleInputChange}
+          required
+        >
+          <option value="" disabled>בחר קטגוריה</option>
+          {CATEGORIES.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
 
         <label>אימייל:</label>
         <input
@@ -100,7 +97,7 @@ export default function MainSection({
           placeholder="הכנס אימייל"
         />
 
-        {/* Logo */}
+        {/* לוגו */}
         <label>לוגו:</label>
         <input
           type="file"
@@ -117,7 +114,7 @@ export default function MainSection({
           העלאת לוגו
         </button>
 
-        {/* Main Images */}
+        {/* תמונות ראשיות */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
@@ -156,7 +153,7 @@ export default function MainSection({
           )}
         </div>
 
-        {/* Actions */}
+        {/* כפתור שמירה ו־"צפה בפרופיל" */}
         <button
           className="save-btn"
           onClick={handleSave}
