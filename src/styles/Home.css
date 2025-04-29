@@ -97,7 +97,7 @@ body {
   font-size: 15px;
 }
 
-/* 🌟 אזור החיפוש */
+/* 🌟 אזור החיפוש (react-select) */
 .search-section {
   display: flex;
   justify-content: center;
@@ -106,14 +106,23 @@ body {
   flex-wrap: wrap;
 }
 
-.search-input {
-  width: 350px;
-  padding: 14px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  font-size: 18px;
+/* סגנון לדיב שסביב כל select */
+.dropdown-wrapper {
+  position: relative;
+  min-width: 250px;
+  max-width: 350px;
+  width: 100%;
 }
 
+/* Override של ה-dropdown menu דרך portal */
+.css-1g6gooi-Menu {
+  z-index: 9999 !important;
+}
+.css-1g6gooi-MenuList {
+  z-index: 9999 !important;
+}
+
+/* 🌟 כפתור החיפוש */
 .search-button {
   background: linear-gradient(90deg, #7c3aed, #4c1d95);
   color: white;
@@ -274,8 +283,9 @@ copyright {
     font-size: 18px;
   }
 
-  .search-input {
-    width: 90%;
+  .search-section .dropdown-wrapper {
+    max-width: none;
+    width: 100%;
   }
 
   .cards-container {
@@ -287,16 +297,12 @@ copyright {
     width: 90%;
   }
 
-  .action-button {
-    font-size: 16px;
-    padding: 12px 0;
-  }
-
   .categories-container {
     flex-wrap: nowrap;
     justify-content: flex-start;
   }
 }
+
 .quick-jobs-button-wrapper {
   margin-top: 20px;
   margin-bottom: 30px;
