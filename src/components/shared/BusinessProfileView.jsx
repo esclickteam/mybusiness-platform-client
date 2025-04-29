@@ -30,7 +30,8 @@ export default function BusinessProfileView() {
     API.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-        // גיבוי: city מתוך address או מתוך שדה על־טבעי biz.city
+
+        // גיבוי: city מתוך address או מתוך שדה ישיר biz.city
         const city = biz.address?.city ?? biz.city ?? "";
 
         setData({
@@ -143,11 +144,7 @@ export default function BusinessProfileView() {
               <div className="public-main-images">
                 {uniqueMain.length > 0 ? (
                   uniqueMain.map((url, i) => (
-                    <img
-                      key={url}
-                      src={url}
-                      alt={`תמונה ראשית ${i + 1}`}
-                    />
+                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
                   ))
                 ) : (
                   <p className="no-data">אין תמונות להצגה</p>
