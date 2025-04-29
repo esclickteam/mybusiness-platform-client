@@ -1,14 +1,16 @@
 // src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef } from "react";
 import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
 
-// Prepare sorted, deduped city and category options once
-const CITIES = Array.from(new Set(rawCities)).sort((a, b) => a.localeCompare(b, "he"));
+// Prepare sorted, deduped options
+const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
+  a.localeCompare(b, "he")
+);
 const categoryOptions = ALL_CATEGORIES.map(cat => ({ value: cat, label: cat }));
-const cityOptions    = CITIES.map(city => ({ value: city, label: city }));
+const cityOptions = CITIES.map(city => ({ value: city, label: city }));
 
 export default function MainSection({
   businessDetails,
@@ -26,28 +28,27 @@ export default function MainSection({
 }) {
   const containerRef = useRef();
 
-  // Dedupe & limit to 5 images
-  const mainImages     = businessDetails.mainImages || [];
-  const uniqueImages   = dedupeByPreview(mainImages);
+  // dedupe & limit images
+  const mainImages = businessDetails.mainImages || [];
+  const uniqueImages = dedupeByPreview(mainImages);
   const limitedMainImgs = uniqueImages.slice(0, 5);
 
-  // Close any open react-select menus if clicked outside
+  // close react-select menus on outside click
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // react-select will close automatically
+        // react-select will auto-close
       }
     };
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // Wrap react-select onChange to match native input event shape
-  const wrapSelectChange = name => option => {
+  // wrap onChange to mimic native input event
+  const wrapSelectChange = name => option =>
     handleInputChange({
       target: { name, value: option ? option.value : "" }
     });
-  };
 
   return (
     <>
@@ -55,7 +56,9 @@ export default function MainSection({
         <h2>🎨 עריכת פרטי העסק</h2>
 
         {/* שם העסק */}
-        <label>שם העסק: <span style={{ color: "red" }}>*</span></label>
+        <label>
+          שם העסק: <span style={{ color: "red" }}>*</span>
+        </label>
         <input
           type="text"
           name="name"
@@ -88,10 +91,15 @@ export default function MainSection({
         />
 
         {/* קטגוריה */}
-        <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
+        <label>
+          קטגוריה: <span style={{ color: "red" }}>*</span>
+        </label>
         <Select
           options={categoryOptions}
-          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
+          value={
+            categoryOptions.find(o => o.value === businessDetails.category) ||
+            null
+          }
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
@@ -106,10 +114,16 @@ export default function MainSection({
           noOptionsMessage={({ inputValue }) =>
             inputValue ? "אין קטגוריות מתאימות" : null
           }
+          menuPortalTarget={document.body}
+          styles={{
+            menuPortal: base => ({ ...base, zIndex: 9999 })
+          }}
         />
 
         {/* עיר */}
-        <label>עיר: <span style={{ color: "red" }}>*</span></label>
+        <label>
+          עיר: <span style={{ color: "red" }}>*</span>
+        </label>
         <Select
           options={cityOptions}
           value={cityOptions.find(o => o.value === businessDetails.city) || null}
@@ -127,6 +141,10 @@ export default function MainSection({
           noOptionsMessage={({ inputValue }) =>
             inputValue ? "אין ערים מתאימות" : null
           }
+          menuPortalTarget={document.body}
+          styles={{
+            menuPortal: base => ({ ...base, zIndex: 9999 })
+          }}
         />
 
         {/* לוגו */}
@@ -163,7 +181,11 @@ export default function MainSection({
         <div className="gallery-preview">
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="gallery-item-wrapper image-wrapper">
-              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} className="gallery-img" />
+              <img
+                src={img.preview}
+                alt={`תמונה ראשית ${i + 1}`}
+                className="gallery-img"
+              />
               <button
                 className="delete-btn"
                 onClick={() => handleDeleteImage(i)}
@@ -186,11 +208,7 @@ export default function MainSection({
         </div>
 
         {/* שמירה */}
-        <button
-          className="save-btn"
-          onClick={handleSave}
-          disabled={isSaving}
-        >
+        <button className="save-btn" onClick={handleSave} disabled={isSaving}>
           {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
 
