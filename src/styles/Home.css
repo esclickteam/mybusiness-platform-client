@@ -99,22 +99,21 @@ body {
   font-size: 15px;
 }
 
-/* 🌟 אזור החיפוש (react-select) */
+/* עדכון .search-section */
 .search-section {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;   /* שינינו למרכז */
+  justify-content: center;   /* מרכז אופקי */
+  align-items: center;       /* יישור ורטיקלי */
   gap: 10px;
   margin-bottom: 35px;
   direction: rtl;
+  flex-wrap: nowrap;         /* מבטל גלישה לשורה חדשה */
 }
 
-/* סגנון לדיב שסביב כל select */
-.dropdown-wrapper {
-  position: relative;
-  min-width: 250px;
-  max-width: 350px;
-  width: 100%;
+/* וודא שכל פריט לא מתאים את עצמו בגמיש */
+.dropdown-wrapper,
+.search-button {
+  flex: 0 0 auto;
 }
 
 /* Override של react-select dropdown דרך portal */
