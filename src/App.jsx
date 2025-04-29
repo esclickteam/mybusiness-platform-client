@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
@@ -25,9 +26,9 @@ const ChangePassword   = lazy(() => import("./pages/ChangePassword"));
 const BusinessesList   = lazy(() => import("./pages/BusinessesList"));
 
 // Public business profile (clean)
-const BusinessProfileView = lazy(() => import(
-  "./components/shared/BusinessProfileView"
-));
+const BusinessProfileView = lazy(() =>
+  import("./components/shared/BusinessProfileView")
+);
 
 // Lazy-loaded protected dashboards
 const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
@@ -63,7 +64,10 @@ export default function App() {
           {/* Public pages */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
+
+          {/* עמוד החיפוש – חייב קודם */}
           <Route path="/search" element={<SearchBusinesses />} />
+
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/terms" element={<Terms />} />
@@ -77,11 +81,13 @@ export default function App() {
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/search" element={<SearchBusinesses />} />
-
+          <Route path="/businesses" element={<BusinessesList />} />
 
           {/* Public business profile */}
-          <Route path="/business/:businessId" element={<BusinessProfileView />} />
+          <Route
+            path="/business/:businessId"
+            element={<BusinessProfileView />}
+          />
 
           {/* Protected business dashboard */}
           <Route
