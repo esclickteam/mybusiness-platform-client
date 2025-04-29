@@ -5,8 +5,8 @@ import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
 
-// prepare deduped cities and categories once
-const CITIES = Array.from(new Set(rawCities));
+// Prepare options just once
+const CITIES = Array.from(new Set(rawCities)).sort((a, b) => a.localeCompare(b, "he"));
 const categoryOptions = ALL_CATEGORIES.map(cat => ({ value: cat, label: cat }));
 const cityOptions    = CITIES.map(city => ({ value: city, label: city }));
 
@@ -26,23 +26,23 @@ export default function MainSection({
 }) {
   const containerRef = useRef();
 
-  // dedupe & limit images
+  // Deduplicate & limit
   const mainImages     = businessDetails.mainImages || [];
   const uniqueImages   = dedupeByPreview(mainImages);
   const limitedMainImgs = uniqueImages.slice(0, 5);
 
-  // click-outside stub (no native dropdowns to close)
+  // Close react-select menus if clicked outside
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // react-select handles its own open/close
+        // react-select menus auto-close
       }
     };
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // helper to wrap react-select onChange into your handleInputChange
+  // Wrap react-select onChange so it calls the same handler shape as native inputs
   const wrapSelectChange = name => option => {
     handleInputChange({
       target: { name, value: option ? option.value : "" }
@@ -52,12 +52,10 @@ export default function MainSection({
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h2>🎨 עיצוב הכרטיס</h2>
+        <h2>🎨 עריכת פרטי העסק</h2>
 
         {/* שם העסק */}
-        <label>
-          שם העסק: <span style={{ color: "red" }}>*</span>
-        </label>
+        <label>שם העסק: <span style={{ color: "red" }}>*</span></label>
         <input
           type="text"
           name="name"
@@ -89,29 +87,27 @@ export default function MainSection({
           disabled={isSaving}
         />
 
-        {/* קטגוריה – react-select */}
-        <label>
-          קטגוריה: <span style={{ color: "red" }}>*</span>
-        </label>
+        {/* קטגוריה */}
+        <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
         <Select
           options={categoryOptions}
           value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
-          placeholder="בחר קטגוריה"
+          placeholder="הקלד או בחר קטגוריה"
+          isClearable
           menuPlacement="bottom"
         />
 
-        {/* עיר – react-select */}
-        <label>
-          עיר: <span style={{ color: "red" }}>*</span>
-        </label>
+        {/* עיר */}
+        <label>עיר: <span style={{ color: "red" }}>*</span></label>
         <Select
           options={cityOptions}
           value={cityOptions.find(o => o.value === businessDetails.city) || null}
           onChange={wrapSelectChange("city")}
           isDisabled={isSaving}
-          placeholder="בחר עיר"
+          placeholder="הקלד או בחר עיר"
+          isClearable
           menuPlacement="bottom"
         />
 
@@ -175,14 +171,15 @@ export default function MainSection({
           )}
         </div>
 
-        {/* Save & View */}
+        {/* שמירה */}
         <button
           className="save-btn"
           onClick={handleSave}
           disabled={isSaving}
         >
-          {isSaving ? "שומר..." : "💾 שמור"}
+          {isSaving ? "שומר..." : "💾 שמור ושמור שינויים"}
         </button>
+
         {showViewProfile && (
           <button
             type="button"
@@ -198,9 +195,9 @@ export default function MainSection({
         )}
       </div>
 
-      {/* Preview Column */}
+      {/* תצוגת תצוגה מקדימה */}
       <div className="preview-column">
-        {renderTopBar && renderTopBar()}
+        {renderTopBar?.()}
         <div className="preview-images">
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="image-wrapper">
