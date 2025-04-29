@@ -329,3 +329,8 @@
     aspect-ratio: 1 / 1;
   }
 }
+
+/* תיקון: רווח כללי בין תוכן עליון (תיאור, טלפון) לגלריה */
+.preview-column .gallery-preview {
+  margin-top: 1.5rem; /* או גודל אחר לפי טעמך */
+}
