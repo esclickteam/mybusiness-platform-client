@@ -5,7 +5,7 @@ import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
 
-// Prepare options just once
+// Prepare sorted, deduped city and category options once
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) => a.localeCompare(b, "he"));
 const categoryOptions = ALL_CATEGORIES.map(cat => ({ value: cat, label: cat }));
 const cityOptions    = CITIES.map(city => ({ value: city, label: city }));
@@ -26,23 +26,23 @@ export default function MainSection({
 }) {
   const containerRef = useRef();
 
-  // Deduplicate & limit
+  // Dedupe & limit to 5 images
   const mainImages     = businessDetails.mainImages || [];
   const uniqueImages   = dedupeByPreview(mainImages);
   const limitedMainImgs = uniqueImages.slice(0, 5);
 
-  // Close react-select menus if clicked outside
+  // Close any open react-select menus if clicked outside
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // react-select menus auto-close
+        // react-select will close automatically
       }
     };
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // Wrap react-select onChange so it calls the same handler shape as native inputs
+  // Wrap react-select onChange to match native input event shape
   const wrapSelectChange = name => option => {
     handleInputChange({
       target: { name, value: option ? option.value : "" }
@@ -94,9 +94,18 @@ export default function MainSection({
           value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
-          placeholder="הקלד או בחר קטגוריה"
+          placeholder="הקלד קטגוריה"
           isClearable
           menuPlacement="bottom"
+          openMenuOnClick={false}
+          openMenuOnFocus={false}
+          openMenuOnInput
+          filterOption={({ label }, input) =>
+            label.toLowerCase().startsWith(input.toLowerCase())
+          }
+          noOptionsMessage={({ inputValue }) =>
+            inputValue ? "אין קטגוריות מתאימות" : null
+          }
         />
 
         {/* עיר */}
@@ -106,9 +115,18 @@ export default function MainSection({
           value={cityOptions.find(o => o.value === businessDetails.city) || null}
           onChange={wrapSelectChange("city")}
           isDisabled={isSaving}
-          placeholder="הקלד או בחר עיר"
+          placeholder="הקלד עיר"
           isClearable
           menuPlacement="bottom"
+          openMenuOnClick={false}
+          openMenuOnFocus={false}
+          openMenuOnInput
+          filterOption={({ label }, input) =>
+            label.toLowerCase().startsWith(input.toLowerCase())
+          }
+          noOptionsMessage={({ inputValue }) =>
+            inputValue ? "אין ערים מתאימות" : null
+          }
         />
 
         {/* לוגו */}
@@ -145,11 +163,7 @@ export default function MainSection({
         <div className="gallery-preview">
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="gallery-item-wrapper image-wrapper">
-              <img
-                src={img.preview}
-                alt={`תמונה ראשית ${i + 1}`}
-                className="gallery-img"
-              />
+              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} className="gallery-img" />
               <button
                 className="delete-btn"
                 onClick={() => handleDeleteImage(i)}
@@ -177,7 +191,7 @@ export default function MainSection({
           onClick={handleSave}
           disabled={isSaving}
         >
-          {isSaving ? "שומר..." : "💾 שמור ושמור שינויים"}
+          {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
 
         {showViewProfile && (
@@ -185,9 +199,7 @@ export default function MainSection({
             type="button"
             className="save-btn"
             style={{ marginTop: "0.5rem" }}
-            onClick={() =>
-              navigate(`/business/${currentUser.businessId}`)
-            }
+            onClick={() => navigate(`/business/${currentUser.businessId}`)}
             disabled={isSaving}
           >
             👀 צפה בפרופיל
@@ -195,7 +207,7 @@ export default function MainSection({
         )}
       </div>
 
-      {/* תצוגת תצוגה מקדימה */}
+      {/* תצוגה מקדימה */}
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
