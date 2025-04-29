@@ -24,13 +24,12 @@ export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // --- State ראשי ---
-  const [all,      setAll]      = useState([]);
+  const [all, setAll] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [searched, setSearched] = useState(false);
 
-  const catParam  = searchParams.get('category') || '';
-  const [cat,  setCat]  = useState(catParam);
+  const catParam = searchParams.get('category') || '';
+  const [cat, setCat] = useState(catParam);
   const [openCat, setOpenCat] = useState(false);
   const wrapperCatRef = useRef(null);
 
@@ -42,7 +41,7 @@ export default function SearchBusinesses() {
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // טען עסקים ובנה רשימת ערים (סטטית + דינמית)
+  // טען עסקים ובנה רשימת ערים (סטטית + דינמית עם עדיפות סטטית)
   useEffect(() => {
     API.get('/business')
       .then(r => {
@@ -56,12 +55,12 @@ export default function SearchBusinesses() {
             .filter(c => c)
         ));
 
-        // תחבר בין סטטי לדינמי, תסדר ותוסיף “כל הערים”
+        // עדיפות לערכים הסטטיים, והוספת דינמי שלא קיימים
         const merged = Array.from(new Set([
           'כל הערים',
-          ...dynamic,
-          ...ALL_CITIES
-        ])).sort((a,b) => a.localeCompare(b, 'he'));
+          ...ALL_CITIES,
+          ...dynamic.filter(c => !ALL_CITIES.includes(c))
+        ])).sort((a, b) => a.localeCompare(b, 'he'));
 
         setCities(merged);
       })
@@ -71,7 +70,7 @@ export default function SearchBusinesses() {
   // סנכרון ל־URL
   useEffect(() => {
     const p = new URLSearchParams();
-    if (cat)  p.set('category', cat);
+    if (cat) p.set('category', cat);
     if (city) p.set('city', city);
     if (page > 1) p.set('page', page);
     setSearchParams(p, { replace: true });
@@ -94,8 +93,8 @@ export default function SearchBusinesses() {
   // חיפוש וסינון
   const handleSearch = () => {
     const res = all.filter(b => {
-      if (cat && cat !== 'כל הקטגוריות' && b.category !== cat)      return false;
-      if (city && city !== 'כל הערים'       && b.address?.city !== city) return false;
+      if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) return false;
+      if (city && city !== 'כל הערים' && b.address?.city !== city) return false;
       return true;
     });
     setFiltered(res);
@@ -104,8 +103,8 @@ export default function SearchBusinesses() {
   };
 
   // Pagination
-  const start      = (page - 1) * ITEMS_PER_PAGE;
-  const pageItems  = filtered.slice(start, start + ITEMS_PER_PAGE);
+  const start = (page - 1) * ITEMS_PER_PAGE;
+  const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
   return (
@@ -123,7 +122,7 @@ export default function SearchBusinesses() {
             </button>
             {openCat && (
               <ul className="suggestions-list">
-                {CATEGORIES.map((c,i) => (
+                {CATEGORIES.map((c, i) => (
                   <li key={i} onMouseDown={() => { setCat(c); setOpenCat(false); }}>
                     {c === 'כל הקטגוריות' ? <em>{c}</em> : c}
                   </li>
@@ -149,12 +148,11 @@ export default function SearchBusinesses() {
                     city === '' ||
                     c.toLowerCase().includes(city.trim().toLowerCase())
                   )
-                  .map((c,i) => (
+                  .map((c, i) => (
                     <li key={i} onMouseDown={() => { setCity(c); setOpenCity(false); }}>
                       {c === 'כל הערים' ? <em>{c}</em> : c}
                     </li>
-                  ))
-                }
+                  ))}
                 {cities.filter(c =>
                   city === '' ||
                   c.toLowerCase().includes(city.trim().toLowerCase())
