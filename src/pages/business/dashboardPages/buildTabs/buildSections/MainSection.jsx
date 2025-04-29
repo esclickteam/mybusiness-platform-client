@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
+import React, { useEffect, useRef, useMemo } from "react";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
@@ -54,7 +55,7 @@ export default function MainSection({
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // אין dropdownים ננעלים כי משתמשים ב-native select
+        // אין dropdowns ננעלים כי משתמשים ב-native select
       }
     };
     document.addEventListener("mousedown", onClickOutside);
@@ -110,7 +111,6 @@ export default function MainSection({
           value={businessDetails.category || ""}
           onChange={handleInputChange}
           required
-          size={5}
           disabled={isSaving}
         >
           <option value="" disabled>
@@ -128,7 +128,6 @@ export default function MainSection({
           value={businessDetails.city || ""}
           onChange={handleInputChange}
           required
-          size={5}
           disabled={isSaving}
         >
           <option value="" disabled>
