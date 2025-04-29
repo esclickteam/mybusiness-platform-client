@@ -320,16 +320,18 @@
 
 .city-dropdown {
   position: absolute;
-  top: 100%; /* תפריט ייפתח מתחת לתיבת הבחירה */
+  top: 100%;  /* יפתח בדיוק אחרי תיבת הבחירה */
   left: 0;
   right: 0;
-  z-index: 2000; /* להבטיח שהתפריט תמיד יהיה מעל */
+  z-index: 2000; /* לוודא שהתפריט לא חפף עם אלמנטים אחרים */
   max-height: 200px;
-  overflow-y: auto; /* אפשר גלילה אם התפריט ארוך מדי */
+  overflow-y: auto; /* אפשר גלילה במקרה של רשימה ארוכה */
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%; /* תוודא שהתפריט תופס את רוחב ה-container */
 }
+
 
 
