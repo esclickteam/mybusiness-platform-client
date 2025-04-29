@@ -65,6 +65,7 @@
 .filter-button,
 .filter-input {
   min-width: 200px;
+  width: 100%;
   padding: 0.75rem 1.5rem;
   border: 1px solid #ddd;
   border-radius: var(--card-radius);
@@ -91,7 +92,7 @@
   color: var(--text-secondary);
 }
 
-/* input – ימין לשמאל, בלי Chevron */
+/* input – ימין לשמאל */
 .filter-input {
   appearance: none;
   justify-content: flex-start;
@@ -117,21 +118,21 @@
   box-shadow: 0 12px 32px rgba(0,0,0,0.12);
 }
 
-/* ====== רשימת הצעות ====== */
+/* ====== רשימת הצעות (autocomplete dropdown) ====== */
 .suggestions-list {
   position: absolute;
   top: 100%;
   left: 0;
-  /* הרוחב יתאים בדיוק לרוחב השדה */
   width: 100%;
   margin-top: 0.25rem;
   background: #fff;
   box-shadow: var(--card-shadow);
   border-radius: 12px;
-  max-height: 180px;
+  max-height: 200px;
   overflow-y: auto;
   z-index: 20;
-  /* קוסטום scrollbar קל */
+  padding: 0;
+  list-style: none;
   scrollbar-width: thin;
   scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
@@ -154,8 +155,6 @@
   border-bottom: 1px solid #eee;
   transition: background 0.2s;
   color: var(--text-main);
-  /* הוספת נקודה בתחילת כל פריט */
-  list-style: none;
   position: relative;
 }
 .suggestions-list li::before {
@@ -164,7 +163,6 @@
   right: 0.75rem;
   color: var(--primary);
 }
-
 .suggestions-list li:hover {
   background: var(--bg-end);
 }
@@ -178,31 +176,6 @@
   font-size: 0.95rem;
   padding: 0.5rem 1rem;
   list-style: none;
-  position: relative;
-}
-
-.suggestions-list li {
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  text-align: right;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-  transition: background 0.2s;
-  color: var(--text-main);
-}
-
-.suggestions-list li:hover {
-  background: var(--bg-end);
-}
-.suggestions-list li em {
-  font-style: normal;
-  color: var(--text-secondary);
-}
-.no-match {
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  padding: 0.5rem 1rem;
 }
 
 /* ====== תוצאות ====== */

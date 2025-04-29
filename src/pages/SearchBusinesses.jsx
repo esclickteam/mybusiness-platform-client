@@ -7,10 +7,9 @@ import ALL_CATEGORIES from '../data/categories';
 import ALL_CITIES from '../data/cities';
 import './BusinessList.css';
 
-const CATEGORIES = ALL_CATEGORIES;
 const ITEMS_PER_PAGE = 9;
 
-function normalizeCity(str) {
+function normalize(str) {
   return str
     .normalize('NFD')
     .replace(/[\u0591-\u05C7]/g, '')
@@ -27,22 +26,21 @@ export default function SearchBusinesses() {
   const [filtered, setFiltered] = useState([]);
   const [searched, setSearched] = useState(false);
 
-  // Category state
+  // Category as autocomplete
   const catParam = searchParams.get('category') || '';
   const [cat, setCat] = useState(catParam);
   const [openCat, setOpenCat] = useState(false);
   const wrapperCatRef = useRef(null);
 
-  // City state using ALL_CITIES
+  // City as autocomplete
   const cityParam = searchParams.get('city') || '';
   const [city, setCity] = useState(cityParam);
-  const [cities] = useState(ALL_CITIES);
   const [openCity, setOpenCity] = useState(false);
   const wrapperCityRef = useRef(null);
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // Fetch all businesses
+  // Fetch businesses
   useEffect(() => {
     API.get('/business')
       .then(r => setAll(r.data.businesses || []))
@@ -68,14 +66,13 @@ export default function SearchBusinesses() {
     setSearchParams(p, { replace: true });
   }, [cat, city, page]);
 
-  // Handle search
+  // Search handler
   const handleSearch = () => {
-    const normCity = normalizeCity(city);
+    const normCat = normalize(cat);
+    const normCity = normalize(city);
     const res = all.filter(b => {
-      if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) return false;
-      if (city.trim()) {
-        return normalizeCity(b.address?.city || '').startsWith(normCity);
-      }
+      if (normCat && normalize(b.category) !== normCat) return false;
+      if (normCity && !normalize(b.address?.city || '').startsWith(normCity)) return false;
       return true;
     });
     setFiltered(res);
@@ -83,14 +80,17 @@ export default function SearchBusinesses() {
     setSearched(true);
   };
 
-  // Pagination setup
+  // Pagination
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  // City suggestions start-with
+  // Suggestions based on input
+  const catSuggestions = cat.trim()
+    ? ALL_CATEGORIES.filter(c => normalize(c).includes(normalize(cat)))
+    : [];
   const citySuggestions = city.trim()
-    ? cities.filter(c => normalizeCity(c).startsWith(normalizeCity(city)))
+    ? ALL_CITIES.filter(c => normalize(c).startsWith(normalize(city)))
     : [];
 
   return (
@@ -99,14 +99,19 @@ export default function SearchBusinesses() {
         <h1>רשימת עסקים</h1>
 
         <div className="filters">
-          {/* Category dropdown */}
+          {/* Category autocomplete */}
           <div className="dropdown-wrapper cat" ref={wrapperCatRef}>
-            <button className="filter-button" onClick={() => setOpenCat(o => !o)}>
-              {cat || 'בחר קטגוריה'} <span className="chevron">▾</span>
-            </button>
-            {openCat && (
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="הקלד קטגוריה"
+              value={cat}
+              onFocus={() => setOpenCat(true)}
+              onChange={e => { setCat(e.target.value); setOpenCat(true); }}
+            />
+            {openCat && catSuggestions.length > 0 && (
               <ul className="suggestions-list">
-                {CATEGORIES.map((c, i) => (
+                {catSuggestions.map((c, i) => (
                   <li key={i} onClick={() => { setCat(c); setOpenCat(false); }}>{c}</li>
                 ))}
               </ul>
@@ -118,7 +123,7 @@ export default function SearchBusinesses() {
             <input
               type="text"
               className="filter-input"
-              placeholder="הקלד עיר לחיפוש"
+              placeholder="הקלד עיר"
               value={city}
               onFocus={() => setOpenCity(true)}
               onChange={e => { setCity(e.target.value); setOpenCity(true); }}
