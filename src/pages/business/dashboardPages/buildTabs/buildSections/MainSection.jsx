@@ -1,5 +1,3 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
-
 import React from "react";
 import "../../build/Build.css";
 import MainTab from "../MainTab.jsx";
@@ -175,6 +173,11 @@ export default function MainSection({
         {renderTopBar && renderTopBar()}
 
         <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
+          {businessDetails.category && (
+            <p className="preview-category">
+              <strong>קטגוריה:</strong> {businessDetails.category}
+            </p>
+          )}
           {businessDetails.description && (
             <p className="preview-description">
               <strong>תיאור:</strong> {businessDetails.description}
