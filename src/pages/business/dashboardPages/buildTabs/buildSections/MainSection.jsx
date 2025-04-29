@@ -22,14 +22,12 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
-  // autocomplete state
   const [cityQuery, setCityQuery] = useState("");
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [categoryQuery, setCategoryQuery] = useState("");
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const containerRef = useRef();
 
-  // close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -41,16 +39,13 @@ export default function MainSection({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // filter lists
   const filteredCities = CITIES.filter(c => c.toLowerCase().includes(cityQuery.toLowerCase()));
   const filteredCategories = CATEGORIES.filter(c => c.toLowerCase().includes(categoryQuery.toLowerCase()));
 
-  // images
   const mainImages = businessDetails.mainImages || [];
   const uniqueImages = dedupeByPreview(mainImages);
   const limitedMainImages = uniqueImages.slice(0, 5);
 
-  // selection handlers
   const selectCity = c => {
     handleInputChange({ target: { name: "city", value: c } });
     setCityQuery("");
@@ -98,50 +93,34 @@ export default function MainSection({
         />
 
         {/* Category Select */}
-<label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
-{/* Category Select */}
-<label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
-<select
-  name="category"
-  value={businessDetails.category || ""}
-  onChange={handleInputChange}
-  size={CATEGORIES.length > 5 ? 5 : CATEGORIES.length}
-  required
->
-  <option value="" disabled>בחר קטגוריה</option>
-  {CATEGORIES.map(cat => (
-    <option key={cat} value={cat}>{cat}</option>
-  ))}
-</select>
-
-{/* City Select */}
-<label>עיר: <span style={{ color: "red" }}>*</span></label>
-<select
-  name="city"
-  value={businessDetails.city || ""}
-  onChange={handleInputChange}
-  size={CITIES.length > 5 ? 5 : CITIES.length}
-  required
->
-  <option value="" disabled>בחר עיר</option>
-  {CITIES.map(city => (
-    <option key={city} value={city}>{city}</option>
-  ))}
-</select>
+        <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
+        <select
+          name="category"
+          value={businessDetails.category || ""}
+          onChange={handleInputChange}
+          size={5}
+          required
+        >
+          <option value="" disabled>בחר קטגוריה</option>
+          {CATEGORIES.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
 
         {/* City Select */}
-<label>עיר: <span style={{ color: "red" }}>*</span></label>
-<select
-  name="city"
-  value={businessDetails.city || ""}
-  onChange={handleInputChange}
-  required
->
-  <option value="" disabled>בחר עיר</option>
-  {CITIES.map(city => (
-    <option key={city} value={city}>{city}</option>
-  ))}
-</select>
+        <label>עיר: <span style={{ color: "red" }}>*</span></label>
+        <select
+          name="city"
+          value={businessDetails.city || ""}
+          onChange={handleInputChange}
+          size={5}
+          required
+        >
+          <option value="" disabled>בחר עיר</option>
+          {CITIES.map(city => (
+            <option key={city} value={city}>{city}</option>
+          ))}
+        </select>
 
         {/* Logo Upload */}
         <label>לוגו:</label>
