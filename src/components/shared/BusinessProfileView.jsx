@@ -20,6 +20,7 @@ export default function BusinessProfileView() {
   const { businessId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
@@ -61,7 +62,9 @@ export default function BusinessProfileView() {
   } = data;
 
   const normalizedMain = mainImages.map(url => ({ preview: url }));
-  const uniqueMain = dedupeByPreview(normalizedMain).slice(0, 5).map(obj => obj.preview);
+  const uniqueMain = dedupeByPreview(normalizedMain)
+    .slice(0, 5)
+    .map(obj => obj.preview);
 
   const isOwner = user?.role === "business" && user.businessId === businessId;
 
@@ -70,10 +73,15 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
 
-          <button className="back-btn" onClick={() => navigate(-1)}>← חזור</button>
+          <button className="back-btn" onClick={() => navigate(-1)}>
+            ← חזור
+          </button>
 
           {isOwner && (
-            <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+            <Link
+              to={`/business/${businessId}/dashboard/edit`}
+              className="edit-profile-btn"
+            >
               ✏️ ערוך פרטי העסק
             </Link>
           )}
@@ -109,7 +117,9 @@ export default function BusinessProfileView() {
             )}
           </div>
 
-          <div className="rating"><strong>{rating}</strong> / 5 ★</div>
+          <div className="rating">
+            <strong>{rating}</strong> / 5 ★
+          </div>
           <hr className="profile-divider" />
 
           <div className="profile-tabs">
@@ -129,7 +139,11 @@ export default function BusinessProfileView() {
               <div className="public-main-images">
                 {uniqueMain.length > 0 ? (
                   uniqueMain.map((url, i) => (
-                    <img key={url} src={url} alt={`תמונה ראשית ${i + 1}`} />
+                    <img
+                      key={url}
+                      src={url}
+                      alt={`תמונה ראשית ${i + 1}`}
+                    />
                   ))
                 ) : (
                   <p className="no-data">אין תמונות להצגה</p>
@@ -155,7 +169,8 @@ export default function BusinessProfileView() {
                   reviews.map((r, i) => (
                     <div key={i} className="review-card improved">
                       <div className="review-header">
-                        <strong>{r.user}</strong> <span>★ {r.rating}/5</span>
+                        <strong>{r.user}</strong>{" "}
+                        <span>★ {r.rating}/5</span>
                       </div>
                       <p>{r.comment || r.text}</p>
                     </div>
@@ -182,14 +197,17 @@ export default function BusinessProfileView() {
             )}
 
             {currentTab === "צ'אט עם העסק" && (
-              <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
+              <div className="chat-tab">
+                <h3>שלח הודעה לעסק</h3>
+              </div>
             )}
 
             {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
+              <div className="shop-tab-placeholder">
+                <p>פיתוח בהמשך…</p>
+              </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
