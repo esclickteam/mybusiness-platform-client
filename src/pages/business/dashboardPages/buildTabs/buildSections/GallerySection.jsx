@@ -41,22 +41,10 @@ export default function GallerySection({
         {renderTopBar && renderTopBar()}
 
         <h3 className="section-title">הגלריה שלנו</h3>
-        <div
-          className="gallery-scroll-container"
-          style={{
-            display: 'flex',
-            gap: '1rem',
-            overflowX: 'auto',
-            padding: '1rem 0'
-          }}
-        >
+        <div className="gallery-grid-container">
           {gallery.length > 0 ? (
             gallery.map((item, i) => (
-              <div
-                key={i}
-                className="gallery-item-wrapper"
-                style={{ position: 'relative', minWidth: '150px' }}
-              >
+              <div key={i} className="gallery-item-wrapper">
                 <img
                   src={item.preview}
                   alt={`תמונת גלריה ${i + 1}`}
@@ -67,7 +55,6 @@ export default function GallerySection({
                   onClick={() => handleDeleteImage(i)}
                   type="button"
                   title="מחיקה"
-                  style={{ position: 'absolute', top: 4, right: 4 }}
                 >
                   🗑️
                 </button>
@@ -76,7 +63,6 @@ export default function GallerySection({
                   onClick={() => handleEditImage(i)}
                   type="button"
                   title="עריכה"
-                  style={{ position: 'absolute',  top: 4, left: 4 }}
                 >
                   ✏️
                 </button>
