@@ -3,7 +3,15 @@ import { Link } from "react-router-dom";
 import "./BusinessCard.css";
 
 const BusinessCard = ({ business }) => {
-  const { _id, name, logo, description, category, phone } = business;
+  const {
+    _id,
+    name,
+    logo,
+    description,
+    category,
+    phone,
+    address = {},
+  } = business;
 
   return (
     <div className="business-card">
@@ -30,6 +38,12 @@ const BusinessCard = ({ business }) => {
       {phone && (
         <p className="business-card__phone">
           <strong>טלפון:</strong> {phone}
+        </p>
+      )}
+
+      {address.city && (
+        <p className="business-card__phone">
+          <strong>עיר:</strong> {address.city}
         </p>
       )}
 

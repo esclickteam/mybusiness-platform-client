@@ -36,6 +36,7 @@ export default function BusinessProfileView() {
           gallery: Array.isArray(biz.gallery) ? biz.gallery : [],
           reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
           faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
+          address: biz.address || { city: "" },
         });
       })
       .catch(err => console.error("❌ fetch business:", err))
@@ -51,12 +52,12 @@ export default function BusinessProfileView() {
     rating,
     description = "",
     phone = "",
-    city = "",
     category = "",
     mainImages,
     gallery,
     reviews,
     faqs,
+    address = {},
   } = data;
 
   const normalizedMain = mainImages.map(url => ({ preview: url }));
@@ -69,52 +70,48 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
 
-          {/* כפתור חזור */}
           <button className="back-btn" onClick={() => navigate(-1)}>← חזור</button>
 
-          {/* כפתור עריכה אם בעל העסק */}
           {isOwner && (
             <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
 
-{logo && (
-  <div className="logo-wrapper">
-    <img src={logo} alt="לוגו העסק" className="profile-logo" />
-  </div>
-)}
+          {logo && (
+            <div className="logo-wrapper">
+              <img src={logo} alt="לוגו העסק" className="profile-logo" />
+            </div>
+          )}
 
-<h1 className="business-name">{name}</h1>
+          <h1 className="business-name">{name}</h1>
 
-<div className="about-phone">
-  {category && (
-    <p>
-      <strong>🏷️ קטגוריה:</strong> {category}
-    </p>
-  )}
-  {description && (
-    <p>
-      <strong>📝 תיאור:</strong> {description}
-    </p>
-  )}
-  {phone && (
-    <p>
-      <strong>📞 טלפון:</strong> {phone}
-    </p>
-  )}
-  {data.address?.city && (
-    <p>
-      <strong>🏙️ עיר:</strong> {data.address.city}
-    </p>
-  )}
-</div>
-
+          <div className="about-phone">
+            {category && (
+              <p>
+                <strong>🏷️ קטגוריה:</strong> {category}
+              </p>
+            )}
+            {description && (
+              <p>
+                <strong>📝 תיאור:</strong> {description}
+              </p>
+            )}
+            {phone && (
+              <p>
+                <strong>📞 טלפון:</strong> {phone}
+              </p>
+            )}
+            {address.city && (
+              <p>
+                <strong>🏙️ עיר:</strong> {address.city}
+              </p>
+            )}
+          </div>
 
           <div className="rating"><strong>{rating}</strong> / 5 ★</div>
           <hr className="profile-divider" />
 
-          {/* טאבים */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
@@ -127,7 +124,6 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
-          {/* תוכן טאבים */}
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="public-main-images">

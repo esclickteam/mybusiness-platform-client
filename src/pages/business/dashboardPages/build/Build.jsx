@@ -322,26 +322,28 @@ const handleDeleteMainImage = async idx => {
     try {
       // מחכים שכל ההעלאות בתור יסתיימו
       await Promise.all(pendingUploadsRef.current);
-
-      // שולחים רק את השדות הנתמכים ב־PATCH
+  
+      // שולחים את השדות הנתמכים כולל address עם עיר
       await API.patch("/business/my", {
         name:        businessDetails.name,
         category:    businessDetails.category,
         description: businessDetails.description,
         phone:       businessDetails.phone,
-        email:       businessDetails.email,
+        address: {
+          city: businessDetails.city || "",
+        },
       });
-
-      // במקום לנווט — נדליק את הכפתור
+  
+      alert("✅ נשמר בהצלחה!");
       setShowViewProfile(true);
-
     } catch (err) {
-      console.error(err);
-      alert("❌ שגיאה בשמירה");
+      console.error("❌ שגיאה בשמירה:", err);
+      alert("❌ שמירה נכשלה");
     } finally {
       setIsSaving(false);
     }
   };
+  
   
 
   // ===== TOP BAR =====
