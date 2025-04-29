@@ -67,9 +67,17 @@ export default function Build() {
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
+  
           setBusinessDetails({
             ...data,
-            gallery: (data.gallery    || []).map(url => ({ preview: url })),
+  
+            // ✅ הכנת הלוגו לתצוגה
+            logo: data.logo ? { preview: data.logo } : null,
+  
+            // ✅ גלריה
+            gallery: (data.gallery || []).map(url => ({ preview: url })),
+  
+            // ✅ תמונות ראשיות עם הסרת כפילויות
             mainImages: dedupeByPreview(
               (data.mainImages || []).map(url => ({ preview: url, size: "full" }))
             ).slice(0, 5),
@@ -79,32 +87,51 @@ export default function Build() {
       .catch(console.error);
   }, []);
   
+  
 
   const handleInputChange = ({ target: { name, value } }) =>
     setBusinessDetails(prev => ({ ...prev, [name]: value }));
 
   // ===== LOGO =====
-  const handleLogoClick  = () => logoInputRef.current?.click();
-  const handleLogoChange = e => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = null;
-    const preview = URL.createObjectURL(file);
-    setBusinessDetails(prev => ({ ...prev, logo: { file, preview } }));
+  const handleLogoClick = () => logoInputRef.current?.click();
 
-    const fd = new FormData();
-    fd.append("logo", file);
-    track(
-      API.put("/business/my/logo", fd)
-        .then(res => {
-          if (res.status === 200) {
-            setBusinessDetails(prev => ({ ...prev, logo: { preview: res.data.logo } }));
-          }
-        })
-        .finally(() => URL.revokeObjectURL(preview))
-        .catch(console.error)
-    );
-  };
+const handleLogoChange = e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  e.target.value = null;
+
+  // 🧹 ניקוי preview קודם אם היה blob
+  if (businessDetails.logo?.preview?.startsWith("blob:")) {
+    URL.revokeObjectURL(businessDetails.logo.preview);
+  }
+
+  const preview = URL.createObjectURL(file);
+
+  // ⬇️ עדכון זמני ל־state
+  setBusinessDetails(prev => ({
+    ...prev,
+    logo: { file, preview }
+  }));
+
+  // ⬆️ שליחה ל־API
+  const fd = new FormData();
+  fd.append("logo", file);
+
+  track(
+    API.put("/business/my/logo", fd)
+      .then(res => {
+        if (res.status === 200) {
+          setBusinessDetails(prev => ({
+            ...prev,
+            logo: { preview: res.data.logo } // ← מחליף את ה־blob ב־URL אמיתי
+          }));
+        }
+      })
+      .catch(console.error)
+      .finally(() => URL.revokeObjectURL(preview)) // 🧼 ניקוי blob מהזיכרון
+  );
+};
+
 
   // ===== MAIN IMAGES =====
   // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
