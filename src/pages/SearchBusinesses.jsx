@@ -1,5 +1,3 @@
-// src/pages/SearchBusinesses.jsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
@@ -25,60 +23,49 @@ export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // נתונים
+  // --- State ראשי ---
   const [all, setAll]           = useState([]);
   const [filtered, setFiltered] = useState([]);
 
-  // סינון
   const catParam  = searchParams.get('category') || '';
   const cityParam = searchParams.get('city')     || '';
   const [cat,  setCat]  = useState(catParam);
   const [city, setCity] = useState(cityParam);
 
-  // רשימת ערים ייחודיות
   const [cities, setCities] = useState([]);
 
-  // dropdown פתוחים
   const [openCat, setOpenCat]   = useState(false);
   const [openCity, setOpenCity] = useState(false);
   const wrapperCatRef           = useRef(null);
   const wrapperCityRef          = useRef(null);
 
-  // pagination
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // 1) טען את כל העסקים ופלט ערים ייחודיות
+  // --- 1) טען עסקים + הפק ערי ייחודיות ---
   useEffect(() => {
     API.get('/business')
       .then(r => {
         const list = r.data.businesses || [];
         setAll(list);
-        // הפקת ערים
-        const uniq = Array.from(new Set(
+        const uniqCities = Array.from(new Set(
           list.map(b => b.address?.city || '').filter(c => c)
         )).sort();
-        setCities(['כל הערים', ...uniq]);
+        setCities(['כל הערים', ...uniqCities]);
       })
       .catch(console.error);
   }, []);
 
-  // 2) סינון לפי קטגוריה + עיר
+  // --- 2) סינון על פי קטגוריה + עיר ---
   useEffect(() => {
     setFiltered(all.filter(b => {
-      // קטגוריה
-      if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) {
-        return false;
-      }
-      // עיר
-      if (city && city !== 'כל הערים' && b.address?.city !== city) {
-        return false;
-      }
+      if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) return false;
+      if (city && city !== 'כל הערים'       && b.address?.city !== city) return false;
       return true;
     }));
     setPage(1);
   }, [all, cat, city]);
 
-  // 3) סנכרון URL params
+  // --- 3) סנכרון URL params ---
   useEffect(() => {
     const p = new URLSearchParams();
     if (cat)  p.set('category', cat);
@@ -87,7 +74,7 @@ export default function SearchBusinesses() {
     setSearchParams(p, { replace: true });
   }, [cat, city, page]);
 
-  // 4) סגירת dropdown בלחיצה מחוץ (קטגוריה)
+  // --- 4) סגירת dropdown בלחיצה מחוץ ---
   useEffect(() => {
     const handler = e => {
       if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) {
@@ -101,7 +88,7 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // pagination logic
+  // --- Pagination ---
   const start      = (page - 1) * ITEMS_PER_PAGE;
   const pageItems  = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
@@ -111,7 +98,7 @@ export default function SearchBusinesses() {
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* --- סינון: קטגוריה + עיר --- */}
+        {/* ----- סינון: קטגוריה + עיר ----- */}
         <div className="filters">
           {/* קטגוריה */}
           <div className="dropdown-wrapper" ref={wrapperCatRef}>
@@ -154,7 +141,7 @@ export default function SearchBusinesses() {
           </div>
         </div>
 
-        {/* --- תוצאות + pagination --- */}
+        {/* ----- תוצאות + pagination ----- */}
         <div className="business-list">
           {pageItems.length > 0 ? (
             pageItems.map(b => (
