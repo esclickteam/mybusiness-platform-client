@@ -6,9 +6,16 @@ import BusinessCard from '../components/BusinessCard';
 import './BusinessList.css';
 
 const CATEGORIES = [
-  "כל הקטגוריות",
   "אולם אירועים", "אינסטלטור", "איפור קבוע", "בית קפה", "בניית אתרים", "ברברשופ",
-  // … שאר הקטגוריות …
+  "גינון / הדברה", "גלריה / חנות אומנות", "חנויות טבע / בריאות", "חנות בגדים", "חשמלאי",
+  "טכנאי מזגנים", "טכנאי מחשבים", "טכנאי סלולר", "יוגה / פילאטיס", "יועץ מס / רואה חשבון",
+  "כתיבת תוכן / קופירייטינג", "מאמן אישי / עסקי", "מאמן כושר", "מדיה / פרסום", "מדריך טיולים",
+  "מומחה שיווק דיגיטלי", "מורה למוזיקה / אומנות", "מורה פרטי", "מזון / אוכל ביתי", "מטפל/ת הוליסטי",
+  "מטפלת רגשית / NLP", "מכון יופי", "מניקור-פדיקור", "מסגר", "מסעדה", "מספרה",
+  "מעצב גרפי", "מעצב פנים", "מציל / מדריך שחייה", "מרצה / מנטור", "משפחתון / צהרון / גן",
+  "מתווך נדל״ן", "נגר", "נהג / שליחויות", "עורך דין", "עיצוב גבות", "פסיכולוג / יועץ",
+  "צלם / סטודיו צילום", "קוסמטיקאית", "קייטרינג", "רפואה משלימה", "שיפוצניק",
+  "שירותים לקהילה / עמותות", "תזונאית / דיאטנית"
 ];
 
 const SORT_OPTIONS = [
@@ -20,139 +27,134 @@ const ITEMS_PER_PAGE = 9;
 
 export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [businesses, setBusinesses]         = useState([]);
-  const [filtered, setFiltered]             = useState([]);
-  const [searchTerm, setSearchTerm]         = useState(searchParams.get('search') || '');
-  const [sortOption, setSortOption]         = useState(searchParams.get('sort')   || 'newest');
-  const selectedCategory                    = searchParams.get('category')        || "כל הקטגוריות";
-  const [page, setPage]                     = useState(Number(searchParams.get('page')) || 1);
-  const [showCategories, setShowCategories] = useState(false);
-  const scrollRef                           = useRef();
+  const [businesses, setBusinesses] = useState([]);
+  const [filtered, setFiltered]   = useState([]);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [sortOption, setSortOption] = useState(searchParams.get('sort')   || 'newest');
+  const selectedCategory            = searchParams.get('category')        || '';
+  const [page, setPage]             = useState(Number(searchParams.get('page')) || 1);
+  const [openCats, setOpenCats]     = useState(false);
+  const wrapperRef                  = useRef(null);
 
-  // 1) fetch
+  // Fetch
   useEffect(() => {
-    API.get('/business')
-      .then(res => setBusinesses(res.data.businesses || []))
-      .catch(console.error);
+    API.get('/business').then(r => setBusinesses(r.data.businesses || [])).catch(console.error);
   }, []);
 
-  // 2) filter + sort
+  // Filter + sort
   useEffect(() => {
     const term = searchTerm.toLowerCase();
     let list = businesses.filter(b => {
-      const textMatch =
+      const textMatch = (
         b.name?.toLowerCase().includes(term) ||
-        b.category?.toLowerCase().includes(term) ||
-        b.description?.toLowerCase().includes(term);
-      const catMatch =
-        selectedCategory === "כל הקטגוריות" ||
-        b.category === selectedCategory;
+        b.description?.toLowerCase().includes(term)
+      );
+      const catMatch = selectedCategory === '' || b.category === selectedCategory;
       return textMatch && catMatch;
     });
-
     if (sortOption === 'alphabetical') {
-      list.sort((a, b) => a.name.localeCompare(b.name));
+      list.sort((a,b) => a.name.localeCompare(b.name));
     } else {
-      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      list.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
-
     setFiltered(list);
     setPage(1);
   }, [businesses, searchTerm, selectedCategory, sortOption]);
 
-  // 3) sync URL
+  // Sync URL
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchTerm)                         params.set('search', searchTerm);
-    if (selectedCategory !== "כל הקטגוריות") params.set('category', selectedCategory);
-    if (sortOption !== 'newest')            params.set('sort', sortOption);
-    if (page > 1)                           params.set('page', page);
-    setSearchParams(params, { replace: true });
+    const p = new URLSearchParams();
+    if (searchTerm)       p.set('search', searchTerm);
+    if (selectedCategory) p.set('category', selectedCategory);
+    if (sortOption!=='newest') p.set('sort', sortOption);
+    if (page>1)           p.set('page', page);
+    setSearchParams(p, { replace: true });
   }, [searchTerm, selectedCategory, sortOption, page]);
 
-  // pagination
-  const startIdx   = (page - 1) * ITEMS_PER_PAGE;
-  const pageItems  = filtered.slice(startIdx, startIdx + ITEMS_PER_PAGE);
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = e => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setOpenCats(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
-  // scroll cats
-  const scrollCategories = dir => {
-    const amt = 200;
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: dir==='left'? -amt: amt, behavior: 'smooth' });
-    }
-  };
+  // Pagination
+  const startIdx  = (page - 1) * ITEMS_PER_PAGE;
+  const pageItems = filtered.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const totalPages= Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  // category click
-  const handleCategoryClick = cat => {
-    const params = new URLSearchParams(searchParams);
-    if (cat === "כל הקטגוריות") params.delete('category');
-    else                         params.set('category', cat);
-    setSearchParams(params);
+  // Select category
+  const pickCat = cat => {
+    setSearchParams(params => {
+      const p = new URLSearchParams(params);
+      if (cat) p.set('category', cat);
+      else     p.delete('category');
+      return p;
+    });
+    setOpenCats(false);
+    setSearchTerm(''); // optional: clear search
   };
 
   return (
     <div className="list-page">
       <div className="business-list-container">
+
         <h1>רשימת עסקים</h1>
 
-        {/* 1) Search bar */}
-        <input
-          className="search-input"
-          type="text"
-          placeholder="חפש לפי שם, קטגוריה או תיאור..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          onFocus={() => setShowCategories(true)}
-        />
-
-        {/* 2) Categories (shown only after focus on search) */}
-        {showCategories && (
-          <div className="categories-scroll-wrapper">
-            <button className="scroll-arrow" onClick={() => scrollCategories('left')}>&#8678;</button>
-            <div className="categories-scroll" ref={scrollRef}>
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat}
-                  className={`category-btn ${selectedCategory===cat?'active':''}`}
-                  onClick={() => handleCategoryClick(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-            <button className="scroll-arrow" onClick={() => scrollCategories('right')}>&#8680;</button>
-          </div>
-        )}
-
-        {/* 3) Sort */}
-        <div className="sort-options">
-          <select value={sortOption} onChange={e => setSortOption(e.target.value)}>
-            {SORT_OPTIONS.map(o => (
+        <div className="search-wrapper" ref={wrapperRef}>
+          <input
+            className="search-input"
+            type="text"
+            placeholder="חפש לפי שם, קטגוריה או תיאור..."
+            value={searchTerm}
+            onChange={e=>setSearchTerm(e.target.value)}
+            onFocus={()=>setOpenCats(true)}
+          />
+          <select
+            className="sort-select"
+            value={sortOption}
+            onChange={e=>setSortOption(e.target.value)}
+          >
+            {SORT_OPTIONS.map(o=>(
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
+
+          {openCats && !searchTerm && (
+            <ul className="suggestions-list">
+              {['', ...CATEGORIES].map((cat,i)=>(
+                <li key={i} onMouseDown={()=>pickCat(cat)}>
+                  {cat || <em>כל הקטגוריות</em>}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        {/* 4) Results grid */}
         <div className="business-list">
-          {searchTerm === '' && !showCategories ? (
-            <p className="placeholder">🔍 הקש חיפוש כדי להציג קטגוריות ותוצאות.</p>
-          ) : pageItems.length > 0 ? (
-            pageItems.map(biz => <BusinessCard key={biz._id} business={biz} />)
+          { !openCats && searchTerm==='' && selectedCategory==='' ? (
+            <p className="placeholder">🔍 הקש בחיפוש כדי להציג קטגוריות ותוצאות.</p>
+          ) : pageItems.length>0 ? (
+            pageItems.map(b=> <BusinessCard key={b._id} business={b}/>)
           ) : (
             <p className="no-results">😕 לא נמצאו עסקים מתאימים.</p>
           )}
         </div>
 
-        {/* 5) Pagination */}
-        {totalPages > 1 && (
+        {totalPages>1 && (
           <div className="pagination">
-            <button onClick={() => setPage(p=>Math.max(p-1,1))} disabled={page===1}>הקודם</button>
+            <button onClick={()=>setPage(p=>Math.max(p-1,1))}
+                    disabled={page===1}>הקודם</button>
             <span>{page} מתוך {totalPages}</span>
-            <button onClick={() => setPage(p=>Math.min(p+1,totalPages))} disabled={page===totalPages}>הבא</button>
+            <button onClick={()=>setPage(p=>Math.min(p+1,totalPages))}
+                    disabled={page===totalPages}>הבא</button>
           </div>
         )}
+
       </div>
     </div>
   );
