@@ -39,11 +39,13 @@ export default function BusinessDashboardLayout() {
             {/* כפתור צפייה בפרופיל ציבורי */}
             {user?.role === "business" && (
               <NavLink
-                to={`/business/${businessId}`}
-                className={({ isActive }) => (isActive ? "active" : undefined)}
-              >
-                👀 צפייה בפרופיל
-              </NavLink>
+              to={`/business/${businessId}`}
+              end
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
+              👀 צפייה בפרופיל
+            </NavLink>
+            
             )}
 
             {/* כפתורי הטאבים בדשבורד */}
