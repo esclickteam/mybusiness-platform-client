@@ -95,8 +95,8 @@ export default function MainSection({
         {/* Category Select */}
         <label>קטגוריה: <span style={{ color: "red" }}>*</span></label>
         <select
-          name="$1"
-          value={businessDetails.$1 || ""}
+          name="category"
+          value={businessDetails.category || ""}
           onChange={handleInputChange}
           required
         >
