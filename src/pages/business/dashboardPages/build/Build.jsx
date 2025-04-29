@@ -42,6 +42,8 @@ export default function Build() {
   });
 
   const [isSaving, setIsSaving]       = useState(false);
+  const [showViewProfile, setShowViewProfile] = useState(false);
+
   const [editIndex, setEditIndex]     = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
