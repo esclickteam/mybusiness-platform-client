@@ -30,15 +30,18 @@ export default function BusinessProfileView() {
     API.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-
-        // גיבוי: city מתוך address או מתוך שדה ישיר biz.city
-        const city = biz.address?.city ?? biz.city ?? "";
-
+  
+        // אם address הוא מחרוזת (גרסה ישנה) או אובייקט (גרסה חדשה)
+        const rawAddress = biz.address;
+        const city = typeof rawAddress === "string"
+          ? rawAddress
+          : rawAddress?.city ?? biz.city ?? "";
+  
         setData({
           ...biz,
           city,
           address: { city },
-          rating: biz.rating ?? 0,
+          rating:    biz.rating     ?? 0,
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
           gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
           reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
@@ -48,6 +51,7 @@ export default function BusinessProfileView() {
       .catch(err => console.error("❌ fetch business:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
+  
 
   if (loading) return <div className="loading">טוען…</div>;
   if (!data)   return <div className="error">העסק לא נמצא</div>;

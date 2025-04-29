@@ -70,20 +70,26 @@ export default function Build() {
       .then(res => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
-          
+  
+          // תמיכה במקרה ש־address הוא מחרוזת (גרסה ישנה) או אובייקט (גרסה חדשה)
+          const rawAddress = data.address;
+          const city = typeof rawAddress === "string"
+            ? rawAddress
+            : rawAddress?.city || "";
+  
           setBusinessDetails({
-            // ← משיכה של city מתוך data.address
-            city: data.address?.city || "",
-            
+            // ← העיר שמפוענחת
+            city,
+  
             // שאר השדות כפי שהיו
             ...data,
-            
+  
             // ✅ הכנת הלוגו לתצוגה
             logo: data.logo ? { preview: data.logo } : null,
-            
+  
             // ✅ גלריה
             gallery: (data.gallery || []).map(url => ({ preview: url })),
-            
+  
             // ✅ תמונות ראשיות עם הסרת כפילויות
             mainImages: dedupeByPreview(
               (data.mainImages || []).map(url => ({ preview: url, size: "full" }))
@@ -93,6 +99,7 @@ export default function Build() {
       })
       .catch(console.error);
   }, []);
+  
   
   
   
