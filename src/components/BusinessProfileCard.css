@@ -1,25 +1,25 @@
 /* src/components/BusinessProfileCard.css */
 
-/* קונטיינר הכרטיס */
 .business-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #d1b3ff9a; /* לבן עם נגיעה יוקרתית */
+  background-color: #d1b3ff9a; /* רקע סגלגל בהיר */
   border-radius: 24px;
   padding: 2rem 1.5rem;
-  box-shadow: 0 8px 24px rgba(138, 43, 226, 0.08); /* סגול מעודן */
+  box-shadow: 0 8px 24px rgba(138, 43, 226, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
+  min-height: 380px;
+  border: none;
 }
 
-/* אפקט הובר */
 .business-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 28px rgba(138, 43, 226, 0.12);
 }
 
-/* שם העסק */
+/* שם */
 .business-card__name {
   font-size: 1.4rem;
   font-weight: bold;
@@ -27,21 +27,20 @@
   margin-bottom: 0.5rem;
 }
 
-/* קטגוריה ותיאור */
-.business-card__description {
+/* תיאור וקטגוריה */
+.business-card__description,
+.business-card__phone {
   font-size: 1rem;
   color: #444;
   margin-bottom: 0.5rem;
 }
 
-/* טלפון */
-.business-card__phone {
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 1rem;
+/* טלפון - חיזוק קטן */
+.business-card__phone strong {
+  color: #000;
 }
 
-/* כפתור צפייה */
+/* כפתור */
 .business-card__btn {
   background-color: #8a2be2;
   color: white;

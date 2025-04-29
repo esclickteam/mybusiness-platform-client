@@ -148,14 +148,17 @@ const SearchBusinesses = () => {
         </div>
 
         <div className="business-list">
-          {currentBusinesses.length > 0 ? (
-            currentBusinesses.map((business) => (
-              <BusinessCard key={business._id} business={business} />
-            ))
-          ) : (
-            <p>לא נמצאו עסקים מתאימים.</p>
-          )}
-        </div>
+  {searchTerm === "" && selectedCategory === "כל הקטגוריות" ? (
+    <p className="placeholder-message">🔍 בחר קטגוריה או חפש מונח כדי להציג עסקים.</p>
+  ) : currentBusinesses.length > 0 ? (
+    currentBusinesses.map(business => (
+      <BusinessCard key={business._id} business={business} />
+    ))
+  ) : (
+    <p className="no-results-message">😕 לא נמצאו עסקים מתאימים.</p>
+  )}
+</div>
+
 
         {totalPages > 1 && (
           <div className="pagination">
