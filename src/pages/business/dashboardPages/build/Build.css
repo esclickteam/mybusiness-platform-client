@@ -185,20 +185,18 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-top: 1rem;            /* רווח מעל */
-  overflow: visible;           /* מבטל גלילה אופקית */
-  padding-bottom: 0;           /* אין צורך בגלילה */
+  margin-top: 1rem;
+  overflow: visible;
+  padding-bottom: 0;
 }
-
 .form-column .gallery-preview .gallery-item-wrapper,
 .form-column .gallery-preview .gallery-placeholder {
-  width: 100%;                 /* תופס 1/3 מהשורה בדיוק */
-  aspect-ratio: 1 / 1;         /* יחסי גובה-רוחב 1:1 */
-  border: none;                /* מסיר את המסגרת המנוקדת */
-  border-radius: 12px;         /* כמו בתצוגה */
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: none;
+  border-radius: 12px;
   overflow: hidden;
 }
-
 .form-column .gallery-preview .gallery-img {
   width: 100%;
   height: 100%;
@@ -247,6 +245,14 @@
 .edit-btn svg {
   width: 14px;
   height: 14px;
+}
+
+/* ✅ וידוא שה-delete-btn מוצג בצד שמאל */
+.form-column .gallery-item-wrapper .delete-btn {
+  display: flex !important;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
 }
 
 /* === פופאפ בחירת גודל תמונה === */
