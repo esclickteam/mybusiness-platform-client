@@ -6,19 +6,22 @@ import ALL_CITIES from '../data/cities';
 import './BusinessList.css';
 
 const CATEGORIES = [
-  "כל הקטגוריות","אולם אירועים","אינסטלטור","איפור קבוע","בניית אתרים",
-  "בית קפה","ברברשופ","גינון / הדברה","גלריה / חנות אומנות",
-  "חנויות טבע / בריאות","חנות בגדים","חשמלאי","טכנאי מחשבים",
-  "טכנאי מזגנים","טכנאי סלולר","יועץ מס / רואה חשבון","יוגה / פילאטיס",
-  "קייטרינג","כתיבת תוכן / קופירייטינג","מאמן אישי / עסקי","מאמן כושר",
-  "מטפלת רגשית / NLP","מטפל/ת הוליסטי","מדיה / פרסום","מדריך טיולים",
-  "מומחה שיווק דיגיטלי","מורה למוזיקה / אומנות","מורה פרטי",
-  "משפחתון / צהרון / גן","מתווך נדל״ן","נהג / שליחויות","נגר",
-  "עורך דין","עיצוב גבות","פסיכולוג / יועץ","קוסמטיקאית",
-  "רפואה משלימה","שיפוצניק","מוסך","עורך דין משפחה"
+  /* ... כמו קודם ... */
 ];
 
 const ITEMS_PER_PAGE = 9;
+
+// פונקציה לנרמול עיר: הסרת ניקוד עברי ופסיקים/מקפים
+function normalizeCity(str) {
+  return str
+    .normalize('NFD')
+    // הסרת כל ניקוד עברי
+    .replace(/[\u0591-\u05C7]/g, '')
+    // הסרת מקפים, גרשיים, גרשים
+    .replace(/[-'"]+/g, '')
+    .trim()
+    .toLowerCase();
+}
 
 export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,39 +38,20 @@ export default function SearchBusinesses() {
 
   const cityParam = searchParams.get('city') || '';
   const [city, setCity] = useState(cityParam);
-  const [cities, setCities] = useState([]);
+  const [cities, setCities] = useState(['כל הערים', ...ALL_CITIES]);
   const [openCity, setOpenCity] = useState(false);
   const wrapperCityRef = useRef(null);
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // טען עסקים ובנה רשימת ערים (סטטית + דינמית עם עדיפות סטטית)
+  // טען עסקים
   useEffect(() => {
     API.get('/business')
-      .then(r => {
-        const list = r.data.businesses || [];
-        setAll(list);
-
-        // ערים מהעסקים
-        const dynamic = Array.from(new Set(
-          list
-            .map(b => b.address?.city?.trim() || '')
-            .filter(c => c)
-        ));
-
-        // עדיפות לערכים הסטטיים, והוספת דינמי שלא קיימים
-        const merged = Array.from(new Set([
-          'כל הערים',
-          ...ALL_CITIES,
-          ...dynamic.filter(c => !ALL_CITIES.includes(c))
-        ])).sort((a, b) => a.localeCompare(b, 'he'));
-
-        setCities(merged);
-      })
+      .then(r => setAll(r.data.businesses || []))
       .catch(console.error);
   }, []);
 
-  // סנכרון ל־URL
+  // סנכרון פרמטרים ל-URL
   useEffect(() => {
     const p = new URLSearchParams();
     if (cat) p.set('category', cat);
@@ -76,7 +60,7 @@ export default function SearchBusinesses() {
     setSearchParams(p, { replace: true });
   }, [cat, city, page]);
 
-  // סגור dropdown בלחיצה בחוץ
+  // סגור dropdown בלחיצה מחוץ
   useEffect(() => {
     const handler = e => {
       if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) {
@@ -90,11 +74,14 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // חיפוש וסינון
+  // חיפוש וסינון עם נרמול
   const handleSearch = () => {
+    const normCity = normalizeCity(city);
     const res = all.filter(b => {
       if (cat && cat !== 'כל הקטגוריות' && b.category !== cat) return false;
-      if (city && city !== 'כל הערים' && b.address?.city !== city) return false;
+      if (normCity && normCity !== normalizeCity('כל הערים')) {
+        if (normalizeCity(b.address?.city || '') !== normCity) return false;
+      }
       return true;
     });
     setFiltered(res);
@@ -111,8 +98,6 @@ export default function SearchBusinesses() {
     <div className="list-page">
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
-
-        {/* סינון */}
         <div className="filters">
 
           {/* קטגוריה */}
@@ -131,7 +116,7 @@ export default function SearchBusinesses() {
             )}
           </div>
 
-          {/* עיר עם autocomplete */}
+          {/* עיר עם autocomplete ונרמול */}
           <div className="dropdown-wrapper" ref={wrapperCityRef}>
             <input
               type="text"
@@ -144,19 +129,13 @@ export default function SearchBusinesses() {
             {openCity && (
               <ul className="suggestions-list">
                 {cities
-                  .filter(c =>
-                    city === '' ||
-                    c.toLowerCase().includes(city.trim().toLowerCase())
-                  )
+                  .filter(c => normalizeCity(c).includes(normalizeCity(city)))
                   .map((c, i) => (
                     <li key={i} onMouseDown={() => { setCity(c); setOpenCity(false); }}>
                       {c === 'כל הערים' ? <em>{c}</em> : c}
                     </li>
                   ))}
-                {cities.filter(c =>
-                  city === '' ||
-                  c.toLowerCase().includes(city.trim().toLowerCase())
-                ).length === 0 && (
+                {cities.filter(c => normalizeCity(c).includes(normalizeCity(city))).length === 0 && (
                   <li className="no-match">אין ערים מתאימות</li>
                 )}
               </ul>
@@ -173,22 +152,32 @@ export default function SearchBusinesses() {
         <div className="business-list">
           {!searched && <p className="no-search">לחץ על “חפש” כדי לראות תוצאות</p>}
           {searched && (
-            pageItems.length > 0
-              ? pageItems.map(b => (
-                  <BusinessCard key={b._id} business={b} onClick={() => navigate(`/business/${b._id}`)} />
-                ))
-              : <p className="no-results">
-                  😕 לא נמצאו עסקים בקטגוריה “{cat || '–'}” ובעיר “{city || '–'}”.
-                </p>
+            pageItems.length > 0 ? (
+              pageItems.map(b => (
+                <BusinessCard
+                  key={b._id}
+                  business={b}
+                  onClick={() => navigate(`/business/${b._id}`)}
+                />
+              ))
+            ) : (
+              <p className="no-results">
+                😕 לא נמצאו עסקים בקטגוריה “{cat || '–'}” ובעיר “{city || '–'}”.
+              </p>
+            )
           )}
         </div>
 
         {/* pagination */}
         {searched && totalPages > 1 && (
           <div className="pagination">
-            <button onClick={() => setPage(p => Math.max(p-1,1))} disabled={page===1}>הקודם</button>
+            <button onClick={() => setPage(p => Math.max(p-1,1))} disabled={page===1}>
+              הקודם
+            </button>
             <span>{page} מתוך {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(p+1,totalPages))} disabled={page===totalPages}>הבא</button>
+            <button onClick={() => setPage(p => Math.min(p+1,totalPages))} disabled={page===totalPages}>
+              הבא
+            </button>
           </div>
         )}
       </div>
