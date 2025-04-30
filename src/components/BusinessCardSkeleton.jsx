@@ -2,6 +2,7 @@
 import React from 'react';
 import './BusinessCardSkeleton.css';
 
+
 export default function BusinessCardSkeleton() {
   return (
     <div className="skeleton-card">
