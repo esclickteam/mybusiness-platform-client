@@ -110,6 +110,7 @@
   /* ===== Features Wrapper & Scroll Buttons ===== */
   .aw-features-wrapper {
     position: relative;
+    pointer-events: auto;
   }
   .aw-scroll-btn {
     position: absolute;
@@ -265,13 +266,117 @@
   }
   
   /* ===== Rainbow Color Slider ===== */
-  /* ... */
+  .aw-slider input[type="range"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(
+      to right,
+      #ccc 0%, black 5%, red 20%, orange 35%, yellow 50%,
+      green 65%, cyan 75%, blue 85%, magenta 95%, #ccc 100%
+    );
+    outline: none;
+  }
+  .aw-slider input[type="range"]::-webkit-slider-runnable-track {
+    height: 12px;
+    border-radius: 6px;
+    background: inherit;
+  }
+  .aw-slider input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--aw-accent);
+    border: 2px solid var(--aw-white);
+    margin-top: -4px;
+    cursor: pointer;
+  }
+  .aw-slider input[type="range"]::-moz-range-track {
+    height: 12px;
+    border-radius: 6px;
+    background: inherit;
+  }
+  .aw-slider input[type="range"]::-moz-range-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--aw-accent);
+    border: 2px solid var(--aw-white);
+    cursor: pointer;
+  }
   
   /* ===== Footer ===== */
-  /* ... */
+  .aw-footer {
+    background: var(--aw-bg-dark);
+    padding: .75rem 1rem;
+    display: flex;
+    gap: .5rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .aw-footer-btn {
+    background: transparent;
+    border: 1px solid var(--aw-white);
+    border-radius: 4px;
+    padding: .4rem .75rem;
+    color: var(--aw-white);
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .aw-footer-btn:hover,
+  .aw-footer-btn:focus {
+    background: rgba(255,255,255,0.1);
+  }
+  .aw-powered {
+    position: absolute;
+    bottom: .5rem;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: .75rem;
+    opacity: .7;
+  }
   
   /* ===== Utility classes ===== */
-  /* ... */
+  .es-highlight-links a {
+    outline: 2px dashed var(--aw-focus) !important;
+  }
+  .es-dark-contrast {
+    filter: invert(1) hue-rotate(180deg) !important;
+  }
+  .es-light-contrast {
+    filter: brightness(1.2) contrast(1.1) !important;
+  }
+  .es-mono-contrast {
+    filter: grayscale(100%) !important;
+  }
+  .es-high-saturation {
+    filter: saturate(1.5) !important;
+  }
+  .es-low-saturation {
+    filter: saturate(0.5) !important;
+  }
+  .es-large-text {
+    font-size: 1.2rem !important;
+  }
+  
+  /* ===== Screen Reader Mode ===== */
+  .es-screen-reader {
+    filter: contrast(1.2) brightness(0.9);
+  }
+  .es-screen-reader img,
+  .es-screen-reader video {
+    display: none !important;
+  }
+  .es-screen-reader *:not(:focus) {
+    opacity: 0.3 !important;
+  }
   
   /* ===== Voice Commands Indicator ===== */
   .es-voice-commands::after {
