@@ -31,6 +31,7 @@
   align-items: center;
   gap: 12px;
   white-space: nowrap;
+  margin-left: 0;
   margin-right: auto;
   padding-left: 12px;
 }
