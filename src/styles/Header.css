@@ -35,7 +35,7 @@
   transform: scale(1.05);
 }
 
-/* כפתור המבורגר */
+/* כפתור המבורגר – תמיד נראה */
 .menu-toggle {
   display: flex;
   align-items: center;
@@ -49,7 +49,7 @@
   cursor: pointer;
 }
 
-/* התחברות / התנתקות (דסקטופ) */
+/* התחברות / התנתקות (דסקטופ בלבד) */
 .auth-controls.left {
   display: flex;
   align-items: center;
@@ -94,6 +94,11 @@
   border: none;
 }
 
+/* סמנטיקה: רק במובייל */
+.mobile-only {
+  display: none;
+}
+
 /* ===== תפריט צד נפתח ===== */
 .mobile-menu {
   position: fixed;
@@ -118,7 +123,6 @@
   display: flex;
 }
 
-/* רקע כהה מאחורי התפריט */
 .menu-backdrop {
   position: fixed;
   top: 0;
@@ -188,5 +192,10 @@
 
   .desktop-only {
     display: none !important;
+  }
+
+  .mobile-only {
+    display: flex;
+    flex-direction: column;
   }
 }
