@@ -308,25 +308,8 @@ body::after {
   cursor: pointer;
   font-size: 1.2rem; /* גודל גדול יותר */
   color: var(--primary); /* צבע סגול */
-  z-index: 10;       /* מעל ההצעות */
-}
-
-.input-clearable input {
-  padding-right: 2rem;
-}
-.clear-btn {
-  position: absolute;
-  top: 50%;
-  right: 0.75rem;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  color: var(--text-secondary);
-}
-
-/* 15. Responsive */
+  z-index: 30;       /* מעל ההצעות */
+}/* 15. Responsive */
 @media (max-width: 768px) {
   .filters-wrapper {
     flex-direction: column;
