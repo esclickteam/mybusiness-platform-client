@@ -158,8 +158,8 @@ body::after {
   justify-content: center;
   gap: 8px;
   height: 48px;
-  padding: 0.75rem 2rem;
-  min-width: 200px;
+  padding: 0.75rem 2rem;   /* רחב יותר */
+  min-width: 200px;        /* רוחב מינימלי קבוע */
   background: linear-gradient(
     90deg,
     var(--primary) 0%,
@@ -222,7 +222,7 @@ body::after {
   position: relative;
 }
 .suggestions-list li::before {
-  content: "★";
+  content: "★";             /* כוכב במקום נקודה */
   position: absolute;
   right: 0.75rem;
   color: var(--primary);
@@ -263,9 +263,6 @@ body::after {
   transform: translateY(-6px);
   box-shadow: 0 24px 64px rgba(0,0,0,0.12);
 }
-.business-card img {
-  border-radius: 50%;
-}
 
 /* 13. פגינציה */
 .pagination {
@@ -296,23 +293,44 @@ body::after {
 .input-clearable {
   position: relative;
 }
-.input-clearable input {
-  padding-right: 3rem; /* הרחבה כדי שהתוכן לא יתקרב לאייקון */
+
+/* 14. Input clearable */
+.input-clearable {
+  position: relative;
 }
+
+/* ודא שהתיבה פולטת מספיק מרווח לאיקון בסוף */
+.input-clearable .filter-input {
+  /* padding-right גדול כדי שהטקסט לא יתקרב לאייקון */
+  padding-right: 4rem;
+}
+
 .clear-btn {
   position: absolute;
   top: 50%;
+  /* קבע מיקום מעט פנימה כדי להופיע בדיוק בסוף */
   right: 1rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--primary);
+  z-index: 30;
+}
+
+.clear-btn {
+  position: absolute;
+  top: 50%;
+  right: 1rem;      /* מיקום מעט יותר פנימה */
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.2rem; /* גודל גדול יותר */
   color: var(--primary); /* צבע סגול */
-  z-index: 30; /* מעל ההצעות */
-}
-
-/* 15. Responsive */
+  z-index: 30;       /* מעל ההצעות */
+}/* 15. Responsive */
 @media (max-width: 768px) {
   .filters-wrapper {
     flex-direction: column;
