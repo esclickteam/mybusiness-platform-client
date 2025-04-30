@@ -273,18 +273,6 @@ body::after {
 .dropdown-wrapper.input-clearable input.filter-input {
   padding-right: 4rem !important;
 }
-.clear-btn {
-  position: absolute;
-  top: 50%;
-  left: 0.75rem; /* מיקום בצד שמאל */
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: var(--primary);
-  z-index: 999; /* זה שומר שהאיקס יהיה מעל כל אלמנט אחר */
-}
 
 
 

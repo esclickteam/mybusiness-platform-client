@@ -133,9 +133,7 @@ export default function SearchBusinesses() {
               onChange={e => { setCat(e.target.value); setOpenCat(true); }}
               disabled={loading}
             />
-            {cat && !loading && (
-              <button className="clear-btn" onClick={() => setCat('')}>×</button>
-            )}
+            
             {openCat && catSuggestions.length > 0 && (
               <ul className="suggestions-list">
                 {catSuggestions.map((c, i) => (
@@ -156,9 +154,7 @@ export default function SearchBusinesses() {
               onChange={e => { setCity(e.target.value); setOpenCity(true); }}
               disabled={loading}
             />
-            {city && !loading && (
-              <button className="clear-btn" onClick={() => setCity('')}>×</button>
-            )}
+            
             {openCity && citySuggestions.length > 0 && (
               <ul className="suggestions-list">
                 {citySuggestions.map((c, i) => (
