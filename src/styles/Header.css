@@ -1,8 +1,9 @@
 /* ===== ראשי ===== */
+/* ===== ראשי ===== */
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* שומר על פיזור בין האלמנטים */
+  justify-content: flex-start; /* מוודא שהאלמנטים בצד שמאל */
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 90px;
@@ -18,7 +19,7 @@
   align-items: center;
   gap: 12px;
   white-space: nowrap;
-  margin-left: 0; /* הצגת הכפתורים בצד שמאל */
+  margin-left: 0; /* מיקום בצד שמאל */
   padding-left: 12px; /* מרווח בצד שמאל */
   margin-right: auto; /* דחיפת הכפתורים לשמאל */
 }
@@ -38,6 +39,7 @@
 .logo-link:hover .logo {
   transform: scale(1.05);
 }
+
 
 /* ===== ה־drawer ===== */
 .side-menu {
