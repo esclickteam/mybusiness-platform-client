@@ -3,7 +3,6 @@
 /* === reset בסיסי ורקע כללי === */
 html, body, #root {
   background: linear-gradient(135deg, #f0f4ff, #fefaff);
-
   margin: 0;
   padding: 0;
 }
@@ -15,9 +14,10 @@ html, body, #root {
   align-items: flex-start;
   min-height: 100vh;
   padding: 2rem 0;
-  background: #f5e1ff;
+  background: linear-gradient(135deg, #f0f4ff, #fefaff); /* 🟢 תואם ל-body */
   direction: rtl;
 }
+
 
 /* === מיכל הראשי (ללא רקעים וצללים) === */
 .business-profile-view.full-style {
