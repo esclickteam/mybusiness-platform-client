@@ -1,6 +1,7 @@
 // src/components/AccessibilityWidget.jsx
 import React, { useState } from 'react';
-import Modal from 'react-modal';
+import { DialogOverlay, DialogContent } from '@reach/dialog';
+import '@reach/dialog/styles.css';
 import {
   FaTimes,
   FaWheelchair,
@@ -19,8 +20,6 @@ import {
   FaFont
 } from 'react-icons/fa';
 import '../styles/AccessibilityWidget.css';
-
-Modal.setAppElement('#root');
 
 export default function AccessibilityWidget() {
   const [open, setOpen] = useState(false);
@@ -68,150 +67,146 @@ export default function AccessibilityWidget() {
         <FaWheelchair />
       </button>
 
-      <Modal
-        isOpen={open}
-        onRequestClose={() => setOpen(false)}
-        overlayClassName="aw-panel-overlay"
-        className="aw-panel"
-        contentLabel="Accessible Settings"
-      >
-        <button className="aw-close" onClick={() => setOpen(false)} aria-label="סגור">
-          <FaTimes />
-        </button>
-        <h2 className="aw-header">התאמות נגישות</h2>
+      {open && (
+        <DialogOverlay className="aw-panel-overlay" onDismiss={() => setOpen(false)}>
+          <DialogContent className="aw-panel" aria-label="התאמות נגישות">
+            <button className="aw-close" onClick={() => setOpen(false)} aria-label="סגור">
+              <FaTimes />
+            </button>
+            <h2 className="aw-header">התאמות נגישות</h2>
 
-        {/* --- Navigation Section --- */}
-        <section className="aw-section">
-          <header className="aw-section-header" onClick={() => toggleSection('nav')}>
-            <h3>ניווט</h3>
-            {sections.nav ? <FaChevronUp /> : <FaChevronDown />}
-          </header>
-          {sections.nav && (
-            <div className="aw-features">
-              {[
-                ['smartNav', FaArrowsAlt, 'ניווט חכם'],
-                ['keyNav', FaKeyboard, 'ניווט מקלדת'],
-                ['screenReader', FaAssistiveListeningSystems, 'קורא מסך'],
-                ['voiceCommands', FaMicrophoneAlt, 'פקודות קוליות'],
-                ['readAloud', FaVolumeUp, 'הקראת טקסט']
-              ].map(([k, Icon, label]) => (
-                <button
-                  key={k}
-                  className={`aw-feature-btn${state[k] ? ' active' : ''}`}
-                  onClick={() => toggleFeature(k)}
-                  aria-pressed={state[k]}
-                >
-                  <Icon className="aw-icon" />
-                  <span className="aw-label">{label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
+            {/* Navigation Section */}
+            <section className="aw-section">
+              <header className="aw-section-header" onClick={() => toggleSection('nav')}>
+                <h3>ניווט</h3>
+                {sections.nav ? <FaChevronUp /> : <FaChevronDown />}
+              </header>
+              {sections.nav && (
+                <div className="aw-features">
+                  {[
+                    ['smartNav', FaArrowsAlt, 'ניווט חכם'],
+                    ['keyNav', FaKeyboard, 'ניווט מקלדת'],
+                    ['screenReader', FaAssistiveListeningSystems, 'קורא מסך'],
+                    ['voiceCommands', FaMicrophoneAlt, 'פקודות קוליות'],
+                    ['readAloud', FaVolumeUp, 'הקראת טקסט']
+                  ].map(([k, Icon, label]) => (
+                    <button
+                      key={k}
+                      className={`aw-feature-btn${state[k] ? ' active' : ''}`}
+                      onClick={() => toggleFeature(k)}
+                      aria-pressed={state[k]}
+                    >
+                      <Icon className="aw-icon" />
+                      <span className="aw-label">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
 
-        {/* --- Contrast Section --- */}
-        <section className="aw-section">
-          <header className="aw-section-header" onClick={() => toggleSection('contrast')}>
-            <h3>ניגודיות</h3>
-            {sections.contrast ? <FaChevronUp /> : <FaChevronDown />}
-          </header>
-          {sections.contrast && (
-            <>
-              <div className="aw-features">
-                {[
-                  ['brightContrast', FaSun, 'בהירה'],
-                  ['darkContrast', FaMoon, 'כהה'],
-                  ['monoContrast', FaEye, 'מונוכרום'],
-                  ['highSat', FaTint, 'רוויה↑'],
-                  ['lowSat', FaAdjust, 'רוויה↓']
-                ].map(([k, Icon, label]) => (
-                  <button
-                    key={k}
-                    className={`aw-feature-btn${state[k] ? ' active' : ''}`}
-                    onClick={() => toggleFeature(k)}
-                  >
-                    <Icon className="aw-icon" />
-                    <span className="aw-label">{label}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="contrast-tabs">
-                {['backgrounds', 'headings', 'content'].map(tab => (
-                  <button
-                    key={tab}
-                    className={contrastTab === tab ? 'active' : ''}
-                    onClick={() => setContrastTab(tab)}
-                  >
-                    {tab === 'backgrounds' ? 'רקע' : tab === 'headings' ? 'כותרות' : 'תוכן'}
-                  </button>
-                ))}
-              </div>
-              <div className="aw-slider">
-                <label>התאם גוון:</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="360"
-                  value={state.hue}
-                  onChange={e => onSlider('hue', +e.target.value)}
-                />
-              </div>
-            </>
-          )}
-        </section>
+            {/* Contrast Section */}
+            <section className="aw-section">
+              <header className="aw-section-header" onClick={() => toggleSection('contrast')}>
+                <h3>ניגודיות</h3>
+                {sections.contrast ? <FaChevronUp /> : <FaChevronDown />}
+              </header>
+              {sections.contrast && (
+                <>
+                  <div className="aw-features">
+                    {[
+                      ['brightContrast', FaSun, 'בהירה'],
+                      ['darkContrast', FaMoon, 'כהה'],
+                      ['monoContrast', FaEye, 'מונוכרום'],
+                      ['highSat', FaTint, 'רוויה↑'],
+                      ['lowSat', FaAdjust, 'רוויה↓']
+                    ].map(([k, Icon, label]) => (
+                      <button
+                        key={k}
+                        className={`aw-feature-btn${state[k] ? ' active' : ''}`}
+                        onClick={() => toggleFeature(k)}
+                      >
+                        <Icon className="aw-icon" />
+                        <span className="aw-label">{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="contrast-tabs">
+                    {['backgrounds', 'headings', 'content'].map(tab => (
+                      <button
+                        key={tab}
+                        className={contrastTab === tab ? 'active' : ''}
+                        onClick={() => setContrastTab(tab)}
+                      >
+                        {tab === 'backgrounds' ? 'רקע' : tab === 'headings' ? 'כותרות' : 'תוכן'}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="aw-slider">
+                    <label>התאם גוון:</label>
+                    <input
+                      type="range"
+                      min="0" max="360"
+                      value={state.hue}
+                      onChange={e => onSlider('hue', +e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+            </section>
 
-        {/* --- Content Section --- */}
-        <section className="aw-section">
-          <header className="aw-section-header" onClick={() => toggleSection('content')}>
-            <h3>תוכן</h3>
-            {sections.content ? <FaChevronUp /> : <FaChevronDown />}
-          </header>
-          {sections.content && (
-            <>
-              <div className="aw-features">
-                <button
-                  className={`aw-feature-btn${state.largeText ? ' active' : ''}`}
-                  onClick={() => toggleFeature('largeText')}>
-                  <FaFont className="aw-icon" />
-                  <span className="aw-label">טקסט גדול</span>
-                </button>
-              </div>
-              <div className="content-tabs">
-                {['fontSize', 'letterSpacing', 'lineHeight'].map(tab => (
-                  <button
-                    key={tab}
-                    className={contentTab === tab ? 'active' : ''}
-                    onClick={() => setContentTab(tab)}
-                  >
-                    {tab === 'fontSize' ? 'גודל' : tab === 'letterSpacing' ? 'מרווח' : 'גובה'}
-                  </button>
-                ))}
-              </div>
-              <div className="aw-slider">
-                <label>
-                  {contentTab === 'fontSize'
-                    ? 'גודל גופן:'
-                    : contentTab === 'letterSpacing'
-                    ? 'מרווח מילים:'
-                    : 'גובה שורה:'}
-                </label>
-                <input
-                  type="range"
-                  min={contentTab === 'fontSize' ? 0.8 : contentTab === 'letterSpacing' ? 0 : 1}
-                  max={contentTab === 'fontSize' ? 2 : contentTab === 'letterSpacing' ? 20 : 3}
-                  step="0.1"
-                  value={state[contentTab]}
-                  onChange={e => onSlider(contentTab, +e.target.value)}
-                />
-              </div>
-            </>
-          )}
-        </section>
+            {/* Content Section */}
+            <section className="aw-section">
+              <header className="aw-section-header" onClick={() => toggleSection('content')}>
+                <h3>תוכן</h3>
+                {sections.content ? <FaChevronUp /> : <FaChevronDown />}
+              </header>
+              {sections.content && (
+                <>
+                  <div className="aw-features">
+                    <button
+                      className={`aw-feature-btn${state.largeText ? ' active' : ''}`}
+                      onClick={() => toggleFeature('largeText')}
+                    >
+                      <FaFont className="aw-icon" />
+                      <span className="aw-label">טקסט גדול</span>
+                    </button>
+                  </div>
+                  <div className="content-tabs">
+                    {['fontSize', 'letterSpacing', 'lineHeight'].map(tab => (
+                      <button
+                        key={tab}
+                        className={contentTab === tab ? 'active' : ''}
+                        onClick={() => setContentTab(tab)}
+                      >
+                        {tab === 'fontSize' ? 'גודל' : tab === 'letterSpacing' ? 'מרווח' : 'גובה'}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="aw-slider">
+                    <label>{contentTab === 'fontSize'
+                      ? 'גודל גופן:'
+                      : contentTab === 'letterSpacing'
+                      ? 'מרווח מילים:'
+                      : 'גובה שורה:'}</label>
+                    <input
+                      type="range"
+                      min={contentTab === 'fontSize' ? 0.8 : contentTab === 'letterSpacing' ? 0 : 1}
+                      max={contentTab === 'fontSize' ? 2 : contentTab === 'letterSpacing' ? 20 : 3}
+                      step="0.1"
+                      value={state[contentTab]}
+                      onChange={e => onSlider(contentTab, +e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+            </section>
 
-        <footer className="aw-footer">
-          <button onClick={() => setOpen(false)}>סגור</button>
-        </footer>
-      </Modal>
+            <footer className="aw-footer">
+              <button onClick={() => setOpen(false)}>סגור</button>
+            </footer>
+          </DialogContent>
+        </DialogOverlay>
+      )}
     </>
   );
 }
