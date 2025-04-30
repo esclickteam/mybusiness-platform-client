@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaMapMarkerAlt, FaPhoneAlt, FaTags } from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhoneAlt, FaTags, FaInfoCircle } from "react-icons/fa";
 import "./BusinessCard.css";
 
 export default function BusinessCard({ business, onClick }) {
@@ -33,8 +33,8 @@ export default function BusinessCard({ business, onClick }) {
       )}
 
       {description && (
-        <p className="business-card__info business-card__description">
-          <strong>תיאור:</strong> {description}
+        <p className="business-card__info">
+          <FaInfoCircle /> <strong>תיאור:</strong> {description}
         </p>
       )}
 

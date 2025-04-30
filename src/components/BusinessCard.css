@@ -57,14 +57,16 @@
 
 .business-card__info {
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 0.5rem;
   font-size: 1rem;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
   line-height: 1.4;
-  width: 100%;
+  text-align: center;
 }
+
 
 .business-card__info svg {
   flex-shrink: 0;
