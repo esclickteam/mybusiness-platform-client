@@ -110,6 +110,8 @@ body {
 /* ===== Features Wrapper & Scroll Buttons ===== */
 .aw-features-wrapper {
     position: relative;
+    overflow: visible;
+    pointer-events: none;
 }
 .aw-scroll-btn {
     position: absolute;
@@ -125,6 +127,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: auto;
+    z-index: 2000;
 }
 .aw-scroll-btn.up { top: .5rem; }
 .aw-scroll-btn.down { bottom: .5rem; }
@@ -169,6 +173,7 @@ body {
     text-align: center;
     cursor: pointer;
     transition: background .2s, color .2s, border-color .2s;
+    z-index: 2000;
 }
 .aw-feature-btn:hover,
 .aw-feature-btn:focus {
@@ -212,6 +217,7 @@ body {
     cursor: pointer;
     transition: background .2s, color .2s;
     font-size: .85rem;
+    z-index: 2000;
 }
 .contrast-tabs button.active {
     background: var(--aw-white);
@@ -234,6 +240,7 @@ body {
     cursor: pointer;
     transition: background .2s, color .2s;
     font-size: .85rem;
+    z-index: 2000;
 }
 .content-tabs button.active {
     background: var(--aw-white);
@@ -264,6 +271,7 @@ body {
     );
     appearance: none;
     outline: none;
+    z-index: 2000;
 }
 
 /* ===== Feature-specific classes ===== */
@@ -310,26 +318,4 @@ body {
 }
 .es-large-text {
     font-size: 1.2rem !important;
-}
-
-/* ---------------------------------------- */
-/* FIX INTERACTIONS                         */
-/* ---------------------------------------- */
-
-/* ודא שהפאנל נמצא מאחורי כל הכפתורים */
-.aw-panel {
-  z-index: 1000;
-}
-
-/* כפתורים ורכיבים אינטראקטיביים מעל הפאנל */
-.aw-close,
-.aw-section-header,
-.aw-scroll-btn,
-.aw-feature-btn,
-.contrast-tabs button,
-.content-tabs button,
-.aw-footer-btn,
-.aw-slider input[type="range"] {
-  position: relative;
-  z-index: 2000;
 }
