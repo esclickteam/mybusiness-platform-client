@@ -98,20 +98,20 @@
 
 /* ===== כפתור חזור בגוונים רכים ===== */
 .back-button {
-  background: #ffffff;         /* לבן נקי */
-  border: 1px solid #bfa2e1;   /* גבול פסטל סגול בהיר */
+  background: #ffffff;
+  border: 1px solid #bfa2e1;
   border-radius: 50%;
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #5e17eb;              /* סגול כהה קריא */
+  color: #5e17eb;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
 .back-button:hover {
-  background: #e8dbff;         /* רקע פסטל כהה מעט בהובר */
+  background: #e8dbff;
   color: #2d006e;
 }
 
@@ -190,6 +190,11 @@
     width: 100%;
     max-width: 300px;
   }
+}
+
+/* ===== Override specificity ===== */
+.side-menu.open .drawer-header {
+  background-color: #f3e8ff !important;
 }
 
 /* אנימציות */
