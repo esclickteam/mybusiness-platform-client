@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
 const Header = () => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false); // 🔄 מצב תפריט פתוח
 
   if (loading) return null;
 
@@ -39,10 +40,13 @@ const Header = () => {
 
   return (
     <nav className="app-header">
-      {/* צד ימין – כפתור תפריט (שמאל ויזואלית ב־RTL) */}
+      {/* צד ימין – תפריט (שמאל ויזואלית ב־RTL) */}
       <div className="auth-controls right">
-        <button className="menu-button" onClick={() => {}}>
-          <FaBars size={24} />
+        <button
+          className="menu-button"
+          onClick={() => setMenuOpen(prev => !prev)}
+        >
+          {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
         </button>
       </div>
 
@@ -53,8 +57,8 @@ const Header = () => {
         </Link>
       </div>
 
-      {/* צד שמאל – אזור אישי (ימין ויזואלית ב־RTL) */}
-      <div className="auth-controls left">
+      {/* צד שמאל – אזור אישי (פתיחה מותנית לפי מצב תפריט במובייל) */}
+      <div className={`auth-controls left ${menuOpen ? "open" : ""}`}>
         {user ? (
           <>
             <span className="username">שלום, {user.name || user.email}</span>
