@@ -1,5 +1,3 @@
-/* src/styles/Header.css */
-
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -7,7 +5,16 @@
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 80px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* 🟣 צל דק להפרדה */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  direction: rtl;
+}
+
+/* לוגו באמצע */
+.logo-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .logo-link .logo {
@@ -15,17 +22,30 @@
   object-fit: contain;
 }
 
-.menu-button {
-  background: none;
-  border: none;
-  color: #2d006e; /* סגול כהה מודרני */
-  cursor: pointer;
-}
-
-.auth-controls {
+/* צד שמאל וימין */
+.auth-controls.left,
+.auth-controls.right {
   display: flex;
   align-items: center;
   gap: 16px;
+  min-width: 160px;
+}
+
+.auth-controls.left {
+  justify-content: flex-start;
+}
+
+.auth-controls.right {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+/* איקונים וכפתורים */
+.menu-button {
+  background: none;
+  border: none;
+  color: #2d006e;
+  cursor: pointer;
 }
 
 .icon-button {
@@ -39,32 +59,29 @@
   margin-right: 8px;
 }
 
-.personal-area-button {
-  background-color: #fff;
-  color: #2d006e;
-  border: 1px solid #2d006e;
+.personal-area-button,
+.logout-button,
+.login-button {
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
+}
+
+.personal-area-button {
+  background-color: #fff;
+  color: #2d006e;
+  border: 1px solid #2d006e;
 }
 
 .logout-button {
   background: transparent;
   color: #2d006e;
   border: 1px solid #2d006e;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
 }
 
 .login-button {
   background-color: #fff;
   color: #2d006e;
   border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
 }

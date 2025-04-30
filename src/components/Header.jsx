@@ -10,7 +10,7 @@ const Header = () => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
 
-  if (loading) return null; // ⏳ לא מציג כלום עד שהטעינה מסתיימת
+  if (loading) return null;
 
   const handleLogout = async () => {
     try {
@@ -24,7 +24,6 @@ const Header = () => {
   const getDashboardPath = () => {
     switch (user?.role) {
       case "business":
-        // נווט לדשבורד העסק לפי ה-businessId
         return `/business/${user.businessId}/dashboard`;
       case "customer":
         return "/client/dashboard";
@@ -41,16 +40,19 @@ const Header = () => {
 
   return (
     <nav className="app-header">
-      <button className="menu-button" onClick={() => {/* פתיחת סיידבר אם יש */}}>
-        <FaBars size={24} />
-      </button>
+      <div className="auth-controls left">
+        <button className="menu-button" onClick={() => {}}>
+          <FaBars size={24} />
+        </button>
+      </div>
 
-      <Link to="/" className="logo-link">
-        <img src={logo} alt="Logo" className="logo" />
-      </Link>
+      <div className="logo-wrapper">
+        <Link to="/" className="logo-link">
+          <img src={logo} alt="Logo" className="logo" />
+        </Link>
+      </div>
 
-      <div className="auth-controls">
-        {/* כפתור חיפוש מפנה לעמוד החיפוש */}
+      <div className="auth-controls right">
         <Link to="/search" className="icon-button">
           <FaSearch size={24} />
         </Link>
@@ -69,9 +71,7 @@ const Header = () => {
             </button>
           </>
         ) : (
-          <Link to="/login" className="login-button">
-            התחבר
-          </Link>
+          <Link to="/login" className="login-button">התחבר</Link>
         )}
       </div>
     </nav>
