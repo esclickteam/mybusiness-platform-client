@@ -51,14 +51,13 @@ body {
     left: 0;
     width: 100%;
     max-width: 360px;
-    background: var(--aw-bg);
-    color: var(--aw-white);
     display: flex;
     flex-direction: column;
-    z-index: 1000;
+    background: var(--aw-bg);
+    color: var(--aw-white);
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
     overflow: visible;
-    pointer-events: auto;  
+    pointer-events: auto;
 }
 
 /* ===== Panel Close Button (X) ===== */
@@ -92,9 +91,14 @@ body {
 }
 
 /* ===== Sections ===== */
-.aw-section {
+.aw-panel .aw-section {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
     border-top: 1px solid #0074b1;
 }
+
+/* ===== Section Header ===== */
 .aw-section-header {
     padding: .75rem 1rem;
     display: flex;
@@ -112,8 +116,11 @@ body {
 /* ===== Features Wrapper ===== */
 .aw-features-wrapper {
     position: relative;
-    overflow: visible !important;       /* מאפשר לכפתורים לצאת מה-box */
-    pointer-events: auto !important;    /* מבטל כל חסימה של לחיצות */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: visible !important;
+    pointer-events: auto !important;
 }
 
 /* ===== Scroll Buttons ===== */
@@ -131,28 +138,27 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: auto !important;    /* מבטיח שהלחיצות יגיעו לכפתור */
-    z-index: 2000 !important;           /* מבטיח שהכפתור מעל כל השאר */
+    pointer-events: auto !important;
+    z-index: 2000 !important;
 }
 
 .aw-scroll-btn.up { top: .5rem; }
 .aw-scroll-btn.down { bottom: .5rem; }
 
-  
-  /* ===== Features Grid (GLIDE SCROLLING) ===== */
-  .aw-features {
+/* ===== Features Grid (GLIDE SCROLLING) ===== */
+.aw-features {
     flex: 1;
-    pointer-events: auto;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: .75rem;
     padding: 1rem;
-    max-height: 30vh;        /* שומר על תקרה, כדי שיהיה scroll */
-    overflow-y: auto;        /* מאפשר גלילה אנכית */
+    max-height: 30vh;
+    overflow-y: auto;
     overflow-x: hidden;
-    scroll-behavior: smooth; /* גלילה חלקה */
+    scroll-behavior: smooth;
     direction: ltr;
-  }
+    pointer-events: auto;
+}
 .aw-features::-webkit-scrollbar {
     width: 6px;
 }
@@ -181,7 +187,7 @@ body {
     cursor: pointer;
     transition: background .2s, color .2s, border-color .2s;
     z-index: 2000;
-    pointer-events: auto;    /* <- הוספה */
+    pointer-events: auto;
 }
 .aw-feature-btn:hover,
 .aw-feature-btn:focus {
