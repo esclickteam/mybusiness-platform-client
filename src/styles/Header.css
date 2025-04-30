@@ -1,4 +1,4 @@
-/* ===== מבנה ראשי ===== */
+/* ===== ראשי ===== */
 .app-header {
   display: flex;
   align-items: center;
@@ -6,13 +6,13 @@
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 90px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   direction: rtl;
   position: relative;
   z-index: 1000;
 }
 
-/* כפתור המבורגר – תמיד גלוי */
+/* המבורגר תמיד */
 .menu-toggle {
   display: flex;
   align-items: center;
@@ -26,7 +26,7 @@
   cursor: pointer;
 }
 
-/* כפתורי משתמש קבועים – רק בדסקטופ */
+/* כפתורי משתמש בדסקטופ */
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
@@ -34,10 +34,7 @@
   white-space: nowrap;
 }
 
-/* סמנטיקה */
-.desktop-only { display: flex; }
-
-/* ===== לוגו במרכז ===== */
+/* לוגו במרכז */
 .logo-wrapper {
   position: static;
   margin-inline: auto;
@@ -59,8 +56,8 @@
   top: 0; right: 0;
   width: 280px;
   height: 100vh;
-  background: #fff;
-  padding: 90px 24px 24px;
+  background: #ffffff;
+  padding: 0; /* נעדכן ב־drawer-header */
   display: none;
   flex-direction: column;
   gap: 20px;
@@ -72,14 +69,26 @@
 .side-menu.open {
   display: flex;
 }
-.menu-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 1500;
+
+/* כותרת ה־drawer + כפתור חזור */
+.drawer-header {
+  background: #2d006e;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+.back-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
 }
 
-/* כותרות וקישורים */
+/* קישורים וכותרות */
+.menu-section {
+  padding: 0 16px;
+}
 .menu-section h4 {
   margin: 24px 0 8px;
   padding-bottom: 4px;
@@ -88,10 +97,7 @@
   color: #2d006e;
   font-weight: bold;
 }
-.side-menu a,
-.auth-menu .login-button,
-.auth-menu .personal-area-button,
-.auth-menu .logout-button {
+.menu-section a {
   display: block;
   text-decoration: none;
   color: #2d006e;
@@ -99,13 +105,18 @@
   border-bottom: 1px solid #eee;
   transition: color 0.2s ease;
 }
-.side-menu a:hover {
+.menu-section a:hover {
   color: #5e17eb;
 }
-.auth-menu { border-top: 1px solid #eee; padding-top: 16px; gap: 12px; display: flex; flex-direction: column; }
 
-/* ===== כפתורים ===== */
-.username { font-weight: 500; color: #2d006e; }
+/* כפתורי משתמש בתוך ה־drawer */
+.auth-menu {
+  border-top: 1px solid #eee;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 .personal-area-button,
 .logout-button,
 .login-button {
@@ -114,19 +125,30 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
+  color: #2d006e;            /* טקסט כהה */
+  background: #ffffff;       /* רקע לבן */
   border: 1px solid #2d006e;
-  background: #fff;
 }
-.logout-button { background: transparent; }
+.logout-button {
+  background: transparent;
+}
 
-/* ===== רספונסיביות ===== */
+/* backdrop */
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1500;
+}
+
+/* רספונסיביות */
 @media (max-width: 768px) {
   .logo-link .logo { height: 64px; }
   .app-header { padding: 0 12px; height: 80px; }
-  .desktop-only { display: none !important; }
+  .auth-controls.desktop-only { display: none !important; }
 }
 
-/* ===== אנימציות ===== */
+/* אנימציות */
 @keyframes fadeInScale {
   0% { opacity: 0; transform: scale(0.95); }
   100% { opacity: 1; transform: scale(1); }

@@ -1,7 +1,8 @@
+// src/components/Header.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaChevronRight } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
@@ -23,12 +24,18 @@ const Header = () => {
 
   const getDashboardPath = () => {
     switch (user?.role) {
-      case "business": return `/business/${user.businessId}/dashboard`;
-      case "customer": return "/client/dashboard";
-      case "worker":   return "/staff/dashboard";
-      case "manager":  return "/manager/dashboard";
-      case "admin":    return "/admin/dashboard";
-      default:         return "/";
+      case "business":
+        return `/business/${user.businessId}/dashboard`;
+      case "customer":
+        return "/client/dashboard";
+      case "worker":
+        return "/staff/dashboard";
+      case "manager":
+        return "/manager/dashboard";
+      case "admin":
+        return "/admin/dashboard";
+      default:
+        return "/";
     }
   };
 
@@ -52,7 +59,7 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* כפתורי משתמש קבועים – רק בדסקטופ */}
+        {/* כפתורי משתמש – רק בדסקטופ */}
         <div className="auth-controls desktop-only">
           {user ? (
             <>
@@ -63,10 +70,7 @@ const Header = () => {
               >
                 אזור אישי
               </button>
-              <button
-                onClick={handleLogout}
-                className="logout-button"
-              >
+              <button onClick={handleLogout} className="logout-button">
                 התנתק
               </button>
             </>
@@ -78,22 +82,29 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* Drawer – מוצג בכל גודל מסך כש־menuOpen=true */}
+      {/* Drawer פתוח בכל גודל מסך */}
       {menuOpen && (
         <>
-          <div
-            className="menu-backdrop"
-            onClick={() => setMenuOpen(false)}
-          />
+          <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
 
           <div className="side-menu open">
+            {/* כפתור חזור */}
+            <div className="drawer-header">
+              <button
+                className="back-button"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FaChevronRight size={24} />
+              </button>
+            </div>
+
             <div className="menu-section">
               <h4>כללי</h4>
-              <Link to="/"        onClick={() => setMenuOpen(false)}>דף הבית</Link>
-              <Link to="/about"   onClick={() => setMenuOpen(false)}>אודות</Link>
+              <Link to="/" onClick={() => setMenuOpen(false)}>דף הבית</Link>
+              <Link to="/about" onClick={() => setMenuOpen(false)}>אודות</Link>
               <Link to="/contact" onClick={() => setMenuOpen(false)}>צור קשר</Link>
-              <Link to="/faq"     onClick={() => setMenuOpen(false)}>שאלות נפוצות</Link>
-              <Link to="/terms"   onClick={() => setMenuOpen(false)}>תנאי שימוש</Link>
+              <Link to="/faq" onClick={() => setMenuOpen(false)}>שאלות נפוצות</Link>
+              <Link to="/terms" onClick={() => setMenuOpen(false)}>תנאי שימוש</Link>
               <Link to="/privacy" onClick={() => setMenuOpen(false)}>מדיניות פרטיות</Link>
             </div>
 
@@ -101,13 +112,13 @@ const Header = () => {
               <h4>לגלות עסקים</h4>
               <Link to="/businesses" onClick={() => setMenuOpen(false)}>רשימת עסקים</Link>
               <Link to="/categories" onClick={() => setMenuOpen(false)}>קטגוריות</Link>
-              <Link to="/search"     onClick={() => setMenuOpen(false)}>חיפוש מתקדם</Link>
+              <Link to="/search" onClick={() => setMenuOpen(false)}>חיפוש מתקדם</Link>
             </div>
 
             <div className="menu-section">
               <h4>לעסקים</h4>
-              <Link to="/pricing"           onClick={() => setMenuOpen(false)}>מחירים</Link>
-              <Link to="/how-it-works"      onClick={() => setMenuOpen(false)}>איך זה עובד</Link>
+              <Link to="/pricing" onClick={() => setMenuOpen(false)}>מחירים</Link>
+              <Link to="/how-it-works" onClick={() => setMenuOpen(false)}>איך זה עובד</Link>
               <Link to="/register/business" onClick={() => setMenuOpen(false)}>הצטרפות כבעל עסק</Link>
             </div>
 
@@ -118,7 +129,7 @@ const Header = () => {
               {user ? (
                 <>
                   <button
-                    onClick={() => { setMenuOpen(false); navigate(getDashboardPath()); }}
+                    onClick={() => { navigate(getDashboardPath()); setMenuOpen(false); }}
                     className="personal-area-button"
                   >
                     אזור אישי
