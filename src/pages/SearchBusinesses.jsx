@@ -89,7 +89,7 @@ export default function SearchBusinesses() {
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  // Suggestions lists
+  // Suggestions
   const catSuggestions = cat.trim()
     ? ALL_CATEGORIES.filter(c => normalize(c).includes(normalize(cat)))
     : [];
@@ -122,16 +122,27 @@ export default function SearchBusinesses() {
 
         {/* Filters */}
         <div className="filters-wrapper">
-          {/* Search button */}
-          <button
-            className="search-btn"
-            onClick={handleSearch}
-            disabled={loading}
-          >
-            חפש
-          </button>
+          {/* Category */}
+          <div className="dropdown-wrapper" ref={wrapperCatRef}>
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="תחום (לדוגמא: חשמלאי)"
+              value={cat}
+              onFocus={() => setOpenCat(true)}
+              onChange={e => { setCat(e.target.value); setOpenCat(true); }}
+              disabled={loading}
+            />
+            {openCat && catSuggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {catSuggestions.map((c, i) => (
+                  <li key={i} onClick={() => { setCat(c); setOpenCat(false); }}>{c}</li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-          {/* City autocomplete */}
+          {/* City */}
           <div className="dropdown-wrapper" ref={wrapperCityRef}>
             <input
               type="text"
@@ -151,25 +162,14 @@ export default function SearchBusinesses() {
             )}
           </div>
 
-          {/* Category autocomplete */}
-          <div className="dropdown-wrapper" ref={wrapperCatRef}>
-            <input
-              type="text"
-              className="filter-input"
-              placeholder="תחום (לדוגמא: חשמלאי)"
-              value={cat}
-              onFocus={() => setOpenCat(true)}
-              onChange={e => { setCat(e.target.value); setOpenCat(true); }}
-              disabled={loading}
-            />
-            {openCat && catSuggestions.length > 0 && (
-              <ul className="suggestions-list">
-                {catSuggestions.map((c, i) => (
-                  <li key={i} onClick={() => { setCat(c); setOpenCat(false); }}>{c}</li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {/* Search */}
+          <button
+            className="search-btn"
+            onClick={handleSearch}
+            disabled={loading}
+          >
+            <span>חפש</span>
+          </button>
         </div>
 
         {/* Results */}
@@ -178,26 +178,26 @@ export default function SearchBusinesses() {
             ? Array(ITEMS_PER_PAGE).fill().map((_, i) => <BusinessCardSkeleton key={i} />)
             : !searched
               ? <p className="no-search">לחץ על חפש כדי לראות תוצאות</p>
-              : (pageItems.length > 0
-                  ? pageItems.map(b => (
-                      <BusinessCard
-                        key={b._id}
-                        business={b}
-                        onClick={() => navigate(`/business/${b._id}`)}
-                      />
-                    ))
-                  : <p className="no-results">לא נמצאו עסקים</p>
-                )}
+              : pageItems.length > 0
+                ? pageItems.map(b => (
+                    <BusinessCard
+                      key={b._id}
+                      business={b}
+                      onClick={() => navigate(`/business/${b._id}`)}
+                    />
+                  ))
+                : <p className="no-results">לא נמצאו עסקים</p>
+          }
         </div>
 
         {/* Pagination */}
         {searched && totalPages > 1 && (
           <div className="pagination">
-            <button onClick={() => setPage(p => Math.max(p - 1, 1))} disabled={page === 1}>
+            <button onClick={() => setPage(prev => Math.max(prev - 1, 1))} disabled={page === 1}>
               הקודם
             </button>
             <span>{page} מתוך {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(p + 1, totalPages))} disabled={page === totalPages}>
+            <button onClick={() => setPage(prev => Math.min(prev + 1, totalPages))} disabled={page === totalPages}>
               הבא
             </button>
           </div>
