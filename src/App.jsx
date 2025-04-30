@@ -7,23 +7,36 @@ import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 
 // Lazy-loaded public pages
+// Lazy-loaded public pages
 const HomePage         = lazy(() => import("./pages/Home"));
 const About            = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
+
+/* --- לעסקים --- */
 const HowItWorks       = lazy(() => import("./pages/HowItWorks"));
-const FAQ              = lazy(() => import("./pages/FAQ"));
-const Terms            = lazy(() => import("./pages/Terms"));
-const Contact          = lazy(() => import("./pages/Contact"));
-const BusinessOverview = lazy(() => import("./pages/business/Business"));
 const Plans            = lazy(() => import("./pages/business/Plans"));
 const Checkout         = lazy(() => import("./pages/Checkout"));
-const Login            = lazy(() => import("./pages/Login"));
-const Register         = lazy(() => import("./pages/Register"));
+
+/* --- תמיכה / מידע --- */
+const FAQ              = lazy(() => import("./pages/FAQ"));
+const Accessibility    = lazy(() => import("./pages/Accessibility"));   // NEW
+const Terms            = lazy(() => import("./pages/Terms"));
+const Contact          = lazy(() => import("./pages/Contact"));
+
+/* --- תצוגת עסק יחיד ומאגר עסקים --- */
+const BusinessOverview = lazy(() => import("./pages/business/Business"));
+const BusinessesList   = lazy(() => import("./pages/BusinessesList"));
+
+/* --- מודול משרות בזק --- */
 const QuickJobsBoard   = lazy(() => import("./pages/QuickJobsBoard"));
 const QuickJobForm     = lazy(() => import("./pages/QuickJobForm"));
+
+/* --- אימות משתמש --- */
+const Login            = lazy(() => import("./pages/Login"));
+const Register         = lazy(() => import("./pages/Register"));
 const ResetPassword    = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword   = lazy(() => import("./pages/ChangePassword"));
-const BusinessesList   = lazy(() => import("./pages/BusinessesList"));
+
 
 // Public business profile (clean)
 const BusinessProfileView = lazy(() =>
@@ -66,22 +79,33 @@ export default function App() {
           <Route path="/about" element={<About />} />
 
           {/* עמוד החיפוש – חייב קודם */}
-          <Route path="/search" element={<SearchBusinesses />} />
+          <Route path="/search"          element={<SearchBusinesses />} />
 
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/business" element={<BusinessOverview />} />
-          <Route path="/plans" element={<Plans />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
-          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/businesses" element={<BusinessesList />} />
+{/* --- לעסקים / מידע עסקי --- */}
+<Route path="/how-it-works"    element={<HowItWorks />} />
+<Route path="/plans"           element={<Plans />} />
+<Route path="/checkout"        element={<Checkout />} />
+
+{/* --- תמיכה ומשאבים ללקוחות --- */}
+<Route path="/faq"             element={<FAQ />} />
+<Route path="/accessibility"   element={<Accessibility />} />   {/* NEW */}
+<Route path="/terms"           element={<Terms />} />
+<Route path="/contact"         element={<Contact />} />
+
+{/* --- מודול משרות בזק --- */}
+<Route path="/quick-jobs"      element={<QuickJobsBoard />} />
+<Route path="/quick-jobs/new"  element={<QuickJobForm />} />
+
+{/* --- אימות ואבטחה --- */}
+<Route path="/login"           element={<Login />} />
+<Route path="/register"        element={<Register />} />
+<Route path="/reset-password"  element={<ResetPassword />} />
+<Route path="/change-password" element={<ChangePassword />} />
+
+{/* --- עמודי תוכן ומנוע חיפוש עסקים --- */}
+<Route path="/business"        element={<BusinessOverview />} />
+<Route path="/businesses"      element={<BusinessesList />} />
+
 
           {/* Public business profile */}
           <Route
