@@ -122,7 +122,7 @@ const Header = () => {
             </div>
 
             <div className="menu-section">
-              <h4>לגלות עסקים</h4>
+              <h4>ללקוחות</h4>
               <Link to="/businesses" onClick={() => setMenuOpen(false)}>רשימת עסקים</Link>
               <Link to="/categories" onClick={() => setMenuOpen(false)}>קטגוריות</Link>
               <Link to="/search" onClick={() => setMenuOpen(false)}>חיפוש מתקדם</Link>
