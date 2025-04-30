@@ -57,7 +57,7 @@ body {
     flex-direction: column;
     z-index: 1000;
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* ===== Panel Close Button (X) ===== */
@@ -179,6 +179,7 @@ body {
     cursor: pointer;
     transition: background .2s, color .2s, border-color .2s;
     z-index: 2000;
+    pointer-events: auto;    /* <- הוספה */
 }
 .aw-feature-btn:hover,
 .aw-feature-btn:focus {
