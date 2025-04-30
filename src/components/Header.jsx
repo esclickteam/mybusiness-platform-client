@@ -97,18 +97,19 @@ const Header = () => {
             onClick={() => setMenuOpen(false)}
           />
 
-          <div className="side-menu open">
-            {/* כפתור חזור */}
-            <div className="drawer-header">
-              <button
-                className="back-button"
-                onClick={() => setMenuOpen(false)}
-                title="חזור"
-                aria-label="חזור"
-              >
-                <FaChevronLeft size={24} />
-              </button>
-            </div>
+<div className="side-menu open">
+  {/* כפתור חזור */}
+  <div className="drawer-header">
+    <button
+      className="back-button"
+      onClick={() => setMenuOpen(false)}
+      title="חזור"
+      aria-label="חזור"
+    >
+      <FaChevronLeft size={20} />
+      <span className="back-text">חזור</span>
+    </button>
+  </div>
 
             <div className="menu-section">
               <h4>כללי</h4>

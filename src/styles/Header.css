@@ -96,23 +96,26 @@
 }
 
 /* ===== כפתור חזור ===== */
+/* ===== כפתור חזור עם טקסט ואייקון ===== */
 .back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
   background: #ffffff;
   border: 1px solid #bfa2e1;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 20px;
   color: #5e17eb;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 .back-button:hover {
   background: #e8dbff;
   color: #2d006e;
 }
+
 
 /* ===== סעיפים וקישורים ===== */
 .menu-section {
