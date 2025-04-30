@@ -204,13 +204,7 @@ body::after {
   scrollbar-width: thin;
   scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
-.suggestions-list li::before {
-  content: "★";
-  position: absolute;
-  right: 0.75rem;
-  color: var(--primary);
-  font-size: 0.8rem;
-}
+
 
 /* 11. תוצאות גריד */
 .business-list {
