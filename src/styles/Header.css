@@ -1,14 +1,14 @@
 /* ===== ראשי ===== */
 .app-header {
+  position: relative;          /* נקודת ייחוס ללוגו */
   display: flex;
   align-items: center;
-  justify-content: center; /* הלוגו יהיה במרכז */
+  /* אין צורך ב-justify-content:center – נבטל כדי שלא יפריע */
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 90px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  direction: rtl; /* כיוון ימין לשמאל */
-  position: relative;
+  direction: rtl;              /* עדיין RTL לטקסטים */
   z-index: 1000;
 }
 
@@ -17,16 +17,18 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: 0;      /* שמאל פיזי */
+  margin-right: auto;  /* דוחף אותם לצד שמאל */
+  padding-left: 12px;
   white-space: nowrap;
-  margin-left: 0; /* מיקום בצד שמאל */
-  padding-left: 12px; /* מרווח בצד שמאל */
-  margin-right: auto; /* דחיפת הכפתורים לשמאל */
 }
 
 /* לוגו במרכז */
 .logo-wrapper {
-  position: static;
-  margin-inline: auto; /* שמירה על המרכז */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);   /* ממרכז גם אופקית וגם אנכית */
   display: flex;
   align-items: center;
 }

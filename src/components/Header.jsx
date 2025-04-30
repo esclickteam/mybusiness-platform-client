@@ -24,32 +24,25 @@ import "../styles/Header.css";
 
 const Header = () => {
   const { user, logout, loading } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate  = useNavigate();
+  const location  = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) return null;
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (err) {
-      console.error("❌ logout failed:", err);
-    }
-  };
-
+  /* ——— עזר להפניית משתמש לדשבורד לפי תפקיד ——— */
   const getDashboardPath = () => {
     switch (user?.role) {
       case "business": return `/business/${user.businessId}/dashboard`;
       case "customer": return "/client/dashboard";
-      case "worker": return "/staff/dashboard";
-      case "manager": return "/manager/dashboard";
-      case "admin": return "/admin/dashboard";
-      default: return "/";
+      case "worker":   return "/staff/dashboard";
+      case "manager":  return "/manager/dashboard";
+      case "admin":    return "/admin/dashboard";
+      default:         return "/";
     }
   };
 
+  /* ——— יצירת קישורים ל-drawer עם סימון active ——— */
   const link = (to, icon, label) => (
     <Link
       to={to}
@@ -61,9 +54,23 @@ const Header = () => {
     </Link>
   );
 
+  /* ——— יציאה ——— */
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (err) {
+      console.error("❌ logout failed:", err);
+    }
+  };
+
+  /* —————————————— JSX —————————————— */
   return (
     <>
+      {/* ===== HEADER BAR ===== */}
       <nav className="app-header">
+
+        {/* כפתור תפריט (המבורגר) – ימין */}
         {!menuOpen && (
           <div className="menu-toggle">
             <button className="menu-button" onClick={() => setMenuOpen(true)}>
@@ -71,28 +78,63 @@ const Header = () => {
             </button>
           </div>
         )}
+
+        {/* לוגו – באמצע מוחלט */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
           </Link>
         </div>
+
+        {/* כפתורי משתמש – שמאל בדסקטופ בלבד */}
         <div className="auth-controls desktop-only">
-          {!user && <Link to="/login" className="login-button">התחבר</Link>}
+          {!user && (
+            <Link to="/login" className="login-button">התחבר</Link>
+          )}
+
+          {user && (
+            <>
+              <button
+                className="personal-area-button"
+                onClick={() => navigate(getDashboardPath())}
+              >
+                לוח בקרה
+              </button>
+
+              <button
+                className="logout-button"
+                onClick={handleLogout}
+              >
+                <FaSignOutAlt style={{ marginLeft: 6 }} />
+                התנתק
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
+      {/* ===== DRAWER ===== */}
       {menuOpen && (
         <>
-          <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
+          {/* מסך כהה מאחורי drawer */}
+          <div
+            className="menu-backdrop"
+            onClick={() => setMenuOpen(false)}
+          />
 
           <div className="side-menu open">
+            {/* Header של המגירה */}
             <div className="drawer-header">
-              <button className="back-button" onClick={() => setMenuOpen(false)}>
+              <button
+                className="back-button"
+                onClick={() => setMenuOpen(false)}
+              >
                 <FaChevronLeft size={20} />
                 <span className="back-text">חזור</span>
               </button>
             </div>
 
+            {/* פרטי משתמש בחלק העליון */}
             {user && (
               <div className="menu-user">
                 <FaUserCircle size={20} />
@@ -100,32 +142,36 @@ const Header = () => {
               </div>
             )}
 
+            {/* סעיף: כללי */}
             <div className="menu-section">
               <h4>כללי</h4>
-              {link("/", <FaHome />, "דף הבית")}
-              {link("/about", <FaInfoCircle />, "אודות")}
-              {link("/contact", <FaPhone />, "צור קשר")}
-              {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
-              {link("/terms", <FaFileContract />, "תנאי שימוש")}
-              {link("/privacy", <FaShieldAlt />, "מדיניות פרטיות")}
+              {link("/",           <FaHome />,         "דף הבית")}
+              {link("/about",      <FaInfoCircle />,   "אודות")}
+              {link("/contact",    <FaPhone />,        "צור קשר")}
+              {link("/faq",        <FaQuestionCircle />,"שאלות נפוצות")}
+              {link("/terms",      <FaFileContract />, "תנאי שימוש")}
+              {link("/privacy",    <FaShieldAlt />,    "מדיניות פרטיות")}
             </div>
 
+            {/* סעיף: לעסקים */}
             <div className="menu-section">
               <h4>לעסקים</h4>
-              {link("/pricing", <FaMoneyBillAlt />, "מחירים")}
-              {link("/how-it-works", <FaCogs />, "איך זה עובד")}
-              {link("/register/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
+              {link("/pricing",          <FaMoneyBillAlt />, "מחירים")}
+              {link("/how-it-works",     <FaCogs />,         "איך זה עובד")}
+              {link("/register/business",<FaUserPlus />,     "הצטרפות כבעל עסק")}
             </div>
 
+            {/* סעיף: ללקוחות */}
             <div className="menu-section">
               <h4>ללקוחות</h4>
               {link("/businesses", <FaListUl />, "רשימת עסקים")}
-              {link("/categories", <FaTags />, "קטגוריות")}
-              {link("/search", <FaSearch />, "חיפוש מתקדם")}
+              {link("/categories", <FaTags />,   "קטגוריות")}
+              {link("/search",     <FaSearch />, "חיפוש מתקדם")}
             </div>
 
             <hr />
 
+            {/* כפתורי משתמש – מופיעים בתחתית המגירה במובייל */}
             {user && (
               <div className="menu-section auth-menu">
                 <button
@@ -137,6 +183,7 @@ const Header = () => {
                 >
                   אזור אישי
                 </button>
+
                 <button
                   className="logout-button"
                   onClick={() => {
@@ -144,7 +191,8 @@ const Header = () => {
                     setMenuOpen(false);
                   }}
                 >
-                  <FaSignOutAlt style={{ marginLeft: 6 }} /> התנתק
+                  <FaSignOutAlt style={{ marginLeft: 6 }} />
+                  התנתק
                 </button>
               </div>
             )}
