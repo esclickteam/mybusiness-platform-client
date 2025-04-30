@@ -102,26 +102,35 @@ export default function AccessibilityWidget() {
   }, [state.screenReader]);
 
   // 4) Voice Commands
-  useEffect(() => {
-    if (!state.voiceCommands) {
-      recognitionRef.current?.stop();
-      return;
-    }
+useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return alert('דפדפן לא תומך פקודות קוליות');
-    const recog = new SR();
-    recognitionRef.current = recog;
-    recog.lang = 'he-IL';
-    recog.continuous = true;
-    recog.onresult = ev => {
-      const cmd = ev.results[ev.resultIndex][0].transcript.trim().toLowerCase();
-      console.log('▶ voice command:', cmd);
-      if (cmd.includes('בית')) window.location.href = '/';
-      if (cmd.includes('הקרא')) toggle('readAloud');
+  
+    if (state.voiceCommands) {
+      if (!SR) {
+        alert('דפדפן לא תומך פקודות קוליות');
+      } else {
+        const recog = new SR();
+        recognitionRef.current = recog;
+        recog.lang = 'he-IL';
+        recog.continuous = true;
+        recog.onresult = ev => {
+          const cmd = ev.results[ev.resultIndex][0].transcript.trim().toLowerCase();
+          console.log('▶ voice command:', cmd);
+          if (cmd.includes('בית')) window.location.href = '/';
+          if (cmd.includes('הקרא')) toggle('readAloud');
+        };
+        recog.start();
+      }
+    } else {
+      recognitionRef.current?.stop();
+    }
+  
+    // תמיד מחזירים פונקציית ניקוי
+    return () => {
+      recognitionRef.current?.stop();
     };
-    recog.start();
-    return () => recog.stop();
   }, [state.voiceCommands]);
+  
 
   // 5) Read Aloud
   useEffect(() => {
