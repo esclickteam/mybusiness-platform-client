@@ -158,8 +158,8 @@ body::after {
   justify-content: center;
   gap: 8px;
   height: 48px;
-  padding: 0.75rem 2rem;   /* רחב יותר */
-  min-width: 200px;        /* רוחב מינימלי קבוע */
+  padding: 0.75rem 2rem;
+  min-width: 200px;
   background: linear-gradient(
     90deg,
     var(--primary) 0%,
@@ -204,36 +204,12 @@ body::after {
   scrollbar-width: thin;
   scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
-.suggestions-list::-webkit-scrollbar {
-  width: 8px;
-}
-.suggestions-list::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.2);
-  border-radius: 4px;
-}
-.suggestions-list li {
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  text-align: right;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-  transition: background 0.2s;
-  color: var(--text-main);
-  position: relative;
-}
 .suggestions-list li::before {
-  content: "★";             /* כוכב במקום נקודה */
+  content: "★";
   position: absolute;
   right: 0.75rem;
   color: var(--primary);
   font-size: 0.8rem;
-}
-.suggestions-list li:hover {
-  background: var(--bg-mid);
-}
-.suggestions-list li em {
-  font-style: normal;
-  color: var(--text-secondary);
 }
 
 /* 11. תוצאות גריד */
@@ -262,6 +238,9 @@ body::after {
 .business-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+}
+.business-card img {
+  border-radius: 50%;
 }
 
 /* 13. פגינציה */
@@ -293,22 +272,12 @@ body::after {
 .input-clearable {
   position: relative;
 }
-
-/* 14. Input clearable */
-.input-clearable {
-  position: relative;
-}
-
-/* ודא שהתיבה פולטת מספיק מרווח לאיקון בסוף */
 .input-clearable .filter-input {
-  /* padding-right גדול כדי שהטקסט לא יתקרב לאייקון */
-  padding-right: 4rem;
+  padding-right: 4rem; /* הרחבה כדי שהתוכן לא יתקרב לאייקון */
 }
-
 .clear-btn {
   position: absolute;
   top: 50%;
-  /* קבע מיקום מעט פנימה כדי להופיע בדיוק בסוף */
   right: 1rem;
   transform: translateY(-50%);
   background: none;
@@ -319,18 +288,7 @@ body::after {
   z-index: 30;
 }
 
-.clear-btn {
-  position: absolute;
-  top: 50%;
-  right: 1rem;      /* מיקום מעט יותר פנימה */
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem; /* גודל גדול יותר */
-  color: var(--primary); /* צבע סגול */
-  z-index: 30;       /* מעל ההצעות */
-}/* 15. Responsive */
+/* 15. Responsive */
 @media (max-width: 768px) {
   .filters-wrapper {
     flex-direction: column;
