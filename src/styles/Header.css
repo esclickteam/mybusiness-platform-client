@@ -2,7 +2,7 @@
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 90px;
@@ -16,7 +16,6 @@
 .menu-toggle {
   display: flex;
   align-items: center;
-  margin-inline-end: 16px;
   z-index: 1001;
 }
 .menu-button {
@@ -32,6 +31,8 @@
   align-items: center;
   gap: 12px;
   white-space: nowrap;
+  margin-right: auto;
+  padding-left: 12px;
 }
 
 /* לוגו במרכז */
