@@ -46,30 +46,32 @@ export default function AccessibilityWidget() {
   const contrastRef = useRef(null);
   const contentRef = useRef(null);
 
-  // 1) Smart Nav
+  const toggleFeature = feat => {
+    console.log(`toggleFeature ${feat} →`, !state[feat]);
+    setState(s => ({ ...s, [feat]: !s[feat] }));
+  };
+
+  // 1) Smart Nav (arrow-grid)
   useEffect(() => {
     if (!state.smartNav) return;
     const items = () => Array.from(document.querySelectorAll('.aw-feature-btn'));
     const onKey = e => {
       const list = items();
-      if (!list.length) return;
       let idx = list.indexOf(document.activeElement);
       if (idx === -1 && /^Arrow/.test(e.key)) {
-        list[0].focus();
+        list[0]?.focus();
         e.preventDefault();
         return;
       }
       const cols = 2, max = list.length - 1;
-      let next = idx;
       switch (e.key) {
-        case 'ArrowRight': next = idx + 1; break;
-        case 'ArrowLeft':  next = idx - 1; break;
-        case 'ArrowDown':  next = idx + cols; break;
-        case 'ArrowUp':    next = idx - cols; break;
+        case 'ArrowRight': idx = Math.min(max, idx + 1); break;
+        case 'ArrowLeft':  idx = Math.max(0, idx - 1); break;
+        case 'ArrowDown':  idx = Math.min(max, idx + cols); break;
+        case 'ArrowUp':    idx = Math.max(0, idx - cols); break;
         default: return;
       }
-      next = Math.max(0, Math.min(max, next));
-      list[next].focus();
+      list[idx]?.focus();
       e.preventDefault();
     };
     document.addEventListener('keydown', onKey);
@@ -85,11 +87,11 @@ export default function AccessibilityWidget() {
   useEffect(() => {
     const onFocus = e => {
       if (!state.screenReader || !window.speechSynthesis) return;
-      const text = e.target.innerText || e.target.alt || '';
-      if (text) {
-        const utt = new SpeechSynthesisUtterance(text.trim());
+      const txt = e.target.innerText || e.target.alt || '';
+      if (txt) {
+        const u = new SpeechSynthesisUtterance(txt.trim());
         speechSynthesis.cancel();
-        speechSynthesis.speak(utt);
+        speechSynthesis.speak(u);
       }
     };
     document.documentElement.classList.toggle('es-screen-reader', state.screenReader);
@@ -97,47 +99,23 @@ export default function AccessibilityWidget() {
     return () => document.removeEventListener('focusin', onFocus);
   }, [state.screenReader]);
 
-  // 4) Voice Commands
+  // 4) Voice Commands stub
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-    let recog;
+    document.documentElement.classList.toggle('es-voice-commands', state.voiceCommands);
     if (state.voiceCommands) {
-      recog = new SpeechRecognition();
-      recog.continuous = true;
-      recog.interimResults = false;
-      recog.onresult = ev => {
-        const cmd = ev.results[ev.resultIndex][0].transcript.trim().toLowerCase();
-        if (cmd.includes('גלול מטה') || cmd.includes('scroll down')) {
-          navRef.current?.scrollBy({ top: 100, behavior: 'smooth' });
-        } else if (cmd.includes('גלול למעלה') || cmd.includes('scroll up')) {
-          navRef.current?.scrollBy({ top: -100, behavior: 'smooth' });
-        } else if (cmd.includes('הגדל טקסט') || cmd.includes('larger text')) {
-          setState(s => ({ ...s, largeText: true }));
-        } else if (cmd.includes('הקטן טקסט') || cmd.includes('smaller text')) {
-          setState(s => ({ ...s, largeText: false }));
-        }
-      };
-      recog.start();
-      document.documentElement.classList.add('es-voice-commands');
+      // implement Web Speech API handling here
     }
-    return () => {
-      if (recog) recog.stop();
-      document.documentElement.classList.remove('es-voice-commands');
-    };
   }, [state.voiceCommands]);
 
   // 5) Read Aloud
   const readPageAloud = () => {
-    if (state.readAloud && window.speechSynthesis) {
+    if (state.readAloud) {
       speechSynthesis.cancel();
       setState(s => ({ ...s, readAloud: false }));
     } else {
-      const utter = new SpeechSynthesisUtterance(
-        document.body.innerText.replace(/\s+/g, ' ')
-      );
+      const u = new SpeechSynthesisUtterance(document.body.innerText.replace(/\s+/g, ' '));
       speechSynthesis.cancel();
-      speechSynthesis.speak(utter);
+      speechSynthesis.speak(u);
       setState(s => ({ ...s, readAloud: true }));
     }
   };
@@ -166,28 +144,17 @@ export default function AccessibilityWidget() {
   const onSlider = (key, e) => {
     const v = Number(e.target.value);
     setState(s => ({ ...s, [key]: v }));
-    document.documentElement.style.setProperty(
-      key === 'hue'
-        ? '--es-hue-rotate'
-        : key === 'fontSize'
-        ? '--es-font-scale'
-        : key === 'letterSpacing'
-        ? '--es-letter-spacing'
-        : '--es-line-height',
-      key === 'hue'
-        ? `${v}deg`
-        : key === 'letterSpacing'
-        ? `${v}px`
-        : v
-    );
+    const prop =
+      key === 'hue' ? '--es-hue-rotate' :
+      key === 'fontSize' ? '--es-font-scale' :
+      key === 'letterSpacing' ? '--es-letter-spacing' :
+      '--es-line-height';
+    const val = key === 'hue' ? `${v}deg` : key === 'letterSpacing' ? `${v}px` : v;
+    document.documentElement.style.setProperty(prop, val);
   };
 
   const toggleSection = sec => setSections(s => ({ ...s, [sec]: !s[sec] }));
-  const toggleFeature = feat => setState(s => ({ ...s, [feat]: !s[feat] }));
-
-  const scroll = (ref, delta) => {
-    ref.current?.scrollBy({ top: delta, behavior: 'smooth' });
-  };
+  const scroll = delta => navRef.current?.scrollBy({ top: delta, behavior: 'smooth' });
 
   return (
     <>
@@ -209,9 +176,11 @@ export default function AccessibilityWidget() {
             <FaTimes />
           </button>
 
-          <div className="aw-header"><h2>נגישות</h2></div>
+          <div className="aw-header">
+            <h2>נגישות</h2>
+          </div>
 
-          {/* Navigation Section */}
+          {/* התאמות ניווט */}
           <div className="aw-section">
             <div className="aw-section-header" onClick={() => toggleSection('nav')}>
               <h3>התאמות ניווט</h3>
@@ -219,11 +188,9 @@ export default function AccessibilityWidget() {
             </div>
             {sections.nav && (
               <div className="aw-features-wrapper">
-                <button
-                  className="aw-scroll-btn up"
-                  onClick={() => scroll(navRef, -100)}
-                  aria-label="גלילה מעלה"
-                >▲</button>
+                <button className="aw-scroll-btn up" onClick={() => scroll(-100)}>
+                  ▲
+                </button>
                 <div ref={navRef} className="aw-features">
                   <button
                     className={`aw-feature-btn${state.smartNav ? ' active' : ''}`}
@@ -261,16 +228,14 @@ export default function AccessibilityWidget() {
                     <span className="aw-label">הקראת טקסט</span>
                   </button>
                 </div>
-                <button
-                  className="aw-scroll-btn down"
-                  onClick={() => scroll(navRef, 100)}
-                  aria-label="גלילה מטה"
-                >▼</button>
+                <button className="aw-scroll-btn down" onClick={() => scroll(100)}>
+                  ▼
+                </button>
               </div>
             )}
           </div>
 
-          {/* Contrast Section */}
+          {/* התאמות ניגודיות */}
           <div className="aw-section">
             <div className="aw-section-header" onClick={() => toggleSection('contrast')}>
               <h3>התאמות ניגודיות</h3>
@@ -279,18 +244,16 @@ export default function AccessibilityWidget() {
             {sections.contrast && (
               <>
                 <div className="aw-features-wrapper">
-                  <button
-                    className="aw-scroll-btn up"
-                    onClick={() => scroll(contrastRef, -100)}
-                    aria-label="גלילה מעלה"
-                  >▲</button>
+                  <button className="aw-scroll-btn up" onClick={() => scroll(contrastRef.current?.scrollTop - 100)}>
+                    ▲
+                  </button>
                   <div ref={contrastRef} className="aw-features">
                     {[
                       ['brightContrast', <FaSun />, 'ניגודיות בהירה'],
-                      ['darkContrast',   <FaMoon />, 'ניגודיות כהה'],
-                      ['monoContrast',   <FaEye />,  'מונוכרום'],
-                      ['highSat',        <FaTint />, 'רוויה גבוהה'],
-                      ['lowSat',         <FaAdjust />, 'רוויה נמוכה']
+                      ['darkContrast', <FaMoon />, 'ניגודיות כהה'],
+                      ['monoContrast', <FaEye />, 'מונוכרום'],
+                      ['highSat', <FaTint />, 'רוויה גבוהה'],
+                      ['lowSat', <FaAdjust />, 'רוויה נמוכה']
                     ].map(([key, icon, label]) => (
                       <button
                         key={key}
@@ -302,26 +265,30 @@ export default function AccessibilityWidget() {
                       </button>
                     ))}
                   </div>
-                  <button
-                    className="aw-scroll-btn down"
-                    onClick={() => scroll(contrastRef, 100)}
-                    aria-label="גלילה מטה"
-                  >▼</button>
+                  <button className="aw-scroll-btn down" onClick={() => scroll(contrastRef.current?.scrollTop + 100)}>
+                    ▼
+                  </button>
                 </div>
 
                 <div className="contrast-tabs">
                   <button
                     className={contrastTab === 'backgrounds' ? 'active' : ''}
                     onClick={() => setContrastTab('backgrounds')}
-                  >רקע</button>
+                  >
+                    רקע
+                  </button>
                   <button
                     className={contrastTab === 'headings' ? 'active' : ''}
                     onClick={() => setContrastTab('headings')}
-                  >כותרות</button>
+                  >
+                    כותרות
+                  </button>
                   <button
                     className={contrastTab === 'content' ? 'active' : ''}
                     onClick={() => setContrastTab('content')}
-                  >תוכן</button>
+                  >
+                    תוכן
+                  </button>
                 </div>
 
                 <div className="aw-slider">
@@ -338,7 +305,7 @@ export default function AccessibilityWidget() {
             )}
           </div>
 
-          {/* Content Section */}
+          {/* התאמות תוכן */}
           <div className="aw-section">
             <div className="aw-section-header" onClick={() => toggleSection('content')}>
               <h3>התאמות תוכן</h3>
@@ -347,11 +314,9 @@ export default function AccessibilityWidget() {
             {sections.content && (
               <>
                 <div className="aw-features-wrapper">
-                  <button
-                    className="aw-scroll-btn up"
-                    onClick={() => scroll(contentRef, -100)}
-                    aria-label="גלילה מעלה"
-                  >▲</button>
+                  <button className="aw-scroll-btn up" onClick={() => scroll(contentRef.current?.scrollTop - 100)}>
+                    ▲
+                  </button>
                   <div ref={contentRef} className="aw-features aw-grid-3">
                     <button
                       className={`aw-feature-btn${state.largeText ? ' active' : ''}`}
@@ -361,26 +326,30 @@ export default function AccessibilityWidget() {
                       <span className="aw-label">גופן קריא</span>
                     </button>
                   </div>
-                  <button
-                    className="aw-scroll-btn down"
-                    onClick={() => scroll(contentRef, 100)}
-                    aria-label="גלילה מטה"
-                  >▼</button>
+                  <button className="aw-scroll-btn down" onClick={() => scroll(contentRef.current?.scrollTop + 100)}>
+                    ▼
+                  </button>
                 </div>
 
                 <div className="content-tabs">
                   <button
                     className={contentTab === 'fontSize' ? 'active' : ''}
                     onClick={() => setContentTab('fontSize')}
-                  >גודל גופן</button>
+                  >
+                    גודל גופן
+                  </button>
                   <button
                     className={contentTab === 'letterSpacing' ? 'active' : ''}
                     onClick={() => setContentTab('letterSpacing')}
-                  >מרווח בין מילים</button>
+                  >
+                    מרווח בין מילים
+                  </button>
                   <button
                     className={contentTab === 'lineHeight' ? 'active' : ''}
                     onClick={() => setContentTab('lineHeight')}
-                  >מרווח בין שורות</button>
+                  >
+                    מרווח בין שורות
+                  </button>
                 </div>
 
                 <div className="aw-slider">
