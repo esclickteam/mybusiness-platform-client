@@ -196,14 +196,15 @@ body::after {
   background: #fff;
   box-shadow: var(--card-shadow);
   border-radius: 12px;
-  max-height: 200px;
-  overflow-y: auto;
+  max-height: 200px; /* גובה מקסימלי */
+  overflow-y: auto; /* גלילה אנכית */
   z-index: 20;
   padding: 0;
   list-style: none;
   scrollbar-width: thin;
   scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
+
 
 
 /* 11. תוצאות גריד */
