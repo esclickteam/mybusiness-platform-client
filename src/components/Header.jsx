@@ -42,18 +42,20 @@ const Header = () => {
   return (
     <>
       <nav className="app-header">
-        {/* המבורגר תמיד */}
-        <div className="menu-toggle">
-          <button
-            className="menu-button"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? "סגור תפריט" : "פתח תפריט"}
-          >
-            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-          </button>
-        </div>
+        {/* רק כשהתפריט סגור – המבורגר */}
+        {!menuOpen && (
+          <div className="menu-toggle">
+            <button
+              className="menu-button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="פתח תפריט"
+            >
+              <FaBars size={24} />
+            </button>
+          </div>
+        )}
 
-        {/* לוגו במרכז */}
+        {/* לוגו באמצע */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
@@ -64,14 +66,19 @@ const Header = () => {
         <div className="auth-controls desktop-only">
           {user ? (
             <>
-              <span className="username">שלום, {user.name || user.email}</span>
+              <span className="username">
+                שלום, {user.name || user.email}
+              </span>
               <button
-                onClick={() => navigate(getDashboardPath())}
                 className="personal-area-button"
+                onClick={() => navigate(getDashboardPath())}
               >
                 אזור אישי
               </button>
-              <button onClick={handleLogout} className="logout-button">
+              <button
+                className="logout-button"
+                onClick={handleLogout}
+              >
                 התנתק
               </button>
             </>
@@ -83,10 +90,12 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* Drawer פתוח בכל גודל מסך */}
       {menuOpen && (
         <>
-          <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
+          <div
+            className="menu-backdrop"
+            onClick={() => setMenuOpen(false)}
+          />
 
           <div className="side-menu open">
             {/* כפתור חזור */}
@@ -127,19 +136,24 @@ const Header = () => {
 
             <hr />
 
-            {/* כפתורי משתמש בתוך ה־drawer */}
             <div className="menu-section auth-menu">
               {user ? (
                 <>
                   <button
-                    onClick={() => { navigate(getDashboardPath()); setMenuOpen(false); }}
                     className="personal-area-button"
+                    onClick={() => {
+                      navigate(getDashboardPath());
+                      setMenuOpen(false);
+                    }}
                   >
                     אזור אישי
                   </button>
                   <button
-                    onClick={() => { handleLogout(); setMenuOpen(false); }}
                     className="logout-button"
+                    onClick={() => {
+                      handleLogout();
+                      setMenuOpen(false);
+                    }}
                   >
                     התנתק
                   </button>

@@ -12,7 +12,7 @@
   z-index: 1000;
 }
 
-/* המבורגר תמיד */
+/* המבורגר */
 .menu-toggle {
   display: flex;
   align-items: center;
@@ -53,8 +53,7 @@
 /* ===== ה־drawer ===== */
 .side-menu {
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 0; right: 0;
   width: 300px;
   height: 100vh;
   background: #ffffff;
@@ -71,7 +70,7 @@
   transform: translateX(0);
 }
 
-/* Scrollbar עדין */
+/* סרגל גלילה דק */
 .side-menu::-webkit-scrollbar {
   width: 6px;
 }
@@ -86,17 +85,17 @@
 /* ===== header של ה־drawer ===== */
 .drawer-header {
   width: 100%;
-  flex-shrink: 0;
   box-sizing: border-box;
   background: #f3e8ff;        /* פסטל לבנדר עדין */
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  direction: ltr;             /* כדי שהחץ יתיישב לימין */
   padding: 0 16px;
 }
 
-/* ===== כפתור חזור בגוונים רכים ===== */
+/* ===== כפתור חזור ===== */
 .back-button {
   background: #ffffff;
   border: 1px solid #bfa2e1;
@@ -173,7 +172,7 @@
   color: #ffffff;
 }
 
-/* backdrop */
+/* רקע כהה מאחורי ה־drawer */
 .menu-backdrop {
   position: fixed;
   inset: 0;
@@ -190,11 +189,6 @@
     width: 100%;
     max-width: 300px;
   }
-}
-
-/* ===== Override specificity ===== */
-.side-menu.open .drawer-header {
-  background-color: #f3e8ff !important;
 }
 
 /* אנימציות */
