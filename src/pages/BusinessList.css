@@ -165,7 +165,7 @@ body::after {
   justify-content: center;
   gap: 0.5rem;
   height: 48px;
-  padding: 0 1.5rem;
+  padding: 0 1rem;
   background: linear-gradient(90deg, var(--primary), var(--primary-hover));
   color: #fff;
   font-size: 1rem;
@@ -176,9 +176,10 @@ body::after {
   cursor: pointer;
   transition: background 0.2s ease;
   white-space: nowrap;
-  min-width: unset;      /* 🛠 ביטול רוחב מינימלי */
-  width: auto;           /* 🛠 נותן גמישות לגודל */
+  min-width: unset;
+  width: auto;
 }
+
 
 .search-btn:hover:not(:disabled) {
   background: linear-gradient(90deg, var(--primary-hover), var(--primary));
