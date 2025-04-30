@@ -1,16 +1,21 @@
 // src/pages/BusinessesList.jsx
 import React, { useEffect, useState } from "react";
+import Select from "react-select";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
+import ALL_CATEGORIES from "../data/categories";
+import ALL_CITIES     from "../data/cities";
 import "./BusinessList.css";
 
 const BusinessesList = () => {
   const [businesses, setBusinesses] = useState([]);
-  const [category, setCategory] = useState("");
-  const [city, setCity] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [category, setCategory]     = useState(null);
+  const [city, setCity]             = useState(null);
+  const [loading, setLoading]       = useState(false);
 
-  // מביא את כל העסקים או לפי פרמטרים
+  const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
+  const cityOptions     = ALL_CITIES    .map(c => ({ value: c, label: c }));
+
   const fetchBusinesses = async (filters = {}) => {
     setLoading(true);
     try {
@@ -28,13 +33,15 @@ const BusinessesList = () => {
     }
   };
 
-  // ברגע שהעמוד נטען, מושכים את כל העסקים
   useEffect(() => {
     fetchBusinesses();
   }, []);
 
   const handleSearch = () => {
-    fetchBusinesses({ category, city });
+    fetchBusinesses({
+      category: category?.value,
+      city:     city?.value,
+    });
   };
 
   return (
@@ -45,21 +52,25 @@ const BusinessesList = () => {
         {/* סרגל הפילטרים */}
         <div className="filters-container">
           <div className="filter">
-            <label>קטגוריה</label>
-            <input
-              type="text"
-              placeholder="למשל: איפור קבוע"
+            <Select
+              options={categoryOptions}
               value={category}
-              onChange={e => setCategory(e.target.value)}
+              onChange={setCategory}
+              placeholder="תחום (לדוגמה: חשמלאי)"
+              isClearable
+              className="react-select-container"
+              classNamePrefix="react-select"
             />
           </div>
           <div className="filter">
-            <label>עיר</label>
-            <input
-              type="text"
-              placeholder="למשל: קרית אתא"
+            <Select
+              options={cityOptions}
               value={city}
-              onChange={e => setCity(e.target.value)}
+              onChange={setCity}
+              placeholder="עיר (לדוגמה: תל אביב)"
+              isClearable
+              className="react-select-container"
+              classNamePrefix="react-select"
             />
           </div>
           <button
