@@ -2,6 +2,7 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
+import AccessibilityWidget from "./components/AccessibilityWidget";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
@@ -70,6 +71,8 @@ export default function App() {
   return (
     <>
       <Header />
+      {/* ווידג’ט הנגישות */}
+      <AccessibilityWidget />
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>

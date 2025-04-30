@@ -1,0 +1,96 @@
+/* כלליות */
+.aw-toggle-button {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10000;
+    background: #005b96;
+    color: #fff;
+    border: none;
+    padding: .5rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  
+  /* הפאנל */
+  .aw-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 320px;
+    background: #005b96;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    z-index: 9999;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+  }
+  
+  /* כותרת */
+  .aw-header {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #004271;
+  }
+  .aw-header h2 {
+    margin: 0;
+  }
+  .aw-header select {
+    background: #fff;
+    color: #000;
+    border-radius: 4px;
+    padding: .25rem;
+  }
+  
+  /* גריד אייקונים */
+  .aw-features {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .75rem;
+  }
+  .aw-feature-btn {
+    background: #fff;
+    color: #005b96;
+    border: none;
+    border-radius: 8px;
+    padding: .75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+  .aw-icon { font-size: 1.5rem; margin-bottom: .25rem; }
+  .aw-label { font-size: .9rem; }
+  
+  /* פוטר */
+  .aw-footer {
+    background: #004271;
+    padding: .75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .aw-footer-btn {
+    background: transparent;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    padding: .4rem .75rem;
+    color: #fff;
+    font-size: .85rem;
+    cursor: pointer;
+  }
+  .aw-powered {
+    flex: 1 0 100%;
+    text-align: center;
+    font-size: .75rem;
+    margin-top: .5rem;
+    opacity: .7;
+  }
+  
