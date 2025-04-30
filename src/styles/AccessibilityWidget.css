@@ -58,6 +58,7 @@ body {
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
     overflow: visible;
     pointer-events: auto;
+    z-index: 10000;
 }
 
 /* ===== Panel Close Button (X) ===== */
@@ -90,11 +91,11 @@ body {
     font-size: 1.2rem;
 }
 
-/* ===== Sections ===== */
+/* ===== Section ===== */
 .aw-panel .aw-section {
-    display: flex;
+    display: flex;            /* מאפשר גמישות לגובה */
     flex-direction: column;
-    flex: 1;
+    flex: 1;                  /* יתפוס שאר השטח בפאנל */
     border-top: 1px solid #0074b1;
 }
 
@@ -112,13 +113,12 @@ body {
     background: #00668a;
 }
 
-/* ===== Features Wrapper & Scroll Buttons ===== */
 /* ===== Features Wrapper ===== */
 .aw-features-wrapper {
     position: relative;
-    display: flex;
+    display: flex;            /* מאפשר גמישות לגובה */
     flex-direction: column;
-    flex: 1;
+    flex: 1;                  /* יתפוס את כל השטח הפנוי בתוך הסקשן */
     overflow: visible !important;
     pointer-events: auto !important;
 }
@@ -141,13 +141,12 @@ body {
     pointer-events: auto !important;
     z-index: 2000 !important;
 }
-
 .aw-scroll-btn.up { top: .5rem; }
 .aw-scroll-btn.down { bottom: .5rem; }
 
 /* ===== Features Grid (GLIDE SCROLLING) ===== */
 .aw-features {
-    flex: 1;
+    flex: 1;                  /* יתפוס את השטח שנותר ב-wrapper */
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: .75rem;
