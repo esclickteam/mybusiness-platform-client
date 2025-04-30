@@ -11,8 +11,9 @@
   /* ===== Toggle button ===== */
   .aw-toggle-button {
     position: fixed;
-    bottom: 1rem;
+    top: 50%;
     left: 1rem;
+    transform: translateY(-50%);
     z-index: 10000;
     background: var(--aw-accent);
     color: var(--aw-white);
@@ -23,6 +24,7 @@
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
+  
   
   /* ===== Panel ===== */
   .aw-panel {
