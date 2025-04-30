@@ -54,83 +54,116 @@
 .side-menu {
   position: fixed;
   top: 0; right: 0;
-  width: 280px;
+  width: 300px;
   height: 100vh;
   background: #ffffff;
-  padding: 0; /* נעדכן ב־drawer-header */
+  box-shadow: -4px 0 16px rgba(0,0,0,0.1);
   display: none;
   flex-direction: column;
-  gap: 20px;
-  box-shadow: -2px 0 12px rgba(0,0,0,0.08);
   z-index: 1501;
   overflow-y: auto;
-  text-align: right;
+  transition: transform 0.3s ease;
+  transform: translateX(100%);
 }
 .side-menu.open {
   display: flex;
+  transform: translateX(0);
 }
 
-/* כותרת ה־drawer + כפתור חזור */
+/* Scrollbar עדין */
+.side-menu::-webkit-scrollbar {
+  width: 6px;
+}
+.side-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+.side-menu::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+/* ===== header של ה־drawer ===== */
 .drawer-header {
   background: #2d006e;
-  height: 60px;
+  height: 64px;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   padding: 0 16px;
 }
 .back-button {
-  background: none;
+  background: rgba(255,255,255,0.2);
   border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #ffffff;
   cursor: pointer;
+  transition: background 0.2s;
+}
+.back-button:hover {
+  background: rgba(255,255,255,0.3);
 }
 
-/* קישורים וכותרות */
+/* ===== סעיפים וקישורים ===== */
 .menu-section {
-  padding: 0 16px;
+  margin-top: 24px;
 }
 .menu-section h4 {
-  margin: 24px 0 8px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #ddd;
-  font-size: 1.1rem;
+  margin: 0;
+  padding: 0 16px 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: #2d006e;
-  font-weight: bold;
+  border-bottom: 1px solid #eee;
 }
 .menu-section a {
   display: block;
+  padding: 12px 16px;
+  margin: 4px 0;
+  border-radius: 4px;
+  color: #4e2977;
+  font-size: 0.95rem;
   text-decoration: none;
-  color: #2d006e;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-  transition: color 0.2s ease;
+  transition: background 0.2s, color 0.2s;
 }
 .menu-section a:hover {
-  color: #5e17eb;
+  background: #f5f1fa;
+  color: #2d006e;
 }
 
-/* כפתורי משתמש בתוך ה־drawer */
+/* ===== כפתורי משתמש בסוף ===== */
 .auth-menu {
-  border-top: 1px solid #eee;
+  margin-top: auto;
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-.personal-area-button,
-.logout-button,
-.login-button {
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  color: #2d006e;            /* טקסט כהה */
-  background: #ffffff;       /* רקע לבן */
+.auth-menu .personal-area-button,
+.auth-menu .logout-button,
+.auth-menu .login-button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
   border: 1px solid #2d006e;
+  background: #ffffff;
+  color: #2d006e;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
-.logout-button {
-  background: transparent;
+.auth-menu .personal-area-button:hover,
+.auth-menu .logout-button:hover,
+.auth-menu .login-button:hover {
+  background: #2d006e;
+  color: #ffffff;
 }
 
 /* backdrop */
@@ -146,6 +179,10 @@
   .logo-link .logo { height: 64px; }
   .app-header { padding: 0 12px; height: 80px; }
   .auth-controls.desktop-only { display: none !important; }
+  .side-menu {
+    width: 100%;
+    max-width: 300px;
+  }
 }
 
 /* אנימציות */
