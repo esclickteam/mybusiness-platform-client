@@ -137,6 +137,11 @@
   .desktop-only {
     display: none !important;
   }
+
+  .mobile-only {
+    display: flex !important;
+  }
 }
+
 
 

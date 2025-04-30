@@ -41,12 +41,12 @@ const Header = () => {
   return (
     <>
       <nav className="app-header">
-        {/* תפריט (ימין) */}
-        <div className="auth-controls left desktop-only">
-          <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-          </button>
-        </div>
+  {/* ☰ כפתור המבורגר – יופיע רק במובייל */}
+  <div className="mobile-only">
+    <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>
+      {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+    </button>
+  </div>
 
         {/* לוגו במרכז */}
         <div className="logo-wrapper">
