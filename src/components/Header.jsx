@@ -42,7 +42,8 @@ const Header = () => {
     <>
       <nav className="app-header">
   {/* ☰ כפתור המבורגר – יופיע רק במובייל */}
-  <div className="mobile-only">
+  <div className="menu-toggle">
+
     <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>
       {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
     </button>

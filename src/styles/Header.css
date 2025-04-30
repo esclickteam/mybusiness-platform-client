@@ -35,20 +35,25 @@
   transform: scale(1.05);
 }
 
-/* צדדים (שמאל / ימין) */
-.auth-controls.right,
-.auth-controls.left {
+/* כפתור תפריט (המבורגר) – תמיד מוצג */
+.menu-toggle {
   display: flex;
   align-items: center;
-  gap: 16px;
+  z-index: 1001;
 }
 
-/* אייקון תפריט */
 .menu-button {
   background: none;
   border: none;
   color: #2d006e;
   cursor: pointer;
+}
+
+/* צד שמאל – אזור אישי */
+.auth-controls.left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 /* טקסט שם משתמש */
@@ -58,7 +63,7 @@
   margin-right: 8px;
 }
 
-/* כפתורים כלליים */
+/* כפתורים */
 .personal-area-button,
 .logout-button,
 .login-button {
@@ -87,7 +92,7 @@
   border: none;
 }
 
-/* ===== תפריט קורס למובייל ===== */
+/* תפריט צד נפתח */
 .mobile-menu {
   position: absolute;
   top: 90px;
@@ -108,17 +113,6 @@
   display: flex;
 }
 
-/* ===== אנימציות ===== */
-@keyframes fadeInScale {
-  0% { opacity: 0; transform: scale(0.95); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes headerEnter {
-  0% { opacity: 0; transform: translateY(-20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
 /* ===== רספונסיביות ===== */
 @media (max-width: 768px) {
   .logo-link .logo {
@@ -137,11 +131,15 @@
   .desktop-only {
     display: none !important;
   }
-
-  .mobile-only {
-    display: flex !important;
-  }
 }
 
+/* ===== אנימציות ===== */
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
 
-
+@keyframes headerEnter {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
