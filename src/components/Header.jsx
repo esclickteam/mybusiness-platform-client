@@ -42,7 +42,7 @@ const Header = () => {
     <>
       <nav className="app-header">
         {/* תפריט (ימין) */}
-        <div className="auth-controls right">
+        <div className="auth-controls left desktop-only">
           <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
