@@ -276,7 +276,7 @@ body::after {
 .clear-btn {
   position: absolute;
   top: 50%;
-  right: 1rem;
+  left: 0.75rem; /* שים את האיקס בצד שמאל */
   transform: translateY(-50%);
   background: none;
   border: none;
@@ -285,3 +285,5 @@ body::after {
   color: var(--primary);
   z-index: 30;
 }
+
+
