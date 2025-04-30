@@ -62,9 +62,10 @@ body {
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
     overflow-y: auto;
     outline: none;
-    display: flex;
+    display: flex;      /* ensure children stack vertically */
     flex-direction: column;
     padding-bottom: 1rem;
+    z-index: 10001;     /* place above overlay */
 }
 
 /* ===== Panel Close Button (X) ===== */
