@@ -83,30 +83,38 @@
 }
 
 /* ===== header של ה־drawer ===== */
+/* ===== header של ה־drawer צבע עדין ===== */
 .drawer-header {
-  background: #2d006e;
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background: #f3e8ff;        /* פסטל לבנדר עדין */
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding: 0 16px;
 }
+
+/* ===== כפתור חזור בגוונים רכים ===== */
 .back-button {
-  background: rgba(255,255,255,0.2);
-  border: none;
+  background: #ffffff;         /* לבן נקי */
+  border: 1px solid #bfa2e1;   /* גבול פסטל סגול בהיר */
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: #5e17eb;              /* סגול כהה מעט לעניין קריא */
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 .back-button:hover {
-  background: rgba(255,255,255,0.3);
+  background: #e8dbff;         /* רקע סגול פסטלי בהיר יותר בהובר */
+  color: #2d006e;              /* סגול כהה קריא */
 }
+
 
 /* ===== סעיפים וקישורים ===== */
 .menu-section {
