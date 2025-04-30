@@ -31,9 +31,9 @@
   align-items: center;
   gap: 12px;
   white-space: nowrap;
-  margin-left: 0;
-  margin-right: auto;
-  padding-left: 12px;
+  margin-right: 0;
+  margin-left: auto;
+  padding-right: 12px;
 }
 
 /* לוגו במרכז */
