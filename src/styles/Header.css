@@ -28,13 +28,15 @@
 }
 
 /* ===== קיבוע הכפתורים (דסקטופ בלבד) ===== */
-.auth-controls.left.desktop-only {
+/* כפתורי משתמש – דסקטופ בלבד */
+.auth-controls.desktop-only {
   display: flex;         /* שורה אופקית אחת */
   flex-wrap: nowrap;     /* בלי שבירת שורה */
   align-items: center;   /* יישור אנכי */
   gap: 12px;             /* ריווח בין אלמנטים */
   white-space: nowrap;   /* מונע שבירת טקסט */
 }
+
 
 /* bar semantic classes */
 .desktop-only {

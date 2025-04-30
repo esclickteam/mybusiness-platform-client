@@ -46,14 +46,14 @@ const Header = () => {
           </button>
         </div>
 
-        {/* לוגו באמצע */}
+        {/* לוגו במרכז */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
           </Link>
         </div>
 
-        {/* כפתורי משתמש קבועים – רק בדסקטופ */}
+        {/* כפתורי משתמש – רק בדסקטופ */}
         <div className="auth-controls desktop-only">
           {user ? (
             <>
@@ -79,15 +79,15 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* התפריט הנפתח */}
+      {/* תפריט צד – כללי גם בדסקטופ אבל מוצג רק במובייל */}
       {menuOpen && (
         <>
           <div
-            className="menu-backdrop"
+            className="menu-backdrop mobile-only"
             onClick={() => setMenuOpen(false)}
           />
 
-          <div className="mobile-menu open">
+          <div className="mobile-menu open mobile-only">
             <div className="menu-section">
               <h4>כללי</h4>
               <Link to="/"        onClick={() => setMenuOpen(false)}>דף הבית</Link>
@@ -114,7 +114,7 @@ const Header = () => {
 
             <hr />
 
-            {/* רק במובייל – כפתורי המשתמש בתוך התפריט */}
+            {/* כפתורי משתמש – רק במובייל */}
             <div className="auth-menu mobile-only">
               {user ? (
                 <>
