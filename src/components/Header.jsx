@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -53,7 +52,7 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* כפתורי משתמש – רק בדסקטופ */}
+        {/* כפתורי משתמש קבועים – רק בדסקטופ */}
         <div className="auth-controls desktop-only">
           {user ? (
             <>
@@ -79,15 +78,15 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* תפריט צד – כללי גם בדסקטופ אבל מוצג רק במובייל */}
+      {/* Drawer – מוצג בכל גודל מסך כש־menuOpen=true */}
       {menuOpen && (
         <>
           <div
-            className="menu-backdrop mobile-only"
+            className="menu-backdrop"
             onClick={() => setMenuOpen(false)}
           />
 
-          <div className="mobile-menu open mobile-only">
+          <div className="side-menu open">
             <div className="menu-section">
               <h4>כללי</h4>
               <Link to="/"        onClick={() => setMenuOpen(false)}>דף הבית</Link>
@@ -114,8 +113,8 @@ const Header = () => {
 
             <hr />
 
-            {/* כפתורי משתמש – רק במובייל */}
-            <div className="auth-menu mobile-only">
+            {/* כפתורי משתמש בתוך ה־drawer */}
+            <div className="menu-section auth-menu">
               {user ? (
                 <>
                   <button

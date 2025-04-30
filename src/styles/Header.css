@@ -1,4 +1,4 @@
-/* ===== מבנה ראשי של ההדר ===== */
+/* ===== מבנה ראשי ===== */
 .app-header {
   display: flex;
   align-items: center;
@@ -8,16 +8,15 @@
   height: 90px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   direction: rtl;
-  animation: headerEnter 0.6s ease-out both;
   position: relative;
   z-index: 1000;
 }
 
-/* ===== כפתור המבורגר ===== */
+/* כפתור המבורגר – תמיד גלוי */
 .menu-toggle {
-  display: flex;               /* תמיד נראה */
+  display: flex;
   align-items: center;
-  margin-inline-end: 16px;     /* ריווח לכפתורים */
+  margin-inline-end: 16px;
   z-index: 1001;
 }
 .menu-button {
@@ -27,33 +26,23 @@
   cursor: pointer;
 }
 
-/* ===== קיבוע הכפתורים (דסקטופ בלבד) ===== */
-/* כפתורי משתמש – דסקטופ בלבד */
+/* כפתורי משתמש קבועים – רק בדסקטופ */
 .auth-controls.desktop-only {
-  display: flex;         /* שורה אופקית אחת */
-  flex-wrap: nowrap;     /* בלי שבירת שורה */
-  align-items: center;   /* יישור אנכי */
-  gap: 12px;             /* ריווח בין אלמנטים */
-  white-space: nowrap;   /* מונע שבירת טקסט */
-}
-
-
-/* bar semantic classes */
-.desktop-only {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
 }
-.mobile-only {
-  display: none;
-}
+
+/* סמנטיקה */
+.desktop-only { display: flex; }
 
 /* ===== לוגו במרכז ===== */
 .logo-wrapper {
-  position: static;      /* מבטל absolute */
-  margin-inline: auto;   /* מרכז אוטומטי */
-  transform: none;
+  position: static;
+  margin-inline: auto;
   display: flex;
   align-items: center;
-  animation: fadeInScale 0.7s ease-out both;
 }
 .logo-link .logo {
   height: 80px;
@@ -64,64 +53,59 @@
   transform: scale(1.05);
 }
 
-/* ===== תפריט צד נפתח ===== */
-.mobile-menu {
+/* ===== ה־drawer ===== */
+.side-menu {
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 0; right: 0;
   width: 280px;
   height: 100vh;
-  background-color: #ffffff;
+  background: #fff;
   padding: 90px 24px 24px;
-  display: none;          /* נסתר כברירת מחדל */
+  display: none;
   flex-direction: column;
   gap: 20px;
-  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.08);
+  box-shadow: -2px 0 12px rgba(0,0,0,0.08);
   z-index: 1501;
-  text-align: right;
-  animation: fadeInScale 0.3s ease-out both;
   overflow-y: auto;
-  border-right: 4px solid #eee;
+  text-align: right;
 }
-.mobile-menu.open {
-  display: flex;          /* מוצג כשפתוח */
+.side-menu.open {
+  display: flex;
 }
 .menu-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.5);
   z-index: 1500;
-  animation: fadeInBackdrop 0.3s ease-out both;
 }
 
-/* ===== קישורים וכותרות בתפריט ===== */
-.mobile-menu a {
+/* כותרות וקישורים */
+.menu-section h4 {
+  margin: 24px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ddd;
+  font-size: 1.1rem;
+  color: #2d006e;
+  font-weight: bold;
+}
+.side-menu a,
+.auth-menu .login-button,
+.auth-menu .personal-area-button,
+.auth-menu .logout-button {
+  display: block;
   text-decoration: none;
   color: #2d006e;
-  font-size: 1rem;
   padding: 8px 0;
   border-bottom: 1px solid #eee;
   transition: color 0.2s ease;
 }
-.mobile-menu a:hover {
+.side-menu a:hover {
   color: #5e17eb;
 }
-.menu-section h4 {
-  font-size: 1.1rem;
-  margin-top: 24px;
-  margin-bottom: 8px;
-  color: #2d006e;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 4px;
-  font-weight: bold;
-}
+.auth-menu { border-top: 1px solid #eee; padding-top: 16px; gap: 12px; display: flex; flex-direction: column; }
 
-/* ===== כפתורי התחברות/התנתקות ===== */
-.username {
-  color: #2d006e;
-  font-weight: 500;
-  margin-right: 8px;
-}
+/* ===== כפתורים ===== */
+.username { font-weight: 500; color: #2d006e; }
 .personal-area-button,
 .logout-button,
 .login-button {
@@ -130,43 +114,16 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
-}
-.personal-area-button {
-  background-color: #fff;
-  color: #2d006e;
   border: 1px solid #2d006e;
+  background: #fff;
 }
-.logout-button {
-  background: transparent;
-  color: #2d006e;
-  border: 1px solid #2d006e;
-}
-.login-button {
-  background-color: #fff;
-  color: #2d006e;
-  border: none;
-}
+.logout-button { background: transparent; }
 
 /* ===== רספונסיביות ===== */
 @media (max-width: 768px) {
-  /* מקטין לוגו */
-  .logo-link .logo {
-    height: 64px;
-  }
-  /* מסתיר כפתורי דסקטופ */
-  .desktop-only {
-    display: none !important;
-  }
-  /* מציג כל מה שב־mobile-only */
-  .mobile-only {
-    display: flex;
-    flex-direction: column;
-  }
-  /* מעט התאמות נוספות */
-  .app-header {
-    height: 80px;
-    padding: 0 12px;
-  }
+  .logo-link .logo { height: 64px; }
+  .app-header { padding: 0 12px; height: 80px; }
+  .desktop-only { display: none !important; }
 }
 
 /* ===== אנימציות ===== */
@@ -177,8 +134,4 @@
 @keyframes fadeInBackdrop {
   0% { opacity: 0; }
   100% { opacity: 1; }
-}
-@keyframes headerEnter {
-  0% { opacity: 0; transform: translateY(-20px); }
-  100% { opacity: 1; transform: translateY(0); }
 }
