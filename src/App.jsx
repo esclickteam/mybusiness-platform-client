@@ -2,6 +2,12 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
+
+// 1️⃣ קודם נטען כאן (או ב־index.js) את כל ה־CSS הגלובלי של האתר
+// (נניח שיש לכם index.css שמאגד את כל הסגנונות הכלליים)
+import "./styles/index.css";
+
+
 import AccessibilityWidget from "./components/AccessibilityWidget";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
