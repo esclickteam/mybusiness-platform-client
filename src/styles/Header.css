@@ -35,7 +35,7 @@
   transform: scale(1.05);
 }
 
-/* כפתור תפריט (המבורגר) – תמיד מוצג */
+/* כפתור המבורגר */
 .menu-toggle {
   display: flex;
   align-items: center;
@@ -49,21 +49,23 @@
   cursor: pointer;
 }
 
-/* צד שמאל – אזור אישי */
+/* התחברות / התנתקות (דסקטופ) */
 .auth-controls.left {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-/* טקסט שם משתמש */
+.desktop-only {
+  display: flex;
+}
+
 .username {
   color: #2d006e;
   font-weight: 500;
   margin-right: 8px;
 }
 
-/* כפתורים */
 .personal-area-button,
 .logout-button,
 .login-button {
@@ -92,25 +94,81 @@
   border: none;
 }
 
-/* תפריט צד נפתח */
+/* ===== תפריט צד נפתח ===== */
 .mobile-menu {
-  position: absolute;
-  top: 90px;
+  position: fixed;
+  top: 0;
   right: 0;
+  width: 280px;
+  height: 100vh;
   background-color: #ffffff;
-  width: 100%;
-  padding: 16px 24px;
+  padding: 90px 24px 24px;
   display: none;
   flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  z-index: 999;
+  gap: 20px;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.08);
+  z-index: 1501;
   text-align: right;
   animation: fadeInScale 0.3s ease-out both;
+  overflow-y: auto;
+  border-right: 4px solid #eee;
 }
 
 .mobile-menu.open {
   display: flex;
+}
+
+/* רקע כהה מאחורי התפריט */
+.menu-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1500;
+  animation: fadeInBackdrop 0.3s ease-out both;
+}
+
+/* קישורים בתפריט */
+.mobile-menu a {
+  text-decoration: none;
+  color: #2d006e;
+  font-size: 1rem;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  transition: color 0.2s ease;
+}
+
+.mobile-menu a:hover {
+  color: #5e17eb;
+}
+
+/* כותרות קטגוריה */
+.menu-section h4 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #2d006e;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+  font-weight: bold;
+  margin-top: 24px;
+}
+
+/* ===== אנימציות ===== */
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInBackdrop {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes headerEnter {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== רספונסיביות ===== */
@@ -131,15 +189,4 @@
   .desktop-only {
     display: none !important;
   }
-}
-
-/* ===== אנימציות ===== */
-@keyframes fadeInScale {
-  0% { opacity: 0; transform: scale(0.95); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes headerEnter {
-  0% { opacity: 0; transform: translateY(-20px); }
-  100% { opacity: 1; transform: translateY(0); }
 }
