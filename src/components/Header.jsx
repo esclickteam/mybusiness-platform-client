@@ -60,14 +60,31 @@ const Header = () => {
         </div>
 
         <div className="auth-controls desktop-only">
-  {!user && (
-    <Link to="/login" className="login-button">
-      התחבר
-    </Link>
-  )}
-</div>
-</nav>
-
+          {user ? (
+            <>
+              <span className="username">
+                שלום, {user.name || user.email}
+              </span>
+              <button
+                className="personal-area-button"
+                onClick={() => navigate(getDashboardPath())}
+              >
+                אזור אישי
+              </button>
+              <button
+                className="logout-button"
+                onClick={handleLogout}
+              >
+                התנתק
+              </button>
+            </>
+          ) : (
+            <Link to="/login" className="login-button">
+              התחבר
+            </Link>
+          )}
+        </div>
+      </nav>
 
       {menuOpen && (
         <>
