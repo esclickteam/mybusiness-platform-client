@@ -110,9 +110,10 @@ body {
 /* ===== Features Wrapper & Scroll Buttons ===== */
 .aw-features-wrapper {
     position: relative;
-    overflow: visible;
-    pointer-events: none;
+    overflow: visible;    /* מאפשר לחצנים לצאת מחוץ לאזור הגלילה */
+    pointer-events: auto; /* מחזיר לחיצות גם ל-wrapper וגם לילדיו */
 }
+
 .aw-scroll-btn {
     position: absolute;
     right: 1rem;
@@ -145,7 +146,8 @@ body {
     overflow-x: hidden;
     scroll-behavior: smooth;
     direction: ltr;
-}
+} /* <-- סוגר חסר הוסף כאן */
+
 .aw-features::-webkit-scrollbar {
     width: 6px;
 }
