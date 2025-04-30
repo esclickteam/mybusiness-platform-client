@@ -58,6 +58,7 @@ body {
     z-index: 1000;
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
     overflow: visible;
+    pointer-events: auto;  
 }
 
 /* ===== Panel Close Button (X) ===== */
@@ -141,6 +142,7 @@ body {
   /* ===== Features Grid (GLIDE SCROLLING) ===== */
   .aw-features {
     flex: 1;
+    pointer-events: auto;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: .75rem;
