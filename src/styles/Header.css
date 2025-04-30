@@ -1,4 +1,3 @@
-/* ===== מבנה ראשי של ההדר ===== */
 .app-header {
   display: flex;
   align-items: center;
@@ -12,7 +11,6 @@
   position: relative;
 }
 
-/* לוגו ממורכז לחלוטין */
 .logo-wrapper {
   position: absolute;
   right: 50%;
@@ -34,21 +32,13 @@
   transform: scale(1.05);
 }
 
-/* צד ימין – תפריט */
-.auth-controls.right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-/* צד שמאל – אזור אישי */
+.auth-controls.right,
 .auth-controls.left {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-/* כפתור המבורגר */
 .menu-button {
   background: none;
   border: none;
@@ -56,14 +46,12 @@
   cursor: pointer;
 }
 
-/* טקסט שם משתמש */
 .username {
   color: #2d006e;
   font-weight: 500;
   margin-right: 8px;
 }
 
-/* כפתורים */
 .personal-area-button,
 .logout-button,
 .login-button {
@@ -92,45 +80,39 @@
   border: none;
 }
 
-/* ===== תפריט נפתח למובייל ===== */
+/* תפריט קורס במובייל */
 .mobile-menu {
   position: absolute;
   top: 90px;
   right: 0;
-  background-color: #fff;
+  background-color: #ffffff;
   width: 100%;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px 24px;
   display: none;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  text-align: right;
+  animation: fadeInScale 0.3s ease-out both;
 }
 
-/* ===== אנימציות ===== */
+.mobile-menu.open {
+  display: flex;
+}
+
+/* אנימציות */
 @keyframes fadeInScale {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes headerEnter {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== רספונסיביות ===== */
+/* רספונסיביות */
 @media (max-width: 768px) {
   .logo-link .logo {
     height: 64px;
@@ -145,11 +127,7 @@
     padding: 0 12px;
   }
 
-  .auth-controls.left {
+  .desktop-only {
     display: none;
-  }
-
-  .mobile-menu {
-    display: flex;
   }
 }

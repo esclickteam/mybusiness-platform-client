@@ -1,3 +1,4 @@
+// src/components/Header.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -8,7 +9,7 @@ import "../styles/Header.css";
 const Header = () => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false); // 🔄 מצב תפריט פתוח
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) return null;
 
@@ -39,44 +40,78 @@ const Header = () => {
   };
 
   return (
-    <nav className="app-header">
-      {/* צד ימין – תפריט (שמאל ויזואלית ב־RTL) */}
-      <div className="auth-controls right">
-        <button
-          className="menu-button"
-          onClick={() => setMenuOpen(prev => !prev)}
-        >
-          {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-        </button>
-      </div>
+    <>
+      <nav className="app-header">
+        <div className="auth-controls right">
+          <button
+            className="menu-button"
+            onClick={() => setMenuOpen((prev) => !prev)}
+          >
+            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
+        </div>
 
-      {/* מרכז – לוגו */}
-      <div className="logo-wrapper">
-        <Link to="/" className="logo-link">
-          <img src={logo} alt="Logo" className="logo" />
-        </Link>
-      </div>
+        <div className="logo-wrapper">
+          <Link to="/" className="logo-link">
+            <img src={logo} alt="Logo" className="logo" />
+          </Link>
+        </div>
 
-      {/* צד שמאל – אזור אישי (פתיחה מותנית לפי מצב תפריט במובייל) */}
-      <div className={`auth-controls left ${menuOpen ? "open" : ""}`}>
+        <div className="auth-controls left desktop-only">
+          {user ? (
+            <>
+              <span className="username">שלום, {user.name || user.email}</span>
+              <button
+                onClick={() => navigate(getDashboardPath())}
+                className="personal-area-button"
+              >
+                אזור אישי
+              </button>
+              <button onClick={handleLogout} className="logout-button">
+                התנתק
+              </button>
+            </>
+          ) : (
+            <Link to="/login" className="login-button">התחבר</Link>
+          )}
+        </div>
+      </nav>
+
+      {/* תפריט קורס במובייל */}
+      <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
         {user ? (
           <>
             <span className="username">שלום, {user.name || user.email}</span>
             <button
-              onClick={() => navigate(getDashboardPath())}
+              onClick={() => {
+                navigate(getDashboardPath());
+                setMenuOpen(false);
+              }}
               className="personal-area-button"
             >
               אזור אישי
             </button>
-            <button onClick={handleLogout} className="logout-button">
+            <button
+              onClick={() => {
+                handleLogout();
+                setMenuOpen(false);
+              }}
+              className="logout-button"
+            >
               התנתק
             </button>
           </>
         ) : (
-          <Link to="/login" className="login-button">התחבר</Link>
+          <Link
+            to="/login"
+            className="login-button"
+            onClick={() => setMenuOpen(false)}
+          >
+            התחבר
+          </Link>
         )}
       </div>
-    </nav>
+    </>
   );
 };
 
