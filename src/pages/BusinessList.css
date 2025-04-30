@@ -29,14 +29,10 @@ body {
   direction: rtl;
   background:
     url('/assets/noise.png') repeat,
-    linear-gradient(
-      135deg,
-      var(--bg-start) 0%,
-      var(--bg-mid)   50%,
-      var(--bg-end)   100%
-    );
+    linear-gradient(135deg, #f9faff, #f3f4fc);
   background-size: auto, cover;
 }
+
 
 /* 2. אלמנטים וקטוריים מאחורי הרקע */
 body::before,
@@ -252,7 +248,7 @@ body::after {
 
 /* 12. כרטיס עסק */
 .business-card {
-  background: linear-gradient(135deg, #faf6ff, #f3efff);
+  background: linear-gradient(135deg, #ffffff, #f5f6fa);
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   padding: 2rem;
@@ -261,6 +257,7 @@ body::after {
   width: 100%;
   margin: 0 auto;
 }
+
 
 
 
