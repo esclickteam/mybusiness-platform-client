@@ -107,6 +107,35 @@
     background: #00668a;
   }
   
+  /* ===== Features Wrapper & Scroll Buttons ===== */
+  .aw-features-wrapper {
+    position: relative;
+  }
+  .aw-scroll-btn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--aw-accent);
+    color: var(--aw-white);
+    border: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    font-size: .9rem;
+    line-height: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .aw-scroll-btn.up {
+    top: .5rem;
+  }
+  .aw-scroll-btn.down {
+    bottom: .5rem;
+  }
+  
   /* ===== Features Grid ===== */
   .aw-features {
     flex: 1;
