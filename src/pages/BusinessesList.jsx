@@ -42,29 +42,34 @@ const BusinessesList = () => {
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* שדות חיפוש */}
-        <input
-          className="search-input"
-          type="text"
-          placeholder="קטגוריה (למשל: איפור קבוע)"
-          value={category}
-          onChange={e => setCategory(e.target.value)}
-        />
-        <input
-          className="search-input"
-          type="text"
-          placeholder="עיר (למשל: קרית אתא)"
-          value={city}
-          onChange={e => setCity(e.target.value)}
-        />
-
-        <button
-          className="search-btn"
-          onClick={handleSearch}
-          disabled={loading}
-        >
-          {loading ? "טוען…" : "חפש"}
-        </button>
+        {/* סרגל הפילטרים */}
+        <div className="filters-container">
+          <div className="filter">
+            <label>קטגוריה</label>
+            <input
+              type="text"
+              placeholder="למשל: איפור קבוע"
+              value={category}
+              onChange={e => setCategory(e.target.value)}
+            />
+          </div>
+          <div className="filter">
+            <label>עיר</label>
+            <input
+              type="text"
+              placeholder="למשל: קרית אתא"
+              value={city}
+              onChange={e => setCity(e.target.value)}
+            />
+          </div>
+          <button
+            className="search-btn"
+            onClick={handleSearch}
+            disabled={loading}
+          >
+            {loading ? "טוען…" : "חפש"}
+          </button>
+        </div>
 
         {/* תוצאות */}
         {loading ? (

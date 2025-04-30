@@ -15,7 +15,7 @@
   --primary-hover:  #7a23d0;
 
   --text-main:      #222222;
-  --text-secondary: #555555;
+  --text-secondary:#555555;
 
   --gap-sm: 12px;
   --gap-md: 16px;
@@ -101,13 +101,17 @@ body::after {
 }
 
 /* ====== סינון ====== */
-.filters {
+.filters-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--gap-md);
   justify-content: center;
   align-items: center;
+  background: var(--card-bg);
+  padding: var(--gap-lg);
   margin-bottom: var(--gap-lg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
 }
 
 .dropdown-wrapper {
@@ -167,6 +171,10 @@ body::after {
 .search-btn:hover:not(:disabled) {
   background-color: var(--primary-hover);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+.search-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 /* רשימת autocomplete */
@@ -266,7 +274,7 @@ body::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: var(--gap-lg);
   margin: var(--gap-lg) 0;
 }
 .pagination button {
@@ -289,7 +297,7 @@ body::after {
 
 /* 10. Responsive */
 @media (max-width: 768px) {
-  .filters {
+  .filters-container {
     flex-direction: column;
   }
   .business-list {
