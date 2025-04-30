@@ -1,19 +1,18 @@
 /* ===== ראשי ===== */
-/* ===== ראשי ===== */
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* מוודא שהאלמנטים בצד שמאל */
+  justify-content: center; /* הלוגו יהיה במרכז */
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 90px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  direction: rtl;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  direction: rtl; /* כיוון ימין לשמאל */
   position: relative;
   z-index: 1000;
 }
 
-/* כפתורי משתמש בדסקטופ בצד שמאל */
+/* כפתורי משתמש בצד שמאל בדסקטופ */
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
@@ -22,11 +21,7 @@
   margin-left: 0; /* מיקום בצד שמאל */
   padding-left: 12px; /* מרווח בצד שמאל */
   margin-right: auto; /* דחיפת הכפתורים לשמאל */
-  width: 100%; /* ווידוא שהכפתורים יימתחו לרוחב */
-  position: relative; /* לוודא שאין חפיפות עם רכיבים אחרים */
-  z-index: 1001; /* על מנת להבטיח שהכפתורים יהיו מעל רכיבים אחרים */
 }
-
 
 /* לוגו במרכז */
 .logo-wrapper {
@@ -43,6 +38,7 @@
 .logo-link:hover .logo {
   transform: scale(1.05);
 }
+
 
 
 /* ===== ה־drawer ===== */
