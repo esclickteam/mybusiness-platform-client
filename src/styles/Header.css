@@ -1,22 +1,21 @@
 /* ===== מבנה ראשי של ההדר ===== */
 .app-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* ימין | לוגו | שמאל */
   align-items: center;
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 90px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  position: relative;
   direction: rtl;
   animation: headerEnter 0.6s ease-out both;
 }
 
-/* ===== לוגו במרכז עם אפקט ===== */
+/* ===== לוגו במרכז עם אנימציה ===== */
 .logo-wrapper {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   animation: fadeInScale 0.7s ease-out both;
 }
 
@@ -25,40 +24,34 @@
   object-fit: contain;
   transition: transform 0.3s ease;
 }
-
 .logo-link:hover .logo {
   transform: scale(1.05);
 }
 
-/* ===== צד ימין (תפריט) ===== */
+/* ===== צדדים ===== */
+.auth-controls.right,
 .auth-controls.left {
   display: flex;
   align-items: center;
   gap: 16px;
-  justify-content: flex-end;
-  margin-right: auto;
 }
 
-/* ===== צד שמאל (אזור אישי) ===== */
+/* ימין = תפריט */
 .auth-controls.right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  justify-content: flex-start;
-  margin-left: auto;
+  justify-content: flex-end;
 }
 
-/* ===== אייקונים וכפתורים ===== */
+/* שמאל = שם משתמש, אזור אישי, התנתק */
+.auth-controls.left {
+  justify-content: flex-start;
+}
+
+/* ===== כפתורים ועיצוב ===== */
 .menu-button {
   background: none;
   border: none;
   color: #2d006e;
   cursor: pointer;
-}
-
-.icon-button {
-  color: #2d006e;
-  text-decoration: none;
 }
 
 .username {
@@ -77,7 +70,6 @@
   transition: all 0.3s ease;
 }
 
-/* עיצוב לפי סוג כפתור */
 .personal-area-button {
   background-color: #fff;
   color: #2d006e;
@@ -98,25 +90,13 @@
 
 /* ===== אנימציות ===== */
 @keyframes fadeInScale {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-  }
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes headerEnter {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== רספונסיביות ===== */
@@ -126,7 +106,7 @@
   }
 
   .username {
-    display: none; /* אפשר גם להשאיר לפי הצורך */
+    display: none;
   }
 
   .app-header {

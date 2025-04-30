@@ -39,8 +39,8 @@ const Header = () => {
 
   return (
     <nav className="app-header">
-      {/* צד שמאל – כפתור תפריט */}
-      <div className="auth-controls left">
+      {/* צד ימין – כפתור תפריט (שמאל ויזואלית ב־RTL) */}
+      <div className="auth-controls right">
         <button className="menu-button" onClick={() => {}}>
           <FaBars size={24} />
         </button>
@@ -53,8 +53,8 @@ const Header = () => {
         </Link>
       </div>
 
-      {/* צד ימין – אזור אישי */}
-      <div className="auth-controls right">
+      {/* צד שמאל – אזור אישי (ימין ויזואלית ב־RTL) */}
+      <div className="auth-controls left">
         {user ? (
           <>
             <span className="username">שלום, {user.name || user.email}</span>
