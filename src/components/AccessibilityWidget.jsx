@@ -22,6 +22,7 @@ import {
 import '../styles/AccessibilityWidget.css';
 
 export default function AccessibilityWidget() {
+  // מיקום של כל useState מחוץ לתנאים
   const [open, setOpen] = useState(false);
   const [sections, setSections] = useState({ nav: true, contrast: false, content: false });
   const [contrastTab, setContrastTab] = useState('backgrounds');
@@ -73,16 +74,16 @@ export default function AccessibilityWidget() {
     console.log(state); // הדפסת ה-state לאחר כל עדכון
   }, [state]);
 
+  // כל ה-Hooks נמצאים כאן, בסדר הקבוע שלהם
+  const { buttonProps } = useButton({
+    onPress: () => setOpen(true),
+    'aria-label': 'פתח התאמות נגישות',
+  });
+
   return (
     <>
       {/* Accessible Button for Opening Dialog */}
-      <button
-        {...useButton({
-          onPress: () => setOpen(true),
-          'aria-label': 'פתח התאמות נגישות',
-        }).buttonProps}
-        className="aw-toggle-button"
-      >
+      <button {...buttonProps} className="aw-toggle-button">
         <FaWheelchair />
       </button>
 
