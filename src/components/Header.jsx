@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -42,29 +41,26 @@ const Header = () => {
   return (
     <>
       <nav className="app-header">
+        {/* תפריט (ימין) */}
         <div className="auth-controls right">
-          <button
-            className="menu-button"
-            onClick={() => setMenuOpen((prev) => !prev)}
-          >
+          <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
 
+        {/* לוגו במרכז */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
           </Link>
         </div>
 
+        {/* כפתורים לדסקטופ בלבד */}
         <div className="auth-controls left desktop-only">
           {user ? (
             <>
               <span className="username">שלום, {user.name || user.email}</span>
-              <button
-                onClick={() => navigate(getDashboardPath())}
-                className="personal-area-button"
-              >
+              <button onClick={() => navigate(getDashboardPath())} className="personal-area-button">
                 אזור אישי
               </button>
               <button onClick={handleLogout} className="logout-button">
@@ -77,40 +73,25 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* תפריט קורס במובייל */}
-      <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
-        {user ? (
-          <>
-            <span className="username">שלום, {user.name || user.email}</span>
-            <button
-              onClick={() => {
-                navigate(getDashboardPath());
-                setMenuOpen(false);
-              }}
-              className="personal-area-button"
-            >
-              אזור אישי
-            </button>
-            <button
-              onClick={() => {
-                handleLogout();
-                setMenuOpen(false);
-              }}
-              className="logout-button"
-            >
-              התנתק
-            </button>
-          </>
-        ) : (
-          <Link
-            to="/login"
-            className="login-button"
-            onClick={() => setMenuOpen(false)}
-          >
-            התחבר
-          </Link>
-        )}
-      </div>
+      {/* תפריט נפתח במובייל */}
+      {menuOpen && (
+        <div className="mobile-menu open">
+          {user ? (
+            <>
+              <button onClick={() => { setMenuOpen(false); navigate(getDashboardPath()); }} className="personal-area-button">
+                אזור אישי
+              </button>
+              <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="logout-button">
+                התנתק
+              </button>
+            </>
+          ) : (
+            <Link to="/login" className="login-button" onClick={() => setMenuOpen(false)}>
+              התחבר
+            </Link>
+          )}
+        </div>
+      )}
     </>
   );
 };
