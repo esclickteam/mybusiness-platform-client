@@ -12,15 +12,15 @@
   z-index: 1000;
 }
 
-/* כפתורי משתמש בדסקטופ (בצד שמאל) */
+/* כפתורי משתמש בדסקטופ בצד שמאל */
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
   gap: 12px;
   white-space: nowrap;
-  margin-right: auto; /* שמירה על פיזור שמאלה */
-  margin-left: 0;
-  padding-right: 12px;
+  margin-left: 0; /* הצגת הכפתורים בצד שמאל */
+  padding-left: 12px; /* מרווח בצד שמאל */
+  margin-right: auto; /* דחיפת הכפתורים לשמאל */
 }
 
 /* לוגו במרכז */
