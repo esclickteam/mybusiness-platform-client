@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/SearchBusinesses.jsx
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
 import BusinessCard from '../components/BusinessCard';
@@ -25,30 +26,47 @@ export default function SearchBusinesses() {
   const [filtered, setFiltered] = useState([]);
   const [searched, setSearched] = useState(false);
 
-  // selectors
+  // Category as autocomplete
   const catParam = searchParams.get('category') || '';
   const [cat, setCat] = useState(catParam);
+  const [openCat, setOpenCat] = useState(false);
+  const wrapperCatRef = useRef(null);
+
+  // City as autocomplete
   const cityParam = searchParams.get('city') || '';
   const [city, setCity] = useState(cityParam);
+  const [openCity, setOpenCity] = useState(false);
+  const wrapperCityRef = useRef(null);
+
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // fetch data
+  // Fetch businesses
   useEffect(() => {
     API.get('/business')
       .then(r => setAll(r.data.businesses || []))
       .catch(console.error);
   }, []);
 
-  // sync URL params
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handler = e => {
+      if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) setOpenCat(false);
+      if (wrapperCityRef.current && !wrapperCityRef.current.contains(e.target)) setOpenCity(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Sync URL params
   useEffect(() => {
     const p = new URLSearchParams();
     if (cat) p.set('category', cat);
     if (city) p.set('city', city);
     if (page > 1) p.set('page', page);
     setSearchParams(p, { replace: true });
-  }, [cat, city, page, setSearchParams]);
+  }, [cat, city, page]);
 
-  // handle search
+  // Search handler
   const handleSearch = () => {
     const normCat = normalize(cat);
     const normCity = normalize(city);
@@ -62,63 +80,74 @@ export default function SearchBusinesses() {
     setSearched(true);
   };
 
-  // pagination
+  // Pagination
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
+  // Suggestions based on input
+  const catSuggestions = cat.trim()
+    ? ALL_CATEGORIES.filter(c => normalize(c).includes(normalize(cat)))
+    : [];
+  const citySuggestions = city.trim()
+    ? ALL_CITIES.filter(c => normalize(c).startsWith(normalize(city)))
+    : [];
 
   return (
     <div className="list-page">
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        <div className="filters-wrapper">
+        <div className="filters">
+          {/* Category autocomplete */}
+          <div className="dropdown-wrapper cat" ref={wrapperCatRef}>
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="הקלד קטגוריה"
+              value={cat}
+              onFocus={() => setOpenCat(true)}
+              onChange={e => { setCat(e.target.value); setOpenCat(true); }}
+            />
+            {openCat && catSuggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {catSuggestions.map((c, i) => (
+                  <li key={i} onClick={() => { setCat(c); setOpenCat(false); }}>{c}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* City autocomplete */}
+          <div className="dropdown-wrapper city" ref={wrapperCityRef}>
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="הקלד עיר"
+              value={city}
+              onFocus={() => setOpenCity(true)}
+              onChange={e => { setCity(e.target.value); setOpenCity(true); }}
+            />
+            {openCity && citySuggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {citySuggestions.map((c, i) => (
+                  <li key={i} onClick={() => { setCity(c); setOpenCity(false); }}>{c}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+
           {/* Search button */}
-          <button className="search-btn" onClick={handleSearch}>
-            <span>חפש</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="search-btn__icon" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" strokeWidth="2" />
-            </svg>
-          </button>
-
-          {/* City selector */}
-          <div className="select-wrapper">
-            <select value={city} onChange={e => setCity(e.target.value)}>
-              <option value="" disabled>עיר (לדוגמא: תל אביב)</option>
-              {ALL_CITIES.map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            <svg xmlns="http://www.w3.org/2000/svg" className="select-icon" viewBox="0 0 24 24">
-              <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" fill="none" />
-            </svg>
-          </div>
-
-          {/* Category selector */}
-          <div className="select-wrapper">
-            <select value={cat} onChange={e => setCat(e.target.value)}>
-              <option value="" disabled>תחום (לדוגמא: חשמלאי)</option>
-              {ALL_CATEGORIES.map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            <svg xmlns="http://www.w3.org/2000/svg" className="select-icon" viewBox="0 0 24 24">
-              <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" fill="none" />
-            </svg>
-          </div>
+          <button className="filter-button search-btn" onClick={handleSearch}>חפש</button>
         </div>
 
+        {/* Results */}
         <div className="business-list">
           {!searched && <p className="no-search">לחץ על חפש כדי לראות תוצאות</p>}
           {searched && (
             pageItems.length > 0 ? (
               pageItems.map(b => (
-                <BusinessCard
-                  key={b._id}
-                  business={b}
-                  onClick={() => navigate(`/business/${b._id}`)}
-                />
+                <BusinessCard key={b._id} business={b} onClick={() => navigate(`/business/${b._id}`)} />
               ))
             ) : (
               <p className="no-results">לא נמצאו עסקים</p>
@@ -126,15 +155,12 @@ export default function SearchBusinesses() {
           )}
         </div>
 
+        {/* Pagination */}
         {searched && totalPages > 1 && (
           <div className="pagination">
-            <button onClick={() => setPage(p => Math.max(p - 1, 1))} disabled={page === 1}>
-              הקודם
-            </button>
+            <button onClick={() => setPage(p => Math.max(p - 1, 1))} disabled={page === 1}>הקודם</button>
             <span>{page} מתוך {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(p + 1, totalPages))} disabled={page === totalPages}>
-              הבא
-            </button>
+            <button onClick={() => setPage(p => Math.min(p + 1, totalPages))} disabled={page === totalPages}>הבא</button>
           </div>
         )}
       </div>
