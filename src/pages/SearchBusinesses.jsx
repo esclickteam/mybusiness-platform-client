@@ -63,23 +63,23 @@ export default function SearchBusinesses() {
 
   // Sync URL params
   useEffect(() => {
-    const p = new URLSearchParams();
-    if (cat) p.set('category', cat);
-    if (city) p.set('city', city);
-    if (page > 1) p.set('page', page);
-    setSearchParams(p, { replace: true });
+    const params = new URLSearchParams();
+    if (cat) params.set('category', cat);
+    if (city) params.set('city', city);
+    if (page > 1) params.set('page', page);
+    setSearchParams(params, { replace: true });
   }, [cat, city, page, setSearchParams]);
 
   // Search handler
   const handleSearch = () => {
     const normCat = normalize(cat);
     const normCity = normalize(city);
-    const res = all.filter(b => {
+    const result = all.filter(b => {
       if (normCat && normalize(b.category) !== normCat) return false;
       if (normCity && !normalize(b.address?.city || '').startsWith(normCity)) return false;
       return true;
     });
-    setFiltered(res);
+    setFiltered(result);
     setPage(1);
     setSearched(true);
   };
@@ -89,7 +89,7 @@ export default function SearchBusinesses() {
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  // Suggestions
+  // Suggestions lists
   const catSuggestions = cat.trim()
     ? ALL_CATEGORIES.filter(c => normalize(c).includes(normalize(cat)))
     : [];
@@ -103,49 +103,40 @@ export default function SearchBusinesses() {
         <h1>רשימת עסקים</h1>
 
         {/* Filter chips */}
-{(cat || city) && (
-  <div className="filter-chips">
-    {cat && (
-      <div className="chip">
-        <span>{cat}</span>
-        <button onClick={() => { setCat(''); setSearched(false); }}>×</button>
-      </div>
-    )}
-    {city && (
-      <div className="chip">
-        <span>{city}</span>
-        <button onClick={() => { setCity(''); setSearched(false); }}>×</button>
-      </div>
-    )}
-  </div>
-)}
-<div className="filters-wrapper">
-          {/* Category autocomplete */}
-          <div className="dropdown-wrapper" ref={wrapperCatRef}>
-            <input
-              type="text"
-              className="filter-input"
-              placeholder="הקלד קטגוריה"
-              value={cat}
-              onFocus={() => setOpenCat(true)}
-              onChange={e => { setCat(e.target.value); setOpenCat(true); }}
-              disabled={loading}
-            />
-            {openCat && catSuggestions.length > 0 && (
-              <ul className="suggestions-list">
-                {catSuggestions.map((c, i) => (
-                  <li key={i} onClick={() => { setCat(c); setOpenCat(false); }}>{c}</li>
-                ))}
-              </ul>
+        {(cat || city) && (
+          <div className="filter-chips">
+            {cat && (
+              <div className="chip">
+                <span>{cat}</span>
+                <button onClick={() => { setCat(''); setSearched(false); }}>×</button>
+              </div>
+            )}
+            {city && (
+              <div className="chip">
+                <span>{city}</span>
+                <button onClick={() => { setCity(''); setSearched(false); }}>×</button>
+              </div>
             )}
           </div>
+        )}
+
+        {/* Filters */}
+        <div className="filters-wrapper">
+          {/* Search button */}
+          <button
+            className="search-btn"
+            onClick={handleSearch}
+            disabled={loading}
+          >
+            חפש
+          </button>
 
           {/* City autocomplete */}
           <div className="dropdown-wrapper" ref={wrapperCityRef}>
             <input
               type="text"
               className="filter-input"
-              placeholder="הקלד עיר"
+              placeholder="עיר (לדוגמא: תל אביב)"
               value={city}
               onFocus={() => setOpenCity(true)}
               onChange={e => { setCity(e.target.value); setOpenCity(true); }}
@@ -160,14 +151,25 @@ export default function SearchBusinesses() {
             )}
           </div>
 
-          {/* Search button */}
-          <button
-            className="search-btn"
-            onClick={handleSearch}
-            disabled={loading}
-          >
-            חפש
-          </button>
+          {/* Category autocomplete */}
+          <div className="dropdown-wrapper" ref={wrapperCatRef}>
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="תחום (לדוגמא: חשמלאי)"
+              value={cat}
+              onFocus={() => setOpenCat(true)}
+              onChange={e => { setCat(e.target.value); setOpenCat(true); }}
+              disabled={loading}
+            />
+            {openCat && catSuggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {catSuggestions.map((c, i) => (
+                  <li key={i} onClick={() => { setCat(c); setOpenCat(false); }}>{c}</li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         {/* Results */}
@@ -185,12 +187,11 @@ export default function SearchBusinesses() {
                       />
                     ))
                   : <p className="no-results">לא נמצאו עסקים</p>
-                )
-          }
+                )}
         </div>
 
         {/* Pagination */}
-        {!loading && searched && totalPages > 1 && (
+        {searched && totalPages > 1 && (
           <div className="pagination">
             <button onClick={() => setPage(p => Math.max(p - 1, 1))} disabled={page === 1}>
               הקודם
