@@ -165,7 +165,7 @@ body::after {
   justify-content: center;
   gap: 0.5rem;
   height: 48px;
-  padding: 0 1rem;
+  padding: 0 2.5rem; /* 🟣 הגדלת רוחב ע"י ריווח פנימי */
   background: linear-gradient(90deg, var(--primary), var(--primary-hover));
   color: #fff;
   font-size: 1rem;
@@ -179,6 +179,7 @@ body::after {
   min-width: unset;
   width: auto;
 }
+
 
 
 .search-btn:hover:not(:disabled) {
