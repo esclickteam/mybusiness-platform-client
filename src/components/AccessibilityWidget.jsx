@@ -1,11 +1,20 @@
 // src/components/AccessibilityWidget.jsx
 import React, { useState, useEffect } from 'react';
 import {
-  FaTimes, FaWheelchair,
-  FaChevronUp, FaChevronDown,
-  FaArrowsAlt, FaKeyboard,
-  FaSun, FaMoon, FaEye,
-  FaTint, FaAdjust,
+  FaTimes,
+  FaWheelchair,
+  FaChevronUp,
+  FaChevronDown,
+  FaArrowsAlt,
+  FaKeyboard,
+  FaAssistiveListeningSystems,
+  FaMicrophoneAlt,
+  FaVolumeUp,
+  FaSun,
+  FaMoon,
+  FaEye,
+  FaTint,
+  FaAdjust,
   FaFont
 } from 'react-icons/fa';
 import '../styles/AccessibilityWidget.css';
@@ -24,10 +33,13 @@ export default function AccessibilityWidget() {
   const [contrastTab, setContrastTab] = useState('backgrounds');
   const [contentTab, setContentTab]    = useState('fontSize');
 
-  // סתייט של הפיצ'רים
+  // סטייט של כל הפיצ'רים
   const [state, setState] = useState({
     smartNav: false,
     keyNav: false,
+    screenReader: false,
+    voiceCommands: false,
+    readAloud: false,
     // contrast modes
     brightContrast: false,
     darkContrast:  false,
@@ -42,7 +54,7 @@ export default function AccessibilityWidget() {
     lineHeight:    1.5
   });
 
-  // Smart keyboard navigation (כפי שדיברנו לפני)
+  // Smart keyboard navigation
   useEffect(() => {
     if (!state.smartNav) return;
     const btns = () => Array.from(document.querySelectorAll('.aw-feature-btn'));
@@ -51,22 +63,25 @@ export default function AccessibilityWidget() {
       if (!all.length) return;
       let idx = all.indexOf(document.activeElement);
       if (idx === -1 && /^Arrow/.test(e.key)) {
-        all[0].focus(); e.preventDefault(); return;
+        all[0].focus();
+        e.preventDefault();
+        return;
       }
-      const cols = 2, max = all.length -1;
+      const cols = 2, max = all.length - 1;
       let next = idx;
-      switch(e.key){
-        case 'ArrowRight': next = idx+1; break;
-        case 'ArrowLeft':  next = idx-1; break;
-        case 'ArrowDown':  next = idx+cols; break;
-        case 'ArrowUp':    next = idx-cols; break;
+      switch (e.key) {
+        case 'ArrowRight': next = idx + 1; break;
+        case 'ArrowLeft':  next = idx - 1; break;
+        case 'ArrowDown':  next = idx + cols; break;
+        case 'ArrowUp':    next = idx - cols; break;
         default: return;
       }
       next = Math.max(0, Math.min(max, next));
-      all[next].focus(); e.preventDefault();
+      all[next].focus();
+      e.preventDefault();
     };
     document.addEventListener('keydown', onKey);
-    return ()=> document.removeEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [state.smartNav]);
 
   const toggleSection = sec =>
@@ -80,17 +95,32 @@ export default function AccessibilityWidget() {
     setState(s => ({ ...s, [key]: v }));
     document.documentElement.style.setProperty(
       key === 'hue' ? '--es-hue-rotate'
-    : key === 'fontSize' ? '--es-font-scale'
-    : key === 'letterSpacing' ? '--es-letter-spacing'
-    : '--es-line-height',
+      : key === 'fontSize' ? '--es-font-scale'
+      : key === 'letterSpacing' ? '--es-letter-spacing'
+      : '--es-line-height',
       key === 'hue' ? `${v}deg`
-    : key === 'letterSpacing' ? `${v}px`
-    : v
+      : key === 'letterSpacing' ? `${v}px`
+      : v
     );
+  };
+
+  const readPageAloud = () => {
+    if (state.readAloud && window.speechSynthesis) {
+      speechSynthesis.cancel();
+      setState(s => ({ ...s, readAloud: false }));
+    } else {
+      const utter = new SpeechSynthesisUtterance(
+        document.body.innerText.replace(/\s+/g,' ')
+      );
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utter);
+      setState(s => ({ ...s, readAloud: true }));
+    }
   };
 
   return (
     <>
+      {/* Toggle Button */}
       <button
         className="aw-toggle-button"
         onClick={()=>setOpen(o=>!o)}
@@ -101,30 +131,66 @@ export default function AccessibilityWidget() {
 
       {open && (
         <div className="aw-panel" role="dialog" aria-modal="true">
+          {/* Close X */}
           <button className="aw-close" onClick={()=>setOpen(false)}>
             <FaTimes/>
           </button>
-          <div className="aw-header"><h2>נגישות</h2></div>
+
+          {/* Header */}
+          <div className="aw-header">
+            <h2>נגישות</h2>
+          </div>
 
           {/* === סקשן 1: התאמות ניווט === */}
           <div className="aw-section">
-            <div className="aw-section-header" onClick={()=>toggleSection('nav')}>
+            <div
+              className="aw-section-header"
+              onClick={()=>toggleSection('nav')}
+            >
               <h3>התאמות ניווט</h3>
               {sections.nav ? <FaChevronUp/> : <FaChevronDown/>}
             </div>
             {sections.nav && (
               <div className="aw-features">
+                {/* ניווט חכם */}
                 <button
                   className={`aw-feature-btn${state.smartNav?' active':''}`}
-                  onClick={()=>toggleFeature('smartNav')}>
+                  onClick={()=>toggleFeature('smartNav')}
+                >
                   <FaArrowsAlt className="aw-icon"/>
                   <span className="aw-label">ניווט חכם</span>
                 </button>
+                {/* ניווט מקלדת */}
                 <button
                   className={`aw-feature-btn${state.keyNav?' active':''}`}
-                  onClick={()=>toggleFeature('keyNav')}>
+                  onClick={()=>toggleFeature('keyNav')}
+                >
                   <FaKeyboard className="aw-icon"/>
                   <span className="aw-label">ניווט מקלדת</span>
+                </button>
+                {/* התאמה לקורא-מסך */}
+                <button
+                  className={`aw-feature-btn${state.screenReader?' active':''}`}
+                  onClick={()=>toggleFeature('screenReader')}
+                >
+                  <FaAssistiveListeningSystems className="aw-icon"/>
+                  <span className="aw-label">התאמה לקורא-מסך</span>
+                </button>
+                {/* פקודות קוליות */}
+                <button
+                  className={`aw-feature-btn${state.voiceCommands?' active':''}`}
+                  onClick={()=>toggleFeature('voiceCommands')}
+                >
+                  <FaMicrophoneAlt className="aw-icon"/>
+                  <span className="aw-label">פקודות קוליות</span>
+                </button>
+                {/* הקראת טקסט */}
+                <button
+                  className={`aw-feature-btn${state.readAloud?' active':''}`}
+                  onClick={readPageAloud}
+                >
+                  <FaVolumeUp className="aw-icon"/>
+                  <span className="aw-label">הקראת טקסט</span>
                 </button>
               </div>
             )}
@@ -132,7 +198,10 @@ export default function AccessibilityWidget() {
 
           {/* === סקשן 2: התאמות ניגודיות === */}
           <div className="aw-section">
-            <div className="aw-section-header" onClick={()=>toggleSection('contrast')}>
+            <div
+              className="aw-section-header"
+              onClick={()=>toggleSection('contrast')}
+            >
               <h3>התאמות ניגודיות</h3>
               {sections.contrast ? <FaChevronUp/> : <FaChevronDown/>}
             </div>
@@ -173,17 +242,23 @@ export default function AccessibilityWidget() {
                 <div className="aw-slider">
                   <label>התאם צבעים:</label>
                   <input
-                    type="range" min="0" max="360" value={state.hue}
-                    onChange={e=>onSlider('hue',e)}
+                    type="range"
+                    min="0"
+                    max="360"
+                    value={state.hue}
+                    onChange={e=>onSlider('hue', e)}
                   />
                 </div>
               </>
             )}
           </div>
 
-          {/* === סקשן 3: התאמות תוכן === */}
+          {/* === סקשן 3: התאמות תוכן === */}\
           <div className="aw-section">
-            <div className="aw-section-header" onClick={()=>toggleSection('content')}>
+            <div
+              className="aw-section-header"
+              onClick={()=>toggleSection('content')}
+            >
               <h3>התאמות תוכן</h3>
               {sections.content ? <FaChevronUp/> : <FaChevronDown/>}
             </div>
@@ -205,17 +280,19 @@ export default function AccessibilityWidget() {
                 </div>
                 <div className="aw-slider">
                   <label>
-                    {contentTab==='fontSize' ? 'גודל גופן:' :
-                     contentTab==='letterSpacing' ? 'מרווח בין מילים (px):' :
-                     'גובה שורה:'}
+                    {contentTab==='fontSize'
+                      ? 'גודל גופן:'
+                      : contentTab==='letterSpacing'
+                        ? 'מרווח בין מילים (px):'
+                        : 'גובה שורה:'}
                   </label>
                   <input
                     type="range"
                     min={contentTab==='fontSize' ? 0.8 : contentTab==='letterSpacing' ? 0 : 1}
                     max={contentTab==='fontSize' ? 2   : contentTab==='letterSpacing' ? 20 : 3}
-                    step={contentTab==='fontSize'?0.1:0.1}
+                    step="0.1"
                     value={state[contentTab]}
-                    onChange={e=>onSlider(contentTab,e)}
+                    onChange={e=>onSlider(contentTab, e)}
                   />
                 </div>
               </>
