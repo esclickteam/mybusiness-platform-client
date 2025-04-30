@@ -205,19 +205,25 @@
 
 /* כפתור בתוך הכרטיס */
 .business-card__btn {
-  background-color: var(--primary);
+  /* רקע גרדיאנטי במקום צבע בודד */
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
   color: #fff;
   padding: 0.6rem 1.5rem;
+  border: none;                 /* מסירים קו מסביב */
   border-radius: 30px;
   text-decoration: none;
   font-weight: bold;
-  transition: background-color 0.2s ease, transform 0.2s ease;
   font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
+
 .business-card__btn:hover {
-  background-color: var(--primary-hover);
+  /* אפקט הקטנה קלה והעמקת הגרדיאנט ב־hover */
   transform: scale(1.05);
+  background: linear-gradient(90deg, var(--primary-hover) 0%, var(--primary) 100%);
 }
+
 
 /* עיר בכרטיס */
 .business-card__city {
