@@ -102,7 +102,24 @@ export default function SearchBusinesses() {
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        <div className="filters-wrapper">
+        {/* Filter chips */}
+{(cat || city) && (
+  <div className="filter-chips">
+    {cat && (
+      <div className="chip">
+        <span>{cat}</span>
+        <button onClick={() => { setCat(''); setSearched(false); }}>×</button>
+      </div>
+    )}
+    {city && (
+      <div className="chip">
+        <span>{city}</span>
+        <button onClick={() => { setCity(''); setSearched(false); }}>×</button>
+      </div>
+    )}
+  </div>
+)}
+<div className="filters-wrapper">
           {/* Category autocomplete */}
           <div className="dropdown-wrapper" ref={wrapperCatRef}>
             <input
