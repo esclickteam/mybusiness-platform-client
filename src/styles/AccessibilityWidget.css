@@ -1,23 +1,26 @@
-/* כלליות */
+/* Toggle button */
 .aw-toggle-button {
     position: fixed;
-    top: 1rem;
-    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
     z-index: 10000;
-    background: #005b96;
+    background: #5c27e0;
     color: #fff;
     border: none;
-    padding: .5rem;
+    padding: .75rem;
     border-radius: 50%;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
   
-  /* הפאנל */
+  /* Panel */
   .aw-panel {
     position: fixed;
-    top: 0; right: 0; bottom: 0;
-    width: 320px;
+    bottom: 0; right: 0;
+    width: 100%;
+    max-width: 360px;
+    height: 80%;
     background: #005b96;
     color: #fff;
     display: flex;
@@ -26,7 +29,7 @@
     box-shadow: -2px 0 8px rgba(0,0,0,0.2);
   }
   
-  /* כותרת */
+  /* Header */
   .aw-header {
     padding: 1rem;
     display: flex;
@@ -36,6 +39,7 @@
   }
   .aw-header h2 {
     margin: 0;
+    font-size: 1.2rem;
   }
   .aw-header select {
     background: #fff;
@@ -44,7 +48,7 @@
     padding: .25rem;
   }
   
-  /* גריד אייקונים */
+  /* Features grid */
   .aw-features {
     flex: 1;
     overflow-y: auto;
@@ -62,19 +66,25 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     cursor: pointer;
   }
-  .aw-icon { font-size: 1.5rem; margin-bottom: .25rem; }
-  .aw-label { font-size: .9rem; }
+  .aw-icon {
+    font-size: 1.6rem;
+    margin-bottom: .5rem;
+  }
+  .aw-label {
+    font-size: .9rem;
+    text-align: center;
+  }
   
-  /* פוטר */
+  /* Footer */
   .aw-footer {
     background: #004271;
     padding: .75rem;
     display: flex;
-    flex-wrap: wrap;
     gap: .5rem;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
   }
   .aw-footer-btn {
@@ -87,10 +97,28 @@
     cursor: pointer;
   }
   .aw-powered {
-    flex: 1 0 100%;
+    position: absolute;
+    bottom: .5rem;
+    width: 100%;
     text-align: center;
     font-size: .75rem;
-    margin-top: .5rem;
     opacity: .7;
+  }
+  
+  /* Utility classes */
+  .es-highlight-links a {
+    outline: 2px dashed #e27d60 !important;
+  }
+  .es-dark-contrast {
+    filter: invert(1) hue-rotate(180deg) !important;
+  }
+  .es-light-contrast {
+    filter: brightness(1.2) contrast(1.1) !important;
+  }
+  .es-large-text {
+    font-size: 1.2rem !important;
+  }
+  .es-keyboard-nav :focus {
+    outline: 3px solid #e27d60 !important;
   }
   
