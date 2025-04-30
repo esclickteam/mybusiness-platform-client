@@ -145,12 +145,12 @@
     padding: 1rem;
   
     /* גלילה אנכית מוגבלת גובה */
-    max-height: 30vh;      /* או ערך קבוע כמו 250px */
+    max-height: 30vh;
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
   
-    /* כדי לשמור גלילה אנכית גם ב־RTL */
+    /* בכדי לשמור גלילה אנכית גם ב־RTL */
     direction: ltr;
   }
   
@@ -188,20 +188,17 @@
     text-align: center;
     white-space: normal;
   }
-  
   .aw-feature-btn:hover,
   .aw-feature-btn:focus {
     outline: none;
     box-shadow: 0 0 0 3px var(--aw-focus);
     border-color: var(--aw-focus);
   }
-  
   .aw-feature-btn.active {
     background: var(--aw-primary);
     color: var(--aw-white);
   }
-  
-  /* סימן ✔ בפינה העליונה־ימנית של כפתור פעיל */
+  /* סימן ✔ בפינה */
   .aw-feature-btn.active::after {
     content: "✔";
     position: absolute;
@@ -210,12 +207,10 @@
     font-size: 1rem;
     color: var(--aw-focus);
   }
-  
   .aw-feature-btn .aw-icon {
     font-size: 1.6rem;
     margin-bottom: .5rem;
   }
-  
   .aw-feature-btn .aw-label {
     font-size: .9rem;
     line-height: 1.2;
@@ -378,12 +373,20 @@
   .es-large-text {
     font-size: 1.2rem !important;
   }
+  /* ===== Screen Reader Mode ===== */
+  .es-screen-reader {
+    filter: contrast(1.2) brightness(0.9);
+  }
   .es-screen-reader img,
   .es-screen-reader video {
     display: none !important;
   }
+  .es-screen-reader *:not(:focus) {
+    opacity: 0.3 !important;
+  }
+  /* ===== Voice Commands Indicator ===== */
   .es-voice-commands::after {
-    content: "🎤 פקודות קוליות פועלות";
+    content: "🎤 פקודות קוליות פעילות";
     position: fixed;
     bottom: 1rem;
     right: 1rem;
@@ -393,7 +396,15 @@
     border-radius: 4px;
     font-size: .85rem;
     z-index: 10001;
+    animation: pulse 1.5s infinite;
   }
+  /* Pulse animation */
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50%     { transform: scale(1.1); opacity: .7; }
+  }
+  
+  /* Keyboard nav focus */
   .es-keyboard-nav :focus {
     outline: 3px solid var(--aw-focus) !important;
   }
