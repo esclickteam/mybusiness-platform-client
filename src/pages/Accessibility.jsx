@@ -1,6 +1,5 @@
 // src/pages/Accessibility.jsx
 import React from "react";
-import "./Accessibility.css";        // ↓ CSS בסיסי קטן (לא חובה)
 
 export default function Accessibility() {
   return (
