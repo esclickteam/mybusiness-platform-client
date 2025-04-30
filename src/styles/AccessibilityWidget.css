@@ -29,10 +29,8 @@ body {
 /* ===== Toggle Button ===== */
 .aw-toggle-button {
     position: fixed;
-    top: 50%;
-    left: 1rem;
-    transform: translateY(-50%);
-    z-index: 10000;
+    bottom: 20px;  /* מיקום 20 פיקסלים מלמטה */
+    left: 20px;    /* מיקום 20 פיקסלים מצד שמאל */
     background: var(--aw-accent);
     color: var(--aw-white);
     border: none;
@@ -41,6 +39,7 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 10000;
 }
 
 /* ===== @reach/dialog Overlay ===== */
