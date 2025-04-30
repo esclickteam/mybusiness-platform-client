@@ -15,7 +15,7 @@
   --primary-hover:  #7a23d0;
 
   --text-main:      #222222;
-  --text-secondary:#555555;
+  --text-secondary: #555555;
 
   --gap-sm: 12px;
   --gap-md: 16px;
@@ -101,18 +101,13 @@ body::after {
 }
 
 /* ====== סינון ====== */
-/* סרגל הפילטרים בצד ימין, סטאק אנכי */
-.filters-container {
-  max-width: 300px;
-  width: 100%;
-  margin: var(--gap-lg) 0 0 auto; /* יישור לימין בתוך הקונטיינר */
+.filters {
   display: flex;
-  flex-direction: column;
-  gap: var(--gap-md);
-  background: var(--card-bg);
-  padding: var(--gap-lg);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--gap-lg);
 }
 
 .dropdown-wrapper {
@@ -120,39 +115,44 @@ body::after {
   min-width: 200px;
 }
 
-/* כל פילטר (label + input) */
-.filter {
-  display: flex;
-  flex-direction: column;
+/* כפתורים ו־input אחידים */
+.filter-input,
+.filter-button {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: var(--card-radius);
+  background: #fff;
+  box-shadow: var(--card-shadow);
+  font-size: 1rem;
+  color: var(--text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 200px;
+  appearance: none;
+  text-align: right;
 }
 
-.filter label {
-  margin-bottom: 0.5rem;
-  font-weight: 600;
+.filter-input {
+  justify-content: flex-start;
+}
+
+.filter-input:hover,
+.filter-button:hover {
+  border-color: var(--primary);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.filter-button .chevron {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
-/* שדות קלט */
-.filters-container input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: var(--card-radius);
-  font-size: 1rem;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.filters-container input:hover,
-.filters-container input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
 /* כפתור חפש */
-.filters-container .search-btn {
-  width: 100%;
-  padding: 0.75rem 0;
+.search-btn {
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: var(--card-radius);
   background: var(--primary);
@@ -160,17 +160,13 @@ body::after {
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.2s, box-shadow 0.2s;
+  min-width: 200px;
 }
-
-.filters-container .search-btn:hover:not(:disabled) {
+.search-btn:hover:not(:disabled) {
   background-color: var(--primary-hover);
-  transform: translateY(-2px);
-}
-
-.filters-container .search-btn:disabled {
-  opacity: 0.6;
-  cursor: default;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
 
 /* רשימת autocomplete */
@@ -235,7 +231,6 @@ body::after {
   gap: var(--gap-lg);
   margin-top: var(--gap-lg);
 }
-
 .no-results,
 .no-search {
   font-size: 1.1rem;
@@ -271,7 +266,7 @@ body::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--gap-lg);
+  gap: 1rem;
   margin: var(--gap-lg) 0;
 }
 .pagination button {
@@ -294,9 +289,7 @@ body::after {
 
 /* 10. Responsive */
 @media (max-width: 768px) {
-  .filters-container {
-    max-width: 100%;
-    margin: var(--gap-lg) auto;
+  .filters {
     flex-direction: column;
   }
   .business-list {
