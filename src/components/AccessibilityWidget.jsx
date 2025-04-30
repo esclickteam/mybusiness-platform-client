@@ -76,16 +76,7 @@ export default function AccessibilityWidget() {
 
   return (
     <>
-      {/* כפתור נגיש לפתיחת הדיאלוג */}
-      <button
-        {...useButton({
-          onPress: () => setOpen(true),
-          'aria-label': 'פתח התאמות נגישות',
-        }).buttonProps}
-        className="aw-toggle-button"
-      >
-        <FaWheelchair />
-      </button>
+      
 
       {open && (
         <DialogOverlay className="aw-panel-overlay" onDismiss={() => setOpen(false)}>
