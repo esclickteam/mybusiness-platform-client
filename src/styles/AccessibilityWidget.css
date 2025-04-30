@@ -1,11 +1,21 @@
-/* Toggle button */
-.aw-toggle-button {
+/* ===== Utility CSS Variables ===== */
+:root {
+    --aw-bg:       #005b96;
+    --aw-bg-dark:  #004271;
+    --aw-white:    #ffffff;
+    --aw-primary:  #005b96;
+    --aw-accent:   #5c27e0;
+    --aw-focus:    #e27d60;
+  }
+  
+  /* ===== Toggle button ===== */
+  .aw-toggle-button {
     position: fixed;
     bottom: 1rem;
     left: 1rem;
     z-index: 10000;
-    background: #5c27e0;
-    color: #fff;
+    background: var(--aw-accent);
+    color: var(--aw-white);
     border: none;
     padding: .75rem;
     border-radius: 50%;
@@ -14,41 +24,78 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
   
-  /* Panel */
+  /* ===== Panel ===== */
   .aw-panel {
     position: fixed;
-    bottom: 0; right: 0;
+    top: 0; bottom: 0; right: 0;
     width: 100%;
     max-width: 360px;
-    height: 80%;
-    background: #005b96;
-    color: #fff;
+    background: var(--aw-bg);
+    color: var(--aw-white);
     display: flex;
     flex-direction: column;
     z-index: 9999;
     box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+    overflow: hidden;
   }
   
-  /* Header */
+  /* ===== Panel Close Button (X) ===== */
+  .aw-panel .aw-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--aw-accent);
+    border: none;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--aw-white);
+    font-size: 1.2rem;
+  }
+  
+  /* ===== Header ===== */
   .aw-header {
     padding: 1rem;
+    background: var(--aw-bg-dark);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #004271;
+    position: relative;
   }
   .aw-header h2 {
     margin: 0;
     font-size: 1.2rem;
   }
   .aw-header select {
-    background: #fff;
+    background: var(--aw-white);
     color: #000;
     border-radius: 4px;
     padding: .25rem;
+    font-size: .9rem;
   }
   
-  /* Features grid */
+  /* ===== Sections ===== */
+  .aw-section {
+    border-top: 1px solid #0074b1;
+  }
+  .aw-section-header {
+    padding: .75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: var(--aw-bg);
+    font-weight: bold;
+  }
+  .aw-section-header:hover {
+    background: #00668a;
+  }
+  
+  /* ===== Features Grid ===== */
   .aw-features {
     flex: 1;
     overflow-y: auto;
@@ -57,10 +104,23 @@
     grid-template-columns: repeat(2, 1fr);
     gap: .75rem;
   }
+  /* Custom scrollbar */
+  .aw-features::-webkit-scrollbar {
+    width: 6px;
+  }
+  .aw-features::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .aw-features::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+  }
+  
   .aw-feature-btn {
-    background: #fff;
-    color: #005b96;
-    border: none;
+    position: relative;
+    background: var(--aw-white);
+    color: var(--aw-primary);
+    border: 2px solid var(--aw-primary);
     border-radius: 8px;
     padding: .75rem;
     display: flex;
@@ -68,46 +128,84 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: background .2s, color .2s;
   }
-  .aw-icon {
+  .aw-feature-btn:hover,
+  .aw-feature-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--aw-focus);
+  }
+  .aw-feature-btn.active {
+    background: var(--aw-primary);
+    color: var(--aw-white);
+  }
+  .aw-feature-btn .aw-icon {
     font-size: 1.6rem;
     margin-bottom: .5rem;
   }
-  .aw-label {
+  .aw-feature-btn .aw-label {
     font-size: .9rem;
     text-align: center;
   }
+  /* ✓ tick in active button */
+  .aw-feature-btn.active::after {
+    content: "✔";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 1rem;
+    color: var(--aw-focus);
+  }
   
-  /* Footer */
+  /* ===== Sliders within grid ===== */
+  .aw-slider {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+  }
+  .aw-slider label {
+    font-size: .85rem;
+    margin-bottom: .25rem;
+  }
+  .aw-slider input[type="range"] {
+    width: 100%;
+  }
+  
+  /* ===== Footer ===== */
   .aw-footer {
-    background: #004271;
-    padding: .75rem;
+    background: var(--aw-bg-dark);
+    padding: .75rem 1rem;
     display: flex;
     gap: .5rem;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
   }
   .aw-footer-btn {
     background: transparent;
-    border: 1px solid #fff;
+    border: 1px solid var(--aw-white);
     border-radius: 4px;
     padding: .4rem .75rem;
-    color: #fff;
+    color: var(--aw-white);
     font-size: .85rem;
     cursor: pointer;
+    transition: background .2s;
+  }
+  .aw-footer-btn:hover,
+  .aw-footer-btn:focus {
+    background: rgba(255,255,255,0.1);
   }
   .aw-powered {
     position: absolute;
     bottom: .5rem;
-    width: 100%;
+    left: 0; right: 0;
     text-align: center;
     font-size: .75rem;
     opacity: .7;
   }
   
-  /* Utility classes */
+  /* ===== Utility classes for page-wide effects ===== */
   .es-highlight-links a {
-    outline: 2px dashed #e27d60 !important;
+    outline: 2px dashed var(--aw-focus) !important;
   }
   .es-dark-contrast {
     filter: invert(1) hue-rotate(180deg) !important;
@@ -119,6 +217,6 @@
     font-size: 1.2rem !important;
   }
   .es-keyboard-nav :focus {
-    outline: 3px solid #e27d60 !important;
+    outline: 3px solid var(--aw-focus) !important;
   }
   
