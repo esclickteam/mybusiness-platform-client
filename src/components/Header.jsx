@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
-import { FaBars, FaTimes, FaChevronRight } from "react-icons/fa";
+import { FaBars, FaTimes, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
@@ -47,6 +47,7 @@ const Header = () => {
           <button
             className="menu-button"
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "סגור תפריט" : "פתח תפריט"}
           >
             {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
@@ -93,8 +94,10 @@ const Header = () => {
               <button
                 className="back-button"
                 onClick={() => setMenuOpen(false)}
+                title="חזור"
+                aria-label="חזור"
               >
-                <FaChevronRight size={24} />
+                <FaChevronLeft size={24} />
               </button>
             </div>
 

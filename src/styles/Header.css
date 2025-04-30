@@ -53,7 +53,8 @@
 /* ===== ה־drawer ===== */
 .side-menu {
   position: fixed;
-  top: 0; right: 0;
+  top: 0;
+  right: 0;
   width: 300px;
   height: 100vh;
   background: #ffffff;
@@ -83,7 +84,6 @@
 }
 
 /* ===== header של ה־drawer ===== */
-/* ===== header של ה־drawer צבע עדין ===== */
 .drawer-header {
   width: 100%;
   flex-shrink: 0;
@@ -106,15 +106,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #5e17eb;              /* סגול כהה מעט לעניין קריא */
+  color: #5e17eb;              /* סגול כהה קריא */
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
 .back-button:hover {
-  background: #e8dbff;         /* רקע סגול פסטלי בהיר יותר בהובר */
-  color: #2d006e;              /* סגול כהה קריא */
+  background: #e8dbff;         /* רקע פסטל כהה מעט בהובר */
+  color: #2d006e;
 }
-
 
 /* ===== סעיפים וקישורים ===== */
 .menu-section {
