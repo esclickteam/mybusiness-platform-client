@@ -269,11 +269,9 @@ body::after {
 }
 
 /* 14. Input clearable */
-.input-clearable {
-  position: relative;
-}
-.input-clearable .filter-input {
-  padding-right: 4rem; /* הרחבה כדי שהתוכן לא יתקרב לאייקון */
+/* יותר ספציפי, כדי לגבור על הסטיילגורמות מתצוגת suggestions */
+.dropdown-wrapper.input-clearable input.filter-input {
+  padding-right: 4rem !important;
 }
 .clear-btn {
   position: absolute;
@@ -286,15 +284,4 @@ body::after {
   font-size: 1.2rem;
   color: var(--primary);
   z-index: 30;
-}
-
-/* 15. Responsive */
-@media (max-width: 768px) {
-  .filters-wrapper {
-    flex-direction: column;
-    flex-wrap: wrap;
-  }
-  .business-list {
-    grid-template-columns: 1fr;
-  }
 }
