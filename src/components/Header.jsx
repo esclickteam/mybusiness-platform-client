@@ -9,7 +9,6 @@ import {
   FaPhone,
   FaQuestionCircle,
   FaFileContract,
-  FaShieldAlt,
   FaMoneyBillAlt,
   FaCogs,
   FaUserPlus,
@@ -68,7 +67,6 @@ export default function Header() {
     <>
       {/* ===== HEADER BAR ===== */}
       <nav className="app-header">
-        {/* המבורגר — ימין */}
         {!menuOpen && (
           <div className="menu-toggle">
             <button className="menu-button" onClick={() => setMenuOpen(true)}>
@@ -77,14 +75,12 @@ export default function Header() {
           </div>
         )}
 
-        {/* לוגו במרכז */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
           </Link>
         </div>
 
-        {/* כפתורי דסקטופ — שמאל */}
         <div className="auth-controls desktop-only">
           {!user && <Link to="/login" className="login-button">התחבר</Link>}
 
@@ -112,7 +108,7 @@ export default function Header() {
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
 
           <div className="side-menu open">
-            {/* 1) Header קטן */}
+            {/* header קטן */}
             <div className="drawer-header">
               <button className="back-button" onClick={() => setMenuOpen(false)}>
                 <FaChevronLeft size={20} />
@@ -120,7 +116,7 @@ export default function Header() {
               </button>
             </div>
 
-            {/* 2) אזור גלילה */}
+            {/* ===== תוכן גלילה ===== */}
             <div className="menu-scroll">
               {user && (
                 <div className="menu-user">
@@ -129,6 +125,23 @@ export default function Header() {
                 </div>
               )}
 
+              {/* ——— 1) לעסקים ——— */}
+              <div className="menu-section">
+                <h4>לעסקים</h4>
+                {link("/register/business", <FaUserPlus />,     "הצטרפות כבעל עסק")}
+                {link("/how-it-works",      <FaCogs />,         "איך זה עובד")}
+                {link("/pricing",           <FaMoneyBillAlt />, "מחירים")}
+              </div>
+
+              {/* ——— 2) ללקוחות ——— */}
+              <div className="menu-section">
+                <h4>ללקוחות</h4>
+                {link("/businesses", <FaListUl />, "רשימת עסקים")}
+                {link("/categories", <FaTags />,   "קטגוריות")}
+                {link("/search",     <FaSearch />, "חיפוש מתקדם")}
+              </div>
+
+              {/* ——— 3) כללי ——— */}
               <div className="menu-section">
                 <h4>כללי</h4>
                 {link("/",        <FaHome />,         "דף הבית")}
@@ -136,25 +149,10 @@ export default function Header() {
                 {link("/contact", <FaPhone />,        "צור קשר")}
                 {link("/faq",     <FaQuestionCircle />,"שאלות נפוצות")}
                 {link("/terms",   <FaFileContract />, "תנאי שימוש")}
-                {link("/privacy", <FaShieldAlt />,    "מדיניות פרטיות")}
-              </div>
-
-              <div className="menu-section">
-                <h4>לעסקים</h4>
-                {link("/pricing",          <FaMoneyBillAlt />, "מחירים")}
-                {link("/how-it-works",     <FaCogs />,         "איך זה עובד")}
-                {link("/register/business",<FaUserPlus />,     "הצטרפות כבעל עסק")}
-              </div>
-
-              <div className="menu-section">
-                <h4>ללקוחות</h4>
-                {link("/businesses", <FaListUl />, "רשימת עסקים")}
-                {link("/categories", <FaTags />,   "קטגוריות")}
-                {link("/search",     <FaSearch />, "חיפוש מתקדם")}
               </div>
             </div>
 
-            {/* 3) פוטר קבוע */}
+            {/* ===== פוטר קבוע ===== */}
             {user && (
               <div className="auth-menu">
                 <button
