@@ -108,11 +108,14 @@ body {
 }
 
 /* ===== Features Wrapper & Scroll Buttons ===== */
+/* ===== Features Wrapper ===== */
 .aw-features-wrapper {
     position: relative;
-    overflow: visible;    /* מאפשר לחצנים לצאת מחוץ לאזור */
-    pointer-events: auto; /* מאפשר לחיצות */
+    overflow: visible !important;       /* מאפשר לכפתורים לצאת מה-box */
+    pointer-events: auto !important;    /* מבטל כל חסימה של לחיצות */
 }
+
+/* ===== Scroll Buttons ===== */
 .aw-scroll-btn {
     position: absolute;
     right: 1rem;
@@ -127,25 +130,27 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: auto;
-    z-index: 2000;
+    pointer-events: auto !important;    /* מבטיח שהלחיצות יגיעו לכפתור */
+    z-index: 2000 !important;           /* מבטיח שהכפתור מעל כל השאר */
 }
+
 .aw-scroll-btn.up { top: .5rem; }
 .aw-scroll-btn.down { bottom: .5rem; }
 
-/* ===== Features Grid ===== */
-.aw-features {
+  
+  /* ===== Features Grid (GLIDE SCROLLING) ===== */
+  .aw-features {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: .75rem;
     padding: 1rem;
-    /* הסרנו את המגבלות של גובה וגלילה */
-    max-height: none;
-    overflow: visible;
-    scroll-behavior: auto;
+    max-height: 30vh;        /* שומר על תקרה, כדי שיהיה scroll */
+    overflow-y: auto;        /* מאפשר גלילה אנכית */
+    overflow-x: hidden;
+    scroll-behavior: smooth; /* גלילה חלקה */
     direction: ltr;
-}
+  }
 .aw-features::-webkit-scrollbar {
     width: 6px;
 }
