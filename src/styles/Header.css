@@ -6,7 +6,7 @@
   /* אין צורך ב-justify-content:center – נבטל כדי שלא יפריע */
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
-  height: 90px;
+  height: 110px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   direction: rtl;              /* עדיין RTL לטקסטים */
   z-index: 1000;
@@ -33,7 +33,7 @@
   align-items: center;
 }
 .logo-link .logo {
-  height: 80px;
+  height: 96px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
@@ -203,9 +203,10 @@ a.active-link {
 
 /* רספונסיביות */
 @media (max-width: 768px) {
-  .logo-link .logo { height: 64px; }
-  .app-header { padding: 0 12px; height: 80px; }
+  .app-header        { padding: 0 12px; height: 90px; }
+  .logo-link .logo   { height: 90px; }  /* ממלא את ה-header במלואו */
   .auth-controls.desktop-only { display: none !important; }
+
   .side-menu {
     width: 100%;
     max-width: 300px;
