@@ -13,19 +13,31 @@
   <link rel="icon" type="image/png" href="favicon.ico" />
   <link rel="manifest" href="manifest.json" />
   <meta http-equiv="Content-Language" content="he" />
-  
-  <!-- הוספת תוסף נגישות WAVE -->
-  <script type="text/javascript" src="https://cdn.wave.webaim.org/wa.js"></script>
 
-  <!-- הוספת CSS -->
+  <!-- הוספת CSS לנגישות -->
   <style>
-    /* הוספת CSS לאייקון של תוסף הנגישות */
-    #wave-widget {
-      z-index: 9999 !important;
+    /* high-contrast mode */
+    body.high-contrast {
+      background: #000 !important;
+      color: #fff !important;
+    }
+    /* larger font */
+    body.large-text {
+      font-size: 1.2rem !important;
+    }
+    /* עיצוב כפתורי נגישות */
+    #accessibility-controls {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      display: block !important;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 9999;
+      font-family: sans-serif;
+    }
+    #accessibility-controls button {
+      margin: 0 .25rem;
+      padding: .5rem;
+      font-size: 14px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -37,6 +49,19 @@
 
   <div id="root"></div>
   <div id="popup-root"></div>
+
+  <!-- בקרי נגישות in-house -->
+  <div id="accessibility-controls">
+    <button id="toggle-contrast">ניגודיות</button>
+    <button id="toggle-text">הגדלת טקסט</button>
+  </div>
+  <script>
+    document.getElementById('toggle-contrast')
+      .addEventListener('click', () => document.body.classList.toggle('high-contrast'));
+    document.getElementById('toggle-text')
+      .addEventListener('click', () => document.body.classList.toggle('large-text'));
+  </script>
+  <!-- end Accessibility Controls -->
 
   <!-- ✅ סקריפט ראשי שמחבר את React -->
   <script type="module" src="/src/main.jsx"></script>
