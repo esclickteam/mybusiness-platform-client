@@ -1,53 +1,53 @@
-/* ===== מבנה ראשי של ההדר ===== */
 .app-header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr; /* ימין | לוגו | שמאל */
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 90px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   direction: rtl;
   animation: headerEnter 0.6s ease-out both;
+  position: relative;
 }
 
-/* ===== לוגו במרכז עם אנימציה ===== */
+/* לוגו ממורכז לחלוטין */
 .logo-wrapper {
+  position: absolute;
+  right: 50%;
+  transform: translateX(50%);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   animation: fadeInScale 0.7s ease-out both;
 }
 
 .logo-link .logo {
-  height: 80px; /* ⬅️ עודכן מ-120px ל-80px */
+  height: 80px;
   max-height: 100%;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
+
 .logo-link:hover .logo {
   transform: scale(1.05);
 }
 
-/* ===== צדדים ===== */
-.auth-controls.right,
+/* צד ימין – תפריט */
+.auth-controls.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* צד שמאל – אזור אישי */
 .auth-controls.left {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-/* ימין = תפריט */
-.auth-controls.right {
-  justify-content: flex-end;
-}
-
-/* שמאל = שם משתמש, אזור אישי, התנתק */
-.auth-controls.left {
-  justify-content: flex-start;
-}
-
-/* ===== כפתורים ועיצוב ===== */
+/* כפתור המבורגר */
 .menu-button {
   background: none;
   border: none;
@@ -55,12 +55,14 @@
   cursor: pointer;
 }
 
+/* טקסט שם משתמש */
 .username {
   color: #2d006e;
   font-weight: 500;
   margin-right: 8px;
 }
 
+/* כפתורים */
 .personal-area-button,
 .logout-button,
 .login-button {
