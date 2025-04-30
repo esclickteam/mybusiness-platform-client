@@ -1,0 +1,66 @@
+/* src/components/BusinessCardSkeleton.css */
+
+/* 1. מיכל הכרטיס */
+.skeleton-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: var(--gap-md);
+    overflow: hidden;
+  }
+  
+  /* 2. אזור התמונה */
+  .skeleton-img {
+    width: 100%;
+    height: 160px;
+    background: #e0e0e0;
+    border-radius: var(--card-radius);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* 3. קו טקסט קצר/ארוך */
+  .skeleton-line {
+    width: 100%;
+    height: 16px;
+    background: #e0e0e0;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .skeleton-line.short {
+    width: 60%;
+  }
+  
+  /* 4. אנימציית Shimmer */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-150%);
+    }
+    100% {
+      transform: translateX(150%);
+    }
+  }
+  
+  /* 5. האפקט המונע בלוק */
+  .skeleton-img::before,
+  .skeleton-line::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    height: 100%;
+    width: 150%;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 1.5s infinite ease-in-out;
+  }
+  
