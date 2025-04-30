@@ -43,18 +43,17 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
-/* ===== react-modal Overlay ===== */
+/* ===== @reach/dialog Overlay ===== */
 .aw-panel-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     z-index: 10000;
-    pointer-events: none; /* allow clicks through overlay */
 }
 
-/* ===== react-modal Content (Drawer) ===== */
+/* ===== @reach/dialog Content (Drawer) ===== */
 .aw-panel {
-    position: fixed;   /* ensure fixed positioning */
+    position: fixed;
     top: 0; left: 0;
     width: 360px;
     height: 100%;
@@ -66,7 +65,7 @@ body {
     display: flex;
     flex-direction: column;
     padding-bottom: 1rem;
-    z-index: 10001;    /* above overlay */
+    z-index: 10001;
 }
 
 /* ===== Panel Close Button (X) ===== */
@@ -77,9 +76,7 @@ body {
     border: none;
     border-radius: 50%;
     width: 2rem; height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     color: var(--aw-white);
     font-size: 1.2rem;
     cursor: pointer;
@@ -97,7 +94,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* ===== Sections ===== */
+/* ===== Section ===== */
 .aw-section {
     border-top: 1px solid #0074b1;
 }
@@ -120,7 +117,6 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: .75rem;
     padding: 1rem;
-    pointer-events: auto;
 }
 
 /* ===== Feature Buttons ===== */
@@ -139,7 +135,6 @@ body {
     text-align: center;
     cursor: pointer;
     transition: background .2s, color .2s, border-color .2s;
-    pointer-events: auto;
 }
 .aw-feature-btn:hover,
 .aw-feature-btn:focus {
@@ -167,32 +162,14 @@ body {
     line-height: 1.2;
 }
 
-/* ===== Contrast Section Tabs ===== */
-.contrast-tabs {
-    display: flex; gap: .5rem;
-    padding: 0 1rem 1rem;
-}
-.contrast-tabs button {
-    background: transparent;
-    border: 1px solid var(--aw-white);
-    border-radius: 20px;
-    padding: .3rem .75rem;
-    color: var(--aw-white);
-    cursor: pointer;
-    transition: background .2s, color .2s;
-    font-size: .85rem;
-}
-.contrast-tabs button.active {
-    background: var(--aw-white);
-    color: var(--aw-bg);
-    border-color: var(--aw-white);
-}
-
-/* ===== Content Section Tabs ===== */
+/* ===== Contrast Tabs ===== */
+.contrast-tabs,
 .content-tabs {
-    display: flex; gap: .5rem;
+    display: flex;
+    gap: .5rem;
     padding: 0 1rem 1rem;
 }
+.contrast-tabs button,
 .content-tabs button {
     background: transparent;
     border: 1px solid var(--aw-white);
@@ -203,16 +180,18 @@ body {
     transition: background .2s, color .2s;
     font-size: .85rem;
 }
+.contrast-tabs button.active,
 .content-tabs button.active {
     background: var(--aw-white);
     color: var(--aw-bg);
     border-color: var(--aw-white);
 }
 
-/* ===== Sliders within grid ===== */
+/* ===== Slider ===== */
 .aw-slider {
     grid-column: span 2;
-    display: flex; flex-direction: column;
+    display: flex;
+    flex-direction: column;
     padding: 0 1rem 1rem;
 }
 .aw-slider label {
@@ -248,7 +227,7 @@ body {
     cursor: pointer;
 }
 
-/* ===== Feature-specific classes ===== */
+/* ===== Voice Commands Indicator ===== */
 .es-voice-commands::after {
     content: "🎤 פקודות קוליות פעילות";
     position: fixed;
