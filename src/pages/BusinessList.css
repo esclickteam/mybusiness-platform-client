@@ -102,14 +102,16 @@ body::after {
 
 /* ====== סינון ====== */
 .filters-container {
+  max-width: 800px;
+  width: 100%;
+  margin: var(--gap-lg) auto;
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap-md);
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-end;
   background: var(--card-bg);
   padding: var(--gap-lg);
-  margin-bottom: var(--gap-lg);
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
 }
