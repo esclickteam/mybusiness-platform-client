@@ -1,5 +1,5 @@
 // src/components/AccessibilityWidget.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DialogOverlay, DialogContent } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 import {
@@ -44,8 +44,16 @@ export default function AccessibilityWidget() {
     lineHeight: 1.5
   });
 
+  // Function to toggle the sections
   const toggleSection = sec => setSections(s => ({ ...s, [sec]: !s[sec] }));
-  const toggleFeature = feat => setState(s => ({ ...s, [feat]: !s[feat] }));
+
+  // Function to toggle feature on or off
+  const toggleFeature = feat => {
+    console.log(`לחץ על ${feat}`); // לדפוק את שם הפיצ'ר שנלחץ
+    setState(s => ({ ...s, [feat]: !s[feat] }));
+  };
+
+  // Function to update the state when a slider is changed
   const onSlider = (key, v) => {
     setState(s => ({ ...s, [key]: v }));
     const prop =
@@ -56,6 +64,11 @@ export default function AccessibilityWidget() {
     const val = key === 'hue' ? `${v}deg` : key === 'letterSpacing' ? `${v}px` : v;
     document.documentElement.style.setProperty(prop, val);
   };
+
+  // Track state changes for debugging
+  useEffect(() => {
+    console.log(state);  // הדפסת ה-state לאחר כל עדכון
+  }, [state]);
 
   return (
     <>
