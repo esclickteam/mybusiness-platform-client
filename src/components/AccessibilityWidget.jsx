@@ -4,6 +4,8 @@ import Modal from 'react-modal';
 import {
   FaTimes,
   FaWheelchair,
+  FaChevronUp,
+  FaChevronDown,
   FaArrowsAlt,
   FaKeyboard,
   FaAssistiveListeningSystems,
@@ -40,7 +42,7 @@ export default function AccessibilityWidget() {
     hue: 0,
     fontSize: 1,
     letterSpacing: 0,
-    lineHeight: 1.5,
+    lineHeight: 1.5
   });
 
   const toggleSection = sec => setSections(s => ({ ...s, [sec]: !s[sec] }));
@@ -73,21 +75,14 @@ export default function AccessibilityWidget() {
         className="aw-panel"
         contentLabel="Accessible Settings"
       >
-        <button
-          className="aw-close"
-          onClick={() => setOpen(false)}
-          aria-label="סגור"
-        >
+        <button className="aw-close" onClick={() => setOpen(false)} aria-label="סגור">
           <FaTimes />
         </button>
         <h2 className="aw-header">התאמות נגישות</h2>
 
         {/* --- Navigation Section --- */}
         <section className="aw-section">
-          <header
-            className="aw-section-header"
-            onClick={() => toggleSection('nav')}
-          >
+          <header className="aw-section-header" onClick={() => toggleSection('nav')}>
             <h3>ניווט</h3>
             {sections.nav ? <FaChevronUp /> : <FaChevronDown />}
           </header>
@@ -98,7 +93,7 @@ export default function AccessibilityWidget() {
                 ['keyNav', FaKeyboard, 'ניווט מקלדת'],
                 ['screenReader', FaAssistiveListeningSystems, 'קורא מסך'],
                 ['voiceCommands', FaMicrophoneAlt, 'פקודות קוליות'],
-                ['readAloud', FaVolumeUp, 'הקראת טקסט'],
+                ['readAloud', FaVolumeUp, 'הקראת טקסט']
               ].map(([k, Icon, label]) => (
                 <button
                   key={k}
@@ -116,10 +111,7 @@ export default function AccessibilityWidget() {
 
         {/* --- Contrast Section --- */}
         <section className="aw-section">
-          <header
-            className="aw-section-header"
-            onClick={() => toggleSection('contrast')}
-          >
+          <header className="aw-section-header" onClick={() => toggleSection('contrast')}>
             <h3>ניגודיות</h3>
             {sections.contrast ? <FaChevronUp /> : <FaChevronDown />}
           </header>
@@ -131,7 +123,7 @@ export default function AccessibilityWidget() {
                   ['darkContrast', FaMoon, 'כהה'],
                   ['monoContrast', FaEye, 'מונוכרום'],
                   ['highSat', FaTint, 'רוויה↑'],
-                  ['lowSat', FaAdjust, 'רוויה↓'],
+                  ['lowSat', FaAdjust, 'רוויה↓']
                 ].map(([k, Icon, label]) => (
                   <button
                     key={k}
@@ -144,7 +136,7 @@ export default function AccessibilityWidget() {
                 ))}
               </div>
               <div className="contrast-tabs">
-                {['backgrounds','headings','content'].map(tab => (
+                {['backgrounds', 'headings', 'content'].map(tab => (
                   <button
                     key={tab}
                     className={contrastTab === tab ? 'active' : ''}
@@ -158,7 +150,8 @@ export default function AccessibilityWidget() {
                 <label>התאם גוון:</label>
                 <input
                   type="range"
-                  min="0" max="360"
+                  min="0"
+                  max="360"
                   value={state.hue}
                   onChange={e => onSlider('hue', +e.target.value)}
                 />
@@ -169,10 +162,7 @@ export default function AccessibilityWidget() {
 
         {/* --- Content Section --- */}
         <section className="aw-section">
-          <header
-            className="aw-section-header"
-            onClick={() => toggleSection('content')}
-          >
+          <header className="aw-section-header" onClick={() => toggleSection('content')}>
             <h3>תוכן</h3>
             {sections.content ? <FaChevronUp /> : <FaChevronDown />}
           </header>
@@ -181,14 +171,13 @@ export default function AccessibilityWidget() {
               <div className="aw-features">
                 <button
                   className={`aw-feature-btn${state.largeText ? ' active' : ''}`}
-                  onClick={() => toggleFeature('largeText')}
-                >
+                  onClick={() => toggleFeature('largeText')}>
                   <FaFont className="aw-icon" />
                   <span className="aw-label">טקסט גדול</span>
                 </button>
               </div>
               <div className="content-tabs">
-                {['fontSize','letterSpacing','lineHeight'].map(tab => (
+                {['fontSize', 'letterSpacing', 'lineHeight'].map(tab => (
                   <button
                     key={tab}
                     className={contentTab === tab ? 'active' : ''}
