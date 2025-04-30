@@ -1,113 +1,133 @@
-/* ===== ראשי ===== */
+/* ===================================================================== */
+/*                               Header.css                              */
+/* ===================================================================== */
+
+/* ======= Header (Desktop default) ======= */
 .app-header {
-  position: relative;          /* נקודת ייחוס ללוגו */
+  position: relative;
   display: flex;
   align-items: center;
-  /* אין צורך ב-justify-content:center – נבטל כדי שלא יפריע */
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
-  padding: 0 20px;
-  height: 110px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  direction: rtl;              /* עדיין RTL לטקסטים */
+
+  /* גובה דינמי – מחבק את הלוגו, עם 6 px רווח עליון */
+  height: auto;
+  padding: 6px 20px 0;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  direction: rtl;
   z-index: 1000;
 }
 
-/* כפתורי משתמש בצד שמאל בדסקטופ */
-.auth-controls.desktop-only {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-left: 0;      /* שמאל פיזי */
-  margin-right: auto;  /* דוחף אותם לצד שמאל */
-  padding-left: 12px;
-  white-space: nowrap;
-}
-
-/* לוגו במרכז */
+/* לוגו ממורכז מוחלט */
 .logo-wrapper {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);   /* ממרכז גם אופקית וגם אנכית */
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
 }
 .logo-link .logo {
   height: 96px;
   object-fit: contain;
-  transition: transform 0.3s ease;
+  transition: transform .3s;
 }
-.logo-link:hover .logo {
-  transform: scale(1.05);
+.logo-link:hover .logo { transform: scale(1.05); }
+
+/* כפתור המבורגר */
+.menu-toggle { position: relative; z-index: 1001; }
+.menu-button {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #5e17eb;
 }
 
+/* כפתורי דסקטופ – צמודים שמאלה (RTL) */
+.auth-controls.desktop-only {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: auto;   /* דוחף לשמאל */
+  padding-left: 12px;
+  white-space: nowrap;
+}
 
+/* כפתורים כלליים */
+.personal-area-button,
+.logout-button,
+.login-button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  background: #5e17eb;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s;
+}
+.personal-area-button:hover,
+.logout-button:hover,
+.login-button:hover {
+  background: #4315c7;
+}
 
-/* ===== ה־drawer ===== */
+/* ===================================================================== */
+/*                               Drawer                                  */
+/* ===================================================================== */
+
 .side-menu {
   position: fixed;
-  top: 0; right: 0;
-  width: 300px;
-  height: 100vh;
-  background: #ffffff;
-  box-shadow: -4px 0 16px rgba(0,0,0,0.1);
-  display: none;
-  flex-direction: column;
-  z-index: 1501;
-  overflow-y: auto;
-  transition: transform 0.3s ease;
-  transform: translateX(100%);
-}
-.side-menu.open {
-  display: flex;
-  transform: translateX(0);
-}
-
-/* סרגל גלילה דק */
-.side-menu::-webkit-scrollbar {
-  width: 6px;
-}
-.side-menu::-webkit-scrollbar-track {
-  background: transparent;
-}
-.side-menu::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border-radius: 3px;
-}
-
-/* ===== header של ה־drawer ===== */
-.drawer-header {
+  top: 0;
+  right: 0;
   width: 100%;
-  box-sizing: border-box;
-  background: #f3e8ff;
+  max-width: 300px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -4px 0 16px rgba(0,0,0,.1);
+
+  /* שלד תלת-חלקי: header | scroll | footer */
+  display: flex;
+  flex-direction: column;
+
+  transform: translateX(100%);
+  transition: transform .3s;
+  z-index: 1501;
+}
+.side-menu.open { transform: translateX(0); }
+
+/* ----- Drawer header (חזור) ----- */
+.drawer-header {
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  direction: ltr;
+  background: #f3e8ff;
   padding: 0 16px;
 }
-
 .back-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #bfa2e1;
   border-radius: 20px;
   color: #5e17eb;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: .95rem;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
 }
-.back-button:hover {
-  background: #e8dbff;
-  color: #2d006e;
+.back-button:hover { background: #e8dbff; }
+
+/* ----- אזור גלילה ----- */
+.menu-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* ===== שם משתמש ===== */
+/* פרטי משתמש */
 .menu-user {
   display: flex;
   align-items: center;
@@ -117,24 +137,19 @@
   border-bottom: 1px solid #e0d3f2;
   color: #2d006e;
   font-weight: 500;
-  font-size: 0.95rem;
 }
 
-/* ===== סעיפים וקישורים ===== */
-.menu-section {
-  margin-top: 24px;
-}
-.menu-section h4 {
+/* ----- Sections ----- */
+.menu-section           { margin-top: 24px; }
+.menu-section h4        {
   margin: 0;
   padding: 0 16px 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  font: 600 1rem/1 "inherit";
   text-transform: uppercase;
-  letter-spacing: 0.5px;
   color: #2d006e;
   border-bottom: 1px solid #eee;
 }
-.menu-section a {
+.menu-section a         {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -142,83 +157,54 @@
   margin: 4px 0;
   border-radius: 4px;
   color: #4e2977;
-  font-size: 0.95rem;
+  font-size: .95rem;
   text-decoration: none;
-  transition: background 0.2s, color 0.2s;
+  transition: background .2s, color .2s;
 }
-.menu-section a:hover {
-  background: #f5f1fa;
-  color: #2d006e;
-}
+.menu-section a:hover   { background:#f5f1fa; color:#2d006e; }
+a.active-link           { background:#f5f1fa; font-weight:700; color:#2d006e; }
+.link-icon              { display:inline-flex; align-items:center; margin-left:4px; }
 
-/* קישור פעיל */
-a.active-link {
-  background: #f5f1fa;
-  font-weight: bold;
-  color: #2d006e;
-}
-.link-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 4px;
-}
-
-/* ===== כפתורי משתמש בסוף ===== */
+/* ----- פוטר (אזור אישי / התנתק) ----- */
 .auth-menu {
-  margin-top: auto;
   padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom)); /* מכבד את ה-Home Indicator */
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-.auth-menu .personal-area-button,
-.auth-menu .logout-button,
-.auth-menu .login-button {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #2d006e;
-  background: #ffffff;
-  color: #2d006e;
-  font-weight: 500;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.auth-menu .personal-area-button:hover,
-.auth-menu .logout-button:hover,
-.auth-menu .login-button:hover {
-  background: #2d006e;
-  color: #ffffff;
-}
 
-/* רקע כהה מאחורי ה־drawer */
+/* ===================================================================== */
+/*                      Drawer Scrollbar Styling                          */
+/* ===================================================================== */
+.side-menu::-webkit-scrollbar        { width: 6px; }
+.side-menu::-webkit-scrollbar-track  { background: transparent; }
+.side-menu::-webkit-scrollbar-thumb  { background: rgba(0,0,0,.2); border-radius: 3px; }
+
+/* ===================================================================== */
+/*                             Overlay                                   */
+/* ===================================================================== */
 .menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,.5);
   z-index: 1500;
+  animation: fadeInBackdrop .3s forwards;
 }
 
-/* רספונסיביות */
+/* ===================================================================== */
+/*                         Responsive – Mobile                            */
+/* ===================================================================== */
 @media (max-width: 768px) {
-  .app-header        { padding: 0 12px; height: 90px; }
-  .logo-link .logo   { height: 90px; }  /* ממלא את ה-header במלואו */
+  .app-header      { padding: 0 12px; height: 90px; }
+  .logo-link .logo { height: 90px; }
   .auth-controls.desktop-only { display: none !important; }
 
-  .side-menu {
-    width: 100%;
-    max-width: 300px;
-  }
+  .side-menu { max-width: 300px; }
 }
 
-/* אנימציות */
-@keyframes fadeInScale {
-  0% { opacity: 0; transform: scale(0.95); }
-  100% { opacity: 1; transform: scale(1); }
-}
-@keyframes fadeInBackdrop {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
+/* ===================================================================== */
+/*                            Animations                                 */
+/* ===================================================================== */
+@keyframes fadeInScale   { 0%{opacity:0;transform:scale(.95)} 100%{opacity:1;transform:scale(1)} }
+@keyframes fadeInBackdrop{ 0%{opacity:0;}                     100%{opacity:1;} }

@@ -22,7 +22,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
-const Header = () => {
+export default function Header() {
   const { user, logout, loading } = useAuth();
   const navigate  = useNavigate();
   const location  = useLocation();
@@ -30,7 +30,7 @@ const Header = () => {
 
   if (loading) return null;
 
-  /* ——— עזר להפניית משתמש לדשבורד לפי תפקיד ——— */
+  /* ——— דשבורד לפי תפקיד ——— */
   const getDashboardPath = () => {
     switch (user?.role) {
       case "business": return `/business/${user.businessId}/dashboard`;
@@ -42,7 +42,7 @@ const Header = () => {
     }
   };
 
-  /* ——— יצירת קישורים ל-drawer עם סימון active ——— */
+  /* ——— קישור Drawer עם active ——— */
   const link = (to, icon, label) => (
     <Link
       to={to}
@@ -54,7 +54,7 @@ const Header = () => {
     </Link>
   );
 
-  /* ——— יציאה ——— */
+  /* ——— Logout ——— */
   const handleLogout = async () => {
     try {
       await logout();
@@ -64,13 +64,11 @@ const Header = () => {
     }
   };
 
-  /* —————————————— JSX —————————————— */
   return (
     <>
       {/* ===== HEADER BAR ===== */}
       <nav className="app-header">
-
-        {/* כפתור תפריט (המבורגר) – ימין */}
+        {/* המבורגר — ימין */}
         {!menuOpen && (
           <div className="menu-toggle">
             <button className="menu-button" onClick={() => setMenuOpen(true)}>
@@ -79,18 +77,16 @@ const Header = () => {
           </div>
         )}
 
-        {/* לוגו – באמצע מוחלט */}
+        {/* לוגו במרכז */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
           </Link>
         </div>
 
-        {/* כפתורי משתמש – שמאל בדסקטופ בלבד */}
+        {/* כפתורי דסקטופ — שמאל */}
         <div className="auth-controls desktop-only">
-          {!user && (
-            <Link to="/login" className="login-button">התחבר</Link>
-          )}
+          {!user && <Link to="/login" className="login-button">התחבר</Link>}
 
           {user && (
             <>
@@ -101,10 +97,7 @@ const Header = () => {
                 לוח בקרה
               </button>
 
-              <button
-                className="logout-button"
-                onClick={handleLogout}
-              >
+              <button className="logout-button" onClick={handleLogout}>
                 <FaSignOutAlt style={{ marginLeft: 6 }} />
                 התנתק
               </button>
@@ -116,80 +109,64 @@ const Header = () => {
       {/* ===== DRAWER ===== */}
       {menuOpen && (
         <>
-          {/* מסך כהה מאחורי drawer */}
-          <div
-            className="menu-backdrop"
-            onClick={() => setMenuOpen(false)}
-          />
+          <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
 
           <div className="side-menu open">
-            {/* Header של המגירה */}
+            {/* 1) Header קטן */}
             <div className="drawer-header">
-              <button
-                className="back-button"
-                onClick={() => setMenuOpen(false)}
-              >
+              <button className="back-button" onClick={() => setMenuOpen(false)}>
                 <FaChevronLeft size={20} />
                 <span className="back-text">חזור</span>
               </button>
             </div>
 
-            {/* פרטי משתמש בחלק העליון */}
-            {user && (
-              <div className="menu-user">
-                <FaUserCircle size={20} />
-                <span>{user.name || user.email}</span>
+            {/* 2) אזור גלילה */}
+            <div className="menu-scroll">
+              {user && (
+                <div className="menu-user">
+                  <FaUserCircle size={20} />
+                  <span>{user.name || user.email}</span>
+                </div>
+              )}
+
+              <div className="menu-section">
+                <h4>כללי</h4>
+                {link("/",        <FaHome />,         "דף הבית")}
+                {link("/about",   <FaInfoCircle />,   "אודות")}
+                {link("/contact", <FaPhone />,        "צור קשר")}
+                {link("/faq",     <FaQuestionCircle />,"שאלות נפוצות")}
+                {link("/terms",   <FaFileContract />, "תנאי שימוש")}
+                {link("/privacy", <FaShieldAlt />,    "מדיניות פרטיות")}
               </div>
-            )}
 
-            {/* סעיף: כללי */}
-            <div className="menu-section">
-              <h4>כללי</h4>
-              {link("/",           <FaHome />,         "דף הבית")}
-              {link("/about",      <FaInfoCircle />,   "אודות")}
-              {link("/contact",    <FaPhone />,        "צור קשר")}
-              {link("/faq",        <FaQuestionCircle />,"שאלות נפוצות")}
-              {link("/terms",      <FaFileContract />, "תנאי שימוש")}
-              {link("/privacy",    <FaShieldAlt />,    "מדיניות פרטיות")}
+              <div className="menu-section">
+                <h4>לעסקים</h4>
+                {link("/pricing",          <FaMoneyBillAlt />, "מחירים")}
+                {link("/how-it-works",     <FaCogs />,         "איך זה עובד")}
+                {link("/register/business",<FaUserPlus />,     "הצטרפות כבעל עסק")}
+              </div>
+
+              <div className="menu-section">
+                <h4>ללקוחות</h4>
+                {link("/businesses", <FaListUl />, "רשימת עסקים")}
+                {link("/categories", <FaTags />,   "קטגוריות")}
+                {link("/search",     <FaSearch />, "חיפוש מתקדם")}
+              </div>
             </div>
 
-            {/* סעיף: לעסקים */}
-            <div className="menu-section">
-              <h4>לעסקים</h4>
-              {link("/pricing",          <FaMoneyBillAlt />, "מחירים")}
-              {link("/how-it-works",     <FaCogs />,         "איך זה עובד")}
-              {link("/register/business",<FaUserPlus />,     "הצטרפות כבעל עסק")}
-            </div>
-
-            {/* סעיף: ללקוחות */}
-            <div className="menu-section">
-              <h4>ללקוחות</h4>
-              {link("/businesses", <FaListUl />, "רשימת עסקים")}
-              {link("/categories", <FaTags />,   "קטגוריות")}
-              {link("/search",     <FaSearch />, "חיפוש מתקדם")}
-            </div>
-
-            <hr />
-
-            {/* כפתורי משתמש – מופיעים בתחתית המגירה במובייל */}
+            {/* 3) פוטר קבוע */}
             {user && (
-              <div className="menu-section auth-menu">
+              <div className="auth-menu">
                 <button
                   className="personal-area-button"
-                  onClick={() => {
-                    navigate(getDashboardPath());
-                    setMenuOpen(false);
-                  }}
+                  onClick={() => { navigate(getDashboardPath()); setMenuOpen(false); }}
                 >
                   אזור אישי
                 </button>
 
                 <button
                   className="logout-button"
-                  onClick={() => {
-                    handleLogout();
-                    setMenuOpen(false);
-                  }}
+                  onClick={() => { handleLogout(); setMenuOpen(false); }}
                 >
                   <FaSignOutAlt style={{ marginLeft: 6 }} />
                   התנתק
@@ -201,6 +178,4 @@ const Header = () => {
       )}
     </>
   );
-};
-
-export default Header;
+}
