@@ -1,5 +1,6 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { FaMapMarkerAlt, FaPhoneAlt, FaTags } from "react-icons/fa";
 import "./BusinessCard.css";
 
 export default function BusinessCard({ business, onClick }) {
@@ -16,11 +17,7 @@ export default function BusinessCard({ business, onClick }) {
   };
 
   return (
-    <div
-      className="business-card"
-      onClick={handleCardClick}
-      style={{ cursor: 'pointer' }}
-    >
+    <div className="business-card" onClick={handleCardClick} style={{ cursor: "pointer" }}>
       {logo && (
         <div className="business-card__media">
           <img src={logo} alt={`${name} logo`} loading="lazy" />
@@ -30,32 +27,32 @@ export default function BusinessCard({ business, onClick }) {
       <h2 className="business-card__title">{name}</h2>
 
       {category && (
-        <p className="business-card__subtitle">
-          <strong>קטגוריה:</strong> {category}
+        <p className="business-card__info">
+          <FaTags /> <strong>קטגוריה:</strong> {category}
         </p>
       )}
 
       {description && (
-        <p className="business-card__description">
+        <p className="business-card__info business-card__description">
           <strong>תיאור:</strong> {description}
         </p>
       )}
 
       {phone && (
-        <p className="business-card__phone">
-          <strong>טלפון:</strong> {phone}
+        <p className="business-card__info">
+          <FaPhoneAlt /> <strong>טלפון:</strong> {phone}
         </p>
       )}
 
       {city && (
-        <p className="business-card__city">
-          <strong>עיר:</strong> {city}
+        <p className="business-card__info">
+          <FaMapMarkerAlt /> <strong>עיר:</strong> {city}
         </p>
       )}
 
       <button
         className="business-card__btn"
-        onClick={e => {
+        onClick={(e) => {
           e.stopPropagation();
           handleCardClick();
         }}
