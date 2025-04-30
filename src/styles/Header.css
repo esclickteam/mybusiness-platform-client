@@ -3,7 +3,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #d1b3ff9a; /* רקע סגול בהיר כפי שהיה */
+    background: linear-gradient(90deg, #d8c1ff, #f3e6ff);
     padding: 0 20px;
     height: 80px;
   }

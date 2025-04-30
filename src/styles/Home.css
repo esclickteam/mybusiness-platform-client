@@ -4,7 +4,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #e0e4ff, #ffffff);
+  background: linear-gradient(135deg, #f9f9ff, #fefeff);
   direction: rtl;
   font-family: Arial, sans-serif;
 }
