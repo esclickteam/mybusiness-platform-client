@@ -1,48 +1,47 @@
-/* src/styles/Home.css */
-
-/* 🌟 רקע דף הבית */
+/* === רקע דף הבית === */
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f9f9ff, #fefeff);
+  background: linear-gradient(to bottom right, #f3f1ff, #faf8ff);
   direction: rtl;
   font-family: Arial, sans-serif;
 }
 
-/* 🌟 מבנה הדף */
+/* === מבנה כללי === */
 .home-container {
   text-align: center;
-  padding: 30px;
+  padding: 2rem 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-/* 🌟 כותרות */
+/* === כותרות === */
 .main-title {
   font-size: 42px;
-  color: #4a148c;
+  color: #5b21b6;
   font-weight: bold;
   margin-bottom: 8px;
 }
 
 .subtitle {
-  font-size: 22px;
+  font-size: 20px;
   color: #333;
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 25px;
 }
 
-/* 🌟 הצגת עיר לפי מיקום */
 .location-hint {
   color: #555;
-  margin-top: -10px;
   font-size: 16px;
+  margin-top: -10px;
 }
 .location-hint strong {
-  color: #4a148c;
+  color: #5b21b6;
 }
 
-/* 🌟 מחולל התאמה מהירה */
+/* === מחולל התאמה מהירה === */
 .quick-options h3 {
-  color: #4a148c;
+  color: #5b21b6;
   margin-bottom: 1rem;
 }
 
@@ -56,170 +55,136 @@ body {
 
 .quick-option-btn {
   background: #ede9fe;
-  border: 2px solid #d1c4e9;
+  border: 2px solid #c4b5fd;
   border-radius: 12px;
   padding: 10px 20px;
   font-weight: bold;
-  color: #4a148c;
+  color: #5b21b6;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
 }
-
 .quick-option-btn:hover {
-  background-color: #e9d5ff;
+  background-color: #e0d4ff;
   transform: translateY(-2px);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
-/* 🌟 חיפושים חמים */
+/* === חיפושים חמים === */
 .trending-box {
-  margin-bottom: 2rem;
-  background: #f4f1fd;
+  margin-bottom: 2.5rem;
+  background: #f5f3ff;
   padding: 1rem 1.5rem;
   border-radius: 16px;
   max-width: 700px;
   margin-inline: auto;
-  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+  box-shadow: 0 0 10px rgba(0,0,0,0.04);
 }
-
 .trending-box h4 {
   margin-bottom: 10px;
-  color: #4c1d95;
+  color: #5b21b6;
 }
-
-.trending-box ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
 .trending-box li {
-  margin-bottom: 6px;
-  color: #555;
   font-size: 15px;
+  margin-bottom: 6px;
+  color: #444;
 }
 
-/* עדכון .search-section */
+/* === סקשן חיפוש === */
 .search-section {
   display: flex;
-  justify-content: center;   /* מרכז אופקי */
-  align-items: center;       /* יישור ורטיקלי */
-  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 35px;
-  direction: rtl;
-  flex-wrap: nowrap;         /* מבטל גלישה לשורה חדשה */
+  flex-wrap: wrap;
 }
-
-/* וודא שכל פריט לא מתאים את עצמו בגמיש */
 .dropdown-wrapper {
-  flex: 1 1 250px;    /* יגדל, יקצר, ובספר מינימום 250px */
-  min-width: 250px;   /* לא יתרסק מתחת ל־250px */
-  max-width: 350px;   /* אם תרצה, או אפשר להסיר כדי להיות גמיש יותר */
+  min-width: 250px;
+  max-width: 350px;
+  flex: 1 1 250px;
 }
-
-/* Override של react-select dropdown דרך portal */
-.css-1g6gooi-Menu,
-.css-1g6gooi-MenuList {
-  z-index: 9999 !important;
-}
-
-/* 🌟 כפתור החיפוש */
 .search-button {
   background: linear-gradient(90deg, #7c3aed, #4c1d95);
-  color: white;
+  color: #fff;
   padding: 14px 25px;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
   font-weight: bold;
   font-size: 18px;
-  transition: background 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
-
 .search-button:hover {
   background: linear-gradient(90deg, #4c1d95, #7c3aed);
   transform: translateY(-1px);
 }
 
-/* 🌟 כפתור לוח עבודות מהירות */
+/* === כפתור לוח עבודות מהירות === */
 .quick-jobs-button-wrapper {
-  margin-top: 20px;
-  margin-bottom: 30px;
+  margin: 2rem 0;
 }
-
 .quick-jobs-button {
   background: linear-gradient(90deg, #4c1d95, #7c3aed);
-  color: white;
-  border: none;
+  color: #fff;
   padding: 14px 30px;
-  border-radius: 12px;
   font-size: 18px;
+  border: none;
+  border-radius: 12px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
 }
-
 .quick-jobs-button:hover {
   background: linear-gradient(90deg, #7c3aed, #4c1d95);
   transform: translateY(-1px);
 }
 
-/* 🌟 קטגוריות עם דפדוף */
+/* === סרגל קטגוריות === */
 .categories-slider {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 30px;
   gap: 10px;
-  position: relative;
+  margin-bottom: 30px;
 }
-
 .categories-container {
   display: flex;
-  gap: 12px;
   overflow: hidden;
-  justify-content: center;
   flex-wrap: nowrap;
+  gap: 12px;
 }
-
 .category {
-  background-color: #e0e7ff;
+  background: #e0e7ff;
   color: #3730a3;
   padding: 0.6rem 1.2rem;
   border-radius: 20px;
   font-weight: bold;
-  cursor: pointer;
   white-space: nowrap;
-  flex-shrink: 0;
+  cursor: pointer;
   transition: background 0.3s ease;
 }
-
 .category:hover {
-  background-color: #c7d2fe;
+  background: #c7d2fe;
 }
-
 .scroll-button {
-  background-color: #d1c4e9;
+  background: #c4b5fd;
   border: none;
   border-radius: 50%;
   font-size: 1.2rem;
-  padding: 8px 12px;
+  padding: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
   height: 40px;
   width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .scroll-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-/* 🌟 כרטיסיות סימניה */
+/* === כרטיסיות bookmark === */
 .cards-container {
   display: flex;
   flex-wrap: wrap;
@@ -228,123 +193,80 @@ body {
   margin: 2rem auto;
   padding: 0 1rem;
 }
-
 .bookmark-card {
-  background: #ffffff;
+  background: #fff;
   border-radius: 0 20px 20px 0;
   border-right: 6px solid #7c3aed;
   padding: 1.5rem;
   width: 280px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   text-align: right;
   transition: transform 0.3s ease;
 }
-
 .bookmark-card:hover {
   transform: translateY(-5px);
 }
-
 .bookmark-card h3 {
-  margin-top: 0;
+  margin: 0 0 0.5rem;
   color: #4c1d95;
 }
-
 .bookmark-card button {
   background-color: #7c3aed;
-  color: white;
-  border: none;
+  color: #fff;
   padding: 0.5rem 1rem;
+  border: none;
   border-radius: 8px;
   margin-top: 1rem;
-  cursor: pointer;
   font-weight: bold;
+  cursor: pointer;
   transition: background 0.3s ease, transform 0.3s ease;
 }
-
 .bookmark-card button:hover {
   background-color: #8b5cf6;
   transform: translateY(-1px);
 }
 
-/* 🌟 חיפושים חמים */
-.trending-box {
-  margin-bottom: 2rem;
-  background: #f4f1fd;
-  padding: 1rem 1.5rem;
-  border-radius: 16px;
-  max-width: 700px;
-  margin-inline: auto;
-  box-shadow: 0 0 8px rgba(0,0,0,0.05);
-}
-
-.trending-box h4 {
-  margin-bottom: 10px;
-  color: #4c1d95;
-}
-
-.trending-box ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.trending-box li {
-  margin-bottom: 6px;
-  color: #555;
-  font-size: 15px;
-}
-
-/* 🌟 תחתית האתר */
+/* === תחתית האתר === */
 .footer {
   margin-top: 40px;
   padding: 20px;
   text-align: center;
-  background-color: #ede9fe;
+  background-color: #f3e8ff;
 }
-
 .footer-links {
   list-style: none;
-  padding: 0;
-  margin-bottom: 10px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 15px;
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 0;
 }
-
 .footer-links li {
-  color: #4c1d95;
+  color: #5b21b6;
   font-weight: bold;
   cursor: pointer;
 }
-
 .footer-links li:hover {
   text-decoration: underline;
 }
-
 footer p {
-  font-size: 16px;
-  color: #000;
+  font-size: 15px;
+  color: #444;
 }
 
-/* 🌟 התאמה לנייד */
+/* === מובייל === */
 @media (max-width: 768px) {
   .main-title {
-    font-size: 32px;
+    font-size: 30px;
   }
 
   .subtitle {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .search-section {
     flex-direction: column;
-    align-items: center;
-  }
-
-  .search-section .dropdown-wrapper {
-    max-width: none;
-    width: 100%;
   }
 
   .cards-container {
@@ -354,10 +276,5 @@ footer p {
 
   .bookmark-card {
     width: 90%;
-  }
-
-  .categories-container {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
   }
 }
