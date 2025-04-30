@@ -14,20 +14,20 @@
     --es-font-scale:     1;
     --es-letter-spacing: 0px;
     --es-line-height:    1.5;
-  }
-  
-  /* Apply page-wide filters & scales */
-  html {
+}
+
+/* Apply page-wide filters & scales */
+html {
     filter: hue-rotate(var(--es-hue-rotate));
-  }
-  body {
+}
+body {
     font-size: calc(1rem * var(--es-font-scale));
     letter-spacing: var(--es-letter-spacing);
     line-height: var(--es-line-height);
-  }
-  
-  /* ===== Toggle button ===== */
-  .aw-toggle-button {
+}
+
+/* ===== Toggle button ===== */
+.aw-toggle-button {
     position: fixed;
     top: 50%;
     left: 1rem;
@@ -42,10 +42,10 @@
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     pointer-events: auto;
-  }
-  
-  /* ===== Panel ===== */
-  .aw-panel {
+}
+
+/* ===== Panel ===== */
+.aw-panel {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -59,11 +59,12 @@
     z-index: 9999;
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
     overflow: hidden;
-    pointer-events: auto;
-  }
-  
-  /* ===== Panel Close Button (X) ===== */
-  .aw-panel .aw-close {
+    /* חוסם קליקים על הרקע של הפאנל */
+    pointer-events: none;
+}
+
+/* ===== Panel Close Button (X) ===== */
+.aw-panel .aw-close {
     position: absolute;
     top: 1rem;
     left: 1rem;
@@ -78,28 +79,29 @@
     color: var(--aw-white);
     font-size: 1.2rem;
     cursor: pointer;
+    /* מאפשר קליקים על ה־X */
     pointer-events: auto;
-  }
-  
-  /* ===== Header ===== */
-  .aw-header {
+}
+
+/* ===== Header ===== */
+.aw-header {
     padding: 1rem;
     background: var(--aw-bg-dark);
     display: flex;
     align-items: center;
     pointer-events: auto;
-  }
-  .aw-header h2 {
+}
+.aw-header h2 {
     margin: 0;
     font-size: 1.2rem;
-  }
-  
-  /* ===== Sections ===== */
-  .aw-section {
+}
+
+/* ===== Sections ===== */
+.aw-section {
     border-top: 1px solid #0074b1;
     pointer-events: auto;
-  }
-  .aw-section-header {
+}
+.aw-section-header {
     padding: .75rem 1rem;
     display: flex;
     justify-content: space-between;
@@ -108,45 +110,39 @@
     font-weight: bold;
     cursor: pointer;
     pointer-events: auto;
-  }
-  .aw-section-header:hover {
+}
+.aw-section-header:hover {
     background: #00668a;
-  }
-  
-  /* ===== Features Wrapper & Scroll Buttons ===== */
-  .aw-features-wrapper {
+}
+
+/* ===== Features Wrapper & Scroll Buttons ===== */
+.aw-features-wrapper {
     position: relative;
-    pointer-events: auto;
     z-index: 3;
-  }
-  .aw-scroll-btn {
+    pointer-events: auto;
+}
+.aw-scroll-btn {
     position: absolute;
     right: 1rem;
-    left: auto;
+    width: 1.5rem;
+    height: 1.5rem;
     background: var(--aw-accent);
     color: var(--aw-white);
     border: none;
-    width: 1.5rem;
-    height: 1.5rem;
     border-radius: 50%;
     cursor: pointer;
-    z-index: 2;
     font-size: .9rem;
-    line-height: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2;
     pointer-events: auto;
-  }
-  .aw-scroll-btn.up {
-    top: .5rem;
-  }
-  .aw-scroll-btn.down {
-    bottom: .5rem;
-  }
-  
-  /* ===== Features Grid ===== */
-  .aw-features {
+}
+.aw-scroll-btn.up { top: .5rem; }
+.aw-scroll-btn.down { bottom: .5rem; }
+
+/* ===== Features Grid ===== */
+.aw-features {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -157,22 +153,22 @@
     overflow-x: hidden;
     scroll-behavior: smooth;
     direction: ltr;
-    pointer-events: auto;
     z-index: 3;
-  }
-  .aw-features::-webkit-scrollbar {
+    pointer-events: auto;
+}
+.aw-features::-webkit-scrollbar {
     width: 6px;
-  }
-  .aw-features::-webkit-scrollbar-track {
+}
+.aw-features::-webkit-scrollbar-track {
     background: transparent;
-  }
-  .aw-features::-webkit-scrollbar-thumb {
+}
+.aw-features::-webkit-scrollbar-thumb {
     background: rgba(255,255,255,0.3);
     border-radius: 3px;
-  }
-  
-  /* ===== Feature Buttons ===== */
-  .aw-feature-btn {
+}
+
+/* ===== Feature Buttons ===== */
+.aw-feature-btn {
     position: relative;
     z-index: 4;
     background: var(--aw-white);
@@ -184,49 +180,48 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: background .2s, color .2s, border-color .2s;
     min-height: 6rem;
     text-align: center;
-    white-space: normal;
+    cursor: pointer;
+    transition: background .2s, color .2s, border-color .2s;
     pointer-events: auto;
-  }
-  .aw-feature-btn:hover,
-  .aw-feature-btn:focus {
+}
+.aw-feature-btn:hover,
+.aw-feature-btn:focus {
     outline: none;
     box-shadow: 0 0 0 3px var(--aw-focus);
     border-color: var(--aw-focus);
-  }
-  .aw-feature-btn.active {
+}
+.aw-feature-btn.active {
     background: var(--aw-primary);
     color: var(--aw-white);
-  }
-  .aw-feature-btn.active::after {
+}
+.aw-feature-btn.active::after {
     content: "✔";
     position: absolute;
     top: 6px;
     right: 6px;
     font-size: 1rem;
     color: var(--aw-focus);
-  }
-  .aw-feature-btn .aw-icon {
+}
+.aw-feature-btn .aw-icon {
     font-size: 1.6rem;
     margin-bottom: .5rem;
-  }
-  .aw-feature-btn .aw-label {
+}
+.aw-feature-btn .aw-label {
     font-size: .9rem;
     line-height: 1.2;
-  }
-  
-  /* ===== Contrast Section Tabs ===== */
-  .contrast-tabs {
+}
+
+/* ===== Contrast Section Tabs ===== */
+.contrast-tabs {
     display: flex;
     gap: .5rem;
     padding: 0 1rem 1rem;
-    pointer-events: auto;
     z-index: 3;
-  }
-  .contrast-tabs button {
+    pointer-events: auto;
+}
+.contrast-tabs button {
     background: transparent;
     border: 1px solid var(--aw-white);
     border-radius: 20px;
@@ -236,22 +231,22 @@
     transition: background .2s, color .2s;
     font-size: .85rem;
     pointer-events: auto;
-  }
-  .contrast-tabs button.active {
+}
+.contrast-tabs button.active {
     background: var(--aw-white);
     color: var(--aw-bg);
     border-color: var(--aw-white);
-  }
-  
-  /* ===== Content Section Tabs ===== */
-  .content-tabs {
+}
+
+/* ===== Content Section Tabs ===== */
+.content-tabs {
     display: flex;
     gap: .5rem;
     padding: 0 1rem 1rem;
-    pointer-events: auto;
     z-index: 3;
-  }
-  .content-tabs button {
+    pointer-events: auto;
+}
+.content-tabs button {
     background: transparent;
     border: 1px solid var(--aw-white);
     border-radius: 20px;
@@ -261,30 +256,30 @@
     transition: background .2s, color .2s;
     font-size: .85rem;
     pointer-events: auto;
-  }
-  .content-tabs button.active {
+}
+.content-tabs button.active {
     background: var(--aw-white);
     color: var(--aw-bg);
     border-color: var(--aw-white);
-  }
-  
-  /* ===== Sliders within grid ===== */
-  .aw-slider {
+}
+
+/* ===== Sliders within grid ===== */
+.aw-slider {
     grid-column: span 2;
     display: flex;
     flex-direction: column;
     padding: 0 1rem 1rem;
-    pointer-events: auto;
     z-index: 3;
-  }
-  .aw-slider label {
+    pointer-events: auto;
+}
+.aw-slider label {
     font-size: .85rem;
     margin-bottom: .25rem;
     color: var(--aw-white);
-  }
-  
-  /* ===== Rainbow Color Slider ===== */
-  .aw-slider input[type="range"] {
+}
+
+/* ===== Rainbow Color Slider ===== */
+.aw-slider input[type="range"] {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -299,5 +294,4 @@
     outline: none;
     pointer-events: auto;
     z-index: 3;
-  }
-  /* … שאר הסלקטורים נשארים זהים … */
+}
