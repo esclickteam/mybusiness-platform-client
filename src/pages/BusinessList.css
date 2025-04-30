@@ -2,10 +2,11 @@
 
 /* 0. :root – משתני CSS מרכזיים */
 :root {
-  --bg-start:       #f0f4ff;
-  --bg-mid:         #f9f7ff;
-  --bg-end:         #fffaf7;
+  --bg-start:       #f0f4ff;  /* light periwinkle */
+  --bg-mid:         #f9f7ff;  /* subtle blush */
+  --bg-end:         #fffaf7;  /* warm ivory */
 
+  --card-bg:        #ffffff;
   --card-radius:    24px;
   --card-shadow:    0 16px 48px rgba(0, 0, 0, 0.08);
 
@@ -50,15 +51,19 @@
 }
 
 .list-page::before {
-  top: -25%; left: -20%;
-  width: 60vw; height: 60vh;
+  top: -25%;
+  left: -20%;
+  width: 60vw;
+  height: 60vh;
   background: url('/assets/blob1.svg') no-repeat center/contain;
   opacity: 0.18;
 }
 
 .list-page::after {
-  bottom: -30%; right: -15%;
-  width: 55vw; height: 55vh;
+  bottom: -30%;
+  right: -15%;
+  width: 55vw;
+  height: 55vh;
   background: url('/assets/blob2.svg') no-repeat center/contain;
   opacity: 0.12;
 }
@@ -85,41 +90,9 @@
   flex-wrap: wrap;
   gap: var(--gap-sm);
   justify-content: center;
-  align-items: center;
   margin-bottom: var(--gap-lg);
 }
 
-/* dropdown wrapper */
-.dropdown-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 300px;
-}
-
-.dropdown-wrapper::after {
-  content: '\25BC'; /* ▼ */
-  position: absolute;
-  top: 50%;
-  right: 1rem;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: var(--text-secondary);
-}
-
-.filters select {
-  appearance: none;
-  width: 100%;
-  padding: 0 1rem;
-  height: 3rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  background: #fff;
-  color: var(--text-main);
-}
-
-/* 6. לחצן חפש */
 .search-btn {
   padding: 0.8rem 1.5rem;
   margin-right: var(--gap-sm);
@@ -132,17 +105,24 @@
   cursor: pointer;
   box-shadow: var(--card-shadow);
   transition: background 0.2s, transform 0.2s;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 .search-btn:hover:not(:disabled) {
   background: var(--primary-hover);
   transform: translateY(-2px);
 }
 
-/* 7. תצוגת תוצאות */
+.search-input {
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 300px;
+  direction: rtl;
+}
+
+/* 6. תצוגת תוצאות */
 .no-results {
   text-align: center;
   color: var(--text-secondary);
@@ -156,7 +136,7 @@
   gap: var(--gap-lg);
 }
 
-/* 8. כרטיס עסק */
+/* 7. כרטיס עסק */
 .business-card {
   background: #fff;
   border-radius: var(--card-radius);
