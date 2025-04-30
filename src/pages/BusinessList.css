@@ -17,9 +17,9 @@
   --text-main:      #222222;
   --text-secondary: #555555;
 
-  --gap-sm: 12px;
-  --gap-md: 16px;
-  --gap-lg: 24px;
+  --gap-sm:  12px;
+  --gap-md:  16px;
+  --gap-lg:  24px;
 }
 
 /* 1. טקסטורת רעש עדינה + גרדיאנט בסיסי על כל העמוד */
@@ -74,24 +74,24 @@ body::after {
   padding: 0 1rem;
   min-height: 100vh;
   background: linear-gradient(
-      -45deg,
-      var(--bg-start),
-      var(--bg-mid),
-      var(--bg-end),
-      #e4e8ff
-    );
+    -45deg,
+    var(--bg-start),
+    var(--bg-mid),
+    var(--bg-end),
+    #e4e8ff
+  );
   background-size: 400% 400%;
   animation: gradientShift 25s ease infinite;
 }
 
 /* 5. קונטיינר ראשי */
 .business-list-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-bottom: var(--gap-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--gap-lg);
+  padding: var(--gap-lg);
 }
 
-/* 6. כותרת */
 .business-list-container h1 {
   font-size: 2.4rem;
   color: var(--text-main);
@@ -101,136 +101,81 @@ body::after {
 }
 
 /* ====== סינון ====== */
-.filters {
+.filters-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--gap-md);
   justify-content: center;
   align-items: center;
   margin-bottom: var(--gap-lg);
-}
-
-.dropdown-wrapper {
-  position: relative;
-  min-width: 200px;
-}
-
-/* כפתורים ו־input אחידים */
-.filter-input,
-.filter-button {
-  padding: 0.75rem 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: var(--card-radius);
-  background: #fff;
-  box-shadow: var(--card-shadow);
-  font-size: 1rem;
-  color: var(--text-main);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 200px;
-  appearance: none;
-  text-align: right;
-}
-
-.filter-input {
-  justify-content: flex-start;
-}
-
-.filter-input:hover,
-.filter-button:hover {
-  border-color: var(--primary);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-}
-
-.filter-button .chevron {
-  margin-left: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+  direction: rtl;
 }
 
 /* כפתור חפש */
 .search-btn {
-  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary);
+  color: #fff;
   border: none;
   border-radius: var(--card-radius);
-  background: var(--primary);
-  color: #fff;
+  padding: 0 24px;
+  height: 48px;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
   font-size: 1rem;
   font-weight: bold;
-  cursor: pointer;
-  box-shadow: var(--card-shadow);
   transition: background-color 0.2s, box-shadow 0.2s;
-  min-width: 200px;
 }
 .search-btn:hover:not(:disabled) {
   background-color: var(--primary-hover);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
+.search-btn__icon {
+  width: 20px;
+  height: 20px;
+}
 
-/* רשימת autocomplete */
-.suggestions-list {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  margin-top: 0.25rem;
-  background: #fff;
-  box-shadow: var(--card-shadow);
-  border-radius: 12px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 20;
-  padding: 0;
-  list-style: none;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
-.suggestions-list::-webkit-scrollbar {
-  width: 8px;
-}
-.suggestions-list::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-.suggestions-list li {
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  text-align: right;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-  transition: background 0.2s;
-  color: var(--text-main);
+/* מיכל ל־<select> + אייקון */
+.select-wrapper {
   position: relative;
-}
-.suggestions-list li::before {
-  content: "•";
-  position: absolute;
-  right: 0.75rem;
-  color: var(--primary);
-}
-.suggestions-list li:hover {
-  background: var(--bg-mid);
-}
-.suggestions-list li em {
-  font-style: normal;
-  color: var(--text-secondary);
-}
-.no-match {
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  padding: 0.5rem 1rem;
+  width: 240px;
 }
 
-/* 7. Grid תוצאות */
+.select-wrapper select {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px 0 40px;
+  border-radius: var(--card-radius);
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  appearance: none;
+  font-size: 1rem;
+  color: var(--text-main);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+}
+
+.select-icon {
+  position: absolute;
+  top: 50%;
+  left: 16px; /* בגליון RTL זה הצד הוויזואלי הנכון */
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 20px;
+  height: 20px;
+  color: var(--text-secondary);
+}
+
+/* 6. Grid תוצאות */
 .business-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--gap-lg);
   margin-top: var(--gap-lg);
 }
+
 .no-results,
 .no-search {
   font-size: 1.1rem;
@@ -239,7 +184,7 @@ body::after {
   text-align: center;
 }
 
-/* 8. כרטיס עסק */
+/* 7. כרטיס עסק */
 .business-card {
   background: linear-gradient(
     135deg,
@@ -261,12 +206,12 @@ body::after {
   border-radius: 50%;
 }
 
-/* 9. Pagination */
+/* 8. Pagination */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: var(--gap-md);
   margin: var(--gap-lg) 0;
 }
 .pagination button {
@@ -287,9 +232,9 @@ body::after {
   cursor: not-allowed;
 }
 
-/* 10. Responsive */
+/* 9. Responsive */
 @media (max-width: 768px) {
-  .filters {
+  .filters-wrapper {
     flex-direction: column;
   }
   .business-list {
