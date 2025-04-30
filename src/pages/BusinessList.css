@@ -194,15 +194,28 @@ body::after {
   width: 100%;
   margin-top: 0.25rem;
   background: #fff;
-  box-shadow: var(--card-shadow);
-  border-radius: 12px;
-  max-height: 200px; /* גובה מקסימלי */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* צל עדין כמו בעמוד הבית */
+  border-radius: 16px; /* מעוגל כמו בעמוד הבית */
+  max-height: 200px;
   overflow-y: auto; /* גלילה אנכית */
   z-index: 20;
-  padding: 0;
+  padding: 0.5rem;
   list-style: none;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.2) transparent;
+  scrollbar-width: thin; /* גלילה דקה */
+  scrollbar-color: rgba(0,0,0,0.2) transparent; /* צבע סרגל גלילה */
+}
+
+.suggestions-list::-webkit-scrollbar {
+  width: 8px; /* רוחב דק של סרגל הגלילה */
+}
+
+.suggestions-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px; /* עיגול לפינות */
+}
+
+.suggestions-list::-webkit-scrollbar-track {
+  background: transparent; /* רקע שקוף */
 }
 
 
