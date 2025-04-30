@@ -101,53 +101,19 @@ body::after {
 }
 
 /* ====== סינון ====== */
-.filters {
+.filters-wrapper {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-wrap: nowrap;
+  gap: var(--gap-md);
   justify-content: center;
   align-items: center;
   margin-bottom: var(--gap-lg);
+  direction: rtl;
 }
 
 .dropdown-wrapper {
   position: relative;
   min-width: 200px;
-}
-
-/* כפתורים ו־input אחידים */
-.filter-input,
-.filter-button {
-  padding: 0.75rem 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: var(--card-radius);
-  background: #fff;
-  box-shadow: var(--card-shadow);
-  font-size: 1rem;
-  color: var(--text-main);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 200px;
-  appearance: none;
-  text-align: right;
-}
-
-.filter-input {
-  justify-content: flex-start;
-}
-
-.filter-input:hover,
-.filter-button:hover {
-  border-color: var(--primary);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-}
-
-.filter-button .chevron {
-  margin-left: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
 }
 
 /* כפתור חפש */
@@ -162,7 +128,7 @@ body::after {
   cursor: pointer;
   box-shadow: var(--card-shadow);
   transition: background-color 0.2s, box-shadow 0.2s;
-  min-width: 200px;
+  flex: 0 0 auto;
 }
 .search-btn:hover:not(:disabled) {
   background-color: var(--primary-hover);
@@ -289,14 +255,16 @@ body::after {
 
 /* 10. Responsive */
 @media (max-width: 768px) {
-  .filters {
+  .filters-wrapper {
     flex-direction: column;
+    flex-wrap: wrap;
   }
   .business-list {
     grid-template-columns: 1fr;
   }
 }
 
+/* Filter chips */
 .filter-chips {
   display: flex;
   gap: var(--gap-sm);
