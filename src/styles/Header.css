@@ -1,46 +1,54 @@
+/* ===== מבנה ראשי של ההדר ===== */
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
-  height: 80px;
+  height: 90px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   position: relative;
   direction: rtl;
+  animation: headerEnter 0.6s ease-out both;
 }
 
-/* לוגו באמצע */
+/* ===== לוגו במרכז עם אפקט ===== */
 .logo-wrapper {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  animation: fadeInScale 0.7s ease-out both;
 }
 
 .logo-link .logo {
-  height: 80px;
+  height: 120px;
   object-fit: contain;
+  transition: transform 0.3s ease;
 }
 
-/* צד שמאל וימין */
-.auth-controls.left,
+.logo-link:hover .logo {
+  transform: scale(1.05);
+}
+
+/* ===== צד ימין (תפריט) ===== */
+.auth-controls.left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-right: auto;
+}
+
+/* ===== צד שמאל (אזור אישי) ===== */
 .auth-controls.right {
   display: flex;
   align-items: center;
   gap: 16px;
-  min-width: 160px;
-}
-
-.auth-controls.left {
   justify-content: flex-start;
-}
-
-.auth-controls.right {
-  justify-content: flex-end;
   margin-left: auto;
 }
 
-/* איקונים וכפתורים */
+/* ===== אייקונים וכפתורים ===== */
 .menu-button {
   background: none;
   border: none;
@@ -66,8 +74,10 @@
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
+  transition: all 0.3s ease;
 }
 
+/* עיצוב לפי סוג כפתור */
 .personal-area-button {
   background-color: #fff;
   color: #2d006e;
@@ -84,4 +94,43 @@
   background-color: #fff;
   color: #2d006e;
   border: none;
+}
+
+/* ===== אנימציות ===== */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes headerEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== רספונסיביות ===== */
+@media (max-width: 768px) {
+  .logo-link .logo {
+    height: 64px;
+  }
+
+  .username {
+    display: none; /* אפשר גם להשאיר לפי הצורך */
+  }
+
+  .app-header {
+    height: 80px;
+    padding: 0 12px;
+  }
 }

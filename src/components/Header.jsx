@@ -1,8 +1,7 @@
-// src/components/Header.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
-import { FaBars, FaSearch } from "react-icons/fa";
+import { FaBars } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
@@ -40,23 +39,22 @@ const Header = () => {
 
   return (
     <nav className="app-header">
+      {/* צד שמאל – כפתור תפריט */}
       <div className="auth-controls left">
         <button className="menu-button" onClick={() => {}}>
           <FaBars size={24} />
         </button>
       </div>
 
+      {/* מרכז – לוגו */}
       <div className="logo-wrapper">
         <Link to="/" className="logo-link">
           <img src={logo} alt="Logo" className="logo" />
         </Link>
       </div>
 
+      {/* צד ימין – אזור אישי */}
       <div className="auth-controls right">
-        <Link to="/search" className="icon-button">
-          <FaSearch size={24} />
-        </Link>
-
         {user ? (
           <>
             <span className="username">שלום, {user.name || user.email}</span>
