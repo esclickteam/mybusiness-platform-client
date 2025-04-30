@@ -175,7 +175,11 @@ body::after {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: background 0.2s ease;
+  white-space: nowrap;
+  min-width: unset;      /* 🛠 ביטול רוחב מינימלי */
+  width: auto;           /* 🛠 נותן גמישות לגודל */
 }
+
 .search-btn:hover:not(:disabled) {
   background: linear-gradient(90deg, var(--primary-hover), var(--primary));
 }
