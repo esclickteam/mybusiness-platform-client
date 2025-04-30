@@ -2,10 +2,9 @@
 
 /* 0. :root – משתני CSS מרכזיים */
 :root {
-  /* צבעי גרדיאנט פסטלי */
-  --bg-start:       #f0f4ff;  /* light periwinkle */
-  --bg-mid:         #f9f7ff;  /* subtle blush */
-  --bg-end:         #fffaf7;  /* warm ivory */
+  --bg-start:       #f0f4ff;
+  --bg-mid:         #f9f7ff;
+  --bg-end:         #fffaf7;
 
   --card-bg:        #ffffff;
   --card-radius:    24px;
@@ -17,20 +16,24 @@
   --text-main:      #222222;
   --text-secondary: #555555;
 
-  --gap-sm: 12px;
-  --gap-md: 16px;
-  --gap-lg: 24px;
+  --gap-sm:         12px;
+  --gap-md:         16px;
+  --gap-lg:         24px;
 }
 
-/* 1. טקסטורת רעש עדינה + גרדיאנט בסיסי על כל העמוד */
+/* 1. body – רקע רעש + גרדיאנט בסיסי */
 body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  direction: rtl;
   background:
     url('/assets/noise.png') repeat,
     linear-gradient(
       135deg,
       var(--bg-start) 0%,
       var(--bg-mid)   50%,
-      var(--bg-end)  100%
+      var(--bg-end)   100%
     );
   background-size: auto, cover;
 }
@@ -43,7 +46,6 @@ body::after {
   pointer-events: none;
   z-index: -1;
 }
-
 body::before {
   top: -25%;
   left: -20%;
@@ -52,7 +54,6 @@ body::before {
   background: url('/assets/blob1.svg') no-repeat center/contain;
   opacity: 0.18;
 }
-
 body::after {
   bottom: -30%;
   right: -15%;
@@ -62,7 +63,7 @@ body::after {
   opacity: 0.12;
 }
 
-/* 3. Keyframes לאנימציית גרדיאנט */
+/* 3. אנימציית גרדיאנט */
 @keyframes gradientShift {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
@@ -71,15 +72,9 @@ body::after {
 
 /* 4. .list-page – רקע גרדיאנט אנימטיבי */
 .list-page {
-  padding: 0 1rem;
   min-height: 100vh;
-  background: linear-gradient(
-      -45deg,
-      var(--bg-start),
-      var(--bg-mid),
-      var(--bg-end),
-      #e4e8ff
-    );
+  padding: 0 1rem;
+  background: linear-gradient(-45deg, var(--bg-start), var(--bg-mid), var(--bg-end), #e4e8ff);
   background-size: 400% 400%;
   animation: gradientShift 25s ease infinite;
 }
@@ -88,19 +83,44 @@ body::after {
 .business-list-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding-bottom: var(--gap-lg);
+  padding: var(--gap-lg) 0;
 }
-
-/* 6. כותרת */
 .business-list-container h1 {
+  text-align: center;
   font-size: 2.4rem;
   color: var(--text-main);
-  text-align: center;
-  margin: var(--gap-lg) 0;
+  margin-bottom: var(--gap-lg);
   letter-spacing: 0.5px;
 }
 
-/* ====== סינון ====== */
+/* 6. Filter chips */
+.filter-chips {
+  display: flex;
+  gap: var(--gap-sm);
+  justify-content: center;
+  margin-bottom: var(--gap-md);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  background: #f0f0f0;
+  border-radius: 16px;
+  padding: 0.4rem 0.8rem;
+}
+.chip span {
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+.chip button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+/* 7. שורת סינון */
 .filters-wrapper {
   display: flex;
   flex-wrap: nowrap;
@@ -111,31 +131,52 @@ body::after {
   direction: rtl;
 }
 
+/* 8. dropdown inputs */
 .dropdown-wrapper {
   position: relative;
-  min-width: 200px;
+  width: 240px;
+}
+.dropdown-wrapper input.filter-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+  background: #fff;
+  appearance: none;
+  font-size: 1rem;
+  color: var(--text-main);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  cursor: pointer;
+  text-align: right;
 }
 
-/* כפתור חפש */
+/* 9. כפתור חיפוש */
 .search-btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: var(--card-radius);
-  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 24px;
+  background-color: var(--primary);
   color: #fff;
+  border: none;
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   font-size: 1rem;
-  font-weight: bold;
   cursor: pointer;
-  box-shadow: var(--card-shadow);
-  transition: background-color 0.2s, box-shadow 0.2s;
-  flex: 0 0 auto;
+  transition: background-color 0.2s ease;
 }
 .search-btn:hover:not(:disabled) {
   background-color: var(--primary-hover);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+.search-btn__icon {
+  width: 20px;
+  height: 20px;
 }
 
-/* רשימת autocomplete */
+/* 10. suggestions list */
 .suggestions-list {
   position: absolute;
   top: 100%;
@@ -151,13 +192,13 @@ body::after {
   padding: 0;
   list-style: none;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
 .suggestions-list::-webkit-scrollbar {
   width: 8px;
 }
 .suggestions-list::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0,0,0,0.2);
   border-radius: 4px;
 }
 .suggestions-list li {
@@ -183,67 +224,51 @@ body::after {
   font-style: normal;
   color: var(--text-secondary);
 }
-.no-match {
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  padding: 0.5rem 1rem;
-}
 
-/* 7. Grid תוצאות */
+/* 11. תוצאות גריד */
 .business-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
   gap: var(--gap-lg);
   margin-top: var(--gap-lg);
 }
-.no-results,
-.no-search {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
+.no-search,
+.no-results {
   grid-column: 1 / -1;
   text-align: center;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
 }
 
-/* 8. כרטיס עסק */
+/* 12. כרטיס עסק */
 .business-card {
-  background: linear-gradient(
-    135deg,
-    var(--bg-start) 0%,
-    var(--bg-mid)   50%,
-    var(--bg-end)  100%
-  );
+  background: var(--card-bg);
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.4);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .business-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
-}
-.business-card img {
-  border-radius: 50%;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.12);
 }
 
-/* 9. Pagination */
+/* 13. פגינציה */
 .pagination {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin: var(--gap-lg) 0;
+  gap: var(--gap-md);
+  margin-top: var(--gap-lg);
 }
 .pagination button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 8px;
-  background-color: var(--primary);
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
+ 	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 12px;
+	background-color: var(--primary);
+	color: #fff;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
 }
 .pagination button:hover:not(:disabled) {
   background-color: var(--primary-hover);
@@ -253,7 +278,7 @@ body::after {
   cursor: not-allowed;
 }
 
-/* 10. Responsive */
+/* 14. Responsive */
 @media (max-width: 768px) {
   .filters-wrapper {
     flex-direction: column;
@@ -262,34 +287,4 @@ body::after {
   .business-list {
     grid-template-columns: 1fr;
   }
-}
-
-/* Filter chips */
-.filter-chips {
-  display: flex;
-  gap: var(--gap-sm);
-  justify-content: center;
-  margin-bottom: var(--gap-md);
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  background: #f0f0f0;
-  border-radius: 16px;
-  padding: 0.4rem 0.8rem;
-}
-
-.chip span {
-  margin-right: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-main);
-}
-
-.chip button {
-  background: none;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  color: var(--text-secondary);
 }
