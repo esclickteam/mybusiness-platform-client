@@ -2,7 +2,7 @@
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* שומר על פיזור בין האלמנטים */
   background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
   padding: 0 20px;
   height: 90px;
@@ -12,34 +12,21 @@
   z-index: 1000;
 }
 
-/* המבורגר */
-.menu-toggle {
-  display: flex;
-  align-items: center;
-  z-index: 1001;
-}
-.menu-button {
-  background: none;
-  border: none;
-  color: #2d006e;
-  cursor: pointer;
-}
-
-/* כפתורי משתמש בדסקטופ */
+/* כפתורי משתמש בדסקטופ (בצד שמאל) */
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
   gap: 12px;
   white-space: nowrap;
-  margin-right: 0;
-  margin-left: auto;
+  margin-right: auto; /* שמירה על פיזור שמאלה */
+  margin-left: 0;
   padding-right: 12px;
 }
 
 /* לוגו במרכז */
 .logo-wrapper {
   position: static;
-  margin-inline: auto;
+  margin-inline: auto; /* שמירה על המרכז */
   display: flex;
   align-items: center;
 }
