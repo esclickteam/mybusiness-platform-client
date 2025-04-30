@@ -1,4 +1,3 @@
-// src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
@@ -124,7 +123,7 @@ export default function SearchBusinesses() {
         {/* Filters */}
         <div className="filters-wrapper">
           {/* Category */}
-          <div className="dropdown-wrapper" ref={wrapperCatRef}>
+          <div className="dropdown-wrapper input-clearable" ref={wrapperCatRef}>
             <input
               type="text"
               className="filter-input"
@@ -134,6 +133,9 @@ export default function SearchBusinesses() {
               onChange={e => { setCat(e.target.value); setOpenCat(true); }}
               disabled={loading}
             />
+            {cat && !loading && (
+              <button className="clear-btn" onClick={() => setCat('')}>×</button>
+            )}
             {openCat && catSuggestions.length > 0 && (
               <ul className="suggestions-list">
                 {catSuggestions.map((c, i) => (
@@ -144,7 +146,7 @@ export default function SearchBusinesses() {
           </div>
 
           {/* City */}
-          <div className="dropdown-wrapper" ref={wrapperCityRef}>
+          <div className="dropdown-wrapper input-clearable" ref={wrapperCityRef}>
             <input
               type="text"
               className="filter-input"
@@ -154,6 +156,9 @@ export default function SearchBusinesses() {
               onChange={e => { setCity(e.target.value); setOpenCity(true); }}
               disabled={loading}
             />
+            {city && !loading && (
+              <button className="clear-btn" onClick={() => setCity('')}>×</button>
+            )}
             {openCity && citySuggestions.length > 0 && (
               <ul className="suggestions-list">
                 {citySuggestions.map((c, i) => (
