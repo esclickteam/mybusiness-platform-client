@@ -41,25 +41,23 @@ export default function AccessibilityWidget() {
     lineHeight: 1.5
   });
 
-  // refs for scrolling
-  const navRef = useRef();
-  const contrastRef = useRef();
-  const contentRef = useRef();
+  // refs for scrolling feature lists
+  const navRef = useRef(null);
+  const contrastRef = useRef(null);
+  const contentRef = useRef(null);
 
   // smart keyboard nav
   useEffect(() => {
     if (!state.smartNav) return;
-    const btns = () => Array.from(document.querySelectorAll('.aw-feature-btn'));
+    const items = () => Array.from(document.querySelectorAll('.aw-feature-btn'));
     const onKey = e => {
-      const all = btns();
-      if (!all.length) return;
-      let idx = all.indexOf(document.activeElement);
+      const list = items();
+      if (!list.length) return;
+      let idx = list.indexOf(document.activeElement);
       if (idx === -1 && /^Arrow/.test(e.key)) {
-        all[0].focus();
-        e.preventDefault();
-        return;
+        list[0].focus(); e.preventDefault(); return;
       }
-      const cols = 2, max = all.length - 1;
+      const cols = 2, max = list.length - 1;
       let next = idx;
       switch (e.key) {
         case 'ArrowRight': next = idx + 1; break;
@@ -69,19 +67,14 @@ export default function AccessibilityWidget() {
         default: return;
       }
       next = Math.max(0, Math.min(max, next));
-      all[next].focus();
-      e.preventDefault();
+      list[next].focus(); e.preventDefault();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [state.smartNav]);
 
-  const toggleSection = sec =>
-    setSections(s => ({ ...s, [sec]: !s[sec] }));
-
-  const toggleFeature = feat =>
-    setState(s => ({ ...s, [feat]: !s[feat] }));
-
+  const toggleSection = sec => setSections(s => ({ ...s, [sec]: !s[sec] }));
+  const toggleFeature = feat => setState(s => ({ ...s, [feat]: !s[feat] }));
   const onSlider = (key, e) => {
     const v = Number(e.target.value);
     setState(s => ({ ...s, [key]: v }));
@@ -101,19 +94,15 @@ export default function AccessibilityWidget() {
       speechSynthesis.cancel();
       setState(s => ({ ...s, readAloud: false }));
     } else {
-      const u = new SpeechSynthesisUtterance(
-        document.body.innerText.replace(/\s+/g,' ')
-      );
+      const utter = new SpeechSynthesisUtterance(document.body.innerText.replace(/\s+/g,' '));
       speechSynthesis.cancel();
-      speechSynthesis.speak(u);
+      speechSynthesis.speak(utter);
       setState(s => ({ ...s, readAloud: true }));
     }
   };
 
-  const scroll = (ref, amount) => {
-    if (ref.current) {
-      ref.current.scrollBy({ top: amount, behavior: 'smooth' });
-    }
+  const scroll = (ref, delta) => {
+    if (ref.current) ref.current.scrollBy({ top: delta, behavior: 'smooth' });
   };
 
   return (
@@ -121,7 +110,7 @@ export default function AccessibilityWidget() {
       {/* Toggle Button */}
       <button
         className="aw-toggle-button"
-        onClick={()=>setOpen(o=>!o)}
+        onClick={() => setOpen(o => !o)}
         aria-label="פתח/סגור נגישות"
       >
         {open ? <FaTimes/> : <FaWheelchair/>}
@@ -130,7 +119,7 @@ export default function AccessibilityWidget() {
       {open && (
         <div className="aw-panel" role="dialog" aria-modal="true">
           {/* Close X */}
-          <button className="aw-close" onClick={()=>setOpen(false)}>
+          <button className="aw-close" onClick={() => setOpen(false)}>
             <FaTimes/>
           </button>
 
@@ -139,88 +128,93 @@ export default function AccessibilityWidget() {
             <h2>נגישות</h2>
           </div>
 
-          {/* Section 1: Navigation */}
+          {/* Section 1: Navigation Adaptations */}
           <div className="aw-section">
-            <div className="aw-section-header" onClick={()=>toggleSection('nav')}>
+            <div className="aw-section-header" onClick={() => toggleSection('nav')}>
               <h3>התאמות ניווט</h3>
               {sections.nav ? <FaChevronUp/> : <FaChevronDown/>}
             </div>
             {sections.nav && (
               <div className="aw-features-wrapper">
-                <button className="aw-scroll-btn up" onClick={()=>scroll(navRef, -100)}>▲</button>
+                <button className="aw-scroll-btn up" onClick={() => scroll(navRef, -100)}>▲</button>
                 <div ref={navRef} className="aw-features">
+                  {/* Smart Nav */}
                   <button
-                    className={`aw-feature-btn${state.smartNav?' active':''}`}
-                    onClick={()=>toggleFeature('smartNav')}
+                    className={`aw-feature-btn${state.smartNav ? ' active' : ''}`}
+                    onClick={() => toggleFeature('smartNav')}
                   >
                     <FaArrowsAlt className="aw-icon"/><span className="aw-label">ניווט חכם</span>
                   </button>
+                  {/* Keyboard Nav */}
                   <button
-                    className={`aw-feature-btn${state.keyNav?' active':''}`}
-                    onClick={()=>toggleFeature('keyNav')}
+                    className={`aw-feature-btn${state.keyNav ? ' active' : ''}`}
+                    onClick={() => toggleFeature('keyNav')}
                   >
                     <FaKeyboard className="aw-icon"/><span className="aw-label">ניווט מקלדת</span>
                   </button>
+                  {/* Screen Reader */}
                   <button
-                    className={`aw-feature-btn${state.screenReader?' active':''}`}
-                    onClick={()=>toggleFeature('screenReader')}
+                    className={`aw-feature-btn${state.screenReader ? ' active' : ''}`}
+                    onClick={() => toggleFeature('screenReader')}
                   >
                     <FaAssistiveListeningSystems className="aw-icon"/><span className="aw-label">התאמה לקורא-מסך</span>
                   </button>
+                  {/* Voice Commands */}
                   <button
-                    className={`aw-feature-btn${state.voiceCommands?' active':''}`}
-                    onClick={()=>toggleFeature('voiceCommands')}
+                    className={`aw-feature-btn${state.voiceCommands ? ' active' : ''}`}
+                    onClick={() => toggleFeature('voiceCommands')}
                   >
                     <FaMicrophoneAlt className="aw-icon"/><span className="aw-label">פקודות קוליות</span>
                   </button>
+                  {/* Read Aloud */}
                   <button
-                    className={`aw-feature-btn${state.readAloud?' active':''}`}
+                    className={`aw-feature-btn${state.readAloud ? ' active' : ''}`}
                     onClick={readPageAloud}
                   >
                     <FaVolumeUp className="aw-icon"/><span className="aw-label">הקראת טקסט</span>
                   </button>
                 </div>
-                <button className="aw-scroll-btn down" onClick={()=>scroll(navRef, 100)}>▼</button>
+                <button className="aw-scroll-btn down" onClick={() => scroll(navRef, 100)}>▼</button>
               </div>
             )}
           </div>
 
-          {/* Section 2: Contrast */}
+          {/* Section 2: Contrast Adaptations */}
           <div className="aw-section">
-            <div className="aw-section-header" onClick={()=>toggleSection('contrast')}>
+            <div className="aw-section-header" onClick={() => toggleSection('contrast')}>
               <h3>התאמות ניגודיות</h3>
               {sections.contrast ? <FaChevronUp/> : <FaChevronDown/>}
             </div>
             {sections.contrast && (
               <>
                 <div className="aw-features-wrapper">
-                  <button className="aw-scroll-btn up" onClick={()=>scroll(contrastRef, -100)}>▲</button>
+                  <button className="aw-scroll-btn up" onClick={() => scroll(contrastRef, -100)}>▲</button>
                   <div ref={contrastRef} className="aw-features">
                     {[
                       ['brightContrast', <FaSun/>, 'ניגודיות בהירה'],
                       ['darkContrast',   <FaMoon/>, 'ניגודיות כהה'],
                       ['monoContrast',   <FaEye/>,  'מונוכרום'],
                       ['highSat',        <FaTint/>, 'רוויה גבוהה'],
-                      ['lowSat',         <FaAdjust/>, 'רוויה נמוכה'],
+                      ['lowSat',         <FaAdjust/>, 'רוויה נמוכה']
                     ].map(([key, icon, label]) => (
                       <button
                         key={key}
-                        className={`aw-feature-btn${state[key]?' active':''}`}
-                        onClick={()=>toggleFeature(key)}
+                        className={`aw-feature-btn${state[key] ? ' active' : ''}`}
+                        onClick={() => toggleFeature(key)}
                       >
                         <span className="aw-icon">{icon}</span><span className="aw-label">{label}</span>
                       </button>
                     ))}
                   </div>
-                  <button className="aw-scroll-btn down" onClick={()=>scroll(contrastRef, 100)}>▼</button>
+                  <button className="aw-scroll-btn down" onClick={() => scroll(contrastRef, 100)}>▼</button>
                 </div>
 
                 <div className="contrast-tabs">
-                  <button className={contrastTab==='backgrounds'?'active':''}
+                  <button className={contrastTab==='backgrounds'? 'active':''}
                     onClick={()=>setContrastTab('backgrounds')}>רקע</button>
-                  <button className={contrastTab==='headings'?'active':''}
+                  <button className={contrastTab==='headings'? 'active':''}
                     onClick={()=>setContrastTab('headings')}>כותרות</button>
-                  <button className={contrastTab==='content'?'active':''}
+                  <button className={contrastTab==='content'? 'active':''}
                     onClick={()=>setContrastTab('content')}>תוכן</button>
                 </div>
 
@@ -231,58 +225,60 @@ export default function AccessibilityWidget() {
                     min="0"
                     max="360"
                     value={state.hue}
-                    onChange={e=>onSlider('hue', e)}
+                    onChange={e => onSlider('hue', e)}
                   />
                 </div>
               </>
             )}
           </div>
 
-          {/* Section 3: Content */}
+          {/* Section 3: Content Adaptations */}
           <div className="aw-section">
-            <div className="aw-section-header" onClick={()=>toggleSection('content')}>
+            <div className="aw-section-header" onClick={() => toggleSection('content')}>
               <h3>התאמות תוכן</h3>
               {sections.content ? <FaChevronUp/> : <FaChevronDown/>}
             </div>
             {sections.content && (
               <>
                 <div className="aw-features-wrapper">
-                  <button className="aw-scroll-btn up" onClick={()=>scroll(contentRef, -100)}>▲</button>
-                  <div ref={contentRef} className="aw-features aw-features aw-grid-3">
-                    {/* קוליות */}
+                  <button className="aw-scroll-btn up" onClick={() => scroll(contentRef, -100)}>▲</button>
+                  <div ref={contentRef} className="aw-features aw-grid-3">
+                    {/* Font Size */}
                     <button
-                      className={`aw-feature-btn${state.screenReader?' active':''}`}
-                      onClick={()=>toggleFeature('screenReader')}
+                      className={`aw-feature-btn${state.fontSize>1?' active':''}`}
+                      onClick={()=>{}}
                     >
-                      <FaEye className="aw-icon"/><span className="aw-label">גופן קריא</span>
+                      <FaFont className="aw-icon"/><span className="aw-label">גופן קריא</span>
                     </button>
-                    {/* כאן ניתן להוסיף עוד פיצ'רים אם רוצים */}
+                    {/* ניתן להוסיף כאן כפתורים נוספים */}
                   </div>
-                  <button className="aw-scroll-btn down" onClick={()=>scroll(contentRef, 100)}>▼</button>
+                  <button className="aw-scroll-btn down" onClick={() => scroll(contentRef, 100)}>▼</button>
                 </div>
 
                 <div className="content-tabs">
-                  <button className={contentTab==='fontSize'?'active':''}
+                  <button className={contentTab==='fontSize'? 'active':''}
                     onClick={()=>setContentTab('fontSize')}>גודל גופן</button>
-                  <button className={contentTab==='letterSpacing'?'active':''}
+                  <button className={contentTab==='letterSpacing'? 'active':''}
                     onClick={()=>setContentTab('letterSpacing')}>מרווח בין מילים</button>
-                  <button className={contentTab==='lineHeight'?'active':''}
+                  <button className={contentTab==='lineHeight'? 'active':''}
                     onClick={()=>setContentTab('lineHeight')}>מרווח בין שורות</button>
                 </div>
 
                 <div className="aw-slider">
                   <label>
-                    {contentTab==='fontSize' ? 'גודל גופן:' :
-                     contentTab==='letterSpacing' ? 'מרווח מילים (px):' :
-                     'גובה שורה:'}
+                    {contentTab==='fontSize'
+                      ? 'גודל גופן:'
+                      : contentTab==='letterSpacing'
+                        ? 'מרווח בין מילים (px):'
+                        : 'גובה שורה:'}
                   </label>
                   <input
                     type="range"
-                    min={contentTab==='fontSize' ? 0.8 : contentTab==='letterSpacing'?0:1}
-                    max={contentTab==='fontSize' ? 2 : contentTab==='letterSpacing'?20:3}
+                    min={contentTab==='fontSize'?0.8: contentTab==='letterSpacing'?0:1}
+                    max={contentTab==='fontSize'?2: contentTab==='letterSpacing'?20:3}
                     step="0.1"
                     value={state[contentTab]}
-                    onChange={e=>onSlider(contentTab, e)}
+                    onChange={e => onSlider(contentTab, e)}
                   />
                 </div>
               </>
@@ -291,7 +287,7 @@ export default function AccessibilityWidget() {
 
           {/* Footer */}
           <div className="aw-footer">
-            <button onClick={()=>setOpen(false)}>בטל נגישות</button>
+            <button onClick={() => setOpen(false)}>בטל נגישות</button>
             <button>הצהרת נגישות</button>
             <button>שלח משוב</button>
             <div className="aw-powered">נגיש בקליק</div>
