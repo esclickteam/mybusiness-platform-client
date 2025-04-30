@@ -86,17 +86,15 @@
 .drawer-header {
   width: 100%;
   box-sizing: border-box;
-  background: #f3e8ff;        /* פסטל לבנדר עדין */
+  background: #f3e8ff;
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  direction: ltr;             /* כדי שהחץ יתיישב לימין */
+  direction: ltr;
   padding: 0 16px;
 }
 
-/* ===== כפתור חזור ===== */
-/* ===== כפתור חזור עם טקסט ואייקון ===== */
 .back-button {
   display: inline-flex;
   align-items: center;
@@ -116,6 +114,18 @@
   color: #2d006e;
 }
 
+/* ===== שם משתמש ===== */
+.menu-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #faf5ff;
+  border-bottom: 1px solid #e0d3f2;
+  color: #2d006e;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
 
 /* ===== סעיפים וקישורים ===== */
 .menu-section {
@@ -132,7 +142,9 @@
   border-bottom: 1px solid #eee;
 }
 .menu-section a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 12px 16px;
   margin: 4px 0;
   border-radius: 4px;
@@ -144,6 +156,19 @@
 .menu-section a:hover {
   background: #f5f1fa;
   color: #2d006e;
+}
+
+/* קישור פעיל */
+a.active-link {
+  background: #f5f1fa;
+  font-weight: bold;
+  color: #2d006e;
+}
+.link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
 }
 
 /* ===== כפתורי משתמש בסוף ===== */
