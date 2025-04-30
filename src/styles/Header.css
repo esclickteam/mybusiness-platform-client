@@ -20,7 +20,8 @@
 }
 
 .logo-link .logo {
-  height: 120px;
+  height: 80px; /* ⬅️ עודכן מ-120px ל-80px */
+  max-height: 100%;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
