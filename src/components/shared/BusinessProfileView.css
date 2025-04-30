@@ -2,7 +2,8 @@
 
 /* === reset בסיסי ורקע כללי === */
 html, body, #root {
-  background: #f5e1ff;
+  background: linear-gradient(135deg, #f0f4ff, #fefaff);
+
   margin: 0;
   padding: 0;
 }
