@@ -4,7 +4,7 @@ import API from "@api";
 import BusinessCard from "../components/BusinessCard";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES     from "../data/cities";
-import { ReactComponent as SearchIcon } from "../assets/icons/search.svg"; // תחליפו בנתיב שלכם
+import { FaSearch } from "react-icons/fa"; // ← שימוש באייקון מובנה
 import "./BusinessList.css";
 
 const BusinessesList = () => {
@@ -49,7 +49,7 @@ const BusinessesList = () => {
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* 1. Filter Chips */}
+        {/* פילטרים שנבחרו */}
         {(category || city) && (
           <div className="filter-chips">
             {category && (
@@ -67,19 +67,13 @@ const BusinessesList = () => {
           </div>
         )}
 
-        {/* 2. שורת החיפוש */}
+        {/* שורת חיפוש */}
         <div className="filters-wrapper">
-          {/* כפתור חיפוש ראשון לפי RTL */}
-          <button
-            className="search-btn"
-            onClick={handleSearch}
-            disabled={loading}
-          >
-            <SearchIcon className="search-btn__icon" />
+          <button className="search-btn" onClick={handleSearch} disabled={loading}>
+            <FaSearch className="search-btn__icon" />
             {loading ? "טוען…" : "חפש"}
           </button>
 
-          {/* dropdown עיר */}
           <div className="dropdown-wrapper">
             <Select
               options={cityOptions}
@@ -92,7 +86,6 @@ const BusinessesList = () => {
             />
           </div>
 
-          {/* dropdown תחום */}
           <div className="dropdown-wrapper">
             <Select
               options={categoryOptions}
@@ -106,7 +99,7 @@ const BusinessesList = () => {
           </div>
         </div>
 
-        {/* 3. תוצאות */}
+        {/* תוצאות */}
         {loading ? (
           <p className="no-results">טוען תוצאות…</p>
         ) : businesses.length > 0 ? (
