@@ -22,7 +22,7 @@ import {
 import '../styles/AccessibilityWidget.css';
 
 export default function AccessibilityWidget() {
-  // מיקום של כל useState מחוץ לתנאים
+  // הסטייטים צריכים להיות מחוץ לתנאים
   const [open, setOpen] = useState(false);
   const [sections, setSections] = useState({ nav: true, contrast: false, content: false });
   const [contrastTab, setContrastTab] = useState('backgrounds');
@@ -45,16 +45,16 @@ export default function AccessibilityWidget() {
     lineHeight: 1.5
   });
 
-  // Function to toggle the sections
+  // פונקציה להחלפת מצבי הסקשנים
   const toggleSection = (sec) => setSections((s) => ({ ...s, [sec]: !s[sec] }));
 
-  // Function to toggle feature on or off
+  // פונקציה להחלפת פיצ'רים
   const toggleFeature = (feat) => {
     console.log(`לחץ על ${feat}`); // לדפוק את שם הפיצ'ר שנלחץ
     setState((s) => ({ ...s, [feat]: !s[feat] }));
   };
 
-  // Function to update the state when a slider is changed
+  // פונקציה לעדכון ה-state כשיש שינוי ב־slider
   const onSlider = (key, v) => {
     setState((s) => ({ ...s, [key]: v }));
     const prop =
@@ -69,21 +69,21 @@ export default function AccessibilityWidget() {
     document.documentElement.style.setProperty(prop, val);
   };
 
-  // Track state changes for debugging
+  // מעקב אחרי שינויים ב־state לצורך debugging
   useEffect(() => {
     console.log(state); // הדפסת ה-state לאחר כל עדכון
   }, [state]);
 
-  // כל ה-Hooks נמצאים כאן, בסדר הקבוע שלהם
-  const { buttonProps } = useButton({
-    onPress: () => setOpen(true),
-    'aria-label': 'פתח התאמות נגישות',
-  });
-
   return (
     <>
-      {/* Accessible Button for Opening Dialog */}
-      <button {...buttonProps} className="aw-toggle-button">
+      {/* כפתור נגיש לפתיחת הדיאלוג */}
+      <button
+        {...useButton({
+          onPress: () => setOpen(true),
+          'aria-label': 'פתח התאמות נגישות',
+        }).buttonProps}
+        className="aw-toggle-button"
+      >
         <FaWheelchair />
       </button>
 
@@ -101,7 +101,7 @@ export default function AccessibilityWidget() {
             </button>
             <h2 className="aw-header">התאמות נגישות</h2>
 
-            {/* Navigation Section */}
+            {/* סקשן ניווט */}
             <section className="aw-section">
               <header
                 {...useButton({
@@ -138,7 +138,7 @@ export default function AccessibilityWidget() {
               )}
             </section>
 
-            {/* Contrast Section */}
+            {/* סקשן ניגודיות */}
             <section className="aw-section">
               <header
                 {...useButton({
@@ -205,7 +205,7 @@ export default function AccessibilityWidget() {
               )}
             </section>
 
-            {/* Content Section */}
+            {/* סקשן תוכן */}
             <section className="aw-section">
               <header
                 {...useButton({
