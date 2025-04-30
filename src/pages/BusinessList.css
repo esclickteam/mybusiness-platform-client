@@ -103,8 +103,9 @@ body::after {
 .chip {
   display: inline-flex;
   align-items: center;
-  background: #f0f0f0;
-  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--primary);
+  border-radius: 24px;
   padding: 0.4rem 0.8rem;
 }
 .chip span {
@@ -115,18 +116,18 @@ body::after {
 .chip button {
   background: none;
   border: none;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  line-height: 1;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--primary-hover);
 }
 
 /* 7. שורת סינון */
 .filters-wrapper {
   display: flex;
-  flex-wrap: nowrap;
+  align-items: center;
   gap: var(--gap-md);
   justify-content: center;
-  align-items: center;
   margin-bottom: var(--gap-lg);
   direction: rtl;
 }
@@ -139,16 +140,18 @@ body::after {
 .dropdown-wrapper input.filter-input {
   width: 100%;
   height: 48px;
-  padding: 0 16px;
+  padding: 0 1rem;
   border: 2px solid var(--primary);
   border-radius: 24px;
   background: #fff;
   font-size: 1rem;
   color: var(--text-main);
   box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-  cursor: pointer;
   text-align: right;
   transition: border-color 0.2s ease;
+}
+.dropdown-wrapper input.filter-input::placeholder {
+  color: var(--text-secondary);
 }
 .dropdown-wrapper input.filter-input:focus {
   outline: none;
@@ -160,15 +163,10 @@ body::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0.5rem;
   height: 48px;
-  padding: 0.75rem 2rem;
-  min-width: 200px;
-  background: linear-gradient(
-    90deg,
-    var(--primary) 0%,
-    var(--primary-hover) 100%
-  );
+  padding: 0 1.5rem;
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
   color: #fff;
   font-size: 1rem;
   font-weight: bold;
@@ -179,15 +177,16 @@ body::after {
   transition: background 0.2s ease;
 }
 .search-btn:hover:not(:disabled) {
-  background: linear-gradient(
-    90deg,
-    var(--primary-hover) 0%,
-    var(--primary) 100%
-  );
+  background: linear-gradient(90deg, var(--primary-hover), var(--primary));
+}
+.search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .search-btn__icon {
   width: 20px;
   height: 20px;
+  fill: #fff;
 }
 
 /* 10. suggestions list */
@@ -197,7 +196,7 @@ body::after {
   left: 0;
   width: 100%;
   background: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   border-radius: 16px;
   max-height: 200px;
   overflow-y: auto;

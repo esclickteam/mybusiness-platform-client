@@ -1,10 +1,10 @@
-// src/pages/BusinessesList.jsx
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES     from "../data/cities";
+import { ReactComponent as SearchIcon } from "../assets/icons/search.svg"; // תחליפו בנתיב שלכם
 import "./BusinessList.css";
 
 const BusinessesList = () => {
@@ -26,7 +26,7 @@ const BusinessesList = () => {
       const response = await API.get(`/business?${params.toString()}`);
       setBusinesses(response.data.businesses || []);
     } catch (err) {
-      console.error("Error fetching businesses:", err);
+      console.error(err);
       setBusinesses([]);
     } finally {
       setLoading(false);
@@ -49,20 +49,38 @@ const BusinessesList = () => {
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* סרגל הפילטרים */}
-        <div className="filters-container">
-          <div className="filter">
-            <Select
-              options={categoryOptions}
-              value={category}
-              onChange={setCategory}
-              placeholder="תחום (לדוגמה: חשמלאי)"
-              isClearable
-              className="react-select-container"
-              classNamePrefix="react-select"
-            />
+        {/* 1. Filter Chips */}
+        {(category || city) && (
+          <div className="filter-chips">
+            {category && (
+              <div className="chip">
+                <span>{category.label}</span>
+                <button onClick={() => setCategory(null)}>×</button>
+              </div>
+            )}
+            {city && (
+              <div className="chip">
+                <span>{city.label}</span>
+                <button onClick={() => setCity(null)}>×</button>
+              </div>
+            )}
           </div>
-          <div className="filter">
+        )}
+
+        {/* 2. שורת החיפוש */}
+        <div className="filters-wrapper">
+          {/* כפתור חיפוש ראשון לפי RTL */}
+          <button
+            className="search-btn"
+            onClick={handleSearch}
+            disabled={loading}
+          >
+            <SearchIcon className="search-btn__icon" />
+            {loading ? "טוען…" : "חפש"}
+          </button>
+
+          {/* dropdown עיר */}
+          <div className="dropdown-wrapper">
             <Select
               options={cityOptions}
               value={city}
@@ -73,16 +91,22 @@ const BusinessesList = () => {
               classNamePrefix="react-select"
             />
           </div>
-          <button
-            className="search-btn"
-            onClick={handleSearch}
-            disabled={loading}
-          >
-            {loading ? "טוען…" : "חפש"}
-          </button>
+
+          {/* dropdown תחום */}
+          <div className="dropdown-wrapper">
+            <Select
+              options={categoryOptions}
+              value={category}
+              onChange={setCategory}
+              placeholder="תחום (לדוגמה: חשמלאי)"
+              isClearable
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
+          </div>
         </div>
 
-        {/* תוצאות */}
+        {/* 3. תוצאות */}
         {loading ? (
           <p className="no-results">טוען תוצאות…</p>
         ) : businesses.length > 0 ? (
