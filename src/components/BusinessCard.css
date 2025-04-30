@@ -21,17 +21,7 @@
   --gap-lg:         24px;
 }
 
-/* רקע כללי */
-.list-page {
-  padding: 0 1rem;
-  min-height: 100vh;
-  background: linear-gradient(
-    135deg,
-    var(--bg-start) 0%,
-    var(--bg-mid)   50%,
-    var(--bg-end)  100%
-  );
-}
+
 
 /* קונטיינר */
 .business-list-container {
