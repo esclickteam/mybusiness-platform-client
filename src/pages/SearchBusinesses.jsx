@@ -1,3 +1,4 @@
+// src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
@@ -169,6 +170,17 @@ export default function SearchBusinesses() {
             disabled={loading}
           >
             <span>חפש</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="search-btn__icon"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
           </button>
         </div>
 
