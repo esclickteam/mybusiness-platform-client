@@ -1,24 +1,29 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import "./BusinessCard.css";
 
-const BusinessCard = ({ business }) => {
-  const {
-    _id,
-    name,
-    logo,
-    description,
-    category,
-    phone,
-    address = {},
-  } = business;
-  const { city } = address; // לחילוץ נוח של העיר
+export default function BusinessCard({ business, onClick }) {
+  const { _id, name, logo, description, category, phone, address = {} } = business;
+  const { city } = address;
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(`/business/${_id}`);
+    }
+  };
 
   return (
-    <div className="business-card">
+    <div
+      className="business-card"
+      onClick={handleCardClick}
+      style={{ cursor: 'pointer' }}
+    >
       {logo && (
         <div className="business-card__media">
-          <img src={logo} alt={`${name} logo`} />
+          <img src={logo} alt={`${name} logo`} loading="lazy" />
         </div>
       )}
 
@@ -48,11 +53,15 @@ const BusinessCard = ({ business }) => {
         </p>
       )}
 
-      <Link to={`/business/${_id}`} className="business-card__btn">
+      <button
+        className="business-card__btn"
+        onClick={e => {
+          e.stopPropagation();
+          handleCardClick();
+        }}
+      >
         צפה בפרופיל
-      </Link>
+      </button>
     </div>
   );
-};
-
-export default BusinessCard;
+}
