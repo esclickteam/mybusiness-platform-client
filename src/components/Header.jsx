@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -42,7 +41,6 @@ const Header = () => {
   return (
     <>
       <nav className="app-header">
-        {/* רק כשהתפריט סגור – המבורגר */}
         {!menuOpen && (
           <div className="menu-toggle">
             <button
@@ -55,14 +53,12 @@ const Header = () => {
           </div>
         )}
 
-        {/* לוגו באמצע */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
           </Link>
         </div>
 
-        {/* כפתורי משתמש – רק בדסקטופ */}
         <div className="auth-controls desktop-only">
           {user ? (
             <>
@@ -97,20 +93,21 @@ const Header = () => {
             onClick={() => setMenuOpen(false)}
           />
 
-<div className="side-menu open">
-  {/* כפתור חזור */}
-  <div className="drawer-header">
-    <button
-      className="back-button"
-      onClick={() => setMenuOpen(false)}
-      title="חזור"
-      aria-label="חזור"
-    >
-      <FaChevronLeft size={20} />
-      <span className="back-text">חזור</span>
-    </button>
-  </div>
+          <div className="side-menu open">
+            {/* כפתור חזור */}
+            <div className="drawer-header">
+              <button
+                className="back-button"
+                onClick={() => setMenuOpen(false)}
+                title="חזור"
+                aria-label="חזור"
+              >
+                <FaChevronLeft size={20} />
+                <span className="back-text">חזור</span>
+              </button>
+            </div>
 
+            {/* כללי */}
             <div className="menu-section">
               <h4>כללי</h4>
               <Link to="/" onClick={() => setMenuOpen(false)}>דף הבית</Link>
@@ -121,18 +118,20 @@ const Header = () => {
               <Link to="/privacy" onClick={() => setMenuOpen(false)}>מדיניות פרטיות</Link>
             </div>
 
-            <div className="menu-section">
-              <h4>ללקוחות</h4>
-              <Link to="/businesses" onClick={() => setMenuOpen(false)}>רשימת עסקים</Link>
-              <Link to="/categories" onClick={() => setMenuOpen(false)}>קטגוריות</Link>
-              <Link to="/search" onClick={() => setMenuOpen(false)}>חיפוש מתקדם</Link>
-            </div>
-
+            {/* לעסקים */}
             <div className="menu-section">
               <h4>לעסקים</h4>
               <Link to="/pricing" onClick={() => setMenuOpen(false)}>מחירים</Link>
               <Link to="/how-it-works" onClick={() => setMenuOpen(false)}>איך זה עובד</Link>
               <Link to="/register/business" onClick={() => setMenuOpen(false)}>הצטרפות כבעל עסק</Link>
+            </div>
+
+            {/* ללקוחות */}
+            <div className="menu-section">
+              <h4>ללקוחות</h4>
+              <Link to="/businesses" onClick={() => setMenuOpen(false)}>רשימת עסקים</Link>
+              <Link to="/categories" onClick={() => setMenuOpen(false)}>קטגוריות</Link>
+              <Link to="/search" onClick={() => setMenuOpen(false)}>חיפוש מתקדם</Link>
             </div>
 
             <hr />
