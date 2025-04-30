@@ -28,18 +28,18 @@ body {
 
 /* ===== Toggle Button ===== */
 .aw-toggle-button {
-    position: fixed;
-    bottom: 20px;  /* מיקום 20 פיקסלים מלמטה */
-    left: 20px;    /* מיקום 20 פיקסלים מצד שמאל */
-    background: var(--aw-accent);
-    color: var(--aw-white);
-    border: none;
-    padding: .75rem;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    z-index: 10000;
+    position: fixed !important;
+    bottom: 20px !important;  /* מיקום 20 פיקסלים מלמטה */
+    right: 20px !important;   /* מיקום 20 פיקסלים מצד ימין */
+    background: var(--aw-accent) !important;
+    color: var(--aw-white) !important;
+    border: none !important;
+    padding: .75rem !important;
+    border-radius: 50% !important;
+    font-size: 1.5rem !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+    z-index: 10000 !important;
 }
 
 /* ===== @reach/dialog Overlay ===== */
