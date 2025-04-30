@@ -1,11 +1,27 @@
 /* ===== Utility CSS Variables ===== */
 :root {
-    --aw-bg:       #005b96;
-    --aw-bg-dark:  #004271;
-    --aw-white:    #ffffff;
-    --aw-primary:  #005b96;
-    --aw-accent:   #5c27e0;
-    --aw-focus:    #e27d60;
+    --aw-bg:             #005b96;
+    --aw-bg-dark:        #004271;
+    --aw-white:          #ffffff;
+    --aw-primary:        #005b96;
+    --aw-accent:         #5c27e0;
+    --aw-focus:          #e27d60;
+  
+    /* Accessibility globals */
+    --es-hue-rotate:     0deg;
+    --es-font-scale:     1;
+    --es-letter-spacing: 0px;
+    --es-line-height:    1.5;
+  }
+  
+  /* apply page-wide filters & scales */
+  html {
+    filter: hue-rotate(var(--es-hue-rotate));
+  }
+  body {
+    font-size: calc(1rem * var(--es-font-scale));
+    letter-spacing: var(--es-letter-spacing);
+    line-height: var(--es-line-height);
   }
   
   /* ===== Toggle button ===== */
@@ -24,7 +40,6 @@
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
-  
   
   /* ===== Panel ===== */
   .aw-panel {
@@ -64,20 +79,12 @@
     padding: 1rem;
     background: var(--aw-bg-dark);
     display: flex;
-    justify-content: space-between;
     align-items: center;
     position: relative;
   }
   .aw-header h2 {
     margin: 0;
     font-size: 1.2rem;
-  }
-  .aw-header select {
-    background: var(--aw-white);
-    color: #000;
-    border-radius: 4px;
-    padding: .25rem;
-    font-size: .9rem;
   }
   
   /* ===== Sections ===== */
@@ -105,6 +112,9 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: .75rem;
+  }
+  .aw-features.aw-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
   }
   /* Custom scrollbar */
   .aw-features::-webkit-scrollbar {
@@ -159,15 +169,61 @@
     color: var(--aw-focus);
   }
   
+  /* ===== Contrast Section Tabs ===== */
+  .contrast-tabs {
+    display: flex;
+    gap: .5rem;
+    padding: 0 1rem 1rem;
+  }
+  .contrast-tabs button {
+    background: transparent;
+    border: 1px solid var(--aw-white);
+    border-radius: 20px;
+    padding: .3rem .75rem;
+    color: var(--aw-white);
+    cursor: pointer;
+    transition: background .2s, color .2s;
+    font-size: .85rem;
+  }
+  .contrast-tabs button.active {
+    background: var(--aw-white);
+    color: var(--aw-bg);
+    border-color: var(--aw-white);
+  }
+  
+  /* ===== Content Section Tabs ===== */
+  .content-tabs {
+    display: flex;
+    gap: .5rem;
+    padding: 0 1rem 1rem;
+  }
+  .content-tabs button {
+    background: transparent;
+    border: 1px solid var(--aw-white);
+    border-radius: 20px;
+    padding: .3rem .75rem;
+    color: var(--aw-white);
+    cursor: pointer;
+    transition: background .2s, color .2s;
+    font-size: .85rem;
+  }
+  .content-tabs button.active {
+    background: var(--aw-white);
+    color: var(--aw-bg);
+    border-color: var(--aw-white);
+  }
+  
   /* ===== Sliders within grid ===== */
   .aw-slider {
     grid-column: span 2;
     display: flex;
     flex-direction: column;
+    padding: 0 1rem 1rem;
   }
   .aw-slider label {
     font-size: .85rem;
     margin-bottom: .25rem;
+    color: var(--aw-white);
   }
   .aw-slider input[type="range"] {
     width: 100%;
