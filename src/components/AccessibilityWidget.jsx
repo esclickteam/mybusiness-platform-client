@@ -1,5 +1,5 @@
-// src/components/AccessibilityWidget.jsx
 import React, { useState, useEffect } from 'react';
+import { useButton } from 'react-aria'; // יבוא של useButton מ־react-aria
 import { DialogOverlay, DialogContent } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 import {
@@ -45,37 +45,43 @@ export default function AccessibilityWidget() {
   });
 
   // Function to toggle the sections
-  const toggleSection = sec => setSections(s => ({ ...s, [sec]: !s[sec] }));
+  const toggleSection = (sec) => setSections((s) => ({ ...s, [sec]: !s[sec] }));
 
   // Function to toggle feature on or off
-  const toggleFeature = feat => {
+  const toggleFeature = (feat) => {
     console.log(`לחץ על ${feat}`); // לדפוק את שם הפיצ'ר שנלחץ
-    setState(s => ({ ...s, [feat]: !s[feat] }));
+    setState((s) => ({ ...s, [feat]: !s[feat] }));
   };
 
   // Function to update the state when a slider is changed
   const onSlider = (key, v) => {
-    setState(s => ({ ...s, [key]: v }));
+    setState((s) => ({ ...s, [key]: v }));
     const prop =
-      key === 'hue' ? '--es-hue-rotate' :
-      key === 'fontSize' ? '--es-font-scale' :
-      key === 'letterSpacing' ? '--es-letter-spacing' :
-      '--es-line-height';
+      key === 'hue'
+        ? '--es-hue-rotate'
+        : key === 'fontSize'
+        ? '--es-font-scale'
+        : key === 'letterSpacing'
+        ? '--es-letter-spacing'
+        : '--es-line-height';
     const val = key === 'hue' ? `${v}deg` : key === 'letterSpacing' ? `${v}px` : v;
     document.documentElement.style.setProperty(prop, val);
   };
 
   // Track state changes for debugging
   useEffect(() => {
-    console.log(state);  // הדפסת ה-state לאחר כל עדכון
+    console.log(state); // הדפסת ה-state לאחר כל עדכון
   }, [state]);
 
   return (
     <>
+      {/* Accessible Button for Opening Dialog */}
       <button
+        {...useButton({
+          onPress: () => setOpen(true),
+          'aria-label': 'פתח התאמות נגישות',
+        }).buttonProps}
         className="aw-toggle-button"
-        onClick={() => setOpen(true)}
-        aria-label="פתח התאמות נגישות"
       >
         <FaWheelchair />
       </button>
@@ -83,14 +89,26 @@ export default function AccessibilityWidget() {
       {open && (
         <DialogOverlay className="aw-panel-overlay" onDismiss={() => setOpen(false)}>
           <DialogContent className="aw-panel" aria-label="התאמות נגישות">
-            <button className="aw-close" onClick={() => setOpen(false)} aria-label="סגור">
+            <button
+              {...useButton({
+                onPress: () => setOpen(false),
+                'aria-label': 'סגור',
+              }).buttonProps}
+              className="aw-close"
+            >
               <FaTimes />
             </button>
             <h2 className="aw-header">התאמות נגישות</h2>
 
             {/* Navigation Section */}
             <section className="aw-section">
-              <header className="aw-section-header" onClick={() => toggleSection('nav')}>
+              <header
+                {...useButton({
+                  onPress: () => toggleSection('nav'),
+                  'aria-expanded': sections.nav,
+                }).buttonProps}
+                className="aw-section-header"
+              >
                 <h3>ניווט</h3>
                 {sections.nav ? <FaChevronUp /> : <FaChevronDown />}
               </header>
@@ -101,13 +119,15 @@ export default function AccessibilityWidget() {
                     ['keyNav', FaKeyboard, 'ניווט מקלדת'],
                     ['screenReader', FaAssistiveListeningSystems, 'קורא מסך'],
                     ['voiceCommands', FaMicrophoneAlt, 'פקודות קוליות'],
-                    ['readAloud', FaVolumeUp, 'הקראת טקסט']
+                    ['readAloud', FaVolumeUp, 'הקראת טקסט'],
                   ].map(([k, Icon, label]) => (
                     <button
+                      {...useButton({
+                        onPress: () => toggleFeature(k),
+                        'aria-pressed': state[k],
+                      }).buttonProps}
                       key={k}
                       className={`aw-feature-btn${state[k] ? ' active' : ''}`}
-                      onClick={() => toggleFeature(k)}
-                      aria-pressed={state[k]}
                     >
                       <Icon className="aw-icon" />
                       <span className="aw-label">{label}</span>
@@ -119,7 +139,13 @@ export default function AccessibilityWidget() {
 
             {/* Contrast Section */}
             <section className="aw-section">
-              <header className="aw-section-header" onClick={() => toggleSection('contrast')}>
+              <header
+                {...useButton({
+                  onPress: () => toggleSection('contrast'),
+                  'aria-expanded': sections.contrast,
+                }).buttonProps}
+                className="aw-section-header"
+              >
                 <h3>ניגודיות</h3>
                 {sections.contrast ? <FaChevronUp /> : <FaChevronDown />}
               </header>
@@ -131,12 +157,15 @@ export default function AccessibilityWidget() {
                       ['darkContrast', FaMoon, 'כהה'],
                       ['monoContrast', FaEye, 'מונוכרום'],
                       ['highSat', FaTint, 'רוויה↑'],
-                      ['lowSat', FaAdjust, 'רוויה↓']
+                      ['lowSat', FaAdjust, 'רוויה↓'],
                     ].map(([k, Icon, label]) => (
                       <button
+                        {...useButton({
+                          onPress: () => toggleFeature(k),
+                          'aria-pressed': state[k],
+                        }).buttonProps}
                         key={k}
                         className={`aw-feature-btn${state[k] ? ' active' : ''}`}
-                        onClick={() => toggleFeature(k)}
                       >
                         <Icon className="aw-icon" />
                         <span className="aw-label">{label}</span>
@@ -144,13 +173,20 @@ export default function AccessibilityWidget() {
                     ))}
                   </div>
                   <div className="contrast-tabs">
-                    {['backgrounds', 'headings', 'content'].map(tab => (
+                    {['backgrounds', 'headings', 'content'].map((tab) => (
                       <button
+                        {...useButton({
+                          onPress: () => setContrastTab(tab),
+                          'aria-selected': contrastTab === tab,
+                        }).buttonProps}
                         key={tab}
                         className={contrastTab === tab ? 'active' : ''}
-                        onClick={() => setContrastTab(tab)}
                       >
-                        {tab === 'backgrounds' ? 'רקע' : tab === 'headings' ? 'כותרות' : 'תוכן'}
+                        {tab === 'backgrounds'
+                          ? 'רקע'
+                          : tab === 'headings'
+                          ? 'כותרות'
+                          : 'תוכן'}
                       </button>
                     ))}
                   </div>
@@ -158,9 +194,10 @@ export default function AccessibilityWidget() {
                     <label>התאם גוון:</label>
                     <input
                       type="range"
-                      min="0" max="360"
+                      min="0"
+                      max="360"
                       value={state.hue}
-                      onChange={e => onSlider('hue', +e.target.value)}
+                      onChange={(e) => onSlider('hue', +e.target.value)}
                     />
                   </div>
                 </>
@@ -169,7 +206,13 @@ export default function AccessibilityWidget() {
 
             {/* Content Section */}
             <section className="aw-section">
-              <header className="aw-section-header" onClick={() => toggleSection('content')}>
+              <header
+                {...useButton({
+                  onPress: () => toggleSection('content'),
+                  'aria-expanded': sections.content,
+                }).buttonProps}
+                className="aw-section-header"
+              >
                 <h3>תוכן</h3>
                 {sections.content ? <FaChevronUp /> : <FaChevronDown />}
               </header>
@@ -177,37 +220,49 @@ export default function AccessibilityWidget() {
                 <>
                   <div className="aw-features">
                     <button
+                      {...useButton({
+                        onPress: () => toggleFeature('largeText'),
+                        'aria-pressed': state.largeText,
+                      }).buttonProps}
                       className={`aw-feature-btn${state.largeText ? ' active' : ''}`}
-                      onClick={() => toggleFeature('largeText')}
                     >
                       <FaFont className="aw-icon" />
                       <span className="aw-label">טקסט גדול</span>
                     </button>
                   </div>
                   <div className="content-tabs">
-                    {['fontSize', 'letterSpacing', 'lineHeight'].map(tab => (
+                    {['fontSize', 'letterSpacing', 'lineHeight'].map((tab) => (
                       <button
+                        {...useButton({
+                          onPress: () => setContentTab(tab),
+                          'aria-selected': contentTab === tab,
+                        }).buttonProps}
                         key={tab}
                         className={contentTab === tab ? 'active' : ''}
-                        onClick={() => setContentTab(tab)}
                       >
-                        {tab === 'fontSize' ? 'גודל' : tab === 'letterSpacing' ? 'מרווח' : 'גובה'}
+                        {tab === 'fontSize'
+                          ? 'גודל'
+                          : tab === 'letterSpacing'
+                          ? 'מרווח'
+                          : 'גובה'}
                       </button>
                     ))}
                   </div>
                   <div className="aw-slider">
-                    <label>{contentTab === 'fontSize'
-                      ? 'גודל גופן:'
-                      : contentTab === 'letterSpacing'
-                      ? 'מרווח מילים:'
-                      : 'גובה שורה:'}</label>
+                    <label>
+                      {contentTab === 'fontSize'
+                        ? 'גודל גופן:'
+                        : contentTab === 'letterSpacing'
+                        ? 'מרווח מילים:'
+                        : 'גובה שורה:'}
+                    </label>
                     <input
                       type="range"
                       min={contentTab === 'fontSize' ? 0.8 : contentTab === 'letterSpacing' ? 0 : 1}
                       max={contentTab === 'fontSize' ? 2 : contentTab === 'letterSpacing' ? 20 : 3}
                       step="0.1"
                       value={state[contentTab]}
-                      onChange={e => onSlider(contentTab, +e.target.value)}
+                      onChange={(e) => onSlider(contentTab, +e.target.value)}
                     />
                   </div>
                 </>
@@ -215,7 +270,14 @@ export default function AccessibilityWidget() {
             </section>
 
             <footer className="aw-footer">
-              <button onClick={() => setOpen(false)}>סגור</button>
+              <button
+                {...useButton({
+                  onPress: () => setOpen(false),
+                  'aria-label': 'סגור',
+                }).buttonProps}
+              >
+                סגור
+              </button>
             </footer>
           </DialogContent>
         </DialogOverlay>
