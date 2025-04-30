@@ -55,7 +55,7 @@ body {
     color: var(--aw-white);
     display: flex;
     flex-direction: column;
-    z-index: 1000; /* נמוך מתחת לכפתורים */
+    z-index: 1000;
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
     overflow: hidden;
 }
@@ -110,10 +110,9 @@ body {
 /* ===== Features Wrapper & Scroll Buttons ===== */
 .aw-features-wrapper {
     position: relative;
-    overflow: visible;    /* מאפשר לחצנים לצאת מחוץ לאזור הגלילה */
-    pointer-events: auto; /* מחזיר לחיצות גם ל-wrapper וגם לילדיו */
+    overflow: visible;    /* מאפשר לחצנים לצאת מחוץ לאזור */
+    pointer-events: auto; /* מאפשר לחיצות */
 }
-
 .aw-scroll-btn {
     position: absolute;
     right: 1rem;
@@ -141,13 +140,12 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: .75rem;
     padding: 1rem;
-    max-height: 30vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
+    /* הסרנו את המגבלות של גובה וגלילה */
+    max-height: none;
+    overflow: visible;
+    scroll-behavior: auto;
     direction: ltr;
-} /* <-- סוגר חסר הוסף כאן */
-
+}
 .aw-features::-webkit-scrollbar {
     width: 6px;
 }
