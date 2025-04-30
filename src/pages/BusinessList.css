@@ -222,10 +222,11 @@ body::after {
   position: relative;
 }
 .suggestions-list li::before {
-  content: "•";
+  content: "★";             /* כוכב במקום נקודה */
   position: absolute;
   right: 0.75rem;
   color: var(--primary);
+  font-size: 0.8rem;
 }
 .suggestions-list li:hover {
   background: var(--bg-mid);
@@ -292,6 +293,24 @@ body::after {
 .input-clearable {
   position: relative;
 }
+
+.input-clearable input {
+  padding-right: 2.5rem; /* קצת יותר מקום לכפתור */
+}
+
+.clear-btn {
+  position: absolute;
+  top: 50%;
+  right: 1rem;      /* מיקום מעט יותר פנימה */
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem; /* גודל גדול יותר */
+  color: var(--primary); /* צבע סגול */
+  z-index: 10;       /* מעל ההצעות */
+}
+
 .input-clearable input {
   padding-right: 2rem;
 }
