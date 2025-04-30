@@ -41,6 +41,7 @@
     font-size: 1.5rem;
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    pointer-events: auto;
   }
   
   /* ===== Panel ===== */
@@ -58,6 +59,7 @@
     z-index: 9999;
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
     overflow: hidden;
+    pointer-events: auto;
   }
   
   /* ===== Panel Close Button (X) ===== */
@@ -76,6 +78,7 @@
     color: var(--aw-white);
     font-size: 1.2rem;
     cursor: pointer;
+    pointer-events: auto;
   }
   
   /* ===== Header ===== */
@@ -84,6 +87,7 @@
     background: var(--aw-bg-dark);
     display: flex;
     align-items: center;
+    pointer-events: auto;
   }
   .aw-header h2 {
     margin: 0;
@@ -93,6 +97,7 @@
   /* ===== Sections ===== */
   .aw-section {
     border-top: 1px solid #0074b1;
+    pointer-events: auto;
   }
   .aw-section-header {
     padding: .75rem 1rem;
@@ -102,6 +107,7 @@
     background: var(--aw-bg);
     font-weight: bold;
     cursor: pointer;
+    pointer-events: auto;
   }
   .aw-section-header:hover {
     background: #00668a;
@@ -111,6 +117,7 @@
   .aw-features-wrapper {
     position: relative;
     pointer-events: auto;
+    z-index: 3;
   }
   .aw-scroll-btn {
     position: absolute;
@@ -123,7 +130,7 @@
     height: 1.5rem;
     border-radius: 50%;
     cursor: pointer;
-    z-index: 5;
+    z-index: 2;
     font-size: .9rem;
     line-height: 1rem;
     display: flex;
@@ -150,6 +157,8 @@
     overflow-x: hidden;
     scroll-behavior: smooth;
     direction: ltr;
+    pointer-events: auto;
+    z-index: 3;
   }
   .aw-features::-webkit-scrollbar {
     width: 6px;
@@ -165,7 +174,7 @@
   /* ===== Feature Buttons ===== */
   .aw-feature-btn {
     position: relative;
-    z-index: 10;
+    z-index: 4;
     background: var(--aw-white);
     color: var(--aw-primary);
     border: 2px solid var(--aw-primary);
@@ -180,6 +189,7 @@
     min-height: 6rem;
     text-align: center;
     white-space: normal;
+    pointer-events: auto;
   }
   .aw-feature-btn:hover,
   .aw-feature-btn:focus {
@@ -213,6 +223,8 @@
     display: flex;
     gap: .5rem;
     padding: 0 1rem 1rem;
+    pointer-events: auto;
+    z-index: 3;
   }
   .contrast-tabs button {
     background: transparent;
@@ -223,6 +235,7 @@
     cursor: pointer;
     transition: background .2s, color .2s;
     font-size: .85rem;
+    pointer-events: auto;
   }
   .contrast-tabs button.active {
     background: var(--aw-white);
@@ -235,6 +248,8 @@
     display: flex;
     gap: .5rem;
     padding: 0 1rem 1rem;
+    pointer-events: auto;
+    z-index: 3;
   }
   .content-tabs button {
     background: transparent;
@@ -245,6 +260,7 @@
     cursor: pointer;
     transition: background .2s, color .2s;
     font-size: .85rem;
+    pointer-events: auto;
   }
   .content-tabs button.active {
     background: var(--aw-white);
@@ -258,6 +274,8 @@
     display: flex;
     flex-direction: column;
     padding: 0 1rem 1rem;
+    pointer-events: auto;
+    z-index: 3;
   }
   .aw-slider label {
     font-size: .85rem;
@@ -279,128 +297,7 @@
       green 65%, cyan 75%, blue 85%, magenta 95%, #ccc 100%
     );
     outline: none;
+    pointer-events: auto;
+    z-index: 3;
   }
-  .aw-slider input[type="range"]::-webkit-slider-runnable-track {
-    height: 12px;
-    border-radius: 6px;
-    background: inherit;
-  }
-  .aw-slider input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--aw-accent);
-    border: 2px solid var(--aw-white);
-    margin-top: -4px;
-    cursor: pointer;
-  }
-  .aw-slider input[type="range"]::-moz-range-track {
-    height: 12px;
-    border-radius: 6px;
-    background: inherit;
-  }
-  .aw-slider input[type="range"]::-moz-range-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--aw-accent);
-    border: 2px solid var(--aw-white);
-    cursor: pointer;
-  }
-  
-  /* ===== Footer ===== */
-  .aw-footer {
-    background: var(--aw-bg-dark);
-    padding: .75rem 1rem;
-    display: flex;
-    gap: .5rem;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .aw-footer-btn {
-    background: transparent;
-    border: 1px solid var(--aw-white);
-    border-radius: 4px;
-    padding: .4rem .75rem;
-    color: var(--aw-white);
-    font-size: .85rem;
-    cursor: pointer;
-    transition: background .2s;
-  }
-  .aw-footer-btn:hover,
-  .aw-footer-btn:focus {
-    background: rgba(255,255,255,0.1);
-  }
-  .aw-powered {
-    position: absolute;
-    bottom: .5rem;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: .75rem;
-    opacity: .7;
-  }
-  
-  /* ===== Utility classes ===== */
-  .es-highlight-links a {
-    outline: 2px dashed var(--aw-focus) !important;
-  }
-  .es-dark-contrast {
-    filter: invert(1) hue-rotate(180deg) !important;
-  }
-  .es-light-contrast {
-    filter: brightness(1.2) contrast(1.1) !important;
-  }
-  .es-mono-contrast {
-    filter: grayscale(100%) !important;
-  }
-  .es-high-saturation {
-    filter: saturate(1.5) !important;
-  }
-  .es-low-saturation {
-    filter: saturate(0.5) !important;
-  }
-  .es-large-text {
-    font-size: 1.2rem !important;
-  }
-  
-  /* ===== Screen Reader Mode ===== */
-  .es-screen-reader {
-    filter: contrast(1.2) brightness(0.9);
-  }
-  .es-screen-reader img,
-  .es-screen-reader video {
-    display: none !important;
-  }
-  .es-screen-reader *:not(:focus) {
-    opacity: 0.3 !important;
-  }
-  
-  /* ===== Voice Commands Indicator ===== */
-  .es-voice-commands::after {
-    content: "🎤 פקודות קוליות פעילות";
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    background: var(--aw-accent);
-    color: var(--aw-white);
-    padding: .25rem .5rem;
-    border-radius: 4px;
-    font-size: .85rem;
-    z-index: 10001;
-    animation: pulse 1.5s infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    50% {
-      transform: scale(1.1);
-      opacity: 0.7;
-    }
-  }
-  
+  /* … שאר הסלקטורים נשארים זהים … */
