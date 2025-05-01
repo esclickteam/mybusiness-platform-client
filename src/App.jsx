@@ -104,7 +104,6 @@ export default function App() {
 <Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
 
 {/* --- עמודי בניית עסקים --- */}
-<Route path="/business/join" element={<BusinessJoin />} />       {/* NEW */}
 <Route path="/business" element={<BusinessOverview />} />
 <Route path="/businesses" element={<BusinessesList />} />
 
