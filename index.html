@@ -20,6 +20,47 @@
   
   <!-- הוספת קובץ CSS מותאם אישית -->
   <link rel="stylesheet" href="/styles/custom-styles.css" />
+  
+  <!-- הוספת CSS מותאם אישית לתפריט נגישות -->
+  <style>
+    #accessibilityMenu {
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      z-index: 999999;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      display: none;
+      width: 200px;
+    }
+
+    #accessibilityMenu label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    #accessibilityMenu input {
+      margin-left: 10px;
+    }
+
+    #accessibilityButton {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #4c84ff;
+      color: white;
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000000;
+    }
+  </style>
 </head>
 <body>
   <noscript>
@@ -39,19 +80,14 @@
 
   <!-- סקריפט לשליטה על המיקום של כפתור הנגישות -->
   <script>
-    // הגדרות נגישות בסיסיות
-    function initAccessibility() {
+    // הפונקציה המפנה את טעינת ה-Widget של accessibility.js
+    function loadAccessibilityWidget() {
       accessibility.init({
-        enlargeText: true,  // אפשרות להגדיל טקסט
-        highContrast: true, // אפשרות לניגודיות גבוהה
+        enlargeText: true,  // מאפשר הגדלת טקסט
+        highContrast: true, // מאפשר ניגודיות גבוהה
         descriptions: true, // תיאורים חלופיים לתמונות
         fontSize: '18px'    // גודל טקסט ברירת מחדל
       });
-    }
-
-    // הפעלת ה-widget של accessibility.js
-    function loadAccessibilityWidget() {
-      initAccessibility();
     }
 
     // פונקציה לעדכון המיקום של כפתור הנגישות
@@ -78,19 +114,10 @@
   </script>
 
   <!-- כפתור נגישות גלוי -->
-  <button id="accessibilityButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 999999;">
-    הפעל נגישות
-  </button>
-
-  <script>
-    // כפתור נגישות המפעיל את האפשרויות
-    document.getElementById('accessibilityButton').addEventListener('click', function() {
-      accessibility.toggle();  // החלפת תכונות נגישות בעת לחיצה על הכפתור
-    });
-  </script>
+  <button id="accessibilityButton" onclick="toggleAccessibilityMenu()">הפעל נגישות</button>
 
   <!-- תפריט נגישות מותאם אישית -->
-  <div id="accessibilityMenu" style="position: fixed; bottom: 100px; right: 20px; z-index: 999999;">
+  <div id="accessibilityMenu">
     <label>
       <input type="checkbox" id="increaseText" /> הגדלת טקסט
     </label>
@@ -100,6 +127,13 @@
   </div>
 
   <script>
+    // הצגת תפריט הנגישות כאשר לוחצים על כפתור הנגישות
+    function toggleAccessibilityMenu() {
+      var menu = document.getElementById('accessibilityMenu');
+      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    }
+
+    // שינוי גודל הטקסט וניגודיות גבוהה
     document.getElementById('increaseText').addEventListener('change', function() {
       accessibility.setTextSize(this.checked ? '18px' : '16px');  // שינוי גודל טקסט
     });
