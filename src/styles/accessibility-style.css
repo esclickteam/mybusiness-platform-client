@@ -1,21 +1,36 @@
-/* CSS for Accessibility Page */
+/* עיצוב כללי לדף נגישות */
 .accessibility-page {
     margin: 0 auto;
-    padding: 20px;
-    max-width: 900px; /* ניתן לשנות את הרוחב המרבי לפי הצורך */
-    font-family: Arial, sans-serif;
+    padding: 30px;
+    max-width: 900px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
     text-align: right;
   }
   
   h1, h2 {
-    color: #1876c9;
-    font-size: 24px;
-    text-align: center; /* יישור כותרות למרכז */
+    color: #5c27e0;
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 20px;
   }
   
   ul {
-    list-style-type: disc;
-    padding-left: 20px;
+    list-style-type: none;
+    padding-left: 0;
+    font-size: 18px;
+  }
+  
+  ul li {
+    margin: 10px 0;
+  }
+  
+  p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #555;
   }
   
   a {
@@ -27,10 +42,45 @@
     text-decoration: underline;
   }
   
-  /* יישור כלל התוכן לאמצע */
-  .accessibility-page p,
-  .accessibility-page ul,
-  .accessibility-page h2 {
+  /* עיצוב כפתור נגישות */
+  .aw-toggle-button {
+    background-color: #1876c9;
+    color: white;
+    font-size: 1.5rem;
+    padding: 1rem;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+  }
+  
+  .aw-toggle-button:hover {
+    background-color: #5c27e0;
+  }
+  
+  /* הגדרת טביות ושורות */
+  h2 {
+    margin-top: 30px;
+    font-size: 26px;
+  }
+  
+  .time {
+    font-style: italic;
+  }
+  
+  /* עיצוב קישורים */
+  ul li a {
+    font-weight: bold;
+  }
+  
+  /* פוטר הדף */
+  footer {
+    margin-top: 30px;
     text-align: center;
+    font-size: 16px;
+    color: #999;
   }
   
