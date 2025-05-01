@@ -1,0 +1,13 @@
+/* custom-styles.css */
+.aw-toggle-button {
+    position: fixed !important;
+    top: 600px !important;
+    right: 20px !important;
+    background: #005b96 !important;
+    color: #ffffff !important;
+    padding: .75rem !important;
+    border-radius: 50% !important;
+    font-size: 1.5rem !important;
+    cursor: pointer !important;
+    z-index: 999999999 !important;
+}
