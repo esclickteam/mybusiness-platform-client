@@ -33,10 +33,6 @@ const BusinessesList = () => {
     }
   };
 
-  useEffect(() => {
-    fetchBusinesses();
-  }, []);
-
   const handleSearch = () => {
     fetchBusinesses({
       category: category?.value,
