@@ -28,8 +28,6 @@ export default function Accessibility() {
 
       <h2>יצירת קשר בנושא נגישות</h2>
       <ul>
-        <li>רכזת נגישות: דנה כהן</li>
-        <li>טלפון: 03-1234567 (א׳-ה׳ 09:00-16:00)</li>
         <li>דוא״ל: <a href="mailto:accessibility@esclick.co.il">accessibility@esclick.co.il</a></li>
       </ul>
       <p>נשיב לפנייה בתוך 3 ימי עבודה.</p>
