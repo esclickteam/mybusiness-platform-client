@@ -26,6 +26,9 @@ section {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-bottom: 30px;
+  width: 100%; /* ווידאו להתאים לגודל */
+  max-width: 800px; /* גבול לרוחב של הפורמטים */
+  margin: 0 auto; /* יישור למרכז */
 }
 
 label {
@@ -37,12 +40,12 @@ label {
 
 input, textarea {
   width: 100%;
-  max-width: 500px; /* הגבלת רוחב */
   padding: 12px;
   border: 1px solid #e0e0e0;
   border-radius: 5px;
   font-size: 1rem;
   margin-bottom: 15px;
+  box-sizing: border-box; /* טיפול במידות כולל ריפוד */
 }
 
 button {
@@ -54,7 +57,7 @@ button {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 10px; /* רווח בין הכפתור לשאר האלמנטים */
+  margin-top: 10px;
 }
 
 button:hover {
@@ -78,25 +81,6 @@ ul li a {
 
 ul li a:hover {
   text-decoration: underline;
-}
-
-.support-page .menu-scroll {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.support-page .menu-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.support-page .menu-user span {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #4a4a4a;
 }
 
 @media (max-width: 768px) {
