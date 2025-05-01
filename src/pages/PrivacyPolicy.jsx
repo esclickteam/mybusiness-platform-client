@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/privacy-policy.css"; // וודא שהקובץ CSS מיובא כאן
+import "../styles/privacy-policy.css";
 
 export default function PrivacyPolicy() {
   return (
