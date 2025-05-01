@@ -74,27 +74,11 @@ function ScrollToTop() {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // בדיקה אם המשתמש מחובר (על פי טוקן ב-localStorage)
-  useEffect(() => {
-    const userToken = localStorage.getItem("userToken");
-    if (userToken) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  // פונקציה להתנתקות
-  const handleLogout = () => {
-    localStorage.removeItem("userToken"); // מוחק את הטוקן
-    setIsLoggedIn(false); // עדכון מצב המשתמש ל"שאינו מחובר"
-  };
-
   return (
     <>
-      <Header handleLogout={handleLogout} />
+      <Header />
       <ScrollToTop />
-      
+
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           {/* Public pages */}
