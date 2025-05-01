@@ -64,3 +64,8 @@ body {
     padding-bottom: 1rem;
     z-index: 10001;
 }
+
+/* ===== סגנון להסתרת כפתור הנגישות שלך ===== */
+#accessibility-button {
+    display: none !important; /* החבא את כפתור הנגישות שלך */
+}
