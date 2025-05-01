@@ -79,4 +79,5 @@ body .uwy.userway_p1 .userway_buttons_wrapper {
     left: calc(100vw - 2px) !important; /* מוודא שהכפתור בצד הימני */
     transform: unset !important; /* מוודא שלא יהיה תזוזה מיותרת */
     position: fixed !important; /* מוודא מיקום קבוע */
+    z-index: 999999999 !important; /* וודא שהכפתור יהיה מעל כל האלמנטים */
 }
