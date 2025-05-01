@@ -1,21 +1,19 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 
 // 1️⃣ קודם נטען כאן (או ב־index.js) את כל ה־CSS הגלובלי של האתר
-// (נניח שיש לכם index.css שמאגד את כל הסגנונות הכלליים)
 import "./styles/index.css";
 
-
+// ProtectedRoute ו־BusinessDashboardRoutes לשימוש מאוחר יותר אם צריך
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
-import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 
 // Lazy-loaded public pages
 const HomePage = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));  // NEW
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));  
 
 /* --- לעסקים --- */
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
@@ -29,7 +27,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
 
 // New BusinessSupport page
-const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));  // NEW
+const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));  
 
 /* --- תצוגת עסק יחיד ומאגר עסקים --- */
 const BusinessOverview = lazy(() => import("./pages/business/Business"));
@@ -74,51 +72,64 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // בדיקה אם המשתמש מחובר (על פי טוקן ב-localStorage)
+  useEffect(() => {
+    const userToken = localStorage.getItem("userToken");
+    if (userToken) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  // פונקציה להתנתקות
+  const handleLogout = () => {
+    localStorage.removeItem("userToken"); // מוחק את הטוקן
+    setIsLoggedIn(false); // עדכון מצב המשתמש ל"שאינו מחובר"
+  };
+
   return (
     <>
-      <Header />
+      <Header handleLogout={handleLogout} />
       <ScrollToTop />
-
+      
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           {/* Public pages */}
           <Route path="/" element={<HomePage />} />
-<Route path="/about" element={<About />} />
-<Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />  
 
-{/* עמוד החיפוש – חייב קודם */}
-<Route path="/search" element={<SearchBusinesses />} />
+          {/* עמוד החיפוש – חייב קודם */}
+          <Route path="/search" element={<SearchBusinesses />} />
 
-{/* --- לעסקים / מידע עסקי --- */}
-<Route path="/how-it-works" element={<HowItWorks />} />
-<Route path="/plans" element={<Plans />} />
-<Route path="/checkout" element={<Checkout />} />
+          {/* --- לעסקים / מידע עסקי --- */}
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/checkout" element={<Checkout />} />
 
-{/* --- תמיכה ומשאבים ללקוחות --- */}
-<Route path="/faq" element={<FAQ />} />
-<Route path="/accessibility" element={<Accessibility />} />
-<Route path="/terms" element={<Terms />} />
-<Route path="/contact" element={<Contact />} />
+          {/* --- תמיכה ומשאבים ללקוחות --- */}
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/accessibility" element={<Accessibility />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
 
-{/* New Business Support page */}
-<Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
+          {/* New Business Support page */}
+          <Route path="/business-support" element={<BusinessSupport />} />  
 
-{/* --- עמודי בניית עסקים --- */}
-<Route path="/business" element={<BusinessOverview />} />
-<Route path="/businesses" element={<BusinessesList />} />
+          {/* --- עמודי בניית עסקים --- */}
+          <Route path="/business" element={<BusinessOverview />} />
+          <Route path="/businesses" element={<BusinessesList />} />
 
-{/* --- מודול משרות בזק --- */}
-<Route path="/quick-jobs" element={<QuickJobsBoard />} />
-<Route path="/quick-jobs/new" element={<QuickJobForm />} />
+          {/* --- מודול משרות בזק --- */}
+          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
-{/* --- אימות ואבטחה --- */}
-<Route path="/login" element={<Login />} />
-<Route path="/register" element={<Register />} />
-<Route path="/reset-password" element={<ResetPassword />} />
-<Route path="/change-password" element={<ChangePassword />} />
-
-
-
+          {/* --- אימות ואבטחה --- */}
+          <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
