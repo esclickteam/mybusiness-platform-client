@@ -74,7 +74,6 @@ export default function App() {
   return (
     <>
       <Header />
-      {/* כפתור הנגישות של UserWay יופיע אוטומטית דרך הסקריפט ב-HTML */}
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
