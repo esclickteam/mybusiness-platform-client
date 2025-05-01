@@ -38,8 +38,9 @@ body {
     font-size: 1.5rem !important;
     cursor: pointer !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
-    z-index: 10001 !important; /* ודא שהכפתור יהיה מעל הווידג'ט של UserWay */
+    z-index: 2147483648 !important; /* תוודא שהכפתור יהיה מעל הווידג'ט */
   }
+  
   
 
 /* ===== @reach/dialog Overlay ===== */
