@@ -51,19 +51,10 @@
       }
     }
 
-    // עקוב אחרי שינויים ב-DOM כדי לעדכן את המיקום בכל פעם
-    const observer = new MutationObserver(function(mutationsList) {
-      for (let mutation of mutationsList) {
-        if (mutation.type === 'childList') {
-          updateAccessibilityButtonPosition();  // עדכון המיקום של הכפתור
-        }
-      }
-    });
+    // עדכון המיקום כל 500 מילי שניות (במקרה של שינויים חוזרים)
+    setInterval(updateAccessibilityButtonPosition, 500);
 
-    // מתחילים לעקוב אחרי שינויים בתוך ה-body
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // עידכון מיידי אחרי טעינת הדף
+    // עדכון המיקום גם לאחר טעינת הדף
     window.onload = updateAccessibilityButtonPosition;
   </script>
 </body>
