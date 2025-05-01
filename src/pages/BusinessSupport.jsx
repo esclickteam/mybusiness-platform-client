@@ -18,8 +18,16 @@ export default function BusinessSupport() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // אימות נתונים
+    if (!formData.name || !formData.issueDescription) {
+      alert("אנא מלא את כל השדות");
+      return;
+    }
+
+    console.log("נתונים לפני שליחה:", formData); // הוספת לוגים כדי לבדוק את הנתונים
+
     // שליחה לשרת
-    const response = await fetch('/api/support', { // שים כאן את ה-API endpoint שלך
+    const response = await fetch('/api/support', { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,6 +44,8 @@ export default function BusinessSupport() {
       });
     } else {
       alert('הייתה בעיה בשליחת הפנייה, נסה שוב מאוחר יותר');
+      const errorResponse = await response.json();
+      console.error("שגיאה במערכת:", errorResponse);
     }
   };
 
