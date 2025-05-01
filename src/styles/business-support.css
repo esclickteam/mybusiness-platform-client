@@ -1,113 +1,114 @@
 /* עיצוב כללי */
 .support-page {
-    font-family: Arial, sans-serif;
-    background: #f9f9fb;
-    padding: 20px;
-    max-width: 1200px;
-    margin: auto;
-  }
-  
-  h1 {
-    text-align: center;
-    font-size: 2rem;
-    color: #4a4a4a;
-    margin-bottom: 30px;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-    color: #4a4a4a;
-    margin-bottom: 15px;
-  }
-  
-  section {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 30px;
-  }
-  
-  label {
-    display: block;
-    font-size: 1rem;
-    margin-bottom: 5px;
-    color: #4a4a4a;
-  }
-  
-  input, textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    font-size: 1rem;
-    margin-bottom: 15px;
-  }
-  
-  button {
-    background-color: #7c4dff;
-    color: white;
-    padding: 12px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #5e35b1;
-  }
-  
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  ul li {
-    font-size: 1rem;
-    margin-bottom: 8px;
-  }
-  
-  ul li a {
-    color: #7c4dff;
-    text-decoration: none;
-  }
-  
-  ul li a:hover {
-    text-decoration: underline;
-  }
-  
-  .support-page .menu-scroll {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .support-page .menu-user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  
-  .support-page .menu-user span {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #4a4a4a;
-  }
-  
-  @media (max-width: 768px) {
-    .support-page {
+  font-family: Arial, sans-serif;
+  background: #f9f9fb;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  text-align: center; /* יישור כל התוכן למרכז */
+}
+
+h1 {
+  font-size: 2rem;
+  color: #4a4a4a;
+  margin-bottom: 30px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: #4a4a4a;
+  margin-bottom: 15px;
+}
+
+section {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 5px;
+  color: #4a4a4a;
+}
+
+input, textarea {
+  width: 100%;
+  max-width: 500px; /* הגבלת רוחב */
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+button {
+  background-color: #7c4dff;
+  color: white;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px; /* רווח בין הכפתור לשאר האלמנטים */
+}
+
+button:hover {
+  background-color: #5e35b1;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+ul li a {
+  color: #7c4dff;
+  text-decoration: none;
+}
+
+ul li a:hover {
+  text-decoration: underline;
+}
+
+.support-page .menu-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.support-page .menu-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.support-page .menu-user span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4a4a4a;
+}
+
+@media (max-width: 768px) {
+  .support-page {
       padding: 15px;
-    }
-  
-    h1 {
-      font-size: 1.8rem;
-    }
-  
-    button {
-      width: 100%;
-    }
   }
-  
+
+  h1 {
+      font-size: 1.8rem;
+  }
+
+  button {
+      width: 100%;
+  }
+}
