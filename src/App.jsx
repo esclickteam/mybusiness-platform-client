@@ -82,7 +82,7 @@ export default function App() {
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           {/* Public pages */}
-<Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
 <Route path="/about" element={<About />} />
 <Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
 
@@ -103,6 +103,11 @@ export default function App() {
 {/* New Business Support page */}
 <Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
 
+{/* --- עמודי בניית עסקים --- */}
+<Route path="/business/join" element={<BusinessJoin />} />       {/* NEW */}
+<Route path="/business" element={<BusinessOverview />} />
+<Route path="/businesses" element={<BusinessesList />} />
+
 {/* --- מודול משרות בזק --- */}
 <Route path="/quick-jobs" element={<QuickJobsBoard />} />
 <Route path="/quick-jobs/new" element={<QuickJobForm />} />
@@ -113,9 +118,6 @@ export default function App() {
 <Route path="/reset-password" element={<ResetPassword />} />
 <Route path="/change-password" element={<ChangePassword />} />
 
-{/* --- עמודי תוכן ומנוע חיפוש עסקים --- */}
-<Route path="/business" element={<BusinessOverview />} />
-<Route path="/businesses" element={<BusinessesList />} />
 
 
 
