@@ -72,6 +72,15 @@
       align-items: center;
     }
 
+    .range-slider {
+      width: 100%;
+    }
+
+    .range-label {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -148,8 +157,27 @@
       </label>
     </div>
     <label>
-      <input type="range" id="textSizeRange" min="10" max="30" value="18" /> 
-      <span id="textSizeLabel">הגדרת גודל טקסט</span>
+      <input type="range" id="textSizeRange" min="10" max="30" value="16" class="range-slider" /> 
+      <span id="textSizeLabel" class="range-label">גודל טקסט</span>
+    </label>
+
+    <div class="accessibility-icon-container">
+      <span class="accessibility-icon">🔄</span>
+      <label>
+        <input type="checkbox" id="resetSettings" /> אפס הגדרות
+      </label>
+    </div>
+
+    <div class="accessibility-icon-container">
+      <span class="accessibility-icon">🔲</span>
+      <label>
+        <input type="checkbox" id="increaseContrast" /> הגברת קונטרסט
+      </label>
+    </div>
+
+    <label>
+      <input type="range" id="contrastLevel" min="0" max="100" value="50" class="range-slider" /> 
+      <span id="contrastLevelLabel" class="range-label">רמת קונטרסט</span>
     </label>
   </div>
 
@@ -172,8 +200,24 @@
     // עדכון גודל הטקסט על פי סרגל שינוי הגודל
     document.getElementById('textSizeRange').addEventListener('input', function() {
       const newSize = this.value + 'px';
-      document.getElementById('textSizeLabel').innerText = `הגדרת גודל טקסט: ${newSize}`;
+      document.getElementById('textSizeLabel').innerText = `גודל טקסט: ${newSize}`;
       accessibility.setTextSize(newSize);  // שינוי גודל טקסט בהתאם לסרגל
+    });
+
+    // אפס הגדרות
+    document.getElementById('resetSettings').addEventListener('change', function() {
+      if (this.checked) {
+        accessibility.resetSettings(); // אפס את הגדרות הנגישות
+        document.getElementById('increaseText').checked = false;
+        document.getElementById('highContrast').checked = false;
+        document.getElementById('textSizeRange').value = 16;
+      }
+    });
+
+    // שינוי רמת הקונטרסט
+    document.getElementById('contrastLevel').addEventListener('input', function() {
+      document.getElementById('contrastLevelLabel').innerText = `רמת קונטרסט: ${this.value}%`;
+      accessibility.setContrastLevel(this.value); // שינוי רמת הקונטרסט בהתאם לסרגל
     });
   </script>
 </body>
