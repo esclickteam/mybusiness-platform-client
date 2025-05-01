@@ -51,8 +51,18 @@
       }
     }
 
-    // עדכון המיקום כל 500 מילי שניות (במקרה של שינויים חוזרים)
-    setInterval(updateAccessibilityButtonPosition, 500);
+    // יצירת MutationObserver לעקוב אחרי שינויים ב-DOM
+    const observer = new MutationObserver(function(mutationsList) {
+      // עבור כל שינוי, נוודא שהמיקום של כפתור הנגישות נשאר נכון
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList' || mutation.type === 'attributes') {
+          updateAccessibilityButtonPosition();  // עדכון המיקום
+        }
+      }
+    });
+
+    // מתחילים לעקוב אחרי כל שינויי ה-DOM בתוך ה-body
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 
     // עדכון המיקום גם לאחר טעינת הדף
     window.onload = updateAccessibilityButtonPosition;
