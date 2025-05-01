@@ -33,11 +33,16 @@ button {
   cursor: pointer;  /* משנה את הסמן לכף יד כאשר מרחפים על הכפתור */
 }
 
-/* ===== סגנונות לכפתור הנגישות ===== */
+/* ===== סגנונות לכפתור הנגישות (הכפתור שלך) ===== */
+#accessibility-button { /* מחבאים את כפתור הנגישות שלך */
+  display: none !important;
+}
+
+/* ===== סגנונות לכפתור הנגישות של UserWay ===== */
 .aw-toggle-button {
   position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
+  bottom: 20px !important; /* מיקום הכפתור בתחתית */
+  right: 20px !important;  /* מיקום בצד ימין */
   background: #005b96 !important;
   color: #ffffff !important;
   border: none !important;
@@ -52,8 +57,8 @@ button {
 
 /* ===== ווידג'ט של UserWay ===== */
 #userway-widget {
-  z-index: 0 !important;  /* הגדרת z-index נמוך יותר כך שהכפתור יהיה מעל */
+  z-index: 999999999 !important;  /* הגדרת z-index גבוה יותר כך שהכפתור יהיה מעל */
   position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
+  bottom: 20px !important;  /* מיקום בתחתית */
+  right: 20px !important;   /* מיקום בצד ימין */
 }
