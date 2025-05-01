@@ -51,8 +51,9 @@ button {
 
 /* ווידג'ט של UserWay */
 #userway-widget {
-  z-index: 10000 !important;
+  z-index: 9999 !important;  /* הגדרת z-index נמוך יותר כך שהכפתור יהיה מעל */
   position: fixed !important;
   bottom: 20px !important;
   right: 20px !important;
 }
+

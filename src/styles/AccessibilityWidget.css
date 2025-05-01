@@ -28,8 +28,8 @@ body {
 /* ===== Toggle Button ===== */
 .aw-toggle-button {
     position: fixed !important;
-    bottom: 20px !important;  /* מיקום 20 פיקסלים מלמטה */
-    right: 20px !important;   /* מיקום 20 פיקסלים מצד ימין */
+    bottom: 20px !important;
+    right: 20px !important;
     background: var(--aw-accent) !important;
     color: var(--aw-white) !important;
     border: none !important;
@@ -38,8 +38,9 @@ body {
     font-size: 1.5rem !important;
     cursor: pointer !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
-    z-index: 10000 !important; /* תוודא שאין אלמנטים אחרים עם z-index גבוה יותר */
-}
+    z-index: 10001 !important; /* ודא שהכפתור יהיה מעל הווידג'ט של UserWay */
+  }
+  
 
 /* ===== @reach/dialog Overlay ===== */
 .aw-panel-overlay {
