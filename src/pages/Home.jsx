@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
 import "../styles/Home.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -63,7 +62,6 @@ export default function Home() {
 
       {/* 🔍 שורת חיפוש */}
       <div className="search-section">
-        {/* קודם – קטגוריה */}
         <div className="dropdown-wrapper">
           <Select
             options={categoryOptions}
@@ -86,7 +84,6 @@ export default function Home() {
           />
         </div>
 
-        {/* אחר כך – עיר */}
         <div className="dropdown-wrapper">
           <Select
             options={cityOptions}
@@ -107,7 +104,6 @@ export default function Home() {
           />
         </div>
 
-        {/* בסוף – כפתור חיפוש */}
         <button className="search-button" onClick={navigateToSearch}>
           🔍 חפש
         </button>
