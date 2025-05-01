@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
@@ -85,31 +84,30 @@ export default function App() {
           {/* עמוד החיפוש – חייב קודם */}
           <Route path="/search"          element={<SearchBusinesses />} />
 
-{/* --- לעסקים / מידע עסקי --- */}
-<Route path="/how-it-works"    element={<HowItWorks />} />
-<Route path="/plans"           element={<Plans />} />
-<Route path="/checkout"        element={<Checkout />} />
+          {/* --- לעסקים / מידע עסקי --- */}
+          <Route path="/how-it-works"    element={<HowItWorks />} />
+          <Route path="/plans"           element={<Plans />} />
+          <Route path="/checkout"        element={<Checkout />} />
 
-{/* --- תמיכה ומשאבים ללקוחות --- */}
-<Route path="/faq"             element={<FAQ />} />
-<Route path="/accessibility"   element={<Accessibility />} />   {/* NEW */}
-<Route path="/terms"           element={<Terms />} />
-<Route path="/contact"         element={<Contact />} />
+          {/* --- תמיכה ומשאבים ללקוחות --- */}
+          <Route path="/faq"             element={<FAQ />} />
+          <Route path="/accessibility"   element={<Accessibility />} />   {/* NEW */}
+          <Route path="/terms"           element={<Terms />} />
+          <Route path="/contact"         element={<Contact />} />
 
-{/* --- מודול משרות בזק --- */}
-<Route path="/quick-jobs"      element={<QuickJobsBoard />} />
-<Route path="/quick-jobs/new"  element={<QuickJobForm />} />
+          {/* --- מודול משרות בזק --- */}
+          <Route path="/quick-jobs"      element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new"  element={<QuickJobForm />} />
 
-{/* --- אימות ואבטחה --- */}
-<Route path="/login"           element={<Login />} />
-<Route path="/register"        element={<Register />} />
-<Route path="/reset-password"  element={<ResetPassword />} />
-<Route path="/change-password" element={<ChangePassword />} />
+          {/* --- אימות ואבטחה --- */}
+          <Route path="/login"           element={<Login />} />
+          <Route path="/register"        element={<Register />} />
+          <Route path="/reset-password"  element={<ResetPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
-{/* --- עמודי תוכן ומנוע חיפוש עסקים --- */}
-<Route path="/business"        element={<BusinessOverview />} />
-<Route path="/businesses"      element={<BusinessesList />} />
-
+          {/* --- עמודי תוכן ומנוע חיפוש עסקים --- */}
+          <Route path="/business"        element={<BusinessOverview />} />
+          <Route path="/businesses"      element={<BusinessesList />} />
 
           {/* Public business profile */}
           <Route

@@ -128,7 +128,7 @@ export default function Header() {
               {/* ——— 1) לעסקים ——— */}
               <div className="menu-section">
                 <h4>לעסקים</h4>
-                {link("/register/business", <FaUserPlus />,     "הצטרפות כבעל עסק")}
+                {link("/register/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
                 {link("/how-it-works",      <FaCogs />,         "איך זה עובד")}
                 {link("/pricing",           <FaMoneyBillAlt />, "מחירים")}
               </div>
@@ -149,6 +149,7 @@ export default function Header() {
                 {link("/contact", <FaPhone />,        "צור קשר")}
                 {link("/faq",     <FaQuestionCircle />,"שאלות נפוצות")}
                 {link("/terms",   <FaFileContract />, "תנאי שימוש")}
+                {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")} {/* הוסף קישור לדף נגישות */}
               </div>
             </div>
 
