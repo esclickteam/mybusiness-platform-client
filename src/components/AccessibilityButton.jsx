@@ -6,21 +6,37 @@ const AccessibilityButton = () => {
   const handleClick = () => {
     console.log("הכפתור נלחץ");
 
-    if (!userWayLoaded && window.UserWay) {
+    if (!userWayLoaded) {
       console.log("נטען UserWay");
 
-      // טוען את הסקריפט רק פעם אחת בעת לחיצה
-      window.UserWay.init({
-        account: 'HnP2BQ1axC', // הכנס את ה-account שלך כאן
-      });
-      setUserWayLoaded(true); // מעדכן את הסטייט שהווידג'ט נטען
-    }
+      // בודק אם הסקריפט כבר נטען
+      if (!document.querySelector('script[src="https://cdn.userway.org/widget.js"]')) {
+        // טוען את הסקריפט רק אם לא נטען עדיין
+        const script = document.createElement('script');
+        script.src = "https://cdn.userway.org/widget.js";
+        script.async = true;
 
-    if (window.UserWay) {
-      console.log("מפעיל את פאנל הנגישות");
-      window.UserWay.toggle(); // מפעיל את פאנל הנגישות של UserWay
+        script.onload = () => {
+          console.log("הסקריפט נטען בהצלחה");
+          window.UserWay.init({
+            account: 'HnP2BQ1axC', // הכנס את ה-account שלך כאן
+          });
+          setUserWayLoaded(true); // עדכון הסטייט שהווידג'ט נטען
+        };
+
+        script.onerror = () => {
+          console.error("שגיאה בטעינת הסקריפט של UserWay");
+        };
+
+        document.head.appendChild(script);
+      } else {
+        // אם הסקריפט כבר נטען
+        console.log("הסקריפט כבר נטען");
+        window.UserWay.toggle(); // מפעיל את פאנל הנגישות של UserWay
+      }
     } else {
-      console.log("UserWay לא נמצא");
+      // אם הסקריפט נטען
+      window.UserWay.toggle(); // מפעיל את פאנל הנגישות של UserWay
     }
   };
 
