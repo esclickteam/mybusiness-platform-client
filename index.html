@@ -16,8 +16,7 @@
 
   <!-- שאר ה-CSS והגדרות אחרות -->
   <link rel="stylesheet" href="/index.css" />
-  <link rel="stylesheet" href="/styles/accessibility-style.css" />  <!-- נתיב CSS עדכני -->
-
+  <link rel="stylesheet" href="/styles/accessibility-style.css" />
 </head>
 <body>
   <noscript>
@@ -25,13 +24,18 @@
     <p>אנא אפשר JavaScript בדפדפן שלך ונסה שוב.</p>
   </noscript>
 
+  <!-- כפתור נגישות ישירות ב־HTML -->
+  <button style="position: fixed; bottom: 20px; right: 20px; background: #005b96; color: white; border: none; padding: .75rem; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 99999999; display: block;">
+    נגישות
+  </button>
+
   <div id="root"></div>
   <div id="popup-root"></div>
 
   <!-- ✅ סקריפט ראשי שמחבר את React -->
   <script type="module" src="/src/main.jsx"></script>
 
-  <!-- ווידג'ט נגישות של UserWay (הוזז למטה כדי לא לשבש את הסגנונות) -->
+  <!-- ווידג'ט נגישות של UserWay -->
   <script src="https://cdn.userway.org/widget.js" data-account="HnP2BQ1axC"></script>
 </body>
 </html>
