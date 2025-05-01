@@ -9,19 +9,20 @@
 /* ===== Style for the Accessibility Button ===== */
 .aw-toggle-button {
     position: fixed !important; /* מיקום קבוע */
-    bottom: 20px !important; /* מיקום 20 פיקסלים מהתחתית */
-    right: 20px !important; /* מיקום 20 פיקסלים מהצד הימני */
-    background: var(--aw-bg) !important; /* רקע צבעוני */
-    color: var(--aw-white) !important; /* צבע לבן */
-    border: none !important; /* ללא גבול */
-    padding: .75rem !important; /* מרווח פנימי */
-    border-radius: 50% !important; /* עיגול הכפתור */
-    font-size: 1.5rem !important; /* גודל גופן */
-    cursor: pointer !important; /* סמן כף יד */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important; /* הצללה */
-    z-index: 99999999 !important; /* מיקום מעל כל האלמנטים */
-    display: block !important; /* הצג את הכפתור */
-}
+    bottom: 20px !important;    /* מיקום 20 פיקסלים מהתחתית */
+    left: unset !important;     /* הסרת מיקום מצד ימין */
+    right: 20px !important;     /* מיקום 20 פיקסלים מהצד הימני */
+    background: #005b96 !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: .75rem !important;
+    border-radius: 50% !important;
+    font-size: 1.5rem !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+    z-index: 999999999 !important; /* וודא שהכפתור יהיה מעל כל האלמנטים */
+    display: block !important;  /* וודא שהכפתור מוצג */
+  }
 
 /* ===== Style to hide interfering elements ===== */
 .uwy .uai, .uwy .ulsti, .uwy .ulsti img {
