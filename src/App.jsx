@@ -7,7 +7,6 @@ import Header from "./components/Header";
 // (נניח שיש לכם index.css שמאגד את כל הסגנונות הכלליים)
 import "./styles/index.css";
 
-import AccessibilityButton from "./components/AccessibilityButton";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
@@ -75,8 +74,7 @@ export default function App() {
   return (
     <>
       <Header />
-      {/* כפתור הנגישות */}
-      <AccessibilityButton /> {/* הוספת כפתור הנגישות כאן */}
+      {/* כפתור הנגישות של UserWay יופיע אוטומטית דרך הסקריפט ב-HTML */}
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
