@@ -39,27 +39,34 @@
 
   <!-- סקריפט לשליטה על המיקום של כפתור הנגישות -->
   <script>
-    // פונקציה לעדכון המיקום של כפתור הנגישות
-    function updateAccessibilityButtonPosition() {
+    // עדכון המיקום של כפתור הנגישות
+    function updateButtonPosition() {
       var accessibilityButton = document.querySelector('.aw-toggle-button');
       if (accessibilityButton) {
         accessibilityButton.style.position = 'fixed';
-        accessibilityButton.style.bottom = '20px';
-        accessibilityButton.style.right = '20px';
-        accessibilityButton.style.left = 'unset';
-        accessibilityButton.style.top = '600px'; // עדכון ל-600 פיקסלים מלמעלה
+        accessibilityButton.style.top = '600px';   // 600 פיקסלים מלמעלה
+        accessibilityButton.style.right = '20px';  // 20 פיקסלים מהצד הימני
+        accessibilityButton.style.left = 'unset';  // מבטל את המיקום משמאל
+        accessibilityButton.style.bottom = 'auto'; // מבטל את המיקום מלמטה
+        accessibilityButton.style.zIndex = '999999999';  // מוודא שהכפתור יהיה מעל כל האלמנטים
       }
     }
 
-    // הפעלת עדכון מיקום כל 100 מילי-שניות עד שהכפתור ממוקם במקום הנכון
-    function keepUpdatingPosition() {
-      updateAccessibilityButtonPosition();
-      setTimeout(keepUpdatingPosition, 100);  // עדכון כל 100 מילי-שניות
-    }
+    // יצירת MutationObserver כדי לעקוב אחרי שינויים ב-DOM
+    const observer = new MutationObserver(function(mutationsList) {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList' || mutation.type === 'attributes') {
+          setTimeout(updateButtonPosition, 100); // עיכוב של 100ms לפני עדכון המיקום
+        }
+      }
+    });
 
-    // התחלה מיידית של העדכון
+    // מתחילים לעקוב אחרי כל שינויי ה-DOM בתוך ה-body
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+    // עדכון המיקום גם לאחר טעינת הדף
     window.onload = function() {
-      keepUpdatingPosition(); // מתחיל לעדכן את המיקום כל 100 מילי-שניות
+      setTimeout(updateButtonPosition, 500); // עיכוב של 500ms אחרי טעינת הדף
     };
   </script>
 </body>
