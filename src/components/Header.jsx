@@ -16,10 +16,12 @@ import {
   FaTags,
   FaSearch,
   FaSignOutAlt,
-  FaUserCircle
+  FaUserCircle,
+  FaHeadset  // הוספת הייבוא של FaHeadset
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
+
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
