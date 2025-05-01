@@ -38,8 +38,12 @@ body {
     font-size: 1.5rem !important;
     cursor: pointer !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-    z-index: 2147483648 !important;
-    display: block !important;  /* תוודא שהכפתור לא מוסתר */
+    z-index: 999999 !important; /* הגדרת z-index מאוד גבוה */
+    display: block !important; /* וודא שהכפתור לא יסתתר */
+  }
+
+  .uwy .uai, .uwy .ulsti, .uwy .ulsti img {
+    display: none !important; /* מסתיר את האלמנטים שגורמים לבעיה */
   }
   
   
