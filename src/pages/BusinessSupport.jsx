@@ -15,9 +15,28 @@ export default function BusinessSupport() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('הפנייה נשלחה בהצלחה');
+
+    // שליחה לשרת
+    const response = await fetch('/api/support', { // שים כאן את ה-API endpoint שלך
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      alert('הפנייה נשלחה בהצלחה');
+      // לאפס את הטופס לאחר שליחה מוצלחת
+      setFormData({
+        name: '',
+        issueDescription: ''
+      });
+    } else {
+      alert('הייתה בעיה בשליחת הפנייה, נסה שוב מאוחר יותר');
+    }
   };
 
   return (
@@ -33,31 +52,6 @@ export default function BusinessSupport() {
           <li><strong>מה לעשות אם אני נתקל בבעיה טכנית?</strong> - אם נתקלת בבעיה טכנית, אתה יכול לפתוח פנייה דרך טופס יצירת הקשר או ליצור קשר ישירות עם צוות התמיכה שלנו.</li>
           <li><strong>איך אני עובר בין חבילות השירות?</strong> - בתפריט ה"הגדרות", תוכל לעדכן את החבילה שלך. קיימת אפשרות לשדרג או להוריד את חבילת השירות בהתאם לצרכים שלך.</li>
         </ul>
-      </section>
-
-      <section>
-        <h2>צור קשר עם צוות התמיכה</h2>
-        <p>נשמח לעזור לך. אנא פנה אלינו דרך טופס יצירת קשר למטה, או בטלפון.</p>
-        <form onSubmit={handleSubmit}>
-          <label>שמך:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            required
-          />
-
-          <label>תיאור הבעיה:</label>
-          <textarea
-            name="issueDescription"
-            value={formData.issueDescription}
-            onChange={handleInputChange}
-            required
-          />
-
-          <button type="submit">שלח פנייה</button>
-        </form>
       </section>
 
       <section>
@@ -81,13 +75,30 @@ export default function BusinessSupport() {
         </ul>
       </section>
 
+      {/* צור קשר עם צוות התמיכה נמצא בסוף */}
       <section>
-        <h2>עדכונים ותחזוקה</h2>
-        <p>נעדכן אותך כאן על כל שדרוגים ותחזוקה שמתבצעים על מנת לשפר את חוויית השימוש שלך.</p>
-        <ul>
-          <li>עדכון חדש בגרסת המערכת: אפשרות להוסיף מספר עובדים בבת אחת</li>
-          <li>תחזוקה מתבצעת ביום ראשון, 30 למאי, כל המערכת תהיה לא זמינה למשך שעה.</li>
-        </ul>
+        <h2>צור קשר עם צוות התמיכה</h2>
+        <p>נשמח לעזור לך. אנא פנה אלינו דרך טופס יצירת קשר למטה, או בטלפון.</p>
+        <form onSubmit={handleSubmit}>
+          <label>שמך:</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            required
+          />
+
+          <label>תיאור הבעיה:</label>
+          <textarea
+            name="issueDescription"
+            value={formData.issueDescription}
+            onChange={handleInputChange}
+            required
+          />
+
+          <button type="submit">שלח פנייה</button>
+        </form>
       </section>
     </div>
   );
