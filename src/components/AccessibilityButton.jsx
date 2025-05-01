@@ -1,9 +1,25 @@
-// src/components/AccessibilityButton.jsx
-import React from 'react';
+import React, { useState } from 'react';
 
 const AccessibilityButton = () => {
+  const [userWayLoaded, setUserWayLoaded] = useState(false); // סטייט למעקב אם הווידג'ט נטען
+
+  const handleClick = () => {
+    if (!userWayLoaded && window.UserWay) {
+      // טוען את הסקריפט רק פעם אחת בעת לחיצה
+      window.UserWay.init({
+        account: 'HnP2BQ1axC', // הכנס את ה-account שלך כאן
+      });
+      setUserWayLoaded(true); // מעדכן את הסטייט שהווידג'ט נטען
+    }
+
+    if (window.UserWay) {
+      window.UserWay.toggle(); // מפעיל את פאנל הנגישות של UserWay
+    }
+  };
+
   return (
-    <button 
+    <button
+      onClick={handleClick}  // מקשר את הפונקציה handleClick לאירוע הלחיצה
       style={{
         position: 'fixed', 
         bottom: '20px', 
@@ -21,6 +37,6 @@ const AccessibilityButton = () => {
       נגישות
     </button>
   );
-}
+};
 
 export default AccessibilityButton;
