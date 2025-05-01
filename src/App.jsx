@@ -14,6 +14,7 @@ import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage
 const HomePage         = lazy(() => import("./pages/Home"));
 const About            = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
+const PrivacyPolicy    = lazy(() => import("./pages/PrivacyPolicy"));  // NEW
 
 /* --- לעסקים --- */
 const HowItWorks       = lazy(() => import("./pages/HowItWorks"));
@@ -22,7 +23,7 @@ const Checkout         = lazy(() => import("./pages/Checkout"));
 
 /* --- תמיכה / מידע --- */
 const FAQ              = lazy(() => import("./pages/FAQ"));
-const Accessibility    = lazy(() => import("./pages/Accessibility"));   // NEW
+const Accessibility    = lazy(() => import("./pages/Accessibility"));
 const Terms            = lazy(() => import("./pages/Terms"));
 const Contact          = lazy(() => import("./pages/Contact"));
 
@@ -39,7 +40,6 @@ const Login            = lazy(() => import("./pages/Login"));
 const Register         = lazy(() => import("./pages/Register"));
 const ResetPassword    = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword   = lazy(() => import("./pages/ChangePassword"));
-
 
 // Public business profile (clean)
 const BusinessProfileView = lazy(() =>
@@ -80,6 +80,7 @@ export default function App() {
           {/* Public pages */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
 
           {/* עמוד החיפוש – חייב קודם */}
           <Route path="/search"          element={<SearchBusinesses />} />
@@ -91,7 +92,7 @@ export default function App() {
 
           {/* --- תמיכה ומשאבים ללקוחות --- */}
           <Route path="/faq"             element={<FAQ />} />
-          <Route path="/accessibility"   element={<Accessibility />} />   {/* NEW */}
+          <Route path="/accessibility"   element={<Accessibility />} />
           <Route path="/terms"           element={<Terms />} />
           <Route path="/contact"         element={<Contact />} />
 

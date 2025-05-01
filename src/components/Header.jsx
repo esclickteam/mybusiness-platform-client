@@ -149,7 +149,8 @@ export default function Header() {
                 {link("/contact", <FaPhone />,        "צור קשר")}
                 {link("/faq",     <FaQuestionCircle />,"שאלות נפוצות")}
                 {link("/terms",   <FaFileContract />, "תנאי שימוש")}
-                {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")} {/* הוסף קישור לדף נגישות */}
+                {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
+                {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")} {/* הוסף קישור למדיניות פרטיות */}
               </div>
             </div>
 
