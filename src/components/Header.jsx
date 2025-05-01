@@ -130,7 +130,8 @@ export default function Header() {
   <h4>לעסקים</h4>
   {link("/register/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
   {link("/how-it-works", <FaCogs />, "איך זה עובד")}
-  {link("/support", <FaPhone />, "תמיכה לעסק")} {/* הוסף קישור לתמיכה לעסק */}
+  {link("/business-support", <FaHeadset />, "תמיכה לעסק")} {/* הוסף קישור לתמיכה לעסק */}
+
 </div>
 
 

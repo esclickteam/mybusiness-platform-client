@@ -102,6 +102,7 @@ export default function App() {
           {/* New Business Support page */}
           <Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
 
+
           {/* --- מודול משרות בזק --- */}
           <Route path="/quick-jobs" element={<QuickJobsBoard />} />
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
