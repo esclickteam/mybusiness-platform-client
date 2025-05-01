@@ -1,3 +1,5 @@
+/* src/styles/AccessibilityWidget.css */
+
 /* ===== Utility CSS Variables ===== */
 :root {
     --aw-bg:             #005b96;
@@ -14,17 +16,30 @@
     --es-line-height:    1.5;
 }
 
+/* Apply page-wide filters & scales */
+html {
+    filter: hue-rotate(var(--es-hue-rotate));
+}
+body {
+    font-size: calc(1rem * var(--es-font-scale));
+    letter-spacing: var(--es-letter-spacing);
+    line-height: var(--es-line-height);
+}
+
 /* ===== Toggle Button ===== */
-.uiiw {
+.aw-toggle-button {
     position: fixed !important;
     bottom: 20px !important;  /* מיקום 20 פיקסלים מלמטה */
     right: 20px !important;   /* מיקום 20 פיקסלים מצד ימין */
-    background: #5c27e0 !important;  /* צבע רקע */
-    color: white !important;  /* צבע טקסט */
-    border-radius: 50% !important;  /* עיגול לכפתור */
-    padding: 12px !important;   /* ריווח סביב הכפתור */
-    font-size: 24px !important;  /* גודל סמל */
-    z-index: 10000 !important;  /* מוודא שהכפתור יישאר מעל שאר האלמנטים */
+    background: var(--aw-accent) !important;
+    color: var(--aw-white) !important;
+    border: none !important;
+    padding: .75rem !important;
+    border-radius: 50% !important;
+    font-size: 1.5rem !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+    z-index: 10000 !important;
 }
 
 /* ===== @reach/dialog Overlay ===== */
