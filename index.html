@@ -35,38 +35,34 @@
   <script type="module" src="/src/main.jsx"></script>
 
   <!-- סקריפט של UserWay מוטמע בסוף ה-body -->
-  <script src="https://cdn.userway.org/widget.js" data-account="HnP2BQ1axC"></script>
-
-  <!-- סקריפט לשליטה על המיקום של כפתור הנגישות -->
   <script>
-    // עדכון המיקום של כפתור הנגישות
+    // הפונקציה המפנה את טעינת ה-UserWay widget אחרי שטעינו את הדף
+    function loadUserWayWidget() {
+      var script = document.createElement('script');
+      script.src = 'https://cdn.userway.org/widget.js';
+      script.setAttribute('data-account', 'HnP2BQ1axC');
+      document.body.appendChild(script);
+    }
+
+    // פונקציה לעדכון המיקום של כפתור הנגישות
     function updateButtonPosition() {
       var accessibilityButton = document.querySelector('.aw-toggle-button');
       if (accessibilityButton) {
         accessibilityButton.style.position = 'fixed';
-        accessibilityButton.style.top = '600px';   // 600 פיקסלים מלמעלה
-        accessibilityButton.style.right = '20px';  // 20 פיקסלים מהצד הימני
-        accessibilityButton.style.left = 'unset';  // מבטל את המיקום משמאל
-        accessibilityButton.style.bottom = 'auto'; // מבטל את המיקום מלמטה
-        accessibilityButton.style.zIndex = '999999999';  // מוודא שהכפתור יהיה מעל כל האלמנטים
+        accessibilityButton.style.top = '600px';
+        accessibilityButton.style.right = '20px';
+        accessibilityButton.style.left = 'unset';
+        accessibilityButton.style.bottom = 'auto';
       }
     }
 
-    // יצירת MutationObserver כדי לעקוב אחרי שינויים ב-DOM
-    const observer = new MutationObserver(function(mutationsList) {
-      for (let mutation of mutationsList) {
-        if (mutation.type === 'childList' || mutation.type === 'attributes') {
-          setTimeout(updateButtonPosition, 100); // עיכוב של 100ms לפני עדכון המיקום
-        }
-      }
-    });
+    // עדכון המיקום כל 500 מילי-שניות
+    setInterval(updateButtonPosition, 500);  // עדכון כל חצי שניה
 
-    // מתחילים לעקוב אחרי כל שינויי ה-DOM בתוך ה-body
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-
-    // עדכון המיקום גם לאחר טעינת הדף
+    // נטען את ה-widget לאחר טעינת הדף
     window.onload = function() {
-      setTimeout(updateButtonPosition, 500); // עיכוב של 500ms אחרי טעינת הדף
+      updateButtonPosition();  // עדכון המיקום מיד
+      loadUserWayWidget();     // נטען את ה-UserWay widget
     };
   </script>
 </body>
