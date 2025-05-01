@@ -36,17 +36,18 @@ button {
 /* סגנונות לכפתור הנגישות */
 .aw-toggle-button {
   position: fixed !important;
-  bottom: 20px !important;   /* מיקום 20 פיקסלים מלמטה */
-  right: 20px !important;    /* מיקום 20 פיקסלים מצד ימין */
-  background: var(--aw-accent) !important;
-  color: var(--aw-white) !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  background: #005b96 !important;
+  color: #ffffff !important;
   border: none !important;
   padding: .75rem !important;
   border-radius: 50% !important;
   font-size: 1.5rem !important;
   cursor: pointer !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-  z-index: 2147483648 !important; /* כפתור הנגישות יהיה מעל הווידג'ט */
+  z-index: 999999999 !important;  /* וודא שהכפתור יהיה מעל */
+  display: block !important;  /* וודא שהכפתור מוצג */
 }
 
 /* ווידג'ט של UserWay */
