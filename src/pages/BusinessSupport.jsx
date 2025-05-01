@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../styles/business-support.css"; // הוספת קובץ ה-CSS לעיצוב הדף
 
 export default function BusinessSupport() {
   const [formData, setFormData] = useState({
@@ -14,15 +15,9 @@ export default function BusinessSupport() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      // כאן תוכל להוסיף את הקוד לשליחה לשרת
-      // לדוגמה: await api.sendSupportRequest(formData);
-      alert('הפנייה נשלחה בהצלחה');
-    } catch (error) {
-      alert('הייתה שגיאה בשליחת הפנייה');
-    }
+    alert('הפנייה נשלחה בהצלחה');
   };
 
   return (
