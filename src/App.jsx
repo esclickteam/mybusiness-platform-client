@@ -6,6 +6,9 @@ import Header from "./components/Header";
 // (נניח שיש לכם index.css שמאגד את כל הסגנונות הכלליים)
 import "./styles/index.css";
 
+// הוספת ה־import לקומפוננטה BusinessRegistration
+import BusinessRegistration from "./pages/BusinessRegistration"; // עדכן את הנתיב אם צריך
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
