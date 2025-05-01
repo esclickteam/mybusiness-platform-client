@@ -17,78 +17,8 @@
   <!-- שאר ה-CSS והגדרות אחרות -->
   <link rel="stylesheet" href="/index.css" />
   <link rel="stylesheet" href="/styles/accessibility-style.css" />
-  
-  <!-- הוספת קובץ CSS מותאם אישית -->
-  <link rel="stylesheet" href="/styles/custom-styles.css" />
-
-  <!-- הוספת CSS מותאם אישית לתפריט נגישות -->
-  <style>
-    #accessibilityMenu {
-      position: fixed;
-      top: 50%;
-      right: 20px;
-      z-index: 999999;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      padding: 15px;
-      border-radius: 10px;
-      display: none;
-      width: 250px;
-      font-family: Arial, sans-serif;
-    }
-
-    #accessibilityMenu label {
-      display: block;
-      margin-bottom: 10px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    #accessibilityMenu input {
-      margin-left: 10px;
-    }
-
-    #accessibilityButton {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #4c84ff;
-      color: white;
-      padding: 10px 20px;
-      font-size: 14px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      z-index: 1000000;
-    }
-
-    .accessibility-icon {
-      font-size: 20px;
-      margin-right: 10px;
-    }
-
-    .accessibility-icon-container {
-      display: flex;
-      align-items: center;
-    }
-
-    .range-slider {
-      width: 100%;
-    }
-
-    .range-label {
-      display: inline-block;
-      width: 100%;
-      text-align: center;
-    }
-  </style>
 </head>
 <body>
-  <noscript>
-    <p>❌ יש להפעיל JavaScript כדי להשתמש באפליקציה.</p>
-    <p>אנא אפשר JavaScript בדפדפן שלך ונסה שוב.</p>
-  </noscript>
-
   <!-- תוכן האתר שלך -->
   <div id="root"></div>
   <div id="popup-root"></div>
@@ -96,129 +26,13 @@
   <!-- ✅ סקריפט ראשי שמחבר את React -->
   <script type="module" src="/src/main.jsx"></script>
 
-  <!-- סקריפט של accessibility.js מוטמע בסוף ה-body -->
-  <script src="https://cdn.jsdelivr.net/npm/accessibility.js@1.0.0"></script>
+  <!-- סקריפט של OneClick Accessibility מוטמע בסוף ה-body -->
+  <script src="https://cdn.oneclickaccessibility.com/oneclick-accessibility.js"></script>
 
-  <!-- סקריפט לשליטה על המיקום של כפתור הנגישות -->
   <script>
-    // הגדרות נגישות בסיסיות
-    function initAccessibility() {
-      accessibility.init({
-        enlargeText: true,  // מאפשר הגדלת טקסט
-        highContrast: true, // מאפשר ניגודיות גבוהה
-        descriptions: true, // תיאורים חלופיים לתמונות
-        fontSize: '18px'    // גודל טקסט ברירת מחדל
-      });
-    }
-
-    // הפעלת ה-widget של accessibility.js
-    function loadAccessibilityWidget() {
-      initAccessibility();
-    }
-
-    // פונקציה לעדכון המיקום של כפתור הנגישות
-    function updateButtonPosition() {
-      var accessibilityButton = document.querySelector('.aw-toggle-button');
-      if (accessibilityButton) {
-        accessibilityButton.style.position = 'fixed';
-        accessibilityButton.style.top = '600px';
-        accessibilityButton.style.right = '20px';
-        accessibilityButton.style.left = 'unset';
-        accessibilityButton.style.bottom = 'auto';
-        accessibilityButton.style.zIndex = '999999999';  // מוודא שהכפתור יהיה מעל כל האלמנטים
-      }
-    }
-
-    // עדכון המיקום כל 500 מילי-שניות
-    setInterval(updateButtonPosition, 500);  // עדכון כל חצי שניה
-
-    // נטען את ה-widget לאחר טעינת הדף
     window.onload = function() {
-      updateButtonPosition();  // עדכון המיקום מיד
-      loadAccessibilityWidget();  // הפעלת ה-Widget של נגישות
-    };
-  </script>
-
-  <!-- כפתור נגישות גלוי -->
-  <button id="accessibilityButton" onclick="toggleAccessibilityMenu()">הפעל נגישות</button>
-
-  <!-- תפריט נגישות מותאם אישית -->
-  <div id="accessibilityMenu">
-    <div class="accessibility-icon-container">
-      <span class="accessibility-icon">🌑</span>
-      <label>
-        <input type="checkbox" id="increaseText" /> הגדלת טקסט
-      </label>
-    </div>
-    <div class="accessibility-icon-container">
-      <span class="accessibility-icon">🌙</span>
-      <label>
-        <input type="checkbox" id="highContrast" /> ניגודיות גבוהה
-      </label>
-    </div>
-    <label>
-      <input type="range" id="textSizeRange" min="10" max="30" value="16" class="range-slider" /> 
-      <span id="textSizeLabel" class="range-label">גודל טקסט</span>
-    </label>
-
-    <div class="accessibility-icon-container">
-      <span class="accessibility-icon">🔄</span>
-      <label>
-        <input type="checkbox" id="resetSettings" /> אפס הגדרות
-      </label>
-    </div>
-
-    <div class="accessibility-icon-container">
-      <span class="accessibility-icon">🔲</span>
-      <label>
-        <input type="checkbox" id="increaseContrast" /> הגברת קונטרסט
-      </label>
-    </div>
-
-    <label>
-      <input type="range" id="contrastLevel" min="0" max="100" value="50" class="range-slider" /> 
-      <span id="contrastLevelLabel" class="range-label">רמת קונטרסט</span>
-    </label>
-  </div>
-
-  <script>
-    // הצגת תפריט הנגישות כאשר לוחצים על כפתור הנגישות
-    function toggleAccessibilityMenu() {
-      var menu = document.getElementById('accessibilityMenu');
-      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+      OneClickAccessibility.init();  // אתחול התוסף
     }
-
-    // שינוי גודל הטקסט וניגודיות גבוהה
-    document.getElementById('increaseText').addEventListener('change', function() {
-      accessibility.setTextSize(this.checked ? '18px' : '16px');  // שינוי גודל טקסט
-    });
-
-    document.getElementById('highContrast').addEventListener('change', function() {
-      accessibility.setContrast(this.checked ? 'high' : 'normal');  // שינוי ניגודיות
-    });
-
-    // עדכון גודל הטקסט על פי סרגל שינוי הגודל
-    document.getElementById('textSizeRange').addEventListener('input', function() {
-      const newSize = this.value + 'px';
-      document.getElementById('textSizeLabel').innerText = `גודל טקסט: ${newSize}`;
-      accessibility.setTextSize(newSize);  // שינוי גודל טקסט בהתאם לסרגל
-    });
-
-    // אפס הגדרות
-    document.getElementById('resetSettings').addEventListener('change', function() {
-      if (this.checked) {
-        accessibility.resetSettings(); // אפס את הגדרות הנגישות
-        document.getElementById('increaseText').checked = false;
-        document.getElementById('highContrast').checked = false;
-        document.getElementById('textSizeRange').value = 16;
-      }
-    });
-
-    // שינוי רמת הקונטרסט
-    document.getElementById('contrastLevel').addEventListener('input', function() {
-      document.getElementById('contrastLevelLabel').innerText = `רמת קונטרסט: ${this.value}%`;
-      accessibility.setContrastLevel(this.value); // שינוי רמת הקונטרסט בהתאם לסרגל
-    });
   </script>
 </body>
 </html>
