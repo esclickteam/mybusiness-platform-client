@@ -11,7 +11,6 @@ import { useAuth } from "../context/AuthContext";
 const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
   const { user, loading } = useAuth();
   
-
   // בזמן טעינה – תצוגת "טוען"
   if (loading) {
     return (
@@ -24,10 +23,10 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
     );
   }
 
-  // אין משתמש מחובר – הפניה לעמוד login
+  // אין משתמש מחובר – הפניה ל־Homepage
   if (!user) {
-    console.log("No user found. Redirecting to login.");
-    return <Navigate to="/login" replace />;
+    console.log("No user found. Redirecting to home.");
+    return <Navigate to="/" replace />;
   }
 
   // הדפס את המשתמש, התפקיד ו-businessId

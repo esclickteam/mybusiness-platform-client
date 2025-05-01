@@ -1,3 +1,4 @@
+// src/components/Header.jsx
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -9,7 +10,6 @@ import {
   FaPhone,
   FaQuestionCircle,
   FaFileContract,
-  FaMoneyBillAlt,
   FaCogs,
   FaUserPlus,
   FaListUl,
@@ -17,16 +17,15 @@ import {
   FaSearch,
   FaSignOutAlt,
   FaUserCircle,
-  FaHeadset  // הוספת הייבוא של FaHeadset
+  FaHeadset
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
-
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) return null;
@@ -34,12 +33,18 @@ export default function Header() {
   /* ——— דשבורד לפי תפקיד ——— */
   const getDashboardPath = () => {
     switch (user?.role) {
-      case "business": return `/business/${user.businessId}/dashboard`;
-      case "customer": return "/client/dashboard";
-      case "worker":   return "/staff/dashboard";
-      case "manager":  return "/manager/dashboard";
-      case "admin":    return "/admin/dashboard";
-      default:         return "/";
+      case "business":
+        return `/business/${user.businessId}/dashboard`;
+      case "customer":
+        return "/client/dashboard";
+      case "worker":
+        return "/staff/dashboard";
+      case "manager":
+        return "/manager/dashboard";
+      case "admin":
+        return "/admin/dashboard";
+      default:
+        return "/";
     }
   };
 
@@ -59,7 +64,9 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/login");
+      // סגירת Drawer (אם פתוח) ואז ניווט לשורש
+      setMenuOpen(false);
+      navigate("/", { replace: true });
     } catch (err) {
       console.error("❌ logout failed:", err);
     }
@@ -84,7 +91,11 @@ export default function Header() {
         </div>
 
         <div className="auth-controls desktop-only">
-          {!user && <Link to="/login" className="login-button">התחבר</Link>}
+          {!user && (
+            <Link to="/login" className="login-button">
+              התחבר
+            </Link>
+          )}
 
           {user && (
             <>
@@ -112,7 +123,10 @@ export default function Header() {
           <div className="side-menu open">
             {/* header קטן */}
             <div className="drawer-header">
-              <button className="back-button" onClick={() => setMenuOpen(false)}>
+              <button
+                className="back-button"
+                onClick={() => setMenuOpen(false)}
+              >
                 <FaChevronLeft size={20} />
                 <span className="back-text">חזור</span>
               </button>
@@ -129,13 +143,11 @@ export default function Header() {
 
               {/* ——— 1) לעסקים ——— */}
               <div className="menu-section">
-  <h4>לעסקים</h4>
-  {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
-  {link("/how-it-works", <FaCogs />, "איך זה עובד")}
-  {link("/business-support", <FaHeadset />, "תמיכה לעסק")} {/* הוסף קישור לתמיכה לעסק */}
-
-</div>
-
+                <h4>לעסקים</h4>
+                {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
+                {link("/how-it-works", <FaCogs />, "איך זה עובד")}
+                {link("/business-support", <FaHeadset />, "תמיכה לעסק")}
+              </div>
 
               {/* ——— 2) ללקוחות ——— */}
               <div className="menu-section">
@@ -151,10 +163,10 @@ export default function Header() {
                 {link("/", <FaHome />, "דף הבית")}
                 {link("/about", <FaInfoCircle />, "אודות")}
                 {link("/contact", <FaPhone />, "צור קשר")}
-                {link("/faq", <FaQuestionCircle />,"שאלות נפוצות")}
+                {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
                 {link("/terms", <FaFileContract />, "תנאי שימוש")}
                 {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
-                {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")} {/* הוסף קישור למדיניות פרטיות */}
+                {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
               </div>
             </div>
 
@@ -163,14 +175,17 @@ export default function Header() {
               <div className="auth-menu">
                 <button
                   className="personal-area-button"
-                  onClick={() => { navigate(getDashboardPath()); setMenuOpen(false); }}
+                  onClick={() => {
+                    navigate(getDashboardPath());
+                    setMenuOpen(false);
+                  }}
                 >
                   אזור אישי
                 </button>
 
                 <button
                   className="logout-button"
-                  onClick={() => { handleLogout(); setMenuOpen(false); }}
+                  onClick={handleLogout}
                 >
                   <FaSignOutAlt style={{ marginLeft: 6 }} />
                   התנתק
