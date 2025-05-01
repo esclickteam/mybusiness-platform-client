@@ -34,14 +34,24 @@
   <!-- ✅ סקריפט ראשי שמחבר את React -->
   <script type="module" src="/src/main.jsx"></script>
 
-  <!-- סקריפט של UserWay מוטמע בסוף ה-body -->
+  <!-- סקריפט של accessibility.js מוטמע בסוף ה-body -->
+  <script src="https://cdn.jsdelivr.net/npm/accessibility.js@1.0.0"></script>
+
+  <!-- סקריפט לשליטה על המיקום של כפתור הנגישות -->
   <script>
-    // הפונקציה המפנה את טעינת ה-UserWay widget אחרי שטעינו את הדף
-    function loadUserWayWidget() {
-      var script = document.createElement('script');
-      script.src = 'https://cdn.userway.org/widget.js';
-      script.setAttribute('data-account', 'HnP2BQ1axC');
-      document.body.appendChild(script);
+    // הגדרות נגישות בסיסיות
+    function initAccessibility() {
+      accessibility.init({
+        enlargeText: true,  // אפשרות להגדיל טקסט
+        highContrast: true, // אפשרות לניגודיות גבוהה
+        descriptions: true, // תיאורים חלופיים לתמונות
+        fontSize: '18px'    // גודל טקסט ברירת מחדל
+      });
+    }
+
+    // הפעלת ה-widget של accessibility.js
+    function loadAccessibilityWidget() {
+      initAccessibility();
     }
 
     // פונקציה לעדכון המיקום של כפתור הנגישות
@@ -53,6 +63,7 @@
         accessibilityButton.style.right = '20px';
         accessibilityButton.style.left = 'unset';
         accessibilityButton.style.bottom = 'auto';
+        accessibilityButton.style.zIndex = '999999999';  // מוודא שהכפתור יהיה מעל כל האלמנטים
       }
     }
 
@@ -62,8 +73,40 @@
     // נטען את ה-widget לאחר טעינת הדף
     window.onload = function() {
       updateButtonPosition();  // עדכון המיקום מיד
-      loadUserWayWidget();     // נטען את ה-UserWay widget
+      loadAccessibilityWidget();  // הפעלת ה-Widget של נגישות
     };
+  </script>
+
+  <!-- כפתור נגישות גלוי -->
+  <button id="accessibilityButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 999999;">
+    הפעל נגישות
+  </button>
+
+  <script>
+    // כפתור נגישות המפעיל את האפשרויות
+    document.getElementById('accessibilityButton').addEventListener('click', function() {
+      accessibility.toggle();  // החלפת תכונות נגישות בעת לחיצה על הכפתור
+    });
+  </script>
+
+  <!-- תפריט נגישות מותאם אישית -->
+  <div id="accessibilityMenu" style="position: fixed; bottom: 100px; right: 20px; z-index: 999999;">
+    <label>
+      <input type="checkbox" id="increaseText" /> הגדלת טקסט
+    </label>
+    <label>
+      <input type="checkbox" id="highContrast" /> ניגודיות גבוהה
+    </label>
+  </div>
+
+  <script>
+    document.getElementById('increaseText').addEventListener('change', function() {
+      accessibility.setTextSize(this.checked ? '18px' : '16px');  // שינוי גודל טקסט
+    });
+
+    document.getElementById('highContrast').addEventListener('change', function() {
+      accessibility.setContrast(this.checked ? 'high' : 'normal');  // שינוי ניגודיות
+    });
   </script>
 </body>
 </html>
