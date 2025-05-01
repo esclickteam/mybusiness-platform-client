@@ -1,5 +1,5 @@
-// src/pages/Accessibility.jsx
 import React from "react";
+import "../styles/accessibility-style.css";  // ודא שהקובץ CSS מיובא כאן
 
 export default function Accessibility() {
   return (
