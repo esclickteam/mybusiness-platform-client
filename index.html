@@ -51,11 +51,16 @@
       }
     }
 
-    // עדכון המיקום כל 500 מילי-שניות כדי למנוע את השפעת ה-UserWay widget
-    setInterval(updateAccessibilityButtonPosition, 500);  // עדכון כל חצי שניה
+    // הפעלת עדכון מיקום כל 100 מילי-שניות עד שהכפתור ממוקם במקום הנכון
+    function keepUpdatingPosition() {
+      updateAccessibilityButtonPosition();
+      setTimeout(keepUpdatingPosition, 100);  // עדכון כל 100 מילי-שניות
+    }
 
-    // עדכון המיקום גם לאחר טעינת הדף
-    window.onload = updateAccessibilityButtonPosition;
+    // התחלה מיידית של העדכון
+    window.onload = function() {
+      keepUpdatingPosition(); // מתחיל לעדכן את המיקום כל 100 מילי-שניות
+    };
   </script>
 </body>
 </html>
