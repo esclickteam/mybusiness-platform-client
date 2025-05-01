@@ -81,40 +81,44 @@ export default function App() {
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           {/* Public pages */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
+<Route path="/" element={<HomePage />} />
+<Route path="/about" element={<About />} />
+<Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
 
-          {/* עמוד החיפוש – חייב קודם */}
-          <Route path="/search" element={<SearchBusinesses />} />
+{/* עמוד החיפוש – חייב קודם */}
+<Route path="/search" element={<SearchBusinesses />} />
 
-          {/* --- לעסקים / מידע עסקי --- */}
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/plans" element={<Plans />} />
-          <Route path="/checkout" element={<Checkout />} />
+{/* --- לעסקים / מידע עסקי --- */}
+<Route path="/how-it-works" element={<HowItWorks />} />
+<Route path="/plans" element={<Plans />} />
+<Route path="/checkout" element={<Checkout />} />
 
-          {/* --- תמיכה ומשאבים ללקוחות --- */}
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/accessibility" element={<Accessibility />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/contact" element={<Contact />} />
+{/* --- תמיכה ומשאבים ללקוחות --- */}
+<Route path="/faq" element={<FAQ />} />
+<Route path="/accessibility" element={<Accessibility />} />
+<Route path="/terms" element={<Terms />} />
+<Route path="/contact" element={<Contact />} />
 
-          {/* New Business Support page */}
-          <Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
+{/* New Business Support page */}
+<Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
 
-          {/* --- מודול משרות בזק --- */}
-          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
-          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
+{/* --- מודול משרות בזק --- */}
+<Route path="/quick-jobs" element={<QuickJobsBoard />} />
+<Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
-          {/* --- אימות ואבטחה --- */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/change-password" element={<ChangePassword />} />
+{/* --- אימות ואבטחה --- */}
+<Route path="/login" element={<Login />} />
+<Route path="/register" element={<Register />} />
+<Route path="/reset-password" element={<ResetPassword />} />
+<Route path="/change-password" element={<ChangePassword />} />
 
-          {/* --- עמודי תוכן ומנוע חיפוש עסקים --- */}
-          <Route path="/business" element={<BusinessOverview />} />
-          <Route path="/businesses" element={<BusinessesList />} />
+{/* --- עמודי תוכן ומנוע חיפוש עסקים --- */}
+<Route path="/business" element={<BusinessOverview />} />
+<Route path="/businesses" element={<BusinessesList />} />
+
+{/* הוספת הנתיב עבור הצטרפות כבעל עסק */}
+<Route path="/register/business" element={<BusinessRegistration />} />  {/* NEW */}
+
 
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
