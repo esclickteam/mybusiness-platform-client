@@ -4,7 +4,11 @@ const AccessibilityButton = () => {
   const [userWayLoaded, setUserWayLoaded] = useState(false); // סטייט למעקב אם הווידג'ט נטען
 
   const handleClick = () => {
+    console.log("הכפתור נלחץ");
+
     if (!userWayLoaded && window.UserWay) {
+      console.log("נטען UserWay");
+
       // טוען את הסקריפט רק פעם אחת בעת לחיצה
       window.UserWay.init({
         account: 'HnP2BQ1axC', // הכנס את ה-account שלך כאן
@@ -13,7 +17,10 @@ const AccessibilityButton = () => {
     }
 
     if (window.UserWay) {
+      console.log("מפעיל את פאנל הנגישות");
       window.UserWay.toggle(); // מפעיל את פאנל הנגישות של UserWay
+    } else {
+      console.log("UserWay לא נמצא");
     }
   };
 
