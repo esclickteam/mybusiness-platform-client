@@ -1,0 +1,66 @@
+/* ===== Utility CSS Variables ===== */
+:root {
+    --aw-bg: #005b96; /* צבע רקע */
+    --aw-accent: #5c27e0; /* צבע להדגשה */
+    --aw-white: #ffffff; /* צבע לבן */
+    --aw-focus: #e27d60; /* צבע מיקוד */
+}
+
+/* ===== Style for the Accessibility Button ===== */
+.aw-toggle-button {
+    position: fixed !important; /* מיקום קבוע */
+    bottom: 20px !important; /* מיקום 20 פיקסלים מהתחתית */
+    right: 20px !important; /* מיקום 20 פיקסלים מהצד הימני */
+    background: var(--aw-bg) !important; /* רקע צבעוני */
+    color: var(--aw-white) !important; /* צבע לבן */
+    border: none !important; /* ללא גבול */
+    padding: .75rem !important; /* מרווח פנימי */
+    border-radius: 50% !important; /* עיגול הכפתור */
+    font-size: 1.5rem !important; /* גודל גופן */
+    cursor: pointer !important; /* סמן כף יד */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important; /* הצללה */
+    z-index: 99999999 !important; /* מיקום מעל כל האלמנטים */
+    display: block !important; /* הצג את הכפתור */
+}
+
+/* ===== Style to hide interfering elements ===== */
+.uwy .uai, .uwy .ulsti, .uwy .ulsti img {
+    display: none !important; /* הסתרת אלמנטים מפריעים */
+}
+
+/* ===== Additional Enhancements for the Page ===== */
+body {
+    font-family: Arial, sans-serif; /* פונטים קריאים */
+    background-color: #f4f4f4; /* צבע רקע בהיר */
+}
+
+/* ===== Hover effect for the button ===== */
+.aw-toggle-button:hover {
+    background: var(--aw-accent) !important; /* צבע רקע שונה בעת ריחוף */
+    transform: scale(1.1); /* אפקט ריחוף */
+    transition: all 0.3s ease; /* מעבר חלק */
+}
+
+/* ===== Accessibility Options Container ===== */
+.aw-panel-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 10000;
+}
+
+.aw-panel {
+    position: fixed;
+    top: 0; left: 0;
+    width: 360px;
+    height: 100%;
+    background: var(--aw-bg);
+    color: var(--aw-white);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1rem;
+    z-index: 10001;
+}
