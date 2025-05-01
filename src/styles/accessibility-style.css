@@ -82,5 +82,15 @@ body .uwy.userway_p1 .userway_buttons_wrapper {
     z-index: 999999999 !important;
 }
 
+body .uwy .userway_buttons_wrapper {
+    top: 600px !important;
+    right: 20px !important;
+    left: unset !important;
+    bottom: unset !important;
+    position: fixed !important;
+    transform: unset !important;
+    z-index: 999999999 !important;
+}
+
 
 
