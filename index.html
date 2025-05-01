@@ -20,7 +20,7 @@
   
   <!-- הוספת קובץ CSS מותאם אישית -->
   <link rel="stylesheet" href="/styles/custom-styles.css" />
-  
+
   <!-- הוספת CSS מותאם אישית לתפריט נגישות -->
   <style>
     #accessibilityMenu {
@@ -33,7 +33,8 @@
       padding: 15px;
       border-radius: 10px;
       display: none;
-      width: 200px;
+      width: 250px;
+      font-family: Arial, sans-serif;
     }
 
     #accessibilityMenu label {
@@ -60,6 +61,17 @@
       cursor: pointer;
       z-index: 1000000;
     }
+
+    .accessibility-icon {
+      font-size: 20px;
+      margin-right: 10px;
+    }
+
+    .accessibility-icon-container {
+      display: flex;
+      align-items: center;
+    }
+
   </style>
 </head>
 <body>
@@ -80,14 +92,19 @@
 
   <!-- סקריפט לשליטה על המיקום של כפתור הנגישות -->
   <script>
-    // הפונקציה המפנה את טעינת ה-Widget של accessibility.js
-    function loadAccessibilityWidget() {
+    // הגדרות נגישות בסיסיות
+    function initAccessibility() {
       accessibility.init({
         enlargeText: true,  // מאפשר הגדלת טקסט
         highContrast: true, // מאפשר ניגודיות גבוהה
         descriptions: true, // תיאורים חלופיים לתמונות
         fontSize: '18px'    // גודל טקסט ברירת מחדל
       });
+    }
+
+    // הפעלת ה-widget של accessibility.js
+    function loadAccessibilityWidget() {
+      initAccessibility();
     }
 
     // פונקציה לעדכון המיקום של כפתור הנגישות
@@ -118,11 +135,21 @@
 
   <!-- תפריט נגישות מותאם אישית -->
   <div id="accessibilityMenu">
+    <div class="accessibility-icon-container">
+      <span class="accessibility-icon">🌑</span>
+      <label>
+        <input type="checkbox" id="increaseText" /> הגדלת טקסט
+      </label>
+    </div>
+    <div class="accessibility-icon-container">
+      <span class="accessibility-icon">🌙</span>
+      <label>
+        <input type="checkbox" id="highContrast" /> ניגודיות גבוהה
+      </label>
+    </div>
     <label>
-      <input type="checkbox" id="increaseText" /> הגדלת טקסט
-    </label>
-    <label>
-      <input type="checkbox" id="highContrast" /> ניגודיות גבוהה
+      <input type="range" id="textSizeRange" min="10" max="30" value="18" /> 
+      <span id="textSizeLabel">הגדרת גודל טקסט</span>
     </label>
   </div>
 
@@ -140,6 +167,13 @@
 
     document.getElementById('highContrast').addEventListener('change', function() {
       accessibility.setContrast(this.checked ? 'high' : 'normal');  // שינוי ניגודיות
+    });
+
+    // עדכון גודל הטקסט על פי סרגל שינוי הגודל
+    document.getElementById('textSizeRange').addEventListener('input', function() {
+      const newSize = this.value + 'px';
+      document.getElementById('textSizeLabel').innerText = `הגדרת גודל טקסט: ${newSize}`;
+      accessibility.setTextSize(newSize);  // שינוי גודל טקסט בהתאם לסרגל
     });
   </script>
 </body>
