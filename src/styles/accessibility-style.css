@@ -2,7 +2,7 @@
 .accessibility-page {
     margin: 0 auto;
     padding: 20px;
-    max-width: 1200px;
+    max-width: 900px; /* ניתן לשנות את הרוחב המרבי לפי הצורך */
     font-family: Arial, sans-serif;
     text-align: right;
   }
@@ -10,6 +10,7 @@
   h1, h2 {
     color: #1876c9;
     font-size: 24px;
+    text-align: center; /* יישור כותרות למרכז */
   }
   
   ul {
@@ -24,5 +25,12 @@
   
   a:hover {
     text-decoration: underline;
+  }
+  
+  /* יישור כלל התוכן לאמצע */
+  .accessibility-page p,
+  .accessibility-page ul,
+  .accessibility-page h2 {
+    text-align: center;
   }
   
