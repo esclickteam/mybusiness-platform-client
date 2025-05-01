@@ -7,13 +7,11 @@ import Header from "./components/Header";
 // (נניח שיש לכם index.css שמאגד את כל הסגנונות הכלליים)
 import "./styles/index.css";
 
-
-import AccessibilityWidget from "./components/AccessibilityWidget";
+import AccessibilityButton from "./components/AccessibilityButton";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 
-// Lazy-loaded public pages
 // Lazy-loaded public pages
 const HomePage         = lazy(() => import("./pages/Home"));
 const About            = lazy(() => import("./pages/About"));
@@ -77,8 +75,8 @@ export default function App() {
   return (
     <>
       <Header />
-      {/* ווידג’ט הנגישות */}
-      <AccessibilityWidget />
+      {/* כפתור הנגישות */}
+      <AccessibilityButton /> {/* הוספת כפתור הנגישות כאן */}
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
