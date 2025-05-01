@@ -129,26 +129,26 @@ export default function Header() {
               <div className="menu-section">
                 <h4>לעסקים</h4>
                 {link("/register/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
-                {link("/how-it-works",      <FaCogs />,         "איך זה עובד")}
-                {link("/pricing",           <FaMoneyBillAlt />, "מחירים")}
+                {link("/how-it-works", <FaCogs />, "איך זה עובד")}
+                {link("/support", <FaPhone />, "תמיכה לעסק")} {/* הוסף קישור לתמיכה לעסק */}
               </div>
 
               {/* ——— 2) ללקוחות ——— */}
               <div className="menu-section">
                 <h4>ללקוחות</h4>
                 {link("/businesses", <FaListUl />, "רשימת עסקים")}
-                {link("/categories", <FaTags />,   "קטגוריות")}
-                {link("/search",     <FaSearch />, "חיפוש מתקדם")}
+                {link("/categories", <FaTags />, "קטגוריות")}
+                {link("/search", <FaSearch />, "חיפוש מתקדם")}
               </div>
 
               {/* ——— 3) כללי ——— */}
               <div className="menu-section">
                 <h4>כללי</h4>
-                {link("/",        <FaHome />,         "דף הבית")}
-                {link("/about",   <FaInfoCircle />,   "אודות")}
-                {link("/contact", <FaPhone />,        "צור קשר")}
-                {link("/faq",     <FaQuestionCircle />,"שאלות נפוצות")}
-                {link("/terms",   <FaFileContract />, "תנאי שימוש")}
+                {link("/", <FaHome />, "דף הבית")}
+                {link("/about", <FaInfoCircle />, "אודות")}
+                {link("/contact", <FaPhone />, "צור קשר")}
+                {link("/faq", <FaQuestionCircle />,"שאלות נפוצות")}
+                {link("/terms", <FaFileContract />, "תנאי שימוש")}
                 {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
                 {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")} {/* הוסף קישור למדיניות פרטיות */}
               </div>

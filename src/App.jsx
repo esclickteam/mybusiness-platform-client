@@ -11,35 +11,38 @@ import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 
 // Lazy-loaded public pages
-const HomePage         = lazy(() => import("./pages/Home"));
-const About            = lazy(() => import("./pages/About"));
+const HomePage = lazy(() => import("./pages/Home"));
+const About = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy    = lazy(() => import("./pages/PrivacyPolicy"));  // NEW
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));  // NEW
 
 /* --- לעסקים --- */
-const HowItWorks       = lazy(() => import("./pages/HowItWorks"));
-const Plans            = lazy(() => import("./pages/business/Plans"));
-const Checkout         = lazy(() => import("./pages/Checkout"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
+const Plans = lazy(() => import("./pages/business/Plans"));
+const Checkout = lazy(() => import("./pages/Checkout"));
 
 /* --- תמיכה / מידע --- */
-const FAQ              = lazy(() => import("./pages/FAQ"));
-const Accessibility    = lazy(() => import("./pages/Accessibility"));
-const Terms            = lazy(() => import("./pages/Terms"));
-const Contact          = lazy(() => import("./pages/Contact"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const Accessibility = lazy(() => import("./pages/Accessibility"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Contact = lazy(() => import("./pages/Contact"));
+
+// New BusinessSupport page
+const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));  // NEW
 
 /* --- תצוגת עסק יחיד ומאגר עסקים --- */
 const BusinessOverview = lazy(() => import("./pages/business/Business"));
-const BusinessesList   = lazy(() => import("./pages/BusinessesList"));
+const BusinessesList = lazy(() => import("./pages/BusinessesList"));
 
 /* --- מודול משרות בזק --- */
-const QuickJobsBoard   = lazy(() => import("./pages/QuickJobsBoard"));
-const QuickJobForm     = lazy(() => import("./pages/QuickJobForm"));
+const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
+const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
 
 /* --- אימות משתמש --- */
-const Login            = lazy(() => import("./pages/Login"));
-const Register         = lazy(() => import("./pages/Register"));
-const ResetPassword    = lazy(() => import("./pages/ResetPassword"));
-const ChangePassword   = lazy(() => import("./pages/ChangePassword"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 
 // Public business profile (clean)
 const BusinessProfileView = lazy(() =>
@@ -47,21 +50,21 @@ const BusinessProfileView = lazy(() =>
 );
 
 // Lazy-loaded protected dashboards
-const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
-const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks             = lazy(() => import("./pages/staff/MyTasks"));
-const MySales             = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard    = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard      = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs           = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans          = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings       = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
+const StaffDashboard = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks = lazy(() => import("./pages/staff/MyTasks"));
+const MySales = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -83,38 +86,38 @@ export default function App() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
 
           {/* עמוד החיפוש – חייב קודם */}
-          <Route path="/search"          element={<SearchBusinesses />} />
+          <Route path="/search" element={<SearchBusinesses />} />
 
           {/* --- לעסקים / מידע עסקי --- */}
-          <Route path="/how-it-works"    element={<HowItWorks />} />
-          <Route path="/plans"           element={<Plans />} />
-          <Route path="/checkout"        element={<Checkout />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/checkout" element={<Checkout />} />
 
           {/* --- תמיכה ומשאבים ללקוחות --- */}
-          <Route path="/faq"             element={<FAQ />} />
-          <Route path="/accessibility"   element={<Accessibility />} />
-          <Route path="/terms"           element={<Terms />} />
-          <Route path="/contact"         element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/accessibility" element={<Accessibility />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+
+          {/* New Business Support page */}
+          <Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
 
           {/* --- מודול משרות בזק --- */}
-          <Route path="/quick-jobs"      element={<QuickJobsBoard />} />
-          <Route path="/quick-jobs/new"  element={<QuickJobForm />} />
+          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
           {/* --- אימות ואבטחה --- */}
-          <Route path="/login"           element={<Login />} />
-          <Route path="/register"        element={<Register />} />
-          <Route path="/reset-password"  element={<ResetPassword />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
 
           {/* --- עמודי תוכן ומנוע חיפוש עסקים --- */}
-          <Route path="/business"        element={<BusinessOverview />} />
-          <Route path="/businesses"      element={<BusinessesList />} />
+          <Route path="/business" element={<BusinessOverview />} />
+          <Route path="/businesses" element={<BusinessesList />} />
 
           {/* Public business profile */}
-          <Route
-            path="/business/:businessId"
-            element={<BusinessProfileView />}
-          />
+          <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
           {/* Protected business dashboard */}
           <Route
