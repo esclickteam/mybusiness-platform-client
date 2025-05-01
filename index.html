@@ -39,19 +39,32 @@
 
   <!-- סקריפט לשליטה על המיקום של כפתור הנגישות -->
   <script>
-    window.onload = function() {
-      // בודק אם כפתור הנגישות קיים בעמוד
+    // פונקציה לעדכון המיקום של כפתור הנגישות
+    function updateAccessibilityButtonPosition() {
       var accessibilityButton = document.querySelector('.aw-toggle-button');
-      
       if (accessibilityButton) {
-        // מגדיר את המיקום של הכפתור לאחר טעינת הדף
         accessibilityButton.style.position = 'fixed';
-        accessibilityButton.style.bottom = '20px';  // 20 פיקסלים מהתחתית
-        accessibilityButton.style.right = '20px';   // 20 פיקסלים מהצד הימני
-        accessibilityButton.style.left = 'unset';    // מבטל כל מיקום משמאל
-        accessibilityButton.style.top = '600px';     // 600 פיקסלים מלמעלה
+        accessibilityButton.style.bottom = '20px';
+        accessibilityButton.style.right = '20px';
+        accessibilityButton.style.left = 'unset';
+        accessibilityButton.style.top = '600px';
       }
-    };
+    }
+
+    // עקוב אחרי שינויים ב-DOM כדי לעדכן את המיקום בכל פעם
+    const observer = new MutationObserver(function(mutationsList) {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          updateAccessibilityButtonPosition();  // עדכון המיקום של הכפתור
+        }
+      }
+    });
+
+    // מתחילים לעקוב אחרי שינויים בתוך ה-body
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // עידכון מיידי אחרי טעינת הדף
+    window.onload = updateAccessibilityButtonPosition;
   </script>
 </body>
 </html>
