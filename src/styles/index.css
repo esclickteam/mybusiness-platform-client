@@ -1,10 +1,10 @@
-/* משתני צבעים גלובליים */
+/* ===== משתני צבעים גלובליים ===== */
 :root {
   --bg-start: #fdfcff;  /* צבע הרקע ההתחלתי (פסטל בהיר) */
   --bg-end:   #e4e8ff;  /* צבע הרקע הסופי (פסטל בהיר יותר) */
 }
 
-/* סגנונות כלליים לדף */
+/* ===== סגנונות כלליים לדף ===== */
 html, body, #root {
   margin: 0;
   padding: 0;
@@ -17,23 +17,23 @@ html, body, #root {
   position: relative;   /* חשוב למיקום של אלמנטים בתוך הדף */
 }
 
-/* סגנונות כלליים לכל אלמנט */
+/* ===== סגנונות כלליים לכל אלמנט ===== */
 * {
   box-sizing: border-box;  /* גורם לכל האלמנטים להשתמש ב־box-sizing */
 }
 
-/* סגנונות לקישורים */
+/* ===== סגנונות לקישורים ===== */
 a {
   text-decoration: none;  /* מסיר קו תחתון מקישורים */
   color: inherit;         /* מקבל את הצבע מההורה */
 }
 
-/* סגנונות לכפתורים */
+/* ===== סגנונות לכפתורים ===== */
 button {
   cursor: pointer;  /* משנה את הסמן לכף יד כאשר מרחפים על הכפתור */
 }
 
-/* סגנונות לכפתור הנגישות */
+/* ===== סגנונות לכפתור הנגישות ===== */
 .aw-toggle-button {
   position: fixed !important;
   bottom: 20px !important;
@@ -50,11 +50,10 @@ button {
   display: block !important;  /* וודא שהכפתור מוצג */
 }
 
-/* ווידג'ט של UserWay */
+/* ===== ווידג'ט של UserWay ===== */
 #userway-widget {
-  z-index: 1 !important;  /* הגדרת z-index נמוך יותר כך שהכפתור יהיה מעל */
+  z-index: 0 !important;  /* הגדרת z-index נמוך יותר כך שהכפתור יהיה מעל */
   position: fixed !important;
   bottom: 20px !important;
   right: 20px !important;
 }
-
