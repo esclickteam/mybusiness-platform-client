@@ -127,11 +127,12 @@ export default function Header() {
 
               {/* ——— 1) לעסקים ——— */}
               <div className="menu-section">
-                <h4>לעסקים</h4>
-                {link("/register/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
-                {link("/how-it-works", <FaCogs />, "איך זה עובד")}
-                {link("/support", <FaPhone />, "תמיכה לעסק")} {/* הוסף קישור לתמיכה לעסק */}
-              </div>
+  <h4>לעסקים</h4>
+  {link("/register/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
+  {link("/how-it-works", <FaCogs />, "איך זה עובד")}
+  {link("/support", <FaPhone />, "תמיכה לעסק")} {/* הוסף קישור לתמיכה לעסק */}
+</div>
+
 
               {/* ——— 2) ללקוחות ——— */}
               <div className="menu-section">

@@ -14,10 +14,15 @@ export default function BusinessSupport() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // כאן תוכל להוסיף את הקוד לשליחה לשרת או פעולה אחרת עם הנתונים
-    alert('הפנייה נשלחה בהצלחה');
+    try {
+      // כאן תוכל להוסיף את הקוד לשליחה לשרת
+      // לדוגמה: await api.sendSupportRequest(formData);
+      alert('הפנייה נשלחה בהצלחה');
+    } catch (error) {
+      alert('הייתה שגיאה בשליחת הפנייה');
+    }
   };
 
   return (
