@@ -73,10 +73,11 @@ body {
 
 /* ===== Positioning for UserWay's button ===== */
 body .uwy.userway_p1 .userway_buttons_wrapper {
-    top: unset !important; 
-    right: auto !important;
-    bottom: 20px !important;
-    left: calc(100vw - 2px) !important;
-    transform: unset !important;
-  }
+    top: unset !important; /* מוודא שאין תזוזה מלמעלה */
+    right: auto !important; /* מוודא שלא תהיה תזוזה מצד ימין */
+    bottom: 20px !important; /* מיקום 20 פיקסלים מהתחתית */
+    left: calc(100vw - 2px) !important; /* מוודא שהכפתור בצד הימני */
+    transform: unset !important; /* מוודא שלא יהיה תזוזה מיותרת */
+    position: fixed !important; /* מוודא מיקום קבוע */
+}
   
