@@ -22,7 +22,7 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
     z-index: 999999999 !important; /* וודא שהכפתור יהיה מעל כל האלמנטים */
     display: block !important;  /* וודא שהכפתור מוצג */
-  }
+}
 
 /* ===== Style to hide interfering elements ===== */
 .uwy .uai, .uwy .ulsti, .uwy .ulsti img {
@@ -66,7 +66,16 @@ body {
     z-index: 10001;
 }
 
-/* ===== סגנון להסתרת כפתור הנגישות שלך ===== */
+/* ===== Style to hide your accessibility button ===== */
 #accessibility-button {
     display: none !important; /* החבא את כפתור הנגישות שלך */
+}
+
+/* ===== Positioning for UserWay's button ===== */
+body .uwy.userway_p1 .userway_buttons_wrapper {
+  top: unset; /* מוודא שאין תזוזה מלמעלה */
+  right: auto;
+  bottom: 20px; /* מיקום 20 פיקסלים מהתחתית */
+  left: calc(100vw - 2px); /* מוודא את מיקום הכפתור בצד הימני */
+  transform: unset; /* מוודא שלא יהיה תזוזה מיותרת */
 }
