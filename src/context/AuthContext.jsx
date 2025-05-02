@@ -17,19 +17,23 @@ export function AuthProvider({ children }) {
     initRan.current = true;
 
     const initialize = async () => {
+      console.log("AuthProvider: initialize start");
       try {
         const res = await API.get("/auth/me");
+        console.log("AuthProvider: /auth/me response:", res.status, res.data);
         setUser(res.data);
-      } catch {
+      } catch (err) {
+        console.error("AuthProvider: /auth/me error:", err);
         setUser(null);
       } finally {
+        console.log("AuthProvider: setting loading=false");
         setLoading(false);
       }
     };
     initialize();
   }, []);
 
-  // login: שולח credentials, ה-cookie מטופל אוטומטית ע"י השרת
+  // login: שולח credentials, ה-cookie מטופל אוטומטית על ידי השרת
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
@@ -37,7 +41,6 @@ export function AuthProvider({ children }) {
       await API.post("/auth/login", { identifier: identifier.trim(), password });
       const me = await API.get("/auth/me");
       setUser(me.data);
-      // ניווט לפי תפקיד
       const path =
         me.data.role === "business"
           ? `/business/${me.data.businessId}/dashboard`
