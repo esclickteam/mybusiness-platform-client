@@ -4,10 +4,9 @@
 
 /* ===== Header (Desktop) ===== */
 .app-header {
-  position: relative;             /* כדי לאפשר מיקום אבסולוטי של הלוגו */
+  position: relative;       /* בשביל הלוגו האבסולוטי */
   display: flex;
   align-items: center;
-  justify-content: space-between; /* הדוחף auth-controls ושמאל, menu-toggle ימינה */
   padding: 6px 20px;
   min-height: 120px;
 }
@@ -17,7 +16,9 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  order: 2;
+  padding: 0;
+  margin: 0;
+  order: 2;       /* אין חשיבות רבה, כי הוא אבסולוטי */
 }
 .logo-link .logo {
   height: 96px;
@@ -30,7 +31,11 @@
 
 /* כפתור המבורגר */
 .menu-toggle {
-  order: 3;
+  position: absolute;
+  right: 20px;                  
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1001;
 }
 .menu-button {
   background: none;
@@ -42,8 +47,12 @@
 
 /* כפתורי דסקטופ – לשמאל */
 .auth-controls.desktop-only {
-  order: 1;
-  margin: 0;            /* מסירים margin-right: auto */
+  position: absolute;
+  left: 20px;                    /* מרחק משמאל */
+  top: 50%;                      
+  transform: translateY(-50%);   /* למרכז אנכית */
+  display: flex;
+  gap: 12px;
 }
 
 /* כפתורי פעולה */
