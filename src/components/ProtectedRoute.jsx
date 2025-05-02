@@ -2,12 +2,6 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-/**
- * ProtectedRoute
- * @param {ReactNode} children - התוכן להציג אם האבטחה עברה
- * @param {string[]} roles - מערך תפקידים מותרים ("admin", "manager", "worker", "business", "customer")
- * @param {string|null} requiredPackage - שם החבילה הנדרשת ("free", "standard", "premium" וכו')
- */
 const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
   const { user, loading } = useAuth();
 
@@ -23,18 +17,18 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
     );
   }
 
-  // 2. אין משתמש מחובר – הפנייה לדף הבית
+  // 2. אין משתמש – הפנייה לדף הבית
   if (!user) {
     if (process.env.NODE_ENV !== "production") {
-      console.warn("⛔ אין משתמש – הפנייה לדף הבית");
+      console.warn("⛔ ProtectedRoute: אין user בכלל – נשלח ל־/");
     }
     return <Navigate to="/" replace />;
   }
 
-  // 3. אין תפקיד כלל – גם אם roles ריק
+  // 3. אין תפקיד כלל
   if (!user.role) {
     if (process.env.NODE_ENV !== "production") {
-      console.warn("⛔ למשתמש אין תפקיד מוגדר – הפנייה לדף הבית");
+      console.warn("⛔ ProtectedRoute: יש user אבל אין role – נשלח ל־/");
     }
     return <Navigate to="/" replace />;
   }
@@ -49,45 +43,38 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
       admin:    `/admin/dashboard`,
     };
 
-    const target = redirectMap[user.role];
-    if (!target) {
-      if (process.env.NODE_ENV !== "production") {
-        console.error(`⛔ תפקיד לא חוקי: "${user.role}" – הפנייה לדף הבית`);
-      }
-      return <Navigate to="/" replace />;
-    }
-
+    const target = redirectMap[user.role] || "/";
     if (process.env.NODE_ENV !== "production") {
       console.warn(
-        `⛔ משתמש עם תפקיד "${user.role}" לא מורשה כאן – מפנה אל ${target}`
+        `⛔ ProtectedRoute: תפקיד "${user.role}" לא מורשה כאן – מפנה אל ${target}`
       );
     }
     return <Navigate to={target} replace />;
   }
 
-  // 5. בדיקת חבילת שימוש אם נדרשת
+  // 5. בדיקת חבילה אם נדרשת
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
     if (process.env.NODE_ENV !== "production") {
       console.warn(
-        `⛔ למשתמש יש חבילה "${user.subscriptionPlan}" במקום "${requiredPackage}" – הפנייה למסך חבילות`
+        `⛔ ProtectedRoute: נדרשת חבילה "${requiredPackage}", אך למשתמש יש "${user.subscriptionPlan}" – הפנייה ל־/plans`
       );
     }
     return <Navigate to="/plans" replace />;
   }
 
-  // 6. אם בעל עסק אך אין businessId – להפנות ליצירת עסק
+  // 6. אם בעל עסק ללא businessId
   if (
     roles.includes("business") &&
     user.role === "business" &&
     !user.businessId
   ) {
     if (process.env.NODE_ENV !== "production") {
-      console.warn("⛔ משתמש עסקי ללא businessId – הפנייה ליצירת עסק");
+      console.warn("⛔ ProtectedRoute: משתמש עסקי ללא businessId – הפנייה ל־/create-business");
     }
     return <Navigate to="/create-business" replace />;
   }
 
-  // 7. הכל תקין – מציג את התוכן המוגן
+  // 7. הכל תקין – מציג את התוכן
   return children;
 };
 
