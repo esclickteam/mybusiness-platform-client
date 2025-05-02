@@ -48,7 +48,6 @@ export default function Home() {
 
     socket.onmessage = function (event) {
       const { message } = JSON.parse(event.data);
-      console.log("התקבל עדכון:", message);
       setUpdates((prev) => [
         ...prev,
         { message, time: new Date().toLocaleTimeString() },
@@ -146,9 +145,7 @@ export default function Home() {
       {/* Quick Jobs */}
       <div className="quick-jobs-button-wrapper">
         <Link to="/quick-jobs">
-          <button className="quick-jobs-button">
-            ⚡ לוח עבודות מהירות
-          </button>
+          <button className="quick-jobs-button">⚡ לוח עבודות מהירות</button>
         </Link>
       </div>
 
@@ -188,20 +185,19 @@ export default function Home() {
 
       {/* Trending / Live Updates */}
       <div className="trending-box">
-  <h4>📈 מה קורה עכשיו בעסקליק?</h4>
-  <ul>
-    {updates.length === 0 ? (
-      <li className="no-updates">אין עדכונים כרגע</li>
-    ) : (
-      updates.map((upd, i) => (
-        <li key={i} className="update-item">
-          🔹 {upd.message} <span className="time">({upd.time})</span>
-        </li>
-      ))
-    )}
-  </ul>
-</div>
-
+        <h4>📈 מה קורה עכשיו בעסקליק?</h4>
+        <ul>
+          {updates.length === 0 ? (
+            <li className="no-updates">אין עדכונים חדשים?</li>
+          ) : (
+            updates.map((upd, i) => (
+              <li key={i} className="update-item">
+                🔹 {upd.message} <span className="time">({upd.time})</span>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
 
       {/* Footer */}
       <footer className="footer">
