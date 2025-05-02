@@ -16,6 +16,7 @@ html, body, #root {
   overflow-x: hidden;   /* מבטל גלילה אופקית */
   overflow-y: auto;     /* מאפשר גלילה אנכית אם יש צורך */
   position: relative;   /* חשוב למיקום של אלמנטים בתוך הדף */
+  box-sizing: border-box;
 }
 
 /* ===== סגנונות כלליים לכל אלמנט ===== */
@@ -39,6 +40,8 @@ button {
   display: none !important;
 }
 
-
-
-
+/* ===== אם יש אלמנטים עם position: fixed, חשוב לוודא שלא חורגים את המסגרת. */
+#accessibility-widget, .some-other-fixed-element {
+  position: fixed;
+  z-index: 1000; /* לוודא שהאלמנטים יראו ויישארו בתוך המסגרת */
+}
