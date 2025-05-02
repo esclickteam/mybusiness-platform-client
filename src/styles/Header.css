@@ -16,16 +16,22 @@
   margin: 0 auto;          /* שומר על הלוגו באמצע */
   display: flex;
   align-items: center;
+  justify-content: center; /* ממקם את הלוגו במרכז */
 }
 .logo-link .logo {
   height: 96px;
   object-fit: contain;
   transition: transform .3s;
 }
-.logo-link:hover .logo { transform: scale(1.05); }
+.logo-link:hover .logo { 
+  transform: scale(1.05); 
+}
 
 /* כפתור המבורגר */
-.menu-toggle { position: relative; z-index: 1001; }
+.menu-toggle { 
+  position: relative; 
+  z-index: 1001; 
+}
 .menu-button {
   background: none;
   border: none;
@@ -59,7 +65,9 @@
 }
 .personal-area-button:hover,
 .logout-button:hover,
-.login-button:hover { background: #4315c7; }
+.login-button:hover { 
+  background: #4315c7; 
+}
 
 /* =================================================================== */
 /*                                Drawer                               */
@@ -80,7 +88,9 @@
   transition: transform .3s;
   z-index: 1501;
 }
-.side-menu.open { transform: translateX(0); }
+.side-menu.open { 
+  transform: translateX(0); 
+}
 
 /* Drawer header – כפתור חזור */
 .drawer-header {
@@ -104,7 +114,9 @@
   font-size: .95rem;
   cursor: pointer;
 }
-.back-button:hover { background: #e8dbff; }
+.back-button:hover { 
+  background: #e8dbff; 
+}
 
 /* ===== אזור גלילה ===== */
 .menu-scroll {
@@ -127,7 +139,9 @@
 }
 
 /* קטעי קישורים */
-.menu-section { margin-top: 24px; }
+.menu-section { 
+  margin-top: 24px; 
+}
 .menu-section h4 {
   margin: 0;
   padding: 0 16px 8px;
@@ -148,9 +162,20 @@
   text-decoration: none;
   transition: background .2s, color .2s;
 }
-.menu-section a:hover { background: #f5f1fa; color: #2d006e; }
-a.active-link        { background: #f5f1fa; font-weight: 700; color: #2d006e; }
-.link-icon           { display: inline-flex; align-items: center; margin-left: 4px; }
+.menu-section a:hover { 
+  background: #f5f1fa; 
+  color: #2d006e; 
+}
+a.active-link        { 
+  background: #f5f1fa; 
+  font-weight: 700; 
+  color: #2d006e; 
+}
+.link-icon           { 
+  display: inline-flex; 
+  align-items: center; 
+  margin-left: 4px; 
+}
 
 /* ===== פוטר Sticky – אזור אישי / התנתק ===== */
 .auth-menu {
@@ -190,7 +215,9 @@ a.active-link        { background: #f5f1fa; font-weight: 700; color: #2d006e; }
   .logo-link .logo   { height: 90px; }
   .auth-controls.desktop-only { display: none !important; }
 
-  .side-menu { max-width: 300px; }
+  .side-menu { 
+    max-width: 300px; 
+  }
 }
 
 /* =================================================================== */
