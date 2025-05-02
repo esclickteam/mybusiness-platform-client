@@ -16,8 +16,9 @@
   display: flex;
   justify-content: center; /* ממקם את הלוגו במרכז */
   align-items: center;     /* ממקם את הלוגו במרכז גם אנכית */
-  width: 100%;             /* וודא שהחלק של הלוגו תופס את כל הרוחב */
+  width: 100%;
   padding: 0;              /* הסר padding מיותר */
+  margin: 0;               /* הסר margin מיותר */
 }
 .logo-link .logo {
   height: 96px;             /* גובה אחיד ללוגו */
