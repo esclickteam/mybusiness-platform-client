@@ -1,103 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 
 export default function Login() {
-  const { login, logout, user } = useAuth();
-  const navigate = useNavigate();
+  const { login, error } = useAuth();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    // בדיקת שדות ריקים
     if (!identifier.trim() || !password) {
-      setError("נא למלא את כל השדות");
-      setLoading(false);
       return;
     }
-
-    // פעולה ראשונית: ניקוי session/עוגיות ישן
+    setLoading(true);
     try {
-      await logout(); 
-    } catch (err) {
-      console.warn("logout failed:", err);
-    }
-
-    // ניסיון התחברות חדש
-    try {
-      const loggedInUser = await login(identifier.trim(), password);
-
-      // שמירה של טוקן אם התחברות הצליחה
-      if (loggedInUser.token) {
-        localStorage.setItem("authToken", loggedInUser.token);  // שמירת הטוקן ב־localStorage
-      }
-
-      // עדכון ניווט אחרי תחברות מוצלחת
-      switch (loggedInUser.role) {
-        case "business":
-          navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
-          break;
-        case "customer":
-          navigate("/client/dashboard", { replace: true });
-          break;
-        case "worker":
-          navigate("/staff/dashboard", { replace: true });
-          break;
-        case "manager":
-          navigate("/manager/dashboard", { replace: true });
-          break;
-        case "admin":
-          navigate("/admin/dashboard", { replace: true });
-          break;
-        default:
-          navigate("/dashboard", { replace: true });
-          break;
-      }
-    } catch (err) {
-      setError(
-        err.response?.status === 401
-          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסו שוב"
-      );
+      await login(identifier.trim(), password);
+      // הניווט נעשה בתוך login()
+    } catch (_) {
+      // error מטופל ומוצג אוטומטית מהקונטקסט
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    // אם המשתמש כבר מחובר, נוודא שהוא לא יגיע לדף הבית
-    if (user) {
-      switch (user.role) {
-        case "business":
-          navigate(`/business/${user.businessId}/dashboard`, { replace: true });
-          break;
-        case "customer":
-          navigate("/client/dashboard", { replace: true });
-          break;
-        case "worker":
-          navigate("/staff/dashboard", { replace: true });
-          break;
-        case "manager":
-          navigate("/manager/dashboard", { replace: true });
-          break;
-        case "admin":
-          navigate("/admin/dashboard", { replace: true });
-          break;
-        default:
-          navigate("/dashboard", { replace: true });
-          break;
-      }
-    }
-  }, [user, navigate]);
 
   return (
     <div className="login-container">
