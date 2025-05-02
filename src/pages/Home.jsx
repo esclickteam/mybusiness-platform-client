@@ -12,6 +12,7 @@ export default function Home() {
   const [category, setCategory] = useState("");
   const [city,     setCity]     = useState("");
   const [userCity, setUserCity] = useState("");
+  const [updates, setUpdates] = useState([]); // עדכונים שנקבל מ־WebSocket
 
   // build options for React-Select
   const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
@@ -35,6 +36,34 @@ export default function Home() {
         console.error("שגיאה בקבלת מיקום:", err);
       }
     });
+  }, []);
+
+  useEffect(() => {
+    // התחברות ל- WebSocket לשמיעת עדכונים בזמן אמת
+    const socket = new WebSocket('wss://api.esclick.co.il'); // חיבור מאובטח
+
+    socket.onmessage = function(event) {
+      const update = JSON.parse(event.data);  // המרת העדכון ל־JSON
+      console.log(update.message);
+
+      // הוספת העדכון למערכת
+      setUpdates(prevUpdates => [
+        ...prevUpdates,
+        { message: update.message, time: new Date().toLocaleTimeString() }
+      ]);
+    };
+
+    socket.onerror = function(error) {
+      console.error('WebSocket Error: ', error);
+    };
+
+    socket.onclose = function() {
+      console.log('WebSocket connection closed');
+    };
+
+    return () => {
+      socket.close(); // סוגרים את החיבור כאשר הרכיב נטען מחדש
+    };
   }, []);
 
   const navigateToSearch = () => {
@@ -147,7 +176,15 @@ export default function Home() {
         </div>
       </div>
 
-      
+      {/* 📈 חיפושים חמים */}
+      <div className="trending-box">
+        <h4>📈 מה קורה עכשיו בעסקליק?</h4>
+        <ul>
+          {updates.map((update, index) => (
+            <li key={index}>🔹 {update.message} ({update.time})</li>
+          ))}
+        </ul>
+      </div>
 
       {/* 🧭 תחתית */}
       <footer className="footer">
