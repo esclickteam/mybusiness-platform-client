@@ -1,16 +1,18 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null); // ✅ הודעת הצלחה
   const initRan = useRef(false);
 
-  // טען את המשתמש בתחילת האפליקציה
+  // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -19,7 +21,7 @@ export function AuthProvider({ children }) {
       try {
         const res = await API.get("/auth/me");
         setUser(res.data);
-      } catch {
+      } catch (err) {
         setUser(null);
       } finally {
         setLoading(false);
@@ -28,7 +30,7 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  // פונקציית login
+  // login
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
@@ -37,7 +39,7 @@ export function AuthProvider({ children }) {
       const me = await API.get("/auth/me");
       setUser(me.data);
 
-      // מנווט לדשבורד לפי תפקיד
+      // ודא שהמשתמש נטען לפני הניווט
       if (me.data) {
         const path =
           me.data.role === "business"
@@ -51,8 +53,7 @@ export function AuthProvider({ children }) {
             : me.data.role === "admin"
             ? "/admin/dashboard"
             : "/";
-        // ספציפית כאן אנחנו משתמשים ב־history API של הדפדפן
-        window.history.replaceState(null, "", path);
+        navigate(path, { replace: true });
       }
       return me.data;
     } catch (e) {
@@ -67,34 +68,38 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // פונקציית logout
+  // logout
   const logout = async () => {
     setLoading(true);
     try {
       await API.post("/auth/logout");
-      setSuccessMessage("✅ נותקת בהצלחה");
+      setSuccessMessage("✅ נותקת בהצלחה"); // ✅ הצגת ההודעה
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
       setUser(null);
       localStorage.removeItem("user");
       setLoading(false);
-      // כאן מבצעים ריענון מלא של הדף לשורש
-      window.location.href = "/";
+      navigate("/", { replace: true });
     }
   };
 
-  // נקה את ההודעה אחרי 4 שניות
+  // ניקוי ההודעה לאחר 4 שניות
   useEffect(() => {
     if (successMessage) {
-      const t = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(t);
+      const timeout = setTimeout(() => setSuccessMessage(null), 4000);
+      return () => clearTimeout(timeout);
     }
   }, [successMessage]);
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {successMessage && <div className="global-success-toast">{successMessage}</div>}
+      {/* ✅ הודעת הצלחה גלובלית */}
+      {successMessage && (
+        <div className="global-success-toast">
+          {successMessage}
+        </div>
+      )}
       {children}
     </AuthContext.Provider>
   );
