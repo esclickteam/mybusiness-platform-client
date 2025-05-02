@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -30,26 +31,34 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await API.post("/auth/login", {
+      // 1️⃣ מבצעים POST ל-login כדי לקבל את ה־Set-Cookie
+      await API.post("/auth/login", {
         identifier: identifier.trim(),
         password,
       });
-      setUser(res.data.user);
+
+      // 2️⃣ עכשיו שה-cookie שמור, קוראים ל-/me כדי להביא את ה-user האמיתי
+      const me = await API.get("/auth/me");
+      const userData = me.data;
+      setUser(userData);
+
+      // 3️⃣ ניווט לפי role מתוך userData
       navigate(
-        res.data.user.role === "business"
-          ? `/business/${res.data.user.businessId}/dashboard`
-          : res.data.user.role === "customer"
+        userData.role === "business"
+          ? `/business/${userData.businessId}/dashboard`
+          : userData.role === "customer"
           ? "/client/dashboard"
-          : res.data.user.role === "worker"
+          : userData.role === "worker"
           ? "/staff/dashboard"
-          : res.data.user.role === "manager"
+          : userData.role === "manager"
           ? "/manager/dashboard"
-          : res.data.user.role === "admin"
+          : userData.role === "admin"
           ? "/admin/dashboard"
           : "/",
         { replace: true }
       );
-      return res.data.user;
+
+      return userData;
     } catch (e) {
       setError(
         e.response?.status === 401
@@ -62,7 +71,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // logout: מבקש מהשרת לנקות את ה-cookie
+  // logout: מבקש מהשרת לנקות את ה-cookie, ואז מפנה ל־Home
   const logout = async () => {
     setLoading(true);
     try {
@@ -72,13 +81,17 @@ export function AuthProvider({ children }) {
     } finally {
       setUser(null);
       setLoading(false);
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     }
   };
 
-  // ה-render מחכה לטעינה לפני הצגת children
+  // בזמן טעינה – מציג מסך טעינה
   if (loading) {
-    return <div className="loading-screen">🔄 טוען נתונים...</div>;
+    return (
+      <div className="loading-screen" style={{ textAlign: "center", padding: "2rem" }}>
+        🔄 טוען נתונים...
+      </div>
+    );
   }
 
   return (
