@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 
-import "./index.css";
 import "./styles/AccessibilityWidget.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
