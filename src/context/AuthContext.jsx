@@ -55,6 +55,11 @@ export function AuthProvider({ children }) {
       console.log("✅ login response:", res.data);
       console.log("🍪 current cookies:", document.cookie);
 
+      const token = res.data.token;  // הנח שהטוקן מגיע מ-API התחברות
+      if (token) {
+        localStorage.setItem("authToken", token);  // שמור את הטוקן תחת authToken
+      }
+
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
       return u;
