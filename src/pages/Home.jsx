@@ -3,84 +3,89 @@ import "../styles/Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
-import ALL_CITIES     from "../data/cities";
+import ALL_CITIES from "../data/cities";
 
 export default function Home() {
   const navigate = useNavigate();
 
-  // react-select state
+  // state
   const [category, setCategory] = useState("");
-  const [city,     setCity]     = useState("");
+  const [city, setCity] = useState("");
   const [userCity, setUserCity] = useState("");
-  const [updates, setUpdates] = useState([]); // עדכונים שנקבל מ־WebSocket
+  const [updates, setUpdates] = useState([]); // עדכונים מ־WebSocket
 
   // build options for React-Select
-  const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
-  const cityOptions     = ALL_CITIES    .map(c => ({ value: c, label: c }));
+  const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
+  const cityOptions = ALL_CITIES.map((c) => ({ value: c, label: c }));
 
   // detect user's city via geolocation
   useEffect(() => {
-    navigator.geolocation?.getCurrentPosition(async pos => {
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
-        );
-        const data = await res.json();
-        const detected =
-          data?.address?.city ||
-          data?.address?.town ||
-          data?.address?.village ||
-          "";
-        setUserCity(detected);
-      } catch (err) {
-        console.error("שגיאה בקבלת מיקום:", err);
-      }
-    });
+    navigator.geolocation?.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
+          );
+          const data = await res.json();
+          const detected =
+            data?.address?.city ||
+            data?.address?.town ||
+            data?.address?.village ||
+            "";
+          setUserCity(detected);
+        } catch (err) {
+          console.error("שגיאה בקבלת מיקום:", err);
+        }
+      },
+      (err) => console.warn("Geolocation error:", err),
+      { timeout: 10000 }
+    );
   }, []);
 
+  // WebSocket connection for live updates
   useEffect(() => {
-    // התחברות ל- WebSocket לשמיעת עדכונים בזמן אמת
-    const socket = new WebSocket('wss://api.esclick.co.il'); // חיבור מאובטח
+    const socket = new WebSocket("wss://api.esclick.co.il");
 
-    socket.onmessage = function(event) {
-      const update = JSON.parse(event.data);  // המרת העדכון ל־JSON
-      console.log(update.message);
-
-      // הוספת העדכון למערכת
-      setUpdates(prevUpdates => [
-        ...prevUpdates,
-        { message: update.message, time: new Date().toLocaleTimeString() }
+    socket.onmessage = function (event) {
+      const { message } = JSON.parse(event.data);
+      console.log("התקבל עדכון:", message);
+      setUpdates((prev) => [
+        ...prev,
+        { message, time: new Date().toLocaleTimeString() },
       ]);
     };
 
-    socket.onerror = function(error) {
-      console.error('WebSocket Error: ', error);
+    socket.onerror = (error) => {
+      console.error("WebSocket Error:", error);
     };
 
-    socket.onclose = function() {
-      console.log('WebSocket connection closed');
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
     };
 
     return () => {
-      socket.close(); // סוגרים את החיבור כאשר הרכיב נטען מחדש
+      socket.close();
     };
   }, []);
 
+  // navigate to search results
   const navigateToSearch = () => {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
-    if (city)     params.set("city", city);
+    if (city) params.set("city", city);
     navigate(`/search?${params.toString()}`);
   };
 
   return (
     <div className="home-container">
+      {/* Hero */}
       <section className="hero-section">
         <h1 className="main-title">
           עסקליק – הפלטפורמה החכמה שמחברת בין לקוחות לעסקים.
         </h1>
         <p className="subtitle">
-          חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט ויעיל.
+          חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט
+          ויעיל.
         </p>
         {userCity && (
           <p className="location-hint">
@@ -89,13 +94,13 @@ export default function Home() {
         )}
       </section>
 
-      {/* 🔍 שורת חיפוש */}
+      {/* Search */}
       <div className="search-section">
         <div className="dropdown-wrapper">
           <Select
             options={categoryOptions}
-            value={categoryOptions.find(o => o.value === category) || null}
-            onChange={opt => setCategory(opt?.value || "")}
+            value={categoryOptions.find((o) => o.value === category) || null}
+            onChange={(opt) => setCategory(opt?.value || "")}
             placeholder="תחום (לדוגמה: חשמלאי)"
             isClearable
             openMenuOnInput
@@ -109,15 +114,15 @@ export default function Home() {
             }
             menuPlacement="bottom"
             menuPortalTarget={document.body}
-            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
           />
         </div>
 
         <div className="dropdown-wrapper">
           <Select
             options={cityOptions}
-            value={cityOptions.find(o => o.value === city) || null}
-            onChange={opt => setCity(opt?.value || "")}
+            value={cityOptions.find((o) => o.value === city) || null}
+            onChange={(opt) => setCity(opt?.value || "")}
             placeholder="עיר (לדוגמה: תל אביב)"
             isClearable
             openMenuOnInput
@@ -129,7 +134,7 @@ export default function Home() {
             noOptionsMessage={() => (city ? "אין ערים מתאימות" : null)}
             menuPlacement="bottom"
             menuPortalTarget={document.body}
-            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
           />
         </div>
 
@@ -138,13 +143,16 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Quick Jobs */}
       <div className="quick-jobs-button-wrapper">
         <Link to="/quick-jobs">
-          <button className="quick-jobs-button">⚡ לוח עבודות מהירות</button>
+          <button className="quick-jobs-button">
+            ⚡ לוח עבודות מהירות
+          </button>
         </Link>
       </div>
 
-      {/* 📌 כרטיסיות סימניה */}
+      {/* Bookmark Cards */}
       <div className="cards-container">
         <div className="bookmark-card">
           <h3>לקוחות 🔐</h3>
@@ -162,7 +170,9 @@ export default function Home() {
         </div>
         <div className="bookmark-card">
           <h3>⚙️ איך זה עובד?</h3>
-          <p>כל מה שצריך לדעת כדי להתחיל, בין אם אתה לקוח או בעל עסק.</p>
+          <p>
+            כל מה שצריך לדעת כדי להתחיל, בין אם אתה לקוח או בעל עסק.
+          </p>
           <Link to="/how-it-works">
             <button>למידע נוסף</button>
           </Link>
@@ -176,29 +186,53 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 📈 חיפושים חמים */}
+      {/* Trending / Live Updates */}
       <div className="trending-box">
         <h4>📈 מה קורה עכשיו בעסקליק?</h4>
         <ul>
-          {updates.map((update, index) => (
-            <li key={index}>🔹 {update.message} ({update.time})</li>
-          ))}
+          {updates.length === 0 ? (
+            <li>אין עדכונים כרגע</li>
+          ) : (
+            updates.map((upd, i) => (
+              <li key={i}>
+                🔹 {upd.message} <span className="time">({upd.time})</span>
+              </li>
+            ))
+          )}
         </ul>
       </div>
 
-      {/* 🧭 תחתית */}
+      {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
-          <li><Link to="/search">📋 חיפוש עסקים</Link></li>
-          <li><Link to="/about">📖 קצת עלינו</Link></li>
-          <li><Link to="/how-it-works">⚙️ איך זה עובד</Link></li>
-          <li><Link to="/business">💼 בעלי עסקים</Link></li>
-          <li><Link to="/join">✏️ הצטרפות עסקים</Link></li>
-          <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
-          <li><Link to="/terms">📜 תקנון</Link></li>
-          <li><Link to="/contact">📞 יצירת קשר</Link></li>
+          <li>
+            <Link to="/search">📋 חיפוש עסקים</Link>
+          </li>
+          <li>
+            <Link to="/about">📖 קצת עלינו</Link>
+          </li>
+          <li>
+            <Link to="/how-it-works">⚙️ איך זה עובד</Link>
+          </li>
+          <li>
+            <Link to="/business">💼 בעלי עסקים</Link>
+          </li>
+          <li>
+            <Link to="/join">✏️ הצטרפות עסקים</Link>
+          </li>
+          <li>
+            <Link to="/faq">❓ שאלות נפוצות</Link>
+          </li>
+          <li>
+            <Link to="/terms">📜 תקנון</Link>
+          </li>
+          <li>
+            <Link to="/contact">📞 יצירת קשר</Link>
+          </li>
         </ul>
-        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
+        <p className="copyright">
+          כל הזכויות שמורות © עסקליק
+        </p>
       </footer>
     </div>
   );
