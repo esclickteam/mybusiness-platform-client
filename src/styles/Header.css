@@ -10,8 +10,6 @@
   min-height: 120px;       /* גובה מינימלי של header */
   padding: 6px 20px;
   width: 100%;
-  position: relative;      /* תוודא שה-position לא חורג */
-  box-sizing: border-box;
 }
 
 .logo-wrapper {
@@ -19,15 +17,15 @@
   justify-content: center; /* ממקם את הלוגו במרכז */
   align-items: center;     /* ממקם את הלוגו במרכז גם אנכית */
   width: 100%;
-  padding: 0 16px;         /* הוספת רווחים נדרשים */
+  padding: 0;              /* הסר padding מיותר */
 }
 .logo-link .logo {
   height: 96px;
   object-fit: contain;     /* שומר על פרופורציות הלוגו */
   transition: transform .3s;
 }
-.logo-link:hover .logo { 
-  transform: scale(1.05); 
+.logo-link:hover .logo {
+  transform: scale(1.05);  /* אפקט הגדלה בלחיצה */
 }
 
 /* כפתור המבורגר */
