@@ -9,31 +9,28 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null); // ✅ הודעת הצלחה
   const initRan = useRef(false);
 
-  // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף (מונע רינדור כפול ב-StrictMode)
+  // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
 
     const initialize = async () => {
-      console.log("AuthProvider: initialize start");
       try {
         const res = await API.get("/auth/me");
-        console.log("AuthProvider: /auth/me response:", res.status, res.data);
         setUser(res.data);
       } catch (err) {
-        console.error("AuthProvider: /auth/me error:", err);
         setUser(null);
       } finally {
-        console.log("AuthProvider: setting loading=false");
         setLoading(false);
       }
     };
     initialize();
   }, []);
 
-  // login: שולח credentials, ה-cookie מטופל אוטומטית על ידי השרת
+  // login
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
@@ -67,22 +64,38 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // logout: מבקש לנקות את cookie ואז מפנה ל-Home
+  // logout
   const logout = async () => {
     setLoading(true);
     try {
       await API.post("/auth/logout");
+      setSuccessMessage("✅ נותקת בהצלחה"); // ✅ הצגת ההודעה
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
       setUser(null);
+      localStorage.removeItem("user");
       setLoading(false);
       navigate("/", { replace: true });
     }
   };
 
+  // ניקוי ההודעה לאחר 4 שניות
+  useEffect(() => {
+    if (successMessage) {
+      const timeout = setTimeout(() => setSuccessMessage(null), 4000);
+      return () => clearTimeout(timeout);
+    }
+  }, [successMessage]);
+
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+      {/* ✅ הודעת הצלחה גלובלית */}
+      {successMessage && (
+        <div className="global-success-toast">
+          {successMessage}
+        </div>
+      )}
       {children}
     </AuthContext.Provider>
   );
