@@ -4,23 +4,16 @@
 
 /* ===== Header (Desktop) ===== */
 .app-header {
-  position: relative;
   display: flex;
   align-items: center;
-  background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
-  height: auto;
-  padding: 6px 20px 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, .05);
-  direction: rtl;
-  z-index: 1000;
+  justify-content: center; /* מרכז אופקי */
+  min-height: 120px;       /* גובה מינימום מספיק לתמונת הלוגו */
+  padding: 6px 20px;
+  /* שאר ההגדרות שלך… */
 }
 
-/* לוגו ממורכז */
 .logo-wrapper {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin: 0 auto;          /* שומר על הלוגו באמצע */
   display: flex;
   align-items: center;
 }
