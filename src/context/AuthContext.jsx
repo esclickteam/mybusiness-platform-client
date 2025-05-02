@@ -82,8 +82,10 @@ export function AuthProvider({ children }) {
       setUser(null);
       setLoading(false);
       navigate("/", { replace: true });
+      window.location.reload();  // רענון מלא
     }
   };
+  
 
   // בזמן טעינה – מציג מסך טעינה
   if (loading) {
