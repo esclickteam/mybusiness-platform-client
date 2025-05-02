@@ -6,35 +6,26 @@
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* מפזר המבורגר, לוגו, כפתורי auth */
-  min-height: 120px;              /* גובה מינימום מספיק ללוגו */
+  justify-content: center; /* מרכז אופקי */
+  min-height: 120px;       /* גובה מינימום מספיק לתמונת הלוגו */
   padding: 6px 20px;
-  background: linear-gradient(90deg, #e6d6ff, #fdf9ff);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, .05);
-  direction: rtl;
-  z-index: 1000;
+  /* שאר ההגדרות שלך… */
 }
 
-/* סדר אלמנטים ב-flex */
-.menu-toggle                  { order: 1; }
-.logo-wrapper                 { order: 2; margin: 0 auto; display: flex; align-items: center; }
-.auth-controls.desktop-only   { order: 3; }
-
-/* לוגו */
+.logo-wrapper {
+  margin: 0 auto;          /* שומר על הלוגו באמצע */
+  display: flex;
+  align-items: center;
+}
 .logo-link .logo {
   height: 96px;
   object-fit: contain;
   transition: transform .3s;
 }
-.logo-link:hover .logo {
-  transform: scale(1.05);
-}
+.logo-link:hover .logo { transform: scale(1.05); }
 
 /* כפתור המבורגר */
-.menu-toggle {
-  position: relative;
-  z-index: 1001;
-}
+.menu-toggle { position: relative; z-index: 1001; }
 .menu-button {
   background: none;
   border: none;
@@ -48,7 +39,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: auto;
+  margin-right: auto;
+  padding-left: 12px;
   white-space: nowrap;
 }
 
@@ -67,9 +59,7 @@
 }
 .personal-area-button:hover,
 .logout-button:hover,
-.login-button:hover {
-  background: #4315c7;
-}
+.login-button:hover { background: #4315c7; }
 
 /* =================================================================== */
 /*                                Drawer                               */
@@ -116,7 +106,7 @@
 }
 .back-button:hover { background: #e8dbff; }
 
-/* גלילה בתפריט */
+/* ===== אזור גלילה ===== */
 .menu-scroll {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -124,7 +114,7 @@
   padding-bottom: 120px;
 }
 
-/* פרטי משתמש בתחילת גלילה */
+/* פרטי משתמש (תמיד בתחילת הגלילה) */
 .menu-user {
   display: flex;
   align-items: center;
@@ -137,9 +127,7 @@
 }
 
 /* קטעי קישורים */
-.menu-section {
-  margin-top: 24px;
-}
+.menu-section { margin-top: 24px; }
 .menu-section h4 {
   margin: 0;
   padding: 0 16px 8px;
@@ -160,22 +148,11 @@
   text-decoration: none;
   transition: background .2s, color .2s;
 }
-.menu-section a:hover {
-  background: #f5f1fa;
-  color: #2d006e;
-}
-a.active-link {
-  background: #f5f1fa;
-  font-weight: 700;
-  color: #2d006e;
-}
-.link-icon {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 4px;
-}
+.menu-section a:hover { background: #f5f1fa; color: #2d006e; }
+a.active-link        { background: #f5f1fa; font-weight: 700; color: #2d006e; }
+.link-icon           { display: inline-flex; align-items: center; margin-left: 4px; }
 
-/* פוטר Sticky – אזור אישי / התנתק */
+/* ===== פוטר Sticky – אזור אישי / התנתק ===== */
 .auth-menu {
   position: sticky;
   bottom: 0;
@@ -187,12 +164,16 @@ a.active-link {
   box-shadow: 0 -2px 8px rgba(0, 0, 0, .04);
 }
 
-/* עיצוב Scrollbar בתפריט */
-.side-menu::-webkit-scrollbar       { width: 6px; }
-.side-menu::-webkit-scrollbar-track { background: transparent; }
-.side-menu::-webkit-scrollbar-thumb { background: rgba(0,0,0,.2); border-radius: 3px; }
+/* =================================================================== */
+/*                        גלילה – עיצוב VScrollbar                      */
+/* =================================================================== */
+.side-menu::-webkit-scrollbar        { width: 6px; }
+.side-menu::-webkit-scrollbar-track  { background: transparent; }
+.side-menu::-webkit-scrollbar-thumb  { background: rgba(0,0,0,.2); border-radius: 3px; }
 
-/* Overlay */
+/* =================================================================== */
+/*                              Overlay                                */
+/* =================================================================== */
 .menu-backdrop {
   position: fixed;
   inset: 0;
@@ -201,25 +182,25 @@ a.active-link {
   animation: fadeInBackdrop .3s forwards;
 }
 
-/* Responsive – Mobile */
+/* =================================================================== */
+/*                          Responsive – Mobile                         */
+/* =================================================================== */
 @media (max-width: 768px) {
-  .app-header {
-    justify-content: space-between;
-    padding: 0 12px;
-    min-height: 90px;
-  }
-  .logo-link .logo {
-    height: 90px;
-  }
-  .auth-controls.desktop-only {
-    display: none !important;
-  }
+  .app-header        { padding: 0 12px; height: 90px; }
+  .logo-link .logo   { height: 90px; }
+  .auth-controls.desktop-only { display: none !important; }
+
+  .side-menu { max-width: 300px; }
 }
 
-/* Animations */
+/* =================================================================== */
+/*                             Animations                              */
+/* =================================================================== */
 @keyframes fadeInBackdrop { 0% { opacity: 0; } 100% { opacity: 1; } }
 
-/* Global Success Toast */
+/* =================================================================== */
+/*                       Global Success Toast                          */
+/* =================================================================== */
 .global-success-toast {
   position: fixed;
   top: 16px;
@@ -235,6 +216,7 @@ a.active-link {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   animation: fadeInOut 4s ease-in-out;
 }
+
 @keyframes fadeInOut {
   0%   { opacity: 0; transform: translateX(-50%) translateY(-12px); }
   10%  { opacity: 1; transform: translateX(-50%) translateY(0); }
