@@ -67,15 +67,19 @@ html, body, #root {
 
 /* === לוגו ושם העסק === */
 .logo-wrapper {
-  text-align: center;
+  text-align: center;      /* כפי שיש לכם */
+  margin-bottom: 1.5rem;   /* תוספת רווח מתחת ללוגו */
 }
+
 .profile-logo {
   width: 120px;
   height: 120px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 50%;
-  border: none;
+  background-color: #fff;
+  display: inline-block;    /* כדי שה־text-align: center יעבוד */
 }
+
 .business-name {
   font-size: 2rem;
   margin: 0;
