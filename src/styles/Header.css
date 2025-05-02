@@ -16,12 +16,12 @@
   display: flex;
   justify-content: center; /* ממקם את הלוגו במרכז */
   align-items: center;     /* ממקם את הלוגו במרכז גם אנכית */
-  width: 100%;
+  width: 100%;             /* וודא שהחלק של הלוגו תופס את כל הרוחב */
   padding: 0;              /* הסר padding מיותר */
 }
 .logo-link .logo {
-  height: 96px;
-  object-fit: contain;     /* שומר על פרופורציות הלוגו */
+  height: 96px;             /* גובה אחיד ללוגו */
+  object-fit: contain;      /* שומר על פרופורציות הלוגו */
   transition: transform .3s;
 }
 .logo-link:hover .logo {
