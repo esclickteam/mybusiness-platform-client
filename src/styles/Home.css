@@ -79,14 +79,32 @@ body {
   margin-inline: auto;
   box-shadow: 0 0 10px rgba(0,0,0,0.04);
 }
+
 .trending-box h4 {
   margin-bottom: 10px;
   color: #5b21b6;
 }
-.trending-box li {
+
+/* ברירת־מחדל כשאין עדכונים */
+.trending-box .no-updates {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+/* פריט עדכון */
+.trending-box .update-item {
   font-size: 15px;
   margin-bottom: 6px;
   color: #444;
+}
+
+/* טיימסטמפ של העדכון */
+.trending-box .time {
+  color: #888;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
 }
 
 /* === סקשן חיפוש === */
