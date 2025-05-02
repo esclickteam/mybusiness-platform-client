@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -59,7 +58,8 @@ export default function Login() {
           navigate("/admin/dashboard", { replace: true });
           break;
         default:
-          navigate("/", { replace: true });
+          // במקרה של תפקיד לא מוכר, דילוג על מעבר לדף הבית
+          navigate(`/dashboard`, { replace: true }); // או לבחור דשבורד כללי אם מתאים
           break;
       }
     } catch (err) {
