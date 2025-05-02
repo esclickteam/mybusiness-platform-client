@@ -75,26 +75,16 @@ html, body, #root {
 }
 
 .profile-logo-wrapper {
-  /* עיגול בגודל קבוע עם חיתוך פנימי */
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  position: relative;
-  z-index: 10;
+  overflow: visible;    /* מאפשר לתמונה לגלוש מחוץ למעגל */
+  border-radius: 0;     /* הופך למלבני */
+  width: auto;          /* מתאים לרוחב התמונה */
+  height: auto;         /* מתאים לגובה התמונה */
 }
 
 .profile-logo {
-  /* תמונה בתוך המעגל, ללא חיתוך */
-  width: 100%;     /* לא תצא מגבולות ה־120px */
-  height: 100%;    /* לא תצא מגבולות ה־120px */
-  object-fit: contain; /* מציג את כל התמונה ביחס המקורי */
-  display: block;
+  max-width: 200px;     /* או כל רוחב שמתאים לך */
+  height: auto;
+  object-fit: none;     /* אין התאמה, מציג את התמונה כמות שהיא */
 }
 
 .business-name {
