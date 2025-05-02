@@ -1,6 +1,6 @@
 // src/components/Header.jsx
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import {
   FaBars,
@@ -26,6 +26,7 @@ export default function Header() {
   const { user, logout, loading } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();  // הוספתי את הניווט מ-React Router
 
   if (loading) return null;
 
@@ -59,10 +60,12 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      console.log('Attempting to log out...');
+      await logout();  // התנתקות
+      console.log('Logout successful');
       setMenuOpen(false);
-      // רענון מלא ושינוי לכתובת הבית
-      window.location.replace("/");
+      // ניווט לדף הבית
+      navigate('/');  // ניווט עם React Router
     } catch (err) {
       console.error("❌ logout failed:", err);
     }
@@ -97,7 +100,7 @@ export default function Header() {
             <>
               <button
                 className="personal-area-button"
-                onClick={() => window.location.replace(getDashboardPath())}
+                onClick={() => navigate(getDashboardPath())}
               >
                 לוח בקרה
               </button>
@@ -167,7 +170,7 @@ export default function Header() {
                   className="personal-area-button"
                   onClick={() => {
                     setMenuOpen(false);
-                    window.location.replace(getDashboardPath());
+                    navigate(getDashboardPath());
                   }}
                 >
                   אזור אישי
