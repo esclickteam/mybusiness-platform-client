@@ -18,13 +18,13 @@ API.interceptors.request.use((config) => {
   }
 
   // attach Authorization token
-  const token = localStorage.getItem("authToken"); // השתמש ב-"authToken" במקום "token"
+  const token = localStorage.getItem("authToken");  // ודא שהשם של הטוקן הוא "authToken"
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // הוסף console.log כדי לבדוק את כותרת ה-Authorization
-  console.log("Authorization header:", config.headers.Authorization); // הדפס את כותרת Authorization
+  // הדפסת כותרת Authorization כדי לבדוק אם הטוקן מצורף
+  console.log("Authorization header:", config.headers.Authorization);  // בדוק אם הכותרת מצורפת
 
   return config;
 });
@@ -35,7 +35,7 @@ API.interceptors.response.use(
   (error) => {
     const isOnLoginPage = window.location.pathname === "/login";
     if (error.response?.status === 401 && !isOnLoginPage) {
-      // אם יש שגיאה 401, הסר את הטוקן ואת המשתמש מ-`localStorage` ונווט לדף ההתחברות
+      // אם יש שגיאה 401, הסר את הטוקן ואת המשתמש מ-`localStorage` ונווט לדף התחברות
       localStorage.removeItem("authToken"); // הסר את הטוקן
       localStorage.removeItem("user"); // הסר את המידע על המשתמש
       window.location.replace("/login"); // הפנה לדף התחברות
