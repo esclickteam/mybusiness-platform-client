@@ -75,19 +75,19 @@ html, body, #root {
   gap: 1rem;
 }
 
-.logo-wrapper {
+.profile-logo-wrapper {
   /* עיגול בגודל קבוע עם חיתוך פנימי */
   width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;           /* חותך כל מה שמחוץ לעיגול */
-  background-color: #fff;     /* רקע לבן מאחורי התמונה */
-  display: flex;              /* מרכז את התמונה בתוכו */
-  align-items: center;        /* מרכז אנכי */
-  justify-content: center;    /* מרכז אופקי */
-  margin: 0;                  /* gap מה־.profile-inner מטפל ברווח */
-  position: relative;
-  z-index: 10;
+   height: 120px;
+   border-radius: 50%;
+   overflow: hidden;
+   background-color: #fff;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   margin: 0;
+   position: relative;
+   z-index: 10;
 }
 
 .profile-logo {

@@ -96,7 +96,7 @@ export default function BusinessProfileView() {
           )}
 
           {logo && (
-            <div className="logo-wrapper">
+            <div className="profile-logo-wrapper">
               <img src={logo} alt="לוגו העסק" className="profile-logo" />
             </div>
           )}
