@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -26,7 +25,7 @@ export default function Header() {
   const { user, logout, loading } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();  // הוספתי את הניווט מ-React Router
+  const navigate = useNavigate();
 
   if (loading) return null;
 
@@ -60,22 +59,12 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      console.log('Attempting to log out...');
-      await logout();  // ההתנתקות
-      console.log('Logout successful');
-      setMenuOpen(false);
-  
-      // מחיקת המידע מה-storages
-      localStorage.removeItem('authToken');  // אם אתה משתמש בטוקן ב-localStorage
-      sessionStorage.removeItem('authToken');  // אם אתה משתמש ב-sessionStorage
-  
-      // ניווט לדף הבית
-      navigate('/');  // ניווט עם React Router
+      await logout();
     } catch (err) {
       console.error("❌ logout failed:", err);
     }
+    setMenuOpen(false);
   };
-  
 
   return (
     <>

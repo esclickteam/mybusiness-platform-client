@@ -1,12 +1,12 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // ✅ להשתמש ב־logout בנוסף ל־login
+import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 
 export default function Login() {
-  // ✅ שולפים גם את logout כדי לנקות קודם את העוגיה הישנה
+  // שולפים את הפונקציות להתחברות ולהתנתקות
   const { login, logout } = useAuth();
 
   const [identifier, setIdentifier] = useState(""); // אימייל או שם משתמש
@@ -22,29 +22,28 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
+
+    // בדיקת שדות ריקים
     if (!identifier.trim() || !password) {
       setError("נא למלא את כל השדות");
       setLoading(false);
       return;
     }
-  
-    // ✅ קודם מנקים session ישן בשרת (clearCookie) כדי שלא ייפרע מה־role הקודם
+
+    // פעולה ראשונית: ניקוי session/עוגיות ישן כדי למנוע role mismatch
     try {
-      await logout();  // מבצע את ה־logout לפני כל ניסיון להתחברות חדשה
+      await logout();
     } catch (err) {
-      // אפילו אם זה נכשל, נמשיך להתחברות החדשה
       console.warn("logout failed:", err);
     }
-  
+
+    // ניסיון התחברות חדש
     try {
-      // מבצעים את הקריאה ל־login ב־AuthContext
       const user = await login(identifier.trim(), password);
-  
-      // ניתוב לפי role
+
+      // ניווט על פי תפקיד המשתמש
       switch (user.role) {
         case "business":
-          // מעבירים ישר לדשבורד העסק עם ה־businessId
           navigate(`/business/${user.businessId}/dashboard`, { replace: true });
           break;
         case "customer":
@@ -61,8 +60,10 @@ export default function Login() {
           break;
         default:
           navigate("/", { replace: true });
+          break;
       }
     } catch (err) {
+      // טיפול בשגיאות התחברות
       setError(
         err.response?.status === 401
           ? "❌ אימייל/שם משתמש או סיסמה שגויים"
@@ -72,7 +73,6 @@ export default function Login() {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="login-container">
@@ -138,7 +138,10 @@ export default function Login() {
           )}
 
           <div className="bottom-links">
-            <span className="forgot-password" onClick={() => setShowForgot(true)}>
+            <span
+              className="forgot-password"
+              onClick={() => setShowForgot(true)}
+            >
               שכחת את הסיסמה?
             </span>
             {!isEmployeeLogin && (

@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const [user, setUser]     = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   const refreshUserData = async () => {
     try {
@@ -28,7 +30,7 @@ export function AuthProvider({ children }) {
     } catch (e) {
       localStorage.removeItem("user");
       setUser(null);
-      setError("\u26a0\ufe0f יש להתחבר מחדש");
+      setError("⚠️ יש להתחבר מחדש");
       return null;
     } finally {
       setLoading(false);
@@ -36,38 +38,36 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    if (user === null) {
-      setLoading(true);  // נטען מחדש אם המשתמש מתנתק
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      API.defaults.headers.common.Authorization = `Bearer ${token}`;
       refreshUserData();
+    } else {
+      setLoading(false);
     }
-  }, [user]);  // ה-useEffect ירוץ כל פעם שה-user משתנה
+  }, []);
 
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
-
     try {
       const res = await API.post("/auth/login", {
         identifier: identifier.trim(),
         password,
       });
-
-      console.log("✅ login response:", res.data);
-      console.log("🍪 current cookies:", document.cookie);
-
-      const token = res.data.token;  // הנח שהטוקן מגיע מ-API התחברות
+      const token = res.data.token;
       if (token) {
-        localStorage.setItem("authToken", token);  // שמור את הטוקן תחת authToken
+        localStorage.setItem("authToken", token);
+        API.defaults.headers.common.Authorization = `Bearer ${token}`;
       }
-
       const u = await refreshUserData();
       if (!u) throw new Error("User load failed");
       return u;
     } catch (e) {
       setError(
         e.response?.status === 401
-          ? "\u274c שם משתמש או סיסמה שגויים"
-          : "\u274c שגיאה בשרת, נסו שוב"
+          ? "❌ שם משתמש או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסו שוב"
       );
       throw e;
     } finally {
@@ -78,20 +78,24 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await API.post("/auth/logout");
-    } catch {}
+    } catch (e) {
+      console.warn("Logout failed:", e);
+    }
+    localStorage.removeItem("authToken");
     localStorage.removeItem("user");
+    delete API.defaults.headers.common.Authorization;
     setUser(null);
-  
-    // הוספת ה-console.log אחרי ההתנתקות
-    setTimeout(() => {
-      console.log("User after logout:", user);  // הדפסת ערך המשתמש אחרי ההתנתקות
-    }, 0);  // שימוש ב-setTimeout כדי לוודא שה-`user` עודכן
+    setLoading(false);
+    navigate("/", { replace: true });
   };
-  
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {loading ? <div className="loading-screen">\uD83D\uDD04 טוען נתונים...</div> : children}
+      {loading ? (
+        <div className="loading-screen">🔄 טוען נתונים...</div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }
