@@ -4,25 +4,26 @@
 
 /* ===== Header (Desktop) ===== */
 .app-header {
+  position: relative;             /* כדי לאפשר מיקום אבסולוטי של הלוגו */
   display: flex;
-  justify-content: center; /* מרכז את התוכן אופקית */
-  align-items: center;     /* מרכז את התוכן אנכית */
-  min-height: 120px;       /* גובה מינימלי של header */
+  align-items: center;
+  justify-content: space-between; /* הדוחף auth-controls ושמאל, menu-toggle ימינה */
   padding: 6px 20px;
-  width: 100%;
+  min-height: 120px;
 }
 
 .logo-wrapper {
-  display: flex;
-  justify-content: center; /* ממקם את הלוגו במרכז */
-  align-items: center;     /* ממקם את הלוגו במרכז גם אנכית */
-  width: 100%;
-  padding: 0;              /* הסר padding מיותר */
-  margin: 0;               /* הסר margin מיותר */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  order: 2;        /* רק בשביל סדר אם משתנים העמודים */
+  padding: 0;
+  margin: 0;
 }
 .logo-link .logo {
-  height: 96px;             /* גובה אחיד ללוגו */
-  object-fit: contain;      /* שומר על פרופורציות הלוגו */
+  height: 96px;
+  object-fit: contain;
   transition: transform .3s;
 }
 .logo-link:hover .logo {
@@ -30,9 +31,10 @@
 }
 
 /* כפתור המבורגר */
-.menu-toggle { 
-  position: relative; 
-  z-index: 1001; 
+.menu-toggle {
+  position: relative;
+  z-index: 1001;
+  order: 3;
 }
 .menu-button {
   background: none;
@@ -47,9 +49,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-right: auto;
-  padding-left: 12px;
-  white-space: nowrap;
+  order: 1;
 }
 
 /* כפתורי פעולה */
