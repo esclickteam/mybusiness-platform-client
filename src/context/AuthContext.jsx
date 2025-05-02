@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null); // ✅ הודעת הצלחה
+  const [successMessage, setSuccessMessage] = useState(null);
   const initRan = useRef(false);
 
   // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
@@ -53,6 +53,7 @@ export function AuthProvider({ children }) {
             : me.data.role === "admin"
             ? "/admin/dashboard"
             : "/";
+        // ניווט לתוך SPA
         navigate(path, { replace: true });
       }
       return me.data;
@@ -73,14 +74,15 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await API.post("/auth/logout");
-      setSuccessMessage("✅ נותקת בהצלחה"); // ✅ הצגת ההודעה
+      setSuccessMessage("✅ נותקת בהצלחה");
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
       setUser(null);
       localStorage.removeItem("user");
       setLoading(false);
-      navigate("/", { replace: true });
+      // ריענון מלא וניווט חיצוני לשורש
+      window.location.replace("/");
     }
   };
 
@@ -94,12 +96,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {/* ✅ הודעת הצלחה גלובלית */}
-      {successMessage && (
-        <div className="global-success-toast">
-          {successMessage}
-        </div>
-      )}
+      {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
   );

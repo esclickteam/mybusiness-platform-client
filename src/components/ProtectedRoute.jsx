@@ -1,65 +1,54 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
+/**
+ * ProtectedRoute component
+ * Wraps routes that require authentication and authorization.
+ * @param {object} props
+ * @param {React.ReactNode} props.children - The component(s) to render if access is granted.
+ * @param {string[]} [props.roles] - Optional list of roles allowed to access this route.
+ * @param {string|null} [props.requiredPackage] - Optional subscription plan required to access this route.
+ */
+function ProtectedRoute({ children, roles = [], requiredPackage = null }) {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    if (loading) return; // אם טעינה בגרסה, אל תבצע שום דבר.
-    
-    // 1. אם אין משתמש, הפנייה לדף הבית
-    if (!user) {
-      navigate("/", { replace: true });
-    } 
-    
-    // 2. אם אין תפקיד למשתמש, הפנייה לדף הבית
-    if (!user.role) {
-      navigate("/", { replace: true });
-    }
-    
-    // 3. אם התפקיד לא מתאים
-    if (roles.length > 0 && !roles.includes(user.role)) {
-      const redirectMap = {
-        customer: `/client/dashboard`,
-        business: `/business/${user.businessId}/dashboard`,
-        worker: `/staff/dashboard`,
-        manager: `/manager/dashboard`,
-        admin: `/admin/dashboard`,
-      };
-
-      const target = redirectMap[user.role] || "/";
-      navigate(target, { replace: true });
-    }
-    
-    // 4. אם נדרשת חבילה (סאבסקריפשן) שלא קיימת, הפנייה לדף החבילות
-    if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
-      navigate("/plans", { replace: true });
-    }
-    
-    // 5. אם משתמש עסקי ואין לו businessId, הפנייה ליצור עסק חדש
-    if (
-      roles.includes("business") &&
-      user.role === "business" &&
-      !user.businessId
-    ) {
-      navigate("/create-business", { replace: true });
-    }
-  }, [user, loading, navigate, roles, requiredPackage]);
-
+  // 1. Show loading indicator while auth state is initializing
   if (loading) {
     return (
-      <div
-        className="loading-screen"
-        style={{ textAlign: "center", padding: "2rem" }}
-      >
+      <div style={{ textAlign: "center", padding: "2rem" }}>
         🔄 טוען נתונים...
       </div>
     );
   }
 
+  // 2. If not authenticated, redirect to login page, preserving the attempted URL
+  if (!user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  // 3. If roles are specified and user role is not in list, redirect to home
+  if (roles.length > 0 && !roles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  // 4. If a specific subscription package is required but user doesn't have it, redirect to plans
+  if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
+    return <Navigate to="/plans" replace />;
+  }
+
+  // 5. If user is a business role but has no businessId, redirect to create business page
+  if (
+    roles.includes("business") &&
+    user.role === "business" &&
+    !user.businessId
+  ) {
+    return <Navigate to="/create-business" replace />;
+  }
+
+  // 6. Otherwise, grant access and render children
   return children;
-};
+}
 
 export default ProtectedRoute;
