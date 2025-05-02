@@ -147,19 +147,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 📈 חיפושים חמים */}
-      <div className="trending-box">
-        <h4>📈 מה קורה עכשיו בעסקליק?</h4>
-        <ul>
-          {[
-            "מישהו חיפש עכשיו: חשמלאי בתל אביב",
-            "עסק חדש: קוסמטיקאית בראשון לציון",
-            "מישהו בדיוק הזמין אינסטלטור!"
-          ].map((item, i) => (
-            <li key={i}>🔹 {item}</li>
-          ))}
-        </ul>
-      </div>
+      
 
       {/* 🧭 תחתית */}
       <footer className="footer">
