@@ -1,11 +1,53 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
-  // 1. בזמן טעינה – תצוגת "טוען"
+  useEffect(() => {
+    if (loading) return; // אם טעינה בגרסה, אל תבצע שום דבר.
+    
+    // 1. אם אין משתמש, הפנייה לדף הבית
+    if (!user) {
+      navigate("/", { replace: true });
+    } 
+    
+    // 2. אם אין תפקיד למשתמש, הפנייה לדף הבית
+    if (!user.role) {
+      navigate("/", { replace: true });
+    }
+    
+    // 3. אם התפקיד לא מתאים
+    if (roles.length > 0 && !roles.includes(user.role)) {
+      const redirectMap = {
+        customer: `/client/dashboard`,
+        business: `/business/${user.businessId}/dashboard`,
+        worker: `/staff/dashboard`,
+        manager: `/manager/dashboard`,
+        admin: `/admin/dashboard`,
+      };
+
+      const target = redirectMap[user.role] || "/";
+      navigate(target, { replace: true });
+    }
+    
+    // 4. אם נדרשת חבילה (סאבסקריפשן) שלא קיימת, הפנייה לדף החבילות
+    if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
+      navigate("/plans", { replace: true });
+    }
+    
+    // 5. אם משתמש עסקי ואין לו businessId, הפנייה ליצור עסק חדש
+    if (
+      roles.includes("business") &&
+      user.role === "business" &&
+      !user.businessId
+    ) {
+      navigate("/create-business", { replace: true });
+    }
+  }, [user, loading, navigate, roles, requiredPackage]);
+
   if (loading) {
     return (
       <div
@@ -17,64 +59,6 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
     );
   }
 
-  // 2. אין משתמש – הפנייה לדף הבית
-  if (!user) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn("⛔ ProtectedRoute: אין user בכלל – נשלח ל־/");
-    }
-    return <Navigate to="/" replace />;
-  }
-
-  // 3. אין תפקיד כלל
-  if (!user.role) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn("⛔ ProtectedRoute: יש user אבל אין role – נשלח ל־/");
-    }
-    return <Navigate to="/" replace />;
-  }
-
-  // 4. בדיקת תפקידים אם נדרש
-  if (roles.length > 0 && !roles.includes(user.role)) {
-    const redirectMap = {
-      customer: `/client/dashboard`,
-      business: `/business/${user.businessId}/dashboard`,
-      worker:   `/staff/dashboard`,
-      manager:  `/manager/dashboard`,
-      admin:    `/admin/dashboard`,
-    };
-
-    const target = redirectMap[user.role] || "/";
-    if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        `⛔ ProtectedRoute: תפקיד "${user.role}" לא מורשה כאן – מפנה אל ${target}`
-      );
-    }
-    return <Navigate to={target} replace />;
-  }
-
-  // 5. בדיקת חבילה אם נדרשת
-  if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        `⛔ ProtectedRoute: נדרשת חבילה "${requiredPackage}", אך למשתמש יש "${user.subscriptionPlan}" – הפנייה ל־/plans`
-      );
-    }
-    return <Navigate to="/plans" replace />;
-  }
-
-  // 6. אם בעל עסק ללא businessId
-  if (
-    roles.includes("business") &&
-    user.role === "business" &&
-    !user.businessId
-  ) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn("⛔ ProtectedRoute: משתמש עסקי ללא businessId – הפנייה ל־/create-business");
-    }
-    return <Navigate to="/create-business" replace />;
-  }
-
-  // 7. הכל תקין – מציג את התוכן
   return children;
 };
 

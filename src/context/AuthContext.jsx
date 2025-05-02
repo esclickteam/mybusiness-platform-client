@@ -38,19 +38,23 @@ export function AuthProvider({ children }) {
       await API.post("/auth/login", { identifier: identifier.trim(), password });
       const me = await API.get("/auth/me");
       setUser(me.data);
-      const path =
-        me.data.role === "business"
-          ? `/business/${me.data.businessId}/dashboard`
-          : me.data.role === "customer"
-          ? "/client/dashboard"
-          : me.data.role === "worker"
-          ? "/staff/dashboard"
-          : me.data.role === "manager"
-          ? "/manager/dashboard"
-          : me.data.role === "admin"
-          ? "/admin/dashboard"
-          : "/";
-      navigate(path, { replace: true });
+
+      // ודא שהמשתמש נטען לפני הניווט
+      if (me.data) {
+        const path =
+          me.data.role === "business"
+            ? `/business/${me.data.businessId}/dashboard`
+            : me.data.role === "customer"
+            ? "/client/dashboard"
+            : me.data.role === "worker"
+            ? "/staff/dashboard"
+            : me.data.role === "manager"
+            ? "/manager/dashboard"
+            : me.data.role === "admin"
+            ? "/admin/dashboard"
+            : "/";
+        navigate(path, { replace: true });
+      }
       return me.data;
     } catch (e) {
       setError(

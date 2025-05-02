@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 
 export default function Login() {
-  const { login, logout, user } = useAuth(); // כולל user מה־Context
+  const { login, logout, user } = useAuth();
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -25,9 +25,9 @@ export default function Login() {
       return;
     }
 
-    // פעולה ראשונית: ניקוי session/עוגיות ישן כדי למנוע role mismatch
+    // פעולה ראשונית: ניקוי session/עוגיות ישן
     try {
-      await logout();
+      await logout(); 
     } catch (err) {
       console.warn("logout failed:", err);
     }
@@ -36,7 +36,12 @@ export default function Login() {
     try {
       const loggedInUser = await login(identifier.trim(), password);
 
-      // כאן הניווט יקרה רק אחרי שהמשתמש התחבר
+      // שמירה של טוקן אם התחברות הצליחה
+      if (loggedInUser.token) {
+        localStorage.setItem("authToken", loggedInUser.token);  // שמירת הטוקן ב־localStorage
+      }
+
+      // עדכון ניווט אחרי תחברות מוצלחת
       switch (loggedInUser.role) {
         case "business":
           navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
@@ -54,7 +59,7 @@ export default function Login() {
           navigate("/admin/dashboard", { replace: true });
           break;
         default:
-          navigate("/dashboard", { replace: true }); // ניווט לדשבורד כללי
+          navigate("/dashboard", { replace: true });
           break;
       }
     } catch (err) {
@@ -92,7 +97,7 @@ export default function Login() {
           break;
       }
     }
-  }, [user, navigate]); // אם הסטייט של המשתמש משתנה, נוודא שהניווט יקרה אוטומטית
+  }, [user, navigate]);
 
   return (
     <div className="login-container">
