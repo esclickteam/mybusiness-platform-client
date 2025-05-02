@@ -66,37 +66,47 @@ html, body, #root {
 }
 
 /* === לוגו ושם העסק === */
+.profile-inner {
+  /* וידוא שכל התוכן מסודר בעמודה וממוקם במרכז */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: visible;
+  gap: 1rem;
+}
+
 .logo-wrapper {
-  /* עיגול סטטי בגודל קבוע */
+  /* עיגול בגודל קבוע עם חיתוך פנימי */
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background-color: #fff;       /* רקע לבן שמסביב */
-  display: flex;                /* כדי למרכז את התמונה */
-  align-items: center;          /* מאונך */
-  justify-content: center;      /* אופקי */
-  margin-bottom: 1.5rem;        /* רווח מתחת ללוגו */
+  overflow: hidden;           /* חותך כל מה שמחוץ לעיגול */
+  background-color: #fff;     /* רקע לבן מאחורי התמונה */
+  display: flex;              /* מרכז את התמונה בתוכו */
+  align-items: center;        /* מרכז אנכי */
+  justify-content: center;    /* מרכז אופקי */
+  margin: 0;                  /* gap מה־.profile-inner מטפל ברווח */
   position: relative;
   z-index: 10;
 }
 
 .profile-logo {
-  /* לא קבועים גם width וגם height! */
-  max-width: 100%;              /* יתאים לרוחב הקונטיינר */
-  max-height: 100%;             /* יתאים לגובה הקונטיינר */
-  object-fit: contain;          /* מציג את כל התמונה */
-  border-radius: 50%;           /* לא הכרחי, כבר העיגול בשכבת ההורה */
+  /* תמונה בתוך המעגל, ללא חיתוך בן־זוג */
+  max-width: 100%;            /* לא תצא מגבולות ה־120px */
+  max-height: 100%;           /* לא תצא מגבולות ה־120px */
+  object-fit: contain;        /* מציג את כל התמונה ביחס המקורי */
   display: block;
 }
 
-/* הכותרת ממש מתחת ללוגו */
 .business-name {
-  position: relative;
-  z-index: 1;
+  /* שם העסק מתחת ללוגו */
   margin: 0;
   margin-top: 0.5rem;
   font-size: 2rem;
   color: #333;
+  text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 /* === תיאור וטלפון === */
