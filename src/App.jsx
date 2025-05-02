@@ -1,6 +1,7 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
+import { useAuth } from "./context/AuthContext"; // ← זו השורה שצריך להוסיף
 
 // 1️⃣ קודם נטען כאן (או ב־index.js) את כל ה־CSS הגלובלי של האתר
 // (נניח שיש לכם index.css שמאגד את כל הסגנונות הכלליים)
@@ -73,6 +74,17 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  // ✅ אם נכנס לנתיב מוגן בלי user – הפנייה אוטומטית ל־/
+  useEffect(() => {
+    const isProtectedPath = /^\/(admin|manager|staff|client|business)/.test(location.pathname);
+    if (!loading && !user && isProtectedPath) {
+      window.location.href = "/";
+    }
+  }, [loading, user, location.pathname]);
+
   return (
     <>
       <Header />
