@@ -1,5 +1,3 @@
-// src/context/AuthContext.jsx
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api";
 
@@ -38,8 +36,11 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    refreshUserData();
-  }, []);
+    if (user === null) {
+      setLoading(true);  // נטען מחדש אם המשתמש מתנתק
+      refreshUserData();
+    }
+  }, [user]);  // ה-useEffect ירוץ כל פעם שה-user משתנה
 
   const login = async (identifier, password) => {
     setLoading(true);
@@ -75,7 +76,13 @@ export function AuthProvider({ children }) {
     } catch {}
     localStorage.removeItem("user");
     setUser(null);
+  
+    // הוספת ה-console.log אחרי ההתנתקות
+    setTimeout(() => {
+      console.log("User after logout:", user);  // הדפסת ערך המשתמש אחרי ההתנתקות
+    }, 0);  // שימוש ב-setTimeout כדי לוודא שה-`user` עודכן
   };
+  
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
