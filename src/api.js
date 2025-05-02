@@ -1,3 +1,4 @@
+// src/api.js
 import axios from "axios";
 
 // הגדרת BASE_URL דינמית לפי סביבת הפיתוח או הפרודקשן
@@ -39,15 +40,20 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
-    const { response } = error;
+    const { response, config } = error;
     if (!response) {
       console.error("Network error:", error);
       return Promise.reject(new Error("שגיאת רשת"));
     }
 
-    // logout אוטומטי והפנייה ל־/login במקרה 401
-    if (response.status === 401 && window.location.pathname !== "/login") {
+    // במקרה של 401, רק אם זו לא קריאה לאימות המשתמש (auth/me) – נווט ללוגין
+    if (
+      response.status === 401 &&
+      !config.url.endsWith("/auth/me") &&
+      window.location.pathname !== "/login"
+    ) {
       window.location.replace("/login");
+      // עצירה מיידית מבלי להמשיך לטפל בשגיאה
       return;
     }
 

@@ -1,44 +1,45 @@
+// src/pages/Plans.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/Plans.css";
-import PlanComparisonGrid from './dashboardPages/buildTabs/PlanComparisonGrid.jsx';
+import PlanComparisonGrid from "./dashboardPages/buildTabs/PlanComparisonGrid.jsx";
 
-function Plans() {
-  // ✅ הגנה על useAuth
-  const auth = useAuth() || {};
-  const user = auth.user;
-
+export default function Plans() {
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // עד שלא יודעים אם יש session – לא מציגים כלום כדי למנוע “הבזקים”
+  if (loading) return null;
 
   const [selectedDurations, setSelectedDurations] = useState({
     advanced: "1",
     professional: "1",
     vip: "1",
   });
-
   const [showComparison, setShowComparison] = useState(false);
 
   const handleDurationChange = (plan, duration) => {
-    setSelectedDurations((prev) => ({ ...prev, [plan]: duration }));
+    setSelectedDurations(prev => ({ ...prev, [plan]: duration }));
   };
 
   const handleSelectPlan = (planKey) => {
+    // אם לא מחובר – נעביר ללוגין
     if (!user) {
-      navigate("/login");
+      navigate("/login", { replace: true });
       return;
     }
 
     const plan = plansData[planKey];
-    const selectedDuration = selectedDurations[planKey];
-    const monthlyPrice = plan.prices ? plan.prices[selectedDuration] : 0;
-    const total = monthlyPrice * parseInt(selectedDuration);
+    const months = parseInt(selectedDurations[planKey], 10);
+    const monthlyPrice = plan.prices?.[selectedDurations[planKey]] || plan.price || 0;
+    const total = monthlyPrice * months;
 
     navigate("/checkout", {
       state: {
         planName: plan.name,
         totalPrice: total,
-        duration: selectedDuration,
+        duration: months,
       },
     });
   };
@@ -99,34 +100,36 @@ function Plans() {
 
       <div className="plans-grid">
         {Object.entries(plansData).map(([planKey, plan]) => {
-          const selectedDuration = selectedDurations[planKey];
-          const price = plan.prices ? plan.prices[selectedDuration] : 0;
-          const isRecommended = plan.recommended;
-          const isVipRecommended = plan.recommendedVip;
+          const duration = selectedDurations[planKey];
+          const price = plan.prices?.[duration] ?? plan.price ?? 0;
+          const isRecommended = !!plan.recommended;
+          const isVip = planKey === "vip";
 
-          const cardClass = [
+          const cardClasses = [
             "plan-card",
-            isRecommended ? "recommended-plan" : "",
-            planKey === "vip" ? "vip-background vip-highlight" : "bordered-card " + planKey,
-            planKey,
-          ].join(" ").trim();
+            isRecommended && "recommended-plan",
+            isVip ? "vip-background vip-highlight" : `bordered-card ${planKey}`,
+          ]
+            .filter(Boolean)
+            .join(" ");
 
           return (
-            <div key={planKey} className={cardClass}>
+            <div key={planKey} className={cardClasses}>
               {isRecommended && <div className="plan-badge">⭐ הכי משתלם</div>}
-              {isVipRecommended && <div className="plan-badge vip-badge">🏆 הבחירה של המובילים</div>}
+              {plan.recommendedVip && <div className="plan-badge vip-badge">🏆 הבחירה של המובילים</div>}
 
-              <h2 className={planKey === "vip" ? "vip-title" : ""}>
-                {planKey === "vip" ? <>VIP <span className="vip-crown">👑</span></> : plan.name}
+              <h2 className={isVip ? "vip-title" : ""}>
+                {isVip ? <>VIP <span className="vip-crown">👑</span></> : plan.name}
               </h2>
 
               {price > 0 && <p>{price} ₪ / חודש</p>}
+
               {plan.prices && (
                 <label>
                   בחר תקופה:
                   <select
-                    value={selectedDuration}
-                    onChange={(e) => handleDurationChange(planKey, e.target.value)}
+                    value={duration}
+                    onChange={e => handleDurationChange(planKey, e.target.value)}
                   >
                     <option value="1">חודש</option>
                     <option value="3">3 חודשים ({plan.prices["3"]} ₪ לחודש)</option>
@@ -134,16 +137,21 @@ function Plans() {
                   </select>
                 </label>
               )}
+
               <ul>
-                {plan.features.map((feature, index) => (
-                  <li key={index} className={feature.enabled ? "" : "no-feature"}>
-                    {feature.text}
+                {plan.features.map((feat, idx) => (
+                  <li key={idx} className={feat.enabled ? "" : "no-feature"}>
+                    {feat.text}
                   </li>
                 ))}
               </ul>
+
               <p className="plan-description">{plan.description}</p>
 
-              <button className="select-button" onClick={() => handleSelectPlan(planKey)}>
+              <button
+                className="select-button"
+                onClick={() => handleSelectPlan(planKey)}
+              >
                 {planKey === "free" && "🚀 התחילו עכשיו בחינם"}
                 {planKey === "advanced" && "✨ שדרגו לתקשורת ישירה"}
                 {planKey === "professional" && "💼 ניהול מקצועי מתחיל כאן"}
@@ -154,7 +162,10 @@ function Plans() {
         })}
       </div>
 
-      <button className="toggle-comparison-button" onClick={() => setShowComparison(!showComparison)}>
+      <button
+        className="toggle-comparison-button"
+        onClick={() => setShowComparison(prev => !prev)}
+      >
         {showComparison ? "הסתר השוואת חבילות" : "השוואת חבילות"}
       </button>
 
@@ -166,5 +177,3 @@ function Plans() {
     </div>
   );
 }
-
-export default Plans;
