@@ -61,15 +61,21 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       console.log('Attempting to log out...');
-      await logout();  // התנתקות
+      await logout();  // ההתנתקות
       console.log('Logout successful');
       setMenuOpen(false);
+  
+      // מחיקת המידע מה-storages
+      localStorage.removeItem('authToken');  // אם אתה משתמש בטוקן ב-localStorage
+      sessionStorage.removeItem('authToken');  // אם אתה משתמש ב-sessionStorage
+  
       // ניווט לדף הבית
       navigate('/');  // ניווט עם React Router
     } catch (err) {
       console.error("❌ logout failed:", err);
     }
   };
+  
 
   return (
     <>
