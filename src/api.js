@@ -1,46 +1,71 @@
 import axios from "axios";
 
-const BASE_URL = "/api";
+const isProd = import.meta.env.MODE === "production";
+const BASE_URL = isProd
+  ? "https://api.esclick.co.il/api"
+  : "/api";
 
 const API = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
   headers: {
-    Accept: "application/json"
-  }
+    Accept: "application/json",
+  },
 });
 
 // interceptor to set Content-Type for JSON requests only
 API.interceptors.request.use((config) => {
-  // set JSON Content-Type when data is not FormData
   if (config.data && !(config.data instanceof FormData)) {
     config.headers["Content-Type"] = "application/json";
   }
 
-  // attach Authorization token
-  const token = localStorage.getItem("authToken");  // ודא שהשם של הטוקן הוא "authToken"
+  const token = localStorage.getItem("authToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // הדפסת כותרת Authorization כדי לבדוק אם הטוקן מצורף
-  console.log("Authorization header:", config.headers.Authorization);  // בדוק אם הכותרת מצורפת
-
+  console.log("Authorization header:", config.headers.Authorization);
   return config;
 });
 
-// handle automatic logout on 401
+// handle automatic logout on 401 and better error parsing
 API.interceptors.response.use(
   (resp) => resp,
-  (error) => {
-    const isOnLoginPage = window.location.pathname === "/login";
-    if (error.response?.status === 401 && !isOnLoginPage) {
-      // אם יש שגיאה 401, הסר את הטוקן ואת המשתמש מ-`localStorage` ונווט לדף התחברות
-      localStorage.removeItem("authToken"); // הסר את הטוקן
-      localStorage.removeItem("user"); // הסר את המידע על המשתמש
-      window.location.replace("/login"); // הפנה לדף התחברות
+  async (error) => {
+    const { response } = error;
+    // רשת כושלת
+    if (!response) {
+      console.error("Network error:", error);
+      return Promise.reject(new Error("שגיאת רשת"));
     }
-    return Promise.reject(error);
+
+    const contentType = response.headers["content-type"] || "";
+    let message;
+
+    // אם התוכן לא JSON, נסה לקרוא טקסט
+    if (!contentType.includes("application/json")) {
+      try {
+        // axios כבר שם את body ב־response.data
+        message = typeof response.data === "string"
+          ? response.data
+          : JSON.stringify(response.data);
+      } catch {
+        message = "שגיאה לא ידועה";
+      }
+    } else {
+      // JSON – תן ל־axios לפרט error.response.data
+      message = response.data?.message || JSON.stringify(response.data);
+    }
+
+    // אם 401, נקה סשן והעבר ל־login
+    if (response.status === 401 && window.location.pathname !== "/login") {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      window.location.replace("/login");
+      return; // לא להמשיך
+    }
+
+    return Promise.reject(new Error(message));
   }
 );
 
