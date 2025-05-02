@@ -1,5 +1,4 @@
-// src/context/AuthContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 
@@ -10,9 +9,13 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const initRan = useRef(false);
 
-  // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
+  // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף (מונע רינדור כפול ב-StrictMode)
   useEffect(() => {
+    if (initRan.current) return;
+    initRan.current = true;
+
     const initialize = async () => {
       try {
         const res = await API.get("/auth/me");
@@ -26,39 +29,29 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  // login: שולח credentials, ה-cookie נטען אוטומטית על ידי השרת
+  // login: שולח credentials, ה-cookie מטופל אוטומטית ע"י השרת
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
     try {
-      // 1️⃣ מבצעים POST ל-login כדי לקבל את ה־Set-Cookie
-      await API.post("/auth/login", {
-        identifier: identifier.trim(),
-        password,
-      });
-
-      // 2️⃣ עכשיו שה-cookie שמור, קוראים ל-/me כדי להביא את ה-user האמיתי
+      await API.post("/auth/login", { identifier: identifier.trim(), password });
       const me = await API.get("/auth/me");
-      const userData = me.data;
-      setUser(userData);
-
-      // 3️⃣ ניווט לפי role מתוך userData
-      navigate(
-        userData.role === "business"
-          ? `/business/${userData.businessId}/dashboard`
-          : userData.role === "customer"
+      setUser(me.data);
+      // ניווט לפי תפקיד
+      const path =
+        me.data.role === "business"
+          ? `/business/${me.data.businessId}/dashboard`
+          : me.data.role === "customer"
           ? "/client/dashboard"
-          : userData.role === "worker"
+          : me.data.role === "worker"
           ? "/staff/dashboard"
-          : userData.role === "manager"
+          : me.data.role === "manager"
           ? "/manager/dashboard"
-          : userData.role === "admin"
+          : me.data.role === "admin"
           ? "/admin/dashboard"
-          : "/",
-        { replace: true }
-      );
-
-      return userData;
+          : "/";
+      navigate(path, { replace: true });
+      return me.data;
     } catch (e) {
       setError(
         e.response?.status === 401
@@ -71,7 +64,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // logout: מבקש מהשרת לנקות את ה-cookie, ואז מפנה ל־Home
+  // logout: מבקש לנקות את cookie ואז מפנה ל-Home
   const logout = async () => {
     setLoading(true);
     try {
@@ -82,19 +75,8 @@ export function AuthProvider({ children }) {
       setUser(null);
       setLoading(false);
       navigate("/", { replace: true });
-      window.location.reload();  // רענון מלא
     }
   };
-  
-
-  // בזמן טעינה – מציג מסך טעינה
-  if (loading) {
-    return (
-      <div className="loading-screen" style={{ textAlign: "center", padding: "2rem" }}>
-        🔄 טוען נתונים...
-      </div>
-    );
-  }
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
