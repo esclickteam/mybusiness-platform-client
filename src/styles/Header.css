@@ -17,9 +17,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  order: 2;        /* רק בשביל סדר אם משתנים העמודים */
-  padding: 0;
-  margin: 0;
+  order: 2;
 }
 .logo-link .logo {
   height: 96px;
@@ -32,8 +30,6 @@
 
 /* כפתור המבורגר */
 .menu-toggle {
-  position: relative;
-  z-index: 1001;
   order: 3;
 }
 .menu-button {
@@ -46,10 +42,8 @@
 
 /* כפתורי דסקטופ – לשמאל */
 .auth-controls.desktop-only {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   order: 1;
+  margin: 0;            /* מסירים margin-right: auto */
 }
 
 /* כפתורי פעולה */
