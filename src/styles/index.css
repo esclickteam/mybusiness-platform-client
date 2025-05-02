@@ -39,28 +39,6 @@ button {
   display: none !important;
 }
 
-/* ===== סגנונות לכפתור הנגישות של UserWay ===== */
-.aw-toggle-button {
-  position: fixed !important;
-  bottom: 20px !important; /* מיקום הכפתור בתחתית */
-  right: 20px !important;  /* מיקום בצד ימין */
-  background: #005b96 !important;
-  color: #ffffff !important;
-  border: none !important;
-  padding: .75rem !important;
-  border-radius: 50% !important;
-  font-size: 1.5rem !important;
-  cursor: pointer !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-  z-index: 999999999 !important;  /* וודא שהכפתור יהיה מעל כל האלמנטים */
-  display: block !important;  /* וודא שהכפתור מוצג */
-}
 
-/* ===== ווידג'ט של UserWay ===== */
-#userway-widget {
-  position: fixed !important;
-  bottom: 20px !important;  /* מיקום בתחתית */
-  left: 20px !important;    /* אם אתה רוצה אותו בצד שמאל */
-  right: unset !important;  /* לוודא שהוא בצד שמאל ולא בצד ימין */
-  z-index: 999999999 !important;  /* הגדרת z-index גבוה כך שהכפתור יהיה מעל */
-}
+
+
