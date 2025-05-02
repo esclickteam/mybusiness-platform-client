@@ -67,22 +67,29 @@ html, body, #root {
 
 /* === לוגו ושם העסק === */
 .logo-wrapper {
-  position: relative;
-  z-index: 10;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-.profile-logo {
-  display: inline-block;
+  /* עיגול סטטי בגודל קבוע */
   width: 120px;
   height: 120px;
-  object-fit: contain;
-  object-position: center;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: #fff;       /* רקע לבן שמסביב */
+  display: flex;                /* כדי למרכז את התמונה */
+  align-items: center;          /* מאונך */
+  justify-content: center;      /* אופקי */
+  margin-bottom: 1.5rem;        /* רווח מתחת ללוגו */
+  position: relative;
+  z-index: 10;
 }
 
-/* לוודא שהכותרת מתחת לשכבת הלוגו */
+.profile-logo {
+  /* לא קבועים גם width וגם height! */
+  max-width: 100%;              /* יתאים לרוחב הקונטיינר */
+  max-height: 100%;             /* יתאים לגובה הקונטיינר */
+  object-fit: contain;          /* מציג את כל התמונה */
+  border-radius: 50%;           /* לא הכרחי, כבר העיגול בשכבת ההורה */
+  display: block;
+}
+
+/* הכותרת ממש מתחת ללוגו */
 .business-name {
   position: relative;
   z-index: 1;
