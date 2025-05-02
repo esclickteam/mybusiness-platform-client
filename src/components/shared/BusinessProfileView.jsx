@@ -95,11 +95,11 @@ export default function BusinessProfileView() {
             </Link>
           )}
 
-          {logo && (
-            <div className="profile-logo-wrapper">
-              <img src={logo} alt="לוגו העסק" className="profile-logo" />
-            </div>
-          )}
+{logo && (
+  <div className="profile-logo-wrapper">
+    <img src={logo} alt="לוגו העסק" className="profile-logo" />
+  </div>
+)}
 
           <h1 className="business-name">{name}</h1>
 
