@@ -1,6 +1,6 @@
 // src/components/Header.jsx
 import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../images/logo.png";
 import {
   FaBars,
@@ -24,13 +24,11 @@ import "../styles/Header.css";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) return null;
 
-  /* ——— דשבורד לפי תפקיד ——— */
   const getDashboardPath = () => {
     switch (user?.role) {
       case "business":
@@ -48,7 +46,6 @@ export default function Header() {
     }
   };
 
-  /* ——— קישור Drawer עם active ——— */
   const link = (to, icon, label) => (
     <Link
       to={to}
@@ -60,13 +57,12 @@ export default function Header() {
     </Link>
   );
 
-  /* ——— Logout ——— */
   const handleLogout = async () => {
     try {
       await logout();
-      // סגירת Drawer (אם פתוח) ואז ניווט לשורש
       setMenuOpen(false);
-      navigate("/", { replace: true });
+      // רענון מלא ושינוי לכתובת הבית
+      window.location.replace("/");
     } catch (err) {
       console.error("❌ logout failed:", err);
     }
@@ -101,7 +97,7 @@ export default function Header() {
             <>
               <button
                 className="personal-area-button"
-                onClick={() => navigate(getDashboardPath())}
+                onClick={() => window.location.replace(getDashboardPath())}
               >
                 לוח בקרה
               </button>
@@ -121,7 +117,6 @@ export default function Header() {
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
 
           <div className="side-menu open">
-            {/* header קטן */}
             <div className="drawer-header">
               <button
                 className="back-button"
@@ -132,7 +127,6 @@ export default function Header() {
               </button>
             </div>
 
-            {/* ===== תוכן גלילה ===== */}
             <div className="menu-scroll">
               {user && (
                 <div className="menu-user">
@@ -141,7 +135,6 @@ export default function Header() {
                 </div>
               )}
 
-              {/* ——— 1) לעסקים ——— */}
               <div className="menu-section">
                 <h4>לעסקים</h4>
                 {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
@@ -149,7 +142,6 @@ export default function Header() {
                 {link("/business-support", <FaHeadset />, "תמיכה לעסק")}
               </div>
 
-              {/* ——— 2) ללקוחות ——— */}
               <div className="menu-section">
                 <h4>ללקוחות</h4>
                 {link("/businesses", <FaListUl />, "רשימת עסקים")}
@@ -157,7 +149,6 @@ export default function Header() {
                 {link("/search", <FaSearch />, "חיפוש מתקדם")}
               </div>
 
-              {/* ——— 3) כללי ——— */}
               <div className="menu-section">
                 <h4>כללי</h4>
                 {link("/", <FaHome />, "דף הבית")}
@@ -170,14 +161,13 @@ export default function Header() {
               </div>
             </div>
 
-            {/* ===== פוטר קבוע ===== */}
             {user && (
               <div className="auth-menu">
                 <button
                   className="personal-area-button"
                   onClick={() => {
-                    navigate(getDashboardPath());
                     setMenuOpen(false);
+                    window.location.replace(getDashboardPath());
                   }}
                 >
                   אזור אישי
