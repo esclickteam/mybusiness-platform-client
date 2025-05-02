@@ -21,7 +21,7 @@
   order: 2;       /* אין חשיבות רבה, כי הוא אבסולוטי */
 }
 .logo-link .logo {
-  height: 96px;
+  height: 120px;
   object-fit: contain;
   transition: transform .3s;
 }
