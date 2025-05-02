@@ -1,18 +1,17 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const initRan = useRef(false);
 
-  // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
+  // טען את המשתמש בתחילת האפליקציה
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -21,7 +20,7 @@ export function AuthProvider({ children }) {
       try {
         const res = await API.get("/auth/me");
         setUser(res.data);
-      } catch (err) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
@@ -30,7 +29,7 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  // login
+  // פונקציית login
   const login = async (identifier, password) => {
     setLoading(true);
     setError(null);
@@ -39,7 +38,7 @@ export function AuthProvider({ children }) {
       const me = await API.get("/auth/me");
       setUser(me.data);
 
-      // ודא שהמשתמש נטען לפני הניווט
+      // ניווט לדשבורד בתפקיד המתאים
       if (me.data) {
         const path =
           me.data.role === "business"
@@ -53,8 +52,7 @@ export function AuthProvider({ children }) {
             : me.data.role === "admin"
             ? "/admin/dashboard"
             : "/";
-        // ניווט לתוך SPA
-        navigate(path, { replace: true });
+        window.history.replaceState(null, "", path);
       }
       return me.data;
     } catch (e) {
@@ -69,7 +67,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // logout
+  // פונקציית logout
   const logout = async () => {
     setLoading(true);
     try {
@@ -81,16 +79,16 @@ export function AuthProvider({ children }) {
       setUser(null);
       localStorage.removeItem("user");
       setLoading(false);
-      // ריענון מלא וניווט חיצוני לשורש
-      window.location.replace("/");
+      // כאן מבצעים ריענון מלא של הדף לשורש
+      window.location.href = "/";
     }
   };
 
-  // ניקוי ההודעה לאחר 4 שניות
+  // נקה את ההודעה אחרי 4 שניות
   useEffect(() => {
     if (successMessage) {
-      const timeout = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(timeout);
+      const t = setTimeout(() => setSuccessMessage(null), 4000);
+      return () => clearTimeout(t);
     }
   }, [successMessage]);
 
