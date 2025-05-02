@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import API from "../api";
 
@@ -38,7 +37,7 @@ export function AuthProvider({ children }) {
       const me = await API.get("/auth/me");
       setUser(me.data);
 
-      // ניווט לדשבורד בתפקיד המתאים
+      // מנווט לדשבורד לפי תפקיד
       if (me.data) {
         const path =
           me.data.role === "business"
@@ -52,6 +51,7 @@ export function AuthProvider({ children }) {
             : me.data.role === "admin"
             ? "/admin/dashboard"
             : "/";
+        // ספציפית כאן אנחנו משתמשים ב־history API של הדפדפן
         window.history.replaceState(null, "", path);
       }
       return me.data;
