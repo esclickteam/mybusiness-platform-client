@@ -59,9 +59,9 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout(); // מתוך AuthContext
     } catch (err) {
-      console.error("❌ logout failed:", err);
+      console.error("❌ Logout failed:", err);
     }
     setMenuOpen(false);
   };
@@ -171,10 +171,7 @@ export default function Header() {
                   אזור אישי
                 </button>
 
-                <button
-                  className="logout-button"
-                  onClick={handleLogout}
-                >
+                <button className="logout-button" onClick={handleLogout}>
                   <FaSignOutAlt style={{ marginLeft: 6 }} />
                   התנתק
                 </button>

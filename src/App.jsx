@@ -6,7 +6,6 @@ import Header from "./components/Header";
 // (נניח שיש לכם index.css שמאגד את כל הסגנונות הכלליים)
 import "./styles/index.css";
 
-
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
@@ -83,42 +82,37 @@ export default function App() {
         <Routes>
           {/* Public pages */}
           <Route path="/" element={<HomePage />} />
-<Route path="/about" element={<About />} />
-<Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
+          <Route path="/search" element={<SearchBusinesses />} />
 
-{/* עמוד החיפוש – חייב קודם */}
-<Route path="/search" element={<SearchBusinesses />} />
+          {/* --- לעסקים / מידע עסקי --- */}
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/checkout" element={<Checkout />} />
 
-{/* --- לעסקים / מידע עסקי --- */}
-<Route path="/how-it-works" element={<HowItWorks />} />
-<Route path="/plans" element={<Plans />} />
-<Route path="/checkout" element={<Checkout />} />
+          {/* --- תמיכה ומשאבים ללקוחות --- */}
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/accessibility" element={<Accessibility />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
 
-{/* --- תמיכה ומשאבים ללקוחות --- */}
-<Route path="/faq" element={<FAQ />} />
-<Route path="/accessibility" element={<Accessibility />} />
-<Route path="/terms" element={<Terms />} />
-<Route path="/contact" element={<Contact />} />
+          {/* New Business Support page */}
+          <Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
 
-{/* New Business Support page */}
-<Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
+          {/* --- עמודי בניית עסקים --- */}
+          <Route path="/business" element={<BusinessOverview />} />
+          <Route path="/businesses" element={<BusinessesList />} />
 
-{/* --- עמודי בניית עסקים --- */}
-<Route path="/business" element={<BusinessOverview />} />
-<Route path="/businesses" element={<BusinessesList />} />
+          {/* --- מודול משרות בזק --- */}
+          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
-{/* --- מודול משרות בזק --- */}
-<Route path="/quick-jobs" element={<QuickJobsBoard />} />
-<Route path="/quick-jobs/new" element={<QuickJobForm />} />
-
-{/* --- אימות ואבטחה --- */}
-<Route path="/login" element={<Login />} />
-<Route path="/register" element={<Register />} />
-<Route path="/reset-password" element={<ResetPassword />} />
-<Route path="/change-password" element={<ChangePassword />} />
-
-
-
+          {/* --- אימות ואבטחה --- */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />

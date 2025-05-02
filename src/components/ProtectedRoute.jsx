@@ -23,13 +23,23 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
     );
   }
 
-  // 2. אין משתמש מחובר – הפנייה ל־Homepage
+  // 2. אין משתמש מחובר – הפנייה לדף הבית
   if (!user) {
-    console.log("No user found. Redirecting to home.");
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("⛔ אין משתמש – הפנייה לדף הבית");
+    }
     return <Navigate to="/" replace />;
   }
 
-  // 3. בדיקת תפקידים
+  // 3. אין תפקיד כלל – גם אם roles ריק
+  if (!user.role) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("⛔ למשתמש אין תפקיד מוגדר – הפנייה לדף הבית");
+    }
+    return <Navigate to="/" replace />;
+  }
+
+  // 4. בדיקת תפקידים אם נדרש
   if (roles.length > 0 && !roles.includes(user.role)) {
     const redirectMap = {
       customer: `/client/dashboard`,
@@ -38,28 +48,46 @@ const ProtectedRoute = ({ children, roles = [], requiredPackage = null }) => {
       manager:  `/manager/dashboard`,
       admin:    `/admin/dashboard`,
     };
-    const target = redirectMap[user.role] || "/";
-    console.log(`User with role "${user.role}" is not allowed here, redirecting to ${target}`);
+
+    const target = redirectMap[user.role];
+    if (!target) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error(`⛔ תפקיד לא חוקי: "${user.role}" – הפנייה לדף הבית`);
+      }
+      return <Navigate to="/" replace />;
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        `⛔ משתמש עם תפקיד "${user.role}" לא מורשה כאן – מפנה אל ${target}`
+      );
+    }
     return <Navigate to={target} replace />;
   }
 
-  // 4. בדיקת חבילה
+  // 5. בדיקת חבילת שימוש אם נדרשת
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
-    console.log(`User subscriptionPlan="${user.subscriptionPlan}" needs "${requiredPackage}", redirecting to /plans`);
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        `⛔ למשתמש יש חבילה "${user.subscriptionPlan}" במקום "${requiredPackage}" – הפנייה למסך חבילות`
+      );
+    }
     return <Navigate to="/plans" replace />;
   }
 
-  // 5. אם בעל עסק ללא עמוד עסקי – להפנות ליצירת עמוד
+  // 6. אם בעל עסק אך אין businessId – להפנות ליצירת עסק
   if (
     roles.includes("business") &&
     user.role === "business" &&
     !user.businessId
   ) {
-    console.log("Business user missing businessId, redirecting to /create-business");
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("⛔ משתמש עסקי ללא businessId – הפנייה ליצירת עסק");
+    }
     return <Navigate to="/create-business" replace />;
   }
 
-  // 6. הכל תקין – מציג את התוכן המוגן
+  // 7. הכל תקין – מציג את התוכן המוגן
   return children;
 };
 
