@@ -67,5 +67,42 @@
         body ? body.appendChild(coreCall) : head.appendChild(coreCall);
     })(document, document.head, document.body);
   </script>
+
+  <!-- WebSocket Script -->
+  <script>
+    // התחברות לשרת WebSocket (כתובת השרת תהיה כתובת ה־WebSocket של השרת שלך)
+    const socket = new WebSocket('ws://localhost:8080');  // החלף לכתובת ה־WebSocket של השרת שלך
+
+    // ברגע שמתקבל עדכון מהשרת
+    socket.onmessage = function(event) {
+      const update = JSON.parse(event.data);  // המרת העדכון ל־JSON
+      console.log(update.message);  // מציג את העדכון בקונסול (אתה יכול להציג את זה גם בעמוד)
+      
+      // לדוגמה, אם ברצונך להציג את העדכון ב-UI:
+      const updateList = document.getElementById('updates-list');  // אלמנט HTML שבו יוצגו העדכונים
+      const listItem = document.createElement('li');
+      listItem.textContent = update.message;  // מציג את ההודעה שנשלחה
+      updateList.appendChild(listItem);  // מוסיף את העדכון לרשימה
+    };
+
+    // טיפול בשגיאות WebSocket
+    socket.onerror = function(error) {
+      console.error('WebSocket Error: ', error);
+    };
+
+    // טיפול בסגירת החיבור
+    socket.onclose = function() {
+      console.log('WebSocket connection closed');
+    };
+  </script>
+
+  <!-- מקום להצגת העדכונים -->
+  <div id="updates-section">
+    <h2>מה קורה עכשיו בעסקליק?</h2>
+    <ul id="updates-list">
+      <!-- עדכונים יוכנסו כאן -->
+    </ul>
+  </div>
+
 </body>
 </html>
