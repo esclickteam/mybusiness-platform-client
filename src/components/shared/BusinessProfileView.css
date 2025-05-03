@@ -159,15 +159,6 @@ html, body, #root {
   color: #fff;
 }
 
-/* === Tab Content Wrapper === */
-.tab-content {
-  padding: 1rem;
-  background-color: #fff;
-  border-radius: 12px;
-  max-width: 900px;
-  margin: 0 auto 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
 
 .profile-tabs .tab {
   padding: 0.6rem 1rem;
