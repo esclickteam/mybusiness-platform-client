@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
+import { Link } from "react-router-dom"; // Importing Link for routing to Register page
 
 export default function Login() {
   const { login, error } = useAuth();
@@ -61,9 +62,9 @@ export default function Login() {
             שכחת את הסיסמה?
           </span>
 
-          {/* קישור להרשמה */}
+          {/* קישור לדף הרשמה */}
           <div className="signup-link">
-            <span>לא רשום? <a href="/register" className="signup-link-text">הירשם עכשיו</a></span>
+            <span>לא רשום? <Link to="/register" className="signup-link-text">הירשם עכשיו</Link></span>
           </div>
         </div>
       </div>
