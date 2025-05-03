@@ -1,36 +1,50 @@
+// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
-import { Link, useNavigate } from "react-router-dom"; // Importing useNavigate for redirection
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login, error } = useAuth(); // Assuming 'user' contains the logged-in user info
+  const { login, logout, error: contextError } = useAuth(); 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
-  const navigate = useNavigate(); // To handle redirection
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginError("");
+
     if (!identifier.trim() || !password) {
+      setLoginError("יש למלא אימייל וסיסמה");
       return;
     }
+
     setLoading(true);
     try {
-      await login(identifier.trim(), password);
-      // הניווט נעשה בתוך login()
-    } catch (_) {
-      // error מטופל ומוצג אוטומטית מהקונטקסט
+      // קריאה ל־login עם skipRedirect כדי למנוע ניווט אוטומטי מהקונטקסט
+      const user = await login(identifier.trim(), password, { skipRedirect: true });
+
+      // מאפשרים רק תפקידים של בעל עסק (business) או לקוח (customer)
+      if (user.role === "business") {
+        navigate(`/business/${user.businessId}/dashboard`, { replace: true });
+      } else if (user.role === "customer") {
+        navigate("/client/dashboard", { replace: true });
+      } else {
+        // תפקיד לא מורשה בדף הזה → מתנתקים ומציגים שגיאה
+        await logout();
+        setLoginError("אין לך הרשאה להתחבר כאן");
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+      // אם הקונטקסט כבר הציג שגיאה, נשאיר אותה, אחרת נציג הודעה משלו
+      setLoginError(contextError || "אימייל או סיסמה שגויים");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleStaffLogin = () => {
-    // פנה לדף לוגין נפרד לעובדים
-    navigate('/staff-login'); // הפניית המשתמש לדף נפרד של לוגין לעובדים
   };
 
   return (
@@ -43,6 +57,7 @@ export default function Login() {
             placeholder="אימייל או שם משתמש"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
+            disabled={loading}
             required
           />
           <input
@@ -50,6 +65,7 @@ export default function Login() {
             placeholder="סיסמה"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
             required
           />
 
@@ -58,7 +74,10 @@ export default function Login() {
           </button>
         </form>
 
-        {error && <p className="error-message">{error}</p>}
+        {/* תעדוף הודעות שגיאה מקומיות על פני הקונטקסט */}
+        {(loginError || contextError) && (
+          <p className="error-message">{loginError || contextError}</p>
+        )}
 
         <div className="login-extra-options">
           <span
@@ -68,20 +87,19 @@ export default function Login() {
             שכחת את הסיסמה?
           </span>
 
-          {/* קישור לדף הרשמה */}
-          <div className="signup-link">
-            <span>לא רשום? <Link to="/register" className="signup-link-text">הירשם עכשיו</Link></span>
-          </div>
+          <p className="signup-link">
+            לא רשום?{" "}
+            <Link to="/register" className="signup-link-text">
+              הירשם עכשיו
+            </Link>
+          </p>
 
-          {/* כפתור כניסת עובדים */}
-          <div className="staff-login-link">
-            <button
-              onClick={handleStaffLogin} // הפניה לדף לוגין לעובדים
-              className="staff-login-btn"
-            >
-              כניסת עובדים
-            </button>
-          </div>
+          <button
+            className="staff-login-btn"
+            onClick={() => navigate("/staff-login")}
+          >
+            כניסת עובדים
+          </button>
         </div>
       </div>
 

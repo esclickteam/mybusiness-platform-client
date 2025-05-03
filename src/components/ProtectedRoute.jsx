@@ -23,13 +23,20 @@ function ProtectedRoute({ children, roles = [], requiredPackage = null }) {
     );
   }
 
-  // 2. If not authenticated, redirect to login page, preserving the attempted URL
+  // 2. If not authenticated, redirect to login page appropriate for the role
   if (!user) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    const loginPath = roles.includes("worker") ? "/staff-login" : "/login";
+    return (
+      <Navigate to={loginPath} replace state={{ from: location }} />
+    );
   }
 
-  // 3. If roles are specified and user role is not in list, redirect to home
+  // 3. If roles are specified and user role is not in list, redirect accordingly
   if (roles.length > 0 && !roles.includes(user.role)) {
+    // unauthorized worker → staff-login, others → homepage
+    if (roles.includes("worker")) {
+      return <Navigate to="/staff-login" replace />;
+    }
     return <Navigate to="/" replace />;
   }
 

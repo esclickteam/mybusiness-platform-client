@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null); // ✅ הודעת הצלחה
+  const [successMessage, setSuccessMessage] = useState(null);
   const initRan = useRef(false);
 
   // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
@@ -30,8 +30,18 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  // login
-  const login = async (identifier, password) => {
+  /**
+   * login
+   * @param {string} identifier
+   * @param {string} password
+   * @param {{ skipRedirect?: boolean }} options
+   * @returns {Promise<object>} user data
+   */
+  const login = async (
+    identifier,
+    password,
+    options = { skipRedirect: false }
+  ) => {
     setLoading(true);
     setError(null);
     try {
@@ -39,8 +49,8 @@ export function AuthProvider({ children }) {
       const me = await API.get("/auth/me");
       setUser(me.data);
 
-      // ודא שהמשתמש נטען לפני הניווט
-      if (me.data) {
+      // ניווט אוטומטי בהתאם לאפשרות
+      if (!options.skipRedirect && me.data) {
         const path =
           me.data.role === "business"
             ? `/business/${me.data.businessId}/dashboard`
@@ -55,6 +65,7 @@ export function AuthProvider({ children }) {
             : "/";
         navigate(path, { replace: true });
       }
+
       return me.data;
     } catch (e) {
       setError(
@@ -73,7 +84,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await API.post("/auth/logout");
-      setSuccessMessage("✅ נותקת בהצלחה"); // ✅ הצגת ההודעה
+      setSuccessMessage("✅ נותקת בהצלחה");
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
@@ -94,7 +105,6 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, error, login, logout }}>
-      {/* ✅ הודעת הצלחה גלובלית */}
       {successMessage && (
         <div className="global-success-toast">
           {successMessage}
