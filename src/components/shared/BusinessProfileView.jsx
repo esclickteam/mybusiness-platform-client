@@ -1,3 +1,4 @@
+// src/components/shared/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "@api";
@@ -14,6 +15,15 @@ const TABS = [
   "צ'אט עם העסק",
   "חנות / יומן",
 ];
+
+// פונקציה שמחזירה את ממוצע הערכים המספריים של ביקורת אחת
+function getReviewAvg(r) {
+  const vals = Object.entries(r)
+    .filter(([key, val]) => typeof val === "number")
+    .map(([_, val]) => val);
+  if (!vals.length) return 0;
+  return vals.reduce((sum, v) => sum + v, 0) / vals.length;
+}
 
 export default function BusinessProfileView() {
   const { businessId } = useParams();
@@ -49,16 +59,8 @@ export default function BusinessProfileView() {
   if (!data) return <div className="error">העסק לא נמצא</div>;
 
   const {
-    name,
-    logo,
-    description = "",
-    phone = "",
-    category = "",
-    mainImages,
-    gallery,
-    reviews,
-    faqs,
-    city,
+    name, logo, description = "", phone = "", category = "",
+    mainImages, gallery, reviews, faqs, city,
   } = data;
 
   const uniqueMain = dedupeByPreview(
@@ -67,9 +69,9 @@ export default function BusinessProfileView() {
     .slice(0, 5)
     .map(o => o.preview);
 
-  // דירוג ממוצע מתוך r.rating
+  // חישוב ממוצע כל הביקורות
   const avgRating = reviews.length
-    ? reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviews.length
+    ? reviews.reduce((sum, r) => sum + getReviewAvg(r), 0) / reviews.length
     : 0;
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const fullAvgStars = Math.floor(roundedAvg);
@@ -82,7 +84,10 @@ export default function BusinessProfileView() {
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal = () => setShowReviewModal(false);
   const handleReviewSubmit = newReview => {
-    setData(prev => ({ ...prev, reviews: [...prev.reviews, newReview] }));
+    setData(prev => ({
+      ...prev,
+      reviews: [...prev.reviews, newReview]
+    }));
     closeReviewModal();
   };
 
@@ -90,7 +95,6 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-
           {isOwner && (
             <Link
               to={`/business/${businessId}/dashboard/edit`}
@@ -117,7 +121,9 @@ export default function BusinessProfileView() {
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
             <span className="stars-inline">
-              {'★'.repeat(fullAvgStars)}{halfAvgStar ? '⯨' : ''}{'☆'.repeat(emptyAvgStars)}
+              {'★'.repeat(fullAvgStars)}
+              {halfAvgStar ? '⯨' : ''}
+              {'☆'.repeat(emptyAvgStars)}
             </span>
             <span className="count">({reviews.length} ביקורות)</span>
           </div>
@@ -136,20 +142,23 @@ export default function BusinessProfileView() {
           </div>
 
           <div className="tab-content">
-
             {currentTab === "ראשי" && (
               <div className="public-main-images">
-                {uniqueMain.length > 0 ? uniqueMain.map((url, i) => (
-                  <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
-                )) : <p className="no-data">אין תמונות להצגה</p>}
+                {uniqueMain.length > 0
+                  ? uniqueMain.map((url, i) => (
+                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
+                    ))
+                  : <p className="no-data">אין תמונות להצגה</p>}
               </div>
             )}
 
             {currentTab === "גלריה" && (
               <div className="public-main-images">
-                {gallery.length > 0 ? gallery.map((url, i) => (
-                  <img key={i} src={url} alt={`גלריה ${i + 1}`} />
-                )) : <p className="no-data">אין תמונות בגלריה</p>}
+                {gallery.length > 0
+                  ? gallery.map((url, i) => (
+                      <img key={i} src={url} alt={`גלריה ${i + 1}`} />
+                    ))
+                  : <p className="no-data">אין תמונות בגלריה</p>}
               </div>
             )}
 
@@ -167,7 +176,6 @@ export default function BusinessProfileView() {
                 )}
                 {filteredReviews.length ? (
                   filteredReviews.map((r, i) => {
-                    // תאריך
                     const rawDate = r.date || r.createdAt;
                     const dateStr = rawDate && !isNaN(new Date(rawDate).getTime())
                       ? new Date(rawDate).toLocaleDateString("he-IL", {
@@ -176,24 +184,13 @@ export default function BusinessProfileView() {
                           year: "numeric",
                         })
                       : "";
-                
-                    // שם המבקר
                     const reviewerName = r.user?.name || "—";
-                
-                    // חשב ממוצע של כל שדות הדירוג המספריים ב־r
-                    const ratingValues = Object.entries(r)
-                      .filter(([key, val]) => typeof val === "number" && key !== "createdAt")
-                      .map(([_, val]) => val);
-                    const avgScore = ratingValues.length
-                      ? ratingValues.reduce((sum, v) => sum + v, 0) / ratingValues.length
-                      : 0;
+                    const avgScore = getReviewAvg(r);
                     const roundedScore = Math.round(avgScore * 10) / 10;
-                
-                    // חישוב כוכבים
-                    const fullStars  = Math.floor(roundedScore);
-                    const halfStar   = roundedScore % 1 ? 1 : 0;
-                    const emptyStars = 5 - fullStars - halfStar;
-                
+                    const fs = Math.floor(roundedScore);
+                    const hs = roundedScore % 1 ? 1 : 0;
+                    const es = 5 - fs - hs;
+
                     return (
                       <div key={i} className="review-card improved">
                         <div className="review-header simple">
@@ -204,9 +201,7 @@ export default function BusinessProfileView() {
                           <div className="score">
                             <span className="score-number">{roundedScore.toFixed(1)}</span>
                             <span className="stars-inline">
-                              {'★'.repeat(fullStars)}
-                              {halfStar ? '⯨' : ''}
-                              {'☆'.repeat(emptyStars)}
+                              {'★'.repeat(fs)}{hs ? '⯨' : ''}{'☆'.repeat(es)}
                             </span>
                           </div>
                         </div>
@@ -222,12 +217,14 @@ export default function BusinessProfileView() {
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
-                {faqs.length > 0 ? faqs.map((f, i) => (
-                  <div key={i} className="faq-item">
-                    <strong>{f.question}</strong>
-                    <p>{f.answer}</p>
-                  </div>
-                )) : <p className="no-data">אין שאלות ותשובות</p>}
+                {faqs.length > 0
+                  ? faqs.map((f, i) => (
+                      <div key={i} className="faq-item">
+                        <strong>{f.question}</strong>
+                        <p>{f.answer}</p>
+                      </div>
+                    ))
+                  : <p className="no-data">אין שאלות ותשובות</p>}
               </div>
             )}
 
@@ -242,7 +239,6 @@ export default function BusinessProfileView() {
                 <p>פיתוח בהמשך…</p>
               </div>
             )}
-
           </div>
 
           {showReviewModal && (
@@ -257,7 +253,6 @@ export default function BusinessProfileView() {
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>
