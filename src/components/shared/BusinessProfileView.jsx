@@ -149,23 +149,29 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {currentTab === "ביקורות" && (
-              <div className="reviews">
-                {filteredReviews.length > 0 ? (
-                  filteredReviews.map((r, i) => (
-                    <div key={i} className="review-card improved">
-                      <div className="review-header">
-                        <strong>{r.userName || r.user}</strong>
-                        <span>★ {r.averageScore || r.averageScore === 0 ? r.averageScore : "-"} / 5</span>
-                      </div>
-                      <p className="review-comment">{r.comment}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="no-data">אין ביקורות</p>
-                )}
-              </div>
-            )}
+{currentTab === "ביקורות" && (
+  <div className="reviews">
+    {filteredReviews.length > 0 ? (
+      filteredReviews.map((r, i) => (
+        <div key={i} className="review-card improved">
+          <div className="review-header">
+            <strong>{r.userName || 'משתמש אלמוני'}</strong>
+            <span className="stars">
+              {'★'.repeat(Math.round(r.averageScore))}{'☆'.repeat(5 - Math.round(r.averageScore))}
+            </span>
+            <small className="score-text">
+              {parseFloat(r.averageScore).toFixed(1)} / 5
+            </small>
+          </div>
+          <p className="review-comment">{r.comment}</p>
+        </div>
+      ))
+    ) : (
+      <p className="no-data">אין ביקורות</p>
+    )}
+  </div>
+)}
+
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
