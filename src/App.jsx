@@ -1,17 +1,12 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import UpdatesTicker from "./components/UpdatesTicker";
+import ScrollToTop from "./components/ScrollToTop";
 import "./styles/index.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
-
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
-  return null;
-}
 
 // Lazy-loaded public pages
 const HomePage = lazy(() => import("./pages/Home"));
@@ -70,12 +65,6 @@ const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
-  return null;
-}
-
 export default function App() {
   return (
     <>
@@ -84,6 +73,7 @@ export default function App() {
       {/* עדכונים חיים לאורך כל הסשן */}
       <UpdatesTicker />
 
+      {/* גלילה לעל בכל שינוי כתובת */}
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
