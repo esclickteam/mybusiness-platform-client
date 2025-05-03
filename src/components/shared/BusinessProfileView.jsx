@@ -78,8 +78,10 @@ export default function BusinessProfileView() {
   const isOwner = user?.role === "business" && user.businessId === businessId;
 
   // סינון הביקורות כך שיתקבלו רק ביקורות אמיתיות
-  const filteredReviews = reviews.filter(review => review.user && review.user !== "example" && review.comment);
-
+  const filteredReviews = reviews.filter(
+    (review) => review.user && review.comment && !review.isExample // סינון ביקורות עם פרמטר 'isExample' או עם תוכן חסר
+  );
+  
 
   return (
     <div className="profile-page">
@@ -172,23 +174,24 @@ export default function BusinessProfileView() {
               )
             )}
 
-            {currentTab === "ביקורות" && (
-              <div className="reviews">
-                {filteredReviews.length > 0 ? (
-                  filteredReviews.map((r, i) => (
-                    <div key={i} className="review-card improved">
-                      <div className="review-header">
-                        <strong>{r.user}</strong> 
-                        <span>★ {r.rating}/5</span>
-                      </div>
-                      <p>{r.comment || r.text}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="no-data">אין ביקורות</p>
-                )}
-              </div>
-            )}
+{currentTab === "ביקורות" && (
+  <div className="reviews">
+    {filteredReviews.length > 0 ? (
+      filteredReviews.map((r, i) => (
+        <div key={i} className="review-card improved">
+          <div className="review-header">
+            <strong>{r.user}</strong>{" "}
+            <span>★ {r.rating}/5</span>
+          </div>
+          <p>{r.comment || r.text}</p>
+        </div>
+      ))
+    ) : (
+      <p className="no-data">אין ביקורות</p>
+    )}
+  </div>
+)}
+
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
