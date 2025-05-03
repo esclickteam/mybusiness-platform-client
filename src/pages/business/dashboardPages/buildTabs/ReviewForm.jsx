@@ -18,7 +18,7 @@ const ReviewForm = ({ businessId, onSubmit }) => {
   const [loading, setLoading] = useState(false);
 
   const handleRatingChange = (key, value) => {
-    setRatings((prev) => ({ ...prev, [key]: value }));
+    setRatings(prev => ({ ...prev, [key]: value }));
   };
 
   const calculateAverage = () => {
@@ -27,7 +27,7 @@ const ReviewForm = ({ businessId, onSubmit }) => {
     return (sum / ratingFields.length).toFixed(1);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     const reviewData = {
@@ -40,7 +40,8 @@ const ReviewForm = ({ businessId, onSubmit }) => {
 
     try {
       setLoading(true);
-      const res = await API.post('/reviews', reviewData);
+      // השתמש ב־api (כפי שהיבאת במעל)
+      const res = await api.post('/reviews', reviewData);
       console.log('✅ ביקורת נשמרה:', res.data);
       onSubmit(res.data);
       setRatings({});
@@ -62,11 +63,11 @@ const ReviewForm = ({ businessId, onSubmit }) => {
           <label>{label}</label>
           <select
             value={ratings[key] || ''}
-            onChange={(e) => handleRatingChange(key, Number(e.target.value))}
+            onChange={e => handleRatingChange(key, Number(e.target.value))}
             required
           >
             <option value="">בחר דירוג</option>
-            {[5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1].map((n) => (
+            {[5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1].map(n => (
               <option key={n} value={n}>
                 {'★'.repeat(Math.round(n))}{'☆'.repeat(5 - Math.round(n))} ({n})
               </option>
@@ -78,7 +79,7 @@ const ReviewForm = ({ businessId, onSubmit }) => {
       <label>✍️ חוות דעת</label>
       <textarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={e => setText(e.target.value)}
         rows="4"
         placeholder="כתוב כאן את החוויה שלך עם השירות..."
         required
