@@ -54,14 +54,6 @@ export default function BusinessProfileView() {
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  // Recompute average rating on reviews change
-  useEffect(() => {
-    if (!data?.reviews) return;
-    const sum = data.reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
-    const newAvg = data.reviews.length ? sum / data.reviews.length : 0;
-    setAvgRating(newAvg);
-  }, [data?.reviews]);
-
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal = () => setShowReviewModal(false);
 
