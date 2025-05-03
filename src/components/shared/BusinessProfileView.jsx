@@ -73,17 +73,13 @@ export default function BusinessProfileView() {
 
   const isOwner = user?.role === "business" && user.businessId === businessId;
   const filteredReviews = reviews.filter(
-    (review) => review.user && review.comment && !review.isExample
+    r => r.user || r.userName
   );
 
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal = () => setShowReviewModal(false);
-
-  const handleReviewSubmit = (newReview) => {
-    setData(prev => ({
-      ...prev,
-      reviews: [...prev.reviews, newReview],
-    }));
+  const handleReviewSubmit = newReview => {
+    setData(prev => ({ ...prev, reviews: [...prev.reviews, newReview] }));
     closeReviewModal();
   };
 
@@ -92,12 +88,18 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
           {isOwner ? (
-            <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+            <Link
+              to={`/business/${businessId}/dashboard/edit`}
+              className="edit-profile-btn"
+            >
               ✏️ ערוך פרטי העסק
             </Link>
           ) : (
             user && (
-              <button onClick={handleReviewClick} className="add-review-btn">
+              <button
+                onClick={handleReviewClick}
+                className="add-review-btn"
+              >
                 הוסף ביקורת
               </button>
             )
@@ -105,19 +107,21 @@ export default function BusinessProfileView() {
 
           {logo && (
             <div className="profile-logo-wrapper">
-              <img className="profile-logo" src={logo} alt="לוגו העסק" />
+              <img
+                className="profile-logo"
+                src={logo}
+                alt="לוגו העסק"
+              />
             </div>
           )}
 
           <h1 className="business-name">{name}</h1>
-
           <div className="about-phone">
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
             {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
             {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
-
           <hr className="profile-divider" />
 
           <div className="profile-tabs">
@@ -135,9 +139,13 @@ export default function BusinessProfileView() {
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="public-main-images">
-                {uniqueMain.length > 0 ? uniqueMain.map((url, i) => (
-                  <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
-                )) : <p className="no-data">אין תמונות להצגה</p>}
+                {uniqueMain.length > 0 ? (
+                  uniqueMain.map((url, i) => (
+                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
+                  ))
+                ) : (
+                  <p className="no-data">אין תמונות להצגה</p>
+                )}
               </div>
             )}
 
@@ -149,29 +157,38 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-{currentTab === "ביקורות" && (
-  <div className="reviews">
-    {filteredReviews.length > 0 ? (
-      filteredReviews.map((r, i) => (
-        <div key={i} className="review-card improved">
-          <div className="review-header">
-            <strong>{r.userName || 'משתמש אלמוני'}</strong>
-            <span className="stars">
-              {'★'.repeat(Math.round(r.averageScore))}{'☆'.repeat(5 - Math.round(r.averageScore))}
-            </span>
-            <small className="score-text">
-              {parseFloat(r.averageScore).toFixed(1)} / 5
-            </small>
-          </div>
-          <p className="review-comment">{r.comment}</p>
-        </div>
-      ))
-    ) : (
-      <p className="no-data">אין ביקורות</p>
-    )}
-  </div>
-)}
+            {currentTab === "ביקורות" && (
+              <div className="reviews">
+                {filteredReviews.length > 0 ? (
+                  filteredReviews.map((r, i) => {
+                    const score = Number(r.averageScore) || 0;
+                    const rounded = Math.round(score * 2) / 2;
+                    const fullStars = Math.floor(rounded);
+                    const halfStars = rounded % 1 ? 1 : 0;
+                    const emptyStars = 5 - fullStars - halfStars;
 
+                    return (
+                      <div key={i} className="review-card improved">
+                        <div className="review-header">
+                          <strong>{r.userName}</strong>
+                          <small className="score-text">
+                            {rounded.toFixed(1)} / 5
+                          </small>
+                        </div>
+                        <div className="stars">
+                          {'★'.repeat(fullStars)}
+                          {halfStars && '⯨'}
+                          {'☆'.repeat(emptyStars)}
+                        </div>
+                        <p className="review-comment">{r.comment}</p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="no-data">אין ביקורות</p>
+                )}
+              </div>
+            )}
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
@@ -205,7 +222,10 @@ export default function BusinessProfileView() {
             <div className="review-modal">
               <div className="modal-content">
                 <h2>הוסף ביקורת</h2>
-                <ReviewForm businessId={businessId} onSubmit={handleReviewSubmit} />
+                <ReviewForm
+                  businessId={businessId}
+                  onSubmit={handleReviewSubmit}
+                />
                 <button onClick={closeReviewModal}>סגור</button>
               </div>
             </div>
