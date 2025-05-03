@@ -67,7 +67,7 @@ export default function BusinessProfileView() {
     .slice(0, 5)
     .map(o => o.preview);
 
-  // חשב את דירוג הממוצע הכללי
+  // דירוג ממוצע
   const avgRating = reviews.length
     ? reviews.reduce((sum, r) => sum + (Number(r.averageScore) || 0), 0) / reviews.length
     : 0;
@@ -90,22 +90,14 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          {isOwner ? (
+
+          {isOwner && (
             <Link
               to={`/business/${businessId}/dashboard/edit`}
               className="edit-profile-btn"
             >
               ✏️ ערוך פרטי העסק
             </Link>
-          ) : (
-            user && (
-              <button
-                onClick={handleReviewClick}
-                className="add-review-btn"
-              >
-                הוסף ביקורת
-              </button>
-            )
           )}
 
           {logo && (
@@ -120,29 +112,12 @@ export default function BusinessProfileView() {
 
           <h1 className="business-name">{name}</h1>
           <div className="about-phone">
-            {category && (
-              <p>
-                <strong>🏷️ קטגוריה:</strong> {category}
-              </p>
-            )}
-            {description && (
-              <p>
-                <strong>📝 תיאור:</strong> {description}
-              </p>
-            )}
-            {phone && (
-              <p>
-                <strong>📞 טלפון:</strong> {phone}
-              </p>
-            )}
-            {city && (
-              <p>
-                <strong>🏙️ עיר:</strong> {city}
-              </p>
-            )}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
-          {/* דירוג ממוצע כללי */}
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
             <span className="stars-inline">
@@ -165,6 +140,7 @@ export default function BusinessProfileView() {
           </div>
 
           <div className="tab-content">
+
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {uniqueMain.length > 0 ? (
@@ -179,60 +155,69 @@ export default function BusinessProfileView() {
 
             {currentTab === "גלריה" && (
               <div className="public-main-images">
-                {gallery.map((url, i) => (
-                  <img key={i} src={url} alt={`גלריה ${i + 1}`} />
-                ))}
+                {gallery.length > 0 ? (
+                  gallery.map((url, i) => (
+                    <img key={i} src={url} alt={`גלריה ${i + 1}`} />
+                  ))
+                ) : (
+                  <p className="no-data">אין תמונות בגלריה</p>
+                )}
               </div>
             )}
 
-{currentTab === "ביקורות" && (
-  <div className="reviews">
-    {filteredReviews.length ? (
-      filteredReviews.map((r, i) => {
-        // תאריך
-        const rawDate = r.date || r.createdAt;
-        const dateStr =
-          rawDate && !isNaN(new Date(rawDate).getTime())
-            ? new Date(rawDate).toLocaleDateString("he-IL", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })
-            : "";
-
-        // כוכבים
-        const score = Number(r.averageScore) || 0;
-        const rounded = Math.round(score * 2) / 2;
-        const fullStars = Math.floor(rounded);
-        const halfStars = rounded % 1 ? 1 : 0;
-        const emptyStars = 5 - fullStars - halfStars;
-
-        return (
-          <div key={i} className="review-card improved">
-            <div className="review-header simple">
-              <div className="author-info">
-                <strong className="reviewer">
-                  {r.user?.name || r.userName}
-                </strong>
-                {dateStr && (
-                  <small className="review-date">{dateStr}</small>
+            {currentTab === "ביקורות" && (
+              <div className="reviews">
+                {user && !isOwner && (
+                  <div className="reviews-header">
+                    <button
+                      onClick={handleReviewClick}
+                      className="add-review-btn"
+                    >
+                      הוסף ביקורת
+                    </button>
+                  </div>
+                )}
+                {filteredReviews.length ? (
+                  filteredReviews.map((r, i) => {
+                    const rawDate = r.date || r.createdAt;
+                    const dateStr =
+                      rawDate && !isNaN(new Date(rawDate).getTime())
+                        ? new Date(rawDate).toLocaleDateString("he-IL", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : "";
+                    const score = Number(r.averageScore) || 0;
+                    const rounded = Math.round(score * 2) / 2;
+                    const fullStars = Math.floor(rounded);
+                    const halfStars = rounded % 1 ? 1 : 0;
+                    const emptyStars = 5 - fullStars - halfStars;
+                    return (
+                      <div key={i} className="review-card improved">
+                        <div className="review-header simple">
+                          <div className="author-info">
+                            <strong className="reviewer">
+                              {r.user?.name || r.userName}
+                            </strong>
+                            {dateStr && (
+                              <small className="review-date">{dateStr}</small>
+                            )}
+                          </div>
+                          <span className="score">
+                            {rounded.toFixed(1)}
+                            <span className="star">★</span>
+                          </span>
+                        </div>
+                        <p className="review-comment simple">{r.comment}</p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="no-data">אין ביקורות</p>
                 )}
               </div>
-              <span className="score">
-                {rounded.toFixed(1)}
-                <span className="star">★</span>
-              </span>
-            </div>
-            <p className="review-comment simple">{r.comment}</p>
-          </div>
-        );
-      })
-    ) : (
-      <p className="no-data">אין ביקורות</p>
-    )}
-  </div>
-)}
-
+            )}
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
@@ -260,6 +245,7 @@ export default function BusinessProfileView() {
                 <p>פיתוח בהמשך…</p>
               </div>
             )}
+
           </div>
 
           {showReviewModal && (
@@ -274,6 +260,7 @@ export default function BusinessProfileView() {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>

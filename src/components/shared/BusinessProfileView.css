@@ -169,22 +169,6 @@ html, body, #root {
   box-shadow: none !important;
 }
 
-.profile-tabs .tab {
-  padding: 0.6rem 1rem;
-  border-radius: 20px;
-  background: #f0eaff;
-  color: #333;
-  border: none;
-  width: 100%;
-  max-width: 200px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-.profile-tabs .tab.active {
-  background: #b46af1;
-  color: #fff;
-}
-
 /* === תמונות (ראשי וגלריה) === */
 .public-main-images {
   display: grid;
@@ -206,15 +190,42 @@ html, body, #root {
   width: 100%;
   max-width: 700px;
 }
+
+/* === כותרת וכפתור בתוך טאב הביקורות === */
+.reviews-header {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 1rem;
+  display: flex;
+  justify-content: flex-end; /* מיושר לימין */
+}
+.add-review-btn {
+  padding: 0.6rem 1.2rem;
+  background-color: #8c63ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+.add-review-btn:hover {
+  background-color: #6f3fcc;
+  transform: translateY(-1px);
+}
+
 .review-card.improved {
+  width: 100%;
+  max-width: 700px;   /* או כל רוחב מקסימלי שנוח לך */
+  margin: 0 auto 1rem; /* מרכז אופקית + רווח תחתון */
   background: #fff;
   border-left: 4px solid #b46af1;
   border-radius: 12px;
   padding: 1rem;
-  margin-bottom: 1rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
 }
+
 .review-card.improved:hover {
   transform: translateX(4px);
   background: #fafafa;
@@ -226,10 +237,8 @@ html, body, #root {
   align-items: center;
   padding: 0.5rem 0;
   border-bottom: 1px solid rgba(0,0,0,0.05);
-  /* לתמוך ב־RTL: שם מימין, ציון משמאל */
   flex-direction: row-reverse;
 }
-
 .author-info {
   display: flex;
   flex-direction: column;
