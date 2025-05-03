@@ -1,4 +1,3 @@
-// src/pages/StaffLogin.jsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
@@ -35,8 +34,8 @@ export default function StaffLogin() {
         navigate("/admin/dashboard", { replace: true });
       } else {
         // כל תפקיד אחר (business/customer וכו') → מתנתקים ומציגים שגיאה
-        await logout();
         setStaffError("אין לך הרשאה להתחבר כעובד");
+        await logout();
       }
     } catch (err) {
       console.error("Staff login failed:", err);
