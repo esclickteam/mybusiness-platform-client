@@ -22,87 +22,113 @@ export default function BusinessProfileView() {
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [avgRating, setAvgRating] = useState(0);
 
   // Fetch business + reviews, compute initial average on load
   useEffect(() => {
     setLoading(true);
+    setError(null);
+    console.log("Fetching business with ID:", businessId);
     api.get(`/business/${businessId}`)
       .then(res => {
+        console.log("Response data:", res.data);
         const biz = res.data.business || res.data;
         const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
+        console.log(`Found ${reviews.length} reviews`, reviews);
         const sum = reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
         const initialAvg = reviews.length > 0 ? sum / reviews.length : 0;
         setData({
           ...biz,
-          city: typeof biz.address === "string"
+          city: typeof biz.address === 'string'
             ? biz.address
-            : biz.address?.city || "",
+            : biz.address?.city || '',
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
           gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
           reviews,
           faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : [],
-          rating:     initialAvg,
         });
+        setAvgRating(initialAvg);
+        console.log("Initial average rating set to", initialAvg);
       })
-      .catch(err => console.error("❌ fetch business:", err))
-      .finally(() => setLoading(false));
+      .catch(err => {
+        console.error('❌ fetch business error:', err);
+        setError('שגיאה בטעינת העסק');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [businessId]);
 
-  // Recompute average any time reviews change
+  // Recompute average when reviews change
   useEffect(() => {
-    if (!data?.reviews) return;
+    if (!data || !Array.isArray(data.reviews)) return;
+    console.log("Recomputing average from reviews:", data.reviews);
     const sum = data.reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
-    const avg = data.reviews.length > 0 ? sum / data.reviews.length : 0;
-    setData(prev => ({ ...prev, rating: avg }));
-  }, [data?.reviews]);
+    const newAvg = data.reviews.length > 0 ? sum / data.reviews.length : 0;
+    setAvgRating(newAvg);
+    console.log("Recomputed average rating:", newAvg);
+  }, [data && data.reviews]);
+
+  const handleReviewClick = () => setShowReviewModal(true);
+  const closeReviewModal   = () => setShowReviewModal(false);
+
+  // Submit new review
+  const handleReviewSubmit = async (newReview) => {
+    try {
+      console.log("Submitting new review:", newReview);
+      const res = await api.post(
+        `/business/${businessId}/reviews`,
+        newReview
+      );
+      console.log("Review submission response:", res.data);
+      const { review, businessRating } = res.data;
+      setData(prev => ({
+        ...prev,
+        reviews: [...prev.reviews, review]
+      }));
+      setAvgRating(businessRating);
+      console.log("Updated average rating to", businessRating);
+      closeReviewModal();
+    } catch (err) {
+      console.error('❌ Error adding review:', err);
+      alert('שגיאה בשליחת הביקורת, נסה שוב');
+    }
+  };
 
   if (loading) return <div className="loading">טוען…</div>;
-  if (!data)   return <div className="error">העסק לא נמצא</div>;
+  if (error)   return <div className="error">{error}</div>;
+  if (!data)  return <div className="error">העסק לא נמצא</div>;
 
   const {
-    name, logo, description = "", phone = "", category = "",
-    mainImages, gallery, reviews, faqs, city, rating
+    name,
+    logo,
+    description = '',
+    phone = '',
+    category = '',
+    mainImages,
+    gallery,
+    reviews,
+    faqs,
+    city
   } = data;
 
   const uniqueMain = dedupeByPreview(
     mainImages.map(url => ({ preview: url }))
   )
-    .slice(0, 5)
+    .slice(0,5)
     .map(o => o.preview);
 
-  // Derive stars for display
-  const roundedAvg    = Math.round(rating * 10) / 10;
+  // Stars display
+  const roundedAvg    = Math.round(avgRating * 10) / 10;
   const fullAvgStars  = Math.floor(roundedAvg);
   const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
-  const isOwner = user?.role === "business" && user.businessId === businessId;
+  const isOwner = user?.role === 'business' && user.businessId === businessId;
   const filteredReviews = reviews.filter(r => r.user && r.comment);
-
-  const handleReviewClick = () => setShowReviewModal(true);
-  const closeReviewModal   = () => setShowReviewModal(false);
-
-  // Submit review to API, receive back review + updated businessRating
-  const handleReviewSubmit = async (newReview) => {
-    try {
-      const res = await api.post(
-        `/business/${businessId}/reviews`,
-        newReview
-      );
-      const { review, businessRating } = res.data;
-
-      setData(prev => ({
-        ...prev,
-        reviews: [...prev.reviews, review],
-        rating:  Number(businessRating),
-      }));
-      closeReviewModal();
-    } catch (err) {
-      console.error("❌ Error adding review:", err);
-    }
-  };
 
   return (
     <div className="profile-page">
@@ -110,10 +136,7 @@ export default function BusinessProfileView() {
         <div className="profile-inner">
 
           {isOwner && (
-            <Link
-              to={`/business/${businessId}/dashboard/edit`}
-              className="edit-profile-btn"
-            >
+            <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
@@ -147,106 +170,70 @@ export default function BusinessProfileView() {
             {TABS.map(tab => (
               <button
                 key={tab}
-                className={`tab ${tab === currentTab ? "active" : ""}`}
+                className={`tab ${tab === currentTab ? 'active' : ''}`}
                 onClick={() => setCurrentTab(tab)}
-              >
-                {tab}
-              </button>
+              >{tab}</button>
             ))}
           </div>
 
           <div className="tab-content">
-            {currentTab === "ראשי" && (
+            {currentTab === 'ראשי' && (
               <div className="public-main-images">
-                {uniqueMain.length > 0
-                  ? uniqueMain.map((url,i) => (
-                      <img key={i} src={url} alt={`תמונה ראשית ${i+1}`} />
-                    ))
-                  : <p className="no-data">אין תמונות להצגה</p>}
+                {uniqueMain.length ?
+                  uniqueMain.map((url,i) => <img key={i} src={url} alt={`תמונה ראשית ${i+1}`} />)
+                  : <p className="no-data">אין תמונות להצגה</p>
+                }
               </div>
             )}
-
-            {currentTab === "גלריה" && (
+            {currentTab === 'גלריה' && (
               <div className="public-main-images">
-                {gallery.length > 0
-                  ? gallery.map((url,i)=>(
-                      <img key={i} src={url} alt={`גלריה ${i+1}`} />
-                    ))
-                  : <p className="no-data">אין תמונות בגלריה</p>}
+                {gallery.length ?
+                  gallery.map((url,i) => <img key={i} src={url} alt={`גלריה ${i+1}`} />)
+                  : <p className="no-data">אין תמונות בגלריה</p>
+                }
               </div>
             )}
-
-            {currentTab === "ביקורות" && (
+            {currentTab === 'ביקורות' && (
               <div className="reviews">
                 {user && !isOwner && (
                   <div className="reviews-header">
-                    <button
-                      onClick={handleReviewClick}
-                      className="add-review-btn"
-                    >
-                      הוסף ביקורת
-                    </button>
+                    <button onClick={handleReviewClick} className="add-review-btn">הוסף ביקורת</button>
                   </div>
                 )}
-                {filteredReviews.length
-                  ? filteredReviews.map((r,i)=>{
-                      const rawDate = r.date||r.createdAt;
-                      const dateStr = rawDate && !isNaN(new Date(rawDate))
-                        ? new Date(rawDate).toLocaleDateString("he-IL", {
-                            day:"2-digit", month:"short", year:"numeric"
-                          })
-                        : "";
-                      const reviewerName = r.user?.name || "—";
-                      const score = r.rating || 0;
-                      const fs2 = Math.floor(score);
-                      const hs2 = score % 1 ? 1 : 0;
-                      const es2 = 5 - fs2 - hs2;
-
-                      return (
-                        <div key={i} className="review-card improved">
-                          <div className="review-header simple">
-                            <div className="author-info">
-                              <strong className="reviewer">{reviewerName}</strong>
-                              {dateStr && <small className="review-date">{dateStr}</small>}
-                            </div>
-                            <div className="score">
-                              <span className="score-number">{score.toFixed(1)}</span>
-                              <span className="stars-inline">
-                                {'★'.repeat(fs2)}{hs2?'⯨':''}{'☆'.repeat(es2)}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="review-comment simple">{r.comment}</p>
-                        </div>
-                      );
-                    })
-                  : <p className="no-data">אין ביקורות</p>}
-              </div>
-            )}
-
-            {currentTab === "שאלות ותשובות" && (
-              <div className="faqs">
-                {faqs.length > 0
-                  ? faqs.map((f,i)=>(
-                      <div key={i} className="faq-item">
-                        <strong>{f.question}</strong>
-                        <p>{f.answer}</p>
+                {filteredReviews.length ? filteredReviews.map((r,i) => (
+                  <div key={i} className="review-card improved">
+                    <div className="review-header simple">
+                      <div className="author-info">
+                        <strong className="reviewer">{r.user.name}</strong>
+                        <small className="review-date">{new Date(r.createdAt).toLocaleDateString('he-IL',{day:'2-digit',month:'short',year:'numeric'})}</small>
                       </div>
-                    ))
-                  : <p className="no-data">אין שאלות ותשובות</p>}
+                      <div className="score">
+                        <span className="score-number">{r.rating.toFixed(1)}</span>
+                        <span className="stars-inline">
+                          {'★'.repeat(Math.floor(r.rating))}{r.rating % 1 ? '⯨' : ''}{'☆'.repeat(5 - fullAvgStars - halfAvgStar)}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="review-comment simple">{r.comment}</p>
+                  </div>
+                )) : <p className="no-data">אין ביקורות</p>}
               </div>
             )}
-
+            {currentTab === 'שאלות ותשובות' && (
+              <div className="faqs">
+                {faqs.length ? faqs.map((f,i) => (
+                  <div key={i} className="faq-item">
+                    <strong>{f.question}</strong>
+                    <p>{f.answer}</p>
+                  </div>
+                )) : <p className="no-data">אין שאלות ותשובות</p>}
+              </div>
+            )}
             {currentTab === "צ'אט עם העסק" && (
-              <div className="chat-tab">
-                <h3>שלח הודעה לעסק</h3>
-              </div>
+              <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
             )}
-
-            {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder">
-                <p>פיתוח בהמשך…</p>
-              </div>
+            {currentTab === 'חנות / יומן' && (
+              <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>
             )}
           </div>
 
@@ -254,10 +241,7 @@ export default function BusinessProfileView() {
             <div className="review-modal">
               <div className="modal-content">
                 <h2>הוסף ביקורת</h2>
-                <ReviewForm
-                  businessId={businessId}
-                  onSubmit={handleReviewSubmit}
-                />
+                <ReviewForm businessId={businessId} onSubmit={handleReviewSubmit} />
                 <button onClick={closeReviewModal}>סגור</button>
               </div>
             </div>
