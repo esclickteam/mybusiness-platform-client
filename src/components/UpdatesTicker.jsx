@@ -7,7 +7,6 @@ export default function UpdatesTicker() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // מתבסס אך ורק על ה־env שהוגדר ב-Vercel/VITE
     const url = import.meta.env.VITE_SSE_URL;
     if (!url) {
       console.error('❌ VITE_SSE_URL is not defined');
@@ -19,6 +18,8 @@ export default function UpdatesTicker() {
     const es = new EventSource(url, { withCredentials: true });
 
     es.onmessage = e => {
+      console.log('🔔 SSE onmessage got:', e.data);  // <<< פה הלוג
+
       try {
         const data = JSON.parse(e.data);
         setUpdates(prev => [data, ...prev].slice(0, 10));
