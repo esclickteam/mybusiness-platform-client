@@ -10,14 +10,16 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  // טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
+  // 1. טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
 
     const initialize = async () => {
+      setLoading(true);
       try {
         const res = await API.get("/auth/me");
         setUser(res.data);
@@ -25,6 +27,7 @@ export function AuthProvider({ children }) {
         setUser(null);
       } finally {
         setLoading(false);
+        setInitialized(true);
       }
     };
     initialize();
@@ -104,7 +107,7 @@ export function AuthProvider({ children }) {
   }, [successMessage]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, initialized, error, login, logout }}>
       {successMessage && (
         <div className="global-success-toast">
           {successMessage}
