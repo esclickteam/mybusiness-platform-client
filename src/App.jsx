@@ -107,8 +107,8 @@ export default function App() {
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
           {/* --- אימות ואבטחה --- */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/auth" element={<AuthPage />} />
+          
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
 

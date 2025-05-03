@@ -85,25 +85,22 @@ export default function Header() {
         </div>
 
         <div className="auth-controls desktop-only">
-          {!user && (
-            <Link to="/login" className="login-button">
-              התחבר
-            </Link>
-          )}
-
-          {user && (
-            <>
-              <button
-                className="personal-area-button"
-                onClick={() => navigate(getDashboardPath())}
-              >
-                לוח בקרה
-              </button>
-
-              <button className="logout-button" onClick={handleLogout}>
-                <FaSignOutAlt style={{ marginLeft: 6 }} />
-                התנתק
-              </button>
+  {!user ? (
+    <Link to="/auth" className="login-button">
+      התחבר / הרשמה
+    </Link>
+  ) : (
+    <>
+      <button
+        className="personal-area-button"
+        onClick={() => navigate(getDashboardPath())}
+      >
+        לוח בקרה
+      </button>
+      <button className="logout-button" onClick={handleLogout}>
+        <FaSignOutAlt style={{ marginLeft: 6 }} />
+        התנתק
+      </button>
             </>
           )}
         </div>
