@@ -211,9 +211,11 @@ html, body, #root {
   border-left: 4px solid #b46af1;
   border-radius: 12px;
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin: 1rem auto;          /* מרכז עם מרווח אנכי */
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+  max-width: 320px;          /* רוחב מקסימלי נורמלי */
+  width: 100%;               /* גמיש להתאים במכשירים קטנים */
 }
 .review-card.improved:hover {
   transform: translateX(4px);
