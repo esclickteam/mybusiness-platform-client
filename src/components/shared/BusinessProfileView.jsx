@@ -75,6 +75,24 @@ export default function BusinessProfileView() {
       await fetchBusiness();
       closeReviewModal();
     } catch (err) {
+      // אם התקבלה כפילות, פשוט רענון וסתימה
+      if (err.response?.status === 409) {
+        await fetchBusiness();
+        closeReviewModal();
+      } else {
+        console.error(err);
+        alert("שגיאה בשליחת הביקורת, נסה שוב");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      await api.post(`/business/${businessId}/reviews`, newReview);
+      await fetchBusiness();
+      closeReviewModal();
+    } catch (err) {
       console.error(err);
       alert("שגיאה בשליחת הביקורת, נסה שוב");
     } finally {
