@@ -42,10 +42,6 @@ const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 
-// Consolidated Auth page
-const AuthPage = lazy(() => import("./pages/AuthPage"));
-
-
 // Public business profile (clean)
 const BusinessProfileView = lazy(() =>
   import("./components/shared/BusinessProfileView")
@@ -111,8 +107,8 @@ export default function App() {
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
           {/* --- אימות ואבטחה --- */}
-          <Route path="/auth" element={<AuthPage />} />
-          
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
 
