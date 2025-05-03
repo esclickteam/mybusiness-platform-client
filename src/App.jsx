@@ -6,7 +6,7 @@ import "./styles/index.css";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
-import ClientDashboardRoutes from "./pages/client/ClientDashboardRoutes";
+import ClientDashboard from "./pages/client/ClientDashboard";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 
 // Lazy-loaded public pages
