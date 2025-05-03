@@ -87,7 +87,7 @@ export default function Header() {
         <div className="auth-controls desktop-only">
           {!user && (
             <Link to="/login" className="login-button">
-              התחבר
+             התחברות
             </Link>
           )}
 
