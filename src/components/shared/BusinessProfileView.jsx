@@ -78,7 +78,8 @@ export default function BusinessProfileView() {
   const isOwner = user?.role === "business" && user.businessId === businessId;
 
   // סינון הביקורות כך שיתקבלו רק ביקורות אמיתיות
-  const filteredReviews = reviews.filter(review => review.user !== "example");
+  const filteredReviews = reviews.filter(review => review.user && review.user !== "example" && review.comment);
+
 
   return (
     <div className="profile-page">
