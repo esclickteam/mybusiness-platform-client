@@ -96,6 +96,22 @@ export default function BusinessProfileView() {
     }
   };
 
+// Delete review (admin/manager only)
+const handleDeleteReview = async (reviewId) => {
+  if (!window.confirm('האם למחוק ביקורת זו?')) return;
+  try {
+    await api.delete(`/business/${businessId}/reviews/${reviewId}`);
+    const refreshed = await api.get(`/business/${businessId}`);
+    const biz = refreshed.data.business || refreshed.data;
+    const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
+    setData({ ...biz, reviews, faqs: Array.isArray(biz.faqs) ? biz.faqs : [] });
+    setAvgRating(Number(biz.rating) || 0);
+  } catch (err) {
+    console.error(err);
+    alert('שגיאה במחיקת הביקורת');
+  }
+};
+
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
   if (!data) return <div className="error">העסק לא נמצא</div>;
