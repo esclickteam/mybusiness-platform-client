@@ -1,10 +1,9 @@
-// src/components/shared/BusinessProfileView.jsx
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "@api";
 import { useAuth } from "../../context/AuthContext";
 import { dedupeByPreview } from "../../utils/dedupe";
+import ReviewForm from "../ReviewForm";  // יבוא של קומפוננטת ה-ReviewForm
 import "./BusinessProfileView.css";
 
 const TABS = [
@@ -24,19 +23,18 @@ export default function BusinessProfileView() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
+  const [showReviewModal, setShowReviewModal] = useState(false);  // ניהול מצב המודאל
 
   useEffect(() => {
     setLoading(true);
     API.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-  
-        // אם address הוא מחרוזת (גרסה ישנה) או אובייקט (גרסה חדשה)
         const rawAddress = biz.address;
         const city = typeof rawAddress === "string"
           ? rawAddress
           : rawAddress?.city ?? biz.city ?? "";
-  
+
         setData({
           ...biz,
           city,
@@ -51,7 +49,6 @@ export default function BusinessProfileView() {
       .catch(err => console.error("❌ fetch business:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
-  
 
   if (loading) return <div className="loading">טוען…</div>;
   if (!data)   return <div className="error">העסק לא נמצא</div>;
@@ -77,11 +74,26 @@ export default function BusinessProfileView() {
 
   const isOwner = user?.role === "business" && user.businessId === businessId;
 
-  // סינון הביקורות כך שיתקבלו רק ביקורות אמיתיות
   const filteredReviews = reviews.filter(
-    (review) => review.user && review.comment && !review.isExample // סינון ביקורות עם פרמטר 'isExample' או עם תוכן חסר
+    (review) => review.user && review.comment && !review.isExample
   );
-  
+
+  const handleReviewClick = () => {
+    setShowReviewModal(true); // מציג את המודאל להוספת ביקורת
+  };
+
+  const closeReviewModal = () => {
+    setShowReviewModal(false);
+  };
+
+  const handleReviewSubmit = (newReview) => {
+    // לאחר שליחת ביקורת, נוסיף אותה לרשימת הביקורות
+    setData((prevData) => ({
+      ...prevData,
+      reviews: [...prevData.reviews, newReview],
+    }));
+    closeReviewModal();
+  };
 
   return (
     <div className="profile-page">
@@ -93,10 +105,7 @@ export default function BusinessProfileView() {
           </button>
 
           {isOwner && (
-            <Link
-              to={`/business/${businessId}/dashboard/edit`}
-              className="edit-profile-btn"
-            >
+            <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
@@ -110,26 +119,10 @@ export default function BusinessProfileView() {
           <h1 className="business-name">{name}</h1>
 
           <div className="about-phone">
-            {category && (
-              <p>
-                <strong>🏷️ קטגוריה:</strong> {category}
-              </p>
-            )}
-            {description && (
-              <p>
-                <strong>📝 תיאור:</strong> {description}
-              </p>
-            )}
-            {phone && (
-              <p>
-                <strong>📞 טלפון:</strong> {phone}
-              </p>
-            )}
-            {city && (
-              <p>
-                <strong>🏙️ עיר:</strong> {city}
-              </p>
-            )}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="rating">
@@ -153,9 +146,7 @@ export default function BusinessProfileView() {
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {uniqueMain.length > 0 ? (
-                  uniqueMain.map((url, i) => (
-                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
-                  ))
+                  uniqueMain.map((url, i) => <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />)
                 ) : (
                   <p className="no-data">אין תמונות להצגה</p>
                 )}
@@ -163,35 +154,27 @@ export default function BusinessProfileView() {
             )}
 
             {currentTab === "גלריה" && (
-              gallery.length > 0 ? (
-                <div className="public-main-images">
-                  {gallery.map((url, i) => (
-                    <img key={i} src={url} alt={`גלריה ${i + 1}`} />
-                  ))}
-                </div>
-              ) : (
-                <p className="no-data">אין תמונות בגלריה</p>
-              )
+              <div className="public-main-images">
+                {gallery.map((url, i) => <img key={i} src={url} alt={`גלריה ${i + 1}`} />)}
+              </div>
             )}
 
-{currentTab === "ביקורות" && (
-  <div className="reviews">
-    {filteredReviews.length > 0 ? (
-      filteredReviews.map((r, i) => (
-        <div key={i} className="review-card improved">
-          <div className="review-header">
-            <strong>{r.user}</strong>{" "}
-            <span>★ {r.rating}/5</span>
-          </div>
-          <p>{r.comment || r.text}</p>
-        </div>
-      ))
-    ) : (
-      <p className="no-data">אין ביקורות</p>
-    )}
-  </div>
-)}
-
+            {currentTab === "ביקורות" && (
+              <div className="reviews">
+                {filteredReviews.length > 0 ? (
+                  filteredReviews.map((r, i) => (
+                    <div key={i} className="review-card improved">
+                      <div className="review-header">
+                        <strong>{r.user}</strong> <span>★ {r.rating}/5</span>
+                      </div>
+                      <p>{r.comment || r.text}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-data">אין ביקורות</p>
+                )}
+              </div>
+            )}
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
@@ -208,18 +191,27 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {currentTab === "צ'אט עם העסק" && (
-              <div className="chat-tab">
-                <h3>שלח הודעה לעסק</h3>
-              </div>
-            )}
-
-            {currentTab === "חנות / יומן" && (
-              <div className="shop-tab-placeholder">
-                <p>פיתוח בהמשך…</p>
-              </div>
-            )}
+            {currentTab === "צ'אט עם העסק" && <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>}
+            {currentTab === "חנות / יומן" && <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>}
           </div>
+
+          {/* כפתור הוספת ביקורת */}
+          {user && !isOwner && (
+            <button onClick={handleReviewClick} className="add-review-btn">
+              הוסף ביקורת
+            </button>
+          )}
+
+          {/* מודאל לביקורת */}
+          {showReviewModal && (
+            <div className="review-modal">
+              <div className="modal-content">
+                <h2>הוסף ביקורת</h2>
+                <ReviewForm businessId={businessId} onSubmit={handleReviewSubmit} />
+                <button onClick={closeReviewModal}>סגור</button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
