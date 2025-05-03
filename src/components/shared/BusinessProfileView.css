@@ -200,14 +200,17 @@ html, body, #root {
   align-items: center;
   padding: 0.5rem 0;
   border-bottom: 1px solid rgba(0,0,0,0.05);
+  /* לתמוך ב־RTL: שם מימין, ציון משמאל */
+  flex-direction: row-reverse;
 }
+
 .author-info {
   display: flex;
   flex-direction: column;
 }
 .author-info .reviewer {
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #333;
 }
 .author-info .review-date {
