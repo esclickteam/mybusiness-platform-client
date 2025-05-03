@@ -25,12 +25,15 @@ export default function BusinessProfileView() {
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
 
-  // Fetch business + reviews + server‐computed rating
+  // Fetch business + reviews, compute initial average on load
   useEffect(() => {
     setLoading(true);
     api.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
+        const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
+        const sum = reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
+        const initialAvg = reviews.length > 0 ? sum / reviews.length : 0;
         setData({
           ...biz,
           city: typeof biz.address === "string"
@@ -38,14 +41,22 @@ export default function BusinessProfileView() {
             : biz.address?.city || "",
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
           gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
-          reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
+          reviews,
           faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : [],
-          rating:     Number(biz.rating || 0),
+          rating:     initialAvg,
         });
       })
       .catch(err => console.error("❌ fetch business:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
+
+  // Recompute average any time reviews change
+  useEffect(() => {
+    if (!data?.reviews) return;
+    const sum = data.reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
+    const avg = data.reviews.length > 0 ? sum / data.reviews.length : 0;
+    setData(prev => ({ ...prev, rating: avg }));
+  }, [data?.reviews]);
 
   if (loading) return <div className="loading">טוען…</div>;
   if (!data)   return <div className="error">העסק לא נמצא</div>;
@@ -61,9 +72,8 @@ export default function BusinessProfileView() {
     .slice(0, 5)
     .map(o => o.preview);
 
-  // Use server‐computed rating
-  const avgRating     = rating;
-  const roundedAvg    = Math.round(avgRating * 10) / 10;
+  // Derive stars for display
+  const roundedAvg    = Math.round(rating * 10) / 10;
   const fullAvgStars  = Math.floor(roundedAvg);
   const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
