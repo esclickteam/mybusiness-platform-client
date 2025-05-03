@@ -41,7 +41,10 @@ const ReviewForm = ({ businessId, onSubmit }) => {
     try {
       setLoading(true);
       // השתמש ב־api (כפי שהיבאת במעל)
-      const res = await api.post('/reviews', reviewData);
+      const res = await api.post(
+        `/business/${businessId}/reviews`,
+        reviewData
+      );
       console.log('✅ ביקורת נשמרה:', res.data);
       onSubmit(res.data);
       setRatings({});
