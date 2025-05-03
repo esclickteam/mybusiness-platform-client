@@ -75,10 +75,7 @@ export default function App() {
     <>
       <Header />
 
-      {/* עדכונים חיים לאורך כל הסשן */}
-      <UpdatesTicker />
-
-      {/* גלילה לעל בכל שינוי כתובת */}
+            {/* גלילה לעל בכל שינוי כתובת */}
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
