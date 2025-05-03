@@ -60,6 +60,11 @@ export default function Login() {
           >
             שכחת את הסיסמה?
           </span>
+
+          {/* קישור להרשמה */}
+          <div className="signup-link">
+            <span>לא רשום? <a href="/register" className="signup-link-text">הירשם עכשיו</a></span>
+          </div>
         </div>
       </div>
 
