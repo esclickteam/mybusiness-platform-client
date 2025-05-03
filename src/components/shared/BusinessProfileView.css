@@ -161,6 +161,7 @@ html, body, #root {
 
 /* === Tab Content Wrapper === */
 .tab-content {
+  width: 100%;
   padding: 1rem;
   background-color: transparent !important;
   border-radius: 12px;
@@ -189,6 +190,8 @@ html, body, #root {
 .reviews {
   width: 100%;
   max-width: 700px;
+  margin: 0 auto;
+  align-self: stretch;
 }
 
 /* === כותרת וכפתור בתוך טאב הביקורות === */
@@ -216,8 +219,8 @@ html, body, #root {
 
 .review-card.improved {
   width: 100%;
-  max-width: 700px;   /* או כל רוחב מקסימלי שנוח לך */
-  margin: 0 auto 1rem; /* מרכז אופקית + רווח תחתון */
+  max-width: 700px;   /* רוחב כרטיס */
+  margin: 0 auto 1rem;  /* מרכז אופקית + רווח תחתון */
   background: #fff;
   border-left: 4px solid #b46af1;
   border-radius: 12px;
@@ -225,12 +228,12 @@ html, body, #root {
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
 }
-
 .review-card.improved:hover {
   transform: translateX(4px);
   background: #fafafa;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
+
 .review-header.simple {
   display: flex;
   justify-content: space-between;
