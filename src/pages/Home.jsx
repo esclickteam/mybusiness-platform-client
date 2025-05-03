@@ -13,7 +13,7 @@ export default function Home() {
   const [city, setCity] = useState("");
   const [userCity, setUserCity] = useState("");
   const [updates, setUpdates] = useState([]); // עדכונים מ־WebSocket
-  const [loading, setLoading] = useState(true); // ניהול מצב של טעינה
+  const [loading, setLoading] = useState(true); // ניהול מצב טעינה
 
   // build options for React-Select
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
@@ -48,29 +48,37 @@ export default function Home() {
 
   // WebSocket connection for live updates
   useEffect(() => {
-    const socket = new WebSocket("wss://api.esclick.co.il");
-
+    // נקבל קודם מה-.env, ואם לא קיים – ניפול ל-/ws
+    const WS_URL = import.meta.env.VITE_WS_URL || "wss://api.esclick.co.il/ws";
+    console.log("🌐 Using WS_URL:", WS_URL);
+  
+    const socket = new WebSocket(WS_URL);
+  
     socket.onopen = () => {
-      console.log('WebSocket connected');
+      console.log("✅ WebSocket connected");
+      setLoading(false);
     };
 
-    socket.onmessage = function (event) {
-      const { message } = JSON.parse(event.data);
-      setUpdates((prev) => [
-        ...prev,
-        { message, time: new Date().toLocaleTimeString() },
-      ]);
-      setLoading(false); // עדכון מצב טעינה
+    socket.onmessage = (event) => {
+      try {
+        const { message } = JSON.parse(event.data);
+        setUpdates((prev) => [
+          { message, time: new Date().toLocaleTimeString() },
+          ...prev,
+        ]);
+      } catch (err) {
+        console.error("Invalid WS message format:", err);
+      }
     };
 
     socket.onerror = (error) => {
-      console.error("WebSocket Error:", error);
-      setLoading(false); // סיום מצב טעינה במקרה של שגיאה
+      console.error("🔴 WebSocket Error:", error);
+      setLoading(false);
     };
 
     socket.onclose = () => {
-      console.log("WebSocket connection closed");
-      setLoading(false); // סיום מצב טעינה במקרה של סגירה
+      console.log("⚪️ WebSocket connection closed");
+      setLoading(false);
     };
 
     return () => {
@@ -178,9 +186,7 @@ export default function Home() {
         </div>
         <div className="bookmark-card">
           <h3>⚙️ איך זה עובד?</h3>
-          <p>
-            כל מה שצריך לדעת כדי להתחיל, בין אם אתה לקוח או בעל עסק.
-          </p>
+          <p>כל מה שצריך לדעת כדי להתחיל, בין אם אתה לקוח או בעל עסק.</p>
           <Link to="/how-it-works">
             <button>למידע נוסף</button>
           </Link>
@@ -215,30 +221,14 @@ export default function Home() {
       {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
-          <li>
-            <Link to="/search">📋 חיפוש עסקים</Link>
-          </li>
-          <li>
-            <Link to="/about">📖 קצת עלינו</Link>
-          </li>
-          <li>
-            <Link to="/how-it-works">⚙️ איך זה עובד</Link>
-          </li>
-          <li>
-            <Link to="/business">💼 בעלי עסקים</Link>
-          </li>
-          <li>
-            <Link to="/join">✏️ הצטרפות עסקים</Link>
-          </li>
-          <li>
-            <Link to="/faq">❓ שאלות נפוצות</Link>
-          </li>
-          <li>
-            <Link to="/terms">📜 תקנון</Link>
-          </li>
-          <li>
-            <Link to="/contact">📞 יצירת קשר</Link>
-          </li>
+          <li><Link to="/search">📋 חיפוש עסקים</Link></li>
+          <li><Link to="/about">📖 קצת עלינו</Link></li>
+          <li><Link to="/how-it-works">⚙️ איך זה עובד</Link></li>
+          <li><Link to="/business">💼 בעלי עסקים</Link></li>
+          <li><Link to="/join">✏️ הצטרפות עסקים</Link></li>
+          <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
+          <li><Link to="/terms">📜 תקנון</Link></li>
+          <li><Link to="/contact">📞 יצירת קשר</Link></li>
         </ul>
         <p className="copyright">
           כל הזכויות שמורות © עסקליק
