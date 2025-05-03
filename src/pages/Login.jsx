@@ -66,6 +66,16 @@ export default function Login() {
           <div className="signup-link">
             <span>לא רשום? <Link to="/register" className="signup-link-text">הירשם עכשיו</Link></span>
           </div>
+
+          {/* כפתור כניסת עובדים */}
+          <div className="staff-login-link">
+            <button 
+              onClick={() => { /* פונקציה לניווט או הצגת דף כניסת עובדים */ }}
+              className="staff-login-btn"
+            >
+              כניסת עובדים
+            </button>
+          </div>
         </div>
       </div>
 

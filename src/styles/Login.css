@@ -103,19 +103,30 @@ input:focus {
 
 /* ⚙️ כפתור מעבר לכניסת עובדים / רגילה */
 .staff-login-link {
-  background: none;
-  border: none;
-  color: #444;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-bottom: 10px;
-  display: inline-block;
-  transition: color 0.3s ease;
+  margin-top: 15px;
+  text-align: center;
 }
 
-.staff-login-link:hover {
-  color: #6b46c1;
+.staff-login-btn {
+  padding: 12px 20px;
+  background: #f5a623; /* צבע חמים לעובדים */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.staff-login-btn:hover {
+  background: #e58e00; /* שינוי צבע בעת hover */
+  transform: scale(1.05); /* אפקט הגדלה */
+}
+
+.staff-login-btn:active {
+  background: #cc7a00; /* צבע כהה יותר בלחיצה */
+  transform: scale(1);
 }
 
 /* 🔗 קישורים תחתונים */
