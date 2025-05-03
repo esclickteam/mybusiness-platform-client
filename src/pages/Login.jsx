@@ -30,13 +30,20 @@ export default function Login() {
   };
 
   const handleStaffLogin = async () => {
-    // בודק אם המשתמש הוא מנהל או אדמין
-    if (user.role === "admin" || user.role === "manager") {
-      // גישה נכונה, יש להפעיל את הלוגיקה של התחברות לעובדים
-      navigate('/staff-dashboard'); // העברת המשתמש לדף המתאים
-    } else {
-      // אם המשתמש לא אדמין או מנהל, הצג הודעה
-      setStaffLoginError("הגישה לעובדים מוגבלת למנהלים ואדמינים בלבד.");
+    // בודק את התפקיד של המשתמש ומפנה לדשבורד המתאים
+    switch (user?.role) {
+      case "admin":
+        navigate('/admin/dashboard'); // העברת אדמין לדשבורד של אדמינים
+        break;
+      case "manager":
+        navigate('/manager/dashboard'); // העברת מנהל לדשבורד של מנהלים
+        break;
+      case "worker":
+        navigate('/staff/dashboard'); // העברת עובד לדשבורד של עובדים
+        break;
+      default:
+        // אם המשתמש לא אחד מהתפקידים הנ"ל, הצג שגיאה
+        setStaffLoginError("הגישה מוגבלת לעובדים, מנהלים ואדמינים בלבד.");
     }
   };
 
