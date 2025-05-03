@@ -77,6 +77,9 @@ export default function BusinessProfileView() {
 
   const isOwner = user?.role === "business" && user.businessId === businessId;
 
+  // סינון הביקורות כך שיתקבלו רק ביקורות אמיתיות
+  const filteredReviews = reviews.filter(review => review.user !== "example");
+
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
@@ -95,11 +98,11 @@ export default function BusinessProfileView() {
             </Link>
           )}
 
-{logo && (
-  <div className="profile-logo-wrapper">
-  <img className="profile-logo" src={logo} alt="לוגו העסק" />
-</div>
-)}
+          {logo && (
+            <div className="profile-logo-wrapper">
+              <img className="profile-logo" src={logo} alt="לוגו העסק" />
+            </div>
+          )}
 
           <h1 className="business-name">{name}</h1>
 
@@ -170,11 +173,11 @@ export default function BusinessProfileView() {
 
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {reviews.length > 0 ? (
-                  reviews.map((r, i) => (
+                {filteredReviews.length > 0 ? (
+                  filteredReviews.map((r, i) => (
                     <div key={i} className="review-card improved">
                       <div className="review-header">
-                        <strong>{r.user}</strong>{" "}
+                        <strong>{r.user}</strong> 
                         <span>★ {r.rating}/5</span>
                       </div>
                       <p>{r.comment || r.text}</p>
