@@ -27,19 +27,17 @@ export default function BusinessProfileView() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [avgRating, setAvgRating] = useState(0);
 
-  // Fetch business data on mount or when businessId changes
+  // Fetch business data
   useEffect(() => {
     setLoading(true);
     setError(null);
-
     api.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-        const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
         setData({
           ...biz,
-          reviews,
-          faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
+          reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
+          faqs: Array.isArray(biz.faqs) ? biz.faqs : []
         });
       })
       .catch(err => {
@@ -49,22 +47,21 @@ export default function BusinessProfileView() {
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  // Recompute avgRating automatically whenever reviews array changes
+  // Always work with a defined array
+  const reviewsList = data?.reviews || [];
+
+  // Recompute avgRating whenever reviewsList changes
   useEffect(() => {
-    if (!data?.reviews) return;
- +  console.debug("🔎 reviews now =", data.reviews);
-    const sum = data.reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
-    const avg = data.reviews.length ? sum / data.reviews.length : 0;
-    console.debug("🔎 recalculated avgRating =", avg);
+    const sum = reviewsList.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
+    const avg = reviewsList.length ? sum / reviewsList.length : 0;
+    console.debug("[BusinessProfileView] recalculated avgRating:", avg);
     setAvgRating(avg);
-  }, [data.reviews]);
- 
+  }, [reviewsList]);
 
   // Handlers
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal = () => setShowReviewModal(false);
 
-  // Submit new review and refresh data
   const handleReviewSubmit = async newReview => {
     try {
       await api.post(`/business/${businessId}/reviews`, newReview);
@@ -73,7 +70,7 @@ export default function BusinessProfileView() {
       setData({
         ...biz,
         reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
-        faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
+        faqs: Array.isArray(biz.faqs) ? biz.faqs : []
       });
       closeReviewModal();
     } catch (err) {
@@ -82,7 +79,6 @@ export default function BusinessProfileView() {
     }
   };
 
-  // Delete review (admin/manager only) and refresh data
   const handleDeleteReview = async reviewId => {
     if (!window.confirm("האם למחוק ביקורת זו?")) return;
     try {
@@ -92,7 +88,7 @@ export default function BusinessProfileView() {
       setData({
         ...biz,
         reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
-        faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
+        faqs: Array.isArray(biz.faqs) ? biz.faqs : []
       });
     } catch (err) {
       console.error("❌ Error deleting review:", err);
@@ -112,16 +108,14 @@ export default function BusinessProfileView() {
     category = "",
     mainImages = [],
     gallery = [],
-    reviews = [],
     faqs = [],
     city = "",
   } = data;
 
-  const uniqueMain = dedupeByPreview(mainImages.map(url => ({ preview: url })))
-    .slice(0, 5)
-    .map(o => o.preview);
+  const uniqueMain = dedupeByPreview(
+    mainImages.map(url => ({ preview: url }))
+  ).slice(0, 5).map(o => o.preview);
 
-  // Stars logic
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const fullAvgStars = Math.floor(roundedAvg);
   const halfAvgStar = roundedAvg % 1 ? 1 : 0;
@@ -129,30 +123,25 @@ export default function BusinessProfileView() {
 
   const isOwner = user?.role === "business" && user.businessId === businessId;
   const canDelete = ["admin", "manager"].includes(user?.role);
-  const filteredReviews = reviews.filter(r => r.user && r.comment);
 
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          {/* Edit button for owner */}
           {isOwner && (
             <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
 
-          {/* Business logo */}
           {logo && (
             <div className="profile-logo-wrapper">
               <img className="profile-logo" src={logo} alt="לוגו העסק" />
             </div>
           )}
 
-          {/* Name */}
           <h1 className="business-name">{name}</h1>
 
-          {/* About section */}
           <div className="about-phone">
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
@@ -160,38 +149,31 @@ export default function BusinessProfileView() {
             {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
-          {/* Overall rating display */}
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
             <span className="stars-inline">
               {'★'.repeat(fullAvgStars)}{halfAvgStar ? '⯨' : ''}{'☆'.repeat(emptyAvgStars)}
             </span>
-            <span className="count">({filteredReviews.length} ביקורות)</span>
+            <span className="count">({reviewsList.length} ביקורות)</span>
           </div>
 
           <hr className="profile-divider" />
 
-          {/* Tabs */}
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
                 key={tab}
                 className={`tab ${tab === currentTab ? "active" : ""}`}
                 onClick={() => setCurrentTab(tab)}
-              >
-                {tab}
-              </button>
+              >{tab}</button>
             ))}
           </div>
 
-          {/* Tab content */}
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {uniqueMain.length > 0 ? (
-                  uniqueMain.map((url, idx) => (
-                    <img key={idx} src={url} alt={`תמונה ראשית ${idx + 1}`} />
-                  ))
+                  uniqueMain.map((url, idx) => <img key={idx} src={url} alt={`תמונה ראשית ${idx+1}`} />)
                 ) : (
                   <p className="no-data">אין תמונות להצגה</p>
                 )}
@@ -201,9 +183,7 @@ export default function BusinessProfileView() {
             {currentTab === "גלריה" && (
               <div className="public-main-images">
                 {gallery.length > 0 ? (
-                  gallery.map((url, idx) => (
-                    <img key={idx} src={url} alt={`גלריה ${idx + 1}`} />
-                  ))
+                  gallery.map((url, idx) => <img key={idx} src={url} alt={`גלריה ${idx+1}`} />)
                 ) : (
                   <p className="no-data">אין תמונות בגלריה</p>
                 )}
@@ -214,25 +194,16 @@ export default function BusinessProfileView() {
               <div className="reviews">
                 {!isOwner && user && (
                   <div className="reviews-header">
-                    <button onClick={handleReviewClick} className="add-review-btn">
-                      הוסף ביקורת
-                    </button>
+                    <button onClick={handleReviewClick} className="add-review-btn">הוסף ביקורת</button>
                   </div>
                 )}
-                {filteredReviews.length > 0 ? (
-                  filteredReviews.map((r, i) => {
-                    const dateStr = r.createdAt
-                      ? new Date(r.createdAt).toLocaleDateString("he-IL", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })
-                      : "";
+                {reviewsList.length > 0 ? (
+                  reviewsList.map((r, i) => {
+                    const dateStr = r.createdAt ? new Date(r.createdAt).toLocaleDateString("he-IL",{day:"2-digit",month:"short",year:"numeric"}) : "";
                     const score = Number(r.rating) || 0;
                     const full = Math.floor(score);
                     const half = score % 1 ? 1 : 0;
                     const empty = 5 - full - half;
-
                     return (
                       <div key={i} className="review-card improved">
                         <div className="review-header simple">
@@ -242,17 +213,10 @@ export default function BusinessProfileView() {
                           </div>
                           <div className="score">
                             <span className="score-number">{score.toFixed(1)}</span>
-                            <span className="stars-inline">
-                              {'★'.repeat(full)}{half ? '⯨' : ''}{'☆'.repeat(empty)}
-                            </span>
+                            <span className="stars-inline">{'★'.repeat(full)}{half?'⯨':''}{'☆'.repeat(empty)}</span>
                           </div>
                           {canDelete && (
-                            <button
-                              className="delete-review-btn"
-                              onClick={() => handleDeleteReview(r._id)}
-                            >
-                              מחק
-                            </button>
+                            <button className="delete-review-btn" onClick={() => handleDeleteReview(r._id)}>מחק</button>
                           )}
                         </div>
                         <p className="review-comment simple">{r.comment}</p>
@@ -265,7 +229,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {currentTab === "שאלות תשובות" && (
+            {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
                   faqs.map((f, idx) => (
@@ -293,7 +257,6 @@ export default function BusinessProfileView() {
             )}
           </div>
 
-          {/* Review modal */}
           {showReviewModal && (
             <div className="review-modal">
               <div className="modal-content">
