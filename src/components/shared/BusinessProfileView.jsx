@@ -45,8 +45,8 @@ export default function BusinessProfileView() {
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  if (loading) return <div className="loading">טוען…</div>
-  if (!data) return <div className="error">העסק לא נמצא</div>
+  if (loading) return <div className="loading">טוען…</div>;
+  if (!data) return <div className="error">העסק לא נמצא</div>;
 
   const {
     name,
@@ -67,7 +67,7 @@ export default function BusinessProfileView() {
     .slice(0, 5)
     .map(o => o.preview);
 
-  // דירוג ממוצע
+  // דירוג ממוצע בפאנל העסק
   const avgRating = reviews.length
     ? reviews.reduce((sum, r) => sum + (Number(r.averageScore) || 0), 0) / reviews.length
     : 0;
@@ -102,11 +102,7 @@ export default function BusinessProfileView() {
 
           {logo && (
             <div className="profile-logo-wrapper">
-              <img
-                className="profile-logo"
-                src={logo}
-                alt="לוגו העסק"
-              />
+              <img className="profile-logo" src={logo} alt="לוגו העסק" />
             </div>
           )}
 
@@ -143,25 +139,17 @@ export default function BusinessProfileView() {
 
             {currentTab === "ראשי" && (
               <div className="public-main-images">
-                {uniqueMain.length > 0 ? (
-                  uniqueMain.map((url, i) => (
-                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
-                  ))
-                ) : (
-                  <p className="no-data">אין תמונות להצגה</p>
-                )}
+                {uniqueMain.length > 0 ? uniqueMain.map((url, i) => (
+                  <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
+                )) : <p className="no-data">אין תמונות להצגה</p>}
               </div>
             )}
 
             {currentTab === "גלריה" && (
               <div className="public-main-images">
-                {gallery.length > 0 ? (
-                  gallery.map((url, i) => (
-                    <img key={i} src={url} alt={`גלריה ${i + 1}`} />
-                  ))
-                ) : (
-                  <p className="no-data">אין תמונות בגלריה</p>
-                )}
+                {gallery.length > 0 ? gallery.map((url, i) => (
+                  <img key={i} src={url} alt={`גלריה ${i + 1}`} />
+                )) : <p className="no-data">אין תמונות בגלריה</p>}
               </div>
             )}
 
@@ -180,33 +168,27 @@ export default function BusinessProfileView() {
                 {filteredReviews.length ? (
                   filteredReviews.map((r, i) => {
                     const rawDate = r.date || r.createdAt;
-                    const dateStr =
-                      rawDate && !isNaN(new Date(rawDate).getTime())
-                        ? new Date(rawDate).toLocaleDateString("he-IL", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })
-                        : "";
-                    const score = Number(r.averageScore) || 0;
-                    const rounded = Math.round(score * 2) / 2;
-                    const fullStars = Math.floor(rounded);
-                    const halfStars = rounded % 1 ? 1 : 0;
-                    const emptyStars = 5 - fullStars - halfStars;
+                    const dateStr = rawDate && !isNaN(new Date(rawDate).getTime())
+                      ? new Date(rawDate).toLocaleDateString("he-IL", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "";
+
+                    const reviewerName = r.user?.name || r.userName || "אנונימי";
+                    const avgScore = Number(r.averageScore) || 0;
+                    const avgRounded = Math.round(avgScore * 10) / 10;
+
                     return (
                       <div key={i} className="review-card improved">
                         <div className="review-header simple">
                           <div className="author-info">
-                            <strong className="reviewer">
-                              {r.user?.name || r.userName}
-                            </strong>
-                            {dateStr && (
-                              <small className="review-date">{dateStr}</small>
-                            )}
+                            <strong className="reviewer">{reviewerName}</strong>
+                            {dateStr && <small className="review-date">{dateStr}</small>}
                           </div>
                           <span className="score">
-                            {rounded.toFixed(1)}
-                            <span className="star">★</span>
+                            {avgRounded.toFixed(1)} <span className="star">★</span>
                           </span>
                         </div>
                         <p className="review-comment simple">{r.comment}</p>
@@ -221,16 +203,12 @@ export default function BusinessProfileView() {
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
-                {faqs.length > 0 ? (
-                  faqs.map((f, i) => (
-                    <div key={i} className="faq-item">
-                      <strong>{f.question}</strong>
-                      <p>{f.answer}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="no-data">אין שאלות ותשובות</p>
-                )}
+                {faqs.length > 0 ? faqs.map((f, i) => (
+                  <div key={i} className="faq-item">
+                    <strong>{f.question}</strong>
+                    <p>{f.answer}</p>
+                  </div>
+                )) : <p className="no-data">אין שאלות ותשובות</p>}
               </div>
             )}
 
@@ -260,7 +238,6 @@ export default function BusinessProfileView() {
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>
