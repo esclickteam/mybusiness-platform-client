@@ -153,52 +153,63 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {currentTab === "ביקורות" && (
-              <div className="reviews">
-                {user && !isOwner && (
-                  <div className="reviews-header">
-                    <button
-                      onClick={handleReviewClick}
-                      className="add-review-btn"
-                    >
-                      הוסף ביקורת
-                    </button>
-                  </div>
-                )}
-                {filteredReviews.length ? (
-                  filteredReviews.map((r, i) => {
-                    const rawDate = r.date || r.createdAt;
-                    const dateStr = rawDate && !isNaN(new Date(rawDate).getTime())
-                      ? new Date(rawDate).toLocaleDateString("he-IL", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })
-                      : "";
+{currentTab === "ביקורות" && (
+  <div className="reviews">
+    {user && !isOwner && (
+      <div className="reviews-header">
+        <button
+          onClick={handleReviewClick}
+          className="add-review-btn"
+        >
+          הוסף ביקורת
+        </button>
+      </div>
+    )}
+    {filteredReviews.length ? (
+      filteredReviews.map((r, i) => {
+        const rawDate = r.date || r.createdAt;
+        const dateStr = rawDate && !isNaN(new Date(rawDate).getTime())
+          ? new Date(rawDate).toLocaleDateString("he-IL", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
+          : "";
 
-                    const reviewerName = r.user?.name || "—";
-                    const roundedScore = Math.round((Number(r.rating) || 0) * 10) / 10;
+        const reviewerName = r.user?.name || "—";
+        const roundedScore = Math.round((Number(r.rating) || 0) * 10) / 10;
 
-                    return (
-                      <div key={i} className="review-card improved">
-                        <div className="review-header simple">
-                          <div className="author-info">
-                            <strong className="reviewer">{reviewerName}</strong>
-                            {dateStr && <small className="review-date">{dateStr}</small>}
-                          </div>
-                          <span className="score">
-                            {roundedScore.toFixed(1)} <span className="star">★</span>
-                          </span>
-                        </div>
-                        <p className="review-comment simple">{r.comment}</p>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p className="no-data">אין ביקורות</p>
-                )}
+        // חישוב כוכבים
+        const fullStars  = Math.floor(roundedScore);
+        const halfStar   = roundedScore % 1 ? 1 : 0;
+        const emptyStars = 5 - fullStars - halfStar;
+
+        return (
+          <div key={i} className="review-card improved">
+            <div className="review-header simple">
+              <div className="author-info">
+                <strong className="reviewer">{reviewerName}</strong>
+                {dateStr && <small className="review-date">{dateStr}</small>}
               </div>
-            )}
+              <div className="score">
+                <span className="score-number">{roundedScore.toFixed(1)}</span>
+                <span className="stars-inline">
+                  {'★'.repeat(fullStars)}
+                  {halfStar ? '⯨' : ''}
+                  {'☆'.repeat(emptyStars)}
+                </span>
+              </div>
+            </div>
+            <p className="review-comment simple">{r.comment}</p>
+          </div>
+        );
+      })
+    ) : (
+      <p className="no-data">אין ביקורות</p>
+    )}
+  </div>
+)}
+
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
