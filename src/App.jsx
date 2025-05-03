@@ -1,16 +1,23 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
+import UpdatesTicker from "./components/UpdatesTicker";
 import "./styles/index.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  return null;
+}
+
 // Lazy-loaded public pages
 const HomePage = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy")); 
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 // Business pages
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
@@ -24,7 +31,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
 
 // New Business Support page
-const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));  
+const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));
 
 // Business view and list
 const BusinessOverview = lazy(() => import("./pages/business/Business"));
@@ -41,7 +48,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 
 // Staff Login page
-const StaffLogin = lazy(() => import("./pages/StaffLogin")); // Added staff login
+const StaffLogin = lazy(() => import("./pages/StaffLogin"));
 
 // Public business profile
 const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
@@ -63,16 +70,14 @@ const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
-  return null;
-}
-
 export default function App() {
   return (
     <>
       <Header />
+
+      {/* עדכונים חיים לאורך כל הסשן */}
+      <UpdatesTicker />
+
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
@@ -112,8 +117,10 @@ export default function App() {
           {/* Staff login page */}
           <Route path="/staff-login" element={<StaffLogin />} />
 
-          {/* Protected routes */}
+          {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
+
+          {/* Business dashboard (protected) */}
           <Route
             path="/business/:businessId/dashboard/*"
             element={
