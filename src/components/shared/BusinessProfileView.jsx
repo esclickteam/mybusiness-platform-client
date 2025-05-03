@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "@api";
 import { useAuth } from "../../context/AuthContext";
 import { dedupeByPreview } from "../../utils/dedupe";
-import ReviewForm from "../ReviewForm";  // יבוא של קומפוננטת ה-ReviewForm
+import ReviewForm from "../../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import "./BusinessProfileView.css";
 
 const TABS = [
