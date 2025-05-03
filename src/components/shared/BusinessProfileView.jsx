@@ -201,64 +201,65 @@ export default function BusinessProfileView() {
               </div>
             )}
             {currentTab === "ביקורות" && (
-              <div className="reviews">
-                {!isOwner && user && !hasReviewed && (
-                  <div className="reviews-header">
-                    <button
-                      onClick={handleReviewClick}
-                      className="add-review-btn"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'טוען…' : 'הוסף ביקורת'}
-                    </button>
-                  </div>
-                )}
-                {hasReviewed && (
-                  <p className="no-data">כבר הגשת ביקורת על העסק הזה</p>
-                )}
-                {reviewsList.length ? (
-                  reviewsList.map((r, i) => {
-                    const dateStr = r.createdAt
-                      ? new Date(r.createdAt).toLocaleDateString("he-IL", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric"
-                        })
-                      : "";
-                    const score = Number(r.rating) || 0;
-                    const full = Math.floor(score);
-                    const half = score % 1 ? 1 : 0;
-                    const empty = 5 - full - half;
-                    const reviewerName = r.user?.name || "אנונימי";
+  <div className="reviews">
+    {!isOwner && user && !hasReviewed && (
+      <div className="reviews-header">
+        <button
+          onClick={handleReviewClick}
+          className="add-review-btn"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'טוען…' : 'הוסף ביקורת'}
+        </button>
+      </div>
+    )}
+    {/* רק לקוחות ובעלי עסקים יקבלו את ההודעה */}
+    {hasReviewed && ['client', 'business'].includes(user.role) && (
+      <p className="no-data">כבר הגשת ביקורת על העסק הזה</p>
+    )}
+    {reviewsList.length ? (
+      reviewsList.map((r, i) => {
+        const dateStr = r.createdAt
+          ? new Date(r.createdAt).toLocaleDateString("he-IL", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric"
+            })
+          : "";
+        const score = Number(r.rating) || 0;
+        const full = Math.floor(score);
+        const half = score % 1 ? 1 : 0;
+        const empty = 5 - full - half;
+        const reviewerName = r.user?.name || "אנונימי";
 
-                    return (
-                      <div key={r._id || i} className="review-card improved">
-                        <div className="review-header simple">
-                          <div className="author-info">
-                            <strong className="reviewer">{reviewerName}</strong>
-                            {dateStr && <small className="review-date">{dateStr}</small>}
-                          </div>
-                          <div className="score">
-                            <span className="score-number">{score.toFixed(1)}</span>
-                            <span className="stars-inline">
-                              {'★'.repeat(full)}{half ? '⯨' : ''}{'☆'.repeat(empty)}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="review-comment simple">{r.comment}</p>
-                        {canDelete && (
-                          <button
-                            className="delete-review-btn"
-                            onClick={() => handleDeleteReview(r._id)}
-                          >
-                            מחק
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p className="no-data">אין ביקורות</p>
+        return (
+          <div key={r._id || i} className="review-card improved">
+            <div className="review-header simple">
+              <div className="author-info">
+                <strong className="reviewer">{reviewerName}</strong>
+                {dateStr && <small className="review-date">{dateStr}</small>}
+              </div>
+              <div className="score">
+                <span className="score-number">{score.toFixed(1)}</span>
+                <span className="stars-inline">
+                  {'★'.repeat(full)}{half ? '⯨' : ''}{'☆'.repeat(empty)}
+                </span>
+              </div>
+            </div>
+            <p className="review-comment simple">{r.comment}</p>
+            {canDelete && (
+              <button
+                className="delete-review-btn"
+                onClick={() => handleDeleteReview(r._id)}
+              >
+                מחק
+              </button>
+            )}
+          </div>
+        );
+      })
+    ) : (
+      <p className="no-data">אין ביקורות</p>
                 )}
               </div>
             )}
