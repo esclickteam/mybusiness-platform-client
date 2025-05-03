@@ -11,40 +11,12 @@ export default function Home() {
   // state
   const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
-  const [userCity, setUserCity] = useState("");
   const [updates, setUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // build options for React-Select
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
   const cityOptions = ALL_CITIES.map((c) => ({ value: c, label: c }));
-
-  // detect user's city via geolocation
-  useEffect(() => {
-    navigator.geolocation?.getCurrentPosition(
-      async (pos) => {
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
-          );
-          const data = await res.json();
-          const detected =
-            data?.address?.city ||
-            data?.address?.town ||
-            data?.address?.village ||
-            "";
-          setUserCity(detected);
-        } catch (err) {
-          console.error("שגיאה בקבלת מיקום:", err);
-        }
-      },
-      (err) => {
-        console.warn("Geolocation error:", err);
-        alert("לא הצלחנו לקבל את המיקום שלך. אנא נסה שוב.");
-      },
-      { timeout: 10000 }
-    );
-  }, []);
 
   // SSE connection for live updates
   useEffect(() => {
@@ -94,11 +66,6 @@ export default function Home() {
           חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט
           ויעיל.
         </p>
-        {userCity && (
-          <p className="location-hint">
-            🎯 הצג עסקים בסביבת <strong>{userCity}</strong>
-          </p>
-        )}
       </section>
 
       {/* Search */}

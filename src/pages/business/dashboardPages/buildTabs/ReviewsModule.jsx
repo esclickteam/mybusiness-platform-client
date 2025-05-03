@@ -1,5 +1,6 @@
-// src/pages/business/dashboardPages/build/buildTabs/ReviewsModule.jsx
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+
 // סגנונות כלליים של עמוד הבניה
 import '../build/Build.css';
 // סגנונות ספציפיים לטאב הביקורות
@@ -7,7 +8,6 @@ import './ReviewsModule.css';
 
 import StarRatingChart from './StarRatingChart';
 import ReviewForm from './ReviewForm';
-import axios from 'axios';
 
 const PARAMETERS = {
   service: '🤝 שירותיות',
