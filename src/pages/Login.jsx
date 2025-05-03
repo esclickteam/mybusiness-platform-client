@@ -5,11 +5,12 @@ import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom"; // Importing useNavigate for redirection
 
 export default function Login() {
-  const { login, error } = useAuth(); // Assuming 'user' contains the logged-in user info
+  const { login, error, user } = useAuth(); // Assuming 'user' contains the logged-in user info
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
+  const [staffLoginError, setStaffLoginError] = useState(""); // Error state for staff login
   const navigate = useNavigate(); // To handle redirection
 
   const handleSubmit = async (e) => {
@@ -29,8 +30,13 @@ export default function Login() {
   };
 
   const handleStaffLogin = () => {
-    // פנה לדף לוגין נפרד לעובדים
-    navigate('/staff-login'); // הפניית המשתמש לדף נפרד של לוגין לעובדים
+    // בודק אם המשתמש הוא עובד, מנהל או אדמין
+    if (user.role === "worker" || user.role === "manager" || user.role === "admin") {
+      navigate('/staff-login'); // הפניית המשתמש לדף כניסת עובדים
+    } else {
+      // אם המשתמש לא אדמין או מנהל, הצג הודעה
+      setStaffLoginError("הגישה לעובדים מוגבלת לעובדים, מנהלים ואדמינים בלבד.");
+    }
   };
 
   return (
@@ -59,6 +65,7 @@ export default function Login() {
         </form>
 
         {error && <p className="error-message">{error}</p>}
+        {staffLoginError && <p className="error-message">{staffLoginError}</p>} {/* הצגת שגיאה לכניסת עובדים */}
 
         <div className="login-extra-options">
           <span
@@ -76,7 +83,7 @@ export default function Login() {
           {/* כפתור כניסת עובדים */}
           <div className="staff-login-link">
             <button
-              onClick={handleStaffLogin} // הפניה לדף לוגין לעובדים
+              onClick={handleStaffLogin} // הפנייה לדף לוגין לעובדים
               className="staff-login-btn"
             >
               כניסת עובדים
