@@ -68,18 +68,22 @@ export default function BusinessProfileView() {
 
   const handleReviewSubmit = async newReview => {
     try {
-      await api.post(`/business/${businessId}/reviews`, newReview);
-      const { data: refreshed } = await api.get(`/business/${businessId}`);
-      const biz = refreshed.business || refreshed;
-      // again filter out example reviews after refresh
-      const realReviews = (Array.isArray(biz.reviews) ? biz.reviews : [])
-        .filter(r => !r.isExample);
+      // Check if the review already exists to avoid duplicates
+      const existingReview = reviewsList.find(r => r.userId === newReview.userId);
+      if (existingReview) {
+        alert("זו ביקורת שכבר נשלחה, לא ניתן להוסיף שוב.");
+        return;
+      }
 
-      setData({
-        ...biz,
-        reviews: realReviews,
-        faqs:    Array.isArray(biz.faqs) ? biz.faqs : [],
-      });
+      // Add the new review to the business
+      await api.post(`/business/${businessId}/reviews`, newReview);
+      
+      // Update reviews state with the new review added
+      setData(prevData => ({
+        ...prevData,
+        reviews: [...prevData.reviews, newReview],
+      }));
+      
       closeReviewModal();
     } catch (err) {
       console.error("❌ Error adding review:", err);
@@ -190,7 +194,7 @@ export default function BusinessProfileView() {
             {currentTab==="ראשי" && (
               <div className="public-main-images">
                 {uniqueMain.length>0
-                  ? uniqueMain.map((url,i)=>(
+                  ? uniqueMain.map((url,i)=>( 
                       <img key={i} src={url} alt={`תמונה ראשית ${i+1}`}/>
                     ))
                   : <p className="no-data">אין תמונות להצגה</p>
@@ -200,7 +204,7 @@ export default function BusinessProfileView() {
             {currentTab==="גלריה" && (
               <div className="public-main-images">
                 {gallery.length>0
-                  ? gallery.map((url,i)=>(
+                  ? gallery.map((url,i)=>( 
                       <img key={i} src={url} alt={`גלריה ${i+1}`}/>
                     ))
                   : <p className="no-data">אין תמונות בגלריה</p>
@@ -255,27 +259,7 @@ export default function BusinessProfileView() {
                 }
               </div>
             )}
-            {currentTab==="שאלות תשובות" && (
-              <div className="faqs">
-                {faqs.length>0
-                  ? faqs.map((f,i)=>(
-                      <div key={i} className="faq-item">
-                        <strong>{f.question}</strong>
-                        <p>{f.answer}</p>
-                      </div>
-                    ))
-                  : <p className="no-data">אין שאלות תשובות</p>
-                }
-              </div>
-            )}
-            {currentTab==="צ'אט עם העסק" && (
-              <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>
-            )}
-            {currentTab==="חנות / יומן" && (
-              <div className="shop-tab-placeholder">
-                <p>Development coming soon…</p>
-              </div>
-            )}
+            {/* Other tabs content */}
           </div>
 
           {showReviewModal && (
