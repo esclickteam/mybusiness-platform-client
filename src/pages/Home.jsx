@@ -1,57 +1,28 @@
-import React, { useState, useEffect } from "react";
+// src/pages/Home.jsx
+import React, { useState } from "react";
 import "../styles/Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES from "../data/cities";
+import UpdatesTicker from "../components/UpdatesTicker";  // ↥ הוספנו כאן
 
 export default function Home() {
   const navigate = useNavigate();
 
-  // state
+  // state לחיפוש
   const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
-  const [updates, setUpdates] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  // build options for React-Select
+  // אופציות ל־Select
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
-  const cityOptions = ALL_CITIES.map((c) => ({ value: c, label: c }));
+  const cityOptions     = ALL_CITIES.map((c)     => ({ value: c, label: c }));
 
-  // SSE connection for live updates
-  useEffect(() => {
-    const url =
-      import.meta.env.VITE_SSE_URL ||
-      "https://api.esclick.co.il/api/updates/stream";
-    const es = new EventSource(url);
-
-    es.onmessage = (e) => {
-      try {
-        const msg = JSON.parse(e.data);
-        setUpdates((prev) => [
-          { message: msg.message, time: new Date().toLocaleTimeString() },
-          ...prev,
-        ]);
-        setLoading(false);
-      } catch (err) {
-        console.error("Invalid SSE data format:", err);
-      }
-    };
-
-    es.onerror = (err) => {
-      console.error("SSE error", err);
-      es.close();
-      setLoading(false);
-    };
-
-    return () => es.close();
-  }, []);
-
-  // navigate to search results
+  // נווט לתוצאות החיפוש
   const navigateToSearch = () => {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
-    if (city) params.set("city", city);
+    if (city)     params.set("city", city);
     navigate(`/search?${params.toString()}`);
   };
 
@@ -63,8 +34,7 @@ export default function Home() {
           עסקליק – הפלטפורמה החכמה שמחברת בין לקוחות לעסקים.
         </h1>
         <p className="subtitle">
-          חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט
-          ויעיל.
+          חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט ויעיל.
         </p>
       </section>
 
@@ -77,14 +47,8 @@ export default function Home() {
             onChange={(opt) => setCategory(opt?.value || "")}
             placeholder="תחום (לדוגמה: חשמלאי)"
             isClearable
-            openMenuOnInput
-            openMenuOnClick={false}
-            openMenuOnFocus={false}
             filterOption={({ label }, input) =>
               label.toLowerCase().includes(input.toLowerCase())
-            }
-            noOptionsMessage={() =>
-              category ? "אין קטגוריות מתאימות" : null
             }
             menuPlacement="bottom"
             menuPortalTarget={document.body}
@@ -97,14 +61,8 @@ export default function Home() {
             onChange={(opt) => setCity(opt?.value || "")}
             placeholder="עיר (לדוגמה: תל אביב)"
             isClearable
-            openMenuOnInput
-            openMenuOnClick={false}
-            openMenuOnFocus={false}
             filterOption={({ label }, input) =>
               label.toLowerCase().startsWith(input.toLowerCase())
-            }
-            noOptionsMessage={() =>
-              city ? "אין ערים מתאימות" : null
             }
             menuPlacement="bottom"
             menuPortalTarget={document.body}
@@ -157,19 +115,7 @@ export default function Home() {
       {/* Trending / Live Updates */}
       <div className="trending-box">
         <h4>📈 מה קורה עכשיו בעסקליק?</h4>
-        <ul>
-          {loading ? (
-            <li className="loading">🔄 טוען עדכונים...</li>
-          ) : updates.length === 0 ? (
-            <li className="no-updates">אין עדכונים חדשים</li>
-          ) : (
-            updates.map((upd, i) => (
-              <li key={i} className="update-item">
-                🔹 {upd.message} <span className="time">({upd.time})</span>
-              </li>
-            ))
-          )}
-        </ul>
+        <UpdatesTicker />  {/* ↥ פה מושתל רכיב העדכונים */}
       </div>
 
       {/* Footer */}
@@ -189,5 +135,5 @@ export default function Home() {
         </p>
       </footer>
     </div>
-  );
+);
 }

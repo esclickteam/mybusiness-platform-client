@@ -1,0 +1,21 @@
+.updates-ticker {
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0;
+    background: #f8f9ff;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .updates-ticker.loading,
+  .updates-ticker.no-updates {
+    padding: 0.5rem;
+    color: #666;
+  }
+  .update-item {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+  }
+  .update-new_review { color: #0a0; }
+  .update-new_business { color: #00a; }
+  
