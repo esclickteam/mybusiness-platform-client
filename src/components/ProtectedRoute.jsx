@@ -1,14 +1,11 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Unauthorized from "./Unauthorized";
 
 /**
  * ProtectedRoute component
  * Wraps routes that require authentication and authorization.
- * @param {object} props
- * @param {React.ReactNode} props.children - The component(s) to render if access is granted.
- * @param {string[]} [props.roles] - Optional list of roles allowed to access this route.
- * @param {string|null} [props.requiredPackage] - Optional subscription plan required to access this route.
  */
 function ProtectedRoute({ children, roles = [], requiredPackage = null }) {
   const { user, loading } = useAuth();
@@ -26,18 +23,12 @@ function ProtectedRoute({ children, roles = [], requiredPackage = null }) {
   // 2. If not authenticated, redirect to login page appropriate for the role
   if (!user) {
     const loginPath = roles.includes("worker") ? "/staff-login" : "/login";
-    return (
-      <Navigate to={loginPath} replace state={{ from: location }} />
-    );
+    return <Navigate to={loginPath} replace state={{ from: location }} />;
   }
 
-  // 3. If roles are specified and user role is not in list, redirect accordingly
+  // 3. If roles are specified and user role is not in list, show unauthorized message
   if (roles.length > 0 && !roles.includes(user.role)) {
-    // unauthorized worker → staff-login, others → homepage
-    if (roles.includes("worker")) {
-      return <Navigate to="/staff-login" replace />;
-    }
-    return <Navigate to="/" replace />;
+    return <Unauthorized />;
   }
 
   // 4. If a specific subscription package is required but user doesn't have it, redirect to plans
