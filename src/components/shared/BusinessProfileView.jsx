@@ -68,28 +68,31 @@ export default function BusinessProfileView() {
 
   const handleReviewSubmit = async newReview => {
     try {
-      // Check if the review already exists to avoid duplicates
-      const existingReview = reviewsList.find(r => r.userId === newReview.userId);
+      // קודם נוודא שהביקורת לא קיימת (לא הוספה פעמיים)
+      const existingReview = reviewsList.find(r => r.userId === newReview.userId && r.createdAt === newReview.createdAt);
       if (existingReview) {
         alert("זו ביקורת שכבר נשלחה, לא ניתן להוסיף שוב.");
         return;
       }
-
-      // Add the new review to the business
-      await api.post(`/business/${businessId}/reviews`, newReview);
+  
+      // עכשיו נשלח את הביקורת לשרת
+      const { data: refreshed } = await api.post(`/business/${businessId}/reviews`, newReview);
       
-      // Update reviews state with the new review added
+      // אחרי שהביקורת נוספה בהצלחה בשרת, נעדכן את ה-state עם הביקורת החדשה
       setData(prevData => ({
         ...prevData,
-        reviews: [...prevData.reviews, newReview],
+        reviews: [...prevData.reviews, refreshed.review],
       }));
-      
+  
       closeReviewModal();
     } catch (err) {
       console.error("❌ Error adding review:", err);
       alert("שגיאה בשליחת הביקורת, נסה שוב");
     }
   };
+  
+  
+  
 
   const handleDeleteReview = async reviewId => {
     if (!window.confirm("האם למחוק ביקורת זו?")) return;
