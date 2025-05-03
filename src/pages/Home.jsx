@@ -1,11 +1,11 @@
 // src/pages/Home.jsx
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "../styles/Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES from "../data/cities";
-import UpdatesTicker from "../components/UpdatesTicker";  // ↥ הוספנו כאן
+import { SSEContext } from "../context/SSEContext"; // ← ייבוא ה-Context
 
 export default function Home() {
   const navigate = useNavigate();
@@ -13,6 +13,9 @@ export default function Home() {
   // state לחיפוש
   const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
+
+  // צריכת עדכוני SSE מ-Context
+  const { updates } = useContext(SSEContext);
 
   // אופציות ל־Select
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
@@ -115,7 +118,21 @@ export default function Home() {
       {/* Trending / Live Updates */}
       <div className="trending-box">
         <h4>📈 מה קורה עכשיו בעסקליק?</h4>
-        <UpdatesTicker />  {/* ↥ פה מושתל רכיב העדכונים */}
+        {updates.length === 0 ? (
+          <div className="updates-ticker loading">🔄 טוען עדכונים…</div>
+        ) : (
+          <ul className="updates-ticker">
+            {updates.map((u, i) => (
+              <li key={i} className={`update-item update-${u.type}`}>
+                <small>
+                  {new Date(u.timestamp).toLocaleTimeString("he-IL")}
+                </small>
+                {" – "}
+                {u.message}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Footer */}
@@ -135,5 +152,5 @@ export default function Home() {
         </p>
       </footer>
     </div>
-);
+  );
 }
