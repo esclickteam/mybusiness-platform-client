@@ -13,6 +13,7 @@ export default function Home() {
   const [city, setCity] = useState("");
   const [userCity, setUserCity] = useState("");
   const [updates, setUpdates] = useState([]); // עדכונים מ־WebSocket
+  const [loading, setLoading] = useState(true); // ניהול מצב של טעינה
 
   // build options for React-Select
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
@@ -37,7 +38,10 @@ export default function Home() {
           console.error("שגיאה בקבלת מיקום:", err);
         }
       },
-      (err) => console.warn("Geolocation error:", err),
+      (err) => {
+        console.warn("Geolocation error:", err);
+        alert("לא הצלחנו לקבל את המיקום שלך. אנא נסה שוב.");
+      },
       { timeout: 10000 }
     );
   }, []);
@@ -46,20 +50,27 @@ export default function Home() {
   useEffect(() => {
     const socket = new WebSocket("wss://api.esclick.co.il");
 
+    socket.onopen = () => {
+      console.log('WebSocket connected');
+    };
+
     socket.onmessage = function (event) {
       const { message } = JSON.parse(event.data);
       setUpdates((prev) => [
         ...prev,
         { message, time: new Date().toLocaleTimeString() },
       ]);
+      setLoading(false); // עדכון מצב טעינה
     };
 
     socket.onerror = (error) => {
       console.error("WebSocket Error:", error);
+      setLoading(false); // סיום מצב טעינה במקרה של שגיאה
     };
 
     socket.onclose = () => {
       console.log("WebSocket connection closed");
+      setLoading(false); // סיום מצב טעינה במקרה של סגירה
     };
 
     return () => {
@@ -187,8 +198,10 @@ export default function Home() {
       <div className="trending-box">
         <h4>📈 מה קורה עכשיו בעסקליק?</h4>
         <ul>
-          {updates.length === 0 ? (
-            <li className="no-updates">אין עדכונים חדשים?</li>
+          {loading ? (
+            <li className="loading">🔄 טוען עדכונים...</li>
+          ) : updates.length === 0 ? (
+            <li className="no-updates">אין עדכונים חדשים</li>
           ) : (
             updates.map((upd, i) => (
               <li key={i} className="update-item">
