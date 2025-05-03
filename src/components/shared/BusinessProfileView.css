@@ -102,28 +102,27 @@ html, body, #root {
 .overall-rating {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
   padding: 0.75rem 1rem;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1.5rem;
+  margin: 1.5rem 0;
   width: 100%;
   max-width: 700px;
 }
 .overall-rating .big-score {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #5e17eb;
 }
 .overall-rating .stars-inline {
   font-size: 1.2rem;
-  line-height: 1;
   color: #f5a623;
 }
 .overall-rating .count {
-  color: #666;
   font-size: 0.9rem;
+  color: #666;
 }
 
 /* === מחיצת טאבים === */
@@ -143,7 +142,6 @@ html, body, #root {
   max-width: 700px;
   justify-items: center;
   margin-bottom: 1rem;
-  background: transparent;
 }
 .profile-tabs .tab {
   padding: 0.6rem 1rem;
@@ -156,22 +154,18 @@ html, body, #root {
   cursor: pointer;
   transition: background-color 0.2s;
 }
-.profile-tabs .tab:hover {
-  background: #e4d6ff;
-}
 .profile-tabs .tab.active {
   background: #b46af1;
   color: #fff;
 }
 
-/* === תמונות ראשיות (טאב “ראשי”) === */
+/* === תמונות (ראשי וגלריה) === */
 .public-main-images {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin: 1rem 0;
   width: 100%;
-  max-width: 700px;
 }
 .public-main-images img {
   width: 100%;
@@ -181,12 +175,7 @@ html, body, #root {
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-/* === גלריה (טאב “גלריה”) === */
-.public-main-images.gallery {
-  margin-top: 0;
-}
-
-/* === ביקורות === */
+/* === ביקורות – מינימליסטי עם שם, תאריך וציון === */
 .reviews {
   width: 100%;
   max-width: 700px;
@@ -194,11 +183,11 @@ html, body, #root {
 .review-card.improved {
   background: #fff;
   border-left: 4px solid #b46af1;
-  border-radius: 0 12px 12px 0;
+  border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  transition: transform .2s, background 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
 }
 .review-card.improved:hover {
   transform: translateX(4px);
@@ -209,20 +198,19 @@ html, body, #root {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
-.review-header.simple .author-info {
+.author-info {
   display: flex;
   flex-direction: column;
 }
-.review-header.simple .reviewer {
+.author-info .reviewer {
   font-weight: bold;
   font-size: 1rem;
   color: #333;
 }
-.review-header.simple .review-date {
+.author-info .review-date {
   font-size: 0.8rem;
   color: #999;
   margin-top: 0.2rem;
@@ -238,22 +226,10 @@ html, body, #root {
   font-size: 1.2rem;
 }
 .review-comment.simple {
+  margin: 0.75rem 0 0;
   font-size: 0.95rem;
   color: #444;
   line-height: 1.4;
-  margin: 0;
-}
-
-/* === שאלות ותשובות === */
-.faqs {
-  width: 100%;
-  max-width: 700px;
-}
-.faqs .faq-item {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
 }
 
 /* === רספונסיביות === */
