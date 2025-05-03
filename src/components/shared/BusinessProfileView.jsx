@@ -67,9 +67,9 @@ export default function BusinessProfileView() {
     .slice(0, 5)
     .map(o => o.preview);
 
-  // דירוג ממוצע בפאנל העסק
+  // דירוג ממוצע בפאנל העסק (עכשיו מתוך r.rating)
   const avgRating = reviews.length
-    ? reviews.reduce((sum, r) => sum + (Number(r.averageScore) || 0), 0) / reviews.length
+    ? reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviews.length
     : 0;
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const fullAvgStars = Math.floor(roundedAvg);
@@ -167,6 +167,9 @@ export default function BusinessProfileView() {
                 )}
                 {filteredReviews.length ? (
                   filteredReviews.map((r, i) => {
+                    // בדיקת קונסול
+                    console.log("review raw:", r);
+
                     const rawDate = r.date || r.createdAt;
                     const dateStr = rawDate && !isNaN(new Date(rawDate).getTime())
                       ? new Date(rawDate).toLocaleDateString("he-IL", {
@@ -176,9 +179,9 @@ export default function BusinessProfileView() {
                         })
                       : "";
 
-                    const reviewerName = r.user?.name || r.userName || "אנונימי";
-                    const avgScore = Number(r.averageScore) || 0;
-                    const avgRounded = Math.round(avgScore * 10) / 10;
+                    const reviewerName = r.user?.name || r.userName || "—";
+                    const score = Number(r.rating) || 0;
+                    const roundedScore = Math.round(score * 10) / 10;
 
                     return (
                       <div key={i} className="review-card improved">
@@ -188,7 +191,7 @@ export default function BusinessProfileView() {
                             {dateStr && <small className="review-date">{dateStr}</small>}
                           </div>
                           <span className="score">
-                            {avgRounded.toFixed(1)} <span className="star">★</span>
+                            {roundedScore.toFixed(1)} <span className="star">★</span>
                           </span>
                         </div>
                         <p className="review-comment simple">{r.comment}</p>
@@ -238,6 +241,7 @@ export default function BusinessProfileView() {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>
