@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import "../styles/Login.css"; // או עיצוב מותאם אישית
+import "../styles/Login.css";
 import { useNavigate } from "react-router-dom";
 
 export default function StaffLogin() {
-  const { login, error } = useAuth();
+  const { login, error, user } = useAuth(); // Assuming 'user' contains the logged-in user info
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // To handle redirection
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,7 +18,21 @@ export default function StaffLogin() {
     setLoading(true);
     try {
       await login(identifier.trim(), password);
-      navigate("/staff-dashboard"); // ניווט לאחר התחברות לעובדים
+
+      // בדוק את התפקיד של המשתמש ולנתב בהתאם
+      switch (user?.role) {
+        case "admin":
+          navigate("/admin/dashboard"); // הפניית אדמין לדשבורד של אדמינים
+          break;
+        case "manager":
+          navigate("/manager/dashboard"); // הפניית מנהל לדשבורד של מנהלים
+          break;
+        case "worker":
+          navigate("/staff/dashboard"); // הפניית עובד לדשבורד של עובדים
+          break;
+        default:
+          break;
+      }
     } catch (_) {
       // error מטופל ומוצג אוטומטית מהקונטקסט
     } finally {

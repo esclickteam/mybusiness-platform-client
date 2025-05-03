@@ -5,12 +5,11 @@ import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom"; // Importing useNavigate for redirection
 
 export default function Login() {
-  const { login, error, user } = useAuth(); // Assuming 'user' contains the logged-in user info
+  const { login, error } = useAuth(); // Assuming 'user' contains the logged-in user info
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
-  const [staffLoginError, setStaffLoginError] = useState(""); // Error state for staff login
   const navigate = useNavigate(); // To handle redirection
 
   const handleSubmit = async (e) => {
@@ -29,22 +28,9 @@ export default function Login() {
     }
   };
 
-  const handleStaffLogin = async () => {
-    // בודק את התפקיד של המשתמש ומפנה לדשבורד המתאים
-    switch (user?.role) {
-      case "admin":
-        navigate('/admin/dashboard'); // העברת אדמין לדשבורד של אדמינים
-        break;
-      case "manager":
-        navigate('/manager/dashboard'); // העברת מנהל לדשבורד של מנהלים
-        break;
-      case "worker":
-        navigate('/staff/dashboard'); // העברת עובד לדשבורד של עובדים
-        break;
-      default:
-        // אם המשתמש לא אחד מהתפקידים הנ"ל, הצג שגיאה
-        setStaffLoginError("הגישה מוגבלת לעובדים, מנהלים ואדמינים בלבד.");
-    }
+  const handleStaffLogin = () => {
+    // פנה לדף לוגין נפרד לעובדים
+    navigate('/staff-login'); // הפניית המשתמש לדף נפרד של לוגין לעובדים
   };
 
   return (
@@ -73,7 +59,6 @@ export default function Login() {
         </form>
 
         {error && <p className="error-message">{error}</p>}
-        {staffLoginError && <p className="error-message">{staffLoginError}</p>} {/* הצגת שגיאה לכניסת עובדים */}
 
         <div className="login-extra-options">
           <span
@@ -91,7 +76,7 @@ export default function Login() {
           {/* כפתור כניסת עובדים */}
           <div className="staff-login-link">
             <button
-              onClick={handleStaffLogin} // הוספת הפעולה בעת לחיצה
+              onClick={handleStaffLogin} // הפניה לדף לוגין לעובדים
               className="staff-login-btn"
             >
               כניסת עובדים

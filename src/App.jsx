@@ -1,9 +1,7 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
-// 1️⃣ טען כאן את כל ה־CSS הגלובלי
 import "./styles/index.css";
-
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
@@ -12,42 +10,43 @@ import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage
 const HomePage = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));  // NEW
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy")); 
 
-/* --- לעסקים --- */
+// Business pages
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Plans = lazy(() => import("./pages/business/Plans"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 
-/* --- תמיכה / מידע --- */
+// Support pages
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
 
-// New BusinessSupport page
-const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));  // NEW
+// New Business Support page
+const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));  
 
-/* --- תצוגת עסק יחיד ומאגר עסקים --- */
+// Business view and list
 const BusinessOverview = lazy(() => import("./pages/business/Business"));
 const BusinessesList = lazy(() => import("./pages/BusinessesList"));
 
-/* --- מודול משרות בזק --- */
+// Quick Jobs
 const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
 const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
 
-/* --- אימות משתמש --- */
+// Authentication
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 
-// Public business profile (clean)
-const BusinessProfileView = lazy(() =>
-  import("./components/shared/BusinessProfileView")
-);
+// Staff Login page
+const StaffLogin = lazy(() => import("./pages/StaffLogin")); // Added staff login
 
-// Lazy-loaded protected dashboards
+// Public business profile
+const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
+
+// Dashboards
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
 const StaffDashboard = lazy(() => import("./pages/staff/StaffDashboard"));
 const WorkSession = lazy(() => import("./pages/staff/WorkSession"));
@@ -81,41 +80,40 @@ export default function App() {
           {/* Public pages */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />  {/* NEW */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/search" element={<SearchBusinesses />} />
 
-          {/* --- לעסקים / מידע עסקי --- */}
+          {/* Business information */}
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/plans" element={<Plans />} />
           <Route path="/checkout" element={<Checkout />} />
 
-          {/* --- תמיכה ומשאבים ללקוחות --- */}
+          {/* Support / information pages */}
           <Route path="/faq" element={<FAQ />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
 
-          {/* New Business Support page */}
-          <Route path="/business-support" element={<BusinessSupport />} />  {/* NEW */}
+          {/* Business support page */}
+          <Route path="/business-support" element={<BusinessSupport />} />
 
-          {/* --- עמודי בניית עסקים --- */}
+          {/* Business and Job pages */}
           <Route path="/business" element={<BusinessOverview />} />
           <Route path="/businesses" element={<BusinessesList />} />
-
-          {/* --- מודול משרות בזק --- */}
           <Route path="/quick-jobs" element={<QuickJobsBoard />} />
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
-          {/* --- אימות ואבטחה --- */}
+          {/* Authentication */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
 
-          {/* Public business profile */}
-          <Route path="/business/:businessId" element={<BusinessProfileView />} />
+          {/* Staff login page */}
+          <Route path="/staff-login" element={<StaffLogin />} />
 
-          {/* Protected business dashboard */}
+          {/* Protected routes */}
+          <Route path="/business/:businessId" element={<BusinessProfileView />} />
           <Route
             path="/business/:businessId/dashboard/*"
             element={
@@ -125,7 +123,7 @@ export default function App() {
             }
           />
 
-          {/* Protected client dashboard */}
+          {/* Client dashboard */}
           <Route
             path="/client/dashboard"
             element={
@@ -135,7 +133,7 @@ export default function App() {
             }
           />
 
-          {/* Protected staff dashboards */}
+          {/* Staff dashboards */}
           <Route
             path="/staff/dashboard"
             element={
@@ -177,7 +175,7 @@ export default function App() {
             }
           />
 
-          {/* Protected manager dashboard */}
+          {/* Manager dashboard */}
           <Route
             path="/manager/dashboard"
             element={
@@ -187,7 +185,7 @@ export default function App() {
             }
           />
 
-          {/* Protected admin dashboards */}
+          {/* Admin dashboard */}
           <Route
             path="/admin/dashboard"
             element={
