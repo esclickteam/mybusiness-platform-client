@@ -25,18 +25,17 @@ export default function BusinessProfileView() {
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
 
-  // טעינת העסק + ביקורות + דירוג כללי
+  // Fetch business + reviews + server‐computed rating
   useEffect(() => {
     setLoading(true);
     api.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-        const city = typeof biz.address === "string"
-          ? biz.address
-          : biz.address?.city ?? "";
         setData({
           ...biz,
-          city,
+          city: typeof biz.address === "string"
+            ? biz.address
+            : biz.address?.city || "",
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
           gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
           reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
@@ -62,11 +61,11 @@ export default function BusinessProfileView() {
     .slice(0, 5)
     .map(o => o.preview);
 
-  // ממוצע כולל כפי שחושב בשרת
-  const avgRating   = rating;
-  const roundedAvg  = Math.round(avgRating * 10) / 10;
-  const fullAvgStars= Math.floor(roundedAvg);
-  const halfAvgStar = roundedAvg % 1 ? 1 : 0;
+  // Use server‐computed rating
+  const avgRating     = rating;
+  const roundedAvg    = Math.round(avgRating * 10) / 10;
+  const fullAvgStars  = Math.floor(roundedAvg);
+  const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
   const isOwner = user?.role === "business" && user.businessId === businessId;
@@ -75,7 +74,7 @@ export default function BusinessProfileView() {
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal   = () => setShowReviewModal(false);
 
-  // POST review → API → update state with returned review & rating
+  // Submit review to API, receive back review + updated businessRating
   const handleReviewSubmit = async (newReview) => {
     try {
       const res = await api.post(
@@ -87,7 +86,7 @@ export default function BusinessProfileView() {
       setData(prev => ({
         ...prev,
         reviews: [...prev.reviews, review],
-        rating: Number(businessRating),
+        rating:  Number(businessRating),
       }));
       closeReviewModal();
     } catch (err) {
@@ -99,9 +98,12 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
+
           {isOwner && (
-            <Link to={`/business/${businessId}/dashboard/edit`}
-                  className="edit-profile-btn">
+            <Link
+              to={`/business/${businessId}/dashboard/edit`}
+              className="edit-profile-btn"
+            >
               ✏️ ערוך פרטי העסק
             </Link>
           )}
@@ -133,9 +135,11 @@ export default function BusinessProfileView() {
 
           <div className="profile-tabs">
             {TABS.map(tab => (
-              <button key={tab}
-                      className={`tab ${tab === currentTab? "active" : ""}`}
-                      onClick={() => setCurrentTab(tab)}>
+              <button
+                key={tab}
+                className={`tab ${tab === currentTab ? "active" : ""}`}
+                onClick={() => setCurrentTab(tab)}
+              >
                 {tab}
               </button>
             ))}
@@ -145,22 +149,20 @@ export default function BusinessProfileView() {
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {uniqueMain.length > 0
-                  ? uniqueMain.map((url, i) => (
+                  ? uniqueMain.map((url,i) => (
                       <img key={i} src={url} alt={`תמונה ראשית ${i+1}`} />
                     ))
-                  : <p className="no-data">אין תמונות להצגה</p>
-                }
+                  : <p className="no-data">אין תמונות להצגה</p>}
               </div>
             )}
 
             {currentTab === "גלריה" && (
               <div className="public-main-images">
                 {gallery.length > 0
-                  ? gallery.map((url, i) => (
+                  ? gallery.map((url,i)=>(
                       <img key={i} src={url} alt={`גלריה ${i+1}`} />
                     ))
-                  : <p className="no-data">אין תמונות בגלריה</p>
-                }
+                  : <p className="no-data">אין תמונות בגלריה</p>}
               </div>
             )}
 
@@ -168,20 +170,20 @@ export default function BusinessProfileView() {
               <div className="reviews">
                 {user && !isOwner && (
                   <div className="reviews-header">
-                    <button onClick={handleReviewClick}
-                            className="add-review-btn">
+                    <button
+                      onClick={handleReviewClick}
+                      className="add-review-btn"
+                    >
                       הוסף ביקורת
                     </button>
                   </div>
                 )}
                 {filteredReviews.length
-                  ? filteredReviews.map((r, i) => {
-                      const rawDate = r.date || r.createdAt;
+                  ? filteredReviews.map((r,i)=>{
+                      const rawDate = r.date||r.createdAt;
                       const dateStr = rawDate && !isNaN(new Date(rawDate))
                         ? new Date(rawDate).toLocaleDateString("he-IL", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
+                            day:"2-digit", month:"short", year:"numeric"
                           })
                         : "";
                       const reviewerName = r.user?.name || "—";
@@ -200,7 +202,7 @@ export default function BusinessProfileView() {
                             <div className="score">
                               <span className="score-number">{score.toFixed(1)}</span>
                               <span className="stars-inline">
-                                {'★'.repeat(fs2)}{hs2 ? '⯨' : ''}{'☆'.repeat(es2)}
+                                {'★'.repeat(fs2)}{hs2?'⯨':''}{'☆'.repeat(es2)}
                               </span>
                             </div>
                           </div>
@@ -208,22 +210,20 @@ export default function BusinessProfileView() {
                         </div>
                       );
                     })
-                  : <p className="no-data">אין ביקורות</p>
-                }
+                  : <p className="no-data">אין ביקורות</p>}
               </div>
             )}
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0
-                  ? faqs.map((f, i) => (
+                  ? faqs.map((f,i)=>(
                       <div key={i} className="faq-item">
                         <strong>{f.question}</strong>
                         <p>{f.answer}</p>
                       </div>
                     ))
-                  : <p className="no-data">אין שאלות ותשובות</p>
-                }
+                  : <p className="no-data">אין שאלות ותשובות</p>}
               </div>
             )}
 
@@ -252,6 +252,7 @@ export default function BusinessProfileView() {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>
