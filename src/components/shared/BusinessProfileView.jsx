@@ -139,7 +139,7 @@ export default function BusinessProfileView() {
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
   const isOwner   = user?.role === "business" && user.businessId === businessId;
-  const canDelete = ["admin","manager"].includes(user?.role);
+  const canDelete = ["admin", "manager"].includes(user?.role);
 
   return (
     <div className="profile-page">
@@ -183,35 +183,35 @@ export default function BusinessProfileView() {
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button key={tab}
-                      className={`tab ${tab===currentTab?"active":""}`}
-                      onClick={()=>setCurrentTab(tab)}>
+                      className={`tab ${tab === currentTab ? "active" : ""}`}
+                      onClick={() => setCurrentTab(tab)}>
                 {tab}
               </button>
             ))}
           </div>
 
           <div className="tab-content">
-            {currentTab==="ראשי" && (
+            {currentTab === "ראשי" && (
               <div className="public-main-images">
-                {uniqueMain.length>0
-                  ? uniqueMain.map((url,i)=>( 
-                      <img key={i} src={url} alt={`תמונה ראשית ${i+1}`}/>
+                {uniqueMain.length > 0
+                  ? uniqueMain.map((url, i) => (
+                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`}/>
                     ))
                   : <p className="no-data">אין תמונות להצגה</p>
                 }
               </div>
             )}
-            {currentTab==="גלריה" && (
+            {currentTab === "גלריה" && (
               <div className="public-main-images">
-                {gallery.length>0
-                  ? gallery.map((url,i)=>( 
-                      <img key={i} src={url} alt={`גלריה ${i+1}`}/>
+                {gallery.length > 0
+                  ? gallery.map((url, i) => (
+                      <img key={i} src={url} alt={`גלריה ${i + 1}`}/>
                     ))
                   : <p className="no-data">אין תמונות בגלריה</p>
                 }
               </div>
             )}
-            {currentTab==="ביקורות" && (
+            {currentTab === "ביקורות" && (
               <div className="reviews">
                 {!isOwner && user && (
                   <div className="reviews-header">
@@ -222,37 +222,45 @@ export default function BusinessProfileView() {
                   </div>
                 )}
                 {reviewsList.length > 0
-  ? reviewsList.map((r, i) => {
-      const dateStr = r.createdAt
-        ? new Date(r.createdAt).toLocaleDateString("he-IL", { day: "2-digit", month: "short", year: "numeric" })
-        : "";
-      const score = Number(r.rating) || 0;
-      const full = Math.floor(score);
-      const half = score % 1 ? 1 : 0;
-      const empty = 5 - full - half;
-      
-      // בדיקה אם r.user.name קיים, אם לא יוצג שם ברירת מחדל
-      const reviewerName = r.user && r.user.name ? r.user.name : "אנונימי"; // ברירת מחדל אם שם לא קיים
-      
-      return (
-        <div key={i} className="review-card improved">
-          <div className="review-header simple">
-            <div className="author-info">
-              <strong className="reviewer">{reviewerName}</strong>
-              {dateStr && <small className="review-date">{dateStr}</small>}
-            </div>
-            <div className="score">
-              <span className="score-number">{score.toFixed(1)}</span>
-              <span className="stars-inline">
-                {'★'.repeat(full)}{half ? '⯨' : ''}{'☆'.repeat(empty)}
-              </span>
-            </div>
-          </div>
-          <p className="review-comment simple">{r.comment}</p>
-        </div>
-      );
-    })
-  : <p className="no-data">אין ביקורות</p>
+                  ? reviewsList.map((r, i) => {
+                      const dateStr = r.createdAt
+                        ? new Date(r.createdAt).toLocaleDateString("he-IL", { day: "2-digit", month: "short", year: "numeric" })
+                        : "";
+                      const score = Number(r.rating) || 0;
+                      const full = Math.floor(score);
+                      const half = score % 1 ? 1 : 0;
+                      const empty = 5 - full - half;
+
+                      const reviewerName = r.user && r.user.name ? r.user.name : "אנונימי"; // ברירת מחדל אם שם לא קיים
+
+                      return (
+                        <div key={i} className="review-card improved">
+                          <div className="review-header simple">
+                            <div className="author-info">
+                              <strong className="reviewer">{reviewerName}</strong>
+                              {dateStr && <small className="review-date">{dateStr}</small>}
+                            </div>
+                            <div className="score">
+                              <span className="score-number">{score.toFixed(1)}</span>
+                              <span className="stars-inline">
+                                {'★'.repeat(full)}{half ? '⯨' : ''}{'☆'.repeat(empty)}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="review-comment simple">{r.comment}</p>
+
+                          {/* כפתור מחיקה רק אם יש למשתמש הרשאות (admin, manager) */}
+                          {canDelete && (
+                            <button 
+                              className="delete-review-btn"
+                              onClick={() => handleDeleteReview(r._id)}>
+                              מחק
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })
+                  : <p className="no-data">אין ביקורות</p>
                 }
               </div>
             )}
