@@ -52,11 +52,13 @@ export default function BusinessProfileView() {
   // Recompute avgRating automatically whenever reviews array changes
   useEffect(() => {
     if (!data?.reviews) return;
+ +  console.debug("🔎 reviews now =", data.reviews);
     const sum = data.reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
     const avg = data.reviews.length ? sum / data.reviews.length : 0;
-    console.debug("[BusinessProfileView] recalculated avgRating:", avg);
+    console.debug("🔎 recalculated avgRating =", avg);
     setAvgRating(avg);
-  }, [data?.reviews]);
+  }, [data.reviews]);
+ 
 
   // Handlers
   const handleReviewClick = () => setShowReviewModal(true);
