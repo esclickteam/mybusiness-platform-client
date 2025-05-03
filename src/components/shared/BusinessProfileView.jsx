@@ -67,7 +67,7 @@ export default function BusinessProfileView() {
     .slice(0, 5)
     .map(o => o.preview);
 
-  // דירוג ממוצע בפאנל העסק (עכשיו מתוך r.rating)
+  // דירוג ממוצע מתוך r.rating
   const avgRating = reviews.length
     ? reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviews.length
     : 0;
@@ -167,9 +167,6 @@ export default function BusinessProfileView() {
                 )}
                 {filteredReviews.length ? (
                   filteredReviews.map((r, i) => {
-                    // בדיקת קונסול
-                    console.log("review raw:", r);
-
                     const rawDate = r.date || r.createdAt;
                     const dateStr = rawDate && !isNaN(new Date(rawDate).getTime())
                       ? new Date(rawDate).toLocaleDateString("he-IL", {
@@ -179,9 +176,8 @@ export default function BusinessProfileView() {
                         })
                       : "";
 
-                    const reviewerName = r.user?.name || r.userName || "—";
-                    const score = Number(r.rating) || 0;
-                    const roundedScore = Math.round(score * 10) / 10;
+                    const reviewerName = r.user?.name || "—";
+                    const roundedScore = Math.round((Number(r.rating) || 0) * 10) / 10;
 
                     return (
                       <div key={i} className="review-card improved">
