@@ -68,21 +68,26 @@ export default function BusinessProfileView() {
 
   const handleReviewSubmit = async newReview => {
     try {
-      // קודם נוודא שהביקורת לא קיימת (לא הוספה פעמיים)
-      const existingReview = reviewsList.find(r => r.userId === newReview.userId && r.createdAt === newReview.createdAt);
-      if (existingReview) {
-        alert("זו ביקורת שכבר נשלחה, לא ניתן להוסיף שוב.");
-        return;
-      }
-  
-      // עכשיו נשלח את הביקורת לשרת
-      const { data: refreshed } = await api.post(`/business/${businessId}/reviews`, newReview);
-      
-      // אחרי שהביקורת נוספה בהצלחה בשרת, נעדכן את ה-state עם הביקורת החדשה
+      // קודם נוסיף את הביקורת ל-state
       setData(prevData => ({
         ...prevData,
-        reviews: [...prevData.reviews, refreshed.review],
+        reviews: [...prevData.reviews, newReview],
       }));
+  
+      // ואז נשלח את הביקורת לשרת
+      await api.post(`/business/${businessId}/reviews`, newReview);
+      
+      // אפשר גם לבדוק אם ה-server החזיר את הביקורת כדי לוודא שהיא אכן הוספה
+      const { data: refreshed } = await api.get(`/business/${businessId}`);
+      const biz = refreshed.business || refreshed;
+      const realReviews = (Array.isArray(biz.reviews) ? biz.reviews : [])
+        .filter(r => !r.isExample);
+  
+      setData({
+        ...biz,
+        reviews: realReviews,
+        faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
+      });
   
       closeReviewModal();
     } catch (err) {
@@ -90,8 +95,6 @@ export default function BusinessProfileView() {
       alert("שגיאה בשליחת הביקורת, נסה שוב");
     }
   };
-  
-  
   
 
   const handleDeleteReview = async reviewId => {
