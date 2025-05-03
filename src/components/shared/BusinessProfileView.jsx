@@ -27,7 +27,7 @@ export default function BusinessProfileView() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [avgRating, setAvgRating] = useState(0);
 
-  // Fetch business and determine avgRating
+  // Fetch business on mount / businessId change
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -36,67 +36,67 @@ export default function BusinessProfileView() {
       .then(res => {
         const biz = res.data.business || res.data;
         const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
-
-        console.debug("[BusinessProfileView] fetched business:", biz);
         setData({
           ...biz,
           reviews,
           faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
         });
-
-        // Compute avgRating (fallback to client calc if zero)
-        let avg = Number(biz.rating) || 0;
-        if (reviews.length > 0 && avg === 0) {
-          const sum = reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
-          avg = sum / reviews.length;
-          console.debug("[BusinessProfileView] client-calculated avgRating:", avg);
-        }
-        setAvgRating(avg);
       })
       .catch(err => {
         console.error("❌ fetch business error:", err);
-        setError('שגיאה בטעינת העסק');
+        setError("שגיאה בטעינת העסק");
       })
       .finally(() => setLoading(false));
   }, [businessId]);
+
+  // Recompute avgRating whenever reviews change
+  useEffect(() => {
+    if (!data?.reviews) return;
+    const sum = data.reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
+    const avg = data.reviews.length ? sum / data.reviews.length : 0;
+    setAvgRating(avg);
+  }, [data?.reviews]);
 
   // Handlers
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal = () => setShowReviewModal(false);
 
-  // Submit new review and refresh
-  const handleReviewSubmit = async (newReview) => {
+  // Submit new review and refresh data
+  const handleReviewSubmit = async newReview => {
     try {
       await api.post(`/business/${businessId}/reviews`, newReview);
       const { data: refreshed } = await api.get(`/business/${businessId}`);
       const biz = refreshed.business || refreshed;
-      const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
-      setData({ ...biz, reviews, faqs: Array.isArray(biz.faqs) ? biz.faqs : [] });
-      setAvgRating(Number(biz.rating) || 0);
+      setData({
+        ...biz,
+        reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
+        faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
+      });
       closeReviewModal();
     } catch (err) {
       console.error("❌ Error adding review:", err);
-      alert('שגיאה בשליחת הביקורת, נסה שוב');
+      alert("שגיאה בשליחת הביקורת, נסה שוב");
     }
   };
 
-  // Delete review (admin/manager only) and refresh
-  const handleDeleteReview = async (reviewId) => {
-    if (!window.confirm('האם למחוק ביקורת זו?')) return;
+  // Delete review (admin/manager only) and refresh data
+  const handleDeleteReview = async reviewId => {
+    if (!window.confirm("האם למחוק ביקורת זו?")) return;
     try {
       await api.delete(`/business/${businessId}/reviews/${reviewId}`);
       const { data: refreshed } = await api.get(`/business/${businessId}`);
       const biz = refreshed.business || refreshed;
-      const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
-      setData({ ...biz, reviews, faqs: Array.isArray(biz.faqs) ? biz.faqs : [] });
-      setAvgRating(Number(biz.rating) || 0);
+      setData({
+        ...biz,
+        reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
+        faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
+      });
     } catch (err) {
       console.error("❌ Error deleting review:", err);
-      alert('שגיאה במחיקת הביקורת');
+      alert("שגיאה במחיקת הביקורת");
     }
   };
 
-  // Render states
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
   if (!data) return <div className="error">העסק לא נמצא</div>;
@@ -104,14 +104,14 @@ export default function BusinessProfileView() {
   const {
     name,
     logo,
-    description = '',
-    phone = '',
-    category = '',
+    description = "",
+    phone = "",
+    category = "",
     mainImages = [],
     gallery = [],
     reviews = [],
     faqs = [],
-    city = '',
+    city = "",
   } = data;
 
   const uniqueMain = dedupeByPreview(mainImages.map(url => ({ preview: url })))
@@ -124,8 +124,8 @@ export default function BusinessProfileView() {
   const halfAvgStar = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
-  const isOwner = user?.role === 'business' && user.businessId === businessId;
-  const canDelete = ['admin', 'manager'].includes(user?.role);
+  const isOwner = user?.role === "business" && user.businessId === businessId;
+  const canDelete = ["admin", "manager"].includes(user?.role);
   const filteredReviews = reviews.filter(r => r.user && r.comment);
 
   return (
@@ -134,7 +134,10 @@ export default function BusinessProfileView() {
         <div className="profile-inner">
           {/* Edit button for owner */}
           {isOwner && (
-            <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+            <Link
+              to={`/business/${businessId}/dashboard/edit`}
+              className="edit-profile-btn"
+            >
               ✏️ ערוך פרטי העסק
             </Link>
           )}
@@ -142,7 +145,11 @@ export default function BusinessProfileView() {
           {/* Business logo */}
           {logo && (
             <div className="profile-logo-wrapper">
-              <img className="profile-logo" src={logo} alt="לוגו העסק" />
+              <img
+                className="profile-logo"
+                src={logo}
+                alt="לוגו העסק"
+              />
             </div>
           )}
 
@@ -175,7 +182,7 @@ export default function BusinessProfileView() {
             {TABS.map(tab => (
               <button
                 key={tab}
-                className={`tab ${tab === currentTab ? 'active' : ''}`}
+                className={`tab ${tab === currentTab ? "active" : ""}`}
                 onClick={() => setCurrentTab(tab)}
               >
                 {tab}
@@ -186,10 +193,16 @@ export default function BusinessProfileView() {
           {/* Tab content */}
           <div className="tab-content">
             {/* Main images */}
-            {currentTab === 'ראשי' && (
+            {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {uniqueMain.length > 0 ? (
-                  uniqueMain.map((url, idx) => <img key={idx} src={url} alt={`תמונה ראשית ${idx+1}`} />)
+                  uniqueMain.map((url, idx) => (
+                    <img
+                      key={idx}
+                      src={url}
+                      alt={`תמונה ראשית ${idx + 1}`}
+                    />
+                  ))
                 ) : (
                   <p className="no-data">אין תמונות להצגה</p>
                 )}
@@ -197,10 +210,16 @@ export default function BusinessProfileView() {
             )}
 
             {/* Gallery */}
-            {currentTab === 'גלריה' && (
+            {currentTab === "גלריה" && (
               <div className="public-main-images">
                 {gallery.length > 0 ? (
-                  gallery.map((url, idx) => <img key={idx} src={url} alt={`גלריה ${idx+1}`} />)
+                  gallery.map((url, idx) => (
+                    <img
+                      key={idx}
+                      src={url}
+                      alt={`גלריה ${idx + 1}`}
+                    />
+                  ))
                 ) : (
                   <p className="no-data">אין תמונות בגלריה</p>
                 )}
@@ -208,48 +227,70 @@ export default function BusinessProfileView() {
             )}
 
             {/* Reviews */}
-            {currentTab === 'ביקורות' && (
+            {currentTab === "ביקורות" && (
               <div className="reviews">
-                {/* Add review button for non-owners */}
                 {!isOwner && user && (
                   <div className="reviews-header">
-                    <button onClick={handleReviewClick} className="add-review-btn">
+                    <button
+                      onClick={handleReviewClick}
+                      className="add-review-btn"
+                    >
                       הוסף ביקורת
                     </button>
                   </div>
                 )}
-
                 {filteredReviews.length > 0 ? (
                   filteredReviews.map((r, i) => {
                     const dateStr = r.createdAt
-                      ? new Date(r.createdAt).toLocaleDateString('he-IL', { day: '2-digit', month: 'short', year: 'numeric' })
-                      : '';
+                      ? new Date(r.createdAt).toLocaleDateString("he-IL", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "";
                     const score = Number(r.rating) || 0;
                     const full = Math.floor(score);
                     const half = score % 1 ? 1 : 0;
                     const empty = 5 - full - half;
 
                     return (
-                      <div key={i} className="review-card improved">
+                      <div
+                        key={i}
+                        className="review-card improved"
+                      >
                         <div className="review-header simple">
                           <div className="author-info">
-                            <strong className="reviewer">{r.user.name}</strong>
-                            {dateStr && <small className="review-date">{dateStr}</small>}
+                            <strong className="reviewer">
+                              {r.user.name}
+                            </strong>
+                            {dateStr && (
+                              <small className="review-date">
+                                {dateStr}
+                              </small>
+                            )}
                           </div>
                           <div className="score">
-                            <span className="score-number">{score.toFixed(1)}</span>
+                            <span className="score-number">
+                              {score.toFixed(1)}
+                            </span>
                             <span className="stars-inline">
-                              {'★'.repeat(full)}{half ? '⯨' : ''}{'☆'.repeat(empty)}
+                              {'★'.repeat(full)}
+                              {half ? '⯨' : ''}
+                              {'☆'.repeat(empty)}
                             </span>
                           </div>
-                          {/* Delete button for admins/managers */}
                           {canDelete && (
-                            <button className="delete-review-btn" onClick={() => handleDeleteReview(r._id)}>
+                            <button
+                              className="delete-review-btn"
+                              onClick={() => handleDeleteReview(r._id)}
+                            >
                               מחק
                             </button>
                           )}
                         </div>
-                        <p className="review-comment simple">{r.comment}</p>
+                        <p className="review-comment simple">
+                          {r.comment}
+                        </p>
                       </div>
                     );
                   })
@@ -260,7 +301,7 @@ export default function BusinessProfileView() {
             )}
 
             {/* FAQs */}
-            {currentTab === 'שאלות ותשובות' && (
+            {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
                 {faqs.length > 0 ? (
                   faqs.map((f, idx) => (
@@ -270,7 +311,7 @@ export default function BusinessProfileView() {
                     </div>
                   ))
                 ) : (
-                  <p className="no-data">אין שאלות ותשובות</p>
+                  <p className="no-data">אין שאלות תשובות</p>
                 )}
               </div>
             )}
@@ -283,7 +324,7 @@ export default function BusinessProfileView() {
             )}
 
             {/* Shop/Diary */}
-            {currentTab === 'חנות / יומן' && (
+            {currentTab === "חנות / יומן" && (
               <div className="shop-tab-placeholder">
                 <p>Development coming soon…</p>
               </div>
@@ -295,7 +336,10 @@ export default function BusinessProfileView() {
             <div className="review-modal">
               <div className="modal-content">
                 <h2>הוסף ביקורת</h2>
-                <ReviewForm businessId={businessId} onSubmit={handleReviewSubmit} />
+                <ReviewForm
+                  businessId={businessId}
+                  onSubmit={handleReviewSubmit}
+                />
                 <button onClick={closeReviewModal}>סגור</button>
               </div>
             </div>
