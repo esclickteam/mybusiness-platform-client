@@ -81,27 +81,27 @@ export default function BusinessProfileView() {
   const handleReviewClick = () => {
     setShowReviewModal(true); // מציג את המודאל להוספת ביקורת
   };
-
+  
   const closeReviewModal = () => {
-    setShowReviewModal(false);
+    setShowReviewModal(false); // סוגר את המודאל
   };
-
+  
   const handleReviewSubmit = (newReview) => {
     // לאחר שליחת ביקורת, נוסיף אותה לרשימת הביקורות
     setData((prevData) => ({
       ...prevData,
-      reviews: [...prevData.reviews, newReview],
+      reviews: [...prevData.reviews, newReview], // עדכון הביקורות עם הביקורת החדשה
     }));
-    closeReviewModal();
+    closeReviewModal(); // סוגר את המודאל לאחר ההגשה
   };
 
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-
-          <button className="back-btn" onClick={() => navigate(-1)}>
-            ← חזור
+          {/* כפתור הוספת ביקורת */}
+          <button onClick={handleReviewClick} className="add-review-btn">
+            הוסף ביקורת
           </button>
 
           {isOwner && (
@@ -204,11 +204,12 @@ export default function BusinessProfileView() {
 
           {/* מודאל לביקורת */}
           {showReviewModal && (
-            <div className="review-modal">
-              <div className="modal-content">
-                <h2>הוסף ביקורת</h2>
-                <ReviewForm businessId={businessId} onSubmit={handleReviewSubmit} />
-                <button onClick={closeReviewModal}>סגור</button>
+          <div className="review-modal">
+            <div className="modal-content">
+              <h2>הוסף ביקורת</h2>
+              {/* טופס ביקורת */}
+              <ReviewForm businessId={businessId} onSubmit={handleReviewSubmit} />
+              <button onClick={closeReviewModal}>סגור</button>
               </div>
             </div>
           )}
