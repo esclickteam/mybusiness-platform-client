@@ -1,5 +1,6 @@
+// src/pages/business/dashboardPages/buildTabs/ReviewForm.jsx
+
 import { useState } from 'react';
-import api from '../../../../api';
 import './ReviewForm.css';
 
 const ratingFields = [
@@ -12,10 +13,9 @@ const ratingFields = [
   { key: 'experience', label: '🎉 חוויה כללית' },
 ];
 
-const ReviewForm = ({ businessId, onSubmit }) => {
+const ReviewForm = ({ businessId, onSubmit, isSubmitting }) => {
   const [ratings, setRatings] = useState({});
   const [text, setText] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleRatingChange = (key, value) => {
     setRatings(prev => ({ ...prev, [key]: value }));
@@ -27,7 +27,7 @@ const ReviewForm = ({ businessId, onSubmit }) => {
     return (sum / ratingFields.length).toFixed(1);
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = e => {
     e.preventDefault();
 
     const reviewData = {
@@ -38,23 +38,9 @@ const ReviewForm = ({ businessId, onSubmit }) => {
       date: new Date().toISOString(),
     };
 
-    try {
-      setLoading(true);
-      // השתמש ב־api (כפי שהיבאת במעל)
-      const res = await api.post(
-        `/business/${businessId}/reviews`,
-        reviewData
-      );
-      console.log('✅ ביקורת נשמרה:', res.data);
-      onSubmit(res.data);
-      setRatings({});
-      setText('');
-    } catch (err) {
-      console.error('❌ שגיאה בשליחת ביקורת:', err);
-      alert('אירעה שגיאה בשליחת הביקורת. נסה שוב.');
-    } finally {
-      setLoading(false);
-    }
+    onSubmit(reviewData);    // שולח ל־BusinessProfileView לטיפול ב־API
+    setRatings({});          // מאפס את הבחירות
+    setText('');             // מאפס את הטקסט
   };
 
   return (
@@ -92,8 +78,8 @@ const ReviewForm = ({ businessId, onSubmit }) => {
         ⭐ ציון ממוצע: {calculateAverage()} / 5
       </div>
 
-      <button type="submit" disabled={loading}>
-        {loading ? 'שולח...' : 'שלח ביקורת'}
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'טוען…' : 'שלח ביקורת'}
       </button>
     </form>
   );

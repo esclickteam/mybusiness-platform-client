@@ -57,6 +57,13 @@ export default function BusinessProfileView() {
 
   const reviewsList = data?.reviews || [];
 
+  // בדיקה אם המשתמש כבר הגיש ביקורת
+  const hasReviewed = user
+    ? reviewsList.some(r =>
+        r.user?._id === user._id || r.user?.id === user._id
+      )
+    : false;
+
   // Compute average rating
   useEffect(() => {
     const sum = reviewsList.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
@@ -70,16 +77,20 @@ export default function BusinessProfileView() {
   const handleReviewSubmit = async newReview => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+
     try {
       await api.post(`/business/${businessId}/reviews`, newReview);
+      // רק אחרי הצלחה מרעננים וסוגרים modal
+      await fetchBusiness();
+      closeReviewModal();
     } catch (err) {
-      if (err.response?.status !== 409) {
+      if (err.response?.status === 409) {
+        alert("כבר הגשת ביקורת על העסק הזה");
+      } else {
         console.error(err);
         alert("שגיאה בשליחת הביקורת, נסה שוב");
       }
     } finally {
-      await fetchBusiness();
-      closeReviewModal();
       setIsSubmitting(false);
     }
   };
@@ -107,7 +118,6 @@ export default function BusinessProfileView() {
     category = "",
     mainImages = [],
     gallery = [],
-    faqs = [],
     city = ""
   } = data;
 
@@ -171,8 +181,8 @@ export default function BusinessProfileView() {
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {mainImages.length ? (
-                  mainImages.slice(0,5).map((url, i) => (
-                    <img key={i} src={url} alt={`תמונה ראשית ${i+1}`} />
+                  mainImages.slice(0, 5).map((url, i) => (
+                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
                   ))
                 ) : (
                   <p className="no-data">אין תמונות להצגה</p>
@@ -183,7 +193,7 @@ export default function BusinessProfileView() {
               <div className="public-main-images">
                 {gallery.length ? (
                   gallery.map((url, i) => (
-                    <img key={i} src={url} alt={`גלריה ${i+1}`} />
+                    <img key={i} src={url} alt={`גלריה ${i + 1}`} />
                   ))
                 ) : (
                   <p className="no-data">אין תמונות בגלריה</p>
@@ -192,7 +202,7 @@ export default function BusinessProfileView() {
             )}
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {!isOwner && user && (
+                {!isOwner && user && !hasReviewed && (
                   <div className="reviews-header">
                     <button
                       onClick={handleReviewClick}
@@ -202,6 +212,9 @@ export default function BusinessProfileView() {
                       {isSubmitting ? 'טוען…' : 'הוסף ביקורת'}
                     </button>
                   </div>
+                )}
+                {hasReviewed && (
+                  <p className="no-data">כבר הגשת ביקורת על העסק הזה</p>
                 )}
                 {reviewsList.length ? (
                   reviewsList.map((r, i) => {
