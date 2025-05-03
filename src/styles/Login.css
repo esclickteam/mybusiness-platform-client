@@ -1,139 +1,184 @@
 /* עיצוב דף ההתחברות */
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #e5d9f2, #c084fc);
-    padding: 20px;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #e5d9f2, #c084fc);
+  padding: 20px;
+  background-image: url('background-image.jpg'); /* הכנס את כתובת התמונה שלך */
+  background-size: cover;
+  background-position: center;
+}
+
+.login-box {
+  background: #f5e9ff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  transition: transform 0.3s ease;
+}
+
+.login-box:hover {
+  transform: scale(1.03); /* אפקט עדין בזמן hover */
+}
+
+.login-box h2 {
+  font-family: 'Roboto', sans-serif; /* פונט מקצועי */
+  font-size: 28px;
+  font-weight: bold;
+  color: #3b007d;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #c084fc;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #f9f9ff;
+  transition: 0.3s;
+}
+
+input:focus {
+  border-color: #8200ff;
+  background-color: #fff;
+  outline: none;
+  animation: inputFocusAnimation 0.3s ease;
+}
+
+@keyframes inputFocusAnimation {
+0% {
+  transform: scale(1);
+}
+100% {
+  transform: scale(1.05);
+}
+}
+
+.login-button {
+  width: 100%;
+  padding: 14px;
+  background: #6a00f4;
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0px 4px 8px rgba(106, 0, 244, 0.3);
+}
+
+.login-button:hover {
+  background: #5000c9;
+  box-shadow: 0px 6px 12px rgba(80, 0, 201, 0.4);
+  transform: translateY(-2px); /* אפקט ריחוף */
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.error-message::before {
+  content: "❌";
+  margin-right: 5px;
+  font-size: 18px;
+}
+
+/* ⚙️ כפתור מעבר לכניסת עובדים / רגילה */
+.staff-login-link {
+  background: none;
+  border: none;
+  color: #444;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 10px;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+.staff-login-link:hover {
+  color: #6b46c1;
+}
+
+/* 🔗 קישורים תחתונים */
+.login-extra-options {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.bottom-links {
+  font-size: 13px;
+  color: #666;
+}
+
+.bottom-links span,
+.bottom-links a {
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgot-password {
+  color: #e53e3e;
+}
+
+.register-link {
+  color: #6b46c1;
+}
+
+.separator {
+  margin: 0 6px;
+  color: #999;
+}
+
+/* 📱 רספונסיביות למובייל */
+@media (max-width: 480px) {
   .login-box {
-    background: #f5e9ff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  .login-box h2 {
-    font-size: 26px;
-    font-weight: bold;
-    color: #3b007d;
-  }
-  
-  input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #c084fc;
-    border-radius: 6px;
-    font-size: 16px;
-    background-color: #f9f9ff;
-    transition: 0.3s;
-  }
-  
-  input:focus {
-    border-color: #8200ff;
-    background-color: #fff;
-    outline: none;
-  }
-  
-  .login-button {
-    width: 100%;
-    padding: 14px;
-    background: #6a00f4;
-    color: #fff;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-    box-shadow: 0px 4px 8px rgba(106, 0, 244, 0.3);
-  }
-  
-  .login-button:hover {
-    background: #5000c9;
-    box-shadow: 0px 6px 12px rgba(80, 0, 201, 0.4);
-  }
-  
-  .error-message {
-    color: red;
-    font-size: 14px;
-    margin-top: 10px;
-  }
-  
-  /* ⚙️ כפתור מעבר לכניסת עובדים / רגילה */
-  .staff-login-link {
-    background: none;
-    border: none;
-    color: #444;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-bottom: 10px;
-    display: inline-block;
-    transition: color 0.3s ease;
-  }
-  
-  .staff-login-link:hover {
-    color: #6b46c1;
-  }
-  
-  /* 🔗 קישורים תחתונים */
-  .login-extra-options {
-    margin-top: 20px;
-    text-align: center;
-  }
-  
-  .bottom-links {
-    font-size: 13px;
-    color: #666;
-  }
-  
-  .bottom-links span,
-  .bottom-links a {
-    cursor: pointer;
-    font-weight: 600;
-    text-decoration: none;
-  }
-  
-  .forgot-password {
-    color: #e53e3e;
-  }
-  
-  .register-link {
-    color: #6b46c1;
-  }
-  
-  .separator {
-    margin: 0 6px;
-    color: #999;
-  }
-  
-  /* 📱 רספונסיביות למובייל */
-  @media (max-width: 480px) {
-    .login-box {
       padding: 20px;
-    }
-  
-    .login-box h2 {
-      font-size: 22px;
-    }
-  
-    .login-button {
-      font-size: 16px;
-    }
-  
-    .staff-login-link {
-      font-size: 13px;
-    }
-  
-    .bottom-links {
-      font-size: 12px;
-    }
   }
-  
+
+  .login-box h2 {
+      font-size: 22px;
+  }
+
+  .login-button {
+      font-size: 16px;
+  }
+
+  .staff-login-link {
+      font-size: 13px;
+  }
+
+  .bottom-links {
+      font-size: 12px;
+  }
+}
+
+/* 📱 כפתור נגישות */
+.login-container .accessibility-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #fff;
+  border: 2px solid #6a00f4;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.login-container .accessibility-btn:hover {
+  transform: scale(1.1);
+}
