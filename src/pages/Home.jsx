@@ -12,8 +12,8 @@ export default function Home() {
   const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
   const [userCity, setUserCity] = useState("");
-  const [updates, setUpdates] = useState([]); // עדכונים מ־WebSocket
-  const [loading, setLoading] = useState(true); // ניהול מצב טעינה
+  const [updates, setUpdates] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // build options for React-Select
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
@@ -46,44 +46,33 @@ export default function Home() {
     );
   }, []);
 
-  // WebSocket connection for live updates
+  // SSE connection for live updates
   useEffect(() => {
-    // נקבל קודם מה-.env, ואם לא קיים – ניפול ל-/ws
-    const WS_URL = import.meta.env.VITE_WS_URL || "wss://api.esclick.co.il/ws";
-    console.log("🌐 Using WS_URL:", WS_URL);
-  
-    const socket = new WebSocket(WS_URL);
-  
-    socket.onopen = () => {
-      console.log("✅ WebSocket connected");
-      setLoading(false);
-    };
+    const url =
+      import.meta.env.VITE_SSE_URL ||
+      "https://api.esclick.co.il/api/updates/stream";
+    const es = new EventSource(url);
 
-    socket.onmessage = (event) => {
+    es.onmessage = (e) => {
       try {
-        const { message } = JSON.parse(event.data);
+        const msg = JSON.parse(e.data);
         setUpdates((prev) => [
-          { message, time: new Date().toLocaleTimeString() },
+          { message: msg.message, time: new Date().toLocaleTimeString() },
           ...prev,
         ]);
+        setLoading(false);
       } catch (err) {
-        console.error("Invalid WS message format:", err);
+        console.error("Invalid SSE data format:", err);
       }
     };
 
-    socket.onerror = (error) => {
-      console.error("🔴 WebSocket Error:", error);
+    es.onerror = (err) => {
+      console.error("SSE error", err);
+      es.close();
       setLoading(false);
     };
 
-    socket.onclose = () => {
-      console.log("⚪️ WebSocket connection closed");
-      setLoading(false);
-    };
-
-    return () => {
-      socket.close();
-    };
+    return () => es.close();
   }, []);
 
   // navigate to search results
@@ -132,10 +121,8 @@ export default function Home() {
             }
             menuPlacement="bottom"
             menuPortalTarget={document.body}
-            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
           />
         </div>
-
         <div className="dropdown-wrapper">
           <Select
             options={cityOptions}
@@ -149,13 +136,13 @@ export default function Home() {
             filterOption={({ label }, input) =>
               label.toLowerCase().startsWith(input.toLowerCase())
             }
-            noOptionsMessage={() => (city ? "אין ערים מתאימות" : null)}
+            noOptionsMessage={() =>
+              city ? "אין ערים מתאימות" : null
+            }
             menuPlacement="bottom"
             menuPortalTarget={document.body}
-            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
           />
         </div>
-
         <button className="search-button" onClick={navigateToSearch}>
           🔍 חפש
         </button>
