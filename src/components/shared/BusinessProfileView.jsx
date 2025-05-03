@@ -157,36 +157,30 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {currentTab === "ביקורות" && (
+{currentTab === "ביקורות" && (
               <div className="reviews">
-                {filteredReviews.length > 0 ? (
-                  filteredReviews.map((r, i) => {
-                    const score = Number(r.averageScore) || 0;
-                    const rounded = Math.round(score * 2) / 2;
-                    const fullStars = Math.floor(rounded);
-                    const halfStars = rounded % 1 ? 1 : 0;
-                    const emptyStars = 5 - fullStars - halfStars;
+                {filteredReviews.length ? filteredReviews.map((r,i) => {
+                  const score = Number(r.averageScore) || 0;
+                  const rounded = Math.round(score * 2) / 2;
+                  const fullStars = Math.floor(rounded);
+                  const halfStars = rounded % 1 ? 1 : 0;
+                  const emptyStars = 5 - fullStars - halfStars;
+                  const dateStr = new Date(r.date).toLocaleDateString('he-IL', { day:'2-digit', month:'short', year:'numeric' });
 
-                    return (
-                      <div key={i} className="review-card improved">
-                        <div className="review-header">
-                          <strong>{r.userName}</strong>
-                          <small className="score-text">
-                            {rounded.toFixed(1)} / 5
-                          </small>
-                        </div>
-                        <div className="stars">
-                          {'★'.repeat(fullStars)}
-                          {halfStars && '⯨'}
-                          {'☆'.repeat(emptyStars)}
-                        </div>
-                        <p className="review-comment">{r.comment}</p>
+                  return (
+                    <div key={i} className="review-card improved">
+                      <div className="review-header">
+                        <strong>{r.user.name}</strong>
+                        <small className="review-date">{dateStr}</small>
                       </div>
-                    );
-                  })
-                ) : (
-                  <p className="no-data">אין ביקורות</p>
-                )}
+                      <div className="stars">
+                        {'★'.repeat(fullStars)}{halfStars ? '⯨' : ''}{'☆'.repeat(emptyStars)}
+                        <span className="score-text">{rounded.toFixed(1)}</span>
+                      </div>
+                      <p className="review-comment">{r.comment}</p>
+                    </div>
+                  );
+                }) : <p className="no-data">אין ביקורות</p>}
               </div>
             )}
 

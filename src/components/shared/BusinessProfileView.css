@@ -18,7 +18,7 @@ html, body, #root {
   direction: rtl;
 }
 
-/* === מיכל הראשי (ללא רקעים וצללים) === */
+/* === מיכל הראשי === */
 .business-profile-view.full-style {
   width: 100%;
   max-width: 800px;
@@ -38,15 +38,7 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  overflow: visible; /* לוודא שלא חותכים אלמנטים פנימיים */
-}
-
-/* Override להסרת הרקע הלבן/הצל/ה‐padding מתחת לטאבים */
-.business-profile-view.full-style .tab-content {
-  background: transparent !important;
-  box-shadow: none         !important;
-  padding: 0               !important;
-  border-radius: 0         !important;
+  overflow: visible;
 }
 
 /* === כפתור עריכה === */
@@ -66,14 +58,6 @@ html, body, #root {
 }
 
 /* === לוגו ושם העסק === */
-.profile-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: visible;
-  gap: 1rem;
-}
-
 .profile-logo-wrapper {
   width: 120px;
   height: 120px;
@@ -87,14 +71,12 @@ html, body, #root {
   position: relative;
   z-index: 10;
 }
-
 .profile-logo {
   width: 100%;
   height: 100%;
-  object-fit: cover;  /* יגדיל את התמונה על מנת שהיא תמלא את המעגל כולו */
+  object-fit: cover;
   display: block;
 }
-
 .business-name {
   margin: 0;
   margin-top: 0.5rem;
@@ -116,11 +98,35 @@ html, body, #root {
   margin: 0.3rem 0;
 }
 
-/* === דירוג וחוצץ === */
-.rating {
-  font-weight: bold;
-  margin-bottom: 1rem;
+/* === Overall Rating Banner === */
+.overall-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 700px;
 }
+.overall-rating .big-score {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #5e17eb;
+}
+.overall-rating .stars-inline {
+  font-size: 1.2rem;
+  line-height: 1;
+  color: #f5a623;
+}
+.overall-rating .count {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* === מחיצת טאבים === */
 .profile-divider {
   width: 100%;
   border: none;
@@ -185,20 +191,41 @@ html, body, #root {
   width: 100%;
   max-width: 700px;
 }
-.reviews .review-card {
+.review-card.improved {
   background: #fff;
-  padding: 1rem;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-}
-.reviews .review-card.improved {
   border-left: 4px solid #b46af1;
+  border-radius: 0 12px 12px 0;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: transform .2s;
+}
+.review-card.improved:hover {
+  transform: translateX(4px);
 }
 .review-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.5rem;
+}
+.review-header strong {
+  font-size: 1rem;
+  color: #333;
+}
+.review-header .score-text {
+  font-size: 0.9rem;
+  color: #555;
+}
+.stars {
+  font-size: 1.1rem;
+  color: #f5a623;
+  margin-bottom: 0.5rem;
+}
+.review-comment {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.4;
 }
 
 /* === שאלות ותשובות === */
