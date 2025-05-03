@@ -198,34 +198,50 @@ html, body, #root {
   padding: 1rem;
   margin-bottom: 1rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  transition: transform .2s;
+  transition: transform .2s, background 0.2s, box-shadow 0.2s;
 }
 .review-card.improved:hover {
   transform: translateX(4px);
+  background: #fafafa;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.review-header {
+.review-header.simple {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 0.75rem;
 }
-.review-header strong {
+.review-header.simple .author-info {
+  display: flex;
+  flex-direction: column;
+}
+.review-header.simple .reviewer {
+  font-weight: bold;
   font-size: 1rem;
   color: #333;
 }
-.review-header .score-text {
-  font-size: 0.9rem;
-  color: #555;
+.review-header.simple .review-date {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 0.2rem;
 }
-.stars {
-  font-size: 1.1rem;
-  color: #f5a623;
-  margin-bottom: 0.5rem;
+.score {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #5e17eb;
 }
-.review-comment {
+.score .star {
+  margin-left: 0.25rem;
+  font-size: 1.2rem;
+}
+.review-comment.simple {
   font-size: 0.95rem;
   color: #444;
   line-height: 1.4;
+  margin: 0;
 }
 
 /* === שאלות ותשובות === */

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "@api";
 import { useAuth } from "../../context/AuthContext";
 import { dedupeByPreview } from "../../utils/dedupe";
@@ -17,7 +17,6 @@ const TABS = [
 
 export default function BusinessProfileView() {
   const { businessId } = useParams();
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   const [data, setData] = useState(null);
@@ -30,51 +29,55 @@ export default function BusinessProfileView() {
     api.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-        const rawAddress = biz.address;
-        const city = typeof rawAddress === "string"
-          ? rawAddress
-          : rawAddress?.city ?? biz.city ?? "";
-
+        const city = typeof biz.address === "string"
+          ? biz.address
+          : biz.address?.city ?? "";
         setData({
           ...biz,
           city,
-          address: { city },
-          rating:    biz.rating     ?? 0,
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
-          gallery:    Array.isArray(biz.gallery)    ? biz.gallery    : [],
-          reviews:    Array.isArray(biz.reviews)    ? biz.reviews    : [],
-          faqs:       Array.isArray(biz.faqs)       ? biz.faqs       : [],
+          gallery: Array.isArray(biz.gallery) ? biz.gallery : [],
+          reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
+          faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
         });
       })
       .catch(err => console.error("❌ fetch business:", err))
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  if (loading) return <div className="loading">טוען…</div>;
-  if (!data)   return <div className="error">העסק לא נמצא</div>;
+  if (loading) return <div className="loading">טוען…</div>
+  if (!data) return <div className="error">העסק לא נמצא</div>
 
   const {
     name,
     logo,
     description = "",
-    phone       = "",
-    category    = "",
+    phone = "",
+    category = "",
     mainImages,
     gallery,
     reviews,
     faqs,
-    city        = "",
+    city,
   } = data;
 
-  const normalizedMain = mainImages.map(url => ({ preview: url }));
-  const uniqueMain = dedupeByPreview(normalizedMain)
+  const uniqueMain = dedupeByPreview(
+    mainImages.map(url => ({ preview: url }))
+  )
     .slice(0, 5)
-    .map(obj => obj.preview);
+    .map(o => o.preview);
+
+  // חשב את דירוג הממוצע הכללי
+  const avgRating = reviews.length
+    ? reviews.reduce((sum, r) => sum + (Number(r.averageScore) || 0), 0) / reviews.length
+    : 0;
+  const roundedAvg = Math.round(avgRating * 10) / 10;
+  const fullAvgStars = Math.floor(roundedAvg);
+  const halfAvgStar = roundedAvg % 1 ? 1 : 0;
+  const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
   const isOwner = user?.role === "business" && user.businessId === businessId;
-  const filteredReviews = reviews.filter(
-    r => r.user || r.userName
-  );
+  const filteredReviews = reviews.filter(r => r.user && r.comment);
 
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal = () => setShowReviewModal(false);
@@ -117,10 +120,35 @@ export default function BusinessProfileView() {
 
           <h1 className="business-name">{name}</h1>
           <div className="about-phone">
-            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
-            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {category && (
+              <p>
+                <strong>🏷️ קטגוריה:</strong> {category}
+              </p>
+            )}
+            {description && (
+              <p>
+                <strong>📝 תיאור:</strong> {description}
+              </p>
+            )}
+            {phone && (
+              <p>
+                <strong>📞 טלפון:</strong> {phone}
+              </p>
+            )}
+            {city && (
+              <p>
+                <strong>🏙️ עיר:</strong> {city}
+              </p>
+            )}
+          </div>
+
+          {/* דירוג ממוצע כללי */}
+          <div className="overall-rating">
+            <span className="big-score">{roundedAvg.toFixed(1)}</span>
+            <span className="stars-inline">
+              {'★'.repeat(fullAvgStars)}{halfAvgStar ? '⯨' : ''}{'☆'.repeat(emptyAvgStars)}
+            </span>
+            <span className="count">({reviews.length} ביקורות)</span>
           </div>
           <hr className="profile-divider" />
 
@@ -158,31 +186,53 @@ export default function BusinessProfileView() {
             )}
 
 {currentTab === "ביקורות" && (
-              <div className="reviews">
-                {filteredReviews.length ? filteredReviews.map((r,i) => {
-                  const score = Number(r.averageScore) || 0;
-                  const rounded = Math.round(score * 2) / 2;
-                  const fullStars = Math.floor(rounded);
-                  const halfStars = rounded % 1 ? 1 : 0;
-                  const emptyStars = 5 - fullStars - halfStars;
-                  const dateStr = new Date(r.date).toLocaleDateString('he-IL', { day:'2-digit', month:'short', year:'numeric' });
+  <div className="reviews">
+    {filteredReviews.length ? (
+      filteredReviews.map((r, i) => {
+        // תאריך
+        const rawDate = r.date || r.createdAt;
+        const dateStr =
+          rawDate && !isNaN(new Date(rawDate).getTime())
+            ? new Date(rawDate).toLocaleDateString("he-IL", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : "";
 
-                  return (
-                    <div key={i} className="review-card improved">
-                      <div className="review-header">
-                        <strong>{r.user.name}</strong>
-                        <small className="review-date">{dateStr}</small>
-                      </div>
-                      <div className="stars">
-                        {'★'.repeat(fullStars)}{halfStars ? '⯨' : ''}{'☆'.repeat(emptyStars)}
-                        <span className="score-text">{rounded.toFixed(1)}</span>
-                      </div>
-                      <p className="review-comment">{r.comment}</p>
-                    </div>
-                  );
-                }) : <p className="no-data">אין ביקורות</p>}
+        // כוכבים
+        const score = Number(r.averageScore) || 0;
+        const rounded = Math.round(score * 2) / 2;
+        const fullStars = Math.floor(rounded);
+        const halfStars = rounded % 1 ? 1 : 0;
+        const emptyStars = 5 - fullStars - halfStars;
+
+        return (
+          <div key={i} className="review-card improved">
+            <div className="review-header simple">
+              <div className="author-info">
+                <strong className="reviewer">
+                  {r.user?.name || r.userName}
+                </strong>
+                {dateStr && (
+                  <small className="review-date">{dateStr}</small>
+                )}
               </div>
-            )}
+              <span className="score">
+                {rounded.toFixed(1)}
+                <span className="star">★</span>
+              </span>
+            </div>
+            <p className="review-comment simple">{r.comment}</p>
+          </div>
+        );
+      })
+    ) : (
+      <p className="no-data">אין ביקורות</p>
+    )}
+  </div>
+)}
+
 
             {currentTab === "שאלות ותשובות" && (
               <div className="faqs">
