@@ -5,7 +5,7 @@ import "../styles/Login.css";
 import { useNavigate } from "react-router-dom";
 
 export default function StaffLogin() {
-  const { login, logout } = useAuth(); // login מחזירה user, logout למקרה של תפקיד לא מורשה
+  const { login, logout } = useAuth(); // login מחזירה user, logout להתנתקות במקרה של תפקיד לא מורשה
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,24 +23,20 @@ export default function StaffLogin() {
 
     setLoading(true);
     try {
-      // קריאה ל-login עם skipRedirect כדי למנוע ניווט אוטומטי
+      // קריאה ל־login עם skipRedirect:true כדי שלא ינווט אוטומטית
       const user = await login(identifier.trim(), password, { skipRedirect: true });
 
-      // ניווט לדשבורד לפי תפקיד, או טיפול במי שלא מורשה
-      switch (user.role) {
-        case "worker":
-          navigate("/staff/dashboard", { replace: true });
-          break;
-        case "manager":
-          navigate("/manager/dashboard", { replace: true });
-          break;
-        case "admin":
-          navigate("/admin/dashboard", { replace: true });
-          break;
-        default:
-          // התפקיד לא מורשה בדף זה → מתנתקים ומציגים שגיאה
-          await logout();
-          setStaffError("אין לך הרשאה להיכנס כדף עובדים");
+      // בדיקה לפי תפקיד
+      if (user.role === "worker") {
+        navigate("/staff/dashboard", { replace: true });
+      } else if (user.role === "manager") {
+        navigate("/manager/dashboard", { replace: true });
+      } else if (user.role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        // כל תפקיד אחר (customer/business וכו') יקבל שגיאה
+        await logout(); 
+        setStaffError("אין לך הרשאה להיכנס כעובד");
       }
     } catch (err) {
       console.error("Staff login failed:", err);

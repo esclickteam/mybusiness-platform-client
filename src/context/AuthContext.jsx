@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
       try {
         const res = await API.get("/auth/me");
         setUser(res.data);
-      } catch (err) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
@@ -92,7 +92,6 @@ export function AuthProvider({ children }) {
       console.warn("Logout failed:", e);
     } finally {
       setUser(null);
-      localStorage.removeItem("user");
       setLoading(false);
       navigate("/", { replace: true });
     }
@@ -108,11 +107,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, initialized, error, login, logout }}>
-      {successMessage && (
-        <div className="global-success-toast">
-          {successMessage}
-        </div>
-      )}
+      {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
   );
