@@ -16,11 +16,11 @@ const TABS = [
   "חנות / יומן",
 ];
 
-// פונקציה שמחזירה את ממוצע הערכים המספריים של ביקורת אחת
+// ממוצע הערכים המספריים של ביקורת אחת
 function getReviewAvg(r) {
   const vals = Object.entries(r)
-    .filter(([key, val]) => typeof val === "number")
-    .map(([_, val]) => val);
+    .filter(([k, v]) => typeof v === "number")
+    .map(([_, v]) => v);
   if (!vals.length) return 0;
   return vals.reduce((sum, v) => sum + v, 0) / vals.length;
 }
@@ -39,6 +39,11 @@ export default function BusinessProfileView() {
     api.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
+        const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
+
+        console.log("🚀 fetched reviews from API:", reviews);
+        console.log("🚀 per-review avgs:", reviews.map(getReviewAvg));
+
         const city = typeof biz.address === "string"
           ? biz.address
           : biz.address?.city ?? "";
@@ -47,7 +52,7 @@ export default function BusinessProfileView() {
           city,
           mainImages: Array.isArray(biz.mainImages) ? biz.mainImages : [],
           gallery: Array.isArray(biz.gallery) ? biz.gallery : [],
-          reviews: Array.isArray(biz.reviews) ? biz.reviews : [],
+          reviews,
           faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
         });
       })
@@ -69,10 +74,14 @@ export default function BusinessProfileView() {
     .slice(0, 5)
     .map(o => o.preview);
 
-  // חישוב ממוצע כל הביקורות
+  // חישוב ממוצע כל הביקורות על סמך r.rating
   const avgRating = reviews.length
-    ? reviews.reduce((sum, r) => sum + getReviewAvg(r), 0) / reviews.length
+    ? reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviews.length
     : 0;
+
+  console.log("🔥 reviews array in render:", reviews);
+  console.log("🔥 calculated avgRating:", avgRating);
+
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const fullAvgStars = Math.floor(roundedAvg);
   const halfAvgStar = roundedAvg % 1 ? 1 : 0;
@@ -84,9 +93,15 @@ export default function BusinessProfileView() {
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal = () => setShowReviewModal(false);
   const handleReviewSubmit = newReview => {
+    const avg = getReviewAvg(newReview);
+    const withRating = { ...newReview, rating: Math.round(avg * 10) / 10 };
+
+    console.log("➡️ newReview submitted:", newReview);
+    console.log("➡️ newReview with rating:", withRating);
+
     setData(prev => ({
       ...prev,
-      reviews: [...prev.reviews, newReview]
+      reviews: [...prev.reviews, withRating]
     }));
     closeReviewModal();
   };
