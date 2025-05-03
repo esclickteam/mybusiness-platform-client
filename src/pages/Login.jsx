@@ -1,48 +1,51 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
-import ForgotPassword from "./ForgotPassword";
-import { Link, useNavigate } from "react-router-dom"; // Importing useNavigate for redirection
 
-export default function Login() {
-  const { login, error, user } = useAuth(); // Assuming 'user' contains the logged-in user info
+const StaffLogin = () => {
+  const { login, error, user } = useAuth(); // משתמשים ב־useAuth כדי לדעת את נתוני המשתמש
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showForgot, setShowForgot] = useState(false);
-  const [staffLoginError, setStaffLoginError] = useState(""); // Error state for staff login
-  const navigate = useNavigate(); // To handle redirection
+  const [staffError, setStaffError] = useState(""); // מצב שגיאה
+  const navigate = useNavigate();
 
+  // פונקציה לטיפול בכניסת עובדים
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!identifier.trim() || !password) {
       return;
     }
+
     setLoading(true);
     try {
-      await login(identifier.trim(), password);
-      // הניווט נעשה בתוך login()
-    } catch (_) {
-      // error מטופל ומוצג אוטומטית מהקונטקסט
+      await login(identifier.trim(), password); // התחברות למערכת
+
+      // אם המשתמש הוא עובד, מנהל או אדמין, נוודא אותו לדף המתאים
+      if (user.role === "worker") {
+        navigate("/staff/dashboard");
+      } else if (user.role === "manager") {
+        navigate("/manager/dashboard");
+      } else if (user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        // אם המשתמש הוא לקוח או בעל עסק, הצג הודעת שגיאה
+        setStaffError("הגישה לעובדים מוגבלת רק לעובדים, מנהלים ואדמינים.");
+      }
+    } catch (err) {
+      // אם יש שגיאה במערכת התחברות
+      setStaffError("שגיאה בהתחברות, אנא נסה שוב.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleStaffLogin = () => {
-    // בודק אם המשתמש הוא עובד, מנהל או אדמין
-    if (user.role === "worker" || user.role === "manager" || user.role === "admin") {
-      navigate('/staff-login'); // הפניית המשתמש לדף כניסת עובדים
-    } else {
-      // אם המשתמש לא אדמין או מנהל, הצג הודעה
-      setStaffLoginError("הגישה לעובדים מוגבלת לעובדים, מנהלים ואדמינים בלבד.");
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>התחברות</h2>
+        <h2>כניסת עובדים</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -64,35 +67,21 @@ export default function Login() {
           </button>
         </form>
 
-        {error && <p className="error-message">{error}</p>}
-        {staffLoginError && <p className="error-message">{staffLoginError}</p>} {/* הצגת שגיאה לכניסת עובדים */}
+        {staffError && <p className="error-message">{staffError}</p>} {/* הצגת שגיאה אם יש */}
 
+        {/* קישורים לדפים נוספים */}
         <div className="login-extra-options">
-          <span
-            className="forgot-password"
-            onClick={() => setShowForgot(true)}
-          >
+          <span className="forgot-password" onClick={() => setShowForgot(true)}>
             שכחת את הסיסמה?
           </span>
 
-          {/* קישור לדף הרשמה */}
           <div className="signup-link">
             <span>לא רשום? <Link to="/register" className="signup-link-text">הירשם עכשיו</Link></span>
           </div>
-
-          {/* כפתור כניסת עובדים */}
-          <div className="staff-login-link">
-            <button
-              onClick={handleStaffLogin} // הפנייה לדף לוגין לעובדים
-              className="staff-login-btn"
-            >
-              כניסת עובדים
-            </button>
-          </div>
         </div>
       </div>
-
-      {showForgot && <ForgotPassword closePopup={() => setShowForgot(false)} />}
     </div>
   );
-}
+};
+
+export default StaffLogin;
