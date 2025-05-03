@@ -69,16 +69,26 @@ export default function BusinessProfileView() {
 
   const handleReviewSubmit = async (newReview) => {
     try {
-      const res = await api.post(
+      // Submit new review
+      await api.post(
         `/business/${businessId}/reviews`, newReview
       );
 
-      // DEBUG
-      console.log("[BusinessProfileView] Review submission response:", res.data);
+      // After posting, re-fetch full business data to get updated reviews and avg
+      const refreshed = await api.get(`/business/${businessId}`);
+      const biz = refreshed.data.business || refreshed.data;
 
-      const { review, businessRating } = res.data;
-      setData(prev => ({ ...prev, reviews: [...prev.reviews, review] }));
-      setAvgRating(businessRating);
+      // DEBUG: log re-fetched business
+      console.log("[BusinessProfileView] Refetched business after review:", biz);
+
+      const reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
+      setData({
+        ...biz,
+        reviews,
+        faqs: Array.isArray(biz.faqs) ? biz.faqs : [],
+      });
+      setAvgRating(Number(biz.rating) || 0);
+
       closeReviewModal();
     } catch (err) {
       console.error("❌ Error adding review:", err);
