@@ -38,7 +38,7 @@ input {
   padding: 12px;
   margin-bottom: 15px;
   border: 1px solid #c084fc;
-  border-radius: 6px;
+  border-radius: 12px; /* קצוות מעוגלים יותר */
   font-size: 16px;
   background-color: #f9f9ff;
   transition: 0.3s;
@@ -52,12 +52,12 @@ input:focus {
 }
 
 @keyframes inputFocusAnimation {
-0% {
-  transform: scale(1);
-}
-100% {
-  transform: scale(1.05);
-}
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
 }
 
 .login-button {
@@ -67,7 +67,7 @@ input:focus {
   color: #fff;
   font-size: 18px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px; /* עיגול קצוות לכפתור */
   cursor: pointer;
   font-weight: bold;
   transition: 0.3s;
@@ -78,6 +78,11 @@ input:focus {
   background: #5000c9;
   box-shadow: 0px 6px 12px rgba(80, 0, 201, 0.4);
   transform: translateY(-2px); /* אפקט ריחוף */
+}
+
+.login-button:active {
+  transform: translateY(0);
+  background: #4b00b8; /* צבע כהה יותר בלחיצה */
 }
 
 .error-message {
