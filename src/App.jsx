@@ -42,6 +42,10 @@ const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 
+// Consolidated Auth page
+const AuthPage = lazy(() => import("./pages/AuthPage"));
+
+
 // Public business profile (clean)
 const BusinessProfileView = lazy(() =>
   import("./components/shared/BusinessProfileView")
