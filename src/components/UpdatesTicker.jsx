@@ -7,23 +7,30 @@ export default function UpdatesTicker() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // אם הגדרת proxy ב-package.json → פשוט '/api/...'
-    // אחרת תגדירי VITE_SSE_URL ב־.env
-    const url = import.meta.env.VITE_SSE_URL || '/api/updates/stream';
+    // מתבסס אך ורק על ה־env שהוגדר ב-Vercel/VITE
+    const url = import.meta.env.VITE_SSE_URL;
+    if (!url) {
+      console.error('❌ VITE_SSE_URL is not defined');
+      setLoading(false);
+      return;
+    }
+    console.log('🔌 Connecting SSE to', url);
+
     const es = new EventSource(url, { withCredentials: true });
 
     es.onmessage = e => {
       try {
         const data = JSON.parse(e.data);
         setUpdates(prev => [data, ...prev].slice(0, 10));
-        setLoading(false);
       } catch (err) {
         console.error('Invalid SSE data format:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
     es.onerror = err => {
-      console.error('SSE error', err);
+      console.error('SSE connection error:', err);
       es.close();
       setLoading(false);
     };
