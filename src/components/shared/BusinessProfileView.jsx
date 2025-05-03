@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import API from "@api";
+import api from "@api";
 import { useAuth } from "../../context/AuthContext";
 import { dedupeByPreview } from "../../utils/dedupe";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
@@ -23,11 +23,11 @@ export default function BusinessProfileView() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
-  const [showReviewModal, setShowReviewModal] = useState(false);  // ניהול מצב המודאל
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    API.get(`/business/${businessId}`)
+    api.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
         const rawAddress = biz.address;
@@ -56,7 +56,6 @@ export default function BusinessProfileView() {
   const {
     name,
     logo,
-    rating,
     description = "",
     phone       = "",
     category    = "",
@@ -73,41 +72,35 @@ export default function BusinessProfileView() {
     .map(obj => obj.preview);
 
   const isOwner = user?.role === "business" && user.businessId === businessId;
-
   const filteredReviews = reviews.filter(
     (review) => review.user && review.comment && !review.isExample
   );
 
-  const handleReviewClick = () => {
-    setShowReviewModal(true); // מציג את המודאל להוספת ביקורת
-  };
-  
-  const closeReviewModal = () => {
-    setShowReviewModal(false); // סוגר את המודאל
-  };
-  
+  const handleReviewClick = () => setShowReviewModal(true);
+  const closeReviewModal = () => setShowReviewModal(false);
+
   const handleReviewSubmit = (newReview) => {
-    // לאחר שליחת ביקורת, נוסיף אותה לרשימת הביקורות
-    setData((prevData) => ({
-      ...prevData,
-      reviews: [...prevData.reviews, newReview], // עדכון הביקורות עם הביקורת החדשה
+    setData(prev => ({
+      ...prev,
+      reviews: [...prev.reviews, newReview],
     }));
-    closeReviewModal(); // סוגר את המודאל לאחר ההגשה
+    closeReviewModal();
   };
 
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          {/* כפתור הוספת ביקורת */}
-          <button onClick={handleReviewClick} className="add-review-btn">
-            הוסף ביקורת
-          </button>
-
-          {isOwner && (
+          {isOwner ? (
             <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
+          ) : (
+            user && (
+              <button onClick={handleReviewClick} className="add-review-btn">
+                הוסף ביקורת
+              </button>
+            )
           )}
 
           {logo && (
@@ -125,9 +118,6 @@ export default function BusinessProfileView() {
             {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
-          <div className="rating">
-            <strong>{rating}</strong> / 5 ★
-          </div>
           <hr className="profile-divider" />
 
           <div className="profile-tabs">
@@ -145,17 +135,17 @@ export default function BusinessProfileView() {
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="public-main-images">
-                {uniqueMain.length > 0 ? (
-                  uniqueMain.map((url, i) => <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />)
-                ) : (
-                  <p className="no-data">אין תמונות להצגה</p>
-                )}
+                {uniqueMain.length > 0 ? uniqueMain.map((url, i) => (
+                  <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
+                )) : <p className="no-data">אין תמונות להצגה</p>}
               </div>
             )}
 
             {currentTab === "גלריה" && (
               <div className="public-main-images">
-                {gallery.map((url, i) => <img key={i} src={url} alt={`גלריה ${i + 1}`} />)}
+                {gallery.map((url, i) => (
+                  <img key={i} src={url} alt={`גלריה ${i + 1}`} />
+                ))}
               </div>
             )}
 
@@ -165,9 +155,10 @@ export default function BusinessProfileView() {
                   filteredReviews.map((r, i) => (
                     <div key={i} className="review-card improved">
                       <div className="review-header">
-                        <strong>{r.user}</strong> <span>★ {r.rating}/5</span>
+                        <strong>{r.userName || r.user}</strong>
+                        <span>★ {r.averageScore || r.averageScore === 0 ? r.averageScore : "-"} / 5</span>
                       </div>
-                      <p>{r.comment || r.text}</p>
+                      <p className="review-comment">{r.comment}</p>
                     </div>
                   ))
                 ) : (
@@ -191,25 +182,25 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {currentTab === "צ'אט עם העסק" && <div className="chat-tab"><h3>שלח הודעה לעסק</h3></div>}
-            {currentTab === "חנות / יומן" && <div className="shop-tab-placeholder"><p>פיתוח בהמשך…</p></div>}
+            {currentTab === "צ'אט עם העסק" && (
+              <div className="chat-tab">
+                <h3>שלח הודעה לעסק</h3>
+              </div>
+            )}
+
+            {currentTab === "חנות / יומן" && (
+              <div className="shop-tab-placeholder">
+                <p>פיתוח בהמשך…</p>
+              </div>
+            )}
           </div>
 
-          {/* כפתור הוספת ביקורת */}
-          {user && !isOwner && (
-            <button onClick={handleReviewClick} className="add-review-btn">
-              הוסף ביקורת
-            </button>
-          )}
-
-          {/* מודאל לביקורת */}
           {showReviewModal && (
-          <div className="review-modal">
-            <div className="modal-content">
-              <h2>הוסף ביקורת</h2>
-              {/* טופס ביקורת */}
-              <ReviewForm businessId={businessId} onSubmit={handleReviewSubmit} />
-              <button onClick={closeReviewModal}>סגור</button>
+            <div className="review-modal">
+              <div className="modal-content">
+                <h2>הוסף ביקורת</h2>
+                <ReviewForm businessId={businessId} onSubmit={handleReviewSubmit} />
+                <button onClick={closeReviewModal}>סגור</button>
               </div>
             </div>
           )}
