@@ -27,7 +27,7 @@ export default function BusinessProfileView() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [avgRating, setAvgRating] = useState(0);
 
-  // Fetch business data
+  // Fetch business data once (או כש-bizId משתנה)
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -35,10 +35,8 @@ export default function BusinessProfileView() {
     api.get(`/business/${businessId}`)
       .then(res => {
         const biz = res.data.business || res.data;
-        // filter out any example/test reviews on initial load
         const realReviews = (Array.isArray(biz.reviews) ? biz.reviews : [])
           .filter(r => !r.isExample);
-
         setData({
           ...biz,
           reviews: realReviews,
@@ -52,10 +50,10 @@ export default function BusinessProfileView() {
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  // Always work with a defined array
+  // עבוד תמיד עם מערך מוגדר
   const reviewsList = data?.reviews || [];
 
-  // Recompute avgRating whenever reviewsList changes
+  // חשב ממוצע דירוג אחרי טעינת הביקורות
   useEffect(() => {
     const sum = reviewsList.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
     const avg = reviewsList.length ? sum / reviewsList.length : 0;
@@ -69,17 +67,12 @@ export default function BusinessProfileView() {
   const handleReviewSubmit = async newReview => {
     try {
       await api.post(`/business/${businessId}/reviews`, newReview);
+      // רענון נתונים
       const { data: refreshed } = await api.get(`/business/${businessId}`);
       const biz = refreshed.business || refreshed;
-      // again filter out example reviews after refresh
       const realReviews = (Array.isArray(biz.reviews) ? biz.reviews : [])
         .filter(r => !r.isExample);
-
-      setData({
-        ...biz,
-        reviews: realReviews,
-        faqs:    Array.isArray(biz.faqs) ? biz.faqs : [],
-      });
+      setData({ ...biz, reviews: realReviews, faqs: biz.faqs || [] });
       closeReviewModal();
     } catch (err) {
       console.error("❌ Error adding review:", err);
@@ -95,12 +88,7 @@ export default function BusinessProfileView() {
       const biz = refreshed.business || refreshed;
       const realReviews = (Array.isArray(biz.reviews) ? biz.reviews : [])
         .filter(r => !r.isExample);
-
-      setData({
-        ...biz,
-        reviews: realReviews,
-        faqs:    Array.isArray(biz.faqs) ? biz.faqs : [],
-      });
+      setData({ ...biz, reviews: realReviews, faqs: biz.faqs || [] });
     } catch (err) {
       console.error("❌ Error deleting review:", err);
       alert("שגיאה במחיקת הביקורת");
@@ -191,7 +179,7 @@ export default function BusinessProfileView() {
               <div className="public-main-images">
                 {uniqueMain.length > 0
                   ? uniqueMain.map((url, i) => (
-                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`}/>
+                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
                     ))
                   : <p className="no-data">אין תמונות להצגה</p>
                 }
@@ -201,7 +189,7 @@ export default function BusinessProfileView() {
               <div className="public-main-images">
                 {gallery.length > 0
                   ? gallery.map((url, i) => (
-                      <img key={i} src={url} alt={`גלריה ${i + 1}`}/>
+                      <img key={i} src={url} alt={`גלריה ${i + 1}`} />
                     ))
                   : <p className="no-data">אין תמונות בגלריה</p>
                 }
@@ -220,14 +208,17 @@ export default function BusinessProfileView() {
                 {reviewsList.length > 0
                   ? reviewsList.map((r, i) => {
                       const dateStr = r.createdAt
-                        ? new Date(r.createdAt).toLocaleDateString("he-IL", { day: "2-digit", month: "short", year: "numeric" })
+                        ? new Date(r.createdAt).toLocaleDateString("he-IL", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric"
+                          })
                         : "";
                       const score = Number(r.rating) || 0;
                       const full = Math.floor(score);
                       const half = score % 1 ? 1 : 0;
                       const empty = 5 - full - half;
-
-                      const reviewerName = r.user && r.user.name ? r.user.name : "אנונימי"; // ברירת מחדל אם שם לא קיים
+                      const reviewerName = r.user?.name || "אנונימי";
 
                       return (
                         <div key={i} className="review-card improved">
@@ -244,10 +235,8 @@ export default function BusinessProfileView() {
                             </div>
                           </div>
                           <p className="review-comment simple">{r.comment}</p>
-
-                          {/* כפתור מחיקה רק אם יש למשתמש הרשאות (admin, manager) */}
                           {canDelete && (
-                            <button 
+                            <button
                               className="delete-review-btn"
                               onClick={() => handleDeleteReview(r._id)}>
                               מחק
@@ -260,7 +249,7 @@ export default function BusinessProfileView() {
                 }
               </div>
             )}
-            {/* Other tabs content */}
+            {/* תוכן לשאר הטאבים */}
           </div>
 
           {showReviewModal && (
