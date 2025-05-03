@@ -221,41 +221,38 @@ export default function BusinessProfileView() {
                     </button>
                   </div>
                 )}
-                {reviewsList.length>0
-                  ? reviewsList.map((r,i)=> {
-                      const dateStr = r.createdAt
-                        ? new Date(r.createdAt)
-                            .toLocaleDateString("he-IL",{day:"2-digit",month:"short",year:"numeric"})
-                        : "";
-                      const score = Number(r.rating)||0;
-                      const full  = Math.floor(score);
-                      const half  = score%1?1:0;
-                      const empty = 5-full-half;
-                      return (
-                        <div key={i} className="review-card improved">
-                          <div className="review-header simple">
-                            <div className="author-info">
-                              <strong className="reviewer">{r.user.name}</strong>
-                              {dateStr && <small className="review-date">{dateStr}</small>}
-                            </div>
-                            <div className="score">
-                              <span className="score-number">{score.toFixed(1)}</span>
-                              <span className="stars-inline">
-                                {'★'.repeat(full)}{half?'⯨':''}{'☆'.repeat(empty)}
-                              </span>
-                            </div>
-                            {canDelete && (
-                              <button className="delete-review-btn"
-                                      onClick={()=>handleDeleteReview(r._id)}>
-                                מחק
-                              </button>
-                            )}
-                          </div>
-                          <p className="review-comment simple">{r.comment}</p>
-                        </div>
-                      );
-                    })
-                  : <p className="no-data">אין ביקורות</p>
+                {reviewsList.length > 0
+  ? reviewsList.map((r, i) => {
+      const dateStr = r.createdAt
+        ? new Date(r.createdAt).toLocaleDateString("he-IL", { day: "2-digit", month: "short", year: "numeric" })
+        : "";
+      const score = Number(r.rating) || 0;
+      const full = Math.floor(score);
+      const half = score % 1 ? 1 : 0;
+      const empty = 5 - full - half;
+      
+      // בדיקה אם r.user.name קיים, אם לא יוצג שם ברירת מחדל
+      const reviewerName = r.user && r.user.name ? r.user.name : "אנונימי"; // ברירת מחדל אם שם לא קיים
+      
+      return (
+        <div key={i} className="review-card improved">
+          <div className="review-header simple">
+            <div className="author-info">
+              <strong className="reviewer">{reviewerName}</strong>
+              {dateStr && <small className="review-date">{dateStr}</small>}
+            </div>
+            <div className="score">
+              <span className="score-number">{score.toFixed(1)}</span>
+              <span className="stars-inline">
+                {'★'.repeat(full)}{half ? '⯨' : ''}{'☆'.repeat(empty)}
+              </span>
+            </div>
+          </div>
+          <p className="review-comment simple">{r.comment}</p>
+        </div>
+      );
+    })
+  : <p className="no-data">אין ביקורות</p>
                 }
               </div>
             )}
