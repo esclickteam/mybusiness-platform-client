@@ -219,8 +219,8 @@ html, body, #root {
 
 .review-card.improved {
   width: 100%;
-  max-width: 700px;   /* רוחב כרטיס */
-  margin: 0 auto 1rem;  /* מרכז אופקית + רווח תחתון */
+  max-width: 50px;   /* רוחב כרטיס */
+  margin: 0.5 auto 1rem;  /* מרכז אופקית + רווח תחתון */
   background: #fff;
   border-left: 4px solid #b46af1;
   border-radius: 12px;
