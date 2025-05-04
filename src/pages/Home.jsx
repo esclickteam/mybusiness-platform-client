@@ -1,25 +1,25 @@
-// src/pages/Home.jsx
 import React, { useState, useContext } from "react";
 import "../styles/Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
-import ALL_CITIES from "../data/cities";
+import ALL_CITIES    from "../data/cities";
 import { SSEContext } from "../context/SSEContext";
-import { MdRateReview, MdPersonAdd, MdUpdate, MdInfo } from "react-icons/md";
+import {
+  MdRateReview,
+  MdPersonAdd,
+  MdUpdate,
+  MdInfo,
+} from "react-icons/md";
 
 export default function Home() {
   const navigate = useNavigate();
-
-  // state לחיפוש
   const [category, setCategory] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity]         = useState("");
+  const { updates }             = useContext(SSEContext);
 
-  // צריכת עדכוני SSE מ-Context
-  const { updates } = useContext(SSEContext);
-
-  const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
-  const cityOptions     = ALL_CITIES.map((c)     => ({ value: c, label: c }));
+  const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
+  const cityOptions     = ALL_CITIES.map(c     => ({ value: c, label: c }));
 
   const navigateToSearch = () => {
     const params = new URLSearchParams();
@@ -28,17 +28,12 @@ export default function Home() {
     navigate(`/search?${params.toString()}`);
   };
 
-  // בוחר איקון לפי סוג העדכון (u.type)
   const renderIcon = (type) => {
     switch (type) {
-      case "review":
-        return <MdRateReview className="icon" />;
-      case "signup":
-        return <MdPersonAdd className="icon" />;
-      case "owner-update":
-        return <MdUpdate className="icon" />;
-      default:
-        return <MdInfo className="icon" />;
+      case "review":       return <MdRateReview className="icon" />;
+      case "signup":       return <MdPersonAdd  className="icon" />;
+      case "owner-update": return <MdUpdate     className="icon" />;
+      default:               return <MdInfo       className="icon" />;
     }
   };
 
@@ -59,8 +54,8 @@ export default function Home() {
         <div className="dropdown-wrapper">
           <Select
             options={categoryOptions}
-            value={categoryOptions.find((o) => o.value === category) || null}
-            onChange={(opt) => setCategory(opt?.value || "")}
+            value={categoryOptions.find(o => o.value===category) || null}
+            onChange={opt => setCategory(opt?.value || "")}
             placeholder="תחום (לדוגמה: חשמלאי)"
             isClearable
             filterOption={({ label }, input) =>
@@ -73,8 +68,8 @@ export default function Home() {
         <div className="dropdown-wrapper">
           <Select
             options={cityOptions}
-            value={cityOptions.find((o) => o.value === city) || null}
-            onChange={(opt) => setCity(opt?.value || "")}
+            value={cityOptions.find(o => o.value===city) || null}
+            onChange={opt => setCity(opt?.value || "")}
             placeholder="עיר (לדוגמה: תל אביב)"
             isClearable
             filterOption={({ label }, input) =>
@@ -101,30 +96,22 @@ export default function Home() {
         <div className="bookmark-card">
           <h3>לקוחות 🔐</h3>
           <p>מצאו עסקים לפי תחום וצרו קשר בקליק!</p>
-          <Link to="/search">
-            <button>מעבר לחיפוש</button>
-          </Link>
+          <Link to="/search"><button>מעבר לחיפוש</button></Link>
         </div>
         <div className="bookmark-card">
           <h3>בעלי עסקים 💼</h3>
           <p>הצטרפו לעסקליק ותקבלו פניות ישירות מלקוחות.</p>
-          <Link to="/business">
-            <button>כניסה לעסקים</button>
-          </Link>
+          <Link to="/business"><button>כניסה לעסקים</button></Link>
         </div>
         <div className="bookmark-card">
           <h3>⚙️ איך זה עובד?</h3>
           <p>כל מה שצריך לדעת כדי להתחיל, בין אם אתה לקוח או בעל עסק.</p>
-          <Link to="/how-it-works">
-            <button>למידע נוסף</button>
-          </Link>
+          <Link to="/how-it-works"><button>למידע נוסף</button></Link>
         </div>
         <div className="bookmark-card">
           <h3>💬 קצת עלינו</h3>
-          <p>עסקליק מחברת بين אנשים לעסקים – בקלות, ביעילות ובקליק אחד.</p>
-          <Link to="/about">
-            <button>הכר את הפלטפורמה</button>
-          </Link>
+          <p>עסקליק מחברת בין אנשים לעסקים – בקלות וביעילות.</p>
+          <Link to="/about"><button>הכר את הפלטפורמה</button></Link>
         </div>
       </div>
 
@@ -162,9 +149,7 @@ export default function Home() {
           <li><Link to="/terms">📜 תקנון</Link></li>
           <li><Link to="/contact">📞 יצירת קשר</Link></li>
         </ul>
-        <p className="copyright">
-          כל הזכויות שמורות © עסקליק
-        </p>
+        <p>© כל הזכויות שמורות עסקליק</p>
       </footer>
     </div>
   );
