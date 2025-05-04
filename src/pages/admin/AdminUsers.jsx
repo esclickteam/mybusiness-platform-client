@@ -14,7 +14,7 @@ function AdminUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // ללא ה־`/api` בקידומת הנתיב
+        // נתיב יחסי ללא `/api`—baseURL כבר מגדיר `/api`
         const res = await API.get("/admin/users");
         setUsers(res.data);
       } catch (err) {
@@ -27,11 +27,12 @@ function AdminUsers() {
 
   // סינון לפי חיפוש ותפקיד
   const filtered = users.filter((u) => {
+    const term = search.toLowerCase();
     const matchSearch =
       u.phone?.includes(search) ||
-      u.username?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase()) ||
-      u.name?.toLowerCase().includes(search.toLowerCase());
+      u.username?.toLowerCase().includes(term) ||
+      u.email?.toLowerCase().includes(term) ||
+      u.name?.toLowerCase().includes(term);
     const matchRole = filter === "all" || u.role === filter;
     return matchSearch && matchRole;
   });
@@ -45,7 +46,7 @@ function AdminUsers() {
       alert("✅ המשתמש נמחק בהצלחה");
     } catch (err) {
       console.error("❌ שגיאה במחיקה:", err.response?.data || err.message);
-      alert(err.response?.data?.error || "שגיאה כללית");
+      alert(err.response?.data?.error || "❌ שגיאה כללית");
     }
   };
 
@@ -55,11 +56,13 @@ function AdminUsers() {
     try {
       await API.put(`/admin/users/${id}`, { status: newStatus });
       setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, status: newStatus } : u))
+        prev.map((u) =>
+          u._id === id ? { ...u, status: newStatus } : u
+        )
       );
     } catch (err) {
       console.error("❌ שגיאה בעדכון סטטוס:", err.response?.data || err.message);
-      alert(err.response?.data?.error || "שגיאה בעדכון סטטוס");
+      alert(err.response?.data?.error || "❌ שגיאה בעדכון הסטטוס");
     }
   };
 
@@ -104,9 +107,9 @@ function AdminUsers() {
           {filtered.map((user) => (
             <tr key={user._id}>
               <td>{user.name}</td>
-              <td>{user.username || "-"}</td>
+              <td>{user.username || "—"}</td>
               <td>{user.email}</td>
-              <td>{user.phone || "-"}</td>
+              <td>{user.phone || "—"}</td>
               <td>{user.role}</td>
               <td>{user.status || "active"}</td>
               <td className="actions-cell">

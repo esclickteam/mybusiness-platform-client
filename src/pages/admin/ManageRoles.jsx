@@ -1,8 +1,8 @@
-// src/components/ManageRoles.jsx
+// src/pages/admin/ManageRoles.jsx
 import React, { useState, useEffect } from "react";
-import "./ManageRoles.css";
 import { Link } from "react-router-dom";
-import API from "../api"; // <-- axios instance
+import API from "../../api";
+import "./ManageRoles.css";
 
 function ManageRoles() {
   const [users, setUsers] = useState([]);
@@ -15,7 +15,7 @@ function ManageRoles() {
   });
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ✅ טוען את המשתמשים מהשרת בהתחלה
+  // טוען את המשתמשים מהשרת בהתחלה
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -24,7 +24,7 @@ function ManageRoles() {
         setUsers(res.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת משתמשים:", err);
-        alert("❌ שגיאה בטעינת משתמשים");
+        alert("❌ שגיאה בטעינת המשתמשים");
       }
     };
     fetchUsers();
@@ -48,7 +48,7 @@ function ManageRoles() {
       setForm({ name: "", username: "", email: "", phone: "", role: "worker" });
     } catch (err) {
       console.error("❌ שגיאה ביצירת משתמש:", err);
-      alert(`❌ שגיאה ביצירת משתמש: ${err.response?.data?.error || err.message}`);
+      alert(err.response?.data?.error || "❌ שגיאה ביצירת המשתמש");
     }
   };
 
@@ -63,7 +63,7 @@ function ManageRoles() {
       alert(`✅ הסיסמה אופסה ל: ${newPassword}`);
     } catch (err) {
       console.error("❌ שגיאה באיפוס סיסמה:", err);
-      alert(`❌ שגיאה באיפוס סיסמה: ${err.response?.data?.error || err.message}`);
+      alert(err.response?.data?.error || "❌ שגיאה באיפוס הסיסמה");
     }
   };
 
@@ -72,16 +72,16 @@ function ManageRoles() {
     try {
       await API.delete(`/users/delete/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id));
+      alert("✅ המשתמש נמחק בהצלחה");
     } catch (err) {
       console.error("❌ שגיאה במחיקת משתמש:", err);
-      alert(`❌ שגיאה במחיקת משתמש: ${err.response?.data?.error || err.message}`);
+      alert(err.response?.data?.error || "❌ שגיאה במחיקת המשתמש");
     }
   };
 
   const filteredUsers = users.filter((user) =>
-    [user.username, user.name, user.phone].some((field) =>
-      field?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    [user.username, user.name, user.phone]
+      .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -152,15 +152,13 @@ function ManageRoles() {
           {filteredUsers.map((user) => (
             <tr key={user._id}>
               <td>{user.name}</td>
-              <td>{user.username}</td>
+              <td>{user.username || "-"}</td>
               <td>{user.email}</td>
-              <td>{user.phone}</td>
+              <td>{user.phone || "-"}</td>
               <td>{user.role}</td>
               <td>
                 <button onClick={() => handleDelete(user._id)}>🗑️</button>
-                <button onClick={() => handleReset(user._id)}>
-                  🔄 איפוס סיסמה
-                </button>
+                <button onClick={() => handleReset(user._id)}>🔄 איפוס סיסמה</button>
               </td>
             </tr>
           ))}
