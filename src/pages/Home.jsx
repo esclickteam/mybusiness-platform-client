@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React, { useState, useContext } from "react";
 import "../styles/Home.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -5,12 +6,9 @@ import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES    from "../data/cities";
 import { SSEContext } from "../context/SSEContext";
-import {
-  MdRateReview,
-  MdPersonAdd,
-  MdUpdate,
-  MdInfo,
-} from "react-icons/md";
+
+// ייבוא רכיב הסיכום שיצרנו
+import SSESummary from "../components/SSESummary";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -26,15 +24,6 @@ export default function Home() {
     if (category) params.set("category", category);
     if (city)     params.set("city", city);
     navigate(`/search?${params.toString()}`);
-  };
-
-  const renderIcon = (type) => {
-    switch (type) {
-      case "review":       return <MdRateReview className="icon" />;
-      case "signup":       return <MdPersonAdd  className="icon" />;
-      case "owner-update": return <MdUpdate     className="icon" />;
-      default:               return <MdInfo       className="icon" />;
-    }
   };
 
   return (
@@ -115,27 +104,16 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Trending / Live Updates */}
-      <div className="trending-box">
+      {/* Live Updates Summary */}
+      <section className="trending-box">
         <h4>📈 מה קורה עכשיו בעסקליק?</h4>
-        {updates.length === 0 ? (
-          <ul className="updates-list empty" />
-        ) : (
-          <ul className="updates-list">
-            {updates.map((u, i) => (
-              <li key={i}>
-                {renderIcon(u.type)}
-                <div className="update-content">
-                  <p className="title">{u.message}</p>
-                  <p className="time">
-                    {new Date(u.timestamp).toLocaleTimeString("he-IL")}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        <SSESummary updates={updates} />
+        <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
+          <Link to="/updates" className="see-more-link">
+            ראו את כל העדכונים →
+          </Link>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="footer">
