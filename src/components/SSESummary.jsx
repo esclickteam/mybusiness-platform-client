@@ -4,14 +4,14 @@ import { MdPersonAdd, MdStorefront, MdRateReview, MdInfo } from 'react-icons/md'
 import './SSESummary.css';
 
 export default function SSESummary({ updates }) {
-  // מונים כמה אירועים מכל סוג באמצעות ניתוח הטקסט מתוך message או title
+  // מונים כמה אירועים מכל סוג עם ניתוח הטקסט מתוך message או title
   const countByType = updates.reduce((acc, u) => {
     let t;
     const msg = (u.message || u.title || '').toString();
 
     if (/לקוח/.test(msg)) t = 'client';
     else if (/עסק/.test(msg)) t = 'business';
-    else if (/ביקורת/.test(msg)) t = 'review';
+    else if (/ביקו/.test(msg)) t = 'review'; // תופס גם "ביקורת" וגם "ביקורות"
     else t = 'info';
 
     acc[t] = (acc[t] || 0) + 1;
