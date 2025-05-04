@@ -1,3 +1,4 @@
+// src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -11,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        {/* עטיפה ב־SSEProvider כדי שה‐EventSource יפעל לכל אורך האפליקציה */}
+        {/* עטיפה ב־SSEProvider כדי שה‐EventSource והיסטוריית העדכונים יפעלו לכל אורך האפליקציה */}
         <SSEProvider>
           <App />
         </SSEProvider>
