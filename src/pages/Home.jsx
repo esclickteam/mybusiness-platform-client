@@ -115,10 +115,10 @@ export default function Home() {
       </div>
 
       {/* Live Updates Summary */}
-      <section className="trending-box" style={{ textAlign: 'center' }}>
-        <h4 style={{ textAlign: 'center' }}>📈 מה קורה עכשיו בעסקליק?</h4>
+      <section className="trending-box">
+        <h4>📈 מה קורה עכשיו בעסקליק?</h4>
         <SSESummary updates={updates} />
-        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <div style={{ marginTop: '1rem' }}>
           <button className="see-more-button" onClick={() => setShowAllUpdates(prev => !prev)}>
             ← {showAllUpdates ? 'סגור עדכונים' : 'ראו את כל העדכונים'}
           </button>
