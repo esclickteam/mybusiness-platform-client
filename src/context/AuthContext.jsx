@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -6,11 +7,11 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [user, setUser]             = useState(null);
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [initialized, setInitialized] = useState(false);
+  const [initialized, setInitialized]       = useState(false);
   const initRan = useRef(false);
 
   // 1. טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
@@ -47,12 +48,28 @@ export function AuthProvider({ children }) {
   ) => {
     setLoading(true);
     setError(null);
+
+    // החלפה: בחר בין קריאה ל-/auth/login (email) או ל-/auth/staff-login (username)
+    const clean = identifier.trim();
+    const isEmail = clean.includes("@");
+
     try {
-      await API.post("/auth/login", { identifier: identifier.trim(), password });
+      if (isEmail) {
+        await API.post("/auth/login", {
+          email: clean.toLowerCase(),
+          password
+        });
+      } else {
+        await API.post("/auth/staff-login", {
+          username: clean,
+          password
+        });
+      }
+
       const me = await API.get("/auth/me");
       setUser(me.data);
 
-      // ניווט אוטומטי בהתאם לאפשרות
+      // ניווט אוטומטי בהתאם לתפקיד
       if (!options.skipRedirect && me.data) {
         const path =
           me.data.role === "business"
