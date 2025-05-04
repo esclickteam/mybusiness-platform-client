@@ -18,7 +18,7 @@ function ManageRoles() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/users/all", {
+        const res = await fetch("/api/admin/users", {
           method: "GET",
           credentials: "include",       // שולח גם את ה־cookie עם ה־JWT
         });
@@ -33,9 +33,10 @@ function ManageRoles() {
         console.error("❌ שגיאה בטעינת משתמשים:", err);
       }
     };
-
+  
     fetchUsers();
   }, []);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
