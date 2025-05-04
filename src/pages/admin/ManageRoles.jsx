@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./ManageRoles.css";
 import { Link } from "react-router-dom";
+import API from "../api"; // <-- axios instance
 
 function ManageRoles() {
   const [users, setUsers] = useState([]);
@@ -18,29 +19,20 @@ function ManageRoles() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/admin/users", {
-          method: "GET",
-          credentials: "include",       // שולח גם את ה־cookie עם ה־JWT
-        });
-        const data = await res.json();
-        console.log("📦 משתמשים מהשרת:", data);
-        if (res.ok) {
-          setUsers(data);
-        } else {
-          alert(`❌ שגיאה בטעינה: ${data.error}`);
-        }
+        const res = await API.get("/admin/users");
+        console.log("📦 משתמשים מהשרת:", res.data);
+        setUsers(res.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת משתמשים:", err);
+        alert("❌ שגיאה בטעינת משתמשים");
       }
     };
-  
     fetchUsers();
   }, []);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAdd = async () => {
@@ -48,26 +40,15 @@ function ManageRoles() {
       alert("יש למלא את כל השדות");
       return;
     }
-
     try {
-      const res = await fetch("/api/admin/create-user", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${data.tempPassword}`);
-        setUsers(prev => [...prev, { ...form, _id: data.userId }]);
-        setForm({ name: "", username: "", email: "", phone: "", role: "worker" });
-      } else {
-        alert(`❌ שגיאה ביצירה: ${data.error}`);
-      }
+      const res = await API.post("/admin/create-user", form);
+      const { userId, tempPassword } = res.data;
+      alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${tempPassword}`);
+      setUsers((prev) => [...prev, { ...form, _id: userId }]);
+      setForm({ name: "", username: "", email: "", phone: "", role: "worker" });
     } catch (err) {
       console.error("❌ שגיאה ביצירת משתמש:", err);
-      alert("❌ שגיאה בלתי צפויה");
+      alert(`❌ שגיאה ביצירת משתמש: ${err.response?.data?.error || err.message}`);
     }
   };
 
@@ -77,58 +58,38 @@ function ManageRoles() {
       alert("סיסמה לא תקינה");
       return;
     }
-
     try {
-      const res = await fetch("/api/users/reset-user-password", {
-        method: "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, newPassword }),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        alert(`✅ הסיסמה אופסה ל: ${newPassword}`);
-      } else {
-        alert(`❌ שגיאה באיפוס: ${data.error}`);
-      }
+      await API.put("/users/reset-user-password", { userId, newPassword });
+      alert(`✅ הסיסמה אופסה ל: ${newPassword}`);
     } catch (err) {
       console.error("❌ שגיאה באיפוס סיסמה:", err);
-      alert("❌ שגיאה בלתי צפויה");
+      alert(`❌ שגיאה באיפוס סיסמה: ${err.response?.data?.error || err.message}`);
     }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("האם אתה בטוח שברצונך למחוק משתמש זה?")) return;
-
     try {
-      const res = await fetch(`/api/users/delete/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        setUsers(prev => prev.filter(u => u._id !== id));
-      } else {
-        alert(`❌ שגיאה במחיקה: ${data.error}`);
-      }
+      await API.delete(`/users/delete/${id}`);
+      setUsers((prev) => prev.filter((u) => u._id !== id));
     } catch (err) {
       console.error("❌ שגיאה במחיקת משתמש:", err);
-      alert("❌ שגיאה בלתי צפויה");
+      alert(`❌ שגיאה במחיקת משתמש: ${err.response?.data?.error || err.message}`);
     }
   };
 
   const filteredUsers = users.filter((user) =>
-    user.username?.includes(searchTerm) ||
-    user.name?.includes(searchTerm) ||
-    user.phone?.includes(searchTerm)
+    [user.username, user.name, user.phone].some((field) =>
+      field?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   );
 
   return (
     <div className="manage-roles">
       <h1>🔐 ניהול משתמשים ותפקידים</h1>
-      <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
+      <Link to="/admin/dashboard" className="back-dashboard">
+        🔙 חזרה לדשבורד
+      </Link>
 
       <div className="role-form">
         <input
@@ -197,7 +158,9 @@ function ManageRoles() {
               <td>{user.role}</td>
               <td>
                 <button onClick={() => handleDelete(user._id)}>🗑️</button>
-                <button onClick={() => handleReset(user._id)}>🔄 איפוס סיסמה</button>
+                <button onClick={() => handleReset(user._id)}>
+                  🔄 איפוס סיסמה
+                </button>
               </td>
             </tr>
           ))}

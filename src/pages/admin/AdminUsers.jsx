@@ -1,3 +1,4 @@
+// src/components/AdminUsers.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaTrashAlt, FaBan, FaCheck } from "react-icons/fa";
@@ -13,9 +14,8 @@ function AdminUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // עדכון הנתיב ל- /api/admin/users
-        const res = await API.get("/api/admin/users");
-  
+        // ללא ה־`/api` בקידומת הנתיב
+        const res = await API.get("/admin/users");
         setUsers(res.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת המשתמשים:", err);
@@ -24,15 +24,14 @@ function AdminUsers() {
     };
     fetchUsers();
   }, []);
-  
 
   // סינון לפי חיפוש ותפקיד
   const filtered = users.filter((u) => {
     const matchSearch =
       u.phone?.includes(search) ||
       u.username?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      u.name.toLowerCase().includes(search.toLowerCase());
+      u.email?.toLowerCase().includes(search.toLowerCase()) ||
+      u.name?.toLowerCase().includes(search.toLowerCase());
     const matchRole = filter === "all" || u.role === filter;
     return matchSearch && matchRole;
   });
@@ -120,8 +119,12 @@ function AdminUsers() {
                 </button>
                 <button
                   className="status-btn"
-                  title={user.status === "active" ? "חסום משתמש" : "הפעל משתמש"}
-                  onClick={() => handleStatusToggle(user._id, user.status)}
+                  title={
+                    user.status === "active" ? "חסום משתמש" : "הפעל משתמש"
+                  }
+                  onClick={() =>
+                    handleStatusToggle(user._id, user.status || "active")
+                  }
                 >
                   {user.status === "active" ? <FaBan /> : <FaCheck />}
                 </button>
