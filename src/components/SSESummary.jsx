@@ -8,10 +8,11 @@ export default function SSESummary({ updates }) {
   const countByType = updates.reduce((acc, u) => {
     // נרמול סוגי אירועים כדי להתאים לכרטיסים
     let t = u.type;
-    if (t === 'signup') t = 'client';
-    else if (t === 'owner-update') t = 'business';
-    else if (t === 'review') t = 'review';
-    else t = 'info'; // ברירת מחדל
+    // מפה כל סוג בפלטפורמה לאחד משלושת הכרטיסים
+    if (t === 'signup' || t === 'client')         t = 'client';
+    else if (t === 'owner-update' || t === 'business') t = 'business';
+    else if (t === 'review')                       t = 'review';
+    else                                           t = 'info'; // לא מיוצג
 
     acc[t] = (acc[t] || 0) + 1;
     return acc;
