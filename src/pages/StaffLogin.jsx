@@ -1,3 +1,4 @@
+// src/pages/StaffLogin.jsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
@@ -5,27 +6,34 @@ import { useNavigate } from "react-router-dom";
 
 export default function StaffLogin() {
   const { login, logout } = useAuth();     // login מחזירה את אובייקט ה-user
-  const [identifier, setIdentifier] = useState("");
+  const [identifier, setIdentifier] = useState(""); // כאן תמיד יהיה שם-משתמש
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [staffError, setStaffError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStaffError("");
 
+    // וידוא שכל השדות מולאו
     if (!identifier.trim() || !password) {
-      setStaffError("יש למלא אימייל וסיסמה");
+      setStaffError("יש למלא שם משתמש וסיסמה");
+      return;
+    }
+
+    // וידוא שלא הוכנס אימייל
+    if (identifier.includes("@")) {
+      setStaffError("נא להזין שם משתמש בלבד");
       return;
     }
 
     setLoading(true);
     try {
-      // קריאה ל-login עם skipRedirect כדי למנוע ניווט אוטומטי
+      // עובדים משתמשים בשם-משתמש בדיוק כמו שהוקלד (case-sensitive)
       const user = await login(identifier.trim(), password, { skipRedirect: true });
 
-      // תפקידים מורשים לדף עובדים
+      // ניווט לפי תפקיד staff
       if (user.role === "worker") {
         navigate("/staff/dashboard", { replace: true });
       } else if (user.role === "manager") {
@@ -33,13 +41,13 @@ export default function StaffLogin() {
       } else if (user.role === "admin") {
         navigate("/admin/dashboard", { replace: true });
       } else {
-        // כל תפקיד אחר (business/customer וכו') → מתנתקים ומציגים שגיאה
+        // תפקיד לא מורשה
         setStaffError("אין לך הרשאה להתחבר כעובד");
         await logout();
       }
     } catch (err) {
       console.error("Staff login failed:", err);
-      setStaffError("אימייל או סיסמה שגויים");
+      setStaffError("שם משתמש או סיסמה שגויים");
     } finally {
       setLoading(false);
     }
@@ -52,7 +60,7 @@ export default function StaffLogin() {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="אימייל או שם משתמש"
+            placeholder="שם משתמש"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             disabled={loading}

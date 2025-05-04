@@ -5,42 +5,40 @@ import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Login({ staff = false }) {
   const { login, logout, error: contextError } = useAuth();
-  const [identifier, setIdentifier] = useState("");  // יכול להיות אימייל או שם משתמש
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword]     = useState("");
   const [loading, setLoading]       = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
 
-  // אם URL מכיל "staff-login" נדע שזה כניסת עובדים
-  const isStaffLogin = window.location.pathname.includes("staff-login");
+  // אם props.staff הוא true, זו כניסת עובדים
+  const isStaffLogin = staff;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoginError("");
 
     if (!identifier.trim() || !password) {
-      setLoginError("יש למלא אימייל/שם משתמש וסיסמה");
+      setLoginError("יש למלא שם משתמש וסיסמה");
       return;
     }
 
     setLoading(true);
     try {
-      // אם זו כניסת עובדים – משתמשים בשם משתמש כמו שהוקלד, אחרת lower-case לאימייל
-      const idValue = isStaffLogin
-        ? identifier.trim()
-        : identifier.trim().toLowerCase();
-
+      // עובדים משתמשים רק בשם משתמש — לא יוריד ל־lowercase
+      const idValue = identifier.trim();
       const user = await login(idValue, password, { skipRedirect: true });
 
+      // ניווט לפי תפקיד
       if (user.role === "business") {
         navigate(`/business/${user.businessId}/dashboard`, { replace: true });
       } else if (user.role === "customer") {
         navigate("/client/dashboard", { replace: true });
       } else {
-        // תפקיד staff – עובדי מנהלים אדמין ימשיכו בדף staff-dashboard
+        // כל תפקיד staff: פשוט לוח בקרה משותפת לעובדים
         navigate("/staff/dashboard", { replace: true });
       }
     } catch (err) {
@@ -48,12 +46,9 @@ export default function Login() {
       setLoginError(
         contextError ||
         err.response?.data?.error ||
-        "אימייל/שם משתמש או סיסמה שגויים"
+        "שם משתמש או סיסמה שגויים"
       );
-      // אם תפקיד staff לא מורשה על דף non-staff, מתנתקים:
-      if (!isStaffLogin) {
-        await logout();
-      }
+      await logout();
     } finally {
       setLoading(false);
     }
@@ -67,7 +62,7 @@ export default function Login() {
           <input
             type="text"
             name="identifier"
-            placeholder={isStaffLogin ? "שם משתמש" : "אימייל"}
+            placeholder={isStaffLogin ? "שם משתמש" : "אימייל או שם משתמש"}
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             disabled={loading}
@@ -91,32 +86,26 @@ export default function Login() {
           <p className="error-message">{loginError || contextError}</p>
         )}
 
-        <div className="login-extra-options">
-          <span
-            className="forgot-password"
-            onClick={() => setShowForgot(true)}
-          >
-            שכחת את הסיסמה?
-          </span>
-
-          {!isStaffLogin && (
-            <>
-              <p className="signup-link">
-                לא רשום?{" "}
-                <Link to="/register" className="signup-link-text">
-                  הירשם עכשיו
-                </Link>
-              </p>
-              <button
-                className="staff-login-btn"
-                onClick={() => navigate("/staff-login")}
-                disabled={loading}
-              >
-                כניסת עובדים
-              </button>
-            </>
-          )}
-        </div>
+        {!isStaffLogin && (
+          <div className="login-extra-options">
+            <span
+              className="forgot-password"
+              onClick={() => setShowForgot(true)}
+            >
+              שכחת את הסיסמה?
+            </span>
+            <p className="signup-link">
+              לא רשום? <Link to="/register">הרשמה</Link>
+            </p>
+            <button
+              className="staff-login-btn"
+              onClick={() => navigate("/staff-login")}
+              disabled={loading}
+            >
+              כניסת עובדים
+            </button>
+          </div>
+        )}
       </div>
 
       {showForgot && <ForgotPassword closePopup={() => setShowForgot(false)} />}
