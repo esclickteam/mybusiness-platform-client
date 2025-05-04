@@ -70,7 +70,7 @@ function ManageRoles() {
   const handleDelete = async (id) => {
     if (!window.confirm("האם אתה בטוח שברצונך למחוק משתמש זה?")) return;
     try {
-      await API.delete(`/users/delete/${id}`);
+      await API.delete(`/admin/users/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id));
       alert("✅ המשתמש נמחק בהצלחה");
     } catch (err) {
