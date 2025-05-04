@@ -4,7 +4,7 @@ import axios from "axios";
 // הגדרת BASE_URL דינמית לפי סביבת הפיתוח או הפרודקשן
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
-  ? "https://api.esclick.co.il/api"
+  ? "https://api.esclick.co.il"  // בסביבת פרודקשן אין `/api` כי השרת מותקן מתחת ל־/api
   : "/api";
 
 // יצירת instance של Axios
@@ -53,7 +53,6 @@ API.interceptors.response.use(
       window.location.pathname !== "/login"
     ) {
       window.location.replace("/login");
-      // עצירה מיידית מבלי להמשיך לטפל בשגיאה
       return;
     }
 
