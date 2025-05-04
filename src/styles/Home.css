@@ -151,14 +151,17 @@ body {
 
 /* === רשימת עדכונים – Compact Timeline עם rail מלא === */
 .trending-box {
-  background: #ffffff;
+  background: #f9f5ff; /* סגול בהיר */
+  color: #3b0764;       /* סגול כהה לטקסט */
   border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   padding: 1.5rem;
   max-width: 700px;
   margin: 0 auto 2.5rem;
   position: relative;
+  text-align: center;
 }
+
 .trending-box h4 {
   display: flex;
   align-items: center;
@@ -250,6 +253,29 @@ body {
   color: #666;
   padding: 1rem 0;
 }
+
+.see-more-button {
+  background-color: #7c3aed;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.see-more-button:hover {
+  background-color: #6d28d9;
+  transform: translateY(-2px);
+}
+
+
+
 
 /* === Footer === */
 .footer {
