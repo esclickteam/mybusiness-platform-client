@@ -1,15 +1,14 @@
 // src/pages/StaffLogin.jsx
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import API from "../api";
 import "../styles/Login.css";
 import { useNavigate } from "react-router-dom";
 
 export default function StaffLogin() {
-  const { login, logout } = useAuth();     // login מחזירה את אובייקט ה-user
-  const [identifier, setIdentifier] = useState(""); // כאן תמיד יהיה שם-משתמש
+  const [username, setUsername] = useState(""); // כאן תמיד יהיה שם-משתמש
   const [password, setPassword] = useState("");
   const [staffError, setStaffError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]   = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,21 +16,25 @@ export default function StaffLogin() {
     setStaffError("");
 
     // וידוא שכל השדות מולאו
-    if (!identifier.trim() || !password) {
+    if (!username.trim() || !password) {
       setStaffError("יש למלא שם משתמש וסיסמה");
       return;
     }
 
     // וידוא שלא הוכנס אימייל
-    if (identifier.includes("@")) {
+    if (username.includes("@")) {
       setStaffError("נא להזין שם משתמש בלבד");
       return;
     }
 
     setLoading(true);
     try {
-      // עובדים משתמשים בשם-משתמש בדיוק כמו שהוקלד (case-sensitive)
-      const user = await login(identifier.trim(), password, { skipRedirect: true });
+      // קריאה ישירה לרוטת staff-login
+      const res = await API.post("/auth/staff-login", {
+        username: username.trim(),
+        password,
+      });
+      const user = res.data.user;
 
       // ניווט לפי תפקיד staff
       if (user.role === "worker") {
@@ -41,13 +44,11 @@ export default function StaffLogin() {
       } else if (user.role === "admin") {
         navigate("/admin/dashboard", { replace: true });
       } else {
-        // תפקיד לא מורשה
         setStaffError("אין לך הרשאה להתחבר כעובד");
-        await logout();
       }
     } catch (err) {
       console.error("Staff login failed:", err);
-      setStaffError("שם משתמש או סיסמה שגויים");
+      setStaffError(err.response?.data?.error || "שם משתמש או סיסמה שגויים");
     } finally {
       setLoading(false);
     }
@@ -61,8 +62,8 @@ export default function StaffLogin() {
           <input
             type="text"
             placeholder="שם משתמש"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
             required
           />
