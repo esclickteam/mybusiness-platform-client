@@ -184,23 +184,22 @@ body {
   content: "";
   position: absolute;
   left: 0.25rem;
-  top: 0;
-  bottom: 0;
+  top: 0;         /* מתחיל מקצה עליון */
+  bottom: 0;      /* עד הקצה התחתון */
   width: 1px;
   background: rgba(0,0,0,0.1);
 }
 
-/* אירוע קומפקטי */
+/* הסרת קו תחתון אופקי */
 .trending-box .updates-list li {
   display: flex;
   align-items: center;
   padding: 0.5rem 0;
   margin: 0;
   background: transparent;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
+  border-bottom: none;   /* <--- כאן הוסר ה־separator */
   transition: background 0.2s;
 }
-.trending-box .updates-list li:last-child { border-bottom: none; }
 .trending-box .updates-list li:hover {
   background: rgba(240,240,250,0.4);
 }
