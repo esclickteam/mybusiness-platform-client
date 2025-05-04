@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES from "../data/cities";
-import { SSEContext } from "../context/SSEContext"; // ← ייבוא ה-Context במקום UpdatesTicker
+import { SSEContext } from "../context/SSEContext";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -17,11 +17,9 @@ export default function Home() {
   // צריכת עדכוני SSE מ-Context
   const { updates } = useContext(SSEContext);
 
-  // אופציות ל־Select
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
   const cityOptions     = ALL_CITIES.map((c)     => ({ value: c, label: c }));
 
-  // נווט לתוצאות החיפוש
   const navigateToSearch = () => {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
@@ -119,17 +117,17 @@ export default function Home() {
       <div className="trending-box">
         <h4>📈 מה קורה עכשיו בעסקליק?</h4>
         {updates.length === 0 ? (
-          <div className="updates-ticker no-updates">
-            אין עדכונים חדשים
-          </div>
+          <ul className="updates-list empty" />
         ) : (
-          <ul className="updates-ticker">
+          <ul className="updates-list">
             {updates.map((u, i) => (
-              <li key={i} className={`update-item update-${u.type}`}>
-                <small>
-                  {new Date(u.timestamp).toLocaleTimeString("he-IL")}
-                </small>{" "}
-                – {u.message}
+              <li key={i}>
+                <div className="update-content">
+                  <p className="title">{u.message}</p>
+                  <p className="time">
+                    {new Date(u.timestamp).toLocaleTimeString("he-IL")}
+                  </p>
+                </div>
               </li>
             ))}
           </ul>
