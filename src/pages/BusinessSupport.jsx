@@ -2,12 +2,9 @@ import React, { useState } from "react";
 import "../styles/business-support.css";
 
 export default function BusinessSupport() {
-  const [formData, setFormData] = useState({
-    name: '',
-    issueDescription: ''
-  });
-
+  const [formData, setFormData] = useState({ name: '', issueDescription: '' });
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: string }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -16,9 +13,10 @@ export default function BusinessSupport() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus(null);
 
     if (!formData.name || !formData.issueDescription) {
-      alert("אנא מלא את כל השדות");
+      setStatus({ type: 'error', message: 'אנא מלא את כל השדות' });
       return;
     }
 
@@ -31,23 +29,18 @@ export default function BusinessSupport() {
         body: JSON.stringify(formData)
       });
 
-      let data;
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error("השרת החזיר תגובה לא תקינה (לא JSON)");
-      }
+      const data = await res.json();
 
       if (!res.ok) {
         throw new Error(data.message || "שגיאה כללית");
       }
 
-      alert(data.message || "✅ הפנייה נשלחה בהצלחה");
+      setStatus({ type: 'success', message: data.message || "הפנייה נשלחה בהצלחה" });
       setFormData({ name: '', issueDescription: '' });
 
     } catch (err) {
       console.error("שגיאה:", err);
-      alert("❌ שגיאה: " + err.message);
+      setStatus({ type: 'error', message: err.message || "שגיאה בשליחה" });
     } finally {
       setLoading(false);
     }
@@ -64,7 +57,6 @@ export default function BusinessSupport() {
           name="name"
           value={formData.name}
           onChange={handleInputChange}
-          required
           disabled={loading}
         />
 
@@ -73,7 +65,6 @@ export default function BusinessSupport() {
           name="issueDescription"
           value={formData.issueDescription}
           onChange={handleInputChange}
-          required
           disabled={loading}
         />
 
@@ -81,6 +72,15 @@ export default function BusinessSupport() {
           {loading ? "שולח..." : "שלח פנייה"}
         </button>
       </form>
+
+      {status && (
+        <div
+          className={`status-msg ${status.type}`}
+          data-icon={status.type === 'success' ? '✅' : '❌'}
+        >
+          {status.message}
+        </div>
+      )}
     </div>
   );
 }
