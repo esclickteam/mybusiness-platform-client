@@ -8,8 +8,13 @@ export default function SSESummary({ updates }) {
   console.log('SSESummary updates:', updates);
   updates.forEach(u => console.log('  type:', u.type, 'message:', u.message || u.title));
 
-  // סופרים אירועים לפי סוג מדויק
+  // סופרים אירועים לפי סוג מדויק עם סינון כפילויות
+  const seen = new Set();
   const countByType = updates.reduce((acc, u) => {
+    const key = u.message || u.title || u._id || '';
+    if (seen.has(key)) return acc;
+    seen.add(key);
+
     const type = (u.type || '').toLowerCase();
 
     let mappedType;
