@@ -26,10 +26,11 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await login(
-        identifier.trim(),
+        identifier.trim().toLowerCase(),  // ← הפעם מורידים ל־lowercase
         password,
         { skipRedirect: true }
       );
+      
 
       if (user.role === "business") {
         navigate(`/business/${user.businessId}/dashboard`, { replace: true });
