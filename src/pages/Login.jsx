@@ -6,11 +6,11 @@ import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [email, setEmail]             = useState("");
-  const [password, setPassword]       = useState("");
-  const [loading, setLoading]         = useState(false);
-  const [loginError, setLoginError]   = useState("");
-  const [showForgot, setShowForgot]   = useState(false);
+  const [email, setEmail]           = useState("");
+  const [password, setPassword]     = useState("");
+  const [loading, setLoading]       = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -36,11 +36,16 @@ export default function Login() {
       } else if (user.role === "customer") {
         navigate("/client/dashboard", { replace: true });
       } else {
-        setLoginError("אין לך הרשאה להתחבר כאן");
+        // עובד/מנהל/אדמין ניסו להכנס דרך העמוד הרגיל
+        setLoginError("אין לך הרשאה להתחבר כאן – אנא השתמש ב'כניסת עובדים'");
       }
     } catch (err) {
       console.error("Login failed:", err);
-      setLoginError(err.response?.data?.error || "אימייל או סיסמה שגויים");
+      if (err.response?.status === 403) {
+        setLoginError("אין לך הרשאה להתחבר כאן – אנא השתמש ב'כניסת עובדים'");
+      } else {
+        setLoginError(err.response?.data?.error || "אימייל או סיסמה שגויים");
+      }
     } finally {
       setLoading(false);
     }
