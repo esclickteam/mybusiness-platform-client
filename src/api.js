@@ -4,8 +4,8 @@ import axios from "axios";
 // הגדרת BASE_URL דינמית לפי סביבת הפיתוח או הפרודקשן
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
-  ? "https://api.esclick.co.il"  // בסביבת פרודקשן אין `/api` כי השרת מותקן מתחת ל־/api
-  : "/api";
+  ? "https://api.esclick.co.il/api"  // בפרודקשן: כל הראוטים תחת `/api`
+  : "/api";                           // בדב: proxied ל־`/api`
 
 // יצירת instance של Axios
 const API = axios.create({
@@ -21,7 +21,6 @@ const API = axios.create({
 API.interceptors.request.use(
   (config) => {
     console.log(`API Request: ${config.method.toUpperCase()} ${config.baseURL}${config.url}`);
-    // Content-Type אוטומטי עבור JSON
     if (config.data && !(config.data instanceof FormData)) {
       config.headers["Content-Type"] = "application/json";
     }
@@ -46,7 +45,7 @@ API.interceptors.response.use(
       return Promise.reject(new Error("שגיאת רשת"));
     }
 
-    // במקרה של 401, רק אם זו לא קריאה לאימות המשתמש (auth/me) – נווט ללוגין
+    // במקרה של 401 (לא auth/me) – נווט ללוגין
     if (
       response.status === 401 &&
       !config.url.endsWith("/auth/me") &&
