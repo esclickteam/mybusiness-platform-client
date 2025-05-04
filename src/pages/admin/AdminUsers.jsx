@@ -13,8 +13,9 @@ function AdminUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await API.get("/users/all");
-
+        // עדכון הנתיב ל- /api/admin/users
+        const res = await API.get("/api/admin/users");
+  
         setUsers(res.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת המשתמשים:", err);
@@ -23,6 +24,7 @@ function AdminUsers() {
     };
     fetchUsers();
   }, []);
+  
 
   // סינון לפי חיפוש ותפקיד
   const filtered = users.filter((u) => {
