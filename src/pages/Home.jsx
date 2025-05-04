@@ -15,6 +15,7 @@ export default function Home() {
   const [category, setCategory] = useState("");
   const [city, setCity]         = useState("");
   const { updates }             = useContext(SSEContext);
+  const [showAllUpdates, setShowAllUpdates] = useState(false);
 
   const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
   const cityOptions     = ALL_CITIES.map(c     => ({ value: c, label: c }));
@@ -24,6 +25,15 @@ export default function Home() {
     if (category) params.set("category", category);
     if (city)     params.set("city", city);
     navigate(`/search?${params.toString()}`);
+  };
+
+  const renderIcon = (type) => {
+    switch (type) {
+      case "new_review": return "📝";
+      case "new_customer": return "👤";
+      case "new_business": return "🏪";
+      default: return "ℹ️";
+    }
   };
 
   return (
@@ -108,11 +118,24 @@ export default function Home() {
       <section className="trending-box">
         <h4>📈 מה קורה עכשיו בעסקליק?</h4>
         <SSESummary updates={updates} />
-        <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
-          <Link to="/updates" className="see-more-link">
-            ראו את כל העדכונים →
-          </Link>
+        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <button className="see-more-button" onClick={() => setShowAllUpdates(prev => !prev)}>
+            ← {showAllUpdates ? 'סגור עדכונים' : 'ראו את כל העדכונים'}
+          </button>
         </div>
+        {showAllUpdates && (
+          <ul className="updates-list">
+            {updates.map((u, i) => (
+              <li key={i}>
+                <div className="update-content">
+                  <span className="icon">{renderIcon(u.type)}</span>
+                  <p className="title">{u.message}</p>
+                  <p className="time">{new Date(u.timestamp).toLocaleTimeString("he-IL")}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {/* Footer */}
