@@ -1,11 +1,12 @@
 // src/pages/StaffLogin.jsx
 import React, { useState } from "react";
-import API from "../api";
+import { useAuth } from "../context/AuthContext";     // ← משתמשים ב־AuthContext
 import "../styles/Login.css";
 import { useNavigate } from "react-router-dom";
 
 export default function StaffLogin() {
-  const [username, setUsername] = useState(""); // כאן תמיד יהיה שם-משתמש
+  const { staffLogin } = useAuth();                  // ← הפונקציה החדשה ל־staff-login ב־context
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [staffError, setStaffError] = useState("");
   const [loading, setLoading]   = useState(false);
@@ -15,13 +16,10 @@ export default function StaffLogin() {
     e.preventDefault();
     setStaffError("");
 
-    // וידוא שכל השדות מולאו
     if (!username.trim() || !password) {
       setStaffError("יש למלא שם משתמש וסיסמה");
       return;
     }
-
-    // וידוא שלא הוכנס אימייל
     if (username.includes("@")) {
       setStaffError("נא להזין שם משתמש בלבד");
       return;
@@ -29,22 +27,23 @@ export default function StaffLogin() {
 
     setLoading(true);
     try {
-      // קריאה ישירה לרוטת staff-login
-      const res = await API.post("/auth/staff-login", {
-        username: username.trim(),
-        password,
-      });
-      const user = res.data.user;
+      // ← קוראים לפונקציה שב־AuthContext שתבצע את הקריאה ל־/auth/staff-login, תשמור טוקן, ותעדכן את user ב־context
+      const user = await staffLogin(username.trim(), password);
 
-      // ניווט לפי תפקיד staff
-      if (user.role === "worker") {
-        navigate("/staff/dashboard", { replace: true });
-      } else if (user.role === "manager") {
-        navigate("/manager/dashboard", { replace: true });
-      } else if (user.role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
-      } else {
-        setStaffError("אין לך הרשאה להתחבר כעובד");
+      // ניווט לפי תפקיד
+      switch (user.role) {
+        case "worker":
+          navigate("/staff/dashboard", { replace: true });
+          break;
+        case "manager":
+        case "מנהל":
+          navigate("/manager/dashboard", { replace: true });
+          break;
+        case "admin":
+          navigate("/admin/dashboard", { replace: true });
+          break;
+        default:
+          setStaffError("אין לך הרשאה להתחבר כעובד");
       }
     } catch (err) {
       console.error("Staff login failed:", err);

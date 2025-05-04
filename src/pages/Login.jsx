@@ -1,11 +1,12 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
-import API from "../api";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const { login } = useAuth();               // ← קבלת הפונקציה מה־context
   const [email, setEmail]           = useState("");
   const [password, setPassword]     = useState("");
   const [loading, setLoading]       = useState(false);
@@ -25,33 +26,26 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      const res = await API.post("/auth/login", {
-        email: cleanEmail,
-        password
-      });
-      const user = res.data.user;
-      const role = (user.role || "").toLowerCase();
+      // ← קוראים ל־context.login, שמטפל ב־API, שמירת טוקן ו־fetch של user
+      const user = await login(cleanEmail, password);
 
+      const role = (user.role || "").toLowerCase();
       switch (role) {
         case "business":
           navigate(`/business/${user.businessId}/dashboard`, { replace: true });
           break;
-
         case "customer":
           navigate("/client/dashboard", { replace: true });
           break;
-
         case "admin":
         case "worker":
-        case "manager":   // מנהל
+        case "manager":
         case "מנהל":
           navigate("/dashboard", { replace: true });
           break;
-
         default:
           setLoginError("אין לך הרשאה להתחבר כאן");
       }
-
     } catch (err) {
       console.error("Login failed:", err);
       if (err.response?.status === 403) {
@@ -90,9 +84,7 @@ export default function Login() {
           </button>
         </form>
 
-        {loginError && (
-          <p className="error-message">{loginError}</p>
-        )}
+        {loginError && <p className="error-message">{loginError}</p>}
 
         <div className="login-extra-options">
           <span

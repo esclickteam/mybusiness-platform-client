@@ -7,14 +7,14 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const [user, setUser]             = useState(null);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState(null);
+  const [user, setUser]                   = useState(null);
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [initialized, setInitialized]       = useState(false);
+  const [initialized, setInitialized]     = useState(false);
   const initRan = useRef(false);
 
-  // 1. טען בהתחלה את פרטי המשתמש אם קיים cookie תקף
+  // 1. On mount: fetch current user if token exists
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -35,11 +35,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * login
-   * @param {string} identifier
+   * generic login (handles both customer/business by email, and staff by username)
+   * @param {string} identifier  email or username
    * @param {string} password
    * @param {{ skipRedirect?: boolean }} options
-   * @returns {Promise<object>} user data
+   * @returns {Promise<object>}  the user object
    */
   const login = async (
     identifier,
@@ -49,38 +49,41 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
 
-    // החלפה: בחר בין קריאה ל-/auth/login (email) או ל-/auth/staff-login (username)
     const clean = identifier.trim();
     const isEmail = clean.includes("@");
 
     try {
       if (isEmail) {
+        // customer/business login
         await API.post("/auth/login", {
           email: clean.toLowerCase(),
           password
         });
       } else {
+        // staff login
         await API.post("/auth/staff-login", {
           username: clean,
           password
         });
       }
 
+      // fetch current user
       const me = await API.get("/auth/me");
       setUser(me.data);
 
-      // ניווט אוטומטי בהתאם לתפקיד
+      // auto-redirect unless skipped
       if (!options.skipRedirect && me.data) {
+        const role = me.data.role;
         const path =
-          me.data.role === "business"
+          role === "business"
             ? `/business/${me.data.businessId}/dashboard`
-            : me.data.role === "customer"
+            : role === "customer"
             ? "/client/dashboard"
-            : me.data.role === "worker"
+            : role === "worker"
             ? "/staff/dashboard"
-            : me.data.role === "manager"
+            : role === "manager" || role === "מנהל"
             ? "/manager/dashboard"
-            : me.data.role === "admin"
+            : role === "admin"
             ? "/admin/dashboard"
             : "/";
         navigate(path, { replace: true });
@@ -99,7 +102,13 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // logout
+  /**
+   * staffLogin wrapper: delegates to generic login but skips auto-redirect
+   * so that StaffLogin page can handle navigation itself
+   */
+  const staffLogin = (username, password) =>
+    login(username, password, { skipRedirect: true });
+
   const logout = async () => {
     setLoading(true);
     try {
@@ -114,17 +123,29 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ניקוי ההודעה לאחר 4 שניות
+  // clear success message after 4s
   useEffect(() => {
     if (successMessage) {
-      const timeout = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(timeout);
+      const t = setTimeout(() => setSuccessMessage(null), 4000);
+      return () => clearTimeout(t);
     }
   }, [successMessage]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, initialized, error, login, logout }}>
-      {successMessage && <div className="global-success-toast">{successMessage}</div>}
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        initialized,
+        error,
+        login,
+        staffLogin,
+        logout
+      }}
+    >
+      {successMessage && (
+        <div className="global-success-toast">{successMessage}</div>
+      )}
       {children}
     </AuthContext.Provider>
   );
