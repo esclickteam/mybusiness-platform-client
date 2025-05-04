@@ -1,3 +1,4 @@
+// src/components/ManageRoles.jsx
 import React, { useState, useEffect } from "react";
 import "./ManageRoles.css";
 import { Link } from "react-router-dom";
@@ -17,11 +18,16 @@ function ManageRoles() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/users/all"); // ← תוקן מ-/admin/users
+        const res = await fetch("/api/users/all", {
+          method: "GET",
+          credentials: "include",       // שולח גם את ה־cookie עם ה־JWT
+        });
         const data = await res.json();
         console.log("📦 משתמשים מהשרת:", data);
         if (res.ok) {
           setUsers(data);
+        } else {
+          alert(`❌ שגיאה בטעינה: ${data.error}`);
         }
       } catch (err) {
         console.error("❌ שגיאה בטעינת משתמשים:", err);
@@ -45,17 +51,18 @@ function ManageRoles() {
     try {
       const res = await fetch("/api/admin/create-user", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       const data = await res.json();
+
       if (res.ok) {
         alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${data.tempPassword}`);
-        setUsers((prev) => [...prev, { ...form, _id: data.userId }]);
+        setUsers(prev => [...prev, { ...form, _id: data.userId }]);
         setForm({ name: "", username: "", email: "", phone: "", role: "worker" });
       } else {
-        alert(`❌ שגיאה: ${data.error}`);
+        alert(`❌ שגיאה ביצירה: ${data.error}`);
       }
     } catch (err) {
       console.error("❌ שגיאה ביצירת משתמש:", err);
@@ -72,32 +79,49 @@ function ManageRoles() {
 
     try {
       const res = await fetch("/api/users/reset-user-password", {
-
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, newPassword }),
       });
-
       const data = await res.json();
+
       if (res.ok) {
         alert(`✅ הסיסמה אופסה ל: ${newPassword}`);
       } else {
-        alert(`❌ שגיאה: ${data.error}`);
+        alert(`❌ שגיאה באיפוס: ${data.error}`);
       }
     } catch (err) {
       console.error("❌ שגיאה באיפוס סיסמה:", err);
-      alert("שגיאה כללית");
+      alert("❌ שגיאה בלתי צפויה");
     }
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter((u) => u._id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm("האם אתה בטוח שברצונך למחוק משתמש זה?")) return;
+
+    try {
+      const res = await fetch(`/api/users/delete/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setUsers(prev => prev.filter(u => u._id !== id));
+      } else {
+        alert(`❌ שגיאה במחיקה: ${data.error}`);
+      }
+    } catch (err) {
+      console.error("❌ שגיאה במחיקת משתמש:", err);
+      alert("❌ שגיאה בלתי צפויה");
+    }
   };
 
   const filteredUsers = users.filter((user) =>
-    (user.username || "").includes(searchTerm) ||
-    (user.name || "").includes(searchTerm) ||
-    (user.phone || "").includes(searchTerm)
+    user.username?.includes(searchTerm) ||
+    user.name?.includes(searchTerm) ||
+    user.phone?.includes(searchTerm)
   );
 
   return (
@@ -106,10 +130,34 @@ function ManageRoles() {
       <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
 
       <div className="role-form">
-        <input type="text" name="name" placeholder="שם מלא" value={form.name} onChange={handleChange} />
-        <input type="text" name="username" placeholder="שם משתמש ייחודי" value={form.username} onChange={handleChange} />
-        <input type="email" name="email" placeholder="אימייל" value={form.email} onChange={handleChange} />
-        <input type="tel" name="phone" placeholder="טלפון" value={form.phone} onChange={handleChange} />
+        <input
+          type="text"
+          name="name"
+          placeholder="שם מלא"
+          value={form.name}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="username"
+          placeholder="שם משתמש ייחודי"
+          value={form.username}
+          onChange={handleChange}
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="אימייל"
+          value={form.email}
+          onChange={handleChange}
+        />
+        <input
+          type="tel"
+          name="phone"
+          placeholder="טלפון"
+          value={form.phone}
+          onChange={handleChange}
+        />
         <select name="role" value={form.role} onChange={handleChange}>
           <option value="worker">עובד</option>
           <option value="manager">מנהל</option>
@@ -125,7 +173,6 @@ function ManageRoles() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button>חפש</button>
       </div>
 
       <table className="users-table">
