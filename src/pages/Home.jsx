@@ -6,6 +6,7 @@ import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES from "../data/cities";
 import { SSEContext } from "../context/SSEContext";
+import { MdRateReview, MdPersonAdd, MdUpdate, MdInfo } from "react-icons/md";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -25,6 +26,20 @@ export default function Home() {
     if (category) params.set("category", category);
     if (city)     params.set("city", city);
     navigate(`/search?${params.toString()}`);
+  };
+
+  // בוחר איקון לפי סוג העדכון (u.type)
+  const renderIcon = (type) => {
+    switch (type) {
+      case "review":
+        return <MdRateReview className="icon" />;
+      case "signup":
+        return <MdPersonAdd className="icon" />;
+      case "owner-update":
+        return <MdUpdate className="icon" />;
+      default:
+        return <MdInfo className="icon" />;
+    }
   };
 
   return (
@@ -106,7 +121,7 @@ export default function Home() {
         </div>
         <div className="bookmark-card">
           <h3>💬 קצת עלינו</h3>
-          <p>עסקליק מחברת בין אנשים לעסקים – בקלות, ביעילות ובקליק אחד.</p>
+          <p>עסקליק מחברת بين אנשים לעסקים – בקלות, ביעילות ובקליק אחד.</p>
           <Link to="/about">
             <button>הכר את הפלטפורמה</button>
           </Link>
@@ -122,6 +137,7 @@ export default function Home() {
           <ul className="updates-list">
             {updates.map((u, i) => (
               <li key={i}>
+                {renderIcon(u.type)}
                 <div className="update-content">
                   <p className="title">{u.message}</p>
                   <p className="time">

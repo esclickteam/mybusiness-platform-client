@@ -69,7 +69,7 @@ body {
   box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
-/* === עיצוב רשימת עדכונים (Trending Box) === */
+/* === עיצוב רשימת עדכונים (Trending Box as Timeline) === */
 .trending-box {
   background: #ffffff;
   border-radius: 1rem;
@@ -77,8 +77,10 @@ body {
   padding: 1.5rem;
   max-width: 700px;
   margin: 0 auto 2.5rem;
+  position: relative;
 }
 
+/* כותרת עם אייקון כללי */
 .trending-box h4 {
   display: flex;
   align-items: center;
@@ -86,58 +88,90 @@ body {
   color: #5b21b6;
   margin-bottom: 1rem;
 }
-
 .trending-box h4::before {
   content: "📝";
   font-size: 1.5rem;
   margin-right: 0.75rem;
 }
 
+/* פס צידי (rail) */
 .trending-box .updates-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  position: relative;
+  margin-left: 1.5rem;
+}
+.trending-box .updates-list::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 2px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 1px;
 }
 
+/* כל אירוע ככרטיס Timeline */
 .trending-box .updates-list li {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  position: relative;
+  padding: 1rem 1rem 1rem 1.5rem;
+  margin-bottom: 1rem;
+  background: #faf8ff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: background 0.3s, transform 0.3s;
+  opacity: 0;
+  animation: fadeInUp 0.4s ease forwards;
+}
+.trending-box .updates-list li:hover {
+  background: #f3f0ff;
+  transform: translateY(-2px);
 }
 
-.trending-box .updates-list li:last-child {
-  border-bottom: none;
-}
-
+/* הנקודה הצבעונית בצד */
 .trending-box .updates-list li::before {
   content: "";
-  flex-shrink: 0;
-  width: 0.5rem;
-  height: 0.5rem;
+  position: absolute;
+  left: -0.6rem;
+  top: 1.25rem;
+  width: 0.75rem;
+  height: 0.75rem;
   background: #7c3aed;
+  border: 2px solid #ffffff;
   border-radius: 50%;
-  margin-top: 0.25rem;
 }
 
+/* אייקון לכל אירוע */
+.trending-box .updates-list .icon {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  color: #7c3aed;
+  margin-left: 0.75rem;
+}
+
+/* תכולת האירוע */
 .trending-box .updates-list .update-content {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
-
 .trending-box .updates-list .update-content .title {
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   color: #333333;
   margin: 0;
 }
-
 .trending-box .updates-list .update-content .time {
-  font-size: 0.8rem;
-  color: #888888;
+  font-size: 0.85rem;
+  color: #777777;
   margin-top: 0.25rem;
+  font-style: italic;
 }
 
+/* אם אין עדכונים */
 .trending-box .updates-list.empty::before {
   content: "אין עדכונים לשעת עתה";
   display: block;
@@ -145,6 +179,18 @@ body {
   font-style: italic;
   color: #666666;
   padding: 1rem 0;
+}
+
+/* אנימציית Fade-In Up */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === סקשן חיפוש === */
