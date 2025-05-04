@@ -1,11 +1,19 @@
+// src/components/SSESummary.jsx
 import React from 'react';
 import { MdPersonAdd, MdStorefront, MdRateReview, MdInfo } from 'react-icons/md';
 import './SSESummary.css';
 
 export default function SSESummary({ updates }) {
-  // מונים כמה אירועים מכל סוג
+  // מונים כמה אירועים מכל סוג עם נורמליזציה
   const countByType = updates.reduce((acc, u) => {
-    acc[u.type] = (acc[u.type] || 0) + 1;
+    // נרמול סוגי אירועים כדי להתאים לכרטיסים
+    let t = u.type;
+    if (t === 'signup') t = 'client';
+    else if (t === 'owner-update') t = 'business';
+    else if (t === 'review') t = 'review';
+    else t = 'info'; // ברירת מחדל
+
+    acc[t] = (acc[t] || 0) + 1;
     return acc;
   }, {});
 
