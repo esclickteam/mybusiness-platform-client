@@ -23,7 +23,9 @@ export default function ProtectedRoute({
 
   // 2. If not authenticated and initialization still pending → redirect to login
   if (!user && !initialized) {
-    const loginPath = roles.includes("worker") ? "/staff-login" : "/login";
+    const loginPath = roles.map(r => r.toLowerCase()).includes("worker")
+      ? "/staff-login"
+      : "/login";
     return <Navigate to={loginPath} replace state={{ from: location }} />;
   }
 
@@ -32,8 +34,18 @@ export default function ProtectedRoute({
     return <Unauthorized />;
   }
 
+  // DEBUG: print roles and returned user.role
+  console.log("🔒 ProtectedRoute:", {
+    allowedRoles: roles,
+    userRole: user.role
+  });
+
+  // Normalize to lowercase to avoid case-sensitivity issues
+  const normalizedRoles = roles.map(r => r.toLowerCase());
+  const normalizedUserRole = (user.role || "").toLowerCase();
+
   // 4. If roles are specified and user's role isn't allowed → show Unauthorized
-  if (roles.length > 0 && !roles.includes(user.role)) {
+  if (normalizedRoles.length > 0 && !normalizedRoles.includes(normalizedUserRole)) {
     return <Unauthorized />;
   }
 
@@ -44,8 +56,8 @@ export default function ProtectedRoute({
 
   // 6. If business role but missing businessId → redirect to create-business
   if (
-    roles.includes("business") &&
-    user.role === "business" &&
+    normalizedRoles.includes("business") &&
+    normalizedUserRole === "business" &&
     !user.businessId
   ) {
     return <Navigate to="/create-business" replace />;
