@@ -80,7 +80,29 @@ export default function Login() {
           <p className="error-message">{loginError || contextError}</p>
         )}
 
-        {/* … שאר הקומפוננטה ללא שינוי … */}
+        <div className="login-extra-options">
+          <span
+            className="forgot-password"
+            onClick={() => setShowForgot(true)}
+          >
+            שכחת את הסיסמה?
+          </span>
+
+          <p className="signup-link">
+            לא רשום?{" "}
+            <Link to="/register" className="signup-link-text">
+              הירשם עכשיו
+            </Link>
+          </p>
+
+          <button
+            className="staff-login-btn"
+            onClick={() => navigate("/staff-login")}
+            disabled={loading}
+          >
+            כניסת עובדים
+          </button>
+        </div>
       </div>
 
       {showForgot && <ForgotPassword closePopup={() => setShowForgot(false)} />}
