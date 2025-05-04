@@ -20,13 +20,11 @@
     font-weight: 600;
     margin-bottom: 1rem;
     color: #3a3a85;
-    transition: color 0.3s ease, transform 0.3s ease;
-    animation: fadeSlideDown 0.7s ease;
+    transition: color 0.3s ease;
   }
   
   .sse-summary-title:hover {
     color: #6c63ff;
-    transform: translateY(-3px);
   }
   
   .sse-card {
@@ -81,23 +79,11 @@
     color: #6c63ff;
   }
   
-  /* אנימציה כללית לכניסת הקופסה */
+  /* אנימציה כללית לכניסה */
   @keyframes fadeIn {
     from {
       opacity: 0;
       transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* אנימציית כניסה לכותרת בלבד */
-  @keyframes fadeSlideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
     }
     to {
       opacity: 1;

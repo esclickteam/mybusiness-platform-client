@@ -1,12 +1,9 @@
 // src/components/SSESummary.jsx
 import React from 'react';
 import { MdPersonAdd, MdStorefront, MdRateReview, MdInfo } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
 import './SSESummary.css';
 
 export default function SSESummary({ updates }) {
-  const navigate = useNavigate();
-
   // Debug: log incoming updates and types
   console.log('SSESummary updates:', updates);
   updates.forEach(u => console.log('  type:', u.type, 'message:', u.message || u.title));
@@ -48,24 +45,16 @@ export default function SSESummary({ updates }) {
   ];
 
   return (
-    <div className="sse-summary-wrapper">
-      <h4 className="sse-summary-title">📈 מה קורה עכשיו בעסקליק?</h4>
-      <div className="sse-summary">
-        {cards.map(c => (
-          <div key={c.type} className="sse-card">
-            <div className="sse-icon">{c.icon}</div>
-            <div className="sse-info">
-              <div className="sse-count">{countByType[c.type] || 0}</div>
-              <div className="sse-label">{c.label}</div>
-            </div>
+    <div className="sse-summary">
+      {cards.map(c => (
+        <div key={c.type} className="sse-card">
+          <div className="sse-icon">{c.icon}</div>
+          <div className="sse-info">
+            <div className="sse-count">{countByType[c.type] || 0}</div>
+            <div className="sse-label">{c.label}</div>
           </div>
-        ))}
-      </div>
-      <div className="sse-more-link" style={{ textAlign: 'center', marginTop: '1rem' }}>
-        <button onClick={() => navigate('/updates')} className="see-more-button">
-          ← ראו את כל העדכונים
-        </button>
-      </div>
+        </div>
+      ))}
     </div>
   );
 }
