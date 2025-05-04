@@ -55,7 +55,7 @@ const Register = () => {
       // שליחה לשרת להרשמה
       await API.post("/auth/register", {
         name: name.trim(),
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         phone: userType === "business" ? phone.trim() : "",
         password,
         userType,
