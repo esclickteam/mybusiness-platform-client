@@ -7,9 +7,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const { login, logout, error: contextError } = useAuth(); 
-  const [email, setEmail]       = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
@@ -18,30 +18,29 @@ export default function Login() {
     e.preventDefault();
     setLoginError("");
 
-    if (!email.trim() || !password) {
+    if (!identifier.trim() || !password) {
       setLoginError("יש למלא אימייל וסיסמה");
       return;
     }
 
     setLoading(true);
     try {
-      // מעבירים כעת email ו־password נכונים
-      const user = await login(
-        email.trim().toLowerCase(),
-        password,
-        { skipRedirect: true }
-      );
+      // קריאה ל־login עם skipRedirect כדי למנוע ניווט אוטומטי מהקונטקסט
+      const user = await login(identifier.trim(), password, { skipRedirect: true });
 
+      // מאפשרים רק תפקידים של בעל עסק (business) או לקוח (customer)
       if (user.role === "business") {
         navigate(`/business/${user.businessId}/dashboard`, { replace: true });
       } else if (user.role === "customer") {
         navigate("/client/dashboard", { replace: true });
       } else {
+        // תפקיד לא מורשה בדף הזה → מתנתקים ומציגים שגיאה
         await logout();
         setLoginError("אין לך הרשאה להתחבר כאן");
       }
     } catch (err) {
       console.error("Login failed:", err);
+      // אם הקונטקסט כבר הציג שגיאה, נשאיר אותה, אחרת נציג הודעה משלו
       setLoginError(contextError || "אימייל או סיסמה שגויים");
     } finally {
       setLoading(false);
@@ -54,17 +53,15 @@ export default function Login() {
         <h2>התחברות</h2>
         <form onSubmit={handleSubmit}>
           <input
-            type="email"
-            name="email"
-            placeholder="אימייל"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="אימייל או שם משתמש"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
             disabled={loading}
             required
           />
           <input
             type="password"
-            name="password"
             placeholder="סיסמה"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -77,6 +74,7 @@ export default function Login() {
           </button>
         </form>
 
+        {/* תעדוף הודעות שגיאה מקומיות על פני הקונטקסט */}
         {(loginError || contextError) && (
           <p className="error-message">{loginError || contextError}</p>
         )}
