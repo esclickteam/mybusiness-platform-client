@@ -30,19 +30,32 @@ export default function Login() {
         password
       });
       const user = res.data.user;
+      const role = (user.role || "").toLowerCase();
 
-      if (user.role === "business") {
-        navigate(`/business/${user.businessId}/dashboard`, { replace: true });
-      } else if (user.role === "customer") {
-        navigate("/client/dashboard", { replace: true });
-      } else {
-        // עובד/מנהל/אדמין ניסו להכנס דרך העמוד הרגיל
-        setLoginError("אין לך הרשאה להתחבר כאן – אנא השתמש ב'כניסת עובדים'");
+      switch (role) {
+        case "business":
+          navigate(`/business/${user.businessId}/dashboard`, { replace: true });
+          break;
+
+        case "customer":
+          navigate("/client/dashboard", { replace: true });
+          break;
+
+        case "admin":
+        case "worker":
+        case "manager":   // מנהל
+        case "מנהל":
+          navigate("/dashboard", { replace: true });
+          break;
+
+        default:
+          setLoginError("אין לך הרשאה להתחבר כאן");
       }
+
     } catch (err) {
       console.error("Login failed:", err);
       if (err.response?.status === 403) {
-        setLoginError("אין לך הרשאה להתחבר כאן – אנא השתמש ב'כניסת עובדים'");
+        setLoginError("אין לך הרשאה להתחבר כאן");
       } else {
         setLoginError(err.response?.data?.error || "אימייל או סיסמה שגויים");
       }
@@ -58,19 +71,17 @@ export default function Login() {
         <form onSubmit={handleSubmit}>
           <input
             type="email"
-            name="email"
             placeholder="אימייל"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             disabled={loading}
             required
           />
           <input
             type="password"
-            name="password"
             placeholder="סיסמה"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             disabled={loading}
             required
           />
