@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES from "../data/cities";
-import { SSEContext } from "../context/SSEContext"; // ← ייבוא ה-Context
+import { SSEContext } from "../context/SSEContext"; // ← ייבוא ה-Context במקום UpdatesTicker
 
 export default function Home() {
   const navigate = useNavigate();
@@ -119,16 +119,17 @@ export default function Home() {
       <div className="trending-box">
         <h4>📈 מה קורה עכשיו בעסקליק?</h4>
         {updates.length === 0 ? (
-          <div className="updates-ticker loading">🔄 טוען עדכונים…</div>
+          <div className="updates-ticker no-updates">
+            אין עדכונים חדשים
+          </div>
         ) : (
           <ul className="updates-ticker">
             {updates.map((u, i) => (
               <li key={i} className={`update-item update-${u.type}`}>
                 <small>
                   {new Date(u.timestamp).toLocaleTimeString("he-IL")}
-                </small>
-                {" – "}
-                {u.message}
+                </small>{" "}
+                – {u.message}
               </li>
             ))}
           </ul>
