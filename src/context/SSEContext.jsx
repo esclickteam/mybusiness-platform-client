@@ -7,16 +7,14 @@ export function SSEProvider({ children }) {
   const [updates, setUpdates] = useState([]);
 
   useEffect(() => {
-    const streamUrl  =
-      import.meta.env.VITE_SSE_URL || "/api/updates/stream";
-    const historyUrl =
-      import.meta.env.VITE_SSE_URL
-        ? import.meta.env.VITE_SSE_URL.replace(/\/stream$/, "/history")
-        : "/api/updates/history";
+    const streamUrl  = import.meta.env.VITE_SSE_URL || "/api/updates/stream";
+    const historyUrl = import.meta.env.VITE_SSE_URL
+      ? import.meta.env.VITE_SSE_URL.replace(/\/stream$/, "/history")
+      : "/api/updates/history";
 
-    let es;  // נמנע משגיאת scope ב-cleanup
+    let es;
 
-    // טען היסטוריה
+    // 1) טען היסטוריה
     fetch(historyUrl, { credentials: "include" })
       .then(res => res.json())
       .then(data => setUpdates(data))
@@ -28,7 +26,18 @@ export function SSEProvider({ children }) {
         es.onmessage = e => {
           try {
             const ev = JSON.parse(e.data);
-            setUpdates(prev => [ev, ...prev].slice(0, 20));
+            setUpdates(prev => {
+              // בדיקה: אם בראש הרשימה כבר קיים אותו אירוע, אל תוסיף
+              if (
+                prev.length > 0 &&
+                prev[0].timestamp === ev.timestamp &&
+                prev[0].message   === ev.message
+              ) {
+                return prev;
+              }
+              // אחרת, הוסף בראש ונקשור עד 20
+              return [ev, ...prev].slice(0, 20);
+            });
           } catch (err) {
             console.error("Invalid SSE data:", err);
           }
@@ -40,7 +49,7 @@ export function SSEProvider({ children }) {
         };
       });
 
-    // cleanup של ה־EventSource
+    // 2) cleanup
     return () => {
       if (es) {
         es.close();
