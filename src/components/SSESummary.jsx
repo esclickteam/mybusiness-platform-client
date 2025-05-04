@@ -8,24 +8,28 @@ export default function SSESummary({ updates }) {
   console.log('SSESummary updates:', updates);
   updates.forEach(u => console.log('  type:', u.type, 'message:', u.message || u.title));
 
-  // סופרים אירועים לפי סוג, כולל מיפוי סוגים ממחרוזות שונות
+  // סופרים אירועים לפי סוג מדויק
   const countByType = updates.reduce((acc, u) => {
-    const rawType = (u.type || '').toString().toLowerCase();
-    const msg = (u.message || u.title || '').toString();
-    let t;
+    const type = (u.type || '').toLowerCase();
 
-    if (/signup|client/.test(rawType) || /לקוח/.test(msg)) {
-      t = 'client';
-    } else if (/owner|business/.test(rawType) || /עסק/.test(msg)) {
-      t = 'business';
-    } else if (/review/.test(rawType) || /ביקו/.test(msg)) {
-      t = 'review';
-    } else {
-      console.warn('SSESummary: unmapped type', u.type);
-      t = 'info';
+    let mappedType;
+    switch (type) {
+      case 'new_customer':
+        mappedType = 'client';
+        break;
+      case 'new_business':
+        mappedType = 'business';
+        break;
+      case 'new_review':
+        mappedType = 'review';
+        break;
+      default:
+        mappedType = 'info';
+        console.warn('לא נמצא מיפוי ל-type:', type);
+        break;
     }
 
-    acc[t] = (acc[t] || 0) + 1;
+    acc[mappedType] = (acc[mappedType] || 0) + 1;
     return acc;
   }, {});
 
