@@ -59,7 +59,7 @@ function ManageRoles() {
       return;
     }
     try {
-      await API.put("/users/reset-user-password", { userId, newPassword });
+      await API.put("/admin/users/reset-user-password", { userId, newPassword });
       alert(`✅ הסיסמה אופסה ל: ${newPassword}`);
     } catch (err) {
       console.error("❌ שגיאה באיפוס סיסמה:", err);
