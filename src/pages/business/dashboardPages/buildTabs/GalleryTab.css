@@ -62,12 +62,12 @@
 }
 
 .gallery-item-square {
+  position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 250px;  /* גובה קבוע */
   background: #f7f7f7;
   border-radius: 8px;
   overflow: hidden;
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,7 +84,7 @@
 .gallery-media {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* הצגת התמונה בצורה שתמלא את הריבוע בלי לעוות אותה */
   border-radius: 8px;
   display: block;
   pointer-events: none;
@@ -261,6 +261,8 @@
     right: 10px;
   }
 }
+
+/* ===== לודר (Spinner) ===== */
 .spinner {
   width: 48px;
   height: 48px;
