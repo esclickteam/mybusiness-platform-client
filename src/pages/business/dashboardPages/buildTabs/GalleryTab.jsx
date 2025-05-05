@@ -70,118 +70,50 @@ const GalleryTab = ({
     }, 1500);
   };
 
-  if (!isForm) {
-    return (
-      <div className="gallery-preview-wrapper">
-        <h3>הגלריה שלנו</h3>
-        <div className="gallery-instagram-grid">
-          {galleryTabImages.map((item, index) => (
-            <div
-              className="gallery-item-square"
-              key={item.id}
-              onClick={() => !item.loading && setActiveImageIndex(index)}
-            >
-              {item.loading ? (
-                <div className="spinner"></div>
-              ) : item.type === "image" ? (
-                <img
-                  src={item.url}
-                  alt=""
-                  className="gallery-media"
-                  style={{ objectFit: galleryTabFits[index] || "cover" }}
-                />
-              ) : (
-                <video
-                  src={item.url}
-                  muted
-                  className="gallery-media"
-                  style={{ objectFit: galleryTabFits[index] || "cover" }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {activeImageIndex !== null && (
-          <div className="modal-overlay" onClick={() => setActiveImageIndex(null)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <button
-                className="nav-btn left"
-                onClick={() =>
-                  setActiveImageIndex(
-                    (prev) => (prev - 1 + galleryTabImages.length) % galleryTabImages.length
-                  )
-                }
-              >
-                ◀
-              </button>
-
-              {galleryTabImages[activeImageIndex].type === "image" ? (
-                <img
-                  src={galleryTabImages[activeImageIndex].url}
-                  alt=""
-                  className="modal-media"
-                  style={{ objectFit: galleryTabFits[activeImageIndex] || "cover" }}
-                />
-              ) : (
-                <video
-                  src={galleryTabImages[activeImageIndex].url}
-                  controls
-                  className="modal-media"
-                  style={{ objectFit: galleryTabFits[activeImageIndex] || "cover" }}
-                />
-              )}
-
-              <button
-                className="nav-btn right"
-                onClick={() =>
-                  setActiveImageIndex((prev) => (prev + 1) % galleryTabImages.length)
-                }
-              >
-                ▶
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="gallery-form-wrapper edit-mode">
-      <h2>🎨 עיצוב הגלריה</h2>
-      <h4>העלאת מדיה</h4>
-      <p className="info-note">ניתן להעלות תמונות או סרטונים</p>
-      <input
-        type="file"
-        multiple
-        ref={galleryTabInputRef}
-        style={{ display: "none" }}
-        onChange={handleUpload}
-      />
-      <button onClick={() => galleryTabInputRef.current.click()} className="upload-btn">
-        ➕ הוספת מדיה
-      </button>
-      <p className="info-note">ניתן לגרור ולשנות את הסדר</p>
+      <div className="image-preview">
+        {/* הצגת התמונה מצד שמאל */}
+        {galleryTabImages.length > 0 && (
+          <img src={galleryTabImages[0].url} alt="תמונה" className="image-preview-side" />
+        )}
+      </div>
 
-      <GalleryDndKit
-        images={galleryTabImages}
-        setImages={(newImages) =>
-          setBusinessDetails((prev) => ({ ...prev, galleryTabImages: newImages }))
-        }
-        setActiveImageIndex={setActiveImageIndex}
-        isForm
-        onDelete={handleDeleteGalleryTabImage}
-        setEditIndex={setEditGalleryTabIndex}
-        editIndex={editGalleryTabIndex}
-        handleFitChange={handleFitChange}
-        popupRefs={popupRef}
-        galleryTabFits={galleryTabFits}
-      />
+      <div className="form-content">
+        <h2>🎨 עיצוב הגלריה</h2>
+        <h4>העלאת מדיה</h4>
+        <p className="info-note">ניתן להעלות תמונות או סרטונים</p>
+        <input
+          type="file"
+          multiple
+          ref={galleryTabInputRef}
+          style={{ display: "none" }}
+          onChange={handleUpload}
+        />
+        <button onClick={() => galleryTabInputRef.current.click()} className="upload-btn">
+          ➕ הוספת מדיה
+        </button>
+        <p className="info-note">ניתן לגרור ולשנות את הסדר</p>
 
-      <button className="save-btn" onClick={handleConfirmEdit}>
-        שמור
-      </button>
+        <GalleryDndKit
+          images={galleryTabImages}
+          setImages={(newImages) =>
+            setBusinessDetails((prev) => ({ ...prev, galleryTabImages: newImages }))
+          }
+          setActiveImageIndex={setActiveImageIndex}
+          isForm
+          onDelete={handleDeleteGalleryTabImage}
+          setEditIndex={setEditGalleryTabIndex}
+          editIndex={editGalleryTabIndex}
+          handleFitChange={handleFitChange}
+          popupRefs={popupRef}
+          galleryTabFits={galleryTabFits}
+        />
+
+        <button className="save-btn" onClick={handleConfirmEdit}>
+          שמור
+        </button>
+      </div>
     </div>
   );
 };
