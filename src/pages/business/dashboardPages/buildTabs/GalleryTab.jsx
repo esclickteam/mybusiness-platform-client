@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-// ייבוא סגנונות גלובליים של העמוד
 import '../build/Build.css';
-// סגנונות ספציפיים לטאב הגלריה
 import "./GalleryTab.css";
-
 import GalleryDndKit from "./GalleryDndKit";
 
 const GalleryTab = ({
@@ -23,7 +20,6 @@ const GalleryTab = ({
   const galleryTabImages = businessDetails.galleryTabImages || [];
   const galleryTabFits = businessDetails.galleryTabFits || {};
 
-  // סגירת הפופאפ בלחיצה מחוץ
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -39,7 +35,6 @@ const GalleryTab = ({
     return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, [setEditGalleryTabIndex]);
 
-  // הוספת קבצים חדשים
   const handleUpload = (e) => {
     const files = Array.from(e.target.files);
     const existingIds = galleryTabImages.map((img) => img.id);
@@ -52,17 +47,29 @@ const GalleryTab = ({
           file,
           url: URL.createObjectURL(file),
           type: isVideo ? "video" : "image",
+          loading: true, // ⏳ סימון כטעינה
         };
       })
       .filter((img) => !existingIds.includes(img.id));
 
+    const updatedImages = [...galleryTabImages, ...newImages];
+
     setBusinessDetails((prev) => ({
       ...prev,
-      galleryTabImages: [...(prev.galleryTabImages || []), ...newImages],
+      galleryTabImages: updatedImages,
     }));
+
+    // סימולציית טעינה של 1.5 שניות
+    setTimeout(() => {
+      setBusinessDetails((prev) => ({
+        ...prev,
+        galleryTabImages: prev.galleryTabImages.map((img) =>
+          img.loading ? { ...img, loading: false } : img
+        ),
+      }));
+    }, 1500);
   };
 
-  // מצב תצוגה בלבד
   if (!isForm) {
     return (
       <div className="gallery-preview-wrapper">
@@ -72,9 +79,11 @@ const GalleryTab = ({
             <div
               className="gallery-item-square"
               key={item.id}
-              onClick={() => setActiveImageIndex(index)}
+              onClick={() => !item.loading && setActiveImageIndex(index)}
             >
-              {item.type === "image" ? (
+              {item.loading ? (
+                <div className="spinner"></div>
+              ) : item.type === "image" ? (
                 <img
                   src={item.url}
                   alt=""
@@ -138,7 +147,6 @@ const GalleryTab = ({
     );
   }
 
-  // מצב עריכה
   return (
     <div className="gallery-form-wrapper edit-mode">
       <h2>🎨 עיצוב הגלריה</h2>
