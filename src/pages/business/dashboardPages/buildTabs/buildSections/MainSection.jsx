@@ -3,7 +3,7 @@ import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
-import Gallery from "../../../../../../components/Gallery";  // עדכון לנתיב יחסית
+import Gallery from "@components/Gallery";
 
 // הכנה של אופציות מסודרות ומסוננות
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
