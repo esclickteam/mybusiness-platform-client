@@ -17,7 +17,7 @@ export default function BusinessSupport() {
 
   // במידה והטופס נשלח בהצלחה
   if (state.succeeded) {
-    return <p>הפנייה נשלחה בהצלחה!</p>;
+    return <p className="status-msg success">הפנייה נשלחה בהצלחה!</p>;
   }
 
   const handleInputChange = (e) => {
@@ -63,6 +63,7 @@ export default function BusinessSupport() {
           value={formData.name}
           onChange={handleInputChange}
           disabled={loading}
+          placeholder="הכנס את שמך"
         />
 
         <label>אימייל ליצירת קשר:</label>
@@ -72,6 +73,7 @@ export default function BusinessSupport() {
           value={formData.email}
           onChange={handleInputChange}
           disabled={loading}
+          placeholder="הכנס את אימיילך"
         />
 
         <label>תיאור הבעיה:</label>
@@ -80,6 +82,7 @@ export default function BusinessSupport() {
           value={formData.issueDescription}
           onChange={handleInputChange}
           disabled={loading}
+          placeholder="תאר את הבעיה"
         />
 
         <button type="submit" disabled={loading}>
