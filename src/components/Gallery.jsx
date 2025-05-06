@@ -10,7 +10,10 @@ const Gallery = ({
     return (
         <div className="gallery-preview">
           {isLoading && (
-            <div className="spinner">🔄</div> // הצגת ספינר בזמן טעינה
+            <div className="spinner">
+              {/* הצגת ספינר בזמן טעינה */}
+              🔄
+            </div>
           )}
 
       {images.map((img, i) => (
