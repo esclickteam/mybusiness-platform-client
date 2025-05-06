@@ -1,5 +1,4 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
@@ -26,6 +25,7 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
+  const [isDeleting, setIsDeleting] = useState(false); // מצב טעינה למחיקת תמונה
   const containerRef = useRef();
 
   // dedupe & limit images
@@ -49,6 +49,29 @@ export default function MainSection({
     handleInputChange({
       target: { name, value: option ? option.value : "" }
     });
+
+  const handleDeleteMainImage = async idx => {
+    const url = businessDetails.mainImages[idx]?.preview;
+    if (!url) return;
+
+    setIsDeleting(true); // הגדרת מצב טעינה
+
+    try {
+      const res = await API.delete(`/business/my/main-images/${encodeURIComponent(url)}`);
+      if (res.status === 200) {
+        // עדכון ה־state עם מערך חדש אחרי המחיקה מהשרת
+        setBusinessDetails(prev => ({
+          ...prev,
+          mainImages: prev.mainImages.filter((_, i) => i !== idx)  // סינון התמונה שנמחקה
+        }));
+      }
+    } catch (err) {
+      console.error("❌ שגיאה במחיקת תמונה ראשית:", err);
+      alert("שגיאה בשירות, נסה שוב");
+    } finally {
+      setIsDeleting(false); // סיום מצב טעינה
+    }
+  };
 
   return (
     <>
@@ -96,10 +119,7 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={
-            categoryOptions.find(o => o.value === businessDetails.category) ||
-            null
-          }
+          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
@@ -188,12 +208,16 @@ export default function MainSection({
               />
               <button
                 className="delete-btn"
-                onClick={() => handleDeleteImage(i)}
+                onClick={() => handleDeleteMainImage(i)} // עדכון עם כפתור מחיקה חדש
                 type="button"
                 title="מחיקה"
-                disabled={isSaving}
+                disabled={isSaving || isDeleting}  // כפתור מחוק בזמן טעינה
               >
-                🗑️
+                {isDeleting ? (
+                  <span className="spinner">🔄</span> // אייקון טעינה בזמן פעולת מחיקה
+                ) : (
+                  "🗑️"  // אייקון של מחיקה
+                )}
               </button>
             </div>
           ))}

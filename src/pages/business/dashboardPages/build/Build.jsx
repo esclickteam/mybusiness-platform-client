@@ -203,44 +203,58 @@ const handleDeleteMainImage = async idx => {
   // סגור את הפופאפ אם זה התמונה שנערכה
   if (editIndex === idx) closePopup();
 
+  // מצב טעינה לפני שליחת הבקשה
+  setIsDeleting(true); // הגדרת מצב טעינה
+
   try {
+    // שלח בקשה למחוק את התמונה מהשרת
     const res = await API.delete(`/business/my/main-images/${encodeURIComponent(url)}`);
     if (res.status === 200) {
-      // עדכון ה־state עם מערך חדש
+      // עדכון ה־state עם מערך חדש אחרי המחיקה מהשרת
       setBusinessDetails(prev => ({
         ...prev,
-        mainImages: res.data.mainImages.map(url => ({ preview: url }))
+        mainImages: prev.mainImages.filter((_, i) => i !== idx)  // סינון התמונה שנמחקה
       }));
+      alert("התמונה נמחקה בהצלחה!");
+    } else {
+      alert("המחיקה נכשלה");
     }
   } catch (err) {
     console.error("❌ שגיאה במחיקת תמונה ראשית:", err);
+    alert("שגיאה בשירות, נסה שוב");
+  } finally {
+    setIsDeleting(false); // סיום מצב טעינה
   }
 };
 
-  const openMainImageEdit = idx => {
-    setEditIndex(idx);
-    setIsPopupOpen(true);
-  };
-  
-  // סוגר את הפופאפ ומאפס את האינדקס
-  const closePopup = () => {
-    setEditIndex(null);
-    setIsPopupOpen(false);
-  };
-  
-  // עדכון גודל התמונה לפי סוג ('full' או 'custom')
-  const updateImageSize = sizeType => {
-    if (editIndex === null) return;
-  
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: prev.mainImages.map((img, i) =>
-        i === editIndex ? { ...img, size: sizeType } : img
-      )
-    }));
-  
-    closePopup();
-  };
+const openMainImageEdit = idx => {
+  setEditIndex(idx);
+  setIsPopupOpen(true);
+};
+
+// סוגר את הפופאפ ומאפס את האינדקס
+const closePopup = () => {
+  setEditIndex(null);
+  setIsPopupOpen(false);
+};
+
+// עדכון גודל התמונה לפי סוג ('full' או 'custom')
+const updateImageSize = sizeType => {
+  if (editIndex === null) return;
+
+  setBusinessDetails(prev => ({
+    ...prev,
+    mainImages: prev.mainImages.map((img, i) =>
+      i === editIndex ? { ...img, size: sizeType } : img
+    )
+  }));
+
+  closePopup();
+};
+
+
+
+
 
   // ===== GALLERY =====
   // בתוך Build.jsx
