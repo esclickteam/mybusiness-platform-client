@@ -119,12 +119,14 @@ export default function BusinessProfileView() {
       const afterUpload = url.split("/upload/")[1];
       const publicId = afterUpload.replace(/\.[^/.]+$/, "");
       const res = await api.delete(
-        `/business/my/main-images/${encodeURIComponent(
-          publicId
-        )}`
+        `/business/my/main-images/${encodeURIComponent(publicId)}`
       );
       if (res.status === 204) {
-        await fetchBusiness();
+        // עדכון מיידי של ה-state בלי ריענון
+        setData(prev => ({
+          ...prev,
+          mainImages: prev.mainImages.filter(u => u !== url)
+        }));
       } else {
         alert(`מחיקה נכשלה (${res.status})`);
       }
