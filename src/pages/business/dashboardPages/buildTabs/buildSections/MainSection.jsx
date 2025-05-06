@@ -3,6 +3,7 @@ import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
+import API from "@api"; // assuming API is defined somewhere
 
 // Prepare sorted, deduped options
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
@@ -23,10 +24,11 @@ export default function MainSection({
   logoInputRef,
   mainImagesInputRef,
   handleDeleteImage,
-  isSaving
+  isSaving,
+  setBusinessDetails, // Make sure setBusinessDetails is passed correctly
 }) {
   const containerRef = useRef();
-  const [isUploading, setIsUploading] = useState(false);  // State for spinner
+  const [isUploading, setIsUploading] = useState(false); // State for spinner
 
   // dedupe & limit images
   const mainImages = businessDetails.mainImages || [];
@@ -47,7 +49,7 @@ export default function MainSection({
   // wrap onChange to mimic native input event
   const wrapSelectChange = name => option =>
     handleInputChange({
-      target: { name, value: option ? option.value : "" }
+      target: { name, value: option ? option.value : "" },
     });
 
   // Handle image selection and update immediately
@@ -59,14 +61,14 @@ export default function MainSection({
     // 2) Prepare preview for uploading
     const previews = files.map(f => ({
       preview: URL.createObjectURL(f),
-      file: f
+      file: f,
     }));
 
     // 3) Immediately update the images in the gallery with preview
     setIsUploading(true);
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: [...prev.mainImages, ...previews]
+      mainImages: [...prev.mainImages, ...previews],
     }));
 
     // 4) Upload to API
@@ -79,7 +81,7 @@ export default function MainSection({
         const wrapped = res.data.mainImages.slice(0, 5).map(url => ({ preview: url }));
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages: wrapped
+          mainImages: wrapped,
         }));
       } else {
         console.warn("Image upload failed:", res);
@@ -97,46 +99,46 @@ export default function MainSection({
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h2>🎨 Edit Business Details</h2>
+        <h2>🎨 עריכת פרטי העסק</h2>
 
-        {/* Business Name */}
+        {/* שם העסק */}
         <label>
-          Business Name: <span style={{ color: "red" }}>*</span>
+          שם העסק: <span style={{ color: "red" }}>*</span>
         </label>
         <input
           type="text"
           name="name"
           value={businessDetails.name || ""}
           onChange={handleInputChange}
-          placeholder="Enter business name"
+          placeholder="הכנס שם העסק"
           required
           disabled={isSaving}
         />
 
-        {/* Description */}
-        <label>Description:</label>
+        {/* תיאור */}
+        <label>תיאור:</label>
         <textarea
           name="description"
           value={businessDetails.description || ""}
           onChange={handleInputChange}
-          placeholder="Enter short description"
+          placeholder="הכנס תיאור קצר"
           disabled={isSaving}
         />
 
-        {/* Phone */}
-        <label>Phone:</label>
+        {/* טלפון */}
+        <label>טלפון:</label>
         <input
           type="text"
           name="phone"
           value={businessDetails.phone || ""}
           onChange={handleInputChange}
-          placeholder="Enter phone number"
+          placeholder="הכנס טלפון"
           disabled={isSaving}
         />
 
-        {/* Category */}
+        {/* קטגוריה */}
         <label>
-          Category: <span style={{ color: "red" }}>*</span>
+          קטגוריה: <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={categoryOptions}
@@ -145,7 +147,7 @@ export default function MainSection({
           }
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
-          placeholder="Select category"
+          placeholder="הקלד קטגוריה"
           isClearable
           menuPlacement="bottom"
           openMenuOnClick={false}
@@ -155,24 +157,24 @@ export default function MainSection({
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "No matching categories" : null
+            inputValue ? "אין קטגוריות מתאימות" : null
           }
           menuPortalTarget={document.body}
           styles={{
-            menuPortal: base => ({ ...base, zIndex: 9999 })
+            menuPortal: base => ({ ...base, zIndex: 9999 }),
           }}
         />
 
-        {/* City */}
+        {/* עיר */}
         <label>
-          City: <span style={{ color: "red" }}>*</span>
+          עיר: <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={cityOptions}
           value={cityOptions.find(o => o.value === businessDetails.city) || null}
           onChange={wrapSelectChange("city")}
           isDisabled={isSaving}
-          placeholder="Select city"
+          placeholder="הקלד עיר"
           isClearable
           menuPlacement="bottom"
           openMenuOnClick={false}
@@ -182,16 +184,16 @@ export default function MainSection({
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "No matching cities" : null
+            inputValue ? "אין ערים מתאימות" : null
           }
           menuPortalTarget={document.body}
           styles={{
-            menuPortal: base => ({ ...base, zIndex: 9999 })
+            menuPortal: base => ({ ...base, zIndex: 9999 }),
           }}
         />
 
-        {/* Logo */}
-        <label>Logo:</label>
+        {/* לוגו */}
+        <label>לוגו:</label>
         <input
           type="file"
           name="logo"
@@ -206,11 +208,11 @@ export default function MainSection({
           onClick={() => logoInputRef.current?.click()}
           disabled={isSaving}
         >
-          Upload Logo
+          העלאת לוגו
         </button>
 
-        {/* Main Images */}
-        <label>Main Images:</label>
+        {/* תמונות ראשיות */}
+        <label>תמונות ראשיות:</label>
         <input
           type="file"
           name="main-images"
@@ -218,7 +220,7 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={mainImagesInputRef}
-          onChange={handleMainImagesChangeWithSpinner}  
+          onChange={handleMainImagesChangeWithSpinner}
           disabled={isSaving}
         />
         <div className="gallery-preview">
@@ -226,14 +228,14 @@ export default function MainSection({
             <div key={i} className="gallery-item-wrapper image-wrapper">
               <img
                 src={img.preview}
-                alt={`Main Image ${i + 1}`}
+                alt={`תמונה ראשית ${i + 1}`}
                 className="gallery-img"
               />
               <button
                 className="delete-btn"
                 onClick={() => handleDeleteImage(i)}
                 type="button"
-                title="Delete"
+                title="מחיקה"
                 disabled={isSaving}
               >
                 🗑️
@@ -250,9 +252,9 @@ export default function MainSection({
           )}
         </div>
 
-        {/* Save Button */}
+        {/* שמירה */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Saving..." : "💾 Save Changes"}
+          {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
 
         {showViewProfile && (
@@ -263,7 +265,7 @@ export default function MainSection({
             onClick={() => navigate(`/business/${currentUser.businessId}`)}
             disabled={isSaving}
           >
-            👀 View Profile
+            👀 צפה בפרופיל
           </button>
         )}
       </div>
@@ -274,7 +276,7 @@ export default function MainSection({
         <div className="preview-images">
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="image-wrapper">
-              <img src={img.preview} alt={`Main Image ${i + 1}`} />
+              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} />
             </div>
           ))}
         </div>
