@@ -1,9 +1,9 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
 import React, { useEffect, useRef } from "react";
 import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
+import ImageLoader from "../../../components/ImageLoader"; // ייבוא של ImageLoader
 
 // Prepare sorted, deduped options
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
@@ -181,7 +181,7 @@ export default function MainSection({
         <div className="gallery-preview">
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="gallery-item-wrapper image-wrapper">
-              <img
+              <ImageLoader
                 src={img.preview}
                 alt={`תמונה ראשית ${i + 1}`}
                 className="gallery-img"
@@ -231,7 +231,10 @@ export default function MainSection({
         <div className="preview-images">
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="image-wrapper">
-              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} />
+              <ImageLoader
+                src={img.preview}
+                alt={`תמונה ראשית ${i + 1}`}
+              />
             </div>
           ))}
         </div>

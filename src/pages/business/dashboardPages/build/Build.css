@@ -1,5 +1,3 @@
-/* Build.css */
-
 /* === מבנה עמוד כללי === */
 .build-wrapper {
   display: flex;
@@ -189,7 +187,6 @@
   overflow: visible;
   padding-bottom: 0;
 }
-/* תוספת: מוודא שה-wrapper יהיה relative כדי שה-delete-btn יתמקם נכון */
 .form-column .gallery-preview .gallery-item-wrapper {
   position: relative;
   width: 100%;
@@ -197,14 +194,12 @@
   border-radius: 12px;
   overflow: hidden;
 }
-/* הגדרת התמונה בפנים */
 .form-column .gallery-preview .gallery-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 12px;
 }
-/* Placeholder של תוספת תמונה */
 .form-column .gallery-preview .gallery-placeholder {
   display: flex;
   align-items: center;
@@ -360,4 +355,3 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
