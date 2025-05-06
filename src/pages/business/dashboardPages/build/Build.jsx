@@ -151,55 +151,48 @@ const handleLogoChange = e => {
   // ===== MAIN IMAGES =====
   // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
 
-  const handleMainImagesChange = async e => {
-    // 1) בוחרים עד 5 קבצים
-    const files = Array.from(e.target.files || []).slice(0, 5);
-    if (!files.length) return;
-    e.target.value = null;
-  
-    // 2) הכנת פריוויו לשלב ההעלאה
-    const previews = files.map(f => ({
-      preview: URL.createObjectURL(f),
-      file: f
-    }));
-  
-    // 3) **החלפה מלאה** של mainImages לפריוויו בלבד (blob)
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: previews
-    }));
-  
-    // 4) אתחול טעינה
-    setIsLoading(true);
-  
-    // 5) שליחה ל־API
-    const fd = new FormData();
-    files.forEach(f => fd.append("main-images", f));
-    try {
-      const res = await API.put("/business/my/main-images", fd);
-      if (res.status === 200) {
-        // 6) עטיפת ה־URLs שהשרת החזיר ➞ החלפה מלאה + חיתוך ל-5
-        const wrapped = res.data.mainImages
-          .slice(0, 5)
-          .map(url => ({ preview: url }));
-        setBusinessDetails(prev => ({
-          ...prev,
-          mainImages: wrapped
-        }));
-      } else {
-        console.warn("העלאת תמונות נכשלה:", res);
-      }
-    } catch (err) {
-      console.error("שגיאה בהעלאה:", err);
-    } finally {
-      // 7) סיום טעינה
-      setIsLoading(false);
-  
-      // 8) ניקוי זיכרון של blob-URLs
-      previews.forEach(p => URL.revokeObjectURL(p.preview));
+const handleMainImagesChange = async e => {
+  // 1) בוחרים עד 5 קבצים
+  const files = Array.from(e.target.files || []).slice(0, 5);
+  if (!files.length) return;
+  e.target.value = null;
+
+  // 2) הכנת פריוויו לשלב ההעלאה
+  const previews = files.map(f => ({
+    preview: URL.createObjectURL(f),
+    file: f
+  }));
+
+  // 3) **החלפה מלאה** של mainImages לפריוויו בלבד (blob)
+  setBusinessDetails(prev => ({
+    ...prev,
+    mainImages: previews
+  }));
+
+  // 4) שליחה ל־API
+  const fd = new FormData();
+  files.forEach(f => fd.append("main-images", f));
+  try {
+    const res = await API.put("/business/my/main-images", fd);
+    if (res.status === 200) {
+      // 5) עטיפת ה־URLs שהשרת החזיר ➞ החלפה מלאה + חיתוך ל-5
+      const wrapped = res.data.mainImages
+        .slice(0, 5)
+        .map(url => ({ preview: url }));
+      setBusinessDetails(prev => ({
+        ...prev,
+        mainImages: wrapped
+      }));
+    } else {
+      console.warn("העלאת תמונות נכשלה:", res);
     }
-  };
-  
+  } catch (err) {
+    console.error("שגיאה בהעלאה:", err);
+  } finally {
+    // 6) ניקוי זיכרון של blob-URLs
+    previews.forEach(p => URL.revokeObjectURL(p.preview));
+  }
+};
 
   
 
@@ -211,46 +204,43 @@ const handleDeleteMainImage = async idx => {
   if (editIndex === idx) closePopup();
 
   try {
-    // שלח בקשה למחוק את התמונה מהשרת
     const res = await API.delete(`/business/my/main-images/${encodeURIComponent(url)}`);
     if (res.status === 200) {
-      // עדכון ה־state עם מערך חדש אחרי המחיקה מהשרת
+      // עדכון ה־state עם מערך חדש
       setBusinessDetails(prev => ({
         ...prev,
-        mainImages: prev.mainImages.filter((_, i) => i !== idx)  // סינון התמונה שנמחקה
+        mainImages: res.data.mainImages.map(url => ({ preview: url }))
       }));
     }
   } catch (err) {
     console.error("❌ שגיאה במחיקת תמונה ראשית:", err);
-    alert("שגיאה בשירות, נסה שוב");
   }
 };
 
-const openMainImageEdit = idx => {
-  setEditIndex(idx);
-  setIsPopupOpen(true);
-};
-
-// סוגר את הפופאפ ומאפס את האינדקס
-const closePopup = () => {
-  setEditIndex(null);
-  setIsPopupOpen(false);
-};
-
-// עדכון גודל התמונה לפי סוג ('full' או 'custom')
-const updateImageSize = sizeType => {
-  if (editIndex === null) return;
-
-  setBusinessDetails(prev => ({
-    ...prev,
-    mainImages: prev.mainImages.map((img, i) =>
-      i === editIndex ? { ...img, size: sizeType } : img
-    )
-  }));
-
-  closePopup();
-};
-
+  const openMainImageEdit = idx => {
+    setEditIndex(idx);
+    setIsPopupOpen(true);
+  };
+  
+  // סוגר את הפופאפ ומאפס את האינדקס
+  const closePopup = () => {
+    setEditIndex(null);
+    setIsPopupOpen(false);
+  };
+  
+  // עדכון גודל התמונה לפי סוג ('full' או 'custom')
+  const updateImageSize = sizeType => {
+    if (editIndex === null) return;
+  
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: prev.mainImages.map((img, i) =>
+        i === editIndex ? { ...img, size: sizeType } : img
+      )
+    }));
+  
+    closePopup();
+  };
 
   // ===== GALLERY =====
   // בתוך Build.jsx
