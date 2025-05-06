@@ -113,19 +113,21 @@ export default function BusinessProfileView() {
   };
 
   // Handler to delete main images and immediately refresh
-  const handleDeleteMainImage = async url => {
+  const handleDeleteMainImage = async (url) => {
     if (!window.confirm("האם למחוק את התמונה הזו?")) return;
     try {
-      const afterUpload = url.split("/upload/")[1];
-      const publicId = afterUpload.replace(/\.[^/.]+$/, "");
+      // חותכים רק את השם (abc123def456)
+      const filename = url.split("/").pop();            // "abc123def456.jpg"
+      const publicId = filename.replace(/\.[^/.]+$/, ""); // "abc123def456"
+  
       const res = await api.delete(
-        `/business/my/main-images/${encodeURIComponent(publicId)}`
+        `/business/my/main-images/${publicId}`
       );
       if (res.status === 204) {
-        // עדכון ישיר של ה-state עם מחיקת התמונה מה-array
-        setData(prevState => {
-          const updatedMainImages = prevState.mainImages.filter(image => image !== url);
-          return { ...prevState, mainImages: updatedMainImages };
+        setData(prev => {
+          // מסננים כל URL שמכיל את ה-publicId
+          const updated = prev.mainImages.filter(img => !img.includes(publicId));
+          return { ...prev, mainImages: updated };
         });
       } else {
         alert(`מחיקה נכשלה (${res.status})`);
@@ -135,6 +137,7 @@ export default function BusinessProfileView() {
       alert("שגיאה בשרת, נסה שוב");
     }
   };
+  
   
   
   
