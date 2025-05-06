@@ -3,7 +3,7 @@ import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
-import Gallery from "src/components/Gallery";  // במידה ויש לך הגדרה ב-Webpack או ב-Rollup עבור נתיב מוחלט
+import Gallery from "../../../../../../components/Gallery";  // עדכון לנתיב יחסית
 
 // הכנה של אופציות מסודרות ומסוננות
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
