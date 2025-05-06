@@ -1,4 +1,3 @@
-// Gallery.js
 import React from "react";
 
 const Gallery = ({
@@ -8,11 +7,11 @@ const Gallery = ({
   onImageSelect,
   isLoading
 }) => {
-  return (
-    <div className="gallery-preview">
-      {isLoading && (
-        <div className="spinner">🔄</div>  // הצגת ספינר בזמן טעינה
-      )}
+    return (
+        <div className="gallery-preview">
+          {isLoading && (
+            <div className="spinner">🔄</div> // הצגת ספינר בזמן טעינה
+          )}
 
       {images.map((img, i) => (
         <div key={i} className="gallery-item-wrapper image-wrapper">
