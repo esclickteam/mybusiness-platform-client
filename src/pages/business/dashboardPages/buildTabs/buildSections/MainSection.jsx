@@ -4,7 +4,7 @@ import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
 
-// Prepare sorted, deduped options
+// הכנה של אופציות מסודרות ומסוננות
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
   a.localeCompare(b, "he")
 );
@@ -14,7 +14,7 @@ const cityOptions = CITIES.map(city => ({ value: city, label: city }));
 export default function MainSection({
   businessDetails,
   handleInputChange,
-  handleMainImagesChange,  // ensure it's passed as a prop
+  handleMainImagesChange,  // יש לוודא שהיא מועברת כפרופס
   handleSave,
   showViewProfile,
   navigate,
@@ -25,129 +25,81 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
-  const [isLoading, setIsLoading] = useState(false);  // Loading state
+  const [isLoading, setIsLoading] = useState(false);  // מצב טעינה
   const containerRef = useRef();
 
-  // dedupe & limit images
+  // סינון ותיחום תמונות
   const mainImages = businessDetails.mainImages || [];
   const uniqueImages = dedupeByPreview(mainImages);
   const limitedMainImgs = uniqueImages.slice(0, 5);
 
-  // Close react-select menus on outside click
+  // סגירת תפריטי react-select כאשר לוחצים מחוץ
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // react-select will auto-close
+        // react-select ייסגר אוטומטית
       }
     };
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // wrap onChange to mimic native input event
+  // עטיפת onChange כדי לחקות את האירוע של קלט מקורי
   const wrapSelectChange = name => option =>
     handleInputChange({
       target: { name, value: option ? option.value : "" }
     });
 
-  const handleMainImagesChange = async e => {
-    // 1) Choose up to 5 files
-    const files = Array.from(e.target.files || []).slice(0, 5);
-    if (!files.length) return;
-    e.target.value = null;
-
-    // 2) Prepare preview for upload
-    const previews = files.map(f => ({
-      preview: URL.createObjectURL(f),
-      file: f
-    }));
-
-    // 3) Replace mainImages with previews only (blob)
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: previews
-    }));
-
-    // 4) Start loading
-    setIsLoading(true);
-
-    // 5) Send to API
-    const fd = new FormData();
-    files.forEach(f => fd.append("main-images", f));
-    try {
-      const res = await API.put("/business/my/main-images", fd);
-      if (res.status === 200) {
-        // 6) Wrap the URLs returned by the server ➞ full replace + slice to 5
-        const wrapped = res.data.mainImages
-          .slice(0, 5)
-          .map(url => ({ preview: url }));
-        setBusinessDetails(prev => ({
-          ...prev,
-          mainImages: wrapped
-        }));
-      } else {
-        console.warn("Image upload failed:", res);
-      }
-    } catch (err) {
-      console.error("Upload error:", err);
-    } finally {
-      setIsLoading(false);  // End loading
-
-      // 7) Clean up blob URLs from memory
-      previews.forEach(p => URL.revokeObjectURL(p.preview));
-    }
-  };
-
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h2>🎨 Edit Business Details</h2>
+        <h2>🎨 ערוך פרטי העסק</h2>
 
-        {/* Business Name */}
+        {/* שם העסק */}
         <label>
-          Business Name: <span style={{ color: "red" }}>*</span>
+          שם העסק: <span style={{ color: "red" }}>*</span>
         </label>
         <input
           type="text"
           name="name"
           value={businessDetails.name || ""}
           onChange={handleInputChange}
-          placeholder="Enter business name"
+          placeholder="הזן את שם העסק"
           required
           disabled={isSaving}
         />
 
-        {/* Description */}
-        <label>Description:</label>
+        {/* תיאור */}
+        <label>תיאור:</label>
         <textarea
           name="description"
           value={businessDetails.description || ""}
           onChange={handleInputChange}
-          placeholder="Enter short description"
+          placeholder="הזן תיאור קצר"
           disabled={isSaving}
         />
 
-        {/* Phone */}
-        <label>Phone:</label>
+        {/* טלפון */}
+        <label>טלפון:</label>
         <input
           type="text"
           name="phone"
           value={businessDetails.phone || ""}
           onChange={handleInputChange}
-          placeholder="Enter phone number"
+          placeholder="הזן מספר טלפון"
           disabled={isSaving}
         />
 
-        {/* Category */}
+        {/* קטגוריה */}
         <label>
-          Category: <span style={{ color: "red" }}>*</span>
+          קטגוריה: <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={categoryOptions}
           value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
-          placeholder="Enter category"
+          placeholder="הזן קטגוריה"
           isClearable
           menuPlacement="bottom"
           openMenuOnClick={false}
@@ -157,7 +109,7 @@ export default function MainSection({
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "No matching categories" : null
+            inputValue ? "לא נמצאו קטגוריות תואמות" : null
           }
           menuPortalTarget={document.body}
           styles={{
@@ -165,16 +117,16 @@ export default function MainSection({
           }}
         />
 
-        {/* City */}
+        {/* עיר */}
         <label>
-          City: <span style={{ color: "red" }}>*</span>
+          עיר: <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={cityOptions}
           value={cityOptions.find(o => o.value === businessDetails.city) || null}
           onChange={wrapSelectChange("city")}
           isDisabled={isSaving}
-          placeholder="Enter city"
+          placeholder="הזן עיר"
           isClearable
           menuPlacement="bottom"
           openMenuOnClick={false}
@@ -184,7 +136,7 @@ export default function MainSection({
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "No matching cities" : null
+            inputValue ? "לא נמצאו ערים תואמות" : null
           }
           menuPortalTarget={document.body}
           styles={{
@@ -192,8 +144,8 @@ export default function MainSection({
           }}
         />
 
-        {/* Logo */}
-        <label>Logo:</label>
+        {/* לוגו */}
+        <label>לוגו:</label>
         <input
           type="file"
           name="logo"
@@ -208,11 +160,11 @@ export default function MainSection({
           onClick={() => logoInputRef.current?.click()}
           disabled={isSaving}
         >
-          Upload Logo
+          העלה לוגו
         </button>
 
-        {/* Main Images */}
-        <label>Main Images:</label>
+        {/* תמונות ראשיות */}
+        <label>תמונות ראשיות:</label>
         <input
           type="file"
           name="main-images"
@@ -220,12 +172,12 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={mainImagesInputRef}
-          onChange={handleMainImagesChange}
+          onChange={handleMainImagesChange}  // שימוש בפרופס כאן
           disabled={isSaving}
         />
         <div className="gallery-preview">
           {isLoading && (
-            <div className="spinner">🔄</div>  // Display spinner during loading
+            <div className="spinner">🔄</div>  // הצגת ספינר בזמן טעינה
           )}
 
           {limitedMainImgs.map((img, i) => (
@@ -239,7 +191,7 @@ export default function MainSection({
                 className="delete-btn"
                 onClick={() => handleDeleteImage(i)}
                 type="button"
-                title="Delete"
+                title="מחק"
                 disabled={isSaving}
               >
                 🗑️
@@ -256,9 +208,9 @@ export default function MainSection({
           )}
         </div>
 
-        {/* Save Button */}
+        {/* כפתור שמירה */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Saving..." : "💾 Save Changes"}
+          {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
 
         {showViewProfile && (
@@ -269,12 +221,12 @@ export default function MainSection({
             onClick={() => navigate(`/business/${currentUser.businessId}`)}
             disabled={isSaving}
           >
-            👀 View Profile
+            👀 צפה בפרופיל
           </button>
         )}
       </div>
 
-      {/* Preview Column */}
+      {/* עמודה תצוגה מקדימה */}
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
