@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
+import React, { useEffect, useRef } from "react";
 import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
-import API from "@api"; // assuming API is defined somewhere
 
 // Prepare sorted, deduped options
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
@@ -24,11 +24,9 @@ export default function MainSection({
   logoInputRef,
   mainImagesInputRef,
   handleDeleteImage,
-  isSaving,
-  setBusinessDetails, // Make sure setBusinessDetails is passed correctly
+  isSaving
 }) {
   const containerRef = useRef();
-  const [isUploading, setIsUploading] = useState(false); // State for spinner
 
   // dedupe & limit images
   const mainImages = businessDetails.mainImages || [];
@@ -49,52 +47,8 @@ export default function MainSection({
   // wrap onChange to mimic native input event
   const wrapSelectChange = name => option =>
     handleInputChange({
-      target: { name, value: option ? option.value : "" },
+      target: { name, value: option ? option.value : "" }
     });
-
-  // Handle image selection and update immediately
-  const handleMainImagesChangeWithSpinner = async e => {
-    const files = Array.from(e.target.files || []).slice(0, 5);
-    if (!files.length) return;
-    e.target.value = null;
-
-    // 2) Prepare preview for uploading
-    const previews = files.map(f => ({
-      preview: URL.createObjectURL(f),
-      file: f,
-    }));
-
-    // 3) Immediately update the images in the gallery with preview
-    setIsUploading(true);
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: [...prev.mainImages, ...previews],
-    }));
-
-    // 4) Upload to API
-    const fd = new FormData();
-    files.forEach(f => fd.append("main-images", f));
-    try {
-      const res = await API.put("/business/my/main-images", fd);
-      if (res.status === 200) {
-        // 5) Wrap URLs returned by the server and limit to 5
-        const wrapped = res.data.mainImages.slice(0, 5).map(url => ({ preview: url }));
-        setBusinessDetails(prev => ({
-          ...prev,
-          mainImages: wrapped,
-        }));
-      } else {
-        console.warn("Image upload failed:", res);
-      }
-    } catch (err) {
-      console.error("Error during upload:", err);
-    } finally {
-      // 6) Clean up blob URLs
-      previews.forEach(p => URL.revokeObjectURL(p.preview));
-      // 7) Turn off the spinner after upload completes
-      setIsUploading(false);
-    }
-  };
 
   return (
     <>
@@ -142,7 +96,10 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
+          value={
+            categoryOptions.find(o => o.value === businessDetails.category) ||
+            null
+          }
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
@@ -159,7 +116,7 @@ export default function MainSection({
           }
           menuPortalTarget={document.body}
           styles={{
-            menuPortal: base => ({ ...base, zIndex: 9999 }),
+            menuPortal: base => ({ ...base, zIndex: 9999 })
           }}
         />
 
@@ -186,7 +143,7 @@ export default function MainSection({
           }
           menuPortalTarget={document.body}
           styles={{
-            menuPortal: base => ({ ...base, zIndex: 9999 }),
+            menuPortal: base => ({ ...base, zIndex: 9999 })
           }}
         />
 
@@ -218,7 +175,7 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={mainImagesInputRef}
-          onChange={handleMainImagesChangeWithSpinner}
+          onChange={handleMainImagesChange}
           disabled={isSaving}
         />
         <div className="gallery-preview">
@@ -268,7 +225,7 @@ export default function MainSection({
         )}
       </div>
 
-      {/* Preview Column */}
+      {/* תצוגה מקדימה */}
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
@@ -279,9 +236,6 @@ export default function MainSection({
           ))}
         </div>
       </div>
-
-      {/* Loading Spinner */}
-      {isUploading && <div className="spinner">🔄</div>}
     </>
   );
 }
