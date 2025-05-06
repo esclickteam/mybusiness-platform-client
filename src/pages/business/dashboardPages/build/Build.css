@@ -343,4 +343,17 @@
   font-weight: bold;  /* אופציונלי, להבליט */
 }
 
+/* === ספינר טעינה === */
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: #b46af1;  /* צבע הספינר */
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 

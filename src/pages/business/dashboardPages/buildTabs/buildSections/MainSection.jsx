@@ -1,5 +1,4 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
@@ -26,6 +25,9 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
+  // הוספת useState למעקב אחרי מצב טעינת התמונות
+  const [isLoading, setIsLoading] = useState(false);  // מצב טעינה
+
   const containerRef = useRef();
 
   // dedupe & limit images
@@ -49,6 +51,54 @@ export default function MainSection({
     handleInputChange({
       target: { name, value: option ? option.value : "" }
     });
+
+  const handleMainImagesChange = async e => {
+    // 1) בוחרים עד 5 קבצים
+    const files = Array.from(e.target.files || []).slice(0, 5);
+    if (!files.length) return;
+    e.target.value = null;
+
+    // 2) הכנת פריוויו לשלב ההעלאה
+    const previews = files.map(f => ({
+      preview: URL.createObjectURL(f),
+      file: f
+    }));
+
+    // 3) **החלפה מלאה** של mainImages לפריוויו בלבד (blob)
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: previews
+    }));
+
+    // 4) אתחול טעינה
+    setIsLoading(true);  // התחלת טעינה
+
+    // 5) שליחה ל־API
+    const fd = new FormData();
+    files.forEach(f => fd.append("main-images", f));
+    try {
+      const res = await API.put("/business/my/main-images", fd);
+      if (res.status === 200) {
+        // 6) עטיפת ה־URLs שהשרת החזיר ➞ החלפה מלאה + חיתוך ל-5
+        const wrapped = res.data.mainImages
+          .slice(0, 5)
+          .map(url => ({ preview: url }));
+        setBusinessDetails(prev => ({
+          ...prev,
+          mainImages: wrapped
+        }));
+      } else {
+        console.warn("העלאת תמונות נכשלה:", res);
+      }
+    } catch (err) {
+      console.error("שגיאה בהעלאה:", err);
+    } finally {
+      setIsLoading(false);  // סיום טעינה
+
+      // 7) ניקוי זיכרון של blob-URLs
+      previews.forEach(p => URL.revokeObjectURL(p.preview));
+    }
+  };
 
   return (
     <>
@@ -96,10 +146,7 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={
-            categoryOptions.find(o => o.value === businessDetails.category) ||
-            null
-          }
+          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
@@ -179,6 +226,10 @@ export default function MainSection({
           disabled={isSaving}
         />
         <div className="gallery-preview">
+          {isLoading && (
+            <div className="spinner">🔄</div>  // הצגת ספינר בזמן טעינה
+          )}
+
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="gallery-item-wrapper image-wrapper">
               <img
