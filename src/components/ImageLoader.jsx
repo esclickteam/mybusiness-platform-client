@@ -12,7 +12,7 @@ const ImageLoader = ({ src, alt, className }) => {
   return (
     <div className={`image-container ${className}`}>
       {loading ? (
-        <div className="spinner">🔄</div> // או סמל אחר
+        <div className="spinner">🔄</div>  // ספינר טעינה
       ) : (
         <img src={src} alt={alt} className="loaded-image" />
       )}
