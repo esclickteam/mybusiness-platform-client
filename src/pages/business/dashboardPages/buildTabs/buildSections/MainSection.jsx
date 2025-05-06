@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+// src/pages/business/dashboardPages/buildTabs/buildSections/MainSection.jsx
+import React, { useEffect, useRef } from "react";
 import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
 
-// הכנה של אופציות מסודרות ומסוננות
+// Prepare sorted, deduped options
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
   a.localeCompare(b, "he")
 );
@@ -25,26 +26,25 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
-  const [isLoading, setIsLoading] = useState(false);  // מצב טעינה
   const containerRef = useRef();
 
-  // סינון ותיחום תמונות
+  // dedupe & limit images
   const mainImages = businessDetails.mainImages || [];
   const uniqueImages = dedupeByPreview(mainImages);
   const limitedMainImgs = uniqueImages.slice(0, 5);
 
-  // סגירת תפריטי react-select כאשר לוחצים מחוץ
+  // close react-select menus on outside click
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // react-select ייסגר אוטומטית
+        // react-select will auto-close
       }
     };
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // עטיפת onChange כדי לחקות את האירוע של קלט מקורי
+  // wrap onChange to mimic native input event
   const wrapSelectChange = name => option =>
     handleInputChange({
       target: { name, value: option ? option.value : "" }
@@ -53,7 +53,7 @@ export default function MainSection({
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h2>🎨 ערוך פרטי העסק</h2>
+        <h2>🎨 עריכת פרטי העסק</h2>
 
         {/* שם העסק */}
         <label>
@@ -64,7 +64,7 @@ export default function MainSection({
           name="name"
           value={businessDetails.name || ""}
           onChange={handleInputChange}
-          placeholder="הזן את שם העסק"
+          placeholder="הכנס שם העסק"
           required
           disabled={isSaving}
         />
@@ -75,7 +75,7 @@ export default function MainSection({
           name="description"
           value={businessDetails.description || ""}
           onChange={handleInputChange}
-          placeholder="הזן תיאור קצר"
+          placeholder="הכנס תיאור קצר"
           disabled={isSaving}
         />
 
@@ -86,7 +86,7 @@ export default function MainSection({
           name="phone"
           value={businessDetails.phone || ""}
           onChange={handleInputChange}
-          placeholder="הזן מספר טלפון"
+          placeholder="הכנס טלפון"
           disabled={isSaving}
         />
 
@@ -96,10 +96,13 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
+          value={
+            categoryOptions.find(o => o.value === businessDetails.category) ||
+            null
+          }
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
-          placeholder="הזן קטגוריה"
+          placeholder="הקלד קטגוריה"
           isClearable
           menuPlacement="bottom"
           openMenuOnClick={false}
@@ -109,7 +112,7 @@ export default function MainSection({
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "לא נמצאו קטגוריות תואמות" : null
+            inputValue ? "אין קטגוריות מתאימות" : null
           }
           menuPortalTarget={document.body}
           styles={{
@@ -126,7 +129,7 @@ export default function MainSection({
           value={cityOptions.find(o => o.value === businessDetails.city) || null}
           onChange={wrapSelectChange("city")}
           isDisabled={isSaving}
-          placeholder="הזן עיר"
+          placeholder="הקלד עיר"
           isClearable
           menuPlacement="bottom"
           openMenuOnClick={false}
@@ -136,7 +139,7 @@ export default function MainSection({
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "לא נמצאו ערים תואמות" : null
+            inputValue ? "אין ערים מתאימות" : null
           }
           menuPortalTarget={document.body}
           styles={{
@@ -160,7 +163,7 @@ export default function MainSection({
           onClick={() => logoInputRef.current?.click()}
           disabled={isSaving}
         >
-          העלה לוגו
+          העלאת לוגו
         </button>
 
         {/* תמונות ראשיות */}
@@ -172,20 +175,39 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={mainImagesInputRef}
-          onChange={handleMainImagesChange}  // שימוש בפרופס כאן
+          onChange={handleMainImagesChange}
           disabled={isSaving}
         />
+        <div className="gallery-preview">
+          {limitedMainImgs.map((img, i) => (
+            <div key={i} className="gallery-item-wrapper image-wrapper">
+              <img
+                src={img.preview}
+                alt={`תמונה ראשית ${i + 1}`}
+                className="gallery-img"
+              />
+              <button
+                className="delete-btn"
+                onClick={() => handleDeleteImage(i)}
+                type="button"
+                title="מחיקה"
+                disabled={isSaving}
+              >
+                🗑️
+              </button>
+            </div>
+          ))}
+          {limitedMainImgs.length < 5 && (
+            <div
+              className="gallery-placeholder clickable"
+              onClick={() => mainImagesInputRef.current?.click()}
+            >
+              +
+            </div>
+          )}
+        </div>
 
-        {/* גלריה */}
-        <Gallery
-          images={limitedMainImgs}
-          onImageDelete={handleDeleteImage}
-          isSaving={isSaving}
-          onImageSelect={() => mainImagesInputRef.current?.click()}
-          isLoading={isLoading}
-        />
-
-        {/* כפתור שמירה */}
+        {/* שמירה */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
           {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
@@ -203,17 +225,15 @@ export default function MainSection({
         )}
       </div>
 
-      {/* עמודה תצוגה מקדימה */}
+      {/* תצוגה מקדימה */}
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
-          <Gallery
-            images={limitedMainImgs}
-            onImageDelete={handleDeleteImage}
-            isSaving={isSaving}
-            onImageSelect={() => mainImagesInputRef.current?.click()}
-            isLoading={isLoading}
-          />
+          {limitedMainImgs.map((img, i) => (
+            <div key={i} className="image-wrapper">
+              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} />
+            </div>
+          ))}
         </div>
       </div>
     </>
