@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
-  plugins: [react()],
-  base: '/',
+  plugins: [react()], // הוספת פלאגין React
+  base: '/', // הגדרת הבסיס ליישום
   resolve: {
     alias: {
       '@api': path.resolve(__dirname, 'src/api.js'),
@@ -17,11 +17,11 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    exclude: ['framer-motion'],
-    include: ['chart.js', 'react-chartjs-2']
+    exclude: ['framer-motion'], // מומלץ להחריג מודולים שלא מתאימים
+    include: ['chart.js', 'react-chartjs-2'] // מודולים שצריכים לכלול אותם בתהליך האופטימיזציה
   },
   server: {
-    port: 3000,
+    port: 3000, // הגדרת פורט השרת
     proxy: {
       '/api': {
         target: 'https://api.esclick.co.il',
@@ -33,10 +33,10 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: path.resolve(__dirname, 'index.html'),
+      input: path.resolve(__dirname, 'index.html') // נתיב לקובץ ה־HTML הראשי
     }
   },
   define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) // הגדרת משתנה סביבתי ל־NODE_ENV
   }
-})
+});
