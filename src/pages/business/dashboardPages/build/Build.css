@@ -207,7 +207,7 @@
 .gallery-img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* שימור התמונה בשלמותה */
+  object-fit: cover; /* ממלא את הקונטיינר מבלי לעוות את התמונה */
   border-radius: 12px;
 }
 
