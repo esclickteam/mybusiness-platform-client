@@ -10,11 +10,18 @@ const ImageLoader = ({ src, alt, className }) => {
   }, [src]);
 
   return (
-    <div className={`image-container ${className}`}>
+    <div className={`image-container ${className}`} style={{ position: "relative" }}>
       {loading ? (
-        <div className="spinner">🔄</div>  // ספינר טעינה
+        <div className="spinner" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+          🔄
+        </div>
       ) : (
-        <img src={src} alt={alt} className="loaded-image" />
+        <img
+          src={src}
+          alt={alt}
+          className="loaded-image"
+          style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px" }}
+        />
       )}
     </div>
   );
