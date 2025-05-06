@@ -181,17 +181,17 @@
 /* 3 תמונות בשורה, יחס 1:1 */
 .form-column .gallery-preview {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 עמודות אחידות */
+  grid-template-columns: repeat(2, 1fr); /* 2 עמודות אחידות */
   gap: 1rem;
   margin-top: 1rem;
   padding-bottom: 0;
-  width: 100%; /* ודא שהרוחב תואם את הגודל */
+  width: 100%;
 }
 
 .form-column .gallery-preview .gallery-item-wrapper {
   position: relative;
   width: 100%;
-  height: 200px; /* גובה אחיד לתמונות */
+  height: 200px; /* הגדרת גובה אחיד לכל התמונות */
   border-radius: 12px;
   overflow: hidden;
 }
@@ -199,10 +199,10 @@
 .form-column .gallery-preview .gallery-img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* תוודא שהתמונה לא תיחתך */
+  object-fit: contain; /* מוודא שהתמונה לא תיחתך ושתהיה מותאמת בתוך התיבה */
   border-radius: 12px;
-  min-width: 150px; /* עדכון מינימום של רוחב התמונה */
 }
+
 
 
 
