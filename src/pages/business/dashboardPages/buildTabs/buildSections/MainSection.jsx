@@ -142,9 +142,7 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={
-            categoryOptions.find(o => o.value === businessDetails.category) || null
-          }
+          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
