@@ -179,30 +179,31 @@
 
 /* === גלריה בעריכה === */
 /* 3 תמונות בשורה, יחס 1:1 */
-.form-column .gallery-preview {
+.gallery-preview {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 עמודות אחידות */
   gap: 1rem;
-  margin-top: 1rem;
-  padding-bottom: 0;
   width: 100%;
 }
 
 .gallery-item-wrapper {
   position: relative;
   width: 100%;
-  height: 0;
-  padding-bottom: 100%; /* יחס של 1:1 */
+  padding-top: 100%; /* יחס גובה-רוחב 1:1 */
   overflow: hidden;
   border-radius: 12px;
 }
 
 .gallery-img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* מוודא שהתמונה לא תיחתך */
+  object-fit: cover; /* תמונה שממלאת את הקונטיינר מבלי לעוות אותה */
   border-radius: 12px;
 }
+
 
 
 .form-column .gallery-preview .gallery-placeholder {
