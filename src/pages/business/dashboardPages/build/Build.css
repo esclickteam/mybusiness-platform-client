@@ -181,7 +181,7 @@
 /* 3 תמונות בשורה, יחס 1:1 */
 .gallery-preview {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 עמודות אחידות */
+  grid-template-columns: repeat(3, 1fr); /* שינוי ל-3 עמודות */
   gap: 1rem;
   width: 100%;
 }
