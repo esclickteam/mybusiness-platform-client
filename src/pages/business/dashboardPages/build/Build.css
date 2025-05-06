@@ -199,7 +199,7 @@
 .form-column .gallery-preview .gallery-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* ממלא את התמונה בשטח מבלי לעוות אותה */
+  object-fit: contain; /* תוודא שהתמונה לא תיחתך */
   border-radius: 12px;
   min-width: 150px; /* עדכון מינימום של רוחב התמונה */
 }
