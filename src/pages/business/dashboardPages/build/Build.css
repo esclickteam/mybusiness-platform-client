@@ -191,7 +191,8 @@
 .gallery-item-wrapper {
   position: relative;
   width: 100%;
-  height: auto; /* לא לקבוע גובה */
+  height: 0;
+  padding-bottom: 100%; /* יחס של 1:1 */
   overflow: hidden;
   border-radius: 12px;
 }
