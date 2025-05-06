@@ -14,7 +14,7 @@ const cityOptions = CITIES.map(city => ({ value: city, label: city }));
 export default function MainSection({
   businessDetails,
   handleInputChange,
-  handleMainImagesChange,
+  handleMainImagesChange,  // ensure it's passed as a prop
   handleSave,
   showViewProfile,
   navigate,
@@ -25,9 +25,7 @@ export default function MainSection({
   handleDeleteImage,
   isSaving
 }) {
-  // הוספת useState למעקב אחרי מצב טעינת התמונות
-  const [isLoading, setIsLoading] = useState(false);  // מצב טעינה
-
+  const [isLoading, setIsLoading] = useState(false);  // Loading state
   const containerRef = useRef();
 
   // dedupe & limit images
@@ -35,7 +33,7 @@ export default function MainSection({
   const uniqueImages = dedupeByPreview(mainImages);
   const limitedMainImgs = uniqueImages.slice(0, 5);
 
-  // close react-select menus on outside click
+  // Close react-select menus on outside click
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -53,33 +51,33 @@ export default function MainSection({
     });
 
   const handleMainImagesChange = async e => {
-    // 1) בוחרים עד 5 קבצים
+    // 1) Choose up to 5 files
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
 
-    // 2) הכנת פריוויו לשלב ההעלאה
+    // 2) Prepare preview for upload
     const previews = files.map(f => ({
       preview: URL.createObjectURL(f),
       file: f
     }));
 
-    // 3) **החלפה מלאה** של mainImages לפריוויו בלבד (blob)
+    // 3) Replace mainImages with previews only (blob)
     setBusinessDetails(prev => ({
       ...prev,
       mainImages: previews
     }));
 
-    // 4) אתחול טעינה
-    setIsLoading(true);  // התחלת טעינה
+    // 4) Start loading
+    setIsLoading(true);
 
-    // 5) שליחה ל־API
+    // 5) Send to API
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
     try {
       const res = await API.put("/business/my/main-images", fd);
       if (res.status === 200) {
-        // 6) עטיפת ה־URLs שהשרת החזיר ➞ החלפה מלאה + חיתוך ל-5
+        // 6) Wrap the URLs returned by the server ➞ full replace + slice to 5
         const wrapped = res.data.mainImages
           .slice(0, 5)
           .map(url => ({ preview: url }));
@@ -88,14 +86,14 @@ export default function MainSection({
           mainImages: wrapped
         }));
       } else {
-        console.warn("העלאת תמונות נכשלה:", res);
+        console.warn("Image upload failed:", res);
       }
     } catch (err) {
-      console.error("שגיאה בהעלאה:", err);
+      console.error("Upload error:", err);
     } finally {
-      setIsLoading(false);  // סיום טעינה
+      setIsLoading(false);  // End loading
 
-      // 7) ניקוי זיכרון של blob-URLs
+      // 7) Clean up blob URLs from memory
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
@@ -103,53 +101,53 @@ export default function MainSection({
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h2>🎨 עריכת פרטי העסק</h2>
+        <h2>🎨 Edit Business Details</h2>
 
-        {/* שם העסק */}
+        {/* Business Name */}
         <label>
-          שם העסק: <span style={{ color: "red" }}>*</span>
+          Business Name: <span style={{ color: "red" }}>*</span>
         </label>
         <input
           type="text"
           name="name"
           value={businessDetails.name || ""}
           onChange={handleInputChange}
-          placeholder="הכנס שם העסק"
+          placeholder="Enter business name"
           required
           disabled={isSaving}
         />
 
-        {/* תיאור */}
-        <label>תיאור:</label>
+        {/* Description */}
+        <label>Description:</label>
         <textarea
           name="description"
           value={businessDetails.description || ""}
           onChange={handleInputChange}
-          placeholder="הכנס תיאור קצר"
+          placeholder="Enter short description"
           disabled={isSaving}
         />
 
-        {/* טלפון */}
-        <label>טלפון:</label>
+        {/* Phone */}
+        <label>Phone:</label>
         <input
           type="text"
           name="phone"
           value={businessDetails.phone || ""}
           onChange={handleInputChange}
-          placeholder="הכנס טלפון"
+          placeholder="Enter phone number"
           disabled={isSaving}
         />
 
-        {/* קטגוריה */}
+        {/* Category */}
         <label>
-          קטגוריה: <span style={{ color: "red" }}>*</span>
+          Category: <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={categoryOptions}
           value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
-          placeholder="הקלד קטגוריה"
+          placeholder="Enter category"
           isClearable
           menuPlacement="bottom"
           openMenuOnClick={false}
@@ -159,7 +157,7 @@ export default function MainSection({
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "אין קטגוריות מתאימות" : null
+            inputValue ? "No matching categories" : null
           }
           menuPortalTarget={document.body}
           styles={{
@@ -167,16 +165,16 @@ export default function MainSection({
           }}
         />
 
-        {/* עיר */}
+        {/* City */}
         <label>
-          עיר: <span style={{ color: "red" }}>*</span>
+          City: <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={cityOptions}
           value={cityOptions.find(o => o.value === businessDetails.city) || null}
           onChange={wrapSelectChange("city")}
           isDisabled={isSaving}
-          placeholder="הקלד עיר"
+          placeholder="Enter city"
           isClearable
           menuPlacement="bottom"
           openMenuOnClick={false}
@@ -186,7 +184,7 @@ export default function MainSection({
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "אין ערים מתאימות" : null
+            inputValue ? "No matching cities" : null
           }
           menuPortalTarget={document.body}
           styles={{
@@ -194,8 +192,8 @@ export default function MainSection({
           }}
         />
 
-        {/* לוגו */}
-        <label>לוגו:</label>
+        {/* Logo */}
+        <label>Logo:</label>
         <input
           type="file"
           name="logo"
@@ -210,11 +208,11 @@ export default function MainSection({
           onClick={() => logoInputRef.current?.click()}
           disabled={isSaving}
         >
-          העלאת לוגו
+          Upload Logo
         </button>
 
-        {/* תמונות ראשיות */}
-        <label>תמונות ראשיות:</label>
+        {/* Main Images */}
+        <label>Main Images:</label>
         <input
           type="file"
           name="main-images"
@@ -227,21 +225,21 @@ export default function MainSection({
         />
         <div className="gallery-preview">
           {isLoading && (
-            <div className="spinner">🔄</div>  // הצגת ספינר בזמן טעינה
+            <div className="spinner">🔄</div>  // Display spinner during loading
           )}
 
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="gallery-item-wrapper image-wrapper">
               <img
                 src={img.preview}
-                alt={`תמונה ראשית ${i + 1}`}
+                alt={`Main Image ${i + 1}`}
                 className="gallery-img"
               />
               <button
                 className="delete-btn"
                 onClick={() => handleDeleteImage(i)}
                 type="button"
-                title="מחיקה"
+                title="Delete"
                 disabled={isSaving}
               >
                 🗑️
@@ -258,9 +256,9 @@ export default function MainSection({
           )}
         </div>
 
-        {/* שמירה */}
+        {/* Save Button */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "שומר..." : "💾 שמור שינויים"}
+          {isSaving ? "Saving..." : "💾 Save Changes"}
         </button>
 
         {showViewProfile && (
@@ -271,18 +269,18 @@ export default function MainSection({
             onClick={() => navigate(`/business/${currentUser.businessId}`)}
             disabled={isSaving}
           >
-            👀 צפה בפרופיל
+            👀 View Profile
           </button>
         )}
       </div>
 
-      {/* תצוגה מקדימה */}
+      {/* Preview Column */}
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
           {limitedMainImgs.map((img, i) => (
             <div key={i} className="image-wrapper">
-              <img src={img.preview} alt={`תמונה ראשית ${i + 1}`} />
+              <img src={img.preview} alt={`Main Image ${i + 1}`} />
             </div>
           ))}
         </div>
