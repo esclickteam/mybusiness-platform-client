@@ -122,11 +122,11 @@ export default function BusinessProfileView() {
         `/business/my/main-images/${encodeURIComponent(publicId)}`
       );
       if (res.status === 204) {
-        // עדכון מיידי של ה-state בלי ריענון
-        setData(prev => ({
-          ...prev,
-          mainImages: prev.mainImages.filter(u => u !== url)
-        }));
+        // עדכון ישיר של ה-state עם מחיקת התמונה מה-array
+        setData(prevState => {
+          const updatedMainImages = prevState.mainImages.filter(image => image !== url);
+          return { ...prevState, mainImages: updatedMainImages };
+        });
       } else {
         alert(`מחיקה נכשלה (${res.status})`);
       }
@@ -135,6 +135,7 @@ export default function BusinessProfileView() {
       alert("שגיאה בשרת, נסה שוב");
     }
   };
+  
   
 
   if (loading) return <div className="loading">טוען…</div>;
