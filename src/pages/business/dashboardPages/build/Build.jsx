@@ -196,26 +196,34 @@ const handleMainImagesChange = async e => {
 
   
 
-const handleDeleteMainImage = async idx => {
-  const image = businessDetails.mainImages[idx];
-  if (!image) return;
+const handleDeleteMainImage = async (idx) => {
+  const url = businessDetails.mainImages[idx]; // השתמש ב-mainImages בטאב הראשי
+  if (!url) return;
 
-  const publicId = image?.public_id;  // או כל מזהה ייחודי אחר
-
-  if (!publicId) return;
+  // מפיק את ה-publicId מתוך ה-URL של Cloudinary
+  const publicId = url.split('/').pop().split('.')[0];
 
   try {
     const res = await API.delete(`/business/my/main-images/${encodeURIComponent(publicId)}`);
-    if (res.status === 200) {
-      setBusinessDetails(prev => ({
-        ...prev,
-        mainImages: res.data.mainImages.map(url => ({ preview: url }))
-      }));
+
+    if (res.status === 204) {  // עדכון סטטוס 204 אחרי מחיקה מוצלחת
+      // עדכון mainImages אחרי מחיקת התמונה
+      setBusinessDetails(prev => {
+        // סינון התמונה שנמחקה
+        const updatedMainImages = prev.mainImages.filter((_, index) => index !== idx);
+        return {
+          ...prev,
+          mainImages: updatedMainImages
+        };
+      });
+    } else {
+      console.warn("מחיקה נכשלה:", res);
     }
   } catch (err) {
-    console.error("❌ שגיאה במחיקת תמונה ראשית:", err);
+    console.error("שגיאה במחיקת תמונה בטאב הראשי:", err);
   }
 };
+
 
 
   const openMainImageEdit = idx => {
@@ -305,10 +313,13 @@ const handleDeleteMainImage = async idx => {
       const url = businessDetails.gallery[idx]?.preview;
       if (!url) return;
     
-      try {
-        const res = await API.delete(`/business/my/gallery/${encodeURIComponent(url)}`);
+      // מפיק את ה-publicId מתוך ה-URL של Cloudinary
+      const publicId = url.split('/').pop().split('.')[0];
     
-        if (res.status === 200) {
+      try {
+        const res = await API.delete(`/business/my/gallery/${encodeURIComponent(publicId)}`);
+    
+        if (res.status === 204) {  // עדכון סטטוס 204 אחרי מחיקה מוצלחת
           // עדכון gallery אחרי מחיקת התמונה
           setBusinessDetails(prev => {
             // סינון התמונה שנמחקה
@@ -325,6 +336,7 @@ const handleDeleteMainImage = async idx => {
         console.error("שגיאה במחיקת תמונה:", err);
       }
     };
+    
     
     
     
