@@ -3,6 +3,7 @@ import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
+import Gallery from "../../../components/Gallery";  // יש לוודא שהייבוא נכון
 
 // הכנה של אופציות מסודרות ומסוננות
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
@@ -14,7 +15,7 @@ const cityOptions = CITIES.map(city => ({ value: city, label: city }));
 export default function MainSection({
   businessDetails,
   handleInputChange,
-  handleMainImagesChange,  // יש לוודא שהיא מועברת כפרופס
+  handleMainImagesChange,
   handleSave,
   showViewProfile,
   navigate,
@@ -176,6 +177,15 @@ export default function MainSection({
           disabled={isSaving}
         />
 
+        {/* גלריה */}
+        <Gallery
+          images={limitedMainImgs}
+          onImageDelete={handleDeleteImage}
+          isSaving={isSaving}
+          onImageSelect={() => mainImagesInputRef.current?.click()}
+          isLoading={isLoading}
+        />
+
         {/* כפתור שמירה */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
           {isSaving ? "שומר..." : "💾 שמור שינויים"}
@@ -198,7 +208,13 @@ export default function MainSection({
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
-          {/* כאן כבר אין צורך ב-Gallery */}
+          <Gallery
+            images={limitedMainImgs}
+            onImageDelete={handleDeleteImage}
+            isSaving={isSaving}
+            onImageSelect={() => mainImagesInputRef.current?.click()}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     </>
