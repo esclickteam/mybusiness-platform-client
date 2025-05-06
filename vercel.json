@@ -2,15 +2,24 @@
   "version": 2,
   "builds": [
     {
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination":  "https://api.esclick.co.il/api/:path*"
+      "destination": "https://api.esclick.co.il/api/:path*"
     },
     {
       "source": "/(.*)",
