@@ -189,7 +189,7 @@
 .gallery-item-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1 !important; /* הוספתי !important */
+  aspect-ratio: 1 / 1; /* יחס גובה-רוחב 1:1 */
   overflow: hidden;
   border-radius: 12px;
 }
@@ -197,7 +197,7 @@
 .gallery-img {
   width: 100%;
   height: 100%;
-  object-fit: cover !important; /* הוספתי !important */
+  object-fit: contain; /* שימור התמונה בשלמותה */
   border-radius: 12px;
 }
 
