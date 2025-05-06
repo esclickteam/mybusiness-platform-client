@@ -163,22 +163,22 @@ const handleLogoChange = e => {
       file: f
     }));
   
-    // 3) עדכון התמונות בגלריה עם פריוויו בזמן טעינה
+    // 3) עדכון מיידי של התמונות בגלריה עם פריוויו
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: previews
+      mainImages: [...prev.mainImages, ...previews]
     }));
   
-    // הצגת ספינר בזמן טעינה
+    // 4) הצגת ספינר בזמן טעינה
     setIsSaving(true);
   
-    // 4) שליחה ל־API
+    // 5) שליחה ל־API
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
     try {
       const res = await API.put("/business/my/main-images", fd);
       if (res.status === 200) {
-        // 5) עטיפת ה־URLs שהשרת החזיר ➞ החלפה מלאה + חיתוך ל-5
+        // 6) עטיפת ה־URLs שהשרת החזיר ➞ החלפה מלאה + חיתוך ל-5
         const wrapped = res.data.mainImages
           .slice(0, 5)
           .map(url => ({ preview: url }));
@@ -192,12 +192,13 @@ const handleLogoChange = e => {
     } catch (err) {
       console.error("שגיאה בהעלאה:", err);
     } finally {
-      // 6) ניקוי זיכרון של blob-URLs
+      // 7) ניקוי זיכרון של blob-URLs
       previews.forEach(p => URL.revokeObjectURL(p.preview));
-      // 7) הסרת ספינר עם סיום הטעינה
+      // 8) הסרת ספינר עם סיום הטעינה
       setIsSaving(false);
     }
   };
+  
   
 
   
