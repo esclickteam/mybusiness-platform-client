@@ -30,15 +30,15 @@ export default function BusinessSupport() {
     setLoading(true);
 
     try {
-      // שליחה ל-EmailJS
+      // שליחה ל-EmailJS ללא תבנית
       const result = await emailjs.send(
         "service_zi1ktm8",  // ה-ID של השירות שלך ב-EmailJS
-        "template_ncz077b",  // ה-ID של התבנית שלך ב-EmailJS
+        "",  // השאר ריק כדי לא להשתמש בתבנית
         { 
-          from_name: name,     // השם של השולח
-          from_email: email,   // האימייל של השולח
+          from_name: name,       // השם של בעל העסק
+          from_email: email,     // המייל של בעל העסק
           issue_description: issueDescription,  // תיאור הבעיה
-          to_email: "support@esclick.co.il"  // הכתובת שלך
+          to_email: "support@esclick.co.il"  // כתובת היעד שלך
         },
         "6r3WLmK-pksdHm7kU"  // ה-API Key שלך ב-EmailJS (Public Key)
       );
