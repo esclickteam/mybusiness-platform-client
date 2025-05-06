@@ -115,28 +115,38 @@ export default function BusinessProfileView() {
   // Handler to delete main images and immediately refresh
   const handleDeleteMainImage = async (url) => {
     if (!window.confirm("האם למחוק את התמונה הזו?")) return;
-    try {
-      // חותכים רק את השם (abc123def456)
-      const filename = url.split("/").pop();            // "abc123def456.jpg"
-      const publicId = filename.replace(/\.[^/.]+$/, ""); // "abc123def456"
   
-      const res = await api.delete(
-        `/business/my/main-images/${publicId}`
-      );
-      if (res.status === 204) {
-        setData(prev => {
-          // מסננים כל URL שמכיל את ה-publicId
-          const updated = prev.mainImages.filter(img => !img.includes(publicId));
-          return { ...prev, mainImages: updated };
-        });
+    // 1. חולצים רק את שם הקובץ בלי סיומת
+    const filename = url.split("/").pop();                // e.g. "r5kwmyotqzrre7lzdicw.jpg"
+    const publicId = filename.replace(/\.[^/.]+$/, "");   // "r5kwmyotqzrre7lzdicw"
+  
+    console.log("🗑️ deleting publicId:", publicId);
+  
+    try {
+      // 2. שולחים את ה-DELETE
+      const delRes = await api.delete(`/business/my/main-images/${publicId}`);
+      console.log("🚀 delete status:", delRes.status);
+  
+      if (delRes.status === 204 || delRes.status === 200) {
+        // 3. תביאו את ה-business המעודכן מהשרת
+        const getRes = await api.get("/business/my");
+        const updatedBiz = getRes.data.business;
+        
+        // 4. עדכון ה-state עם המערך החדש
+        setData(prev => ({
+          ...prev,
+          mainImages: updatedBiz.mainImages
+        }));
       } else {
-        alert(`מחיקה נכשלה (${res.status})`);
+        throw new Error(`מחיקה נכשלה (status ${delRes.status})`);
       }
     } catch (err) {
-      console.error(err);
+      console.error("❌ delete error:", err);
       alert("שגיאה בשרת, נסה שוב");
     }
   };
+  
+  
   
   
   
