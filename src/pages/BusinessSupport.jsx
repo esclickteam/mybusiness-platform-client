@@ -31,7 +31,7 @@ export default function BusinessSupport() {
 
     try {
       // שליחה ל-EmailJS
-      const result = await emailjs.sendForm(
+      const result = await emailjs.send(
         "service_zi1ktm8",  // ה-ID של השירות שלך ב-EmailJS
         "template_ncz077b",  // ה-ID של התבנית שלך ב-EmailJS
         { 
