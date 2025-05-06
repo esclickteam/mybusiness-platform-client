@@ -10,7 +10,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://api.esclick.co.il/api/:path*"
+      "destination":  "https://api.esclick.co.il/api/:path*"
     },
     {
       "source": "/(.*)",
