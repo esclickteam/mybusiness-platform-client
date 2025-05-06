@@ -1,8 +1,3 @@
-// src/components/buildTabs/buildSections/GallerySection.jsx
-
-import React from "react";
-import "../../build/Build.css";
-
 export default function GallerySection({
   businessDetails,
   galleryInputRef,
@@ -52,7 +47,7 @@ export default function GallerySection({
                 />
                 <button
                   className="delete-btn"
-                  onClick={() => handleDeleteImage(i)}
+                  onClick={() => handleDeleteImage(item.public_id)} // העברת public_id
                   type="button"
                   title="מחיקה"
                 >

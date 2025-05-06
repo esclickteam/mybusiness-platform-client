@@ -197,16 +197,16 @@ const handleMainImagesChange = async e => {
   
 
 const handleDeleteMainImage = async idx => {
-  const url = businessDetails.mainImages[idx]?.preview;
-  if (!url) return;
+  const image = businessDetails.mainImages[idx];
+  if (!image) return;
 
-  // סגור את הפופאפ אם זה התמונה שנערכה
-  if (editIndex === idx) closePopup();
+  const publicId = image?.public_id;  // או כל מזהה ייחודי אחר
+
+  if (!publicId) return;
 
   try {
-    const res = await API.delete(`/business/my/main-images/${encodeURIComponent(url)}`);
+    const res = await API.delete(`/business/my/main-images/${encodeURIComponent(publicId)}`);
     if (res.status === 200) {
-      // עדכון ה־state עם מערך חדש
       setBusinessDetails(prev => ({
         ...prev,
         mainImages: res.data.mainImages.map(url => ({ preview: url }))
@@ -216,6 +216,7 @@ const handleDeleteMainImage = async idx => {
     console.error("❌ שגיאה במחיקת תמונה ראשית:", err);
   }
 };
+
 
   const openMainImageEdit = idx => {
     setEditIndex(idx);

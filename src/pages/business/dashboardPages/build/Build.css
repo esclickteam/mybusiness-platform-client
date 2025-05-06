@@ -196,6 +196,13 @@
   width: 100%;
 }
 
+.gallery-grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 עמודות שוות */
+  gap: 1rem;
+  width: 100%;
+}
+
 .gallery-item-wrapper {
   position: relative;
   width: 100%;
