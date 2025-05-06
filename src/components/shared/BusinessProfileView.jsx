@@ -137,6 +137,7 @@ export default function BusinessProfileView() {
   };
   
   
+  
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
