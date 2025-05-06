@@ -116,36 +116,32 @@ export default function BusinessProfileView() {
   const handleDeleteMainImage = async (url) => {
     if (!window.confirm("האם למחוק את התמונה הזו?")) return;
   
-    // 1. חולצים רק את שם הקובץ בלי סיומת
-    const filename = url.split("/").pop();                // e.g. "r5kwmyotqzrre7lzdicw.jpg"
-    const publicId = filename.replace(/\.[^/.]+$/, "");   // "r5kwmyotqzrre7lzdicw"
+    // שלב 1: חולצים רק את שם הקובץ בלי סיומת
+    const filename = url.split("/").pop();            // e.g. "r5kwmyotqzrre7lzdicw.jpg"
+    const publicId = filename.replace(/\.[^/.]+$/, ""); // "r5kwmyotqzrre7lzdicw"
   
-    console.log("🗑️ deleting publicId:", publicId);
+    console.log("✔️ deleting publicId:", publicId);
   
     try {
-      // 2. שולחים את ה-DELETE
-      const delRes = await api.delete(`/business/my/main-images/${publicId}`);
-      console.log("🚀 delete status:", delRes.status);
+      const res = await api.delete(`/business/my/main-images/${publicId}`);
+      console.log("🚀 delete status:", res.status);
   
-      if (delRes.status === 204 || delRes.status === 200) {
-        // 3. תביאו את ה-business המעודכן מהשרת
-        const getRes = await api.get("/business/my");
-        const updatedBiz = getRes.data.business;
-        
-        // 4. עדכון ה-state עם המערך החדש
-        setData(prev => ({
-          ...prev,
-          mainImages: updatedBiz.mainImages
-        }));
+      if (res.status === 204) {
+        // שלב 2: מסננים מה-state את כל התמונות שמכילות את publicId
+        setData(prev => {
+          console.log("before filter:", prev.mainImages);
+          const updated = prev.mainImages.filter(img => !img.includes(publicId));
+          console.log("after filter:", updated);
+          return { ...prev, mainImages: updated };
+        });
       } else {
-        throw new Error(`מחיקה נכשלה (status ${delRes.status})`);
+        alert(`מחיקה נכשלה (${res.status})`);
       }
     } catch (err) {
       console.error("❌ delete error:", err);
       alert("שגיאה בשרת, נסה שוב");
     }
   };
-  
   
   
   
