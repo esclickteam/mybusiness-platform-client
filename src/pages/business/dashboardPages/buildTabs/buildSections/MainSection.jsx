@@ -176,15 +176,6 @@ export default function MainSection({
           disabled={isSaving}
         />
 
-        {/* גלריה */}
-        <Gallery
-          images={limitedMainImgs}
-          onImageDelete={handleDeleteImage}
-          isSaving={isSaving}
-          onImageSelect={() => mainImagesInputRef.current?.click()}
-          isLoading={isLoading}
-        />
-
         {/* כפתור שמירה */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
           {isSaving ? "שומר..." : "💾 שמור שינויים"}
@@ -207,13 +198,7 @@ export default function MainSection({
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
-          <Gallery
-            images={limitedMainImgs}
-            onImageDelete={handleDeleteImage}
-            isSaving={isSaving}
-            onImageSelect={() => mainImagesInputRef.current?.click()}
-            isLoading={isLoading}
-          />
+          {/* כאן כבר אין צורך ב-Gallery */}
         </div>
       </div>
     </>
