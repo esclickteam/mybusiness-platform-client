@@ -73,7 +73,7 @@ export default function BusinessSupport() {
           value={formData.email}
           onChange={handleInputChange}
           disabled={loading}
-          placeholder="הכנס את אימיילך"
+          placeholder="הכנס את המייל שלך"
         />
 
         <label>תיאור הבעיה:</label>
