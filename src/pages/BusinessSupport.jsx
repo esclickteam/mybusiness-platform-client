@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import emailjs from "emailjs-com"; // הוספת הספריה
+
 import "../styles/business-support.css";
 
 export default function BusinessSupport() {
@@ -28,23 +30,25 @@ export default function BusinessSupport() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/support", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, issueDescription }),
-      });
+      // שליחה ל-EmailJS
+      const result = await emailjs.sendForm(
+        "service_zi1ktm8",  // ה-ID של השירות שלך ב-EmailJS
+        "template_ncz077b",  // ה-ID של התבנית שלך ב-EmailJS
+        { 
+          from_name: name,     // השם של השולח
+          from_email: email,   // האימייל של השולח
+          issue_description: issueDescription,  // תיאור הבעיה
+          to_email: "support@esclick.co.il"  // הכתובת שלך
+        },
+        "6r3WLmK-pksdHm7kU"  // ה-API Key שלך ב-EmailJS (Public Key)
+      );
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "שגיאה כללית");
-      }
-
-      setStatus({ type: "success", message: data.message || "הפנייה נשלחה בהצלחה" });
+      console.log(result.text);
+      setStatus({ type: "success", message: "הפנייה נשלחה בהצלחה" });
       setFormData({ name: "", email: "", issueDescription: "" });
     } catch (err) {
       console.error("שגיאה:", err);
-      setStatus({ type: "error", message: err.message || "שגיאה בשליחה" });
+      setStatus({ type: "error", message: "שגיאה בשליחה" });
     } finally {
       setLoading(false);
     }
