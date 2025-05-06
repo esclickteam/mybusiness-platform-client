@@ -33,7 +33,10 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: path.resolve(__dirname, 'index.html'), // Make sure input points to the correct HTML
+      input: path.resolve(__dirname, 'index.html'),
     }
+  },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
   }
 })
