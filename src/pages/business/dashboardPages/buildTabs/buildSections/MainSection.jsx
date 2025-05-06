@@ -50,6 +50,54 @@ export default function MainSection({
       target: { name, value: option ? option.value : "" }
     });
 
+  const handleMainImagesChange = async e => {
+    // 1) Choose up to 5 files
+    const files = Array.from(e.target.files || []).slice(0, 5);
+    if (!files.length) return;
+    e.target.value = null;
+
+    // 2) Prepare preview for upload
+    const previews = files.map(f => ({
+      preview: URL.createObjectURL(f),
+      file: f
+    }));
+
+    // 3) Replace mainImages with previews only (blob)
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: previews
+    }));
+
+    // 4) Start loading
+    setIsLoading(true);
+
+    // 5) Send to API
+    const fd = new FormData();
+    files.forEach(f => fd.append("main-images", f));
+    try {
+      const res = await API.put("/business/my/main-images", fd);
+      if (res.status === 200) {
+        // 6) Wrap the URLs returned by the server ➞ full replace + slice to 5
+        const wrapped = res.data.mainImages
+          .slice(0, 5)
+          .map(url => ({ preview: url }));
+        setBusinessDetails(prev => ({
+          ...prev,
+          mainImages: wrapped
+        }));
+      } else {
+        console.warn("Image upload failed:", res);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+    } finally {
+      setIsLoading(false);  // End loading
+
+      // 7) Clean up blob URLs from memory
+      previews.forEach(p => URL.revokeObjectURL(p.preview));
+    }
+  };
+
   return (
     <>
       <div className="form-column" ref={containerRef}>
@@ -172,7 +220,7 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={mainImagesInputRef}
-          onChange={handleMainImagesChange}  // Using the prop here
+          onChange={handleMainImagesChange}
           disabled={isSaving}
         />
         <div className="gallery-preview">
