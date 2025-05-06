@@ -3,7 +3,6 @@ export default function GallerySection({
   galleryInputRef,
   handleGalleryChange,
   handleDeleteImage,
-  handleEditImage,
   renderTopBar
 }) {
   const gallery = businessDetails.gallery || [];
@@ -47,19 +46,11 @@ export default function GallerySection({
                 />
                 <button
                   className="delete-btn"
-                  onClick={() => handleDeleteImage(item.public_id)} // העברת public_id
+                  onClick={() => handleDeleteImage(item.public_id)} // העברת public_id למחיקה
                   type="button"
                   title="מחיקה"
                 >
                   🗑️
-                </button>
-                <button
-                  className="edit-btn"
-                  onClick={() => handleEditImage(i)}
-                  type="button"
-                  title="עריכה"
-                >
-                  ✏️
                 </button>
               </div>
             ))

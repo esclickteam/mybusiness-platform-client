@@ -301,7 +301,7 @@ const handleDeleteMainImage = async idx => {
   
   
     
-    const handleDeleteGalleryImage = async idx => {
+    const handleDeleteGalleryImage = async (idx) => {
       const url = businessDetails.gallery[idx]?.preview;
       if (!url) return;
     
@@ -309,11 +309,15 @@ const handleDeleteMainImage = async idx => {
         const res = await API.delete(`/business/my/gallery/${encodeURIComponent(url)}`);
     
         if (res.status === 200) {
-          // נעדכן את ה־gallery בתשובה מהשרת
-          setBusinessDetails(prev => ({
-            ...prev,
-            gallery: res.data.gallery.map(url => ({ preview: url }))
-          }));
+          // עדכון gallery אחרי מחיקת התמונה
+          setBusinessDetails(prev => {
+            // סינון התמונה שנמחקה
+            const updatedGallery = prev.gallery.filter((_, index) => index !== idx);
+            return {
+              ...prev,
+              gallery: updatedGallery
+            };
+          });
         } else {
           console.warn("מחיקה נכשלה:", res);
         }
@@ -321,6 +325,7 @@ const handleDeleteMainImage = async idx => {
         console.error("שגיאה במחיקת תמונה:", err);
       }
     };
+    
     
     
   
