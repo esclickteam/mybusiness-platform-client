@@ -3,7 +3,7 @@ import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
-import ImageLoader from "../../../components/ImageLoader"; // ייבוא של ImageLoader
+import ImageLoader from "../../../../components/ImageLoader";
 
 // Prepare sorted, deduped options
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
