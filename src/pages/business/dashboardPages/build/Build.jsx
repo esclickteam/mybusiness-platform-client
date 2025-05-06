@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import API from "../api";
+import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
 import { dedupeByPreview } from "../../../../utils/dedupe";
@@ -203,9 +203,6 @@ const handleDeleteMainImage = async idx => {
   // סגור את הפופאפ אם זה התמונה שנערכה
   if (editIndex === idx) closePopup();
 
-  // מצב טעינה לפני שליחת הבקשה
-  setIsDeleting(true); // הגדרת מצב טעינה
-
   try {
     // שלח בקשה למחוק את התמונה מהשרת
     const res = await API.delete(`/business/my/main-images/${encodeURIComponent(url)}`);
@@ -215,15 +212,10 @@ const handleDeleteMainImage = async idx => {
         ...prev,
         mainImages: prev.mainImages.filter((_, i) => i !== idx)  // סינון התמונה שנמחקה
       }));
-      alert("התמונה נמחקה בהצלחה!");
-    } else {
-      alert("המחיקה נכשלה");
     }
   } catch (err) {
     console.error("❌ שגיאה במחיקת תמונה ראשית:", err);
     alert("שגיאה בשירות, נסה שוב");
-  } finally {
-    setIsDeleting(false); // סיום מצב טעינה
   }
 };
 
@@ -251,9 +243,6 @@ const updateImageSize = sizeType => {
 
   closePopup();
 };
-
-
-
 
 
   // ===== GALLERY =====
