@@ -135,6 +135,7 @@ export default function BusinessProfileView() {
       alert("שגיאה בשרת, נסה שוב");
     }
   };
+  
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
