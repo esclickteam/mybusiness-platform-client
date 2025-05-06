@@ -31,7 +31,7 @@ export default function BusinessSupport() {
 
     try {
       // שליחה ל-EmailJS ללא תבנית
-      const result = await  emailjs.send(
+      const result = await emailjs.send(
         "service_zi1ktm8",  // ה-ID של השירות שלך ב-EmailJS
         "",  // השאר ריק כדי לא להשתמש בתבנית
         { 
