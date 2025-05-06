@@ -3,6 +3,7 @@ import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
+import Gallery from "./Gallery";  // ייבוא הקומפוננטה החדשה
 
 // הכנה של אופציות מסודרות ומסוננות
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
@@ -175,38 +176,15 @@ export default function MainSection({
           onChange={handleMainImagesChange}  // שימוש בפרופס כאן
           disabled={isSaving}
         />
-        <div className="gallery-preview">
-          {isLoading && (
-            <div className="spinner">🔄</div>  // הצגת ספינר בזמן טעינה
-          )}
 
-          {limitedMainImgs.map((img, i) => (
-            <div key={i} className="gallery-item-wrapper image-wrapper">
-              <img
-                src={img.preview}
-                alt={`Main Image ${i + 1}`}
-                className="gallery-img"
-              />
-              <button
-                className="delete-btn"
-                onClick={() => handleDeleteImage(i)}
-                type="button"
-                title="מחק"
-                disabled={isSaving}
-              >
-                🗑️
-              </button>
-            </div>
-          ))}
-          {limitedMainImgs.length < 5 && (
-            <div
-              className="gallery-placeholder clickable"
-              onClick={() => mainImagesInputRef.current?.click()}
-            >
-              +
-            </div>
-          )}
-        </div>
+        {/* גלריה */}
+        <Gallery
+          images={limitedMainImgs}
+          onImageDelete={handleDeleteImage}
+          isSaving={isSaving}
+          onImageSelect={() => mainImagesInputRef.current?.click()}
+          isLoading={isLoading}
+        />
 
         {/* כפתור שמירה */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
@@ -230,11 +208,13 @@ export default function MainSection({
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
-          {limitedMainImgs.map((img, i) => (
-            <div key={i} className="image-wrapper">
-              <img src={img.preview} alt={`Main Image ${i + 1}`} />
-            </div>
-          ))}
+          <Gallery
+            images={limitedMainImgs}
+            onImageDelete={handleDeleteImage}
+            isSaving={isSaving}
+            onImageSelect={() => mainImagesInputRef.current?.click()}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     </>
