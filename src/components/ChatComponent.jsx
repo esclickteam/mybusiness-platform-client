@@ -41,7 +41,7 @@ const ChatComponent = () => {
       setIsLoading(false);  // אחרי שההודעה נשלחה, מסתיר את "טוען"
       setIsSending(false); // השבתת שליחה
     });
-    
+
     setMessages((prev) => [...prev, newMsg]);  // עדכון ההודעות בצד הלקוח
     setMessage("");  // ניקוי שדה ההודעה
   };
