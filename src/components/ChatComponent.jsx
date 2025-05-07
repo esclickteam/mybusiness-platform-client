@@ -12,6 +12,7 @@ const ChatComponent = () => {
   const [isLoading, setIsLoading] = useState(false);  // אינדיקטור של טעינה
   const [systemMessage, setSystemMessage] = useState(""); // הודעת מערכת
   const [isSending, setIsSending] = useState(false);  // משתנה למניעת שליחה כפולה
+  const [isClientTabActive, setIsClientTabActive] = useState(false);  // משתנה לניהול מצב הטאב
 
   // קבלת הודעות מהשרת
   useEffect(() => {
@@ -48,7 +49,10 @@ const ChatComponent = () => {
       from: 'client',
     };
     setIsLoading(true);  // הצגת טעינה
-    socket.emit('sendMessage', newMsg);  // שליחת הודעה לשרת
+    socket.emit('sendMessage', newMsg, () => { // הוספת callback אחרי שליחה
+      setIsLoading(false);  // סיום טעינה
+      setIsSending(false);  // השבתת שליחה
+    });  
     // עדכון ההודעות בצד הלקוח
     setMessages((prev) => [...prev, newMsg]);  
     setMessage("");  // ניקוי שדה ההודעה
@@ -67,45 +71,53 @@ const ChatComponent = () => {
       <div className="chat-header">
         <h3>צ'אט עם העסק</h3>
       </div>
-      <div className="chat-messages">
-        {messages.length === 0 && !isLoading && !systemMessage && (
-          <div className="message system-message">
-            ברוך הבא! איך אפשר לעזור לך היום?
-          </div>
-        )}
-        {systemMessage && !isLoading && (
-          <div className="message system-message">
-            {systemMessage}
-          </div>
-        )}
-        {messages.map((msg, index) => {
-          const date = new Date(msg.timestamp);
-          const formattedTime = !isNaN(date)
-            ? date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-            : "שעה לא זמינה";
 
-          return (
-            <div key={index} className={`message ${msg.from === 'client' ? 'client' : 'business'}`}>
-              <div className="message-text">{msg.text}</div>
-              <div className="message-time">{formattedTime}</div>
+      {/* הצגת הצ'אט רק אם לא בטאב של הודעות מלקוחות */}
+      {!isClientTabActive && (
+        <div className="chat-messages">
+          {messages.length === 0 && !isLoading && !systemMessage && (
+            <div className="message system-message">
+              ברוך הבא! איך אפשר לעזור לך היום?
             </div>
-          );
-        })}
-        {isLoading && (
-          <div className="message system-message">
-            <span className="loading-text">טוען...</span>
-          </div>
-        )}
-      </div>
-      <div className="chat-input">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="כתוב הודעה..."
-        />
-        <button onClick={sendMessage} disabled={isLoading || isSending}>שלח</button>
-      </div>
+          )}
+          {systemMessage && !isLoading && (
+            <div className="message system-message">
+              {systemMessage}
+            </div>
+          )}
+          {messages.map((msg, index) => {
+            const date = new Date(msg.timestamp);
+            const formattedTime = !isNaN(date)
+              ? date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+              : "שעה לא זמינה";
+
+            return (
+              <div key={index} className={`message ${msg.from === 'client' ? 'client' : 'business'}`}>
+                <div className="message-text">{msg.text}</div>
+                <div className="message-time">{formattedTime}</div>
+              </div>
+            );
+          })}
+          {isLoading && (
+            <div className="message system-message">
+              <span className="loading-text">טוען...</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* שדה שליחה */}
+      {(!isClientTabActive && !isLoading) && (
+        <div className="chat-input">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="כתוב הודעה..."
+          />
+          <button onClick={sendMessage} disabled={isLoading || isSending}>שלח</button>
+        </div>
+      )}
 
       {/* טאב הודעות מלקוחות */}
       <div className="client-messages-tab">

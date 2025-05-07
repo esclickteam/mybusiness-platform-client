@@ -126,7 +126,7 @@ const BusinessMessagesPage = () => {
             currentUser={{ _id: JSON.parse(localStorage.getItem("user"))?.userId }}
             partnerId={selected.clientId}
             partnerName={selected.name}
-            demoMessages={selected.messages}
+            demoMessages={selected.messages.filter(msg => msg.from !== 'client')} // הצגת רק הודעות בעל העסק
           />
         ) : (
           <EmptyState />
