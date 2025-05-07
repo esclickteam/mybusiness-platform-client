@@ -35,27 +35,27 @@ const ChatComponent = ({ userId }) => {
       console.log("שליחה נמנעה כי ההודעה ריקה או שהיא כבר בשליחה");
       return;
     }
-  
-    setIsSending(false);  // מצב של שליחה
-    setIsLoading(false);  // מצב של טעינה
+
+    setIsSending(true);  // מצב של שליחה
+    setIsLoading(true);  // מצב של טעינה
     console.log("שליחה בעבודה");
-  
+
     const newMsg = {
       text: message,
       timestamp: new Date().toISOString(),
       from: 'client',
       to: 'business',
     };
-  
+
     console.log("הודעה נשלחה:", newMsg);
-  
+
     // שליחה עם callback כדי לבדוק אם ההודעה נשלחה בהצלחה
     socket.emit('sendMessage', newMsg, (confirmation) => {
       console.log("תשובה מהשרת:", confirmation);
-  
+
       setIsLoading(false);  // סיום טעינה
       setIsSending(false);  // סיום שליחה
-  
+
       if (confirmation.success) {
         console.log("ההודעה נשלחה בהצלחה");
       } else {
@@ -63,13 +63,10 @@ const ChatComponent = ({ userId }) => {
         alert("שגיאה בשליחת ההודעה");
       }
     });
-  
+
     setMessages((prev) => [...prev, newMsg]);
     setMessage('');  // מנקה את התיבה אחרי שליחה
   };
-  
-  
-  
 
   useEffect(() => {
     const messageContainer = document.querySelector('.chat-messages');
