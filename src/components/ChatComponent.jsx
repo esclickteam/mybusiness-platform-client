@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import './ChatComponent.css';
 
-const socket = io('https://api.esclick.co.il');
+const socket = io('https://api.esclick.co.il', {
+  autoConnect: false, // מניעת חיבור אוטומטי
+});
 
 const ChatComponent = ({ userId }) => {
   const [message, setMessage] = useState('');
@@ -11,15 +13,18 @@ const ChatComponent = ({ userId }) => {
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    socket.emit('registerClient', userId);
-
-    socket.on('newMessage', (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-      setIsLoading(false);
-    });
+    if (userId) {
+      socket.auth = { userId };
+      socket.connect(); // התחברות ידנית לאחר קבלת מזהה המשתמש
+      socket.on('newMessage', (message) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
+        setIsLoading(false);
+      });
+    }
 
     return () => {
       socket.off('newMessage');
+      socket.disconnect(); // ניתוק בעת יציאת המשתמש
     };
   }, [userId]);
 
