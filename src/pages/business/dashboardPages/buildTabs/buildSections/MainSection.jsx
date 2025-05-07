@@ -181,7 +181,7 @@ export default function MainSection({
               />
               <button
                 className="delete-btn"
-                onClick={() => handleDeleteImage(img.publicId)}
+                onClick={() => handleDeleteImage(img.publicId, i)}
                 type="button"
                 title="מחיקה"
                 disabled={isSaving}

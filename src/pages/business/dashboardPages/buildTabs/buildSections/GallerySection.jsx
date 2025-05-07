@@ -48,7 +48,7 @@ export default function GallerySection({
                 />
                 <button
                   className="delete-btn"
-                  onClick={() => handleDeleteImage(item.publicId)}
+                  onClick={() => handleDeleteImage(item.publicId, i)}
                   type="button"
                   title="מחיקה"
                 >
