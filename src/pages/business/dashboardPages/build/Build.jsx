@@ -56,56 +56,77 @@ export default function Build() {
   const pendingUploadsRef  = useRef([]);
 
   // עוזר ל-track עליות אסינכרוניות
-  const track = p => {
-    pendingUploadsRef.current.push(p);
-    p.finally(() => {
-      pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
-    });
-    return p;
-  };
+  // Helper above your component
+function extractPublicIdFromUrl(url) {
+  // מניחים שה‐URL נגמר ב־<publicId>.<format>?… או ב־<publicId>.<format>
+  const filename = url.split("/").pop().split("?")[0];
+  return filename.substring(0, filename.lastIndexOf("."));
+}
 
-  // טעינת הנתונים הראשונית
-  useEffect(() => {
-    API.get("/business/my")
-      .then(res => {
-        if (res.status === 200) {
-          const data = res.data.business || res.data;
-  
-          // תמיכה ב־address מחרוזת או אובייקט
-          const rawAddress = data.address;
-          const city = typeof rawAddress === "string"
-            ? rawAddress
-            : rawAddress?.city || "";
-  
-          setBusinessDetails({
-            // שדות בסיסיים
-            name:        data.name || "",
-            description: data.description || "",
-            phone:       data.phone || "",
-            email:       data.email || "",
-            category:    data.category || "",
-            city,
-  
-            // לוגו: שומרים URL ומזהה נפרד
-            logo:    data.logo    || null,
-            logoId:  data.logoId  || null,
-  
-            // גלריה: מערך URLs + מערך publicIds
-            gallery:         data.gallery         || [],
-            galleryImageIds: data.galleryImageIds || [],
-  
-            // תמונות ראשיות: מערך URLs + מערך publicIds
-            mainImages:    data.mainImages    || [],
-            mainImageIds:  data.mainImageIds  || [],
-  
-            // שאר השדות
-            faqs:    data.faqs    || [],
-            reviews: data.reviews || []
-          });
-        }
-      })
-      .catch(console.error);
-  }, []);
+const track = p => {
+  pendingUploadsRef.current.push(p);
+  p.finally(() => {
+    pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
+  });
+  return p;
+};
+
+// טעינת הנתונים הראשונית
+useEffect(() => {
+  API.get("/business/my")
+    .then(res => {
+      if (res.status === 200) {
+        const data = res.data.business || res.data;
+
+        // תמיכה ב־address מחרוזת או אובייקט
+        const rawAddress = data.address;
+        const city = typeof rawAddress === "string"
+          ? rawAddress
+          : rawAddress?.city || "";
+
+        // URLs ישנים
+        const urls       = data.mainImages   || [];
+        const galleryUrls= data.gallery      || [];
+
+        // IDs: אם כבר קיימים במערך – נשמור אותם, אחרת נחלץ מהכתובת
+        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+          ? data.mainImageIds
+          : urls.map(extractPublicIdFromUrl);
+        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+          ? data.galleryImageIds
+          : galleryUrls.map(extractPublicIdFromUrl);
+
+        setBusinessDetails(prev => ({
+          ...prev,
+          // שדות בסיסיים
+          name:        data.name        || "",
+          description: data.description || "",
+          phone:       data.phone       || "",
+          email:       data.email       || "",
+          category:    data.category    || "",
+          city,
+
+          // לוגו
+          logo:   data.logo   || null,
+          logoId: data.logoId || null,
+
+          // גלריה
+          gallery:         galleryUrls,
+          galleryImageIds: galleryIds,
+
+          // תמונות ראשיות
+          mainImages:   urls,
+          mainImageIds: mainIds,
+
+          // שאר השדות
+          faqs:    data.faqs    || [],
+          reviews: data.reviews || []
+        }));
+      }
+    })
+    .catch(console.error);
+}, []);
+
   
   
   
