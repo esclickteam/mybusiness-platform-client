@@ -2,38 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import './ChatComponent.css'; // ייבוא ה-CSS
 
-// התחברות לשרת Socket.io
-const socket = io('https://api.esclick.co.il');  // עדכון לכתובת השרת שלך
+const socket = io('https://api.esclick.co.il');  // התחברות לשרת
 
 const ChatComponent = () => {
   const [message, setMessage] = useState("");  // שדה ההודעה
-  const [messages, setMessages] = useState([]); // רשימת ההודעות הכללית
-  const [clientMessages, setClientMessages] = useState([]); // רשימת ההודעות מלקוחות בלבד
+  const [messages, setMessages] = useState([]); // רשימת ההודעות הכללית (לקוחות + בעל העסק)
   const [isLoading, setIsLoading] = useState(false);  // אינדיקטור של טעינה
-  const [systemMessage, setSystemMessage] = useState(""); // הודעת מערכת
   const [isSending, setIsSending] = useState(false);  // משתנה למניעת שליחה כפולה
-  const [isClientTabActive, setIsClientTabActive] = useState(false);  // משתנה לניהול מצב הטאב
 
   // קבלת הודעות מהשרת
   useEffect(() => {
-    socket.on('receiveMessage', (incoming) => {
-      const msgObj = typeof incoming === 'string'
-        ? { text: incoming, timestamp: new Date().toISOString(), from: 'business' }
-        : incoming;
-
-      // אם ההודעה מלקוח, נשמור אותה בנפרד בטאב של הודעות מלקוחות
-      if (msgObj.from === 'client') {
-        setClientMessages((prevMessages) => [...prevMessages, msgObj]);
-      }
-
-      // נוסיף את כל ההודעות גם לרשימה הכללית
-      setMessages((prevMessages) => [...prevMessages, msgObj]);
+    socket.on('newMessage', (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
       setIsLoading(false);  // סיום טעינה
     });
 
-    // ניתוק מהשרת כשהרכיב עוזב את הדף
+    // ניתוק מהשרת כאשר הרכיב עוזב את הדף
     return () => {
-      socket.off('receiveMessage');
+      socket.off('newMessage');
     };
   }, []);
 
@@ -46,16 +32,14 @@ const ChatComponent = () => {
     const newMsg = {
       text: message,
       timestamp: new Date().toISOString(),
-      from: 'client',
+      from: 'client', // ההודעה נשלחת על ידי הלקוח
     };
+
     setIsLoading(true);  // הצגת טעינה
-    socket.emit('sendMessage', newMsg, () => { // הוספת callback אחרי שליחה
-      setIsLoading(false);  // סיום טעינה
-      setIsSending(false);  // השבתת שליחה
-    });  
-    // עדכון ההודעות בצד הלקוח
-    setMessages((prev) => [...prev, newMsg]);  
+    socket.emit('sendMessage', newMsg);  // שולחים את ההודעה לשרת
+    setMessages((prev) => [...prev, newMsg]);  // עדכון ההודעות בצד הלקוח
     setMessage("");  // ניקוי שדה ההודעה
+    setIsSending(false); // השבתת שליחה
   };
 
   // גלילה אוטומטית להודעות האחרונות
@@ -72,70 +56,35 @@ const ChatComponent = () => {
         <h3>צ'אט עם העסק</h3>
       </div>
 
-      {/* הצגת הצ'אט רק אם לא בטאב של הודעות מלקוחות */}
-      {!isClientTabActive && (
-        <div className="chat-messages">
-          {messages.length === 0 && !isLoading && !systemMessage && (
-            <div className="message system-message">
-              ברוך הבא! איך אפשר לעזור לך היום?
-            </div>
-          )}
-          {systemMessage && !isLoading && (
-            <div className="message system-message">
-              {systemMessage}
-            </div>
-          )}
-          {messages.map((msg, index) => {
-            const date = new Date(msg.timestamp);
-            const formattedTime = !isNaN(date)
-              ? date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-              : "שעה לא זמינה";
-
-            return (
-              <div key={index} className={`message ${msg.from === 'client' ? 'client' : 'business'}`}>
-                <div className="message-text">{msg.text}</div>
-                <div className="message-time">{formattedTime}</div>
-              </div>
-            );
-          })}
-          {isLoading && (
-            <div className="message system-message">
-              <span className="loading-text">טוען...</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* שדה שליחה */}
-      {(!isClientTabActive && !isLoading) && (
-        <div className="chat-input">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="כתוב הודעה..."
-          />
-          <button onClick={sendMessage} disabled={isLoading || isSending}>שלח</button>
-        </div>
-      )}
-
-      {/* טאב הודעות מלקוחות */}
-      <div className="client-messages-tab">
-        <h3>הודעות מלקוחות</h3>
-        {clientMessages.length === 0 && <div>אין הודעות מלקוחות כרגע.</div>}
-        {clientMessages.map((msg, index) => {
+      <div className="chat-messages">
+        {messages.map((msg, index) => {
           const date = new Date(msg.timestamp);
           const formattedTime = !isNaN(date)
             ? date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
             : "שעה לא זמינה";
 
           return (
-            <div key={index} className="message client">
+            <div key={index} className={`message ${msg.from === 'client' ? 'client' : 'business'}`}>
               <div className="message-text">{msg.text}</div>
               <div className="message-time">{formattedTime}</div>
             </div>
           );
         })}
+        {isLoading && (
+          <div className="message system-message">
+            <span className="loading-text">טוען...</span>
+          </div>
+        )}
+      </div>
+
+      <div className="chat-input">
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="כתוב הודעה..."
+        />
+        <button onClick={sendMessage} disabled={isLoading || isSending}>שלח</button>
       </div>
     </div>
   );
