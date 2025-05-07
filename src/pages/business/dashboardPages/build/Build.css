@@ -65,23 +65,21 @@
 /* 3 תמונות בשורה, יחס 1:1 */
 /* === תצוגת תמונות בפרופיל הציבורי === */
 /* 3 תמונות בשורה, יחס 1:1 */
-.preview-column .preview-images img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* ממלא את הקונטיינר מבלי לעוות את התמונה */
-  object-position: center; /* ממקם את התמונה במרכז */
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  aspect-ratio: 1 / 1; /* תבטיח שהתמונה תהיה בגודל אחיד */
+.preview-column .preview-images {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 עמודות אחידות */
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .preview-column .preview-images .image-wrapper {
-  width: 100%;
-  aspect-ratio: 1 / 1; /* יחס גובה-רוחב 1:1 */
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1; /* יחס גובה-רוחב 1:1 */
+  overflow: hidden;
 }
 
 .preview-column .preview-images img {
@@ -92,6 +90,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
+
 
 
 
