@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom"; 
 import API from "../../../api";
 import BusinessChat from "./BusinessChatComponent";
 import "./BusinessMessagesPage.css";
-import { useParams } from "react-router-dom"; // הוספתי את useParams
 
 // Placeholder shown when there are no real conversations
 const EmptyState = () => (
@@ -14,6 +14,7 @@ const EmptyState = () => (
 
 const BusinessMessagesPage = () => {
   const { businessId } = useParams(); // קבלת ה-businessId מה-URL
+  const navigate = useNavigate(); // הוספתי את useNavigate
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState(null);
 
@@ -48,6 +49,7 @@ const BusinessMessagesPage = () => {
 
     eventSource.addEventListener("new_message", (event) => {
       const newMessage = JSON.parse(event.data);
+      
       // Update the conversations state with the new message
       setConversations((prevConversations) => {
         const updatedConversations = prevConversations.map((conversation) => {
@@ -66,13 +68,16 @@ const BusinessMessagesPage = () => {
           ...prevSelected,
           messages: [...prevSelected.messages, newMessage]
         }));
+      } else {
+        // אם השיחה החדשה לא נבחרה, נווט אל הצ'אט החדש
+        navigate(`/business/${businessId}/chat`);
       }
     });
 
     return () => {
       eventSource.close();
     };
-  }, [selected]); // תלות ב-selected כדי לעדכן את השיחה הנבחרת
+  }, [selected, businessId, navigate]); // הוספתי את navigate
 
   // If no conversations loaded yet
   if (conversations.length === 0) {
