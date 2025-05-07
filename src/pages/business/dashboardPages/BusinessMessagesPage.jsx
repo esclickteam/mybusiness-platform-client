@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; 
+import { useParams, useNavigate } from "react-router-dom";
 import API from "../../../api";
 import BusinessChat from "./BusinessChatComponent";
 import "./BusinessMessagesPage.css";
@@ -15,8 +15,8 @@ const EmptyState = () => (
 const BusinessMessagesPage = () => {
   const { businessId } = useParams(); // קבלת ה-businessId מה-URL
   const navigate = useNavigate(); // הוספתי את useNavigate
-  const [conversations, setConversations] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [conversations, setConversations] = useState([]); // רשימת השיחות
+  const [selected, setSelected] = useState(null); // השיחה שנבחרה
 
   // Fetch the conversations when the component mounts
   useEffect(() => {
@@ -49,7 +49,7 @@ const BusinessMessagesPage = () => {
 
     eventSource.addEventListener("new_message", (event) => {
       const newMessage = JSON.parse(event.data);
-      
+
       // Update the conversations state with the new message
       setConversations((prevConversations) => {
         const updatedConversations = prevConversations.map((conversation) => {
