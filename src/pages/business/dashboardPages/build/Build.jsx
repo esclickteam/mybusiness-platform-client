@@ -197,15 +197,21 @@ const handleMainImagesChange = async e => {
   
 
 const handleDeleteMainImage = async (idx) => {
-  const url = businessDetails.mainImages[idx]; // מקבל את ה-URL של התמונה
-  if (!url) return;
+  const url = businessDetails.mainImages[idx]; // השתמש ב-mainImages בטאב הראשי
+  if (!url?.preview) return;
 
-  // חותכים את ה-publicId מה-URL
+  // מפיק את ה-publicId מתוך ה-URL של Cloudinary
   const publicId = url.preview.split('/').pop().split('.')[0];
 
   try {
+    // הדפסת ה-publicId למחיקה
+    console.log("Attempting to delete image with publicId:", publicId);
+
     const res = await API.delete(`/business/my/main-images/${encodeURIComponent(publicId)}`);
-    if (res.status === 204) {  // אם המחיקה הצליחה
+
+    // אם המחיקה הצליחה
+    if (res.status === 204) {
+      // עדכון mainImages אחרי מחיקת התמונה
       setBusinessDetails(prev => {
         const updatedMainImages = prev.mainImages.filter((_, index) => index !== idx);
         return {
@@ -215,11 +221,14 @@ const handleDeleteMainImage = async (idx) => {
       });
     } else {
       console.warn("מחיקה נכשלה:", res);
+      alert("❌ שגיאה במחיקת התמונה. אנא נסה שוב.");
     }
   } catch (err) {
     console.error("שגיאה במחיקת תמונה בטאב הראשי:", err);
+    alert("❌ שגיאה במחיקת התמונה. אנא נסה שוב.");
   }
 };
+
 
 
 
@@ -310,10 +319,11 @@ const handleDeleteMainImage = async (idx) => {
     const handleDeleteGalleryImage = async (idx) => {
       const url = businessDetails.gallery[idx]?.preview;  // מקבל את ה-URL של התמונה
       if (!url) return;
-    
+      
       // חותכים את ה-publicId מה-URL
       const publicId = url.split('/').pop().split('.')[0];
-    
+      console.log("Deleting image with publicId:", publicId); // הדפסת ה-publicId למחיקה
+      
       try {
         const res = await API.delete(`/business/my/gallery/${encodeURIComponent(publicId)}`);
         if (res.status === 204) {  // אם המחיקה הצליחה
@@ -324,6 +334,7 @@ const handleDeleteMainImage = async (idx) => {
               gallery: updatedGallery
             };
           });
+          console.log("Image deleted successfully!");
         } else {
           console.warn("מחיקה נכשלה:", res);
         }
@@ -331,6 +342,7 @@ const handleDeleteMainImage = async (idx) => {
         console.error("שגיאה במחיקת תמונה:", err);
       }
     };
+    
     
     
     
