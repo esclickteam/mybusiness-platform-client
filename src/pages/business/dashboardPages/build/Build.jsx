@@ -234,41 +234,37 @@ useEffect(() => {
   // Build.jsx
 
 // קודם כל, נשנה את החתימה כך שהפונקציה תקבל כבר את ה-publicId
-const handleDeleteMainImage = async (fullPublicId) => {
-  console.log("🔴 handleDeleteMainImage called with publicId:", fullPublicId);
-
-  if (!fullPublicId) {
-    console.warn("⚠️ No publicId passed to handleDeleteMainImage");
+const handleDeleteMainImage = async (publicId) => {
+  console.log("🔴 Deleting publicId:", publicId);
+  if (!publicId) {
+    console.warn("⚠️ No publicId passed");
     return;
   }
 
-  //  מדלגים על התיקיה: לוקחים רק את הסגמנט האחרון
-  const shortId = fullPublicId.split("/").pop();
-
   try {
-    // שולחים shortId (בלי הסלאשים) ל־endpoint
-    const res = await API.delete(
-      `/business/my/main-images/${shortId}`
-    );
+    // encodeURIComponent ימיר "/" ל־"%2F" כך שניתן לשלוח ל־path פרמטר עם תת־תיקיה
+    const encodedId = encodeURIComponent(publicId);
+    const res = await API.delete(`/business/my/main-images/${encodedId}`);
 
-    console.log("🟢 DELETE response status:", res.status);
-
+    console.log("🟢 DELETE status:", res.status);
     if (res.status === 204) {
-      // מסננים בחזרה לפי ה־fullPublicId
+      // עדכון state: מסירים גם מה־mainImages וגם מה־mainImageIds
       setBusinessDetails(prev => ({
         ...prev,
-        mainImages: prev.mainImages.filter(img => img.publicId !== fullPublicId)
+        mainImages:   prev.mainImages  .filter(img => img.publicId !== publicId),
+        mainImageIds: prev.mainImageIds.filter(id  => id      !== publicId)
       }));
-      console.log("✅ Image removed from state:", fullPublicId);
+      console.log("✅ Removed:", publicId);
     } else {
-      console.warn("❌ DELETE failed with response:", res);
-      alert("❌ שגיאה במחיקת התמונה. אנא נסה שוב.");
+      console.warn("❌ DELETE failed:", res);
+      alert("שגיאה במחיקת תמונה");
     }
   } catch (err) {
-    console.error("🚨 Error in handleDeleteMainImage:", err);
-    alert("❌ שגיאה במחיקת התמונה. אנא נסה שוב.");
+    console.error("🚨 Error:", err);
+    alert("שגיאה במחיקת תמונה");
   }
 };
+
 
 
 
