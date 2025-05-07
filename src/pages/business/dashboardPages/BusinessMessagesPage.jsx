@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../../api";
 import BusinessChat from "./BusinessChatComponent";
 import "./BusinessMessagesPage.css";
+import { useParams } from "react-router-dom"; // הוספתי את useParams
 
 // Placeholder shown when there are no real conversations
 const EmptyState = () => (
@@ -12,6 +13,7 @@ const EmptyState = () => (
 );
 
 const BusinessMessagesPage = () => {
+  const { businessId } = useParams(); // קבלת ה-businessId מה-URL
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState(null);
 
@@ -30,7 +32,7 @@ const BusinessMessagesPage = () => {
         const { data } = await API.get(`/chat/conversations/${userId}`);
         if (data.length > 0) {
           setConversations(data);
-          setSelected(data[0]);
+          setSelected(data[0]); // בחר את השיחה הראשונה אם יש שיחות
         } else {
           setConversations([]);
         }
@@ -57,12 +59,20 @@ const BusinessMessagesPage = () => {
         });
         return updatedConversations;
       });
+
+      // אם השיחה הנבחרת היא השיחה עם ההודעה החדשה, עדכן אותה
+      if (selected && selected._id === newMessage.businessId) {
+        setSelected((prevSelected) => ({
+          ...prevSelected,
+          messages: [...prevSelected.messages, newMessage]
+        }));
+      }
     });
 
     return () => {
       eventSource.close();
     };
-  }, []);
+  }, [selected]); // תלות ב-selected כדי לעדכן את השיחה הנבחרת
 
   // If no conversations loaded yet
   if (conversations.length === 0) {

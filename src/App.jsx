@@ -116,6 +116,8 @@ export default function App() {
 
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
+          <Route path="/business/:businessId/chat" element={<BusinessMessagesPage />} />
+
 
           {/* Business dashboard (protected) */}
           <Route
