@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import './ChatComponent.css'; // ייבוא ה-CSS
 
 // התחברות לשרת Socket.io
-const socket = io('https://api.esclick.co.il:8888');  // עדכון לכתובת השרת שלך
+const socket = io('https://api.esclick.co.il');
 
 const ChatComponent = () => {
   const [message, setMessage] = useState("");  // שדה ההודעה
