@@ -18,7 +18,7 @@ const ChatComponent = ({ userId }) => {
       socket.connect(); // התחברות ידנית לאחר קבלת מזהה המשתמש
       socket.on('newMessage', (message) => {
         setMessages((prevMessages) => [...prevMessages, message]);
-        setIsLoading(false);
+        setIsLoading(false); // סיום טעינה
       });
     }
 
@@ -28,17 +28,14 @@ const ChatComponent = ({ userId }) => {
     };
   }, [userId]);
 
-  const sendMessage = (e) => {
+  const sendMessage = async (e) => {
     e.preventDefault();
-    console.log("שליחה החלה");
     if (isSending || !message.trim()) {
-      console.log("שליחה נמנעה כי ההודעה ריקה או שהיא כבר בשליחה");
-      return;
+      return; // אם ההודעה ריקה או היא כבר בשליחה, אל תשלח
     }
 
-    setIsSending(true);  // מצב של שליחה
-    setIsLoading(true);  // מצב של טעינה
-    console.log("שליחה בעבודה");
+    setIsSending(true); // מצב של שליחה
+    setIsLoading(true); // מצב של טעינה
 
     const newMsg = {
       text: message,
@@ -47,25 +44,28 @@ const ChatComponent = ({ userId }) => {
       to: 'business',
     };
 
-    console.log("הודעה נשלחה:", newMsg);
+    console.log("שליחת הודעה:", newMsg);
 
-    // שליחה עם callback כדי לבדוק אם ההודעה נשלחה בהצלחה
-    socket.emit('sendMessage', newMsg, (confirmation) => {
-      console.log("תשובה מהשרת:", confirmation);
+    try {
+      // שליחה עם async/await
+      await socket.emit('sendMessage', newMsg, (confirmation) => {
+        if (confirmation.success) {
+          console.log("ההודעה נשלחה בהצלחה");
+        } else {
+          console.error("שגיאה בשליחת ההודעה");
+        }
+      });
 
-      setIsLoading(false);  // סיום טעינה
-      setIsSending(false);  // סיום שליחה
-
-      if (confirmation.success) {
-        console.log("ההודעה נשלחה בהצלחה");
-      } else {
-        console.error("שגיאה בשליחת ההודעה");
-        alert("שגיאה בשליחת ההודעה");
-      }
-    });
-
-    setMessages((prev) => [...prev, newMsg]);
-    setMessage('');  // מנקה את התיבה אחרי שליחה
+      // לאחר שליחה – עדכון מצבים
+      setMessages((prev) => [...prev, newMsg]);
+      setMessage(''); // מנקה את תיבת ההודעה
+    } catch (error) {
+      console.error("שגיאה בהתחברות לשרת:", error);
+      alert("שגיאה בשליחת ההודעה");
+    } finally {
+      setIsSending(false); // סיום שליחה
+      setIsLoading(false); // סיום טעינה
+    }
   };
 
   useEffect(() => {
