@@ -28,12 +28,7 @@ export default function MainSection({
 }) {
   const containerRef = useRef();
 
-  // dedupe & limit images
-  const mainImages = businessDetails.mainImages || [];
-  const uniqueImages = dedupeByPreview(mainImages);
-  const limitedMainImgs = uniqueImages.slice(0, 5);
-
-  // close react-select menus on outside click
+  // Close react-select menus on outside click
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -43,6 +38,18 @@ export default function MainSection({
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
+
+  // Wrap raw URLs & IDs into objects for preview & deletion
+  const rawUrls = businessDetails.mainImages || [];
+  const rawIds  = businessDetails.mainImageIds || [];
+  const wrappedMainImages = rawUrls.map((url, idx) => ({
+    preview:  url,
+    publicId: rawIds[idx] || null
+  }));
+
+  // Deduplicate & limit images
+  const uniqueImages    = dedupeByPreview(wrappedMainImages);
+  const limitedMainImgs = uniqueImages.slice(0, 5);
 
   // wrap onChange to mimic native input event
   const wrapSelectChange = name => option =>
@@ -149,6 +156,7 @@ export default function MainSection({
           style={{ display: "none" }}
           ref={logoInputRef}
           disabled={isSaving}
+          onChange={handleInputChange}
         />
         <button
           type="button"
@@ -172,16 +180,16 @@ export default function MainSection({
           disabled={isSaving}
         />
         <div className="gallery-preview">
-          {limitedMainImgs.map((img, i) => (
-            <div key={img.publicId ?? `preview-${i}`} className="gallery-item-wrapper image-wrapper">
+          {limitedMainImgs.map(({ preview, publicId }, i) => (
+            <div key={publicId || `preview-${i}`} className="gallery-item-wrapper image-wrapper">
               <ImageLoader
-                src={img.preview}
+                src={preview}
                 alt="תמונה ראשית"
                 className="gallery-img"
               />
               <button
                 className="delete-btn"
-                onClick={() => handleDeleteImage(img.publicId, i)}
+                onClick={() => handleDeleteImage(publicId)}
                 type="button"
                 title="מחיקה"
                 disabled={isSaving}
@@ -226,9 +234,9 @@ export default function MainSection({
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
-          {limitedMainImgs.map((img, i) => (
-            <div key={img.publicId ?? `preview-${i}`} className="image-wrapper">
-              <ImageLoader src={img.preview} alt="תמונה ראשית" />
+          {limitedMainImgs.map(({ preview }, i) => (
+            <div key={i} className="image-wrapper">
+              <ImageLoader src={preview} alt="תמונה ראשית" />
             </div>
           ))}
         </div>
