@@ -107,6 +107,11 @@ export default function BusinessProfileView() {
     }
   };
 
+  // פונקציה שתנווט לטאב הצ'אט עם העסק
+  const handleChatClick = () => {
+    window.location.href = `/business/chat/${businessId}`;
+  };
+
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
   if (!data) return <div className="error">העסק לא נמצא</div>;
