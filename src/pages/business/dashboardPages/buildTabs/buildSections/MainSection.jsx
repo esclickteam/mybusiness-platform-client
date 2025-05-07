@@ -96,10 +96,7 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={
-            categoryOptions.find(o => o.value === businessDetails.category) ||
-            null
-          }
+          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
@@ -115,9 +112,7 @@ export default function MainSection({
             inputValue ? "אין קטגוריות מתאימות" : null
           }
           menuPortalTarget={document.body}
-          styles={{
-            menuPortal: base => ({ ...base, zIndex: 9999 })
-          }}
+          styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
         />
 
         {/* עיר */}
@@ -142,9 +137,7 @@ export default function MainSection({
             inputValue ? "אין ערים מתאימות" : null
           }
           menuPortalTarget={document.body}
-          styles={{
-            menuPortal: base => ({ ...base, zIndex: 9999 })
-          }}
+          styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
         />
 
         {/* לוגו */}
@@ -179,16 +172,16 @@ export default function MainSection({
           disabled={isSaving}
         />
         <div className="gallery-preview">
-          {limitedMainImgs.map((img, i) => (
-            <div key={i} className="gallery-item-wrapper image-wrapper">
+          {limitedMainImgs.map(img => (
+            <div key={img.publicId} className="gallery-item-wrapper image-wrapper">
               <ImageLoader
                 src={img.preview}
-                alt={`תמונה ראשית ${i + 1}`}
+                alt="תמונה ראשית"
                 className="gallery-img"
               />
               <button
                 className="delete-btn"
-                onClick={() => handleDeleteImage(i)}
+                onClick={() => handleDeleteImage(img.publicId)}
                 type="button"
                 title="מחיקה"
                 disabled={isSaving}
@@ -208,7 +201,11 @@ export default function MainSection({
         </div>
 
         {/* שמירה */}
-        <button className="save-btn" onClick={handleSave} disabled={isSaving}>
+        <button
+          className="save-btn"
+          onClick={handleSave}
+          disabled={isSaving}
+        >
           {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
 
@@ -229,12 +226,9 @@ export default function MainSection({
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
-          {limitedMainImgs.map((img, i) => (
-            <div key={i} className="image-wrapper">
-              <ImageLoader
-                src={img.preview}
-                alt={`תמונה ראשית ${i + 1}`}
-              />
+          {limitedMainImgs.map(img => (
+            <div key={img.publicId} className="image-wrapper">
+              <ImageLoader src={img.preview} alt="תמונה ראשית" />
             </div>
           ))}
         </div>

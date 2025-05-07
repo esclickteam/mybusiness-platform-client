@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function GallerySection({
   businessDetails,
   galleryInputRef,
@@ -37,16 +39,16 @@ export default function GallerySection({
         <h3 className="section-title">הגלריה שלנו</h3>
         <div className="gallery-grid-container">
           {gallery.length > 0 ? (
-            gallery.map((item, i) => (
-              <div key={i} className="gallery-item-wrapper">
+            gallery.map(item => (
+              <div key={item.publicId} className="gallery-item-wrapper">
                 <img
                   src={item.preview}
-                  alt={`תמונת גלריה ${i + 1}`}
+                  alt="תמונת גלריה"
                   className="gallery-img"
                 />
                 <button
                   className="delete-btn"
-                  onClick={() => handleDeleteImage(item.public_id)} // העברת public_id למחיקה
+                  onClick={() => handleDeleteImage(item.publicId)}
                   type="button"
                   title="מחיקה"
                 >

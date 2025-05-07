@@ -78,27 +78,32 @@ export default function Build() {
             : rawAddress?.city || "";
   
           setBusinessDetails({
-            // ← העיר שמפוענחת
             city,
-  
-            // שאר השדות כפי שהיו
             ...data,
   
-            // ✅ הכנת הלוגו לתצוגה
+            // הכנת הלוגו לתצוגה
             logo: data.logo ? { preview: data.logo } : null,
   
-            // ✅ גלריה
-            gallery: (data.gallery || []).map(url => ({ preview: url })),
+            // גלריה עם publicId
+            gallery: (data.gallery || []).map((url, i) => ({
+              preview:  url,
+              publicId: (data.galleryImageIds || [])[i] || null
+            })),
   
-            // ✅ תמונות ראשיות עם הסרת כפילויות
+            // תמונות ראשיות עם publicId וסינון כפילויות
             mainImages: dedupeByPreview(
-              (data.mainImages || []).map(url => ({ preview: url, size: "full" }))
+              (data.mainImages || []).map((url, i) => ({
+                preview:  url,
+                publicId: (data.mainImageIds || [])[i] || null,
+                size:     "full"
+              }))
             ).slice(0, 5),
           });
         }
       })
       .catch(console.error);
   }, []);
+  
   
   
   
@@ -110,115 +115,119 @@ export default function Build() {
   // ===== LOGO =====
   const handleLogoClick = () => logoInputRef.current?.click();
 
-const handleLogoChange = e => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  e.target.value = null;
-
-  // 🧹 ניקוי preview קודם אם היה blob
-  if (businessDetails.logo?.preview?.startsWith("blob:")) {
-    URL.revokeObjectURL(businessDetails.logo.preview);
-  }
-
-  const preview = URL.createObjectURL(file);
-
-  // ⬇️ עדכון זמני ל־state
-  setBusinessDetails(prev => ({
-    ...prev,
-    logo: { file, preview }
-  }));
-
-  // ⬆️ שליחה ל־API
-  const fd = new FormData();
-  fd.append("logo", file);
-
-  track(
-    API.put("/business/my/logo", fd)
-      .then(res => {
-        if (res.status === 200) {
-          setBusinessDetails(prev => ({
-            ...prev,
-            logo: { preview: res.data.logo } // ← מחליף את ה־blob ב־URL אמיתי
-          }));
-        }
-      })
-      .catch(console.error)
-      .finally(() => URL.revokeObjectURL(preview)) // 🧼 ניקוי blob מהזיכרון
-  );
-};
+  const handleLogoChange = e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = null;
+  
+    // 🧹 ניקוי preview קודם אם היה blob
+    if (businessDetails.logo?.preview?.startsWith("blob:")) {
+      URL.revokeObjectURL(businessDetails.logo.preview);
+    }
+  
+    const preview = URL.createObjectURL(file);
+  
+    // ⬇️ עדכון זמני ל־state
+    setBusinessDetails(prev => ({
+      ...prev,
+      logo: { file, preview }
+    }));
+  
+    // ⬆️ שליחה ל־API
+    const fd = new FormData();
+    fd.append("logo", file);
+  
+    track(
+      API.put("/business/my/logo", fd)
+        .then(res => {
+          if (res.status === 200) {
+            setBusinessDetails(prev => ({
+              ...prev,
+              logo: {
+                preview:  res.data.logo,
+                publicId: res.data.logoId
+              }
+            }));
+          }
+        })
+        .catch(console.error)
+        .finally(() => URL.revokeObjectURL(preview))
+    );
+  };  // ← כאן סוגרים את handleLogoChange
+  
+  
 
 
   // ===== MAIN IMAGES =====
   // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
 
-const handleMainImagesChange = async e => {
-  // 1) בוחרים עד 5 קבצים
-  const files = Array.from(e.target.files || []).slice(0, 5);
-  if (!files.length) return;
-  e.target.value = null;
-
-  // 2) הכנת פריוויו לשלב ההעלאה
-  const previews = files.map(f => ({
-    preview: URL.createObjectURL(f),
-    file: f
-  }));
-
-  // 3) **החלפה מלאה** של mainImages לפריוויו בלבד (blob)
-  setBusinessDetails(prev => ({
-    ...prev,
-    mainImages: previews
-  }));
-
-  // 4) שליחה ל־API
-  const fd = new FormData();
-  files.forEach(f => fd.append("main-images", f));
-  try {
-    const res = await API.put("/business/my/main-images", fd);
-    if (res.status === 200) {
-      // 5) עטיפת ה־URLs שהשרת החזיר ➞ החלפה מלאה + חיתוך ל-5
-      const wrapped = res.data.mainImages
-        .slice(0, 5)
-        .map(url => ({ preview: url }));
-      setBusinessDetails(prev => ({
-        ...prev,
-        mainImages: wrapped
-      }));
-    } else {
-      console.warn("העלאת תמונות נכשלה:", res);
+  const handleMainImagesChange = async e => {
+    // 1) בוחרים עד 5 קבצים
+    const files = Array.from(e.target.files || []).slice(0, 5);
+    if (!files.length) return;
+    e.target.value = null;
+  
+    // 2) הכנת פריוויו לשלב ההעלאה
+    const previews = files.map(f => ({
+      preview: URL.createObjectURL(f),
+      file:    f
+    }));
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: previews
+    }));
+  
+    // 3) שליחה ל-API
+    const fd = new FormData();
+    files.forEach(f => fd.append("main-images", f));
+  
+    try {
+      const res = await API.put("/business/my/main-images", fd);
+  
+      if (res.status === 200) {
+        const wrapped = (res.data.mainImages || [])
+          .slice(0, 5)
+          .map((url, i) => ({
+            preview:  url,
+            publicId: (res.data.mainImageIds || [])[i] || null
+          }));
+  
+        setBusinessDetails(prev => ({
+          ...prev,
+          mainImages: wrapped
+        }));
+      } else {
+        console.warn("העלאת תמונות נכשלה:", res);
+      }
+    } catch (err) {
+      console.error("שגיאה בהעלאה:", err);
+    } finally {
+      previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
-  } catch (err) {
-    console.error("שגיאה בהעלאה:", err);
-  } finally {
-    // 6) ניקוי זיכרון של blob-URLs
-    previews.forEach(p => URL.revokeObjectURL(p.preview));
-  }
-};
+  };
+  
 
   
 
-const handleDeleteMainImage = async (idx) => {
-  const url = businessDetails.mainImages[idx]; // השתמש ב-mainImages בטאב הראשי
-  if (!url?.preview) return;
+  // Build.jsx
 
-  // מפיק את ה-publicId מתוך ה-URL של Cloudinary
-  const publicId = url.preview.split('/').pop().split('.')[0];
+// קודם כל, נשנה את החתימה כך שהפונקציה תקבל כבר את ה-publicId
+const handleDeleteMainImage = async (publicId) => {
+  if (!publicId) return;
+
+  console.log("Attempting to delete image with publicId:", publicId);
 
   try {
-    // הדפסת ה-publicId למחיקה
-    console.log("Attempting to delete image with publicId:", publicId);
+    const res = await API.delete(
+      `/business/my/main-images/${encodeURIComponent(publicId)}`
+    );
 
-    const res = await API.delete(`/business/my/main-images/${encodeURIComponent(publicId)}`);
-
-    // אם המחיקה הצליחה
     if (res.status === 204) {
-      // עדכון mainImages אחרי מחיקת התמונה
-      setBusinessDetails(prev => {
-        const updatedMainImages = prev.mainImages.filter((_, index) => index !== idx);
-        return {
-          ...prev,
-          mainImages: updatedMainImages
-        };
-      });
+      // מסננים את ה-state על פי publicId ולא על פי אינדקס
+      setBusinessDetails(prev => ({
+        ...prev,
+        mainImages: prev.mainImages.filter(img => img.publicId !== publicId)
+      }));
     } else {
       console.warn("מחיקה נכשלה:", res);
       alert("❌ שגיאה במחיקת התמונה. אנא נסה שוב.");
@@ -228,6 +237,8 @@ const handleDeleteMainImage = async (idx) => {
     alert("❌ שגיאה במחיקת התמונה. אנא נסה שוב.");
   }
 };
+
+  
 
 
 
@@ -272,7 +283,7 @@ const handleDeleteMainImage = async (idx) => {
       preview: URL.createObjectURL(f)
     }));
   
-    console.log("New images to upload:", previews); // לוג תמונות חדשות
+    console.log("New images to upload:", previews);
   
     // סינון התמונות הכפולות
     const newGallery = [
@@ -282,7 +293,7 @@ const handleDeleteMainImage = async (idx) => {
       ...previews
     ];
   
-    console.log("Filtered gallery:", newGallery); // לוג הגלריה אחרי הסינון
+    console.log("Filtered gallery:", newGallery);
   
     setBusinessDetails(prev => ({
       ...prev,
@@ -299,10 +310,12 @@ const handleDeleteMainImage = async (idx) => {
       })
         .then(res => {
           if (res.status === 200) {
-            // הגבלת מספר התמונות ל-GALLERY_MAX
-            const wrapped = res.data.gallery
+            const wrapped = (res.data.gallery || [])
               .slice(0, GALLERY_MAX)
-              .map(url => ({ preview: url }));
+              .map((url, i) => ({
+                preview:  url,
+                publicId: (res.data.galleryImageIds || [])[i] || null
+              }));
             setBusinessDetails(prev => ({
               ...prev,
               gallery: wrapped
@@ -312,36 +325,36 @@ const handleDeleteMainImage = async (idx) => {
         .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
         .catch(err => console.error("Error during gallery upload:", err))
     );
-    };
+  };  // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
+  
+    
   
   
     
-    const handleDeleteGalleryImage = async (idx) => {
-      const url = businessDetails.gallery[idx]?.preview;  // מקבל את ה-URL של התמונה
-      if (!url) return;
-      
-      // חותכים את ה-publicId מה-URL
-      const publicId = url.split('/').pop().split('.')[0];
-      console.log("Deleting image with publicId:", publicId); // הדפסת ה-publicId למחיקה
-      
-      try {
-        const res = await API.delete(`/business/my/gallery/${encodeURIComponent(publicId)}`);
-        if (res.status === 204) {  // אם המחיקה הצליחה
-          setBusinessDetails(prev => {
-            const updatedGallery = prev.gallery.filter((_, index) => index !== idx);
-            return {
-              ...prev,
-              gallery: updatedGallery
-            };
-          });
-          console.log("Image deleted successfully!");
-        } else {
-          console.warn("מחיקה נכשלה:", res);
-        }
-      } catch (err) {
-        console.error("שגיאה במחיקת תמונה:", err);
+  const handleDeleteGalleryImage = async (publicId) => {
+    if (!publicId) return;
+  
+    console.log("Deleting image with publicId:", publicId);
+  
+    try {
+      const res = await API.delete(
+        `/business/my/gallery/${encodeURIComponent(publicId)}`
+      );
+      if (res.status === 204) {
+        setBusinessDetails(prev => ({
+          ...prev,
+          gallery: prev.gallery.filter(img => img.publicId !== publicId)
+        }));
+        console.log("Image deleted successfully!");
+      } else {
+        console.warn("מחיקה נכשלה:", res);
       }
-    };
+    } catch (err) {
+      console.error("שגיאה במחיקת תמונה בגלריה:", err);
+    }
+  };
+  
+    
     
     
     
