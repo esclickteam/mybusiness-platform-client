@@ -30,10 +30,15 @@ const ChatComponent = ({ userId }) => {
 
   const sendMessage = (e) => {
     e.preventDefault();
-    if (isSending || !message.trim()) return;
+    console.log("שליחה החלה");
+    if (isSending || !message.trim()) {
+      console.log("שליחה נמנעה כי ההודעה ריקה או שהיא כבר בשליחה");
+      return;
+    }
   
-    setIsSending(true); // מצב של שליחה
+    setIsSending(true);  // מצב של שליחה
     setIsLoading(true);  // מצב של טעינה
+    console.log("שליחה בעבודה");
   
     const newMsg = {
       text: message,
@@ -42,20 +47,28 @@ const ChatComponent = ({ userId }) => {
       to: 'business',
     };
   
+    console.log("הודעה נשלחה:", newMsg);
+  
+    // שליחה עם callback כדי לבדוק אם ההודעה נשלחה בהצלחה
     socket.emit('sendMessage', newMsg, (confirmation) => {
+      console.log("תשובה מהשרת:", confirmation);
+  
       setIsLoading(false);  // סיום טעינה
       setIsSending(false);  // סיום שליחה
   
       if (confirmation.success) {
         console.log("ההודעה נשלחה בהצלחה");
       } else {
+        console.error("שגיאה בשליחת ההודעה");
         alert("שגיאה בשליחת ההודעה");
       }
     });
   
     setMessages((prev) => [...prev, newMsg]);
-    setMessage('');  // מחיקת ההודעה בתיבה
+    setMessage('');  // מנקה את התיבה אחרי שליחה
   };
+  
+  
   
 
   useEffect(() => {
