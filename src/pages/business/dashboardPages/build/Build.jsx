@@ -197,19 +197,16 @@ const handleMainImagesChange = async e => {
   
 
 const handleDeleteMainImage = async (idx) => {
-  const url = businessDetails.mainImages[idx]; // השתמש ב-mainImages בטאב הראשי
+  const url = businessDetails.mainImages[idx]; // מקבל את ה-URL של התמונה
   if (!url) return;
 
-  // מפיק את ה-publicId מתוך ה-URL של Cloudinary
-  const publicId = url.split('/').pop().split('.')[0];
+  // חותכים את ה-publicId מה-URL
+  const publicId = url.preview.split('/').pop().split('.')[0];
 
   try {
     const res = await API.delete(`/business/my/main-images/${encodeURIComponent(publicId)}`);
-
-    if (res.status === 204) {  // עדכון סטטוס 204 אחרי מחיקה מוצלחת
-      // עדכון mainImages אחרי מחיקת התמונה
+    if (res.status === 204) {  // אם המחיקה הצליחה
       setBusinessDetails(prev => {
-        // סינון התמונה שנמחקה
         const updatedMainImages = prev.mainImages.filter((_, index) => index !== idx);
         return {
           ...prev,
@@ -223,6 +220,7 @@ const handleDeleteMainImage = async (idx) => {
     console.error("שגיאה במחיקת תמונה בטאב הראשי:", err);
   }
 };
+
 
 
 
@@ -310,19 +308,16 @@ const handleDeleteMainImage = async (idx) => {
   
     
     const handleDeleteGalleryImage = async (idx) => {
-      const url = businessDetails.gallery[idx]?.preview;
+      const url = businessDetails.gallery[idx]?.preview;  // מקבל את ה-URL של התמונה
       if (!url) return;
     
-      // מפיק את ה-publicId מתוך ה-URL של Cloudinary
+      // חותכים את ה-publicId מה-URL
       const publicId = url.split('/').pop().split('.')[0];
     
       try {
         const res = await API.delete(`/business/my/gallery/${encodeURIComponent(publicId)}`);
-    
-        if (res.status === 204) {  // עדכון סטטוס 204 אחרי מחיקה מוצלחת
-          // עדכון gallery אחרי מחיקת התמונה
+        if (res.status === 204) {  // אם המחיקה הצליחה
           setBusinessDetails(prev => {
-            // סינון התמונה שנמחקה
             const updatedGallery = prev.gallery.filter((_, index) => index !== idx);
             return {
               ...prev,
@@ -336,6 +331,7 @@ const handleDeleteMainImage = async (idx) => {
         console.error("שגיאה במחיקת תמונה:", err);
       }
     };
+    
     
     
     
