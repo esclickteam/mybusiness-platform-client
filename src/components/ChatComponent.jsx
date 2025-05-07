@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import './ChatComponent.css';
 
+// הגדרת Socket.IO
 const socket = io('https://api.esclick.co.il', {
   autoConnect: false, // מניעת חיבור אוטומטי
 });
@@ -12,6 +13,7 @@ const ChatComponent = ({ userId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
+  // התחברות והאזנה להודעות
   useEffect(() => {
     if (userId) {
       socket.auth = { userId };
@@ -22,12 +24,14 @@ const ChatComponent = ({ userId }) => {
       });
     }
 
+    // ניתוק כאשר המשתמש יוצא
     return () => {
       socket.off('newMessage');
       socket.disconnect(); // ניתוק בעת יציאת המשתמש
     };
   }, [userId]);
 
+  // שליחת הודעה
   const sendMessage = async (e) => {
     e.preventDefault();
     if (isSending || !message.trim()) {
@@ -49,7 +53,7 @@ const ChatComponent = ({ userId }) => {
     try {
       // שליחה עם async/await
       await socket.emit('sendMessage', newMsg, (confirmation) => {
-        if (confirmation.success) {
+        if (confirmation && confirmation.success) {
           console.log("ההודעה נשלחה בהצלחה");
         } else {
           console.error("שגיאה בשליחת ההודעה");
@@ -68,6 +72,7 @@ const ChatComponent = ({ userId }) => {
     }
   };
 
+  // גלילת ההודעות אוטומטית
   useEffect(() => {
     const messageContainer = document.querySelector('.chat-messages');
     if (messageContainer) {

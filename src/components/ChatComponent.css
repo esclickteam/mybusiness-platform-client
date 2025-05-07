@@ -46,6 +46,7 @@
 .chat-messages::-webkit-scrollbar-thumb {
   background-color: #6a4fc4;
   border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* הוספת צל ל-thumb */
 }
 
 .chat-messages::-webkit-scrollbar-track {
@@ -79,6 +80,16 @@
   color: #888;
   text-align: left;
   margin-top: 5px;
+}
+
+.message:hover {
+  background-color: #f5f5f5;  /* שינוי צבע רקע בהעברת העכבר */
+}
+
+.message.system-message {
+  background-color: #ffeb3b;  /* צבע רקע צהוב להודעות מערכת */
+  color: #333;
+  font-style: italic;
 }
 
 .chat-input {
@@ -120,6 +131,11 @@
   transform: scale(1.05); /* אפקט מגע */
 }
 
+.chat-input button:active {
+  transform: scale(0.95); /* אפקט לחיצה */
+  background-color: #4c3bb0; /* שינוי צבע כפתור בהקשה */
+}
+
 .chat-input button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
@@ -142,5 +158,20 @@
 
   .chat-input button {
     width: 25%; /* כפתור קטן יותר במובייל */
+  }
+}
+
+@media (max-width: 400px) {
+  .chat-container {
+    width: 95%;
+    height: 90%;
+  }
+  
+  .chat-input input {
+    width: 65%; /* תיבת הטקסט תהפוך קטנה יותר במובייל קטן */
+  }
+
+  .chat-input button {
+    width: 30%; /* כפתור קטן יותר במובייל קטן */
   }
 }
