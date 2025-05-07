@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import './ChatComponent.css'; // ייבוא ה-CSS
 
 // התחברות לשרת Socket.io
-const socket = io('https://api.esclick.co.il');
+const socket = io('https://api.esclick.co.il');  // עדכון לכתובת השרת שלך
 
 const ChatComponent = () => {
   const [message, setMessage] = useState("");  // שדה ההודעה
@@ -25,7 +25,6 @@ const ChatComponent = () => {
   const sendMessage = () => {
     if (message.trim()) {
       socket.emit('sendMessage', message);  // שליחת הודעה לשרת
-      setMessages((prevMessages) => [...prevMessages, message]);  // הוספת ההודעה לרשימה המקומית
       setMessage("");  // ניקוי שדה ההודעה
     }
   };
