@@ -33,13 +33,17 @@ const ChatComponent = () => {
       text: message,
       timestamp: new Date().toISOString(),
       from: 'client', // ההודעה נשלחת על ידי הלקוח
+      to: 'business'  // מייעדים את ההודעה לבעל העסק
     };
 
     setIsLoading(true);  // הצגת טעינה
-    socket.emit('sendMessage', newMsg);  // שולחים את ההודעה לשרת
+    socket.emit('sendMessage', newMsg, () => {  // הוספת callback
+      setIsLoading(false);  // אחרי שההודעה נשלחה, מסתיר את "טוען"
+      setIsSending(false); // השבתת שליחה
+    });
+    
     setMessages((prev) => [...prev, newMsg]);  // עדכון ההודעות בצד הלקוח
     setMessage("");  // ניקוי שדה ההודעה
-    setIsSending(false); // השבתת שליחה
   };
 
   // גלילה אוטומטית להודעות האחרונות
