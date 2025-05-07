@@ -108,7 +108,7 @@ export default function BusinessProfileView() {
   // פונקציה שתנווט לטאב הצ'אט עם העסק
   const handleChatClick = () => {
     console.log("Navigating to chat with business:", businessId); // לבדוק את ה-businessId
-    navigate(`/business/${businessId}/chat`); // לא נכנס לדף הבית אלא לדף הצ'אט
+    navigate(`/business/${businessId}/chat`); // ניווט לדף הצ'אט
   };
   
 

@@ -123,7 +123,7 @@ export default function App() {
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
           {/* Business Messages Page */}
-          <Route path="/business/:businessId/chat" element={<BusinessMessagesPage />} />
+          <Route path="/business/:businessId/chat" element={<ChatComponent />} />
 
           {/* Business dashboard (protected) */}
           <Route

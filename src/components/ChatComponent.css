@@ -1,0 +1,105 @@
+/* ChatComponent.css */
+.chat-container {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 320px;
+  height: 400px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.chat-header {
+  background-color: #6a4fc4;
+  color: white;
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f9f9f9;
+}
+
+.message {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f1f1f1;
+  border-radius: 12px;
+  max-width: 70%;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.message.client {
+  background-color: #e0f7fa;  /* צבע בהיר עבור הודעות הלקוח */
+  align-self: flex-end;  /* יישור ההודעה לשמאל */
+}
+
+.message.business {
+  background-color: #e8eaf6;  /* צבע בהיר עבור הודעות העסק */
+  align-self: flex-start;  /* יישור ההודעה לימין */
+}
+
+.message-time {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: left;
+  margin-top: 5px;
+}
+
+.chat-input {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+  width: 80%;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+.chat-input button {
+  width: 20%;
+  background-color: #6a4fc4;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* עבור מסכים קטנים יותר (כמו טלפונים ניידים) */
+@media (max-width: 600px) {
+  .chat-container {
+    width: 90%;  /* הגדלת רוחב הצ'אט ל-90% */
+    height: 90%; /* התאמת הגובה למסך קטן יותר */
+  }
+  
+  .chat-header {
+    font-size: 1rem;
+  }
+
+  .chat-input input {
+    width: 70%; /* שדה הטקסט יהפוך לרחב יותר במובייל */
+  }
+
+  .chat-input button {
+    width: 25%; /* כפתור קטן יותר במובייל */
+  }
+}
