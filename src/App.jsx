@@ -1,12 +1,14 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
+
 // ScrollToTop component to scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => window.scrollTo(0, 0), [pathname]);
   return null;
 }
+
 import "./styles/index.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
@@ -69,12 +71,15 @@ const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
+// Lazy-load BusinessMessagesPage
+const BusinessMessagesPage = lazy(() => import("./pages/business/dashboardPages/BusinessMessagesPage"));
+
 export default function App() {
   return (
     <>
       <Header />
 
-            {/* גלילה לעל בכל שינוי כתובת */}
+      {/* Scroll to top on route change */}
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
@@ -116,8 +121,9 @@ export default function App() {
 
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
-          <Route path="/business/:businessId/chat" element={<BusinessMessagesPage />} />
 
+          {/* Business Messages Page */}
+          <Route path="/business/:businessId/chat" element={<BusinessMessagesPage />} />
 
           {/* Business dashboard (protected) */}
           <Route
