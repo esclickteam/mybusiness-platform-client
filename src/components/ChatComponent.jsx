@@ -57,12 +57,12 @@ const ChatComponent = () => {
         )}
         {messages.map((msg, index) => {
           const date = new Date(msg.timestamp);
-          const formattedTime = isNaN(date.getTime()) ? "תאריך לא זמין" : date.toLocaleTimeString();
+          const formattedTime = isNaN(date.getTime()) ? "שעה לא זמינה" : date.toLocaleTimeString(); // רק שעה
           
           return (
             <div key={index} className={`message ${index % 2 === 0 ? 'business' : 'client'}`}>
               {msg.text} {/* הצגת ההודעה */}
-              <span className="message-time">{formattedTime}</span>
+              <span className="message-time">{formattedTime}</span> {/* הצגת שעה */}
             </div>
           );
         })}
