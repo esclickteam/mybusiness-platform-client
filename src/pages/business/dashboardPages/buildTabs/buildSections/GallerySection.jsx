@@ -39,11 +39,11 @@ export default function GallerySection({
         <h3 className="section-title">הגלריה שלנו</h3>
         <div className="gallery-grid-container">
           {gallery.length > 0 ? (
-            gallery.map(item => (
-              <div key={item.publicId} className="gallery-item-wrapper">
+            gallery.map((item, i) => (
+              <div key={item.publicId ?? `preview-${i}`} className="gallery-item-wrapper">
                 <img
                   src={item.preview}
-                  alt="תמונת גלריה"
+                  alt={`תמונת גלריה ${i + 1}`}
                   className="gallery-img"
                 />
                 <button

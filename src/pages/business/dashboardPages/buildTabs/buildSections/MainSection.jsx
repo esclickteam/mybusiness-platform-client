@@ -172,8 +172,8 @@ export default function MainSection({
           disabled={isSaving}
         />
         <div className="gallery-preview">
-          {limitedMainImgs.map(img => (
-            <div key={img.publicId} className="gallery-item-wrapper image-wrapper">
+          {limitedMainImgs.map((img, i) => (
+            <div key={img.publicId ?? `preview-${i}`} className="gallery-item-wrapper image-wrapper">
               <ImageLoader
                 src={img.preview}
                 alt="תמונה ראשית"
@@ -226,8 +226,8 @@ export default function MainSection({
       <div className="preview-column">
         {renderTopBar?.()}
         <div className="preview-images">
-          {limitedMainImgs.map(img => (
-            <div key={img.publicId} className="image-wrapper">
+          {limitedMainImgs.map((img, i) => (
+            <div key={img.publicId ?? `preview-${i}`} className="image-wrapper">
               <ImageLoader src={img.preview} alt="תמונה ראשית" />
             </div>
           ))}
