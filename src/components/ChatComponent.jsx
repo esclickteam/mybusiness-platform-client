@@ -1,52 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import './ChatComponent.css'; // ייבוא ה-CSS
+import './ChatComponent.css';
 
-const socket = io('https://api.esclick.co.il');  // התחברות לשרת
+const socket = io('https://api.esclick.co.il');
 
-const ChatComponent = () => {
-  const [message, setMessage] = useState("");  // שדה ההודעה
-  const [messages, setMessages] = useState([]); // רשימת ההודעות הכללית (לקוחות + בעל העסק)
-  const [isLoading, setIsLoading] = useState(false);  // אינדיקטור של טעינה
-  const [isSending, setIsSending] = useState(false);  // משתנה למניעת שליחה כפולה
+const ChatComponent = ({ userId }) => {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
-  // קבלת הודעות מהשרת
   useEffect(() => {
+    socket.emit('registerClient', userId);
+
     socket.on('newMessage', (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
-      setIsLoading(false);  // סיום טעינה
+      setIsLoading(false);
     });
 
-    // ניתוק מהשרת כאשר הרכיב עוזב את הדף
     return () => {
       socket.off('newMessage');
     };
-  }, []);
+  }, [userId]);
 
-  // פונקציה לשליחת הודעה לשרת
   const sendMessage = (e) => {
-    e.preventDefault(); // מונע שליחה כפולה
-    if (isSending || !message.trim()) return; // אם יש שליחה בתהליך או שאין הודעה, לא שולחים
+    e.preventDefault();
+    if (isSending || !message.trim()) return;
 
-    setIsSending(true); // מציין שמתחילה שליחה
+    setIsSending(true);
     const newMsg = {
       text: message,
       timestamp: new Date().toISOString(),
-      from: 'client', // ההודעה נשלחת על ידי הלקוח
-      to: 'business'  // מייעדים את ההודעה לבעל העסק
+      from: 'client',
+      to: 'business',
     };
 
-    setIsLoading(true);  // הצגת טעינה
-    socket.emit('sendMessage', newMsg, () => {  // הוספת callback
-      setIsLoading(false);  // אחרי שההודעה נשלחה, מסתיר את "טוען"
-      setIsSending(false); // השבתת שליחה
+    setIsLoading(true);
+    socket.emit('sendMessage', newMsg, () => {
+      setIsLoading(false);
+      setIsSending(false);
     });
 
-    setMessages((prev) => [...prev, newMsg]);  // עדכון ההודעות בצד הלקוח
-    setMessage("");  // ניקוי שדה ההודעה
+    setMessages((prev) => [...prev, newMsg]);
+    setMessage('');
   };
 
-  // גלילה אוטומטית להודעות האחרונות
   useEffect(() => {
     const messageContainer = document.querySelector('.chat-messages');
     if (messageContainer) {
@@ -65,7 +63,7 @@ const ChatComponent = () => {
           const date = new Date(msg.timestamp);
           const formattedTime = !isNaN(date)
             ? date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-            : "שעה לא זמינה";
+            : 'שעה לא זמינה';
 
           return (
             <div key={index} className={`message ${msg.from === 'client' ? 'client' : 'business'}`}>
@@ -88,7 +86,9 @@ const ChatComponent = () => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="כתוב הודעה..."
         />
-        <button onClick={sendMessage} disabled={isLoading || isSending}>שלח</button>
+        <button onClick={sendMessage} disabled={isLoading || isSending}>
+          שלח
+        </button>
       </div>
     </div>
   );
