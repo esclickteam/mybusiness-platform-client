@@ -19,6 +19,8 @@ const BusinessMessagesPage = () => {
   const [selected, setSelected] = useState(null); // שיחה נבחרת
   const [clientMessages, setClientMessages] = useState([]); // הודעות מלקוחות
   const [newMessageCount, setNewMessageCount] = useState(0); // מספר הודעות חדשות
+  const [isLoading, setIsLoading] = useState(true); // מצב טעינה
+  const [error, setError] = useState(null); // טיפול בשגיאות
 
   // פונקציה להגדלת מספר ההודעות החדשות
   const incrementNewMessageCount = () => {
@@ -39,12 +41,15 @@ const BusinessMessagesPage = () => {
         const { data } = await API.get(`/chat/conversations/${userId}`);
         if (data.length > 0) {
           setConversations(data);
-          setSelected(data[0]);
+          setSelected(data[0]); // בחר את השיחה הראשונה
         } else {
           setConversations([]);
         }
       } catch (error) {
         console.error("❌ שגיאה בטעינת השיחות:", error);
+        setError("שגיאה בטעינת השיחות");
+      } finally {
+        setIsLoading(false); // סיום טעינה
       }
     };
 
@@ -89,7 +94,17 @@ const BusinessMessagesPage = () => {
     };
   }, [selected, businessId, navigate]);
 
-  // If no conversations loaded yet
+  // אם יש שגיאה, הצג את הודעת השגיאה
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  // אם יש טעינה, הצג הודעה למשתמש
+  if (isLoading) {
+    return <div>טוען הודעות...</div>;
+  }
+
+  // אם אין שיחות, הצג את EmptyState
   if (conversations.length === 0) {
     return <EmptyState />;
   }
@@ -113,7 +128,7 @@ const BusinessMessagesPage = () => {
             <strong>{c.name || "לקוח ללא שם"}</strong>
             <p>{getLastMessagePreview(c)}</p>
             {newMessageCount > 0 && !selected && (
-              <span className="new-message-count">{newMessageCount}</span> 
+              <span className="new-message-count">{newMessageCount}</span>
             )}
           </div>
         ))}
@@ -139,14 +154,14 @@ const BusinessMessagesPage = () => {
             <div>אין הודעות מלקוחות כרגע.</div>
           ) : (
             clientMessages.map((msg, index) => {
-              const date = new Date(msg.timestamp);
+              const date = new Date(msg.createdAt);
               const formattedTime = !isNaN(date)
                 ? date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
                 : "שעה לא זמינה";
 
               return (
                 <div key={index} className="message client">
-                  <div className="message-text">{msg.text}</div>
+                  <div className="message-text">{msg.content}</div>
                   <div className="message-time">{formattedTime}</div>
                 </div>
               );
