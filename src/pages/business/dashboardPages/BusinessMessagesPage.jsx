@@ -4,7 +4,7 @@ import API from "../../../api";
 import BusinessChat from "./BusinessChatComponent";
 import "./BusinessMessagesPage.css";
 
-// Placeholder shown when there are no real conversations
+// Placeholder for empty state when no conversations are present
 const EmptyState = () => (
   <div className="empty-chat">
     <h3>עדיין אין לך שיחות</h3>
@@ -15,8 +15,9 @@ const EmptyState = () => (
 const BusinessMessagesPage = () => {
   const { businessId } = useParams();
   const navigate = useNavigate();
-  const [conversations, setConversations] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [conversations, setConversations] = useState([]); // כל השיחות
+  const [selected, setSelected] = useState(null); // שיחה נבחרת
+  const [clientMessages, setClientMessages] = useState([]); // הודעות מלקוחות
   const [newMessageCount, setNewMessageCount] = useState(0); // מספר הודעות חדשות
 
   // פונקציה להגדלת מספר ההודעות החדשות
@@ -55,7 +56,7 @@ const BusinessMessagesPage = () => {
     eventSource.addEventListener("new_message", (event) => {
       const newMessage = JSON.parse(event.data);
 
-      // Update the conversations state with the new message
+      // עדכון שיחות קיימות עם הודעה חדשה
       setConversations((prevConversations) => {
         const updatedConversations = prevConversations.map((conversation) => {
           if (conversation._id === newMessage.businessId) {
@@ -66,14 +67,18 @@ const BusinessMessagesPage = () => {
         return updatedConversations;
       });
 
-      // אם השיחה הנבחרת היא השיחה עם ההודעה החדשה, עדכן אותה
+      // עדכון הודעות מלקוחות
+      if (newMessage.from === "client") {
+        setClientMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+
+      // אם השיחה הנבחרת היא השיחה עם ההודעה החדשה, עדכון אותה
       if (selected && selected._id === newMessage.businessId) {
         setSelected((prevSelected) => ({
           ...prevSelected,
           messages: [...prevSelected.messages, newMessage]
         }));
       } else {
-        // אם השיחה החדשה לא נבחרה, נווט אל הצ'אט החדש
         incrementNewMessageCount();  // עדכון מספר הודעות חדשות
         navigate(`/business/${businessId}/chat`);
       }
@@ -108,7 +113,7 @@ const BusinessMessagesPage = () => {
             <strong>{c.name || "לקוח ללא שם"}</strong>
             <p>{getLastMessagePreview(c)}</p>
             {newMessageCount > 0 && !selected && (
-              <span className="new-message-count">{newMessageCount}</span> // הצגת מספר ההודעות החדשות
+              <span className="new-message-count">{newMessageCount}</span> 
             )}
           </div>
         ))}
@@ -126,6 +131,28 @@ const BusinessMessagesPage = () => {
         ) : (
           <EmptyState />
         )}
+
+        {/* הצגת הודעות מלקוחות */}
+        <div className="client-messages-tab">
+          <h3>הודעות מלקוחות</h3>
+          {clientMessages.length === 0 ? (
+            <div>אין הודעות מלקוחות כרגע.</div>
+          ) : (
+            clientMessages.map((msg, index) => {
+              const date = new Date(msg.timestamp);
+              const formattedTime = !isNaN(date)
+                ? date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+                : "שעה לא זמינה";
+
+              return (
+                <div key={index} className="message client">
+                  <div className="message-text">{msg.text}</div>
+                  <div className="message-time">{formattedTime}</div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </main>
     </div>
   );
