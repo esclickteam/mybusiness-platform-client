@@ -15,12 +15,12 @@ const EmptyState = () => (
 const BusinessMessagesPage = () => {
   const { businessId } = useParams();
   const navigate = useNavigate();
-  const [conversations, setConversations] = useState([]); // כל השיחות
-  const [selected, setSelected] = useState(null); // שיחה נבחרת
-  const [clientMessages, setClientMessages] = useState([]); // הודעות מלקוחות
-  const [newMessageCount, setNewMessageCount] = useState(0); // מספר הודעות חדשות
-  const [isLoading, setIsLoading] = useState(true); // מצב טעינה
-  const [error, setError] = useState(null); // טיפול בשגיאות
+  const [conversations, setConversations] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [clientMessages, setClientMessages] = useState([]);
+  const [newMessageCount, setNewMessageCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // פונקציה להגדלת מספר ההודעות החדשות
   const incrementNewMessageCount = () => {
@@ -49,7 +49,7 @@ const BusinessMessagesPage = () => {
         console.error("❌ שגיאה בטעינת השיחות:", error);
         setError("שגיאה בטעינת השיחות");
       } finally {
-        setIsLoading(false); // סיום טעינה
+        setIsLoading(false);
       }
     };
 
@@ -61,7 +61,6 @@ const BusinessMessagesPage = () => {
     eventSource.addEventListener("new_message", (event) => {
       const newMessage = JSON.parse(event.data);
 
-      // עדכון שיחות קיימות עם הודעה חדשה
       setConversations((prevConversations) => {
         const updatedConversations = prevConversations.map((conversation) => {
           if (conversation._id === newMessage.businessId) {
@@ -72,7 +71,6 @@ const BusinessMessagesPage = () => {
         return updatedConversations;
       });
 
-      // עדכון הודעות מלקוחות
       if (newMessage.from === "client") {
         setClientMessages((prevMessages) => [...prevMessages, newMessage]);
       }
@@ -84,7 +82,7 @@ const BusinessMessagesPage = () => {
           messages: [...prevSelected.messages, newMessage]
         }));
       } else {
-        incrementNewMessageCount();  // עדכון מספר הודעות חדשות
+        incrementNewMessageCount();
         navigate(`/business/${businessId}/chat`);
       }
     });
@@ -141,7 +139,7 @@ const BusinessMessagesPage = () => {
             currentUser={{ _id: JSON.parse(localStorage.getItem("user"))?.userId }}
             partnerId={selected.clientId}
             partnerName={selected.name}
-            demoMessages={selected.messages.filter(msg => msg.from !== 'client')} // הצגת רק הודעות בעל העסק
+            demoMessages={selected.messages.filter(msg => msg.from !== 'client')}
           />
         ) : (
           <EmptyState />

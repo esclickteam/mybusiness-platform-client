@@ -8,18 +8,23 @@ const socket = io('https://api.esclick.co.il', {
 });
 
 const ChatComponent = ({ userId }) => {
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSending, setIsSending] = useState(false);
+  const [message, setMessage] = useState(''); // שדה הודעה חדשה
+  const [messages, setMessages] = useState([]); // היסטוריית הודעות
+  const [isLoading, setIsLoading] = useState(false); // מצב טעינה
+  const [isSending, setIsSending] = useState(false); // מצב שליחת הודעה
 
   // התחברות והאזנה להודעות
   useEffect(() => {
-    if (userId) {
-      socket.auth = { userId };
+    const token = localStorage.getItem('token'); // קבלת ה-token מה-localStorage
+
+    if (userId && token) {
+      // הוספת ה-token לאותנטיקציה של Socket.IO
+      socket.auth = { userId, token };
       socket.connect(); // התחברות ידנית לאחר קבלת מזהה המשתמש
-      socket.on('newMessage', (message) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
+
+      // שמיעה להודעות חדשות
+      socket.on('newMessage', (newMessage) => {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
         setIsLoading(false); // סיום טעינה
       });
     }
@@ -60,7 +65,7 @@ const ChatComponent = ({ userId }) => {
         }
       });
 
-      // לאחר שליחה – עדכון מצבים
+      // עדכון ההיסטוריה
       setMessages((prev) => [...prev, newMsg]);
       setMessage(''); // מנקה את תיבת ההודעה
     } catch (error) {
