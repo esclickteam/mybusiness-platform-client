@@ -31,17 +31,20 @@ export default function Build() {
 
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
-    name:        "",
-    description: "",
-    phone:       "",
-    category:    "",
-    city:        "",       // ← חדש: עיר חובה
-    logo:        null,
-    gallery:     [],
-    mainImages:  [],
-    reviews:     [],
-    faqs:        [],
+    name:            "",
+    description:     "",
+    phone:           "",
+    category:        "",
+    address:         { city: "" },
+    logo:            null,
+    gallery:         [],
+    galleryImageIds: [],
+    mainImages:      [],
+    mainImageIds:    [],
+    reviews:         [],
+    faqs:            [],
   });
+
   
 
   const [isSaving, setIsSaving]       = useState(false);
@@ -134,51 +137,72 @@ useEffect(() => {
   
   
 
-  const handleInputChange = ({ target: { name, value } }) =>
-    setBusinessDetails(prev => ({ ...prev, [name]: value }));
-
-  // ===== LOGO =====
-  const handleLogoClick = () => logoInputRef.current?.click();
-
-  const handleLogoChange = e => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = null;
-  
-    // 🧹 ניקוי preview קודם אם היה blob
-    if (businessDetails.logo?.preview?.startsWith("blob:")) {
-      URL.revokeObjectURL(businessDetails.logo.preview);
-    }
-  
-    const preview = URL.createObjectURL(file);
-  
-    // ⬇️ עדכון זמני ל־state
+  // ===== INPUT CHANGE (supports nested fields) =====
+const handleInputChange = ({ target: { name, value } }) => {
+  if (name.includes('.')) {
+    const [parent, child] = name.split('.');
     setBusinessDetails(prev => ({
       ...prev,
-      logo: { file, preview }
+      [parent]: {
+        ...prev[parent],
+        [child]: value
+      }
     }));
-  
-    // ⬆️ שליחה ל־API
-    const fd = new FormData();
-    fd.append("logo", file);
-  
-    track(
-      API.put("/business/my/logo", fd)
-        .then(res => {
-          if (res.status === 200) {
-            setBusinessDetails(prev => ({
-              ...prev,
-              logo: {
-                preview:  res.data.logo,
-                publicId: res.data.logoId
-              }
-            }));
-          }
-        })
-        .catch(console.error)
-        .finally(() => URL.revokeObjectURL(preview))
-    );
-  };  // ← כאן סוגרים את handleLogoChange
+  } else {
+    setBusinessDetails(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+};
+
+// ===== LOGO UPLOAD =====
+const handleLogoClick = () => {
+  logoInputRef.current?.click();
+};
+
+const handleLogoChange = e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  e.target.value = null;
+
+  // 🧹 ניקוי preview קודם אם היה blob
+  if (businessDetails.logo?.preview?.startsWith('blob:')) {
+    URL.revokeObjectURL(businessDetails.logo.preview);
+  }
+
+  const preview = URL.createObjectURL(file);
+
+  // ⬇️ עדכון זמני ל־state
+  setBusinessDetails(prev => ({
+    ...prev,
+    logo: { file, preview }
+  }));
+
+  // ⬆️ שליחה ל־API
+  const fd = new FormData();
+  fd.append('logo', file);
+
+  track(
+    API.put('/business/my/logo', fd)
+      .then(res => {
+        if (res.status === 200) {
+          setBusinessDetails(prev => ({
+            ...prev,
+            logo: {
+              preview:  res.data.logo,
+              publicId: res.data.logoId
+            }
+          }));
+        }
+      })
+      .catch(console.error)
+      .finally(() => {
+        URL.revokeObjectURL(preview);
+      })
+  );
+};
+
   
   
 
@@ -234,7 +258,7 @@ useEffect(() => {
   // Build.jsx
 
 // קודם כל, נשנה את החתימה כך שהפונקציה תקבל כבר את ה-publicId
-const handleDeleteMainImage = async (publicId) => {
+const handleDeleteMainImage = async publicId => {
   console.log("🔴 Deleting publicId:", publicId);
   if (!publicId) {
     console.warn("⚠️ No publicId passed");
@@ -248,12 +272,21 @@ const handleDeleteMainImage = async (publicId) => {
 
     console.log("🟢 DELETE status:", res.status);
     if (res.status === 204) {
-      // עדכון state: מסירים גם מה־mainImages וגם מה־mainImageIds
-      setBusinessDetails(prev => ({
-        ...prev,
-        mainImages:   prev.mainImages  .filter(img => img.publicId !== publicId),
-        mainImageIds: prev.mainImageIds.filter(id  => id      !== publicId)
-      }));
+      setBusinessDetails(prev => {
+        // מצא את האינדקס של התמונה שנמחקה
+        const idx = prev.mainImageIds.indexOf(publicId);
+        if (idx === -1) return prev;
+        // העתק שני המערכים ושחרר את הפריט המתאים בכל אחד
+        const mainImages   = [...prev.mainImages];
+        const mainImageIds = [...prev.mainImageIds];
+        mainImages.splice(idx, 1);
+        mainImageIds.splice(idx, 1);
+        return {
+          ...prev,
+          mainImages,
+          mainImageIds
+        };
+      });
       console.log("✅ Removed:", publicId);
     } else {
       console.warn("❌ DELETE failed:", res);
@@ -264,13 +297,6 @@ const handleDeleteMainImage = async (publicId) => {
     alert("שגיאה במחיקת תמונה");
   }
 };
-
-
-
-
-  
-
-
 
 
 
@@ -351,34 +377,46 @@ const handleDeleteMainImage = async (publicId) => {
   
   
     
-  const handleDeleteGalleryImage = async (publicId) => {
+   const handleDeleteGalleryImage = async publicId => {
     if (!publicId) return;
   
-    console.log("Deleting image with publicId:", publicId);
+    console.log("🔴 Deleting gallery publicId:", publicId);
   
     try {
       const res = await API.delete(
         `/business/my/gallery/${encodeURIComponent(publicId)}`
       );
+  
+      console.log("🟢 DELETE status:", res.status);
       if (res.status === 204) {
-        setBusinessDetails(prev => ({
-          ...prev,
-          gallery: prev.gallery.filter(img => img.publicId !== publicId)
-        }));
-        console.log("Image deleted successfully!");
+        setBusinessDetails(prev => {
+          // מצא את האינדקס של התמונה בגלריה
+          const idx = prev.galleryImageIds.indexOf(publicId);
+          if (idx === -1) return prev;
+          // העתק שני המערכים ושחרר את הפריט המתאים בכל אחד
+          const gallery         = [...prev.gallery];
+          const galleryImageIds = [...prev.galleryImageIds];
+          gallery.splice(idx, 1);
+          galleryImageIds.splice(idx, 1);
+          return {
+            ...prev,
+            gallery,
+            galleryImageIds
+          };
+        });
+        console.log("✅ Gallery image removed:", publicId);
       } else {
-        console.warn("מחיקה נכשלה:", res);
+        console.warn("❌ DELETE failed:", res);
+        alert("שגיאה במחיקת תמונה בגלריה");
       }
     } catch (err) {
-      console.error("שגיאה במחיקת תמונה בגלריה:", err);
+      console.error("🚨 Error deleting gallery image:", err);
+      alert("שגיאה במחיקת תמונה בגלריה");
     }
   };
   
-    
-    
-    
-    
-    
+  
+                  
     
     
   
@@ -402,9 +440,10 @@ const handleDeleteMainImage = async (publicId) => {
         phone:       businessDetails.phone,
         email:       businessDetails.email,
         address: {
-          city: businessDetails.city // ← חובה להוסיף!
+          city: businessDetails.address.city
         }
       });
+      
       
   
       alert("✅ נשמר בהצלחה!");
@@ -468,11 +507,12 @@ const handleDeleteMainImage = async (publicId) => {
     <strong>טלפון:</strong> {businessDetails.phone}
   </p>
 )}
-{businessDetails.city && (
+{businessDetails.address.city && (
   <p className="preview-city">
-    <strong>עיר:</strong> {businessDetails.city}
+    <strong>עיר:</strong> {businessDetails.address.city}
   </p>
 )}
+
 
 <hr className="divider" />
 

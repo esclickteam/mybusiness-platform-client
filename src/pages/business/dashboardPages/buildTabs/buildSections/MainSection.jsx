@@ -16,15 +16,15 @@ export default function MainSection({
   businessDetails,
   handleInputChange,
   handleMainImagesChange,
+  handleDeleteImage,
   handleSave,
   showViewProfile,
   navigate,
   currentUser,
-  renderTopBar,
   logoInputRef,
   mainImagesInputRef,
-  handleDeleteImage,
-  isSaving
+  isSaving,
+  renderTopBar
 }) {
   const containerRef = useRef();
 
@@ -32,7 +32,7 @@ export default function MainSection({
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // react-select will auto-close
+        // react-select auto-closes
       }
     };
     document.addEventListener("mousedown", onClickOutside);
@@ -41,7 +41,7 @@ export default function MainSection({
 
   // Build preview+ID objects from state arrays
   const wrappedMainImages = (businessDetails.mainImages || []).map((url, idx) => ({
-    preview:  url,
+    preview: url,
     publicId: (businessDetails.mainImageIds || [])[idx] || null
   }));
 
@@ -50,9 +50,7 @@ export default function MainSection({
 
   // wrap Select onChange to mimic native input event
   const wrapSelectChange = name => option =>
-    handleInputChange({
-      target: { name, value: option ? option.value : "" }
-    });
+    handleInputChange({ target: { name, value: option ? option.value : "" } });
 
   return (
     <>
@@ -125,8 +123,14 @@ export default function MainSection({
         </label>
         <Select
           options={cityOptions}
-          value={cityOptions.find(o => o.value === businessDetails.city) || null}
-          onChange={wrapSelectChange("city")}
+          value={
+            cityOptions.find(o => o.value === businessDetails.address?.city) || null
+          }
+          onChange={option =>
+            handleInputChange({
+              target: { name: "address.city", value: option ? option.value : "" }
+            })
+          }
           isDisabled={isSaving}
           placeholder="הקלד עיר"
           isClearable
@@ -179,11 +183,7 @@ export default function MainSection({
         <div className="gallery-preview">
           {limitedMainImgs.map(({ preview, publicId }, i) => (
             <div key={publicId || `preview-${i}`} className="gallery-item-wrapper image-wrapper">
-              <ImageLoader
-                src={preview}
-                alt="תמונה ראשית"
-                className="gallery-img"
-              />
+              <ImageLoader src={preview} alt="תמונה ראשית" className="gallery-img" />
               <button
                 className="delete-btn"
                 onClick={() => handleDeleteImage(publicId)}

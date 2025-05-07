@@ -1,26 +1,39 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import ImageLoader from "@components/ImageLoader";
+import { dedupeByPreview } from "../../../../../utils/dedupe";
 
 export default function GallerySection({
   businessDetails,
   galleryInputRef,
   handleGalleryChange,
   handleDeleteImage,
+  isSaving,
   renderTopBar
 }) {
-  // Extract raw URLs and IDs from state
-  const rawUrls = businessDetails.gallery || [];
-  const rawIds  = businessDetails.galleryImageIds || [];
-  // Wrap into objects for preview and deletion
-  const wrapped = rawUrls.map((url, idx) => ({
-    preview:  url,
-    publicId: rawIds[idx] || null
+  const containerRef = useRef();
+
+  // Close menus on outside click if needed
+  useEffect(() => {
+    const onClickOutside = e => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        // No extra cleanup needed
+      }
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  // Build wrapped list and dedupe
+  const wrapped = (businessDetails.gallery || []).map((url, idx) => ({
+    preview: url,
+    publicId: (businessDetails.galleryImageIds || [])[idx] || null
   }));
+  const uniqueImages = dedupeByPreview(wrapped);
 
   return (
     <>
       {/* Left: upload form */}
-      <div className="form-column">
+      <div className="form-column" ref={containerRef}>
         <h3>העלאת תמונות לגלריה</h3>
         <input
           type="file"
@@ -30,10 +43,13 @@ export default function GallerySection({
           style={{ display: "none" }}
           ref={galleryInputRef}
           onChange={handleGalleryChange}
+          disabled={isSaving}
         />
         <button
+          type="button"
           className="save-btn"
           onClick={() => galleryInputRef.current?.click()}
+          disabled={isSaving}
         >
           הוספת תמונות
         </button>
@@ -45,11 +61,11 @@ export default function GallerySection({
 
         <h3 className="section-title">הגלריה שלנו</h3>
         <div className="gallery-grid-container">
-          {wrapped.length > 0 ? (
-            wrapped.map(({ preview, publicId }, i) => (
+          {uniqueImages.length > 0 ? (
+            uniqueImages.map(({ preview, publicId }, i) => (
               <div
                 key={publicId || `preview-${i}`}
-                className="gallery-item-wrapper"
+                className="gallery-item-wrapper image-wrapper"
               >
                 <ImageLoader
                   src={preview}
@@ -61,6 +77,7 @@ export default function GallerySection({
                   onClick={() => handleDeleteImage(publicId)}
                   type="button"
                   title="מחיקה"
+                  disabled={isSaving}
                 >
                   🗑️
                 </button>
