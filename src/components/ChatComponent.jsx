@@ -37,7 +37,7 @@ const ChatComponent = ({ userId }) => {
     }
   
     setIsSending(true);  // מצב של שליחה
-    setIsLoading(true);  // מצב של טעינה
+    setIsLoading(false);  // מצב של טעינה
     console.log("שליחה בעבודה");
   
     const newMsg = {
