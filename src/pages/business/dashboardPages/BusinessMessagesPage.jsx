@@ -15,6 +15,7 @@ const BusinessMessagesPage = () => {
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState(null);
 
+  // Fetch the conversations when the component mounts
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -39,6 +40,28 @@ const BusinessMessagesPage = () => {
     };
 
     fetchMessages();
+
+    // WebSocket or SSE for real-time updates
+    const eventSource = new EventSource("/api/business/notifications"); // Adjust path if necessary
+
+    eventSource.addEventListener("new_message", (event) => {
+      const newMessage = JSON.parse(event.data);
+      // Update the conversations state with the new message
+      setConversations((prevConversations) => {
+        const updatedConversations = prevConversations.map((conversation) => {
+          if (conversation._id === newMessage.businessId) {
+            // Append the new message to the relevant conversation
+            conversation.messages.push(newMessage);
+          }
+          return conversation;
+        });
+        return updatedConversations;
+      });
+    });
+
+    return () => {
+      eventSource.close();
+    };
   }, []);
 
   // If no conversations loaded yet
