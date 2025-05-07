@@ -1,50 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import './ChatComponent.css';
 
-// הגדרת Socket.IO
 const socket = io('https://api.esclick.co.il', {
-  autoConnect: false, // מניעת חיבור אוטומטי
+  autoConnect: false,  // מניעת חיבור אוטומטי
 });
 
 const ChatComponent = ({ userId }) => {
-  const [message, setMessage] = useState(''); // שדה הודעה חדשה
-  const [messages, setMessages] = useState([]); // היסטוריית הודעות
-  const [isLoading, setIsLoading] = useState(false); // מצב טעינה
-  const [isSending, setIsSending] = useState(false); // מצב שליחת הודעה
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const messageContainerRef = useRef(null);
 
-  // התחברות והאזנה להודעות
   useEffect(() => {
-    const token = localStorage.getItem('token'); // קבלת ה-token מה-localStorage
-
+    const token = localStorage.getItem('token');
     if (userId && token) {
-      // הוספת ה-token לאותנטיקציה של Socket.IO
       socket.auth = { userId, token };
-      socket.connect(); // התחברות ידנית לאחר קבלת מזהה המשתמש
+      socket.connect();
 
-      // שמיעה להודעות חדשות
       socket.on('newMessage', (newMessage) => {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-        setIsLoading(false); // סיום טעינה
+        setIsLoading(false);
+      });
+
+      socket.on('connect_error', (error) => {
+        console.error("שגיאה בחיבור לשרת:", error);
       });
     }
 
-    // ניתוק כאשר המשתמש יוצא
     return () => {
       socket.off('newMessage');
-      socket.disconnect(); // ניתוק בעת יציאת המשתמש
+      socket.disconnect();
     };
-  }, [userId]);
+  }, [userId, localStorage.getItem('token')]);  // חיבור מחדש כשיש שינוי ב־userId או token
 
-  // שליחת הודעה
   const sendMessage = async (e) => {
     e.preventDefault();
     if (isSending || !message.trim()) {
-      return; // אם ההודעה ריקה או היא כבר בשליחה, אל תשלח
+      alert("ההודעה ריקה, בבקשה כתוב משהו!");  // התראה למשתמש על הודעה ריקה
+      return;
     }
 
-    setIsSending(true); // מצב של שליחה
-    setIsLoading(true); // מצב של טעינה
+    setIsSending(true);
+    setIsLoading(true);
 
     const newMsg = {
       text: message,
@@ -53,10 +52,7 @@ const ChatComponent = ({ userId }) => {
       to: 'business',
     };
 
-    console.log("שליחת הודעה:", newMsg);
-
     try {
-      // שליחה עם async/await
       await socket.emit('sendMessage', newMsg, (confirmation) => {
         if (confirmation && confirmation.success) {
           console.log("ההודעה נשלחה בהצלחה");
@@ -65,25 +61,26 @@ const ChatComponent = ({ userId }) => {
         }
       });
 
-      // עדכון ההיסטוריה
       setMessages((prev) => [...prev, newMsg]);
-      setMessage(''); // מנקה את תיבת ההודעה
+      setMessage('');
     } catch (error) {
       console.error("שגיאה בהתחברות לשרת:", error);
       alert("שגיאה בשליחת ההודעה");
     } finally {
-      setIsSending(false); // סיום שליחה
-      setIsLoading(false); // סיום טעינה
+      setIsSending(false);
+      setIsLoading(false);
     }
   };
 
-  // גלילת ההודעות אוטומטית
-  useEffect(() => {
-    const messageContainer = document.querySelector('.chat-messages');
-    if (messageContainer) {
-      messageContainer.scrollTop = messageContainer.scrollHeight;
+  const scrollToBottom = () => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);  // גלילה אוטומטית כשיש שינוי בהודעות
 
   return (
     <div className="chat-container">
@@ -91,7 +88,7 @@ const ChatComponent = ({ userId }) => {
         <h3>צ'אט עם העסק</h3>
       </div>
 
-      <div className="chat-messages">
+      <div className="chat-messages" ref={messageContainerRef}>
         {messages.map((msg, index) => {
           const date = new Date(msg.timestamp);
           const formattedTime = !isNaN(date)
