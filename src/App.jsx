@@ -1,6 +1,8 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
+import ChatComponent from './components/ChatComponent'; // או הנתיב המתאים
+
 
 
 // ScrollToTop component to scroll to top on route change
