@@ -130,11 +130,6 @@ export default function BusinessProfileView() {
   const isOwner = user?.role === "business" && user.businessId === businessId;
   const canDelete = ["admin", "manager"].includes(user?.role);
 
-  const handleChatClick = () => {
-    // קישור לצ'אט עם העסק
-    window.location.href = `/business/chat/${businessId}`;
-  };
-
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
