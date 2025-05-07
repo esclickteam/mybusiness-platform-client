@@ -79,6 +79,11 @@
   border-radius: 12px;
   border: 1px solid #ddd;
   font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.chat-input input:focus {
+  border-color: #6a4fc4;
 }
 
 .chat-input button {
@@ -91,11 +96,12 @@
   cursor: pointer;
   font-weight: bold;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .chat-input button:hover {
   background-color: #5e3ec2;
+  transform: scale(1.05); /* אפקט מגע */
 }
 
 .chat-input button:disabled {

@@ -9,6 +9,7 @@ const ChatComponent = () => {
   const [message, setMessage] = useState("");  // שדה ההודעה
   const [messages, setMessages] = useState([]); // רשימת ההודעות
   const [isLoading, setIsLoading] = useState(false);  // אינדיקטור של טעינה
+  const [systemMessage, setSystemMessage] = useState(""); // הודעת מערכת
 
   // קבלת הודעות מהשרת
   useEffect(() => {
@@ -44,15 +45,20 @@ const ChatComponent = () => {
         <h3>צ'אט עם העסק</h3>
       </div>
       <div className="chat-messages">
-        {messages.length === 0 && !isLoading && (
+        {messages.length === 0 && !isLoading && !systemMessage && (
           <div className="message system-message">
             ברוך הבא! איך אפשר לעזור לך היום?
           </div>
         )}
+        {systemMessage && !isLoading && (
+          <div className="message system-message">
+            {systemMessage}
+          </div>
+        )}
         {messages.map((msg, index) => (
           <div key={index} className={`message ${index % 2 === 0 ? 'business' : 'client'}`}>
-            {msg}
-            <span className="message-time">{new Date().toLocaleTimeString()}</span>
+            {msg.text} {/* הצגת ההודעה */}
+            <span className="message-time">{new Date(msg.timestamp).toLocaleTimeString()}</span>
           </div>
         ))}
         {isLoading && (
