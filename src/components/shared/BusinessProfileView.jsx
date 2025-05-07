@@ -39,12 +39,9 @@ export default function BusinessProfileView() {
     setLoading(true);
     try {
       const res = await api.get(`/business/${businessId}`);
+      console.log(res.data); // הדפסת המידע שהתקבל
       const biz = res.data.business || res.data;
-      let reviews = Array.isArray(biz.reviews) ? biz.reviews : [];
-      reviews = reviews.filter(r => !r.isExample);
-      reviews = dedupeReviews(reviews);
-      setData({ ...biz, reviews });
-      setError(null);
+      setData(biz);
     } catch (err) {
       console.error(err);
       setError("שגיאה בטעינת העסק");
@@ -110,8 +107,10 @@ export default function BusinessProfileView() {
 
   // פונקציה שתנווט לטאב הצ'אט עם העסק
   const handleChatClick = () => {
+    console.log("Navigating to chat with business:", businessId); // הדפסת ה-businessId
     navigate(`/business/chat/${businessId}`); // השתמש ב- useNavigate
   };
+  
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
