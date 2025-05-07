@@ -41,9 +41,17 @@ const ChatComponent = ({ userId }) => {
     };
 
     setIsLoading(true);
-    socket.emit('sendMessage', newMsg, () => {
-      setIsLoading(false);
-      setIsSending(false);
+    socket.emit('sendMessage', newMsg, (confirmation) => {
+      if (confirmation.success) {
+        // הודעה נשלחה בהצלחה
+        setIsLoading(false);
+        setIsSending(false);
+      } else {
+        // במקרה של כשלון
+        setIsLoading(false);
+        setIsSending(false);
+        alert('שגיאה בשליחת ההודעה');
+      }
     });
 
     setMessages((prev) => [...prev, newMsg]);
