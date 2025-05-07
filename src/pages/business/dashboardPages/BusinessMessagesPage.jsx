@@ -13,12 +13,17 @@ const EmptyState = () => (
 );
 
 const BusinessMessagesPage = () => {
-  const { businessId } = useParams(); // קבלת ה-businessId מה-URL
-  const navigate = useNavigate(); // הוספתי את useNavigate
-  const [conversations, setConversations] = useState([]); // רשימת השיחות
-  const [selected, setSelected] = useState(null); // השיחה שנבחרה
+  const { businessId } = useParams();
+  const navigate = useNavigate();
+  const [conversations, setConversations] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [newMessageCount, setNewMessageCount] = useState(0); // מספר הודעות חדשות
 
-  // Fetch the conversations when the component mounts
+  // פונקציה להגדלת מספר ההודעות החדשות
+  const incrementNewMessageCount = () => {
+    setNewMessageCount((prevCount) => prevCount + 1);
+  };
+
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -33,7 +38,7 @@ const BusinessMessagesPage = () => {
         const { data } = await API.get(`/chat/conversations/${userId}`);
         if (data.length > 0) {
           setConversations(data);
-          setSelected(data[0]); // בחר את השיחה הראשונה אם יש שיחות
+          setSelected(data[0]);
         } else {
           setConversations([]);
         }
@@ -45,7 +50,7 @@ const BusinessMessagesPage = () => {
     fetchMessages();
 
     // WebSocket or SSE for real-time updates
-    const eventSource = new EventSource("/api/business/notifications"); // Adjust path if necessary
+    const eventSource = new EventSource("/api/business/notifications");
 
     eventSource.addEventListener("new_message", (event) => {
       const newMessage = JSON.parse(event.data);
@@ -54,7 +59,6 @@ const BusinessMessagesPage = () => {
       setConversations((prevConversations) => {
         const updatedConversations = prevConversations.map((conversation) => {
           if (conversation._id === newMessage.businessId) {
-            // Append the new message to the relevant conversation
             conversation.messages.push(newMessage);
           }
           return conversation;
@@ -70,6 +74,7 @@ const BusinessMessagesPage = () => {
         }));
       } else {
         // אם השיחה החדשה לא נבחרה, נווט אל הצ'אט החדש
+        incrementNewMessageCount();  // עדכון מספר הודעות חדשות
         navigate(`/business/${businessId}/chat`);
       }
     });
@@ -77,7 +82,7 @@ const BusinessMessagesPage = () => {
     return () => {
       eventSource.close();
     };
-  }, [selected, businessId, navigate]); // הוספתי את navigate
+  }, [selected, businessId, navigate]);
 
   // If no conversations loaded yet
   if (conversations.length === 0) {
@@ -102,6 +107,9 @@ const BusinessMessagesPage = () => {
           >
             <strong>{c.name || "לקוח ללא שם"}</strong>
             <p>{getLastMessagePreview(c)}</p>
+            {newMessageCount > 0 && !selected && (
+              <span className="new-message-count">{newMessageCount}</span> // הצגת מספר ההודעות החדשות
+            )}
           </div>
         ))}
       </aside>

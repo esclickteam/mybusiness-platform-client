@@ -1,7 +1,6 @@
 /* 📁 BusinessMessagesPage.css — גרסה מעודכנת עם שדרוגים */
 
 /* עיצוב כללי של הדף */
-/* לדוגמה, אם השורה הזו לא מתבצע עליה שינוי */
 .messages-page {
   display: flex !important;
   height: 100% !important;
@@ -11,7 +10,6 @@
   overflow: hidden !important;
   border: 1px solid #ddd !important;
 }
-
 
 /* סיידבר */
 .chat-sidebar {
@@ -38,6 +36,7 @@
   cursor: pointer;
   transition: all 0.25s ease; /* אנימציה רכה */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* צללית עדינה */
+  position: relative; /* כדי למקם את אייקון ההתראה */
 }
 
 .chat-list-item:hover {
@@ -66,6 +65,20 @@
   margin: 0;
   font-size: 0.9rem;
   color: #555;
+}
+
+/* אייקון התראה של הודעות חדשות */
+.new-message-notification {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #f44336;  /* אדום */
+  color: white;
+  border-radius: 50%;
+  padding: 0.3rem 0.7rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+  z-index: 1;
 }
 
 /* תוכן החלק הראשי של הדף */
