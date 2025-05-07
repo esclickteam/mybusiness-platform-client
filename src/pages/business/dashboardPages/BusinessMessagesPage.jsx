@@ -6,7 +6,6 @@ import "./BusinessMessagesPage.css";
 // Placeholder shown when there are no real conversations
 const EmptyState = () => (
   <div className="empty-chat">
-    {/* Illustration can be added here */}
     <h3>עדיין אין לך שיחות</h3>
     <p>כשתקבל הודעה חדשה היא תופיע כאן.</p>
   </div>
@@ -17,8 +16,6 @@ const BusinessMessagesPage = () => {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    console.log("Current Path in Messages Page:", location.pathname); // יציג את הנתיב הנוכחי
-
     const fetchMessages = async () => {
       try {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -29,15 +26,11 @@ const BusinessMessagesPage = () => {
           return;
         }
 
-        console.log("📡 מבצע קריאה ל-conversations של:", userId);
         const { data } = await API.get(`/chat/conversations/${userId}`);
-        console.log("📥 שיחות שהתקבלו מהשרת:", data);
-
         if (data.length > 0) {
           setConversations(data);
           setSelected(data[0]);
         } else {
-          // No real conversations in production
           setConversations([]);
         }
       } catch (error) {
@@ -66,7 +59,7 @@ const BusinessMessagesPage = () => {
         {conversations.map((c, i) => (
           <div
             key={i}
-            className={`chat-list-item ${selected?.clientId === c.clientId ? "active" : ""}`}
+            className={`chat-list-item ${selected?._id === c._id ? "active" : ""}`}
             onClick={() => setSelected(c)}
           >
             <strong>{c.name || "לקוח ללא שם"}</strong>
