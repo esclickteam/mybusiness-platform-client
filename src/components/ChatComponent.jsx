@@ -13,8 +13,12 @@ const ChatComponent = () => {
 
   // קבלת הודעות מהשרת
   useEffect(() => {
-    socket.on('receiveMessage', (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    socket.on('receiveMessage', (incoming) => {
+      // אם Server שולח string, נהפוך אותו לאובייקט
+      const msgObj = typeof incoming === 'string'
+        ? { text: incoming, timestamp: new Date().toISOString(), from: 'business' }
+        : incoming;
+      setMessages((prevMessages) => [...prevMessages, msgObj]);
       setIsLoading(false);  // סיום טעינה
     });
 
@@ -27,8 +31,14 @@ const ChatComponent = () => {
   // פונקציה לשליחת הודעה לשרת
   const sendMessage = () => {
     if (message.trim()) {
+      const newMsg = {
+        text: message,
+        timestamp: new Date().toISOString(),
+        from: 'client',
+      };
       setIsLoading(true);  // הצגת טעינה
-      socket.emit('sendMessage', message);  // שליחת הודעה לשרת
+      socket.emit('sendMessage', newMsg);  // שליחת הודעה לשרת
+      setMessages((prev) => [...prev, newMsg]);  // הוספת ההודעה החדשה לממשק
       setMessage("");  // ניקוי שדה ההודעה
     }
   };
@@ -36,7 +46,9 @@ const ChatComponent = () => {
   // גלילה אוטומטית להודעות האחרונות
   useEffect(() => {
     const messageContainer = document.querySelector('.chat-messages');
-    messageContainer.scrollTop = messageContainer.scrollHeight;
+    if (messageContainer) {
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
   }, [messages]);
 
   return (
@@ -57,12 +69,15 @@ const ChatComponent = () => {
         )}
         {messages.map((msg, index) => {
           const date = new Date(msg.timestamp);
-          const formattedTime = isNaN(date.getTime()) ? "שעה לא זמינה" : date.toLocaleTimeString(); // רק שעה
-          
+          // פורמט שעה: דקות בלבד
+          const formattedTime = !isNaN(date)
+            ? date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+            : "שעה לא זמינה";
+
           return (
-            <div key={index} className={`message ${index % 2 === 0 ? 'business' : 'client'}`}>
-              {msg.text} {/* הצגת ההודעה */}
-              <span className="message-time">{formattedTime}</span> {/* הצגת שעה */}
+            <div key={index} className={`message ${msg.from === 'client' ? 'client' : 'business'}`}>
+              <div className="message-text">{msg.text}</div>
+              <div className="message-time">{formattedTime}</div>
             </div>
           );
         })}
