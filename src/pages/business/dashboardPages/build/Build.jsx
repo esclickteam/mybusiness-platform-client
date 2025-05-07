@@ -213,30 +213,38 @@ export default function Build() {
 
 // קודם כל, נשנה את החתימה כך שהפונקציה תקבל כבר את ה-publicId
 const handleDeleteMainImage = async (publicId) => {
-  if (!publicId) return;
+  console.log("🔴 handleDeleteMainImage called with publicId:", publicId);
 
-  console.log("Attempting to delete image with publicId:", publicId);
+  if (!publicId) {
+    console.warn("⚠️ No publicId passed to handleDeleteMainImage");
+    return;
+  }
 
   try {
+    // בחרנו לשלוח את ה־publicId כפי שהוא (מלא, כולל תיקיה) ולא לקצר אותו
     const res = await API.delete(
       `/business/my/main-images/${encodeURIComponent(publicId)}`
     );
 
+    console.log("🟢 DELETE response status:", res.status);
+
     if (res.status === 204) {
-      // מסננים את ה-state על פי publicId ולא על פי אינדקס
+      // מסננים את ה־state לפי publicId
       setBusinessDetails(prev => ({
         ...prev,
         mainImages: prev.mainImages.filter(img => img.publicId !== publicId)
       }));
+      console.log("✅ Image removed from state:", publicId);
     } else {
-      console.warn("מחיקה נכשלה:", res);
+      console.warn("❌ DELETE failed with response:", res);
       alert("❌ שגיאה במחיקת התמונה. אנא נסה שוב.");
     }
   } catch (err) {
-    console.error("שגיאה במחיקת תמונה בטאב הראשי:", err);
+    console.error("🚨 Error in handleDeleteMainImage:", err);
     alert("❌ שגיאה במחיקת התמונה. אנא נסה שוב.");
   }
 };
+
 
   
 
