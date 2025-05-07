@@ -55,12 +55,17 @@ const ChatComponent = () => {
             {systemMessage}
           </div>
         )}
-        {messages.map((msg, index) => (
-          <div key={index} className={`message ${index % 2 === 0 ? 'business' : 'client'}`}>
-            {msg.text} {/* הצגת ההודעה */}
-            <span className="message-time">{new Date(msg.timestamp).toLocaleTimeString()}</span>
-          </div>
-        ))}
+        {messages.map((msg, index) => {
+          const date = new Date(msg.timestamp);
+          const formattedTime = isNaN(date.getTime()) ? "תאריך לא זמין" : date.toLocaleTimeString();
+          
+          return (
+            <div key={index} className={`message ${index % 2 === 0 ? 'business' : 'client'}`}>
+              {msg.text} {/* הצגת ההודעה */}
+              <span className="message-time">{formattedTime}</span>
+            </div>
+          );
+        })}
         {isLoading && (
           <div className="message system-message">
             <span className="loading-text">טוען...</span>
