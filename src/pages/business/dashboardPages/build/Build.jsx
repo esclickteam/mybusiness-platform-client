@@ -71,38 +71,42 @@ export default function Build() {
         if (res.status === 200) {
           const data = res.data.business || res.data;
   
-          // תמיכה במקרה ש־address הוא מחרוזת (גרסה ישנה) או אובייקט (גרסה חדשה)
+          // תמיכה ב־address מחרוזת או אובייקט
           const rawAddress = data.address;
           const city = typeof rawAddress === "string"
             ? rawAddress
             : rawAddress?.city || "";
   
           setBusinessDetails({
+            // שדות בסיסיים
+            name:        data.name || "",
+            description: data.description || "",
+            phone:       data.phone || "",
+            email:       data.email || "",
+            category:    data.category || "",
             city,
-            ...data,
   
-            // הכנת הלוגו לתצוגה
-            logo: data.logo ? { preview: data.logo } : null,
+            // לוגו: שומרים URL ומזהה נפרד
+            logo:    data.logo    || null,
+            logoId:  data.logoId  || null,
   
-            // גלריה עם publicId
-            gallery: (data.gallery || []).map((url, i) => ({
-              preview:  url,
-              publicId: (data.galleryImageIds || [])[i] || null
-            })),
+            // גלריה: מערך URLs + מערך publicIds
+            gallery:         data.gallery         || [],
+            galleryImageIds: data.galleryImageIds || [],
   
-            // תמונות ראשיות עם publicId וסינון כפילויות
-            mainImages: dedupeByPreview(
-              (data.mainImages || []).map((url, i) => ({
-                preview:  url,
-                publicId: (data.mainImageIds || [])[i] || null,
-                size:     "full"
-              }))
-            ).slice(0, 5),
+            // תמונות ראשיות: מערך URLs + מערך publicIds
+            mainImages:    data.mainImages    || [],
+            mainImageIds:  data.mainImageIds  || [],
+  
+            // שאר השדות
+            faqs:    data.faqs    || [],
+            reviews: data.reviews || []
           });
         }
       })
       .catch(console.error);
   }, []);
+  
   
   
   

@@ -3,7 +3,7 @@ import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
-import ImageLoader from '@components/ImageLoader';
+import ImageLoader from "@components/ImageLoader";
 
 // Prepare sorted, deduped options
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
@@ -41,17 +41,17 @@ export default function MainSection({
 
   // Wrap raw URLs & IDs into objects for preview & deletion
   const rawUrls = businessDetails.mainImages || [];
-  const rawIds  = businessDetails.mainImageIds || [];
+  const rawIds = businessDetails.mainImageIds || [];
   const wrappedMainImages = rawUrls.map((url, idx) => ({
-    preview:  url,
+    preview: url,
     publicId: rawIds[idx] || null
   }));
 
-  // Deduplicate & limit images
-  const uniqueImages    = dedupeByPreview(wrappedMainImages);
+  // Deduplicate & limit images to 5
+  const uniqueImages = dedupeByPreview(wrappedMainImages);
   const limitedMainImgs = uniqueImages.slice(0, 5);
 
-  // wrap onChange to mimic native input event
+  // wrap Select onChange to mimic native input event
   const wrapSelectChange = name => option =>
     handleInputChange({
       target: { name, value: option ? option.value : "" }
@@ -103,7 +103,10 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
+          value={
+            categoryOptions.find(o => o.value === businessDetails.category) ||
+            null
+          }
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
@@ -128,7 +131,9 @@ export default function MainSection({
         </label>
         <Select
           options={cityOptions}
-          value={cityOptions.find(o => o.value === businessDetails.city) || null}
+          value={
+            cityOptions.find(o => o.value === businessDetails.city) || null
+          }
           onChange={wrapSelectChange("city")}
           isDisabled={isSaving}
           placeholder="הקלד עיר"
@@ -181,7 +186,10 @@ export default function MainSection({
         />
         <div className="gallery-preview">
           {limitedMainImgs.map(({ preview, publicId }, i) => (
-            <div key={publicId || `preview-${i}`} className="gallery-item-wrapper image-wrapper">
+            <div
+              key={publicId || `preview-${i}`}
+              className="gallery-item-wrapper image-wrapper"
+            >
               <ImageLoader
                 src={preview}
                 alt="תמונה ראשית"
@@ -209,11 +217,7 @@ export default function MainSection({
         </div>
 
         {/* שמירה */}
-        <button
-          className="save-btn"
-          onClick={handleSave}
-          disabled={isSaving}
-        >
+        <button className="save-btn" onClick={handleSave} disabled={isSaving}>
           {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
 

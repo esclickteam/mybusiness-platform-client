@@ -1,4 +1,5 @@
 import React from "react";
+import ImageLoader from "@components/ImageLoader";
 
 export default function GallerySection({
   businessDetails,
@@ -7,14 +8,20 @@ export default function GallerySection({
   handleDeleteImage,
   renderTopBar
 }) {
-  const gallery = businessDetails.gallery || [];
+  // Extract raw URLs and IDs from state
+  const rawUrls = businessDetails.gallery || [];
+  const rawIds  = businessDetails.galleryImageIds || [];
+  // Wrap into objects for preview and deletion
+  const wrapped = rawUrls.map((url, idx) => ({
+    preview:  url,
+    publicId: rawIds[idx] || null
+  }));
 
   return (
     <>
-      {/* צד שמאל: טופס העלאה */}
+      {/* Left: upload form */}
       <div className="form-column">
         <h3>העלאת תמונות לגלריה</h3>
-
         <input
           type="file"
           name="gallery"
@@ -32,23 +39,26 @@ export default function GallerySection({
         </button>
       </div>
 
-      {/* צד ימין: תצוגת גלריה */}
+      {/* Right: gallery preview */}
       <div className="preview-column">
-        {renderTopBar && renderTopBar()}
+        {renderTopBar?.()}
 
         <h3 className="section-title">הגלריה שלנו</h3>
         <div className="gallery-grid-container">
-          {gallery.length > 0 ? (
-            gallery.map((item, i) => (
-              <div key={item.publicId ?? `preview-${i}`} className="gallery-item-wrapper">
-                <img
-                  src={item.preview}
+          {wrapped.length > 0 ? (
+            wrapped.map(({ preview, publicId }, i) => (
+              <div
+                key={publicId || `preview-${i}`}
+                className="gallery-item-wrapper"
+              >
+                <ImageLoader
+                  src={preview}
                   alt={`תמונת גלריה ${i + 1}`}
                   className="gallery-img"
                 />
                 <button
                   className="delete-btn"
-                  onClick={() => handleDeleteImage(item.publicId, i)}
+                  onClick={() => handleDeleteImage(publicId)}
                   type="button"
                   title="מחיקה"
                 >
