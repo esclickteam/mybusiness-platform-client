@@ -39,17 +39,14 @@ export default function MainSection({
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // Wrap raw URLs & IDs into objects for preview & deletion
-  const rawUrls = businessDetails.mainImages || [];
-  const rawIds = businessDetails.mainImageIds || [];
-  const wrappedMainImages = rawUrls.map((url, idx) => ({
-    preview: url,
-    publicId: rawIds[idx] || null
+  // Build preview+ID objects from state arrays
+  const wrappedMainImages = (businessDetails.mainImages || []).map((url, idx) => ({
+    preview:  url,
+    publicId: (businessDetails.mainImageIds || [])[idx] || null
   }));
 
-  // Deduplicate & limit images to 5
-  const uniqueImages = dedupeByPreview(wrappedMainImages);
-  const limitedMainImgs = uniqueImages.slice(0, 5);
+  // Deduplicate & limit to 5
+  const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 5);
 
   // wrap Select onChange to mimic native input event
   const wrapSelectChange = name => option =>
@@ -103,10 +100,7 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={
-            categoryOptions.find(o => o.value === businessDetails.category) ||
-            null
-          }
+          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
@@ -131,9 +125,7 @@ export default function MainSection({
         </label>
         <Select
           options={cityOptions}
-          value={
-            cityOptions.find(o => o.value === businessDetails.city) || null
-          }
+          value={cityOptions.find(o => o.value === businessDetails.city) || null}
           onChange={wrapSelectChange("city")}
           isDisabled={isSaving}
           placeholder="הקלד עיר"
@@ -160,8 +152,8 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
-          disabled={isSaving}
           onChange={handleInputChange}
+          disabled={isSaving}
         />
         <button
           type="button"
@@ -186,10 +178,7 @@ export default function MainSection({
         />
         <div className="gallery-preview">
           {limitedMainImgs.map(({ preview, publicId }, i) => (
-            <div
-              key={publicId || `preview-${i}`}
-              className="gallery-item-wrapper image-wrapper"
-            >
+            <div key={publicId || `preview-${i}`} className="gallery-item-wrapper image-wrapper">
               <ImageLoader
                 src={preview}
                 alt="תמונה ראשית"

@@ -187,34 +187,32 @@ useEffect(() => {
   // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
 
   const handleMainImagesChange = async e => {
+    // 1) קבצים (עד 5)
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
   
-    const previews = files.map(f => ({
-      preview: URL.createObjectURL(f),
-      file:    f
-    }));
-    setBusinessDetails(prev => ({ ...prev, mainImages: previews }));
+    // (אופציונלי) פריוויו מקומי בלבד, לא ב־state הקבוע
+    const tempPreviews = files.map(f => URL.createObjectURL(f));
   
+    // 2) בניית FormData
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
   
     try {
+      // 3) שליחה ל־שרת
       const res = await API.put("/business/my/main-images", fd);
   
       if (res.status === 200) {
+        // 4) חילוץ URL-ים ו־publicIds מה-response
         const urls = (res.data.mainImages   || []).slice(0, 5);
         const ids  = (res.data.mainImageIds || []).slice(0, 5);
-        const wrapped = urls.map((url, i) => ({
-          preview:  url,
-          publicId: ids[i] || null
-        }));
   
+        // 5) שמירה נקייה ב־state: רק מערכים של נתונים
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages:   wrapped,
-          mainImageIds: ids
+          mainImages:   urls,  // [ "https://...jpg", ... ]
+          mainImageIds: ids    // [ "folder/xyz123", ... ]
         }));
       } else {
         console.warn("העלאת תמונות ראשיות נכשלה:", res);
@@ -222,9 +220,11 @@ useEffect(() => {
     } catch (err) {
       console.error("שגיאה בהעלאת תמונות ראשיות:", err);
     } finally {
-      previews.forEach(p => URL.revokeObjectURL(p.preview));
+      // 6) שחרור הזכרון של ה־blob URLs
+      tempPreviews.forEach(URL.revokeObjectURL);
     }
   };
+  
   
   
   
@@ -303,46 +303,33 @@ const handleDeleteMainImage = async (publicId) => {
   // בתוך Build.jsx
 
   const handleGalleryChange = async e => {
-    // 1) בוחרים את הקבצים
-    const files = Array.from(e.target.files || []);
+    // 1) קבצים נבחרים
+    const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
     if (!files.length) return;
     e.target.value = null;
   
-    // 2) תצוגת פריוויו מקומי
-    const previews = files.map(f => ({
-      preview: URL.createObjectURL(f),
-      file:    f
-    }));
-    setBusinessDetails(prev => ({
-      ...prev,
-      gallery: previews
-    }));
+    // (אופציונלי) תצוגת פריוויו מקומי; לא שומרים ב־state הקבוע
+    const tempPreviews = files.map(f => URL.createObjectURL(f));
   
-    // 3) בניית FormData
+    // 2) בניית FormData
     const fd = new FormData();
     files.forEach(f => fd.append("gallery", f));
   
     try {
-      // 4) שליחה ל־API
+      // 3) שליחה לשרת
       const res = await API.put("/business/my/gallery", fd, {
         headers: { "Content-Type": "multipart/form-data" }
       });
   
       if (res.status === 200) {
-        // 5) רספונס מהשרת: URLים ו־publicIds
+        // 4) חילוץ URL-ים ו־publicIds מה-response
         const urls = (res.data.gallery         || []).slice(0, GALLERY_MAX);
         const ids  = (res.data.galleryImageIds || []).slice(0, GALLERY_MAX);
   
-        // 6) עטיפה לאובייקטים עם preview ו־publicId
-        const wrapped = urls.map((url, i) => ({
-          preview:  url,
-          publicId: ids[i] || null
-        }));
-  
-        // 7) עדכון State: גם הגל רק עם הפריוויו+ID, וגם מערך ה־IDs
+        // 5) עדכון נקי ב־state: רק שני המערכים
         setBusinessDetails(prev => ({
           ...prev,
-          gallery:         wrapped,
+          gallery:         urls,
           galleryImageIds: ids
         }));
       } else {
@@ -353,10 +340,11 @@ const handleDeleteMainImage = async (publicId) => {
       console.error("שגיאה בהעלאת גלריה:", err);
       alert("❌ שגיאה בהעלאת גלריה");
     } finally {
-      // 8) שחרור ה־blob URLs
-      previews.forEach(p => URL.revokeObjectURL(p.preview));
+      // 6) שחרור זיכרון ה־blob URLs
+      tempPreviews.forEach(URL.revokeObjectURL);
     }
   };
+  
    // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
   
     
