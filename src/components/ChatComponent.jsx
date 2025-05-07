@@ -31,32 +31,32 @@ const ChatComponent = ({ userId }) => {
   const sendMessage = (e) => {
     e.preventDefault();
     if (isSending || !message.trim()) return;
-
-    setIsSending(true);
+  
+    setIsSending(true); // מצב של שליחה
+    setIsLoading(true);  // מצב של טעינה
+  
     const newMsg = {
       text: message,
       timestamp: new Date().toISOString(),
       from: 'client',
       to: 'business',
     };
-
-    setIsLoading(true);
+  
     socket.emit('sendMessage', newMsg, (confirmation) => {
+      setIsLoading(false);  // סיום טעינה
+      setIsSending(false);  // סיום שליחה
+  
       if (confirmation.success) {
-        // הודעה נשלחה בהצלחה
-        setIsLoading(false);
-        setIsSending(false);
+        console.log("ההודעה נשלחה בהצלחה");
       } else {
-        // במקרה של כשלון
-        setIsLoading(false);
-        setIsSending(false);
-        alert('שגיאה בשליחת ההודעה');
+        alert("שגיאה בשליחת ההודעה");
       }
     });
-
+  
     setMessages((prev) => [...prev, newMsg]);
-    setMessage('');
+    setMessage('');  // מחיקת ההודעה בתיבה
   };
+  
 
   useEffect(() => {
     const messageContainer = document.querySelector('.chat-messages');
