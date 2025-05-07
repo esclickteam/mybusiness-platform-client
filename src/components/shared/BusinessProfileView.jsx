@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "@api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
@@ -24,6 +24,7 @@ const dedupeReviews = reviews =>
 export default function BusinessProfileView() {
   const { businessId } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate(); // הוספתי את ה- useNavigate
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -109,7 +110,7 @@ export default function BusinessProfileView() {
 
   // פונקציה שתנווט לטאב הצ'אט עם העסק
   const handleChatClick = () => {
-    window.location.href = `/business/chat/${businessId}`;
+    navigate(`/business/chat/${businessId}`); // השתמש ב- useNavigate
   };
 
   if (loading) return <div className="loading">טוען…</div>;
