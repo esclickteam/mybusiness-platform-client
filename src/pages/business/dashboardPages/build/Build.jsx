@@ -166,22 +166,16 @@ export default function Build() {
   // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
 
   const handleMainImagesChange = async e => {
-    // 1) בוחרים עד 5 קבצים
     const files = Array.from(e.target.files || []).slice(0, 5);
     if (!files.length) return;
     e.target.value = null;
   
-    // 2) הכנת פריוויו לשלב ההעלאה
     const previews = files.map(f => ({
       preview: URL.createObjectURL(f),
       file:    f
     }));
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: previews
-    }));
+    setBusinessDetails(prev => ({ ...prev, mainImages: previews }));
   
-    // 3) שליחה ל-API
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
   
@@ -189,26 +183,29 @@ export default function Build() {
       const res = await API.put("/business/my/main-images", fd);
   
       if (res.status === 200) {
-        const wrapped = (res.data.mainImages || [])
-          .slice(0, 5)
-          .map((url, i) => ({
-            preview:  url,
-            publicId: (res.data.mainImageIds || [])[i] || null
-          }));
+        const urls = (res.data.mainImages   || []).slice(0, 5);
+        const ids  = (res.data.mainImageIds || []).slice(0, 5);
+        const wrapped = urls.map((url, i) => ({
+          preview:  url,
+          publicId: ids[i] || null
+        }));
   
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages: wrapped
+          mainImages:   wrapped,
+          mainImageIds: ids
         }));
       } else {
-        console.warn("העלאת תמונות נכשלה:", res);
+        console.warn("העלאת תמונות ראשיות נכשלה:", res);
       }
     } catch (err) {
-      console.error("שגיאה בהעלאה:", err);
+      console.error("שגיאה בהעלאת תמונות ראשיות:", err);
     } finally {
       previews.forEach(p => URL.revokeObjectURL(p.preview));
     }
   };
+  
+  
   
 
   
@@ -288,60 +285,62 @@ const handleDeleteMainImage = async (fullPublicId) => {
   // ===== GALLERY =====
   // בתוך Build.jsx
 
-  const handleGalleryChange = e => {
+  const handleGalleryChange = async e => {
+    // 1) בוחרים את הקבצים
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
     e.target.value = null;
   
-    // הצגת תמונות ללא כפילויות
+    // 2) תצוגת פריוויו מקומי
     const previews = files.map(f => ({
-      file: f,
-      preview: URL.createObjectURL(f)
+      preview: URL.createObjectURL(f),
+      file:    f
     }));
-  
-    console.log("New images to upload:", previews);
-  
-    // סינון התמונות הכפולות
-    const newGallery = [
-      ...businessDetails.gallery.filter(
-        existingImage => !previews.some(newImage => newImage.preview === existingImage.preview)
-      ),
-      ...previews
-    ];
-  
-    console.log("Filtered gallery:", newGallery);
-  
     setBusinessDetails(prev => ({
       ...prev,
-      gallery: newGallery
+      gallery: previews
     }));
   
-    // העלאה ל-API וסנכרון
+    // 3) בניית FormData
     const fd = new FormData();
     files.forEach(f => fd.append("gallery", f));
   
-    track(
-      API.put("/business/my/gallery", fd, {
+    try {
+      // 4) שליחה ל־API
+      const res = await API.put("/business/my/gallery", fd, {
         headers: { "Content-Type": "multipart/form-data" }
-      })
-        .then(res => {
-          if (res.status === 200) {
-            const wrapped = (res.data.gallery || [])
-              .slice(0, GALLERY_MAX)
-              .map((url, i) => ({
-                preview:  url,
-                publicId: (res.data.galleryImageIds || [])[i] || null
-              }));
-            setBusinessDetails(prev => ({
-              ...prev,
-              gallery: wrapped
-            }));
-          }
-        })
-        .finally(() => previews.forEach(p => URL.revokeObjectURL(p.preview)))
-        .catch(err => console.error("Error during gallery upload:", err))
-    );
-  };  // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
+      });
+  
+      if (res.status === 200) {
+        // 5) רספונס מהשרת: URLים ו־publicIds
+        const urls = (res.data.gallery         || []).slice(0, GALLERY_MAX);
+        const ids  = (res.data.galleryImageIds || []).slice(0, GALLERY_MAX);
+  
+        // 6) עטיפה לאובייקטים עם preview ו־publicId
+        const wrapped = urls.map((url, i) => ({
+          preview:  url,
+          publicId: ids[i] || null
+        }));
+  
+        // 7) עדכון State: גם הגל רק עם הפריוויו+ID, וגם מערך ה־IDs
+        setBusinessDetails(prev => ({
+          ...prev,
+          gallery:         wrapped,
+          galleryImageIds: ids
+        }));
+      } else {
+        console.warn("העלאת גלריה נכשלה:", res);
+        alert("❌ שגיאה בהעלאת גלריה");
+      }
+    } catch (err) {
+      console.error("שגיאה בהעלאת גלריה:", err);
+      alert("❌ שגיאה בהעלאת גלריה");
+    } finally {
+      // 8) שחרור ה־blob URLs
+      previews.forEach(p => URL.revokeObjectURL(p.preview));
+    }
+  };
+   // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
   
     
   
