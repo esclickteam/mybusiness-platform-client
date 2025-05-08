@@ -22,7 +22,7 @@ import CRMSettingsTab       from "./dashboardPages/crmpages/CRMSettingsTab";
 import GoalsPage            from "./dashboardPages/GoalsPage";
 
 // ✅ הייבוא החדש של קומפוננטת הצ'אט
-import BusinessChatPage from "../pages/BusinessChatPage";
+import BusinessChatPage from "../BusinessChatPage";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
