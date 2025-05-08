@@ -24,9 +24,9 @@ export default function ChatComponent({
   useEffect(() => {
     async function loadHistory() {
       try {
-        const endpoint = isBusiness
-          ? `/api/messages/business/${userId}`
-          : `/api/messages/client/${userId}`;
+            const endpoint = isBusiness
+      ? `/messages/business/${userId}`
+      : `/messages/client/${userId}`;
         const { data } = await API.get(endpoint);
         setMessages(data);
       } catch (error) {
