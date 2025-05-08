@@ -25,13 +25,10 @@ export default function ChatComponent({
     async function loadHistory() {
       try {
         const endpoint = isBusiness
-          // בעסק: מרנדרים את כל ההודעות של העסק המחובר
-          ? '/api/my/messages'
-          // בלקוח: נתיב קיים
-          : `/api/messages/client/${userId}`;
+          ? '/api/business/my/messages'        // עבור עסק מחובר
+          : `/api/messages/client/${userId}`; // עבור לקוח
   
         const { data } = await API.get(endpoint);
-        // אם זה עסק, data.messages; אם לקוח, data הוא כבר המערך
         setMessages(isBusiness ? data.messages : data);
       } catch (error) {
         console.error('Error loading history:', error);
@@ -40,6 +37,7 @@ export default function ChatComponent({
   
     if (userId) loadHistory();
   }, [userId, isBusiness]);
+  
   
   
   
