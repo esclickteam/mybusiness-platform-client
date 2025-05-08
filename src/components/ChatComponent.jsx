@@ -6,7 +6,7 @@ import API from '../api';
 import './ChatComponent.css';
 
 const SOCKET_URL = 'https://api.esclick.co.il';
-const API_BASE   = 'https://api.esclick.co.il/api/messages';
+const API_BASE = 'https://api.esclick.co.il/api/messages';
 
 export default function ChatComponent({
   userId,
@@ -87,10 +87,20 @@ export default function ChatComponent({
   };
 
   // 5) Send message (Socket.IO or REST fallback)
-  const sendMessage = e => {
+  const sendMessage = async (e) => {
     e.preventDefault();
     const text = message.trim();
     if (!text && !file) return;
+
+    // הדפסת הערכים כדי לוודא שהם לא undefined
+    console.log('userId:', userId);  // מזהה הלקוח
+    console.log('partnerId:', partnerId);  // מזהה העסק
+
+    // ודא שהמזהים קיימים לפני שליחה
+    if (!userId || !partnerId) {
+      console.error('מזהה הלקוח או מזהה העסק לא מוגדרים');
+      return;
+    }
 
     setIsSending(true);
 
@@ -98,8 +108,8 @@ export default function ChatComponent({
     const tempId = Date.now().toString();
     const optimisticMsg = {
       id: tempId,
-      from: userId,
-      to: isBusiness ? userId : partnerId,
+      from: userId,          // מזהה הלקוח
+      to: partnerId,         // מזהה העסק
       text,
       fileName: file?.name || null,
       timestamp: new Date().toISOString()
@@ -117,33 +127,35 @@ export default function ChatComponent({
         setIsSending(false);
       });
     } else {
-      // REST fallback: שולחים correct payload לפי isBusiness
+      // שליחה דרך API (fallback במקרה שאין Socket.IO)
       const formData = new FormData();
-      formData.append("client", userId);        // מזהה הלקוח
-      formData.append("business", partnerId);   // מזהה העסק
-      formData.append("fromName", "John Doe");  // שם השולח
-      formData.append("content", text);         // תוכן ההודעה
-      if (file) formData.append("file", file);  // אם יש קובץ
+      formData.append("client", userId);          // מזהה הלקוח
+      formData.append("business", partnerId);    // מזהה העסק
+      formData.append("fromName", "John Doe");   // שם השולח
+      formData.append("content", text);          // תוכן ההודעה
+      if (file) formData.append("file", file);  // אם יש קובץ, נוסיף אותו
 
-      API.post('/api/messages/send', formData, { withCredentials: true })
-        .then(({ data }) => {
-          setMessages(prev =>
-            prev.map(m => m.id === tempId ? { ...data, delivered: true } : m)
-          );
-        })
-        .catch(console.error)
-        .finally(() => setIsSending(false));
+      try {
+        const response = await API.post('/api/messages/send', formData, { withCredentials: true });
+        setMessages(prev =>
+          prev.map(m => m.id === tempId ? { ...response.data, delivered: true } : m)
+        );
+      } catch (error) {
+        console.error("שגיאה בשליחת ההודעה", error);
+      } finally {
+        setIsSending(false);
+      }
     }
 
     setMessage("");
     setFile(null);
   };
 
-  const onKeyDown = e => {
+  const onKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
   };
 
-  const handleFile = e => {
+  const handleFile = (e) => {
     const f = e.target.files[0];
     if (f) setFile(f);
   };
