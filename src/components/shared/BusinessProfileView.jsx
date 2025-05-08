@@ -78,7 +78,7 @@ export default function BusinessProfileView() {
     setIsSubmitting(true);
 
     try {
-      await api.post(`/business/${businessId}/reviews`, newReview);
+      await api.post(`/api/business/${businessId}/reviews`, newReview);
       // רק אחרי הצלחה מרעננים וסוגרים modal
       await fetchBusiness();
       closeReviewModal();

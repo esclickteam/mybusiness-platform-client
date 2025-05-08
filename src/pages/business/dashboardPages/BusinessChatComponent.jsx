@@ -53,7 +53,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
 
     if (!isDemo) {
       try {
-        await API.post("/chat/send", newMessage);
+        await API.post("/api/chat/send", newMessage);
         setMessages((prev) =>
           prev.map((msg, i) =>
             i === prev.length - 1 ? { ...msg, pending: false } : msg

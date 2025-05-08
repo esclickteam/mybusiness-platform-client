@@ -23,7 +23,7 @@ export default function EmployeeDashboard() {
 
   const handleChangeStatus = async (employeeId, status) => {
     try {
-      await API.post("/employees/status", { employeeId, status });
+      await API.post("/api/employees/status", { employeeId, status });
       setEmployees(prevEmployees =>
         prevEmployees.map(emp =>
           emp._id === employeeId ? { ...emp, status } : emp

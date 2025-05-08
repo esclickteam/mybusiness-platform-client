@@ -55,13 +55,13 @@ export function AuthProvider({ children }) {
     try {
       if (isEmail) {
         // customer/business login
-        await API.post("/auth/login", {
+        await API.post("/api/auth/login", {
           email: clean.toLowerCase(),
           password
         });
       } else {
         // staff login
-        await API.post("/auth/staff-login", {
+        await API.post("/api/auth/staff-login", {
           username: clean,
           password
         });
@@ -112,7 +112,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     setLoading(true);
     try {
-      await API.post("/auth/logout");
+      await API.post("/api/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
     } catch (e) {
       console.warn("Logout failed:", e);

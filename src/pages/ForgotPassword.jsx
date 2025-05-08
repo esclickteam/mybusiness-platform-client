@@ -17,7 +17,7 @@ const ForgotPassword = ({ closePopup }) => {
     setMessage("");
 
     try {
-      const res = await API.post("/auth/forgot-password", { email });
+      const res = await API.post("/api/auth/forgot-password", { email });
       setMessage("✅ קישור איפוס נשלח לאימייל שלך!");
     } catch (error) {
       console.error("❌ שגיאה בשליחת קוד איפוס:", error);

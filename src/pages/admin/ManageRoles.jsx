@@ -41,7 +41,7 @@ function ManageRoles() {
       return;
     }
     try {
-      const res = await API.post("/admin/create-user", form);
+      const res = await API.post("/api/admin/create-user", form);
       const { userId, tempPassword } = res.data;
       alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${tempPassword}`);
       setUsers((prev) => [...prev, { ...form, _id: userId }]);
