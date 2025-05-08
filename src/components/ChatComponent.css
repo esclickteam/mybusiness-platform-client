@@ -12,7 +12,7 @@
   flex-direction: column;
   overflow: hidden;
   border: 1px solid #ddd;
-  z-index: 9999; /* כדי שהצ'אט יישאר מעל כל התוכן */
+  z-index: 9999;
 }
 
 .chat-header {
@@ -34,7 +34,7 @@
   gap: 10px;
   background-color: #f9f9f9;
   font-size: 1rem;
-  max-height: calc(100% - 80px); /* להימנע מגלילה באורך מלא */
+  max-height: calc(100% - 80px);
   scrollbar-width: thin;
   scrollbar-color: #6a4fc4 #f9f9f9;
 }
@@ -46,7 +46,7 @@
 .chat-messages::-webkit-scrollbar-thumb {
   background-color: #6a4fc4;
   border-radius: 10px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* הוספת צל ל-thumb */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .chat-messages::-webkit-scrollbar-track {
@@ -54,6 +54,8 @@
 }
 
 .message {
+  display: flex;
+  align-items: flex-start;
   padding: 10px;
   margin: 5px 0;
   background-color: #f1f1f1;
@@ -63,15 +65,22 @@
   position: relative;
 }
 
+.message img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
 .message.client {
-  background-color: #e0f7fa;  /* צבע בהיר עבור הודעות הלקוח */
-  align-self: flex-end;  /* יישור ההודעה לשמאל */
+  background-color: #e0f7fa;
+  align-self: flex-end;
   border-bottom-left-radius: 0;
 }
 
 .message.business {
-  background-color: #e8eaf6;  /* צבע בהיר עבור הודעות העסק */
-  align-self: flex-start;  /* יישור ההודעה לימין */
+  background-color: #e8eaf6;
+  align-self: flex-start;
   border-bottom-right-radius: 0;
 }
 
@@ -83,11 +92,11 @@
 }
 
 .message:hover {
-  background-color: #f5f5f5;  /* שינוי צבע רקע בהעברת העכבר */
+  background-color: #f5f5f5;
 }
 
 .message.system-message {
-  background-color: #ffeb3b;  /* צבע רקע צהוב להודעות מערכת */
+  background-color: #ffeb3b;
   color: #333;
   font-style: italic;
 }
@@ -128,12 +137,12 @@
 
 .chat-input button:hover {
   background-color: #5e3ec2;
-  transform: scale(1.05); /* אפקט מגע */
+  transform: scale(1.05);
 }
 
 .chat-input button:active {
-  transform: scale(0.95); /* אפקט לחיצה */
-  background-color: #4c3bb0; /* שינוי צבע כפתור בהקשה */
+  transform: scale(0.95);
+  background-color: #4c3bb0;
 }
 
 .chat-input button:disabled {
@@ -141,23 +150,42 @@
   cursor: not-allowed;
 }
 
+.chat-input .file-upload {
+  background-color: #6a4fc4;
+  color: white;
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.chat-input .file-upload:hover {
+  background-color: #5e3ec2;
+}
+
+.chat-input .file-upload:active {
+  transform: scale(0.95);
+  background-color: #4c3bb0;
+}
+
 /* עבור מסכים קטנים יותר (כמו טלפונים ניידים) */
 @media (max-width: 600px) {
   .chat-container {
-    width: 90%;  /* הגדלת רוחב הצ'אט ל-90% */
-    height: 90%; /* התאמת הגובה למסך קטן יותר */
+    width: 90%;
+    height: 90%;
   }
-  
+
   .chat-header {
     font-size: 1rem;
   }
 
   .chat-input input {
-    width: 70%; /* שדה הטקסט יהפוך לרחב יותר במובייל */
+    width: 70%;
   }
 
   .chat-input button {
-    width: 25%; /* כפתור קטן יותר במובייל */
+    width: 25%;
   }
 }
 
@@ -166,12 +194,12 @@
     width: 95%;
     height: 90%;
   }
-  
+
   .chat-input input {
-    width: 65%; /* תיבת הטקסט תהפוך קטנה יותר במובייל קטן */
+    width: 65%;
   }
 
   .chat-input button {
-    width: 30%; /* כפתור קטן יותר במובייל קטן */
+    width: 30%;
   }
 }

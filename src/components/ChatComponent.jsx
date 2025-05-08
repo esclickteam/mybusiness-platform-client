@@ -6,11 +6,12 @@ const socket = io('https://api.esclick.co.il', {
   autoConnect: false,  // מניעת חיבור אוטומטי
 });
 
-const ChatComponent = ({ userId }) => {
+const ChatComponent = ({ userId, clientProfilePic, businessProfilePic }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [file, setFile] = useState(null);
   const messageContainerRef = useRef(null);
 
   useEffect(() => {
@@ -33,12 +34,12 @@ const ChatComponent = ({ userId }) => {
       socket.off('newMessage');
       socket.disconnect();
     };
-  }, [userId, localStorage.getItem('token')]);  // חיבור מחדש כשיש שינוי ב־userId או token
+  }, [userId, localStorage.getItem('token')]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
     if (isSending || !message.trim()) {
-      alert("ההודעה ריקה, בבקשה כתוב משהו!");  // התראה למשתמש על הודעה ריקה
+      alert("ההודעה ריקה, בבקשה כתוב משהו!");
       return;
     }
 
@@ -50,6 +51,7 @@ const ChatComponent = ({ userId }) => {
       timestamp: new Date().toISOString(),
       from: 'client',
       to: 'business',
+      file: file ? file.name : null,
     };
 
     try {
@@ -63,12 +65,20 @@ const ChatComponent = ({ userId }) => {
 
       setMessages((prev) => [...prev, newMsg]);
       setMessage('');
+      setFile(null);
     } catch (error) {
       console.error("שגיאה בהתחברות לשרת:", error);
       alert("שגיאה בשליחת ההודעה");
     } finally {
       setIsSending(false);
       setIsLoading(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
     }
   };
 
@@ -80,7 +90,7 @@ const ChatComponent = ({ userId }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);  // גלילה אוטומטית כשיש שינוי בהודעות
+  }, [messages]);
 
   return (
     <div className="chat-container">
@@ -97,8 +107,12 @@ const ChatComponent = ({ userId }) => {
 
           return (
             <div key={index} className={`message ${msg.from === 'client' ? 'client' : 'business'}`}>
-              <div className="message-text">{msg.text}</div>
-              <div className="message-time">{formattedTime}</div>
+              <img src={msg.from === 'client' ? clientProfilePic : businessProfilePic} alt="profile" />
+              <div>
+                <div className="message-text">{msg.text}</div>
+                {msg.file && <div className="message-file">{msg.file}</div>}
+                <div className="message-time">{formattedTime}</div>
+              </div>
             </div>
           );
         })}
@@ -119,6 +133,10 @@ const ChatComponent = ({ userId }) => {
         <button onClick={sendMessage} disabled={isLoading || isSending}>
           שלח
         </button>
+        <label className="file-upload">
+          בחר קובץ
+          <input type="file" onChange={handleFileChange} />
+        </label>
       </div>
     </div>
   );
