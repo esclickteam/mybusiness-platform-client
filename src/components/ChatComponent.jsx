@@ -15,15 +15,15 @@ export default function ChatComponent({
   businessProfilePic,
   isBusiness = false
 }) {
-  const [message,     setMessage]     = useState('');
-  const [messages,    setMessages]    = useState([]);
-  const [isSending,   setIsSending]   = useState(false);
-  const [file,        setFile]        = useState(null);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [isSending, setIsSending] = useState(false);
+  const [file, setFile] = useState(null);
   const [typingUsers, setTypingUsers] = useState([]);
   const [socketReady, setSocketReady] = useState(false);
 
   const containerRef = useRef(null);
-  const socketRef    = useRef(null);
+  const socketRef = useRef(null);
 
   // 1) Load chat history
   useEffect(() => {
@@ -33,8 +33,8 @@ export default function ChatComponent({
       : `${API_BASE}/client/${partnerId}`;
 
     API.get(endpoint, { withCredentials: true })
-       .then(({ data }) => setMessages(data))
-       .catch(console.error);
+      .then(({ data }) => setMessages(data))
+      .catch(console.error);
   }, [userId, partnerId, isBusiness]);
 
   // 2) Setup Socket.IO once
@@ -57,7 +57,7 @@ export default function ChatComponent({
       socket.emit('messageDelivered', { messageId: msg.id });
     });
 
-    socket.on('typing',    ({ from }) => setTypingUsers(prev => Array.from(new Set([...prev, from]))));
+    socket.on('typing', ({ from }) => setTypingUsers(prev => Array.from(new Set([...prev, from]))));
     socket.on('stopTyping', ({ from }) => setTypingUsers(prev => prev.filter(id => id !== from)));
 
     return () => {
@@ -97,11 +97,11 @@ export default function ChatComponent({
     // ההודעה הזמנית ל-optimistic UI
     const tempId = Date.now().toString();
     const optimisticMsg = {
-      id:        tempId,
-      from:      userId,
-      to:        isBusiness ? userId : partnerId,
+      id: tempId,
+      from: userId,
+      to: isBusiness ? userId : partnerId,
       text,
-      fileName:  file?.name || null,
+      fileName: file?.name || null,
       timestamp: new Date().toISOString()
     };
     setMessages(prev => [...prev, optimisticMsg]);
@@ -118,15 +118,14 @@ export default function ChatComponent({
       });
     } else {
       // REST fallback: שולחים correct payload לפי isBusiness
-      const payload = {
-        to:   isBusiness ? userId : partnerId,
-        text
-      };
-      if (isBusiness) {
-        payload.clientId = partnerId;
-      }
+      const formData = new FormData();
+      formData.append("client", userId);        // מזהה הלקוח
+      formData.append("business", partnerId);   // מזהה העסק
+      formData.append("fromName", "John Doe");  // שם השולח
+      formData.append("content", text);         // תוכן ההודעה
+      if (file) formData.append("file", file);  // אם יש קובץ
 
-      API.post('/api/messages/send', payload, { withCredentials: true })
+      API.post('/api/messages/send', formData, { withCredentials: true })
         .then(({ data }) => {
           setMessages(prev =>
             prev.map(m => m.id === tempId ? { ...data, delivered: true } : m)
@@ -172,7 +171,7 @@ export default function ChatComponent({
             <div key={m.id || idx} className={`chat__message ${isMine ? 'mine' : 'theirs'}`}>
               <img src={avatar} className="chat__avatar" alt="" />
               <div className="chat__bubble">
-                {m.text     && <p className="chat__text">{m.text}</p>}
+                {m.text && <p className="chat__text">{m.text}</p>}
                 {m.fileName && <p className="chat__file">{m.fileName}</p>}
                 <div className="chat__meta">
                   <span className="chat__time">
@@ -190,7 +189,7 @@ export default function ChatComponent({
       </div>
 
       <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" disabled={isSending && !file}>
+        <button type="submit" disabled={isSending && !file && !message.trim()}>
           <FiSend size={20} />
         </button>
         <input
