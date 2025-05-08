@@ -5,32 +5,65 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import "./BusinessChatPage.css";
 
+const API_BASE = "https://api.esclick.co.il";
+
 export default function BusinessChatPage() {
   const { user } = useAuth();
   const businessId = user?.businessId;
-  const [convos, setConvos]           = useState([]);
+  const [convos, setConvos]       = useState([]);
   const [activeClient, setActiveClient] = useState(null);
-  const [messages, setMessages]       = useState([]);
-  const [newText, setNewText]         = useState("");
+  const [messages, setMessages]   = useState([]);
+  const [newText, setNewText]     = useState("");
   const socketRef = useRef(null);
 
-  // 1. פתיחת חיבור Socket.IO
+  // 1) Load conversations once
   useEffect(() => {
     if (!businessId) return;
+    axios
+      .get(`${API_BASE}/api/messages/conversations`, { withCredentials: true })
+      .then(res => {
+        setConvos(res.data);
+        if (res.data.length > 0) {
+          setActiveClient(res.data[0].clientId);
+        }
+      })
+      .catch(console.error);
+  }, [businessId]);
 
-    const socket = io("https://api.esclick.co.il", {
-      withCredentials: true,   // שולח את ה-cookie אוטומטית
-      transports: ["websocket"]
-    });
+  // 2) Load messages when activeClient changes
+  useEffect(() => {
+    if (!activeClient) return;
+    axios
+      .get(`${API_BASE}/api/messages/conversations/${activeClient}`, { withCredentials: true })
+      .then(res => setMessages(res.data))
+      .catch(console.error);
+  }, [activeClient]);
+
+  // 3) Setup Socket.IO
+  useEffect(() => {
+    if (!businessId) return;
+    const socket = io(API_BASE, { withCredentials: true });
     socketRef.current = socket;
 
     socket.on("connect", () => {
       socket.emit("registerBusiness", businessId);
     });
 
-    socket.on("newMessage", (msg) => {
-      // אם ההודעה מיועדת ללקוח הפעיל, הוסף אותה
-      if (msg.clientId === activeClient) {
+    socket.on("newMessage", msg => {
+      // Determine the clientId from the incoming message
+      // It might come as msg.clientId, or msg.fromUser, or msg.from
+      const clientId = msg.clientId || msg.fromUser || msg.from;
+      
+      // If this is a brand-new conversation, add to the sidebar
+      setConvos(prev => {
+        if (!prev.find(c => c.clientId === clientId)) {
+          return [...prev, { clientId, name: msg.name || msg.fromName || "לקוח" }];
+        }
+        return prev;
+      });
+
+      // If the message belongs to the open chat, append it
+      if (clientId === activeClient) {
         setMessages(prev => [...prev, msg]);
       }
     });
@@ -38,49 +71,28 @@ export default function BusinessChatPage() {
     return () => socket.disconnect();
   }, [businessId, activeClient]);
 
-  // 2. טעינת רשימת השיחות
-  useEffect(() => {
-    if (!businessId) return;
-    axios.get("https://api.esclick.co.il/api/messages/conversations", {
-      withCredentials: true
-    })
-    .then(res => setConvos(res.data))
-    .catch(console.error);
-  }, [businessId]);
-
-  // 3. טעינת היסטוריית הודעות של לקוח מסוים
-  const selectClient = (clientId) => {
-    setActiveClient(clientId);
-    setMessages([]);
-    axios.get(
-      `https://api.esclick.co.il/api/messages/conversations/${clientId}`,
-      { withCredentials: true }
-    )
-    .then(res => setMessages(res.data))
-    .catch(console.error);
-  };
-
-  // 4. שליחת הודעה
+  // 4) Send a new message
   const sendMessage = () => {
-    if (!newText.trim() || !socketRef.current) return;
+    if (!newText.trim() || !activeClient || !socketRef.current) return;
     const msg = {
       from: businessId,
       to: "client",
       toId: activeClient,
       text: newText.trim(),
-      clientId: activeClient
+      clientId: activeClient,
     };
-    // אפשר גם לכתוב REST קודם, אם רוצים לשמור במסד לפני השידור
-    socketRef.current.emit("sendMessage", msg, (ack) => {
+    socketRef.current.emit("sendMessage", msg, ack => {
       if (ack.success) {
-        setMessages(prev => [...prev, { ...msg, id: ack.messageId, timestamp: new Date() }]);
+        setMessages(prev => [
+          ...prev,
+          { ...msg, id: ack.messageId, timestamp: new Date().toISOString() }
+        ]);
         setNewText("");
       }
     });
   };
 
-  // שליחה בלחיצה על Enter
-  const onKeyDown = (e) => {
+  const onKeyDown = e => {
     if (e.key === "Enter") {
       e.preventDefault();
       sendMessage();
@@ -96,7 +108,7 @@ export default function BusinessChatPage() {
             <li key={c.clientId}>
               <button
                 className={c.clientId === activeClient ? "active" : ""}
-                onClick={() => selectClient(c.clientId)}
+                onClick={() => setActiveClient(c.clientId)}
               >
                 {c.name}
               </button>
@@ -111,15 +123,19 @@ export default function BusinessChatPage() {
         ) : (
           <>
             <div className="messages-list">
-              {messages.map((m) => (
+              {messages.map(m => (
                 <div
-                  key={m.id}
+                  key={m.id || m._id}
                   className={`message-item ${
-                    m.from === businessId ? "outgoing" : "incoming"
+                    (m.from === businessId || m.fromUser === businessId)
+                      ? "outgoing"
+                      : "incoming"
                   }`}
                 >
                   <p>{m.text || m.content}</p>
-                  <small>{new Date(m.timestamp).toLocaleTimeString()}</small>
+                  <small>
+                    {new Date(m.timestamp).toLocaleTimeString()}
+                  </small>
                 </div>
               ))}
             </div>
