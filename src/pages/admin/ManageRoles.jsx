@@ -59,7 +59,7 @@ function ManageRoles() {
       return;
     }
     try {
-      await API.put("/admin/users/reset-user-password", { userId, newPassword });
+      await API.put("/api/admin/users/reset-user-password", { userId, newPassword });
       alert(`✅ הסיסמה אופסה ל: ${newPassword}`);
     } catch (err) {
       console.error("❌ שגיאה באיפוס סיסמה:", err);
@@ -70,7 +70,7 @@ function ManageRoles() {
   const handleDelete = async (id) => {
     if (!window.confirm("האם אתה בטוח שברצונך למחוק משתמש זה?")) return;
     try {
-      await API.delete(`/admin/users/${id}`);
+      await API.delete(`/api/admin/users/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id));
       alert("✅ המשתמש נמחק בהצלחה");
     } catch (err) {

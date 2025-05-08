@@ -225,7 +225,7 @@ const handleLogoChange = e => {
   
     try {
       // 3) שליחה ל־שרת
-      const res = await API.put("/business/my/main-images", fd);
+      const res = await API.put("/api/business/my/main-images", fd);
   
       if (res.status === 200) {
         // 4) חילוץ URL-ים ו־publicIds מה-response
@@ -268,7 +268,7 @@ const handleDeleteMainImage = async publicId => {
   try {
     // encodeURIComponent ימיר "/" ל־"%2F" כך שניתן לשלוח ל־path פרמטר עם תת־תיקיה
     const encodedId = encodeURIComponent(publicId);
-    const res = await API.delete(`/business/my/main-images/${encodedId}`);
+    const res = await API.delete(`/api/business/my/main-images/${encodedId}`);
 
     console.log("🟢 DELETE status:", res.status);
     if (res.status === 204) {
@@ -343,7 +343,7 @@ const handleDeleteMainImage = async publicId => {
   
     try {
       // 3) שליחה לשרת
-      const res = await API.put("/business/my/gallery", fd, {
+      const res = await API.put("/api/business/my/gallery", fd, {
         headers: { "Content-Type": "multipart/form-data" }
       });
   
@@ -383,11 +383,10 @@ const handleDeleteMainImage = async publicId => {
     console.log("🔴 Deleting gallery publicId:", publicId);
   
     try {
-      const res = await API.delete(
-        `/business/my/gallery/${encodeURIComponent(publicId)}`
-      );
-  
-      console.log("🟢 DELETE status:", res.status);
+      const res = await API.delete(`/api/business/my/gallery/${encodeURIComponent(publicId)}`);
+
+
+        console.log("🟢 DELETE status:", res.status);
       if (res.status === 204) {
         setBusinessDetails(prev => {
           // מצא את האינדקס של התמונה בגלריה
@@ -433,7 +432,8 @@ const handleDeleteMainImage = async publicId => {
       await Promise.all(pendingUploadsRef.current);
   
       // שולחים את השדות הנתמכים כולל address עם עיר
-      await API.patch("/business/my", {
+      await API.patch("/api/business/my", {
+
         name:        businessDetails.name,
         category:    businessDetails.category,
         description: businessDetails.description,

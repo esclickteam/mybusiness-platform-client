@@ -97,7 +97,7 @@ export default function BusinessProfileView() {
   const handleDeleteReview = async reviewId => {
     if (!window.confirm("האם למחוק ביקורת זו?")) return;
     try {
-      await api.delete(`/business/${businessId}/reviews/${reviewId}`);
+      await api.delete(`/api/business/${businessId}/reviews/${reviewId}`);
       await fetchBusiness();
     } catch (err) {
       console.error(err);
