@@ -9,8 +9,8 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 const API_BASE   = 'https://api.esclick.co.il/api/messages';
 
 export default function ChatComponent({
-  userId,             // id של המשתמש המחובר (client או business)
-  partnerId,          // id של הצד השני בשיחה
+  userId,
+  partnerId,
   clientProfilePic,
   businessProfilePic,
   isBusiness = false
@@ -20,35 +20,37 @@ export default function ChatComponent({
   const [isSending, setIsSending]     = useState(false);
   const [file, setFile]               = useState(null);
   const [typingUsers, setTypingUsers] = useState([]);
-  const containerRef                  = useRef(null);
-  const socketRef                     = useRef(null);
+  const [socketReady, setSocketReady] = useState(false);
 
-  // 1) Load chat history
+  const containerRef = useRef(null);
+  const socketRef    = useRef(null);
+
+  // 1) Load history
   useEffect(() => {
     if (!userId || !partnerId) return;
-
     const endpoint = isBusiness
-      // עסק טוען היסטוריה עם לקוח
       ? `${API_BASE}/conversations/${partnerId}`
-      // לקוח טוען הודעות עם העסק (partnerId הוא ה-businessId)
       : `${API_BASE}/client/${partnerId}`;
 
     API.get(endpoint, { withCredentials: true })
-      .then(({ data }) => setMessages(data))
-      .catch(console.error);
+       .then(({ data }) => setMessages(data))
+       .catch(console.error);
   }, [userId, partnerId, isBusiness]);
 
-  // 2) Setup Socket.IO
+  // 2) Setup Socket.IO once
   useEffect(() => {
     if (!userId || !partnerId) return;
-    const socket = io(SOCKET_URL, { withCredentials: true, autoConnect: false });
-    socketRef.current = socket;
 
-    // auth & connect
+    const socket = io(SOCKET_URL, {
+      withCredentials: true,
+      autoConnect: false
+    });
     socket.auth = { token: localStorage.getItem('token') };
-    socket.connect();
 
-    // הצטרפות לחדר ייעודי
+    socket.connect();
+    socket.on('connect', () => setSocketReady(true));
+
+    // join the room
     const room = isBusiness
       ? `chat:business:${userId}:client:${partnerId}`
       : `chat:business:${partnerId}:client:${userId}`;
@@ -59,13 +61,10 @@ export default function ChatComponent({
       socket.emit('messageDelivered', { messageId: msg.id });
     });
 
-    socket.on('typing', ({ from }) => {
-      setTypingUsers(prev => Array.from(new Set([...prev, from])));
-    });
-    socket.on('stopTyping', ({ from }) => {
-      setTypingUsers(prev => prev.filter(id => id !== from));
-    });
+    socket.on('typing',   ({ from }) => setTypingUsers(prev => Array.from(new Set([...prev, from]))));
+    socket.on('stopTyping',({ from }) => setTypingUsers(prev => prev.filter(id => id !== from)));
 
+    socketRef.current = socket;
     return () => {
       socket.off();
       socket.disconnect();
@@ -79,13 +78,15 @@ export default function ChatComponent({
     }
   }, [messages, typingUsers]);
 
-  // 4) Handle typing indicator
+  // 4) Typing indicator
   const handleTyping = e => {
     setMessage(e.target.value);
-    socketRef.current.emit('typing', { from: userId });
+    const socket = socketRef.current;
+    if (!socket || !socketReady) return;
+    socket.emit('typing',    { from: userId });
     clearTimeout(handleTyping.timeout);
     handleTyping.timeout = setTimeout(() => {
-      socketRef.current.emit('stopTyping', { from: userId });
+      socket.emit('stopTyping', { from: userId });
     }, 800);
   };
 
@@ -93,7 +94,8 @@ export default function ChatComponent({
   const sendMessage = e => {
     e.preventDefault();
     const text = message.trim();
-    if (!text && !file) return;
+    const socket = socketRef.current;
+    if (!socket || !socketReady || (!text && !file)) return;
 
     setIsSending(true);
     const msg = {
@@ -105,7 +107,7 @@ export default function ChatComponent({
       timestamp: new Date().toISOString(),
     };
 
-    socketRef.current.emit('sendMessage', msg, ack => {
+    socket.emit('sendMessage', msg, ack => {
       if (ack.success) {
         setMessages(prev =>
           prev.map(m => m.id === msg.id ? { ...m, delivered: true } : m)
@@ -114,16 +116,14 @@ export default function ChatComponent({
       setIsSending(false);
     });
 
-    // הצגה מיידית
+    // optimistic UI
     setMessages(prev => [...prev, msg]);
     setMessage('');
     setFile(null);
   };
 
   const onKeyDown = e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      sendMessage(e);
-    }
+    if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
   };
 
   const handleFile = e => {
@@ -131,7 +131,6 @@ export default function ChatComponent({
     if (f) setFile(f);
   };
 
-  // render typing…
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
@@ -152,20 +151,14 @@ export default function ChatComponent({
             ? (isBusiness ? businessProfilePic : clientProfilePic)
             : (isBusiness ? clientProfilePic : businessProfilePic);
           return (
-            <div
-              key={m.id || idx}
-              className={`chat__message ${isMine ? 'mine' : 'theirs'}`}
-            >
+            <div key={m.id || idx} className={`chat__message ${isMine ? 'mine' : 'theirs'}`}>
               <img src={avatar} className="chat__avatar" alt="" />
               <div className="chat__bubble">
                 {m.text && <p className="chat__text">{m.text}</p>}
                 {m.fileName && <p className="chat__file">{m.fileName}</p>}
                 <div className="chat__meta">
                   <span className="chat__time">
-                    {new Date(m.timestamp).toLocaleTimeString('he-IL', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+                    {new Date(m.timestamp).toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'})}
                   </span>
                   {m.delivered && <span className="chat__status">✔</span>}
                 </div>
@@ -177,7 +170,7 @@ export default function ChatComponent({
       </div>
 
       <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" disabled={isSending && !file}>
+        <button type="submit" disabled={(!socketReady || isSending) && !file}>
           <FiSend size={20} />
         </button>
         <input
@@ -186,10 +179,11 @@ export default function ChatComponent({
           value={message}
           onChange={handleTyping}
           onKeyDown={onKeyDown}
+          disabled={!socketReady}
         />
         <label className="chat__attach">
           <FiPaperclip size={20} />
-          <input type="file" onChange={handleFile} />
+          <input type="file" onChange={handleFile} disabled={!socketReady} />
         </label>
       </form>
     </div>
