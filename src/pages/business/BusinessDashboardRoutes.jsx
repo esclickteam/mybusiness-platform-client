@@ -1,3 +1,4 @@
+// src/routes/BusinessDashboardRoutes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
@@ -18,8 +19,10 @@ import CRMClientsTab        from "./dashboardPages/crmpages/CRMClientsTab";
 import CRMServicesTab       from "./dashboardPages/crmpages/CRMServicesTab";
 import CRMSettingsTab       from "./dashboardPages/crmpages/CRMSettingsTab";
 
-import BusinessMessagesPage from "./dashboardPages/BusinessMessagesPage";
 import GoalsPage            from "./dashboardPages/GoalsPage";
+
+// ✅ הייבוא החדש של קומפוננטת הצ'אט
+import BusinessChatPage from "../pages/BusinessChatPage";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
@@ -29,10 +32,10 @@ const BusinessDashboardRoutes = () => (
       {/* ברירת מחדל — נווט לדשבורד */}
       <Route index element={<Navigate to="dashboard" replace />} />
 
-      {/* עמוד הבית של הדשבורד */}
+      {/* דשבורד */}
       <Route path="dashboard" element={<DashboardPage />} />
 
-      {/* עמוד עריכה */}
+      {/* Build / Edit */}
       <Route
         path="edit"
         element={
@@ -41,8 +44,6 @@ const BusinessDashboardRoutes = () => (
           </BusinessServicesProvider>
         }
       />
-
-      {/* (אופציונלי) טאב נפרד ל-build אם נדרש */}
       <Route
         path="build"
         element={
@@ -52,7 +53,7 @@ const BusinessDashboardRoutes = () => (
         }
       />
 
-      {/* עגלת רכישות */}
+      {/* Cart */}
       <Route
         path="cart"
         element={
@@ -62,17 +63,23 @@ const BusinessDashboardRoutes = () => (
         }
       />
 
-      {/* שאר הטאבים */}
-      <Route path="collab"    element={<Collab />} />
-      <Route path="upgrade"   element={<Upgrade />} />
-      <Route path="esclick"   element={<EsclickAdvisor />} />
-      <Route path="goals"     element={<GoalsPage />} />
+      {/* טאב־Collab, Upgrade, Advisor, Goals */}
+      <Route path="collab"  element={<Collab />} />
+      <Route path="upgrade" element={<Upgrade />} />
+      <Route path="esclick" element={<EsclickAdvisor />} />
+      <Route path="goals"   element={<GoalsPage />} />
+
+      {/* Preview Chat */}
       <Route path="chat-test" element={<ChatTab isPreview />} />
       <Route path="chat/:partnerId" element={<BusinessChat />} />
-      <Route path="affiliate" element={<AffiliatePage />} />
-      <Route path="messages"  element={<BusinessMessagesPage />} />
 
-      {/* מערכת CRM */}
+      {/* Affiliate */}
+      <Route path="affiliate" element={<AffiliatePage />} />
+
+      {/* ✅ Route חדש לצ'אט של העסק */}
+      <Route path="messages" element={<BusinessChatPage />} />
+
+      {/* CRM */}
       <Route path="crm" element={<CRMMain />}>
         <Route index element={<Navigate to="appointments" replace />} />
         <Route path="appointments" element={<CRMAppointmentsTab />} />

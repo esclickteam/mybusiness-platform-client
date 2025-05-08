@@ -1,11 +1,12 @@
+// src/pages/business/BusinessDashboardLayout.jsx
 import React, { useEffect } from "react";
 import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [
-  { path: "build",     label: "🧱 עריכת עמוד עסקי" },
   { path: "dashboard", label: "📊 דשבורד" },
+  { path: "build",     label: "🧱 עריכת עמוד עסקי" },
   { path: "messages",  label: "💬 הודעות מלקוחות" },
   { path: "collab",    label: "🤝 שיתופי פעולה" },
   { path: "crm",       label: "📇 מערכת CRM" },
@@ -36,23 +37,21 @@ export default function BusinessDashboardLayout() {
         <aside className="sidebar">
           <h2>ניהול העסק</h2>
           <nav>
-            {/* כפתור צפייה בפרופיל ציבורי */}
             {user?.role === "business" && (
               <NavLink
-              to={`/business/${businessId}`}
-              end
-              className={({ isActive }) => (isActive ? "active" : undefined)}
-            >
-              👀 צפייה בפרופיל
-            </NavLink>
-            
+                to={`/business/${businessId}`}
+                end
+                className={({ isActive }) => (isActive ? "active" : undefined)}
+              >
+                👀 צפייה בפרופיל
+              </NavLink>
             )}
 
-            {/* כפתורי הטאבים בדשבורד */}
             {tabs.map(({ path, label }) => (
               <NavLink
                 key={path}
                 to={path}
+                end
                 className={({ isActive }) => (isActive ? "active" : undefined)}
               >
                 {label}
