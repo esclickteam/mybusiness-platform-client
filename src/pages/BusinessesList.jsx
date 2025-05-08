@@ -23,7 +23,7 @@ const BusinessesList = () => {
       if (filters.category) params.append("category", filters.category);
       if (filters.city) params.append("city", filters.city);
 
-      const response = await API.get(`/business?${params.toString()}`);
+      const response = await API.get(`/api/business?${params.toString()}`);
       setBusinesses(response.data.businesses || []);
     } catch (err) {
       console.error("שגיאה בקבלת עסקים:", err);

@@ -65,7 +65,7 @@ export default function Profile() {
       const suffix = token ? "" : "?dev=true";
 
       try {
-        const { data } = await API.get(`/business/my${suffix}`);
+        const { data } = await API.get(`/api/business/my${suffix}`);
 
         // מאחדים את השדות מהמונגו (about → description) לפורמט צד-לקוח
         setBusinessData({

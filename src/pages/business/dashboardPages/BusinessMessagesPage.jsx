@@ -38,7 +38,7 @@ const BusinessMessagesPage = () => {
           return;
         }
 
-        const { data } = await API.get(`/chat/conversations/${userId}`);
+        const { data } = await API.get(`/api/chat/conversations/${userId}`);
         if (data.length > 0) {
           setConversations(data);
           setSelected(data[0]); // בחר את השיחה הראשונה

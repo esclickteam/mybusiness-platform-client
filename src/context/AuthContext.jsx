@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
-        const res = await API.get("/auth/me");
+        const res = await API.get("/api/auth/me");
         setUser(res.data);
       } catch {
         setUser(null);
@@ -68,7 +68,7 @@ export function AuthProvider({ children }) {
       }
 
       // fetch current user
-      const me = await API.get("/auth/me");
+      const me = await API.get("/api/auth/me");
       setUser(me.data);
 
       // auto-redirect unless skipped

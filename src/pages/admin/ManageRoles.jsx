@@ -19,7 +19,7 @@ function ManageRoles() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await API.get("/admin/users");
+        const res = await API.get("/api/admin/users");
         console.log("📦 משתמשים מהשרת:", res.data);
         setUsers(res.data);
       } catch (err) {

@@ -35,7 +35,7 @@ export default function Collab() {
     async function fetchProfile() {
       try {
         // קריאה דרך ה-proxy ל-same-origin, שולחת אוטומטית את ה-cookie
-        const { data } = await API.get("/business/my");
+        const { data } = await API.get("/api/business/my");
         console.log("✅ נתוני העסק מהשרת:", data);
 
         setProfileData({

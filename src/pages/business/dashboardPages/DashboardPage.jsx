@@ -47,7 +47,7 @@ const DashboardPage = () => {
 
       try {
         const businessId = user.businessId;
-        const response = await API.get(`/business/${businessId}/stats`);
+        const response = await API.get(`/api/business/${businessId}/stats`);
         setStats(response.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת נתונים:", err);

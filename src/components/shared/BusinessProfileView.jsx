@@ -38,7 +38,7 @@ export default function BusinessProfileView() {
   const fetchBusiness = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/business/${businessId}`);
+      const res = await api.get(`/api/business/${businessId}`);
       console.log(res.data); // הדפסת המידע שהתקבל
       const biz = res.data.business || res.data;
       setData(biz);

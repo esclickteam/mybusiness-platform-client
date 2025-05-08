@@ -21,21 +21,24 @@ export default function ChatComponent({
   const containerRef = useRef(null);
 
   // Load chat history
-  useEffect(() => {
+  // Load chat history
+useEffect(() => {
     async function loadHistory() {
       try {
-            const endpoint = isBusiness
-      ? `/messages/business/${userId}`
-      : `/messages/client/${userId}`;
+        const endpoint = isBusiness
+          ? `/api/messages/business/${userId}`
+          : `/api/messages/client/${userId}`;
+  
         const { data } = await API.get(endpoint);
         setMessages(data);
       } catch (error) {
         console.error('Error loading history:', error);
       }
     }
-
+  
     if (userId) loadHistory();
   }, [userId, isBusiness]);
+  
 
   // Connect & register socket
   useEffect(() => {
