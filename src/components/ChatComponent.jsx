@@ -34,9 +34,7 @@ export default function ChatComponent({
       }
     }
 
-    if (userId) {
-      loadHistory();
-    }
+    if (userId) loadHistory();
   }, [userId, isBusiness]);
 
   // Connect & register socket
@@ -49,29 +47,31 @@ export default function ChatComponent({
       const registerEvent = isBusiness ? 'registerBusiness' : 'registerClient';
       socket.emit(registerEvent, userId);
 
-      socket.on('newMessage', (msg) => {
+      socket.on('newMessage', msg => {
         socket.emit('messageDelivered', { messageId: msg.id });
         setMessages(prev => [...prev, { ...msg, delivered: true }]);
       });
 
       socket.on('messageDelivered', ({ messageId }) => {
         setMessages(prev =>
-          prev.map(m => m.id === messageId ? { ...m, delivered: true } : m)
+          prev.map(m => (m.id === messageId ? { ...m, delivered: true } : m))
         );
       });
 
       socket.on('messageRead', ({ messageId }) => {
         setMessages(prev =>
-          prev.map(m => m.id === messageId ? { ...m, read: true } : m)
+          prev.map(m => (m.id === messageId ? { ...m, read: true } : m))
         );
       });
 
       socket.on('typing', ({ from }) => {
         setTypingUsers(prev => Array.from(new Set([...prev, from])));
       });
+
       socket.on('stopTyping', ({ from }) => {
         setTypingUsers(prev => prev.filter(id => id !== from));
       });
+
       socket.on('connect_error', err => console.error('Socket error:', err));
     }
 
@@ -88,37 +88,32 @@ export default function ChatComponent({
   // Mark read on display
   useEffect(() => {
     messages.forEach(msg => {
-      if (msg.delivered && !msg.read) {
-        socket.emit('messageRead', { messageId: msg.id });
-      }
+      if (msg.delivered && !msg.read) socket.emit('messageRead', { messageId: msg.id });
     });
   }, [messages]);
 
   // Auto-scroll
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
+    if (containerRef.current) containerRef.current.scrollTop = containerRef.current.scrollHeight;
   }, [messages, typingUsers]);
 
-  // Render typing indicator
   const renderTypingIndicator = () => {
     const others = typingUsers.filter(id => id !== userId);
-    if (others.length === 0) return null;
-    return <div className="chat__typing">{others.map(id => id === userId ? 'אתה' : 'העסק').join(', ')} מקלידים…</div>;
+    if (!others.length) return null;
+    return (
+      <div className="chat__typing">
+        {others.map(id => (id === userId ? 'אתה' : 'העסק')).join(', ')} מקלידים…
+      </div>
+    );
   };
 
-  // Handle typing events
   const handleTyping = e => {
     setMessage(e.target.value);
     socket.emit('typing', { from: userId });
     clearTimeout(handleTyping.timeout);
-    handleTyping.timeout = setTimeout(() => {
-      socket.emit('stopTyping', { from: userId });
-    }, 1000);
+    handleTyping.timeout = setTimeout(() => socket.emit('stopTyping', { from: userId }), 1000);
   };
 
-  // Send message
   const sendMessage = e => {
     e.preventDefault();
     const text = message.trim();
@@ -131,13 +126,13 @@ export default function ChatComponent({
       timestamp: new Date().toISOString(),
       from: isBusiness ? 'business' : 'client',
       to: isBusiness ? 'client' : 'business',
-      file: file ? file.name : null,
+      file: file ? file.name : null
     };
 
     socket.emit('sendMessage', msg, ack => {
       if (ack.success) {
         setMessages(prev =>
-          prev.map(m => m.id === msg.id ? { ...m, delivered: true } : m)
+          prev.map(m => (m.id === msg.id ? { ...m, delivered: true } : m))
         );
       }
     });
@@ -148,16 +143,14 @@ export default function ChatComponent({
     setIsSending(false);
   };
 
-  // Handle file selection
   const handleFile = e => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setFile(selectedFile);
+    const selected = e.target.files[0];
+    if (selected) setFile(selected);
   };
 
   return (
     <div className="chat">
       <header className="chat__header">צ'אט עם העסק</header>
-
       <div className="chat__body" ref={containerRef}>
         {messages.map((msg, idx) => {
           const isClient = msg.from === 'client';
@@ -165,8 +158,9 @@ export default function ChatComponent({
           return (
             <div
               key={msg.id || idx}
-              className={`chat__message ${isClient ? 'chat__message--client' : 'chat__message--biz'}`}
-            >
+              className={`chat__message ${
+                isClient ? 'chat__message--client' : 'chat__message--biz'
+              }`}>
               <img className="chat__avatar" src={isClient ? clientProfilePic : businessProfilePic} alt="" />
               <div className="chat__content">
                 {msg.text && <div className="chat__text">{msg.text}</div>}
@@ -183,18 +177,23 @@ export default function ChatComponent({
         {renderTypingIndicator()}
       </div>
 
+      {/* Updated input row */}
       <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" className="chat__send-text" disabled={isSending && !file}>שלח</button>
-        <div className="chat__input-group">
-          <input type="text" value={message} onChange={handleTyping} placeholder="כתוב הודעה..." aria-label="כתוב הודעה" />
-          <button type="button" className="chat__icon-btn"><FiFileText size={18} /></button>
-          <button type="button" className="chat__icon-btn"><FiMic size={18} /></button>
-          <button type="button" className="chat__icon-btn"><FiImage size={18} /></button>
-          <label className="chat__icon-btn chat__attach">
-            <FiPaperclip size={18} />
-            <input type="file" onChange={handleFile} />
-          </label>
+        <button type="submit" className="chat__send-text" disabled={isSending && !file}>
+          <FiSend size={24} />
+        </button>
+        <div className="chat__input-field">
+          <input
+            type="text"
+            value={message}
+            onChange={handleTyping}
+            placeholder="כתוב הודעה..."
+          />
         </div>
+        <label className="chat__attach">
+          <FiPaperclip size={24} />
+          <input type="file" onChange={handleFile} />
+        </label>
       </form>
     </div>
   );
