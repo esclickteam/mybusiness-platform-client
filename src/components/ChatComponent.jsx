@@ -159,7 +159,7 @@ export default function ChatComponent({
             <div
               key={msg.id || idx}
               className={`chat__message ${
-                isClient ? 'chat__message--client' : 'chat__message--biz'
+                isClient ? 'chat__message--client' :  'chat__message--biz'
               }`}>
               <img className="chat__avatar" src={isClient ? clientProfilePic : businessProfilePic} alt="" />
               <div className="chat__content">
