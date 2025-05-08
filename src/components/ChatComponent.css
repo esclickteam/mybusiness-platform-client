@@ -93,7 +93,8 @@
 
 .chat-input {
   display: flex;
-  align-items: center; /* מוודא שהכפתורים מיושרים במרכז */
+  align-items: center;
+  justify-content: space-between; /* הכפתורים יהיו ממורכזים וישמרו מרווח ביניהם */
   gap: 15px;
   padding: 12px;
   border-top: 1px solid #ddd;
@@ -101,11 +102,11 @@
 }
 
 .chat-input input {
-  width: 70%; /* רוחב התיבה גדולה יותר */
+  width: 60%; /* התיבה תופסת יותר מקום */
   padding: 12px;
   border-radius: 12px;
   border: 1px solid #ddd;
-  font-size: 1.1rem; /* גודל גופן קריא */
+  font-size: 1.1rem;
   transition: border-color 0.3s ease;
 }
 
@@ -114,7 +115,7 @@
 }
 
 .chat-input button {
-  width: 20%; /* הכפתור יהיה בגודל אחיד */
+  width: 17%; /* הגדרת רוחב אחיד לכפתור */
   background-color: #6a4fc4;
   color: white;
   padding: 12px;
@@ -128,7 +129,7 @@
 
 .chat-input button:hover {
   background-color: #5e3ec2;
-  transform: scale(1.05); /* אפקט מגע */
+  transform: scale(1.05);
 }
 
 .chat-input button:active {
@@ -142,6 +143,7 @@
 }
 
 .chat-input .file-upload {
+  width: 17%; /* הגדרת רוחב אחיד לכפתור */
   background-color: #6a4fc4;
   color: white;
   padding: 12px;
@@ -159,6 +161,7 @@
   transform: scale(0.95);
   background-color: #4c3bb0;
 }
+
 
 /* עבור מסכים קטנים יותר (כמו טלפונים ניידים) */
 @media (max-width: 600px) {
