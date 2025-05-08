@@ -93,6 +93,7 @@
 
 .chat-input {
   display: flex;
+  align-items: center; /* מוודא שהכפתורים מיושרים במרכז */
   gap: 15px;
   padding: 12px;
   border-top: 1px solid #ddd;
@@ -100,7 +101,7 @@
 }
 
 .chat-input input {
-  width: 75%;
+  width: 70%; /* רוחב התיבה גדולה יותר */
   padding: 12px;
   border-radius: 12px;
   border: 1px solid #ddd;
@@ -113,7 +114,7 @@
 }
 
 .chat-input button {
-  width: 25%;
+  width: 20%; /* הכפתור יהיה בגודל אחיד */
   background-color: #6a4fc4;
   color: white;
   padding: 12px;
