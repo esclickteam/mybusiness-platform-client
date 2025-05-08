@@ -1,68 +1,55 @@
 /* ChatComponent.css */
 
-/* קונטיינר ראשי */
-.chat-container {
+.chat {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: calc(100vh - 120px); /* תתאם לפי גובה ה-header/ה־navbar שלך */
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   direction: rtl;
 }
 
-/* כותרת הצ'אט */
-.chat-header {
-  flex: 0 0 auto;
+.chat__header {
   background: #6a4fc4;
   color: #fff;
   padding: 1rem 1.25rem;
   font-size: 1.25rem;
   font-weight: 500;
+  flex: 0 0 auto;
 }
 
-/* אזור ההודעות */
-.chat-messages {
+.chat__body {
   flex: 1;
+  background: #f9f5ff;
   padding: 1rem;
   overflow-y: auto;
-  background: #f9f5ff;
+  scroll-behavior: smooth;
 }
 
-/* בועת הודעה */
-.message {
+.chat__message {
   display: flex;
   align-items: flex-end;
   margin-bottom: 0.75rem;
   max-width: 70%;
 }
 
-/* אם מי ששלח הוא הלקוח – מימין, בועה סגולה בהירה */
-.message.client {
+.chat__message--client {
   margin-left: auto;
   flex-direction: row-reverse;
 }
 
-.message.client .message-text {
+.chat__message--client .chat__text {
   background: #ede7fe;
-  color: #333;
 }
 
-/* אם מי ששלח הוא העסק – משמאל, בועה לבנה עם גבול קל */
-.message.business {
-  margin-right: auto;
-}
-
-.message.business .message-text {
+.chat__message--biz .chat__text {
   background: #fff;
   border: 1px solid #ddd;
-  color: #333;
 }
 
-/* תמונת פרופיל */
-.message img {
+.chat__avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -70,17 +57,22 @@
   margin: 0 0.5rem;
 }
 
-/* תוכן ההודעה */
-.message-text {
+.chat__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat__text {
   padding: 0.75rem 1rem;
   border-radius: 16px;
   font-size: 0.95rem;
   line-height: 1.4;
   word-wrap: break-word;
+  background: #fff;
+  color: #333;
 }
 
-/* קובץ מצורף */
-.message-file {
+.chat__file {
   margin-top: 0.25rem;
   font-size: 0.85rem;
   color: #6a4fc4;
@@ -88,85 +80,90 @@
   cursor: pointer;
 }
 
-/* הזמן בצד תחתית הבועה */
-.message-time {
+.chat__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.chat__time {
   font-size: 0.75rem;
   color: #999;
-  margin-top: 0.25rem;
-  text-align: end;
 }
 
-/* הודעות מערכת (טעינה וכו') */
-.system-message {
-  justify-content: center;
+.chat__status {
+  font-size: 0.75rem;
+  color: #6a4fc4;
+}
+
+.chat__typing {
   font-style: italic;
-}
-
-.loading-text {
+  text-align: center;
+  margin-top: 0.5rem;
   color: #666;
 }
 
-/* שורת הקלט */
-.chat-input {
+.chat__input {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-top: 1px solid #eee;
-  background: #fff;
+  gap: 0.75rem;
+  direction: ltr;
 }
 
-/* שדה טקסט */
-.chat-input input[type="text"] {
+.chat__send-text {
+  background: none;
+  border: none;
+  color: #6a4fc4;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chat__input-group {
+  display: flex;
+  align-items: center;
   flex: 1;
-  padding: 0.75rem 1rem;
+  gap: 0.5rem;
+}
+
+.chat__input-group input[type="text"] {
+  flex: 1;
+  padding: 0.6rem 1rem;
   border: 1px solid #ddd;
-  border-radius: 24px;
+  border-radius: 20px;
   font-size: 1rem;
   transition: border-color 0.3s;
 }
-.chat-input input[type="text"]:focus {
+
+.chat__input-group input[type="text"]:focus {
   outline: none;
   border-color: #6a4fc4;
 }
 
-/* כפתור שלח */
-.chat-input button {
-  background: #6a4fc4;
-  color: #fff;
+.chat__icon-btn {
+  background: none;
   border: none;
-  padding: 0.65rem 1.25rem;
-  border-radius: 24px;
-  font-weight: 500;
   cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.2s;
-}
-.chat-input button:disabled {
-  background: #ccc;
-  cursor: default;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* לייבל הכנסת קובץ */
-.file-upload {
+.chat__attach {
   position: relative;
   overflow: hidden;
-  display: inline-block;
-  background: #ede7fe;
-  color: #6a4fc4;
-  padding: 0.65rem 1rem;
-  border-radius: 24px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.2s;
 }
-.file-upload:hover {
-  background: #e0d4fe;
-}
-.file-upload input[type="file"] {
+
+.chat__attach input[type="file"] {
   position: absolute;
-  left: 0; top: 0;
+  left: 0;
+  top: 0;
   opacity: 0;
   width: 100%;
   height: 100%;

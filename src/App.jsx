@@ -1,9 +1,58 @@
+// src/App.jsx
 import React, { Suspense, lazy, useEffect } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import Header from "./components/Header";
-import ChatComponent from './components/ChatComponent'; // או הנתיב המתאים
+import ChatLayout from "./components/ChatLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
+import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 
+import "./styles/index.css";
 
+// Lazy-loaded public pages
+const HomePage           = lazy(() => import("./pages/Home"));
+const About              = lazy(() => import("./pages/About"));
+const SearchBusinesses   = lazy(() => import("./pages/SearchBusinesses"));
+const PrivacyPolicy      = lazy(() => import("./pages/PrivacyPolicy"));
+const HowItWorks         = lazy(() => import("./pages/HowItWorks"));
+const Plans              = lazy(() => import("./pages/business/Plans"));
+const Checkout           = lazy(() => import("./pages/Checkout"));
+const FAQ                = lazy(() => import("./pages/FAQ"));
+const Accessibility      = lazy(() => import("./pages/Accessibility"));
+const Terms              = lazy(() => import("./pages/Terms"));
+const Contact            = lazy(() => import("./pages/Contact"));
+const BusinessSupport    = lazy(() => import("./pages/BusinessSupport"));
+const BusinessOverview   = lazy(() => import("./pages/business/Business"));
+const BusinessesList     = lazy(() => import("./pages/BusinessesList"));
+const QuickJobsBoard     = lazy(() => import("./pages/QuickJobsBoard"));
+const QuickJobForm       = lazy(() => import("./pages/QuickJobForm"));
+const Login              = lazy(() => import("./pages/Login"));
+const Register           = lazy(() => import("./pages/Register"));
+const ResetPassword      = lazy(() => import("./pages/ResetPassword"));
+const ChangePassword     = lazy(() => import("./pages/ChangePassword"));
+const StaffLogin         = lazy(() => import("./pages/StaffLogin"));
+const BusinessProfileView= lazy(() => import("./components/shared/BusinessProfileView"));
+const ClientDashboard    = lazy(() => import("./pages/client/ClientDashboard"));
+const StaffDashboard     = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession        = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile       = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks            = lazy(() => import("./pages/staff/MyTasks"));
+const MySales            = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard   = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard     = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs          = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans         = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings      = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers         = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent    = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles        = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage    = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 // ScrollToTop component to scroll to top on route change
 function ScrollToTop() {
@@ -12,77 +61,27 @@ function ScrollToTop() {
   return null;
 }
 
-import "./styles/index.css";
-import ProtectedRoute from "./components/ProtectedRoute";
-import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
-import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
-
-// Lazy-loaded public pages
-const HomePage = lazy(() => import("./pages/Home"));
-const About = lazy(() => import("./pages/About"));
-const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-
-// Business pages
-const HowItWorks = lazy(() => import("./pages/HowItWorks"));
-const Plans = lazy(() => import("./pages/business/Plans"));
-const Checkout = lazy(() => import("./pages/Checkout"));
-
-// Support pages
-const FAQ = lazy(() => import("./pages/FAQ"));
-const Accessibility = lazy(() => import("./pages/Accessibility"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Contact = lazy(() => import("./pages/Contact"));
-
-// New Business Support page
-const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));
-
-// Business view and list
-const BusinessOverview = lazy(() => import("./pages/business/Business"));
-const BusinessesList = lazy(() => import("./pages/BusinessesList"));
-
-// Quick Jobs
-const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
-const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
-
-// Authentication
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const ChangePassword = lazy(() => import("./pages/ChangePassword"));
-
-// Staff Login page
-const StaffLogin = lazy(() => import("./pages/StaffLogin"));
-
-// Public business profile
-const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
-
-// Dashboards
-const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
-const StaffDashboard = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks = lazy(() => import("./pages/staff/MyTasks"));
-const MySales = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
-
-// Lazy-load BusinessMessagesPage
-const BusinessMessagesPage = lazy(() => import("./pages/business/dashboardPages/BusinessMessagesPage"));
+// BusinessChatRoute: Pulls businessId from URL and renders ChatLayout
+function BusinessChatRoute({ clientProfilePic, businessProfilePic }) {
+  const { businessId } = useParams();
+  return (
+    <ChatLayout
+      userId={businessId}
+      clientProfilePic={clientProfilePic}
+      businessProfilePic={businessProfilePic}
+      isBusiness={true}
+    />
+  );
+}
 
 export default function App() {
+  // Replace these with your actual profile-pic sources, e.g. from context or Redux
+  const clientProfilePic = "/default-client.png";
+  const businessProfilePic = "/default-business.png";
+
   return (
     <>
       <Header />
-
-      {/* Scroll to top on route change */}
       <ScrollToTop />
 
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
@@ -98,35 +97,39 @@ export default function App() {
           <Route path="/plans" element={<Plans />} />
           <Route path="/checkout" element={<Checkout />} />
 
-          {/* Support / information pages */}
+          {/* Support / info */}
           <Route path="/faq" element={<FAQ />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
-
-          {/* Business support page */}
           <Route path="/business-support" element={<BusinessSupport />} />
 
-          {/* Business and Job pages */}
+          {/* Business & jobs */}
           <Route path="/business" element={<BusinessOverview />} />
           <Route path="/businesses" element={<BusinessesList />} />
           <Route path="/quick-jobs" element={<QuickJobsBoard />} />
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
-          {/* Authentication */}
+          {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
-
-          {/* Staff login page */}
           <Route path="/staff-login" element={<StaffLogin />} />
 
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-          {/* Business Messages Page */}
-          <Route path="/business/:businessId/chat" element={<ChatComponent />} />
+          {/* Chat with sidebar */}
+          <Route
+            path="/business/:businessId/chat"
+            element={
+              <BusinessChatRoute
+                clientProfilePic={clientProfilePic}
+                businessProfilePic={businessProfilePic}
+              />
+            }
+          />
 
           {/* Business dashboard (protected) */}
           <Route
@@ -266,7 +269,7 @@ export default function App() {
             }
           />
 
-          {/* Additional routes */}
+          {/* Chat test page */}
           <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
           {/* Fallback */}
