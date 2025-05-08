@@ -1,19 +1,18 @@
 /* Chat container adjustments */
 .chat-container {
   position: fixed;
-  top: 50%;
+  bottom: 0;
   left: 50%;
-  transform: translate(-50%, -50%); /* מרכז את הצ'אט */
-  width: 400px; /* רוחב הצ'אט */
-  height: 500px; /* גובה הצ'אט */
+  transform: translateX(-50%);  /* למרכז את הצ'אט באמצע */
+  width: 80%;
+  max-width: 500px;  /* אפשר לקבוע רוחב מקסימלי כך שלא יתפשט יותר מדי */
   background-color: #fff;
-  border-radius: 15px; /* פינות מעוגלות יותר */
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* הצללה מקצועית */
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid #ddd;
-  z-index: 9999;
 }
 
 .chat-header {
