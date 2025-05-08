@@ -7,6 +7,7 @@ import "../../styles/BusinessDashboardLayout.css";
 const tabs = [
   { path: "dashboard", label: "📊 דשבורד" },
   { path: "build",     label: "🧱 עריכת עמוד עסקי" },
+  { path: "cart",      label: "🛒 עגלת קניות" },           // ← נוסיף כאן
   { path: "messages",  label: "💬 הודעות מלקוחות" },
   { path: "collab",    label: "🤝 שיתופי פעולה" },
   { path: "crm",       label: "📇 מערכת CRM" },
@@ -37,6 +38,7 @@ export default function BusinessDashboardLayout() {
         <aside className="sidebar">
           <h2>ניהול העסק</h2>
           <nav>
+            {/* קישור לפרופיל הציבורי */}
             {user?.role === "business" && (
               <NavLink
                 to={`/business/${businessId}`}
@@ -47,6 +49,7 @@ export default function BusinessDashboardLayout() {
               </NavLink>
             )}
 
+            {/* כפתורי הטאבים בדשבורד */}
             {tabs.map(({ path, label }) => (
               <NavLink
                 key={path}

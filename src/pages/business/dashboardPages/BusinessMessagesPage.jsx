@@ -8,10 +8,13 @@ import "./BusinessMessagesPage.css";
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
   const businessId = user?.businessId;
+  const businessProfilePic = user?.profilePicUrl || "/default-business.png";
+  const defaultClientPic   = "/default-client.png";
 
   const [conversations, setConversations]   = useState([]);
   const [activeClientId, setActiveClientId] = useState(null);
   const [isLoading, setIsLoading]           = useState(true);
+  const [error, setError]                   = useState(null);
 
   // 1) Load list of client conversations
   useEffect(() => {
@@ -24,17 +27,24 @@ export default function BusinessMessagesPage() {
           setActiveClientId(data[0].clientId);
         }
       })
-      .catch(console.error)
+      .catch(err => {
+        console.error("❌ שגיאה בטעינת השיחות:", err);
+        setError("❌ לא ניתן לטעון את השיחות, נסה שוב מאוחר יותר");
+      })
       .finally(() => setIsLoading(false));
   }, [businessId]);
 
+  // handle loading / auth / error states
   if (authLoading) {
     return <div className="loading-screen">🔄 טוען הרשאה…</div>;
   }
   if (isLoading) {
     return <div className="loading-screen">🔄 טוען שיחות…</div>;
   }
-  if (conversations.length === 0) {
+  if (error) {
+    return <div className="error-screen">{error}</div>;
+  }
+  if (!conversations.length) {
     return (
       <div className="empty-chat">
         <h3>עדיין אין לך שיחות</h3>
@@ -55,7 +65,7 @@ export default function BusinessMessagesPage() {
                 className={clientId === activeClientId ? "active" : ""}
                 onClick={() => setActiveClientId(clientId)}
               >
-                {name}
+                {name || "לקוח חסר שם"}
               </button>
             </li>
           ))}
@@ -69,8 +79,8 @@ export default function BusinessMessagesPage() {
             userId={businessId}
             partnerId={activeClientId}
             isBusiness={true}
-            clientProfilePic="/default-client.png"
-            businessProfilePic="/default-business.png"
+            clientProfilePic={defaultClientPic}
+            businessProfilePic={businessProfilePic}
           />
         )}
       </main>

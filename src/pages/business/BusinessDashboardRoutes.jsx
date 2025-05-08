@@ -1,4 +1,4 @@
-// src/routes/BusinessDashboardRoutes.jsx
+// src/pages/business/BusinessDashboardRoutes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
@@ -21,8 +21,8 @@ import CRMSettingsTab       from "./dashboardPages/crmpages/CRMSettingsTab";
 
 import GoalsPage            from "./dashboardPages/GoalsPage";
 
-// ✅ הייבוא החדש של קומפוננטת הצ'אט
-import BusinessChatPage from "../BusinessChatPage";
+// ✅ הייבוא המעודכן של העמוד לצ'אט העסקי
+import BusinessMessagesPage from "./dashboardPages/BusinessMessagesPage";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
@@ -63,7 +63,7 @@ const BusinessDashboardRoutes = () => (
         }
       />
 
-      {/* טאב־Collab, Upgrade, Advisor, Goals */}
+      {/* Tabs: Collab, Upgrade, Advisor, Goals */}
       <Route path="collab"  element={<Collab />} />
       <Route path="upgrade" element={<Upgrade />} />
       <Route path="esclick" element={<EsclickAdvisor />} />
@@ -76,8 +76,8 @@ const BusinessDashboardRoutes = () => (
       {/* Affiliate */}
       <Route path="affiliate" element={<AffiliatePage />} />
 
-      {/* ✅ Route חדש לצ'אט של העסק */}
-      <Route path="messages" element={<BusinessChatPage />} />
+      {/* ✅ Route חדש להצגת שיחות העסק עם לקוחות */}
+      <Route path="messages" element={<BusinessMessagesPage />} />
 
       {/* CRM */}
       <Route path="crm" element={<CRMMain />}>
