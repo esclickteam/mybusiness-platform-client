@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
+import API from '../api';
 import './ChatComponent.css';
 
 const socket = io('https://api.esclick.co.il', { autoConnect: false });
@@ -10,7 +11,7 @@ export default function ChatComponent({
   userId,
   clientProfilePic,
   businessProfilePic,
-  isBusiness = false, // pass true if this instance is for the business side
+  isBusiness = false
 }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
@@ -19,39 +20,61 @@ export default function ChatComponent({
   const [typingUsers, setTypingUsers] = useState([]);
   const containerRef = useRef();
 
-  // connect & register on mount
+  // Load chat history
+  useEffect(() => {
+    async function loadHistory() {
+      try {
+        const endpoint = isBusiness
+          ? `/api/messages/business/${userId}`
+          : `/api/messages/client/${userId}`;
+        const response = await API.get(endpoint);
+        setMessages(response.data);
+      } catch (err) {
+        console.error('Error loading history:', err);
+      }
+    }
+
+    if (userId) {
+      loadHistory();
+    }
+  }, [userId, isBusiness]);
+
+  // Connect & register socket
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (userId && token) {
       socket.auth = { userId, token };
       socket.connect();
 
-      // register as client or business
-      const registerEvent = isBusiness ? 'registerBusiness' : 'registerClient';
-      socket.emit(registerEvent, userId);
+      const event = isBusiness ? 'registerBusiness' : 'registerClient';
+      socket.emit(event, userId);
 
-      // listeners
-      socket.on('newMessage', msg => {
+      socket.on('newMessage', (msg) => {
         socket.emit('messageDelivered', { messageId: msg.id });
-        setMessages(prev => [...prev, { ...msg, delivered: true }]);
+        setMessages((prev) => [...prev, { ...msg, delivered: true }]);
       });
+
       socket.on('messageDelivered', ({ messageId }) => {
-        setMessages(prev =>
-          prev.map(m => (m.id === messageId ? { ...m, delivered: true } : m))
+        setMessages((prev) =>
+          prev.map((m) => (m.id === messageId ? { ...m, delivered: true } : m))
         );
       });
+
       socket.on('messageRead', ({ messageId }) => {
-        setMessages(prev =>
-          prev.map(m => (m.id === messageId ? { ...m, read: true } : m))
+        setMessages((prev) =>
+          prev.map((m) => (m.id === messageId ? { ...m, read: true } : m))
         );
       });
+
       socket.on('typing', ({ from }) => {
-        setTypingUsers(prev => Array.from(new Set([...prev, from])));
+        setTypingUsers((prev) => Array.from(new Set([...prev, from])));
       });
+
       socket.on('stopTyping', ({ from }) => {
-        setTypingUsers(prev => prev.filter(id => id !== from));
+        setTypingUsers((prev) => prev.filter((id) => id !== from));
       });
-      socket.on('connect_error', err => console.error('Socket error:', err));
+
+      socket.on('connect_error', (err) => console.error('Socket error:', err));
     }
 
     return () => {
@@ -60,42 +83,42 @@ export default function ChatComponent({
     };
   }, [userId, isBusiness]);
 
-  // mark read on display
+  // Mark read
   useEffect(() => {
     messages
-      .filter(m => m.delivered && !m.read)
-      .forEach(m => socket.emit('messageRead', { messageId: m.id }));
+      .filter((m) => m.delivered && !m.read)
+      .forEach((m) => {
+        socket.emit('messageRead', { messageId: m.id });
+      });
   }, [messages]);
 
-  // auto-scroll
+  // Auto-scroll
   useEffect(() => {
-    containerRef.current?.scrollTo({
-      top: containerRef.current.scrollHeight,
-      behavior: 'smooth'
-    });
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
   }, [messages, typingUsers]);
 
-  // show typing indicator
-  const renderTypingIndicator = () => {
-    const others = typingUsers.filter(id => id !== userId);
-    if (!others.length) return null;
-    const names = others.map(id => (id === userId ? 'אתה' : 'העסק'));
+  // Typing indicator
+  const renderTyping = () => {
+    const others = typingUsers.filter((id) => id !== userId);
+    if (others.length === 0) return null;
+    const names = others.map((id) => (id === userId ? 'אתה' : 'העסק'));
     return <div className="chat__typing">{names.join(', ')} מקלידים…</div>;
   };
 
-  // handle input typing
-  const handleTyping = e => {
+  // Handle typing
+  const handleTyping = (e) => {
     setMessage(e.target.value);
     socket.emit('typing', { from: userId });
-    clearTimeout(handleTyping.timeout);
-    handleTyping.timeout = setTimeout(
-      () => socket.emit('stopTyping', { from: userId }),
-      1000
-    );
+    if (handleTyping.timeout) clearTimeout(handleTyping.timeout);
+    handleTyping.timeout = setTimeout(() => {
+      socket.emit('stopTyping', { from: userId });
+    }, 1000);
   };
 
-  // send message
-  const sendMessage = e => {
+  // Send message
+  const sendMessage = (e) => {
     e.preventDefault();
     const text = message.trim();
     if (!text && !file) return;
@@ -110,44 +133,42 @@ export default function ChatComponent({
       file: file ? file.name : null,
     };
 
-    socket.emit('sendMessage', msg, ack => {
-      if (ack?.success) {
-        setMessages(prev =>
-          prev.map(m => (m.id === msg.id ? { ...m, delivered: true } : m))
+    socket.emit('sendMessage', msg, (ack) => {
+      if (ack && ack.success) {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === msg.id ? { ...m, delivered: true } : m))
         );
       }
     });
 
-    setMessages(prev => [...prev, msg]);
+    setMessages((prev) => [...prev, msg]);
     setMessage('');
     setFile(null);
     setIsSending(false);
   };
 
-  // pick file
-  const handleFile = e => {
-    const f = e.target.files[0];
-    if (f) setFile(f);
+  // Handle file change
+  const handleFile = (e) => {
+    const selected = e.target.files[0];
+    if (selected) setFile(selected);
   };
 
   return (
     <div className="chat">
       <header className="chat__header">צ'אט עם העסק</header>
-
       <div className="chat__body" ref={containerRef}>
         {messages.map((msg, idx) => {
           const isClient = msg.from === 'client';
           const time = new Date(msg.timestamp).toLocaleTimeString('he-IL', {
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
           });
           return (
             <div
               key={msg.id || idx}
               className={`chat__message ${
                 isClient ? 'chat__message--client' : 'chat__message--biz'
-              }`}
-            >
+              }`}>
               <img
                 className="chat__avatar"
                 src={isClient ? clientProfilePic : businessProfilePic}
@@ -170,9 +191,8 @@ export default function ChatComponent({
             </div>
           );
         })}
-        {renderTypingIndicator()}
+        {renderTyping()}
       </div>
-
       <form className="chat__input" onSubmit={sendMessage}>
         <label className="chat__attach">
           <FiPaperclip size={20} />
