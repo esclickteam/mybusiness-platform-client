@@ -22,11 +22,13 @@ export default function ChatComponent({
 
   // Load chat history
   // Load chat history
-useEffect(() => {
+  useEffect(() => {
     async function loadHistory() {
       try {
         const endpoint = isBusiness
-          ? `/api/messages/business/${userId}`
+          // בעסק: מרנדרים את כל ההודעות של העסק המחובר
+          ? '/api/my/messages'
+          // בלקוח: שומר על הנתיב הקיים עם מזהה הלקוח
           : `/api/messages/client/${userId}`;
   
         const { data } = await API.get(endpoint);
@@ -38,6 +40,7 @@ useEffect(() => {
   
     if (userId) loadHistory();
   }, [userId, isBusiness]);
+  
   
 
   // Connect & register socket
