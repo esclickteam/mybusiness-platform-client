@@ -1,4 +1,3 @@
-// src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
@@ -28,9 +27,12 @@ export default function ChatComponent({
   // 1) Load chat history
   useEffect(() => {
     if (!userId || !partnerId) return;
+
     const endpoint = isBusiness
       ? `${API_BASE}/conversations/${partnerId}`
       : `${API_BASE}/client/${partnerId}`;
+
+    console.log('Loading chat history:', endpoint); // עבור דיבוג
 
     API.get(endpoint, { withCredentials: true })
       .then(({ data }) => setMessages(data))
@@ -92,7 +94,6 @@ export default function ChatComponent({
     const text = message.trim();
     if (!text && !file) return;
 
-    // הדפסת הערכים כדי לוודא שהם לא undefined
     console.log('userId:', userId);  // מזהה הלקוח
     console.log('partnerId:', partnerId);  // מזהה העסק
 
