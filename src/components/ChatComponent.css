@@ -1,197 +1,174 @@
-/* Chat container adjustments */
+/* ChatComponent.css */
+
+/* קונטיינר ראשי */
 .chat-container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* שומר את הצ'אט במרכז החלק העליון */
-  padding: 20px;
-  max-width: 400px; /* או גודל אחר שנראה טוב */
-  min-height: 100vh;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  max-height: calc(100vh - 120px); /* תתאם לפי גובה ה-header/ה־navbar שלך */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow: hidden;
+  direction: rtl;
 }
 
+/* כותרת הצ'אט */
 .chat-header {
-  background-color: #6a4fc4;
-  color: white;
-  padding: 15px;
-  border-radius: 15px 15px 0 0;
-  text-align: center;
-  font-weight: bold;
-  font-size: 1.2rem; /* גודל גופן גדול יותר */
+  flex: 0 0 auto;
+  background: #6a4fc4;
+  color: #fff;
+  padding: 1rem 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 500;
 }
 
+/* אזור ההודעות */
 .chat-messages {
-  flex-grow: 1;
-  padding: 15px;
-  overflow-y: auto; /* גלילה להודעות */
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background-color: #f9f9f9;
-  font-size: 1.1rem; /* גודל גופן קריא יותר */
-  max-height: calc(100% - 90px); /* התאמת גובה לחלק התחתון */
-  scrollbar-width: thin;
-  scrollbar-color: #6a4fc4 #f9f9f9;
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #f9f5ff;
 }
 
-.chat-messages::-webkit-scrollbar {
-  width: 10px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb {
-  background-color: #6a4fc4;
-  border-radius: 10px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* הצללה לכפתור הגלילה */
-}
-
+/* בועת הודעה */
 .message {
   display: flex;
-  align-items: center;
-  padding: 12px;
-  margin: 8px 0;
-  background-color: #f1f1f1;
-  border-radius: 15px;
-  max-width: 80%;
-  word-wrap: break-word;
-  position: relative;
+  align-items: flex-end;
+  margin-bottom: 0.75rem;
+  max-width: 70%;
 }
 
-.message img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  margin-right: 15px; /* מרווח בין התמונה להודעה */
-}
-
+/* אם מי ששלח הוא הלקוח – מימין, בועה סגולה בהירה */
 .message.client {
-  background-color: #e0f7fa; /* צבע עבור הודעות הלקוח */
-  align-self: flex-end;
+  margin-left: auto;
+  flex-direction: row-reverse;
 }
 
+.message.client .message-text {
+  background: #ede7fe;
+  color: #333;
+}
+
+/* אם מי ששלח הוא העסק – משמאל, בועה לבנה עם גבול קל */
 .message.business {
-  background-color: #e8eaf6; /* צבע עבור הודעות העסק */
-  align-self: flex-start;
+  margin-right: auto;
 }
 
+.message.business .message-text {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+/* תמונת פרופיל */
+.message img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 0.5rem;
+}
+
+/* תוכן ההודעה */
+.message-text {
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+/* קובץ מצורף */
+.message-file {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #6a4fc4;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* הזמן בצד תחתית הבועה */
 .message-time {
-  font-size: 0.9rem;
-  color: #888;
-  text-align: left;
-  margin-top: 5px;
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.25rem;
+  text-align: end;
 }
 
-.message:hover {
-  background-color: #f5f5f5;
-  cursor: pointer; /* שינוי עכבר */
+/* הודעות מערכת (טעינה וכו') */
+.system-message {
+  justify-content: center;
+  font-style: italic;
 }
 
+.loading-text {
+  color: #666;
+}
+
+/* שורת הקלט */
 .chat-input {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* הכפתורים יהיו ממורכזים וישמרו מרווח ביניהם */
-  gap: 15px;
-  padding: 12px;
-  border-top: 1px solid #ddd;
-  background-color: #fff;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #eee;
+  background: #fff;
 }
 
-.chat-input input {
-  width: 60%; /* התיבה תופסת יותר מקום */
-  padding: 12px;
-  border-radius: 12px;
+/* שדה טקסט */
+.chat-input input[type="text"] {
+  flex: 1;
+  padding: 0.75rem 1rem;
   border: 1px solid #ddd;
-  font-size: 1.1rem;
-  transition: border-color 0.3s ease;
+  border-radius: 24px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
 }
-
-.chat-input input:focus {
+.chat-input input[type="text"]:focus {
+  outline: none;
   border-color: #6a4fc4;
 }
 
+/* כפתור שלח */
 .chat-input button {
-  width: 17%; /* הגדרת רוחב אחיד לכפתור */
-  background-color: #6a4fc4;
-  color: white;
-  padding: 12px;
+  background: #6a4fc4;
+  color: #fff;
   border: none;
-  border-radius: 12px;
+  padding: 0.65rem 1.25rem;
+  border-radius: 24px;
+  font-weight: 500;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 1.1rem;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  white-space: nowrap;
+  transition: background 0.2s;
 }
-
-.chat-input button:hover {
-  background-color: #5e3ec2;
-  transform: scale(1.05);
-}
-
-.chat-input button:active {
-  transform: scale(0.95);
-  background-color: #4c3bb0;
-}
-
 .chat-input button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+  background: #ccc;
+  cursor: default;
 }
 
-.chat-input .file-upload {
-  width: 17%; /* הגדרת רוחב אחיד לכפתור */
-  background-color: #6a4fc4;
-  color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
+/* לייבל הכנסת קובץ */
+.file-upload {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  background: #ede7fe;
+  color: #6a4fc4;
+  padding: 0.65rem 1rem;
+  border-radius: 24px;
+  font-size: 0.9rem;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 1.1rem;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: background 0.2s;
 }
-
-.chat-input .file-upload:hover {
-  background-color: #5e3ec2;
+.file-upload:hover {
+  background: #e0d4fe;
 }
-
-.chat-input .file-upload:active {
-  transform: scale(0.95);
-  background-color: #4c3bb0;
-}
-
-
-
-/* עבור מסכים קטנים יותר (כמו טלפונים ניידים) */
-@media (max-width: 600px) {
-  .chat-container {
-    width: 90%;
-    height: 90%;
-  }
-
-  .chat-header {
-    font-size: 1.1rem;
-  }
-
-  .chat-input input {
-    width: 65%;
-  }
-
-  .chat-input button {
-    width: 30%;
-  }
-}
-
-@media (max-width: 400px) {
-  .chat-container {
-    width: 95%;
-    height: 90%;
-  }
-
-  .chat-input input {
-    width: 60%;
-  }
-
-  .chat-input button {
-    width: 35%;
-  }
+.file-upload input[type="file"] {
+  position: absolute;
+  left: 0; top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
