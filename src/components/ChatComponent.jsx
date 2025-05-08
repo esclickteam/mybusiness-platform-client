@@ -15,12 +15,12 @@ export default function ChatComponent({
   businessProfilePic,
   isBusiness = false
 }) {
-  const [message,      setMessage]       = useState('');
-  const [messages,     setMessages]      = useState([]);
-  const [isSending,    setIsSending]     = useState(false);
-  const [file,         setFile]          = useState(null);
-  const [typingUsers,  setTypingUsers]   = useState([]);
-  const [socketReady,  setSocketReady]   = useState(false);
+  const [message,     setMessage]     = useState('');
+  const [messages,    setMessages]    = useState([]);
+  const [isSending,   setIsSending]   = useState(false);
+  const [file,        setFile]        = useState(null);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [socketReady, setSocketReady] = useState(false);
 
   const containerRef = useRef(null);
   const socketRef    = useRef(null);
@@ -41,14 +41,11 @@ export default function ChatComponent({
   useEffect(() => {
     if (!userId || !partnerId) return;
 
-    const socket = io(SOCKET_URL, {
-      withCredentials: true
-    });
+    const socket = io(SOCKET_URL, { withCredentials: true });
     socketRef.current = socket;
 
     socket.on('connect', () => {
       setSocketReady(true);
-      // join the room once connected
       const room = isBusiness
         ? `chat:business:${userId}:client:${partnerId}`
         : `chat:business:${partnerId}:client:${userId}`;
@@ -69,7 +66,7 @@ export default function ChatComponent({
     };
   }, [userId, partnerId, isBusiness]);
 
-  // 3) Auto-scroll on new messages or typing
+  // 3) Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -89,51 +86,57 @@ export default function ChatComponent({
     }
   };
 
-  // 5) Send message (Socket.IO if ready, otherwise REST fallback)
+  // 5) Send message (Socket.IO or REST fallback)
   const sendMessage = e => {
     e.preventDefault();
     const text = message.trim();
     if (!text && !file) return;
 
     setIsSending(true);
-    const msg = {
-      id:        Date.now().toString(),
+
+    // ההודעה הזמנית ל-optimistic UI
+    const tempId = Date.now().toString();
+    const optimisticMsg = {
+      id:        tempId,
       from:      userId,
-      to:        partnerId,
+      to:        isBusiness ? userId : partnerId,
       text,
       fileName:  file?.name || null,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
+    setMessages(prev => [...prev, optimisticMsg]);
 
     const socket = socketRef.current;
     if (socketReady && socket) {
-      socket.emit('sendMessage', msg, ack => {
+      socket.emit('sendMessage', optimisticMsg, ack => {
         if (ack.success) {
           setMessages(prev =>
-            prev.map(m => m.id === msg.id ? { ...m, delivered: true } : m)
+            prev.map(m => m.id === tempId ? { ...m, id: ack.messageId, delivered: true } : m)
           );
         }
         setIsSending(false);
       });
     } else {
-      // REST fallback
-      API.post('/api/messages/send', {
-        to:       partnerId,
-        text,
-        clientId: !isBusiness ? userId : partnerId
-      }, { withCredentials: true })
-      .then(({ data }) => {
-        setMessages(prev => prev.map(m =>
-          m.id === msg.id ? { ...data, delivered: true } : m
-        ));
-      })
-      .catch(console.error)
-      .finally(() => setIsSending(false));
+      // REST fallback: שולחים correct payload לפי isBusiness
+      const payload = {
+        to:   isBusiness ? userId : partnerId,
+        text
+      };
+      if (isBusiness) {
+        payload.clientId = partnerId;
+      }
+
+      API.post('/api/messages/send', payload, { withCredentials: true })
+        .then(({ data }) => {
+          setMessages(prev =>
+            prev.map(m => m.id === tempId ? { ...data, delivered: true } : m)
+          );
+        })
+        .catch(console.error)
+        .finally(() => setIsSending(false));
     }
 
-    // optimistic UI update
-    setMessages(prev => [...prev, msg]);
-    setMessage('');
+    setMessage("");
     setFile(null);
   };
 
@@ -166,19 +169,15 @@ export default function ChatComponent({
             ? (isBusiness ? businessProfilePic : clientProfilePic)
             : (isBusiness ? clientProfilePic : businessProfilePic);
           return (
-            <div
-              key={m.id || idx}
-              className={`chat__message ${isMine ? 'mine' : 'theirs'}`}
-            >
+            <div key={m.id || idx} className={`chat__message ${isMine ? 'mine' : 'theirs'}`}>
               <img src={avatar} className="chat__avatar" alt="" />
               <div className="chat__bubble">
-                {m.text && <p className="chat__text">{m.text}</p>}
+                {m.text     && <p className="chat__text">{m.text}</p>}
                 {m.fileName && <p className="chat__file">{m.fileName}</p>}
                 <div className="chat__meta">
                   <span className="chat__time">
                     {new Date(m.timestamp).toLocaleTimeString('he-IL', {
-                      hour: '2-digit',
-                      minute: '2-digit'
+                      hour: '2-digit', minute: '2-digit'
                     })}
                   </span>
                   {m.delivered && <span className="chat__status">✔</span>}
