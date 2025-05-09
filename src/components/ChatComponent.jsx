@@ -9,7 +9,7 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user } = useAuth();
-  const userId = user?._id; // ודא שזה מפתח הקיים ב-user
+  const userId = user?.userId; // השתמש בשדה userId כפי שמוחזר מ-/auth/me // ודא שזה מפתח הקיים ב-user
 
   // DEBUG: לבדוק console
   useEffect(() => {
