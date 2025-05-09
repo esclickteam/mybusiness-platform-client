@@ -139,8 +139,12 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           { withCredentials: true }
         );
         convId = data.conversationId;
+        console.log('⏩ created conversationId:', convId, 'for userId:', userId);
         setConversationId(convId);
       }
+
+      // לוג לפני שליחת ההודעה
+      console.log('⏩ sending message to convId:', convId, 'userId:', userId);
 
       // נסה לשלוח את ההודעה
       const form = new FormData();
