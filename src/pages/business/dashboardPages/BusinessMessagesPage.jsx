@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/BusinessMessagesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ChatComponent from "../../../components/ChatComponent";
@@ -10,7 +9,7 @@ export default function BusinessMessagesPage() {
   // במשתמש ה-JWT יש user.userId, לא id או _id
   const businessUserId = user?.userId;
   const businessProfilePic = user?.profilePicUrl || "/default-business.png";
-  const defaultClientPic   = "/default-client.png";
+  const defaultClientPic = "/default-client.png";
 
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
@@ -22,8 +21,7 @@ export default function BusinessMessagesPage() {
 
     setIsLoading(true);
     API.get(
-      // אם ב־API שלכם כבר יש baseURL שמסתיים ב־/api, החליפו ל־"/messages/conversations"
-      "/messages/conversations",
+      "/messages/conversations", // וודא שזו הכתובת הנכונה
       { withCredentials: true }
     )
       .then(({ data }) => {
@@ -33,7 +31,6 @@ export default function BusinessMessagesPage() {
         const list = data.map(conv => {
           // מוציאים את המזהה של השותף (שאינו העסק)
           const other = conv.participants.find(p => {
-            // p יכול להיות מחרוזת (ObjectId) או אובייקט עם userId/_id
             const id =
               typeof p === "string"
                 ? p
@@ -77,8 +74,9 @@ export default function BusinessMessagesPage() {
   }, [businessUserId]);
 
   if (authLoading) return <div className="loading-screen">🔄 טוען הרשאה…</div>;
-  if (isLoading)  return <div className="loading-screen">🔄 טוען שיחות…</div>;
-  if (error)      return <div className="error-screen">{error}</div>;
+  if (isLoading) return <div className="loading-screen">🔄 טוען שיחות…</div>;
+  if (error) return <div className="error-screen">{error}</div>;
+
   if (!conversations.length) {
     return (
       <div className="empty-chat">
@@ -111,10 +109,7 @@ export default function BusinessMessagesPage() {
         {activeConversationId && (
           <ChatComponent
             conversationId={activeConversationId}
-            partnerId={
-              conversations.find(c => c.conversationId === activeConversationId)
-                .clientId
-            }
+            partnerId={conversations.find(c => c.conversationId === activeConversationId).clientId}
             isBusiness={true}
             clientProfilePic={defaultClientPic}
             businessProfilePic={businessProfilePic}
