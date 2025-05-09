@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
-import API from '../../api';
+import API from '../api';
 import './ChatComponent.css';
 
 const SOCKET_URL = 'https://api.esclick.co.il';
