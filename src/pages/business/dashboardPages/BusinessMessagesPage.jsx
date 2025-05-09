@@ -25,6 +25,7 @@ export default function BusinessMessagesPage() {
     setIsLoading(true);
     API.get("/messages/conversations", { withCredentials: true })
       .then(({ data }) => {
+        console.log('שיחות התקבלו:', data); // בדיקת הנתונים שהתקבלו
         const list = data.map(conv => {
           const other = conv.participants.find(p => p !== businessUserId);
           return {
@@ -40,6 +41,7 @@ export default function BusinessMessagesPage() {
       })
       .catch(err => {
         setError("❌ Could not load conversations, please try again later");
+        console.error("שגיאה בטעינת השיחות:", err); // לוג שגיאה
       })
       .finally(() => setIsLoading(false));
   }, [businessUserId]);
@@ -50,9 +52,12 @@ export default function BusinessMessagesPage() {
 
     API.get(`/messages/${activeConversationId}/messages`, { withCredentials: true })
       .then(res => {
+        console.log('הודעות התקבלו:', res.data); // בדיקת ההודעות שהתקבלו
         setMessages(res.data); // הגדרת ההודעות ב-state
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error("שגיאה בטעינת ההודעות:", err); // לוג שגיאה
+      });
   }, [activeConversationId]);
 
   // 3) חיבור ל-Socket.IO ולהאזנה להודעות בזמן אמת
@@ -63,10 +68,12 @@ export default function BusinessMessagesPage() {
     socketRef.current = socket;
 
     socket.on("connect", () => {
+      console.log(`מחובר ל-Socket עבור שיחה ${activeConversationId}`);
       socket.emit("joinRoom", activeConversationId); // הצטרפות לחדר של השיחה הנבחרת
     });
 
     socket.on("newMessage", msg => {
+      console.log('הודעה חדשה התקבלה:', msg); // בדיקת הודעה חדשה
       if (msg.conversationId === activeConversationId) {
         setMessages(prevMessages => [...prevMessages, msg]); // עדכון הודעות ב-state
       } else {
@@ -80,6 +87,7 @@ export default function BusinessMessagesPage() {
 
     return () => {
       socket.disconnect();
+      console.log('הסוקט התנתק');
     };
   }, [activeConversationId]);
 
@@ -98,6 +106,7 @@ export default function BusinessMessagesPage() {
               <button
                 className={conversationId === activeConversationId ? "active" : ""}
                 onClick={() => {
+                  console.log(`העברנו לשיחה עם ID: ${conversationId}`); // בדיקת ה-ID של השיחה שנבחרה
                   setActiveConversationId(conversationId);
                 }}
               >
