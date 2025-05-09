@@ -27,6 +27,10 @@ export default function BusinessMessagesPage() {
       .then(({ data }) => {
         console.log("📬 raw conversations payload:", data);
 
+        if (!data || data.length === 0) {
+          console.warn("⚠️ No conversations found!");
+        }
+
         // נניח ש־data זה מערך של המסמכים כפי שמגיע מ־Mongoose
         const list = data.map(conv => {
           // מוציאים את המזהה של השותף (שאינו העסק)
@@ -42,6 +46,11 @@ export default function BusinessMessagesPage() {
             return id !== businessUserId.toString();
           });
 
+          if (!other) {
+            console.error("❌ No valid participant found in conversation:", conv);
+            return null; // מוודאים שלא נקבל ערכים חסרים
+          }
+
           // ממירים את other למחרוזת
           const clientId =
             typeof other === "string"
@@ -56,7 +65,7 @@ export default function BusinessMessagesPage() {
             conversationId: conv._id.toString(),
             clientId,
           };
-        });
+        }).filter(Boolean); // מסנן ערכים ריקים
 
         console.log("✅ mapped conversation list:", list);
         setConversations(list);

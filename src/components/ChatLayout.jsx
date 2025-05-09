@@ -1,7 +1,7 @@
 // src/components/ChatLayout.jsx
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';            // תיקן נתיב אם צריך
+import { useAuth } from '../context/AuthContext';  // תוודא שזו הכתובת הנכונה
 import ChatPage from './ChatPage.jsx';
 
 export default function ChatLayout({
@@ -15,7 +15,7 @@ export default function ChatLayout({
   // userId אמיתי: אם isBusiness נשתמש ב־businessId, אחרת ב־user.id מהקונטקסט
   const userId = isBusiness
     ? businessId
-    : user?.id;  
+    : user?.id || '';  // אם אין user, אז לא נשלח מזהה
 
   return (
     <ChatPage
