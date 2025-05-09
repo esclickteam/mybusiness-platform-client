@@ -85,6 +85,10 @@ export default function BusinessMessagesPage() {
       .finally(() => setIsLoading(false));
   }, [businessUserId]);
 
+  useEffect(() => {
+    console.log("📬 activeConversationId:", activeConversationId);
+  }, [activeConversationId]);
+
   if (authLoading) return <div className="loading-screen">🔄 טוען הרשאה…</div>;
   if (isLoading) return <div className="loading-screen">🔄 טוען שיחות…</div>;
   if (error) return <div className="error-screen">{error}</div>;
@@ -107,7 +111,10 @@ export default function BusinessMessagesPage() {
             <li key={conversationId}>
               <button
                 className={conversationId === activeConversationId ? "active" : ""}
-                onClick={() => setActiveConversationId(conversationId)}
+                onClick={() => {
+                  console.log(`📬 Switching to conversation ${conversationId}`);
+                  setActiveConversationId(conversationId);
+                }}
               >
                 {/* כאן תוכלו להחליף את clientId לשם או אימייל על ידי fetch נוסף */}
                 לקוח: {clientId}
