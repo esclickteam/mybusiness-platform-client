@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';            // תיקן נתיב אם צריך
-import ChatPage from './Chat/ChatPage.jsx';
+import ChatPage from './ChatPage.jsx';
 
 export default function ChatLayout({
   clientProfilePic,
