@@ -9,13 +9,13 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user, initialized } = useAuth();
-  // אם ה-AuthContext עדיין נטען, לא מרנדרים כלום
+  // אם AuthContext עדיין נטען, לא מרנדרים
   if (!initialized) return null;
-  const userId = user?.userId; // וודא שזה קיים ב-user({ partnerId, isBusiness = false }) {
-  const { user, initialized } = useAuth();
-  const userId = user?.userId; // וודא שזה קיים ב-user
 
-  // Local state & refs
+  // user.userId אותנטי כפי שמוחזר מ-/auth/me
+  const userId = user?.userId;
+
+  // local state & refs
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
@@ -25,21 +25,23 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
-  // DEBUG logs for user (only after initialization)
+  // דיבוג: וידוא user ו-userId
   useEffect(() => {
-    if (!initialized) return;
     console.log('🔍 Authenticated user:', user);
     console.log('🔍 Using userId:', userId);
-  }, [initialized, user, userId]);
+  }, [user, userId]);
 
-  // 1) Load or create conversation when Auth ready
+  // 1) טען או צור שיחה
   useEffect(() => {
-    if (!initialized || !userId || !partnerId) return;
+    if (!userId || !partnerId) return;
 
     (async () => {
       try {
         console.log('⏩ Fetch convos for userId:', userId);
-        const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
+        const { data: convos } = await API.get(
+          '/messages/conversations',
+          { withCredentials: true }
+        );
         console.log('⏩ convos:', convos);
 
         const convo = convos.find(c =>
@@ -68,11 +70,11 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         setMessages([]);
       }
     })();
-  }, [initialized, partnerId, userId]);
+  }, [partnerId, userId]);
 
-  // 2) Socket.IO & join room
+  // 2) חיבור ל־Socket.IO והצטרפות לחדר
   useEffect(() => {
-    if (!conversationId || !userId) return;
+    if (!conversationId) return;
 
     console.log(`⏩ connecting socket for room ${conversationId}`);
     const socket = io(SOCKET_URL, {
@@ -102,16 +104,16 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [conversationId, userId]);
+  }, [conversationId]);
 
-  // 3) Auto-scroll to bottom
+  // גלילה אוטומטית למטה
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // Typing indicator emit
+  // אינדיקטור הקלדה
   const handleTyping = e => {
     setMessage(e.target.value);
     const socket = socketRef.current;
@@ -124,7 +126,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // Send message (optimistic + API)
+  // שליחת הודעה
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -205,8 +207,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         {messages.map((m, idx) => (
           <div
             key={idx}
-            className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
-          >
+            className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}>
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
               {m.fileUrl && (
