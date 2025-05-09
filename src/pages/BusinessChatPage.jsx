@@ -12,12 +12,11 @@ export default function BusinessChatPage() {
   const businessId = user?.businessId;
 
   const [convos, setConvos]             = useState([]);
-  const [activeClient, setActiveClient] = useState(null);
+  const [activeConversation, setActiveConversation] = useState(null);
   const [messages, setMessages]         = useState([]);
   const [newText, setNewText]           = useState("");
   const socketRef = useRef(null);
 
-  // אם עוד טוען auth או אין businessId — נציג loading
   if (authLoading) {
     return <div className="loading-screen">🔄 מוודא הרשאה…</div>;
   }
@@ -28,30 +27,37 @@ export default function BusinessChatPage() {
   // 1) טען את רשימת השיחות
   useEffect(() => {
     axios
-      .get(`${API_BASE}/api/messages/conversations`, { withCredentials: true })
+      .get(`${API_BASE}/api/conversations`, { withCredentials: true })
       .then(res => {
-        setConvos(res.data);
-        // אם יש שיחות, הפוך את הראשונה לאקטיבית
-        if (res.data.length > 0) {
-          setActiveClient(res.data[0].clientId);
+        const convosData = res.data.map(c => {
+          const client = c.participants.find(p => p._id !== businessId);
+          return {
+            conversationId: c._id,
+            clientId: client._id,
+            name: client.name || "לקוח"
+          };
+        });
+        setConvos(convosData);
+        if (convosData.length > 0) {
+          setActiveConversation(convosData[0]);
         }
       })
       .catch(console.error);
-  }, []);
+  }, [businessId]);
 
-  // 2) טען היסטוריית הודעות כשמשתנה activeClient
+  // 2) טען הודעות של שיחה נבחרת
   useEffect(() => {
-    if (!activeClient) {
+    if (!activeConversation) {
       setMessages([]);
       return;
     }
     axios
-      .get(`${API_BASE}/api/messages/conversations/${activeClient}`, { withCredentials: true })
+      .get(`${API_BASE}/api/conversations/${activeConversation.conversationId}`, { withCredentials: true })
       .then(res => setMessages(res.data))
       .catch(console.error);
-  }, [activeClient]);
+  }, [activeConversation]);
 
-  // 3) התחבר ל-Socket.IO
+  // 3) Socket.IO
   useEffect(() => {
     const socket = io(API_BASE, { withCredentials: true });
     socketRef.current = socket;
@@ -61,35 +67,38 @@ export default function BusinessChatPage() {
     });
 
     socket.on("newMessage", msg => {
-      // מזהה הלקוח שבאמת הגיע
       const clientId = msg.clientId || msg.from;
-      // אם זו שיחה חדשה, הוסף אותה לסיידבר
+      // אם זו שיחה חדשה – הוסף
       setConvos(prev => {
         if (!prev.find(c => c.clientId === clientId)) {
-          return [...prev, { clientId, name: msg.name || "לקוח" }];
+          return [...prev, {
+            clientId,
+            name: msg.name || "לקוח",
+            conversationId: msg.conversationId || ""
+          }];
         }
         return prev;
       });
-      // אם זה אקטיבי, הוסף ל־messages
-      if (clientId === activeClient) {
+
+      if (clientId === activeConversation?.clientId) {
         setMessages(prev => [...prev, msg]);
       }
     });
 
     return () => socket.disconnect();
-  }, [businessId, activeClient]);
+  }, [businessId, activeConversation]);
 
-  // 4) שלח הודעה
+  // 4) שליחת הודעה
   const sendMessage = () => {
     const text = newText.trim();
-    if (!text || !activeClient || !socketRef.current) return;
+    if (!text || !activeConversation || !socketRef.current) return;
 
     const msg = {
-      from:    businessId,
-      to:      "client",
-      toId:    activeClient,
+      from: businessId,
+      to: activeConversation.clientId,
       text,
-      clientId: activeClient,
+      conversationId: activeConversation.conversationId,
+      clientId: activeConversation.clientId,
     };
 
     socketRef.current.emit("sendMessage", msg, ack => {
@@ -118,11 +127,11 @@ export default function BusinessChatPage() {
           <p className="no-convos">אין הודעות מלקוחות</p>
         ) : (
           <ul>
-            {convos.map((c, idx) => (
-              <li key={c.clientId}>
+            {convos.map(c => (
+              <li key={c.conversationId}>
                 <button
-                  className={c.clientId === activeClient ? "active" : ""}
-                  onClick={() => setActiveClient(c.clientId)}
+                  className={c.clientId === activeConversation?.clientId ? "active" : ""}
+                  onClick={() => setActiveConversation(c)}
                 >
                   {c.name}
                 </button>
@@ -133,7 +142,7 @@ export default function BusinessChatPage() {
       </aside>
 
       <section className="chat-window">
-        {!activeClient ? (
+        {!activeConversation ? (
           <p className="placeholder">בחר שיחה כדי להתחיל</p>
         ) : (
           <>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api';
-import './ConversationsList.css';  // CSS styles for sidebar
+import './ConversationsList.css'; // CSS styles for sidebar
 
 /**
  * Props:
@@ -9,39 +9,55 @@ import './ConversationsList.css';  // CSS styles for sidebar
  *  - onSelect: function({ conversationId, partnerId }) callback when selecting a conversation
  */
 export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
-  const [convos, setConvos]   = useState([]);
+  const [convos, setConvos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch]   = useState('');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     setLoading(true);
 
-    // עסק רואה רשימת שיחות
-    // לקוח רואה רק את השיחה מול העסק הנבחר
-    const url = isBusiness
-      ? '/api/messages/conversations'
-      : `/api/messages/conversations/${partnerId}`;
-
-    API.get(url, { withCredentials: true })
+    API.get('/api/conversations', { withCredentials: true })
       .then(res => {
+        const allConvos = res.data;
+
         if (isBusiness) {
-          // שרת מחזיר מערך שיחות עם clientId, clientName, lastMessage, updatedAt, unreadCount
-          setConvos(res.data);
+          // עסק: מחזיר clientName ו־clientId מתוך participants
+          const formatted = allConvos.map(c => {
+            const client = c.participants.find(p => p._id !== undefined); // assume always two participants
+            return {
+              conversationId: c.conversationId || c._id,
+              clientId: client._id,
+              clientName: client.name || 'לקוח',
+              lastMessage: c.lastMessage?.text || c.lastMessage?.content || '',
+              updatedAt: c.updatedAt,
+              unreadCount: 0,
+            };
+          });
+          setConvos(formatted);
         } else {
-          // שרת מחזיר מערך הודעות; נאחד לאובייקט שיחה אחד
-          const msgs = res.data;
-          const last = msgs[msgs.length - 1] || {};
-          setConvos([{
-            conversationId: partnerId,
-            businessId:      partnerId,
-            businessName:    last.toBusinessName || last.businessName || 'העסק',
-            lastMessage:     last.content || last.text || '',
-            updatedAt:       last.timestamp,
-            unreadCount:     0
-          }]);
+          // לקוח: מציג את העסק
+          const convo = allConvos.find(c =>
+            c.participants.some(p => p._id === partnerId)
+          );
+          if (convo) {
+            const business = convo.participants.find(p => p._id === partnerId);
+            setConvos([{
+              conversationId: convo._id,
+              businessId: business._id,
+              businessName: business.name || 'העסק',
+              lastMessage: convo.lastMessage?.text || convo.lastMessage?.content || '',
+              updatedAt: convo.updatedAt,
+              unreadCount: 0,
+            }]);
+          } else {
+            setConvos([]);
+          }
         }
       })
-      .catch(err => console.error('Error loading conversations', err))
+      .catch(err => {
+        console.error('Error loading conversations', err);
+        setConvos([]);
+      })
       .finally(() => setLoading(false));
   }, [isBusiness, partnerId]);
 
@@ -72,7 +88,7 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
           onClick={() =>
             onSelect({
               conversationId: c.conversationId,
-              partnerId:      isBusiness ? c.clientId : c.businessId
+              partnerId: isBusiness ? c.clientId : c.businessId
             })
           }
         >
@@ -86,9 +102,9 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
           {c.updatedAt && (
             <small>
               {new Date(c.updatedAt).toLocaleString('he-IL', {
-                day:    '2-digit',
-                month:  '2-digit',
-                hour:   '2-digit',
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
                 minute: '2-digit'
               })}
             </small>
