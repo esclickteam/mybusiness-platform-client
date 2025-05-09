@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
-  // 1) Hooks תמיד קודם לכל תנאי early-return
+  // 1) תמיד לקרוא את ה-Hooks בתחילת הפונקציה
   const { user, initialized } = useAuth();
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -19,33 +19,30 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
-  // 2) חכה ל־AuthContext לאיתחול לפני כל לוגיקה
+  // 2) אם לא הושלם האיתחול, הצג הודעה למשתמש
   if (!initialized) {
-    return <div>טעינה...</div>;  // ממתינים לאיתחול
+    return <div>טעינה...</div>;
   }
 
   const userId = user?.userId;
 
-  // 3) לוג לדיבוג
+  // 3) לוג דיבוג (הדפס את פרטי המשתמש למעקב)
   useEffect(() => {
     console.log('🔍 Authenticated user:', user);
     console.log('🔍 Using userId:', userId);
   }, [user, userId]);
 
-  // 4) Load or create conversation
+  // 4) טעינת שיחה או יצירה שלה אם לא קיימת
   useEffect(() => {
     if (!userId || !partnerId) return;
 
     (async () => {
       try {
         console.log('⏩ Fetching conversations for userId:', userId);
-        const { data: convos } = await API.get(
-          '/messages/conversations',
-          { withCredentials: true }
-        );
+        const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
         console.log('⏩ Conversations fetched:', convos);
 
-        // בודקים אם convos מוגדר ומכיל מערך
+        // 4.1) אם הנתונים הם מערך, חפש שיחה מתאימה
         if (Array.isArray(convos)) {
           const convo = convos.find(c =>
             c.participants.some(p => p.toString() === partnerId)
@@ -56,31 +53,29 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
             setConversationId(convId);
             console.log('⏩ Using existing conversationId:', convId);
 
-            const { data: msgs } = await API.get(
-              `/messages/${convId}/messages`,
-              { withCredentials: true }
-            );
+            const { data: msgs } = await API.get(`/messages/${convId}/messages`, { withCredentials: true });
             console.log('⏩ Messages loaded:', msgs);
             setMessages(msgs);
           } else {
-            console.log('⏩ No conversation found; will create one on send.');
+            console.log('⏩ No conversation found, setting up new one.');
             setConversationId(null);
             setMessages([]);
           }
         } else {
-          console.error('❌ Invalid response format: convos is not an array');
+          console.error("❌ Invalid response format: convos is not an array");
           setConversationId(null);
           setMessages([]);
         }
       } catch (err) {
         console.error('❌ Error loading conversation:', err);
+        alert('שגיאה בטעינת השיחות. אנא נסה שוב מאוחר יותר.');
         setConversationId(null);
         setMessages([]);
       }
     })();
   }, [partnerId, userId]);
 
-  // 5) Socket.IO setup & join room
+  // 5) חיבור ל-Socket.IO ושמירה על החיבור
   useEffect(() => {
     if (!conversationId) return;
 
@@ -116,14 +111,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     };
   }, [conversationId]);
 
-  // 6) Auto-scroll to bottom on new messages or typing indicator
+  // 6) גלילה אוטומטית למטה כאשר מגיעה הודעה חדשה או כאשר יש משתמשים שמקלידים
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // 7) Typing indicator emitter
+  // 7) טיפול בהקלדה (הצגת אינדיקטור של "מקליד")
   const handleTyping = e => {
     setMessage(e.target.value);
     if (!socketRef.current || !conversationId) return;
@@ -142,7 +137,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // 8) Send message (optimistic + API)
+  // 8) שליחת הודעה (כולל אופטימיזציה ושליחה ל-API)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -165,34 +160,21 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       let convId = conversationId;
       if (!convId) {
         console.log('⏩ Creating new conversation with otherId:', partnerId);
-        const { data } = await API.post(
-          '/messages',
-          { otherId: partnerId },
-          { withCredentials: true }
-        );
+        const { data } = await API.post('/messages', { otherId: partnerId }, { withCredentials: true });
         convId = data.conversationId.toString().trim();
         setConversationId(convId);
         console.log('⏩ Created conversationId:', convId);
       }
 
-      console.log(
-        '⏩ Posting message to conversation',
-        convId,
-        'from user',
-        userId
-      );
+      console.log('⏩ Posting message to conversation', convId, 'from user', userId);
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
 
-      const { data: saved } = await API.post(
-        `/messages/${convId}/messages`,
-        form,
-        {
-          withCredentials: true,
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }
-      );
+      const { data: saved } = await API.post(`/messages/${convId}/messages`, form, {
+        withCredentials: true,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       console.log('⏩ API saved message:', saved);
 
       setMessages(prev =>
@@ -202,6 +184,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       );
     } catch (err) {
       console.error('❌ Error sending message:', err);
+      alert('שגיאה בשליחת ההודעה');
     } finally {
       setIsSending(false);
       setMessage('');
@@ -214,7 +197,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   };
   const handleFile = e => setFile(e.target.files[0] || null);
 
-  // 9) Render typing indicator below messages
+  // 9) הצגת אינדיקטור של "מקלידים" מתחת להודעות
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
