@@ -19,7 +19,7 @@ function ManageRoles() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await API.get("/api/admin/users");
+        const res = await API.get("/admin/users");
         console.log("📦 משתמשים מהשרת:", res.data);
         setUsers(res.data);
       } catch (err) {
@@ -41,7 +41,7 @@ function ManageRoles() {
       return;
     }
     try {
-      const res = await API.post("/api/admin/create-user", form);
+      const res = await API.post("/admin/create-user", form);
       const { userId, tempPassword } = res.data;
       alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${tempPassword}`);
       setUsers((prev) => [...prev, { ...form, _id: userId }]);

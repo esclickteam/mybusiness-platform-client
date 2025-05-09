@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
-        const res = await API.get("/api/auth/me");
+        const res = await API.get("/auth/me");
         setUser(res.data);
       } catch {
         setUser(null);
@@ -55,20 +55,20 @@ export function AuthProvider({ children }) {
     try {
       if (isEmail) {
         // customer/business login
-        await API.post("/api/auth/login", {
+        await API.post("/auth/login", {
           email: clean.toLowerCase(),
           password
         });
       } else {
         // staff login
-        await API.post("/api/auth/staff-login", {
+        await API.post("/auth/staff-login", {
           username: clean,
           password
         });
       }
 
       // fetch current user
-      const me = await API.get("/api/auth/me");
+      const me = await API.get("/auth/me");
       setUser(me.data);
 
       // auto-redirect unless skipped
@@ -112,7 +112,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     setLoading(true);
     try {
-      await API.post("/api/auth/logout");
+      await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
     } catch (e) {
       console.warn("Logout failed:", e);

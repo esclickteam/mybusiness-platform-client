@@ -18,9 +18,9 @@ const GoalsPage = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data: business } = await API.get("/api/business/my");
+        const { data: business } = await API.get("/business/my");
         if (!business?._id) throw new Error("לא הוחזר מזהה עסק");
-        const response = await API.get(`/api/business/${business._id}/stats`);
+        const response = await API.get(`/business/${business._id}/stats`);
         setData(response.data);
       } catch (error) {
         console.error("❌ שגיאה בטעינת סטטיסטיקות:", error.response?.data || error.message);

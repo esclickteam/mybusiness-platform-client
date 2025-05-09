@@ -28,7 +28,7 @@ export default function BusinessChatPage() {
   // 1) טען את רשימת השיחות
   useEffect(() => {
     axios
-      .get(`${API_BASE}/api/messages`, { withCredentials: true })
+      .get(`${API_BASE}/messages`, { withCredentials: true })
       .then(res => {
         // res.data = [{ _id, participants: [clientUserId, businessUserId] }, ...]
         const convosData = res.data.map(c => {
@@ -55,7 +55,7 @@ export default function BusinessChatPage() {
     }
     axios
       .get(
-        `${API_BASE}/api/messages/${activeConversation.conversationId}/messages`,
+        `${API_BASE}/messages/${activeConversation.conversationId}/messages`,
         { withCredentials: true }
       )
       .then(res => setMessages(res.data))

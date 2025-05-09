@@ -43,7 +43,7 @@ export default function SearchBusinesses() {
 
   // Fetch businesses
   useEffect(() => {
-    API.get('/api/business')
+    API.get('/business')
       .then(r => {
         setAll(r.data.businesses || []);
         setLoading(false);

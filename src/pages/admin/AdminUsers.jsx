@@ -15,7 +15,7 @@ function AdminUsers() {
     const fetchUsers = async () => {
       try {
         // נתיב יחסי ללא `/api`—baseURL כבר מגדיר `/api`
-        const res = await API.get("/api/admin/users");
+        const res = await API.get("/admin/users");
         setUsers(res.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת המשתמשים:", err);

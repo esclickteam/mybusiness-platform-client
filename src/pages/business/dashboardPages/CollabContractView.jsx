@@ -54,7 +54,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     };
 
     try {
-      await API.post("/api/chat/send", {
+      await API.post("/chat/send", {
         ...contract.messageMetadata,
         type: "contract",
         contractData: updatedContract,

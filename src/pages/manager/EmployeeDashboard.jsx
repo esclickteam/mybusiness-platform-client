@@ -9,7 +9,7 @@ export default function EmployeeDashboard() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const res = await API.get("/api/employees");
+        const res = await API.get("/employees");
         setEmployees(res.data);
       } catch (err) {
         console.error("Error fetching employees:", err);
@@ -23,7 +23,7 @@ export default function EmployeeDashboard() {
 
   const handleChangeStatus = async (employeeId, status) => {
     try {
-      await API.post("/api/employees/status", { employeeId, status });
+      await API.post("/employees/status", { employeeId, status });
       setEmployees(prevEmployees =>
         prevEmployees.map(emp =>
           emp._id === employeeId ? { ...emp, status } : emp

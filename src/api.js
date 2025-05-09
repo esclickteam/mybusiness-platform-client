@@ -1,11 +1,10 @@
-// src/api.js
 import axios from "axios";
 
 // הגדרת BASE_URL דינמית לפי סביבת הפיתוח או הפרודקשן
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
-  ? "https://api.esclick.co.il"
-  : "";                         // בדב: proxied ל־`/api`
+  ? "https://api.esclick.co.il/api"
+  : "/api";  // ב־dev proxied ל־localhost:5000/api
 
 // יצירת instance של Axios
 const API = axios.create({

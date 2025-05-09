@@ -23,7 +23,7 @@ export default function BusinessMessagesPage() {
     setIsLoading(true);
     API.get(
       // אם ב־API שלכם כבר יש baseURL שמסתיים ב־/api, החליפו ל־"/messages/conversations"
-      "/api/messages/conversations",
+      "/messages/conversations",
       { withCredentials: true }
     )
       .then(({ data }) => {

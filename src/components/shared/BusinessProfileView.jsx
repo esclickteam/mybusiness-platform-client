@@ -33,7 +33,7 @@ export default function BusinessProfileView() {
     (async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/api/business/${businessId}`);
+        const res = await api.get(`/business/${businessId}`);
         setData(res.data.business || res.data);
       } catch (err) {
         console.error(err);
@@ -88,9 +88,9 @@ export default function BusinessProfileView() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      await api.post(`/api/business/${businessId}/reviews`, newReview);
+      await api.post(`/business/${businessId}/reviews`, newReview);
       // רענון הנתונים
-      const res = await api.get(`/api/business/${businessId}`);
+      const res = await api.get(`/business/${businessId}`);
       setData(res.data.business || res.data);
       closeReviewModal();
     } catch (err) {
@@ -108,8 +108,8 @@ export default function BusinessProfileView() {
   const handleDeleteReview = async reviewId => {
     if (!window.confirm("האם למחוק ביקורת זו?")) return;
     try {
-      await api.delete(`/api/business/${businessId}/reviews/${reviewId}`);
-      const res = await api.get(`/api/business/${businessId}`);
+      await api.delete(`/business/${businessId}/reviews/${reviewId}`);
+      const res = await api.get(`/business/${businessId}`);
       setData(res.data.business || res.data);
     } catch (err) {
       console.error(err);

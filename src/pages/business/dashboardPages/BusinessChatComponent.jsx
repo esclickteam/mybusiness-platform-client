@@ -28,7 +28,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
       }
 
       try {
-        const res = await API.get(`/api/chat/${partnerId}`);
+        const res = await API.get(`/chat/${partnerId}`);
         setMessages(res.data || []);
       } catch (err) {
         console.error("❌ שגיאה בטעינת שיחה", err);
@@ -53,7 +53,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
 
     if (!isDemo) {
       try {
-        await API.post("/api/chat/send", newMessage);
+        await API.post("/chat/send", newMessage);
         setMessages((prev) =>
           prev.map((msg, i) =>
             i === prev.length - 1 ? { ...msg, pending: false } : msg

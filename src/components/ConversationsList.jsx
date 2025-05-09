@@ -16,8 +16,8 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
   useEffect(() => {
     setLoading(true);
 
-    // קוראים ל־GET /api/messages
-    API.get('/api/messages', { withCredentials: true })
+    // קוראים ל־GET /messages
+    API.get('/messages', { withCredentials: true })
       .then(res => {
         const all = res.data; // כל השיחות: [{ _id, participants: [{ _id, name }] }, ...]
 

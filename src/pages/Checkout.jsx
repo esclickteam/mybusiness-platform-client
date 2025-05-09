@@ -43,7 +43,7 @@ export default function Checkout() {
     try {
       console.log("🚀 Requesting payment:", { plan: planName, price: totalPrice });
 
-      const response = await API.post("/api/payments", {
+      const response = await API.post("/payments", {
         plan: planName,
         price: totalPrice,
       });

@@ -27,12 +27,12 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
     (async () => {
       try {
-        const { data: convos } = await API.get('/api/messages/conversations', { withCredentials: true });
+        const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
         const convo = convos.find(c => c.participants.some(p => p.toString() === partnerId));
 
         if (convo) {
           setConversationId(convo._id);
-          const { data: msgs } = await API.get(`/api/messages/${convo._id}/messages`, { withCredentials: true });
+          const { data: msgs } = await API.get(`/messages/${convo._id}/messages`, { withCredentials: true });
           setMessages(msgs);
         } else {
           setConversationId(null);
@@ -118,7 +118,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       let convId = conversationId;
       if (!convId) {
         const { data } = await API.post(
-          '/api/messages',
+          '/messages',
           { otherId: partnerId },
           { withCredentials: true }
         );
@@ -135,7 +135,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       form.append('text', text);
 
       const { data: saved } = await API.post(
-        `/api/messages/${convId}/messages`,
+        `/messages/${convId}/messages`,
         form,
         {
           withCredentials: true,
