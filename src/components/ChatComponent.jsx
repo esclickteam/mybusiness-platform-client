@@ -6,38 +6,48 @@ import './ChatComponent.css';
 import { useAuth } from '../context/AuthContext';
 
 const SOCKET_URL = 'https://api.esclick.co.il';
-const API_BASE   = 'https://api.esclick.co.il/api/messages';
+const API_BASE = 'https://api.esclick.co.il/api/messages';
 
 export default function ChatComponent({
   partnerId,
   conversationId,
   clientProfilePic,
   businessProfilePic,
-  isBusiness = false
+  isBusiness = false,
 }) {
+  // קבלת המשתמש המחובר
   const { user } = useAuth();
   const userId = user?.id;
 
-  const [message, setMessage]         = useState('');
-  const [messages, setMessages]       = useState([]);
-  const [isSending, setIsSending]     = useState(false);
-  const [file, setFile]               = useState(null);
+  // סטייט עבור הודעה, רשימת הודעות, מצב שליחה, קובץ וניתוח הקלדה
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [isSending, setIsSending] = useState(false);
+  const [file, setFile] = useState(null);
   const [typingUsers, setTypingUsers] = useState([]);
 
+  // רפרנסים לגלילה ול־socket
   const containerRef = useRef(null);
-  const socketRef    = useRef(null);
+  const socketRef = useRef(null);
 
-  // Load history on conversationId change
+  // 1) טעינת היסטוריית שיחה
   useEffect(() => {
     if (!conversationId) return;
-    API.get(`${API_BASE}/conversations/${conversationId}`, { withCredentials: true })
-      .then(({ data }) => setMessages(data))
-      .catch(err => console.error('Error loading history', err));
+    API.get(`${API_BASE}/conversations/${conversationId}`, {
+      withCredentials: true,
+    })
+      .then(({ data }) => {
+        setMessages(data);
+      })
+      .catch((err) => console.error('Error loading history', err));
   }, [conversationId]);
 
-  // Initialize socket and join room
+  // 2) חיבור ל־Socket.IO והצטרפות לחדר השיחה
   useEffect(() => {
-    if (!conversationId || !userId) return;
+    if (!conversationId || !userId) {
+      return;
+    }
+
     const socket = io(SOCKET_URL, { withCredentials: true });
     socketRef.current = socket;
 
@@ -45,18 +55,19 @@ export default function ChatComponent({
       socket.emit('joinRoom', conversationId);
     });
 
-    socket.on('newMessage', msg => {
+    socket.on('newMessage', (msg) => {
       if (msg.conversationId === conversationId) {
-        setMessages(prev => [...prev, msg]);
+        setMessages((prev) => [...prev, msg]);
       }
     });
 
-    socket.on('typing', ({ from }) =>
-      setTypingUsers(prev => Array.from(new Set([...prev, from])))
-    );
-    socket.on('stopTyping', ({ from }) =>
-      setTypingUsers(prev => prev.filter(id => id !== from))
-    );
+    socket.on('typing', ({ from }) => {
+      setTypingUsers((prev) => Array.from(new Set([...prev, from])));
+    });
+
+    socket.on('stopTyping', ({ from }) => {
+      setTypingUsers((prev) => prev.filter((id) => id !== from));
+    });
 
     return () => {
       socket.off('connect');
@@ -67,18 +78,20 @@ export default function ChatComponent({
     };
   }, [conversationId, userId]);
 
-  // Auto-scroll
+  // 3) גלילה אוטומטית לתחתית
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // Typing indicator
-  const handleTyping = e => {
+  // 4) שליחת אירועי הקלדה
+  const handleTyping = (e) => {
     setMessage(e.target.value);
     const socket = socketRef.current;
-    if (!socket) return;
+    if (!socket) {
+      return;
+    }
     socket.emit('typing', { conversationId, from: userId });
     clearTimeout(handleTyping.timeout);
     handleTyping.timeout = setTimeout(() => {
@@ -86,13 +99,19 @@ export default function ChatComponent({
     }, 800);
   };
 
-  // Send message (WS or REST fallback)
-  const sendMessage = async e => {
-    e?.preventDefault();
-    console.log('🔔 sendMessage fired:', { message, file, conversationId });
-    if (!userId) return;
+  // 5) שליחת הודעה בזמן אמת או דרך REST
+  const sendMessage = async (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    if (!userId) {
+      return;
+    }
+
     const content = message.trim();
-    if (!content && !file) return;
+    if (!content && !file) {
+      return;
+    }
 
     const tempId = Date.now().toString();
     const optimisticMsg = {
@@ -100,21 +119,23 @@ export default function ChatComponent({
       conversationId,
       from: userId,
       to: partnerId,
-      content,
-      fileName: file?.name || null,
+      content: content,
+      fileName: file ? file.name : null,
       timestamp: new Date().toISOString(),
-      delivered: false
+      delivered: false,
     };
-    setMessages(prev => [...prev, optimisticMsg]);
+
+    // הוסף מיידית ל־UI
+    setMessages((prev) => [...prev, optimisticMsg]);
     setIsSending(true);
 
     const socket = socketRef.current;
     if (socket) {
-      socket.emit('sendMessage', optimisticMsg, ack => {
-        console.log('sendMessage ack:', ack);
+      // WS
+      socket.emit('sendMessage', optimisticMsg, (ack) => {
         if (ack.success) {
-          setMessages(prev =>
-            prev.map(m =>
+          setMessages((prev) =>
+            prev.map((m) =>
               m.id === tempId
                 ? { ...m, id: ack.messageId, delivered: true }
                 : m
@@ -130,17 +151,22 @@ export default function ChatComponent({
       formData.append('to', partnerId);
       formData.append('clientId', userId);
       formData.append('text', content);
-      if (file) formData.append('fileData', file);
+      if (file) {
+        formData.append('fileData', file);
+      }
+
       try {
-        console.log('Sending via REST fallback');
-        const res = await API.post(`${API_BASE}/send`, formData, { withCredentials: true });
-        console.log('REST response:', res.data);
-        setMessages(prev => [
-          ...prev.filter(m => m.id !== tempId),
-          { ...res.data, delivered: true }
+        const res = await API.post(`${API_BASE}/send`, formData, {
+          withCredentials: true,
+        });
+        const saved = res.data;
+        // החלף את ההודעה הזמנית בהודעה שנשמרה
+        setMessages((prev) => [
+          ...prev.filter((m) => m.id !== tempId),
+          { ...saved, delivered: true },
         ]);
       } catch (err) {
-        console.error('❌ Error sending message via REST:', err);
+        console.error('Error sending via REST:', err);
       } finally {
         setIsSending(false);
       }
@@ -150,23 +176,27 @@ export default function ChatComponent({
     setFile(null);
   };
 
-  const onKeyDown = e => {
-    if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      sendMessage(e);
+    }
   };
 
-  const handleFile = e => {
+  const handleFile = (e) => {
     const f = e.target.files[0];
-    if (f) setFile(f);
+    if (f) {
+      setFile(f);
+    }
   };
 
+  // הצגת אינדיקטור הקלדה
   const renderTyping = () => {
-    const others = typingUsers.filter(id => id !== userId);
-    if (!others.length) return null;
-    return (
-      <div className="chat__typing">
-        …{others.map(id => (id === partnerId ? 'אתה' : 'העסק')).join(', ')} מקלידים…
-      </div>
-    );
+    const others = typingUsers.filter((id) => id !== userId);
+    if (others.length === 0) {
+      return null;
+    }
+    const names = others.map((id) => (id === partnerId ? 'אתה' : 'העסק')).join(', ');
+    return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
   return (
@@ -176,15 +206,27 @@ export default function ChatComponent({
         {messages.map((m, idx) => {
           const isMine = m.from === userId;
           return (
-            <div key={m.id || idx} className={`chat__message ${isMine ? 'mine' : 'theirs'}`}>
+            <div
+              key={m.id || idx}
+              className={`chat__message ${isMine ? 'mine' : 'theirs'}`}
+            >
               <div className="chat__bubble">
                 {m.content && <p className="chat__text">{m.content}</p>}
                 {m.fileUrl && (
                   <div className="chat__attachment">
                     {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                      <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
+                      <img
+                        src={m.fileUrl}
+                        alt={m.fileName}
+                        className="chat__img"
+                      />
                     ) : (
-                      <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
+                      <a
+                        href={m.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="chat__file-link"
+                      >
                         הורד {m.fileName}
                       </a>
                     )}
@@ -192,7 +234,10 @@ export default function ChatComponent({
                 )}
                 <div className="chat__meta">
                   <span className="chat__time">
-                    {new Date(m.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(m.timestamp).toLocaleTimeString('he-IL', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </span>
                   {m.delivered && <span className="chat__status">✔</span>}
                 </div>
@@ -203,11 +248,7 @@ export default function ChatComponent({
         {renderTyping()}
       </div>
       <form className="chat__input" onSubmit={sendMessage}>
-        <button
-          type="button"
-          onClick={sendMessage}
-          disabled={isSending && !file && !message.trim()}
-        >
+        <button type="submit" disabled={isSending && !file && !message.trim()}>
           <FiSend size={20} />
         </button>
         <input
