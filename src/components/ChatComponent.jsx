@@ -165,20 +165,15 @@ export default function ChatComponent({
       <div className="chat__body" ref={containerRef}>
         {messages.map((m, idx) => {
           const isMine = m.from === userId;
-          const avatar = isMine
-            ? (isBusiness ? businessProfilePic : clientProfilePic)
-            : (isBusiness ? clientProfilePic : businessProfilePic);
 
           return (
             <div
               key={m.id || idx}
               className={`chat__message ${isMine ? 'mine' : 'theirs'}`}
             >
-              <img src={avatar} className="chat__avatar" alt="" />
               <div className="chat__bubble">
                 {m.text && <p className="chat__text">{m.text}</p>}
 
-                {/* מציג קבצים רק אם קיים URL תקין */}
                 {m.fileUrl && (
                   <div className="chat__attachment">
                     {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
