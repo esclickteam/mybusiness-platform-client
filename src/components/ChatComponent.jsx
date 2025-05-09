@@ -9,10 +9,25 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user, initialized } = useAuth();
-  const userId = user?.userId; // השתמש בשדה userId כפי שמוחזר מ-/auth/me // ודא שזה מפתח הקיים ב-user
+  const userId = user?.userId; // וודא שזה קיים ב-user
 
-  // DEBUG: לבדוק console
-  // 1) Load or create conversation
+  // Local state & refs
+  const [conversationId, setConversationId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState(null);
+  const [isSending, setIsSending] = useState(false);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const containerRef = useRef(null);
+  const socketRef = useRef(null);
+
+  // DEBUG logs for user
+  useEffect(() => {
+    console.log('🔍 Authenticated user:', user);
+    console.log('🔍 Using userId:', userId);
+  }, [user, userId]);
+
+  // 1) Load or create conversation when Auth ready
   useEffect(() => {
     if (!initialized || !userId || !partnerId) return;
 
@@ -50,7 +65,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     })();
   }, [initialized, partnerId, userId]);
 
-  // 2) Socket.IO
+  // 2) Socket.IO & join room
   useEffect(() => {
     if (!conversationId || !userId) return;
 
@@ -84,14 +99,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     };
   }, [conversationId, userId]);
 
-  // Auto-scroll
+  // 3) Auto-scroll to bottom
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // Typing indicator
+  // Typing indicator emit
   const handleTyping = e => {
     setMessage(e.target.value);
     const socket = socketRef.current;
@@ -104,7 +119,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // Send message
+  // Send message (optimistic + API)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -195,15 +210,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
                     <img
                       src={m.fileUrl}
                       alt={m.fileName}
-                      className="chat__img"
-                    />
+                      className="chat__img"/>
                   ) : (
-                    <a
-                      href={m.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="chat__file-link"
-                    >
+                    <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
                       הורד {m.fileName}
                     </a>
                   )}
@@ -227,13 +236,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         <button type="submit" disabled={isSending || (!message.trim() && !file)}>
           <FiSend size={20} />
         </button>
-        <input
-          type="text"
-          placeholder="כתוב הודעה..."
-          value={message}
-          onChange={handleTyping}
-          onKeyDown={onKeyDown}
-        />
+        <input type="text" placeholder="כתוב הודעה..." value={message} onChange={handleTyping} onKeyDown={onKeyDown} />
         <label className="chat__attach">
           <FiPaperclip size={20} />
           <input type="file" onChange={handleFile} />
