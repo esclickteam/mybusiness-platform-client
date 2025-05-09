@@ -1,4 +1,3 @@
-// src/components/Chat/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
@@ -26,7 +25,7 @@ export default function ChatComponent({
   const containerRef = useRef(null);
   const socketRef    = useRef(null);
 
-  // 1) Load history
+  // Load history
   useEffect(() => {
     if (!conversationId) return;
     API.get(`${API_BASE}/conversations/${conversationId}`, { withCredentials: true })
@@ -34,7 +33,7 @@ export default function ChatComponent({
       .catch(err => console.error('Error loading history', err));
   }, [conversationId]);
 
-  // 2) Socket.IO
+  // Socket.IO
   useEffect(() => {
     if (!conversationId) return;
     const socket = io(SOCKET_URL, { withCredentials: true });
@@ -61,14 +60,14 @@ export default function ChatComponent({
     };
   }, [conversationId]);
 
-  // 3) Auto-scroll
+  // Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // 4) Typing indicator
+  // Typing indicator
   const handleTyping = e => {
     setMessage(e.target.value);
     const socket = socketRef.current;
@@ -81,7 +80,7 @@ export default function ChatComponent({
     }
   };
 
-  // 5) Send message
+  // Send message
   const sendMessage = async e => {
     e.preventDefault();
     const text = message.trim();
@@ -93,9 +92,10 @@ export default function ChatComponent({
       conversationId,
       from: userId,
       to: partnerId,
-      text,
+      content: text,
       fileName: file?.name || null,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      delivered: false
     };
     setMessages(prev => [...prev, optimisticMsg]);
     setIsSending(true);
@@ -103,26 +103,24 @@ export default function ChatComponent({
     const socket = socketRef.current;
     if (socketReady && socket) {
       socket.emit('sendMessage', optimisticMsg, ack => {
-        if (ack.success) {
-          setMessages(prev =>
-            prev.map(m =>
-              m.id === tempId
-                ? { ...m, id: ack.messageId, delivered: true }
-                : m
-            )
-          );
-        }
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === tempId
+              ? { ...m, id: ack.messageId, delivered: true }
+              : m
+          )
+        );
         setIsSending(false);
       });
     } else {
       const formData = new FormData();
       formData.append('conversationId', conversationId);
-      formData.append('client', userId);
-      formData.append('business', partnerId);
-      formData.append('content', text);
+      formData.append('to', partnerId);
+      formData.append('text', text);
+      formData.append('clientId', userId);
       if (file) formData.append('fileData', file);
       try {
-        const res = await API.post('/api/messages/send', formData, {
+        const res = await API.post('/send', formData, {
           withCredentials: true
         });
         setMessages(prev =>
@@ -172,7 +170,7 @@ export default function ChatComponent({
               className={`chat__message ${isMine ? 'mine' : 'theirs'}`}
             >
               <div className="chat__bubble">
-                {m.text && <p className="chat__text">{m.text}</p>}
+                {m.content && <p className="chat__text">{m.content}</p>}
 
                 {m.fileUrl && (
                   <div className="chat__attachment">
