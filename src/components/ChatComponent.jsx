@@ -177,17 +177,38 @@ export default function ChatComponent({
               className={`chat__message ${isMine ? 'mine' : 'theirs'}`}
             >
               <img src={avatar} className="chat__avatar" alt="" />
-              <div className="chat__bubble">
-                {m.text && <p className="chat__text">{m.text}</p>}
-                {m.fileName && <p className="chat__file">{m.fileName}</p>}
-                <div className="chat__meta">
-                  <span className="chat__time">
-                    {new Date(m.timestamp).toLocaleTimeString('he-IL', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-                  {m.delivered && <span className="chat__status">✔</span>}
+<div className="chat__bubble">
+  {m.text && <p className="chat__text">{m.text}</p>}
+
+  {m.fileUrl && (
+    <div className="chat__attachment">
+      {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
+        <img
+          src={m.fileUrl}
+          alt={m.fileName}
+          className="chat__img"
+        />
+      ) : (
+        <a
+          href={m.fileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="chat__file-link"
+        >
+          הורד {m.fileName}
+        </a>
+      )}
+    </div>
+  )}
+
+  <div className="chat__meta">
+    <span className="chat__time">
+      {new Date(m.timestamp).toLocaleTimeString('he-IL', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })}
+    </span>
+    {m.delivered && <span className="chat__status">✔</span>}
                 </div>
               </div>
             </div>

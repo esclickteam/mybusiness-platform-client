@@ -43,18 +43,9 @@
   max-width: 70%;
 }
 
-.chat__message--client {
+.chat__message.mine {
   margin-left: auto;
   flex-direction: row-reverse;
-}
-
-.chat__message--client .chat__text {
-  background: #ede7fe;
-}
-
-.chat__message--biz .chat__text {
-  background: #fff;
-  border: 1px solid #ddd;
 }
 
 .chat__avatar {
@@ -65,7 +56,7 @@
   margin: 0 0.5rem;
 }
 
-.chat__content {
+.chat__bubble {
   display: flex;
   flex-direction: column;
 }
@@ -80,12 +71,23 @@
   color: #333;
 }
 
-.chat__file {
-  margin-top: 0.25rem;
-  font-size: 0.85rem;
+.chat__attachment {
+  margin-top: 0.5rem;
+}
+
+/* תמונה מצורפת */
+.chat__img {
+  max-width: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* קובץ מצורף אחר */
+.chat__file-link {
   color: #6a4fc4;
   text-decoration: underline;
   cursor: pointer;
+  font-size: 0.85rem;
 }
 
 .chat__meta {
