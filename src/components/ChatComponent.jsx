@@ -8,28 +8,13 @@ import { useAuth } from '../context/AuthContext';
 const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
-  const { user } = useAuth();
+  const { user, initialized } = useAuth();
   const userId = user?.userId; // השתמש בשדה userId כפי שמוחזר מ-/auth/me // ודא שזה מפתח הקיים ב-user
 
   // DEBUG: לבדוק console
-  useEffect(() => {
-    console.log('🔍 Authenticated user:', user);
-    console.log('🔍 Using userId:', userId);
-  }, [user, userId]);
-
-  const [conversationId, setConversationId] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
-  const [file, setFile] = useState(null);
-  const [isSending, setIsSending] = useState(false);
-  const [typingUsers, setTypingUsers] = useState([]);
-
-  const containerRef = useRef(null);
-  const socketRef = useRef(null);
-
   // 1) Load or create conversation
   useEffect(() => {
-    if (!userId || !partnerId) return;
+    if (!initialized || !userId || !partnerId) return;
 
     (async () => {
       try {
@@ -63,7 +48,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         setMessages([]);
       }
     })();
-  }, [partnerId, userId]);
+  }, [initialized, partnerId, userId]);
 
   // 2) Socket.IO
   useEffect(() => {
