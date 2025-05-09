@@ -1,7 +1,7 @@
 // src/pages/business/dashboardPages/BusinessMessagesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import ChatComponent from "../../../components/Chat/ChatComponent";
+import ChatComponent from "../../../components/ChatComponent";
 import API from "../../../api";
 import "./BusinessMessagesPage.css";
 
