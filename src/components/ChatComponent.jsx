@@ -25,7 +25,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   useEffect(() => {
     async function fetchOrCreateConversation() {
       try {
-        const { data } = await API.get('/api/messages/conversations');
+        const { data } = await API.get(`/api/conversations/${conversationId}`);
         const convo = data.find(c => c.participants?.some(p => p._id === partnerId));
         if (convo) {
           setConversationId(convo.conversationId);
