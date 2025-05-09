@@ -45,23 +45,30 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         );
         console.log('⏩ Conversations fetched:', convos);
 
-        const convo = convos.find(c =>
-          c.participants.some(p => p.toString() === partnerId)
-        );
-
-        if (convo) {
-          const convId = convo._id.toString();
-          setConversationId(convId);
-          console.log('⏩ Using existing conversationId:', convId);
-
-          const { data: msgs } = await API.get(
-            `/messages/${convId}/messages`,
-            { withCredentials: true }
+        // בודקים אם convos מוגדר ומכיל מערך
+        if (Array.isArray(convos)) {
+          const convo = convos.find(c =>
+            c.participants.some(p => p.toString() === partnerId)
           );
-          console.log('⏩ Messages loaded:', msgs);
-          setMessages(msgs);
+
+          if (convo) {
+            const convId = convo._id.toString();
+            setConversationId(convId);
+            console.log('⏩ Using existing conversationId:', convId);
+
+            const { data: msgs } = await API.get(
+              `/messages/${convId}/messages`,
+              { withCredentials: true }
+            );
+            console.log('⏩ Messages loaded:', msgs);
+            setMessages(msgs);
+          } else {
+            console.log('⏩ No conversation found; will create one on send.');
+            setConversationId(null);
+            setMessages([]);
+          }
         } else {
-          console.log('⏩ No conversation found; will create one on send.');
+          console.error('❌ Invalid response format: convos is not an array');
           setConversationId(null);
           setMessages([]);
         }
