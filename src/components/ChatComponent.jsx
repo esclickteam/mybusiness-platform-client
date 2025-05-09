@@ -1,4 +1,3 @@
-// src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
@@ -13,14 +12,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const userId = user?.userId; // חשוב: user.userId
 
   const [conversationId, setConversationId] = useState(null);
-  const [messages, setMessages]       = useState([]);
-  const [message, setMessage]         = useState('');
-  const [file, setFile]               = useState(null);
-  const [isSending, setIsSending]     = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState(null);
+  const [isSending, setIsSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
 
   const containerRef = useRef(null);
-  const socketRef    = useRef(null);
+  const socketRef = useRef(null);
 
   // 1) טען או צור שיחה
   useEffect(() => {
@@ -28,24 +27,17 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
     (async () => {
       try {
-        const { data: convos } = await API.get(
-          '/api/messages/conversations',
-          { withCredentials: true }
-        );
-        const convo = convos.find(c =>
-          c.participants.some(p => p.toString() === partnerId)
-        );
+        const { data: convos } = await API.get('/api/messages/conversations', { withCredentials: true });
+        const convo = convos.find(c => c.participants.some(p => p.toString() === partnerId));
 
         if (convo) {
           setConversationId(convo._id);
-          const { data: msgs } = await API.get(
-            `/api/messages/${convo._id}/messages`,
-            { withCredentials: true }
-          );
+          const { data: msgs } = await API.get(`/api/messages/${convo._id}/messages`, { withCredentials: true });
           setMessages(msgs);
         } else {
           setConversationId(null);
           setMessages([]);
+          console.log("⏩ שיחה חדשה תיווצר...");
         }
       } catch (err) {
         console.error('שגיאה בשליפת שיחה:', err);
@@ -67,6 +59,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
     if (conversationId) {
       socket.emit('joinRoom', conversationId);
+      console.log(`⏩ User ${userId} joined room ${conversationId}`);
       socket.on('newMessage', msg =>
         setMessages(prev => [...prev, msg])
       );
@@ -131,10 +124,10 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         );
         convId = data.conversationId.toString().trim();
         setConversationId(convId);
-        console.log('⏩ created conversationId:', convId);
+        console.log('⏩ created conversationId:', convId); // לוג של יצירת שיחה
       }
 
-      // עכשיו לוג
+      // עכשיו לוג לשליחת הודעה
       console.log('⏩ sending message to convId:', convId, 'userId:', userId);
 
       const form = new FormData();
@@ -150,6 +143,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         }
       );
 
+      // עדכון ההודעות הממתינות (optimistic UI)
       setMessages(prev =>
         prev.map(m =>
           m.id === tempId ? { ...saved, delivered: true } : m
