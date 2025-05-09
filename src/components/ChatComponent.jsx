@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
-  // 1) כל ה-Hooks קורים קודם:
   const { user, initialized } = useAuth();
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -20,46 +19,52 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const socketRef = useRef(null);
   const userId = user?.id;
 
-  // 2) Early-return אם המשתמש לא מאותחל
-  useEffect(() => {
-    if (user && user.id) {
-      console.log('🔍 Authenticated user:', user);
-      console.log('🔍 Using userId:', user.id);
-    } else {
-      console.log('❌ User is not authenticated or id is undefined');
-    }
-  }, [user]);
-
-  // 3) אם המשתמש לא מאותחל, החזר הודעה או המתן
+  // 1) Early-return אם המשתמש לא מאותחל
   if (!initialized || !userId) {
+    console.log('❌ User is not authenticated or id is undefined');
     return <p>⚠️ המשתמש לא אותחל כראוי, נא להתחבר מחדש</p>;
   }
 
-  // 4) טעינת או יצירת שיחה
+  // 2) דיוג ראשון של user
+  useEffect(() => {
+    console.log('🔍 Authenticated user:', user);
+    console.log('🔍 Using userId:', userId);
+  }, [user, userId]);
+
+  // 3) טעינת או יצירת שיחה
   useEffect(() => {
     if (!userId || !partnerId) return;
 
     const fetchConversation = async () => {
       try {
         const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
-        const convo = convos.find(c =>
-          c.participants.some(p => p.toString() === partnerId)
-        );
 
-        if (convo) {
-          const convId = convo._id.toString();
-          setConversationId(convId);
-
-          const { data: msgs } = await API.get(
-            `/messages/${convId}/messages`,
-            { withCredentials: true }
+        // בדוק אם convos הוא מערך ולא undefined
+        if (Array.isArray(convos)) {
+          const convo = convos.find(c =>
+            c.participants.some(p => p.toString() === partnerId)
           );
-          setMessages(msgs);
+
+          if (convo) {
+            const convId = convo._id.toString();
+            setConversationId(convId);
+
+            const { data: msgs } = await API.get(
+              `/messages/${convId}/messages`,
+              { withCredentials: true }
+            );
+            setMessages(msgs);
+          } else {
+            setConversationId(null);
+            setMessages([]);
+          }
         } else {
+          console.error('❌ לא התקבל מערך תקין מה-API');
           setConversationId(null);
           setMessages([]);
         }
       } catch (err) {
+        console.error('❌ error loading conversation:', err);
         setConversationId(null);
         setMessages([]);
       }
@@ -68,7 +73,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     fetchConversation();
   }, [partnerId, userId]);
 
-  // 5) Socket.IO + join room
+  // 4) Socket.IO + join room
   useEffect(() => {
     if (!conversationId) return;
 
@@ -98,14 +103,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     };
   }, [conversationId]);
 
-  // 6) Auto-scroll
+  // 5) Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // 7) Typing emitter
+  // 6) Typing emitter
   const handleTyping = useCallback((e) => {
     setMessage(e.target.value);
     if (!socketRef.current || !conversationId) return;
@@ -117,7 +122,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   }, [conversationId, userId]);
 
-  // 8) Send message (optimistic + API)
+  // 7) Send message (optimistic + API)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -179,7 +184,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
   const handleFile = e => setFile(e.target.files[0] || null);
 
-  // 9) Render typing indicator
+  // 8) Render typing indicator
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
