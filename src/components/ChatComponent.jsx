@@ -9,6 +9,10 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user, initialized } = useAuth();
+  // אם ה-AuthContext עדיין נטען, לא מרנדרים כלום
+  if (!initialized) return null;
+  const userId = user?.userId; // וודא שזה קיים ב-user({ partnerId, isBusiness = false }) {
+  const { user, initialized } = useAuth();
   const userId = user?.userId; // וודא שזה קיים ב-user
 
   // Local state & refs
@@ -21,11 +25,12 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
-  // DEBUG logs for user
+  // DEBUG logs for user (only after initialization)
   useEffect(() => {
+    if (!initialized) return;
     console.log('🔍 Authenticated user:', user);
     console.log('🔍 Using userId:', userId);
-  }, [user, userId]);
+  }, [initialized, user, userId]);
 
   // 1) Load or create conversation when Auth ready
   useEffect(() => {
