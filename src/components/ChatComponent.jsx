@@ -8,136 +8,93 @@ import { useAuth } from '../context/AuthContext';
 const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
-  // 1) תמיד לקרוא את ה-Hooks בתחילת הפונקציה
-  const { user, initialized } = useAuth();
+  const { user } = useAuth();
+  const userId = user?.userId; // חשוב: user.userId
+
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
+
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
-  // 2) אם לא הושלם האיתחול, הצג הודעה למשתמש
-  if (!initialized) {
-    return <div>טעינה...</div>;
-  }
-
-  const userId = user?.userId;
-
-  // 3) לוג דיבוג (הדפס את פרטי המשתמש למעקב)
-  useEffect(() => {
-    console.log('🔍 Authenticated user:', user);
-    console.log('🔍 Using userId:', userId);
-  }, [user, userId]);
-
-  // 4) טעינת שיחה או יצירה שלה אם לא קיימת
+  // 1) טען או צור שיחה
   useEffect(() => {
     if (!userId || !partnerId) return;
 
     (async () => {
       try {
-        console.log('⏩ Fetching conversations for userId:', userId);
-        const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
-        console.log('⏩ Conversations fetched:', convos);
+        const { data: convos } = await API.get('/api/messages/conversations', { withCredentials: true });
+        const convo = convos.find(c => c.participants.some(p => p.toString() === partnerId));
 
-        // 4.1) אם הנתונים הם מערך, חפש שיחה מתאימה
-        if (Array.isArray(convos)) {
-          const convo = convos.find(c =>
-            c.participants.some(p => p.toString() === partnerId)
-          );
-
-          if (convo) {
-            const convId = convo._id.toString();
-            setConversationId(convId);
-            console.log('⏩ Using existing conversationId:', convId);
-
-            const { data: msgs } = await API.get(`/messages/${convId}/messages`, { withCredentials: true });
-            console.log('⏩ Messages loaded:', msgs);
-            setMessages(msgs);
-          } else {
-            console.log('⏩ No conversation found, setting up new one.');
-            setConversationId(null);
-            setMessages([]);
-          }
+        if (convo) {
+          setConversationId(convo._id);
+          const { data: msgs } = await API.get(`/api/messages/${convo._id}/messages`, { withCredentials: true });
+          setMessages(msgs);
         } else {
-          console.error("❌ Invalid response format: convos is not an array");
           setConversationId(null);
           setMessages([]);
+          console.log("⏩ שיחה חדשה תיווצר...");
         }
       } catch (err) {
-        console.error('❌ Error loading conversation:', err);
-        alert('שגיאה בטעינת השיחות. אנא נסה שוב מאוחר יותר.');
+        console.error('שגיאה בשליפת שיחה:', err);
         setConversationId(null);
         setMessages([]);
       }
     })();
   }, [partnerId, userId]);
 
-  // 5) חיבור ל-Socket.IO ושמירה על החיבור
+  // 2) הגדרת Socket.IO
   useEffect(() => {
-    if (!conversationId) return;
+    if (!userId) return;
 
-    console.log(`⏩ Connecting socket for room ${conversationId}`);
     const socket = io(SOCKET_URL, {
       withCredentials: true,
       auth: { token: localStorage.getItem('token') },
     });
     socketRef.current = socket;
 
-    socket.emit('joinRoom', conversationId);
-    console.log(`⏩ Emitted joinRoom: ${conversationId}`);
+    if (conversationId) {
+      socket.emit('joinRoom', conversationId);
+      console.log(`⏩ User ${userId} joined room ${conversationId}`);
+      socket.on('newMessage', msg =>
+        setMessages(prev => [...prev, msg])
+      );
+      socket.on('typing', ({ from }) =>
+        setTypingUsers(prev => [...new Set([...prev, from])])
+      );
+      socket.on('stopTyping', ({ from }) =>
+        setTypingUsers(prev => prev.filter(id => id !== from))
+      );
+    }
 
-    socket.on('newMessage', msg => {
-      console.log('🔔 Received newMessage via socket:', msg);
-      setMessages(prev => [...prev, msg]);
-    });
+    return () => socket.disconnect();
+  }, [conversationId, userId]);
 
-    socket.on('typing', ({ from }) => {
-      console.log('🔔 Received typing from:', from);
-      setTypingUsers(prev => Array.from(new Set([...prev, from])));
-    });
-
-    socket.on('stopTyping', ({ from }) => {
-      console.log('🔔 Received stopTyping from:', from);
-      setTypingUsers(prev => prev.filter(id => id !== from));
-    });
-
-    return () => {
-      console.log('⏩ Disconnecting socket');
-      socket.disconnect();
-      socketRef.current = null;
-    };
-  }, [conversationId]);
-
-  // 6) גלילה אוטומטית למטה כאשר מגיעה הודעה חדשה או כאשר יש משתמשים שמקלידים
+  // גלילה אוטומטית למטה
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // 7) טיפול בהקלדה (הצגת אינדיקטור של "מקליד")
+  // אינדיקטור הקלדה
   const handleTyping = e => {
     setMessage(e.target.value);
-    if (!socketRef.current || !conversationId) return;
+    const socket = socketRef.current;
+    if (!socket || !conversationId) return;
 
-    socketRef.current.emit('typing', {
-      conversationId,
-      from: userId,
-    });
-
+    socket.emit('typing', { conversationId, from: userId });
     clearTimeout(handleTyping.timeout);
     handleTyping.timeout = setTimeout(() => {
-      socketRef.current.emit('stopTyping', {
-        conversationId,
-        from: userId,
-      });
+      socket.emit('stopTyping', { conversationId, from: userId });
     }, 800);
   };
 
-  // 8) שליחת הודעה (כולל אופטימיזציה ושליחה ל-API)
+  // 3) שליחת הודעה (optimistic + יצירת שיחה)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -145,7 +102,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
     setIsSending(true);
     const tempId = Date.now().toString();
-    const optimisticMsg = {
+    const optimistic = {
       id: tempId,
       from: userId,
       to: partnerId,
@@ -154,37 +111,46 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       timestamp: new Date().toISOString(),
       delivered: false,
     };
-    setMessages(prev => [...prev, optimisticMsg]);
+    setMessages(prev => [...prev, optimistic]);
 
     try {
+      // קודם הגדר convId
       let convId = conversationId;
       if (!convId) {
-        console.log('⏩ Creating new conversation with otherId:', partnerId);
-        const { data } = await API.post('/messages', { otherId: partnerId }, { withCredentials: true });
+        const { data } = await API.post(
+          '/api/messages',
+          { otherId: partnerId },
+          { withCredentials: true }
+        );
         convId = data.conversationId.toString().trim();
         setConversationId(convId);
-        console.log('⏩ Created conversationId:', convId);
+        console.log('⏩ created conversationId:', convId); // לוג של יצירת שיחה
       }
 
-      console.log('⏩ Posting message to conversation', convId, 'from user', userId);
+      // עכשיו לוג לשליחת הודעה
+      console.log('⏩ sending message to convId:', convId, 'userId:', userId);
+
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
 
-      const { data: saved } = await API.post(`/messages/${convId}/messages`, form, {
-        withCredentials: true,
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      console.log('⏩ API saved message:', saved);
+      const { data: saved } = await API.post(
+        `/api/messages/${convId}/messages`,
+        form,
+        {
+          withCredentials: true,
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }
+      );
 
+      // עדכון ההודעות הממתינות (optimistic UI)
       setMessages(prev =>
         prev.map(m =>
           m.id === tempId ? { ...saved, delivered: true } : m
         )
       );
     } catch (err) {
-      console.error('❌ Error sending message:', err);
-      alert('שגיאה בשליחת ההודעה');
+      console.error('❌ שגיאה בשליחת ההודעה:', err);
     } finally {
       setIsSending(false);
       setMessage('');
@@ -197,45 +163,29 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   };
   const handleFile = e => setFile(e.target.files[0] || null);
 
-  // 9) הצגת אינדיקטור של "מקלידים" מתחת להודעות
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
     const names = others
-      .map(id =>
-        id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'משתמש'
-      )
+      .map(id => (id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'משתמש'))
       .join(', ');
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
-  // 10) JSX render
   return (
     <div className="chat">
       <header className="chat__header">צ'אט</header>
       <div className="chat__body" ref={containerRef}>
-        {messages.map((m, idx) => (
-          <div
-            key={idx}
-            className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
-          >
+        {messages.map((m, i) => (
+          <div key={i} className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}>
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
               {m.fileUrl && (
                 <div className="chat__attachment">
                   {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                    <img
-                      src={m.fileUrl}
-                      alt={m.fileName}
-                      className="chat__img"
-                    />
+                    <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
                   ) : (
-                    <a
-                      href={m.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="chat__file-link"
-                    >
+                    <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
                       הורד {m.fileName}
                     </a>
                   )}
@@ -245,7 +195,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
                 <span className="chat__time">
                   {new Date(m.timestamp).toLocaleTimeString('he-IL', {
                     hour: '2-digit',
-                    minute: '2-digit',
+                    minute: '2-digit'
                   })}
                 </span>
                 {m.delivered && <span className="chat__status">✔</span>}
@@ -256,10 +206,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         {renderTyping()}
       </div>
       <form className="chat__input" onSubmit={sendMessage}>
-        <button
-          type="submit"
-          disabled={isSending || (!message.trim() && !file)}
-        >
+        <button type="submit" disabled={isSending || (!message.trim() && !file)}>
           <FiSend size={20} />
         </button>
         <input
