@@ -9,7 +9,8 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user } = useAuth();
-  const userId = user?.id;
+  // תשתמשו ב־userId כפי שהוא נמצא ב־JWT
+  const userId = user?.userId;
 
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -19,40 +20,49 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const [typingUsers, setTypingUsers] = useState([]);
 
   const containerRef = useRef(null);
-  const socketRef = useRef(null);
+  const socketRef    = useRef(null);
 
-  // Load or create conversation using new API endpoints
+  // 1️⃣ פetch או יצירת שיחה
   useEffect(() => {
-    async function fetchOrCreateConversation() {
+    if (!userId || !partnerId) return;
+
+    async function initConversation() {
       try {
-        const { data } = await API.get('/api/messages', { withCredentials: true });
-        const convo = data.find(c =>
-          c.participants?.some(p => p._id === partnerId)
+        // שולפים רשימת שיחות קיימות
+        const { data: convos } = await API.get(
+          '/api/messages/conversations',
+          { withCredentials: true }
         );
 
-        if (convo) {
-          const convId = convo._id;
-          setConversationId(convId);
-          const msgsResponse = await API.get(
-            `/api/messages/${convId}/messages`,
+        // מחפשים שיחה עם הפרטנר
+        const existing = convos.find(c =>
+          c.participants
+            .map(p => p.toString())
+            .includes(partnerId)
+        );
+
+        if (existing) {
+          setConversationId(existing._id);
+          // שולפים הודעות ישנות
+          const { data: msgs } = await API.get(
+            `/api/messages/${existing._id}/messages`,
             { withCredentials: true }
           );
-          setMessages(msgsResponse.data);
+          setMessages(msgs);
         } else {
+          // לא נמצאה שיחה קיימת
           setConversationId(null);
           setMessages([]);
         }
       } catch (err) {
-        console.error('שגיאה בשליפת שיחה:', err);
-        setConversationId(null);
-        setMessages([]);
+        console.error('❌ שגיאה באתחול השיחה:', err);
       }
     }
 
-    if (userId && partnerId) fetchOrCreateConversation();
-  }, [partnerId, userId]);
+    initConversation();
+  }, [userId, partnerId]);
 
-  // Socket.IO setup remains unchanged
+  // 2️⃣ הגדרת Socket.IO
   useEffect(() => {
     if (!userId) return;
     const socket = io(SOCKET_URL, {
@@ -61,32 +71,41 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     });
     socketRef.current = socket;
 
-    if (conversationId) socket.emit('joinRoom', conversationId);
-    socket.on('newMessage', msg => setMessages(prev => [...prev, msg]));
-    socket.on('typing', ({ from }) => setTypingUsers(prev => [...new Set([...prev, from])]));
-    socket.on('stopTyping', ({ from }) => setTypingUsers(prev => prev.filter(id => id !== from)));
+    if (conversationId) {
+      socket.emit('joinRoom', conversationId);
+    }
+    socket.on('newMessage', msg =>
+      setMessages(prev => [...prev, msg])
+    );
+    socket.on('typing', ({ from }) =>
+      setTypingUsers(prev => [...new Set([...prev, from])])
+    );
+    socket.on('stopTyping', ({ from }) =>
+      setTypingUsers(prev => prev.filter(id => id !== from))
+    );
 
     return () => socket.disconnect();
   }, [conversationId, userId]);
 
-  // Auto-scroll
+  // 3️⃣ גלילה אוטומטית
   useEffect(() => {
-    if (containerRef.current)
+    if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
   }, [messages, typingUsers]);
 
-  // Typing indicator
+  // 4️⃣ אינדיקטור הקלדה
   const handleTyping = e => {
     setMessage(e.target.value);
-    const socket = socketRef.current;
-    if (!socket || !conversationId) return;
-    socket.emit('typing', { conversationId, from: userId });
+    if (!socketRef.current || !conversationId) return;
+    socketRef.current.emit('typing', { conversationId, from: userId });
     clearTimeout(handleTyping.timeout);
     handleTyping.timeout = setTimeout(() => {
-      socket.emit('stopTyping', { conversationId, from: userId });
+      socketRef.current.emit('stopTyping', { conversationId, from: userId });
     }, 800);
   };
 
+  // 5️⃣ שליחת הודעה (אופטימיסטית + יצירת שיחה אם צריך)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -108,31 +127,39 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     try {
       let convId = conversationId;
 
+      // אם אין עדיין שיחה – יוצרים אותה
       if (!convId) {
-        const res = await API.post(
+        const { data } = await API.post(
           '/api/messages',
           { otherId: partnerId },
           { withCredentials: true }
         );
-        convId = res.data.conversationId;
+        convId = data.conversationId;
         setConversationId(convId);
+        // מצטרפים בחזרה לחדר
+        socketRef.current?.emit('joinRoom', convId);
       }
 
+      // מכינים FormData עם קובץ וטקסט
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
 
+      // שולחים ל־server
       const { data: saved } = await API.post(
         `/api/messages/${convId}/messages`,
         form,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
-          withCredentials: true
+          withCredentials: true,
         }
       );
 
+      // מעדכנים את ההודעה האופטימיסטית
       setMessages(prev =>
-        prev.map(m => (m.id === tempId ? { ...saved, delivered: true } : m))
+        prev.map(m =>
+          m.id === tempId ? { ...saved, delivered: true } : m
+        )
       );
     } catch (err) {
       console.error('❌ שגיאה בשליחת ההודעה:', err);
@@ -155,7 +182,11 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
     const names = others
-      .map(id => id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'אחר')
+      .map(id =>
+        id === partnerId
+          ? isBusiness ? 'לקוח' : 'עסק'
+          : 'אחר'
+      )
       .join(', ');
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
@@ -165,15 +196,29 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       <header className="chat__header">צ'אט</header>
       <div className="chat__body" ref={containerRef}>
         {messages.map((m, i) => (
-          <div key={i} className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}>
+          <div
+            key={i}
+            className={`chat__message ${
+              m.from === userId ? 'mine' : 'theirs'
+            }`}
+          >
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
               {m.fileUrl && (
                 <div className="chat__attachment">
                   {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                    <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
+                    <img
+                      src={m.fileUrl}
+                      alt={m.fileName}
+                      className="chat__img"
+                    />
                   ) : (
-                    <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
+                    <a
+                      href={m.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="chat__file-link"
+                    >
                       הורד {m.fileName}
                     </a>
                   )}
@@ -181,9 +226,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
               )}
               <div className="chat__meta">
                 <span className="chat__time">
-                  {new Date(m.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                  {new Date(m.timestamp).toLocaleTimeString('he-IL', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
                 </span>
-                {m.delivered && <span className="chat__status">✔</span>}
+                {m.delivered && (
+                  <span className="chat__status">✔</span>
+                )}
               </div>
             </div>
           </div>
@@ -191,7 +241,12 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         {renderTyping()}
       </div>
       <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" disabled={isSending || (!message.trim() && !file)}><FiSend size={20} /></button>
+        <button
+          type="submit"
+          disabled={isSending || (!message.trim() && !file)}
+        >
+          <FiSend size={20} />
+        </button>
         <input
           type="text"
           placeholder="כתוב הודעה..."
@@ -199,7 +254,10 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           onChange={handleTyping}
           onKeyDown={onKeyDown}
         />
-        <label className="chat__attach"><FiPaperclip size={20} /><input type="file" onChange={handleFile} /></label>
+        <label className="chat__attach">
+          <FiPaperclip size={20} />
+          <input type="file" onChange={handleFile} />
+        </label>
       </form>
     </div>
   );
