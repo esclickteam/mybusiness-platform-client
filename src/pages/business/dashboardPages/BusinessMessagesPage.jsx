@@ -7,8 +7,8 @@ import "./BusinessMessagesPage.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
-  // תמיכה בשני המקרים: _id או id
-  const businessUserId = user?._id || user?.id;
+  // במשתמש ה-JWT יש user.userId, לא id או _id
+  const businessUserId = user?.userId;
   const businessProfilePic = user?.profilePicUrl || "/default-business.png";
   const defaultClientPic   = "/default-client.png";
 
@@ -19,14 +19,16 @@ export default function BusinessMessagesPage() {
 
   useEffect(() => {
     console.log("BusinessMessagesPage user:", user, "businessUserId:", businessUserId);
-    if (!businessUserId) return;
+    if (!businessUserId) {
+      return;
+    }
 
     setIsLoading(true);
     API.get("/api/messages", { withCredentials: true })
       .then(({ data }) => {
         console.log("raw conversations:", data);
 
-        // מיפוי: חילוץ conversationId ו‑clientId
+        // מיפוי: חילוץ conversationId ו-clientId (המזהה השולח השני)
         const list = data.map(conv => {
           const other = conv.participants.find(p =>
             p.toString() !== businessUserId.toString()
@@ -38,7 +40,6 @@ export default function BusinessMessagesPage() {
         });
 
         setConversations(list);
-        // ברירת מחדל לשיחה ראשונה
         if (list.length > 0) {
           setActiveConversationId(list[0].conversationId);
         }
@@ -50,7 +51,6 @@ export default function BusinessMessagesPage() {
       .finally(() => setIsLoading(false));
   }, [businessUserId, user]);
 
-  // זמני טעינה ושגיאות
   if (authLoading) return <div className="loading-screen">🔄 טוען הרשאה…</div>;
   if (isLoading)  return <div className="loading-screen">🔄 טוען שיחות…</div>;
   if (error)      return <div className="error-screen">{error}</div>;
@@ -65,7 +65,6 @@ export default function BusinessMessagesPage() {
 
   return (
     <div className="messages-page">
-      {/* Sidebar */}
       <aside className="chat-sidebar">
         <h4>שיחות מלקוחות</h4>
         <ul>
@@ -82,7 +81,6 @@ export default function BusinessMessagesPage() {
         </ul>
       </aside>
 
-      {/* Main Chat Area */}
       <main className="chat-main">
         {activeConversationId && (
           <ChatComponent
