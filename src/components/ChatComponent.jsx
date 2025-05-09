@@ -9,7 +9,9 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user } = useAuth();
-  const userId = user?.userId; // חשוב: user.userId
+  // חשוב: המשתמש ב־user.id אם ה־AuthContext שלך מאחסן את ה־_id תחת id
+  // או ב־user._id אם שם המפתח שם. תבדוק בעורך שלך מה באמת יש ב־user.
+  const userId = user?.id || user?._id || user?.userId;
 
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -28,16 +30,21 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     (async () => {
       try {
         const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
-        const convo = convos.find(c => c.participants.some(p => p.toString() === partnerId));
+        // כדי לוודא שה־participant מסתדר: נמתח ל־string
+        const convo = convos.find(c =>
+          c.participants.some(p => p.toString() === partnerId)
+        );
 
         if (convo) {
-          setConversationId(convo._id);
-          const { data: msgs } = await API.get(`/messages/${convo._id}/messages`, { withCredentials: true });
+          setConversationId(convo._id.toString());
+          const { data: msgs } = await API.get(
+            `/messages/${convo._id}/messages`,
+            { withCredentials: true }
+          );
           setMessages(msgs);
         } else {
           setConversationId(null);
           setMessages([]);
-          console.log("⏩ שיחה חדשה תיווצר...");
         }
       } catch (err) {
         console.error('שגיאה בשליפת שיחה:', err);
@@ -47,9 +54,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     })();
   }, [partnerId, userId]);
 
-  // 2) הגדרת Socket.IO
+  // 2) חיבור Socket.IO + הצטרפות לחדר ברגע ש–conversationId קיים
   useEffect(() => {
-    if (!userId) return;
+    if (!conversationId || !userId) return;
 
     const socket = io(SOCKET_URL, {
       withCredentials: true,
@@ -57,21 +64,23 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     });
     socketRef.current = socket;
 
-    if (conversationId) {
-      socket.emit('joinRoom', conversationId);
-      console.log(`⏩ User ${userId} joined room ${conversationId}`);
-      socket.on('newMessage', msg =>
-        setMessages(prev => [...prev, msg])
-      );
-      socket.on('typing', ({ from }) =>
-        setTypingUsers(prev => [...new Set([...prev, from])])
-      );
-      socket.on('stopTyping', ({ from }) =>
-        setTypingUsers(prev => prev.filter(id => id !== from))
-      );
-    }
+    socket.emit('joinRoom', conversationId);
+    console.log(`⏩ User ${userId} joined room ${conversationId}`);
 
-    return () => socket.disconnect();
+    socket.on('newMessage', msg => {
+      setMessages(prev => [...prev, msg]);
+    });
+    socket.on('typing', ({ from }) => {
+      setTypingUsers(prev => [...new Set([...prev, from])]);
+    });
+    socket.on('stopTyping', ({ from }) => {
+      setTypingUsers(prev => prev.filter(id => id !== from));
+    });
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
   }, [conversationId, userId]);
 
   // גלילה אוטומטית למטה
@@ -94,7 +103,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // 3) שליחת הודעה (optimistic + יצירת שיחה)
+  // 3) שליחת הודעה + יצירת שיחה אם צריך
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -114,7 +123,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     setMessages(prev => [...prev, optimistic]);
 
     try {
-      // קודם הגדר convId
       let convId = conversationId;
       if (!convId) {
         const { data } = await API.post(
@@ -124,10 +132,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         );
         convId = data.conversationId.toString().trim();
         setConversationId(convId);
-        console.log('⏩ created conversationId:', convId); // לוג של יצירת שיחה
+        console.log('⏩ created conversationId:', convId);
       }
 
-      // עכשיו לוג לשליחת הודעה
       console.log('⏩ sending message to convId:', convId, 'userId:', userId);
 
       const form = new FormData();
@@ -139,11 +146,10 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         form,
         {
           withCredentials: true,
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data' },
         }
       );
 
-      // עדכון ההודעות הממתינות (optimistic UI)
       setMessages(prev =>
         prev.map(m =>
           m.id === tempId ? { ...saved, delivered: true } : m
@@ -177,15 +183,29 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       <header className="chat__header">צ'אט</header>
       <div className="chat__body" ref={containerRef}>
         {messages.map((m, i) => (
-          <div key={i} className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}>
+          <div
+            key={i}
+            className={`chat__message ${
+              m.from === userId ? 'mine' : 'theirs'
+            }`}
+          >
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
               {m.fileUrl && (
                 <div className="chat__attachment">
                   {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                    <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
+                    <img
+                      src={m.fileUrl}
+                      alt={m.fileName}
+                      className="chat__img"
+                    />
                   ) : (
-                    <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
+                    <a
+                      href={m.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="chat__file-link"
+                    >
                       הורד {m.fileName}
                     </a>
                   )}
@@ -195,7 +215,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
                 <span className="chat__time">
                   {new Date(m.timestamp).toLocaleTimeString('he-IL', {
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                   })}
                 </span>
                 {m.delivered && <span className="chat__status">✔</span>}
@@ -206,7 +226,10 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         {renderTyping()}
       </div>
       <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" disabled={isSending || (!message.trim() && !file)}>
+        <button
+          type="submit"
+          disabled={isSending || (!message.trim() && !file)}
+        >
           <FiSend size={20} />
         </button>
         <input
