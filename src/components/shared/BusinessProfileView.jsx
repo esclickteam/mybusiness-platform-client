@@ -1,7 +1,7 @@
 // src/components/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from "../api";           // וודא שהנתיב מדויק: src/api.js
+import api from '../../api';           // וודא שהנתיב מדויק: src/api.js
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import "./BusinessProfileView.css";
