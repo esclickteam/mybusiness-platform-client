@@ -5,7 +5,6 @@ import API from '../api';
 import './ChatComponent.css';
 import { useAuth } from '../context/AuthContext';
 
-
 const SOCKET_URL = 'https://api.esclick.co.il';
 const API_BASE   = 'https://api.esclick.co.il/api/messages';
 
@@ -16,7 +15,6 @@ export default function ChatComponent({
   businessProfilePic,
   isBusiness = false
 }) {
-  // קבלת מזהה המשתמש המחובר מהקונטקסט
   const { user } = useAuth();
   const userId = user?.id;
 
@@ -30,7 +28,7 @@ export default function ChatComponent({
   const containerRef = useRef(null);
   const socketRef    = useRef(null);
 
-  // 1) Load history from REST
+  // Load history
   useEffect(() => {
     if (!conversationId) return;
     API.get(`${API_BASE}/conversations/${conversationId}`, { withCredentials: true })
@@ -38,10 +36,10 @@ export default function ChatComponent({
       .catch(err => console.error('Error loading history', err));
   }, [conversationId]);
 
-  // 2) Socket.IO – connect and join room
+  // Socket.IO – connect and join room
   useEffect(() => {
     if (!conversationId || !userId) return;
-    console.log({ conversationId, userId, partnerId });
+    console.log('Socket setup props:', { conversationId, userId, partnerId });
     const socket = io(SOCKET_URL, { withCredentials: true });
     socketRef.current = socket;
 
@@ -51,6 +49,7 @@ export default function ChatComponent({
     });
 
     socket.on('newMessage', msg => {
+      console.log('Received newMessage:', msg);
       if (msg.conversationId === conversationId) {
         setMessages(prev => [...prev, msg]);
       }
@@ -72,14 +71,14 @@ export default function ChatComponent({
     };
   }, [conversationId, userId]);
 
-  // 3) Auto-scroll
+  // Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // 4) Typing indicator emitter
+  // Typing indicator emitter
   const handleTyping = e => {
     setMessage(e.target.value);
     if (!socketReady || !userId) return;
@@ -91,9 +90,11 @@ export default function ChatComponent({
     }, 800);
   };
 
-  // 5) Send message
+  // Send message
   const sendMessage = async e => {
     e.preventDefault();
+    console.log('🔔 sendMessage fired:', { message, file, socketReady, conversationId });
+
     if (!userId) return;
     const content = message.trim();
     if (!content && !file) return;
@@ -115,6 +116,7 @@ export default function ChatComponent({
     if (socketReady) {
       const socket = socketRef.current;
       socket.emit('sendMessage', optimisticMsg, ack => {
+        console.log('sendMessage ack:', ack);
         setMessages(prev =>
           prev.map(m =>
             m.id === tempId
@@ -132,12 +134,14 @@ export default function ChatComponent({
       formData.append('text', content);
       if (file) formData.append('fileData', file);
       try {
+        console.log('Sending via REST fallback');
         const res = await API.post(`${API_BASE}/send`, formData, { withCredentials: true });
+        console.log('REST response:', res.data);
         setMessages(prev =>
           prev.map(m => (m.id === tempId ? { ...res.data, delivered: true } : m))
         );
       } catch (err) {
-        console.error('Error sending message', err);
+        console.error('❌ Error sending message via REST:', err);
       } finally {
         setIsSending(false);
       }
@@ -168,40 +172,27 @@ export default function ChatComponent({
   return (
     <div className="chat">
       <header className="chat__header">צ'אט</header>
-      <div className="chat__body" ref={containerRef}>
-        {messages.map((m, idx) => {
-          const isMine = m.from === userId;
-          return (
-            <div key={m.id || idx} className={`chat__message ${isMine ? 'mine' : 'theirs'}`}>
-              <div className="chat__bubble">
-                {m.content && <p className="chat__text">{m.content}</p>}
-                {m.fileUrl && (
-                  <div className="chat__attachment">
-                    {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                      <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
-                    ) : (
-                      <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
-                        הורד {m.fileName}
-                      </a>
-                    )}
-                  </div>
-                )}
-                <div className="chat__meta">
-                  <span className="chat__time">
-                    {new Date(m.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                  {m.delivered && <span className="chat__status">✔</span>}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-        {renderTyping()}
-      </div>
+      <div className="chat__body" ref={containerRef}></div>
+
       <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" disabled={isSending && !file && !message.trim()}><FiSend size={20} /></button>
-        <input type="text" placeholder="כתוב הודעה..." value={message} onChange={handleTyping} onKeyDown={onKeyDown} />
-        <label className="chat__attach"><FiPaperclip size={20} /><input type="file" onChange={handleFile} /></label>
+        <button
+          type="button"
+          onClick={sendMessage}
+          disabled={isSending && !file && !message.trim()}
+        >
+          <FiSend size={20} />
+        </button>
+        <input
+          type="text"
+          placeholder="כתוב הודעה..."
+          value={message}
+          onChange={handleTyping}
+          onKeyDown={onKeyDown}
+        />
+        <label className="chat__attach">
+          <FiPaperclip size={20} />
+          <input type="file" onChange={handleFile} />
+        </label>
       </form>
     </div>
   );
