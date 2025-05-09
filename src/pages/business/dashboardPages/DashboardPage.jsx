@@ -46,8 +46,9 @@ const DashboardPage = () => {
       }
 
       try {
-        const businessId = user.businessId;
-        const response = await API.get(`/api/business/${businessId}/stats`);
+        // השתמש במזהה המשתמש כדי לשלוף סטטיסטיקות
+        const businessUserId = user.id;
+        const response = await API.get(`/api/business/${businessUserId}/stats`, { withCredentials: true });
         setStats(response.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת נתונים:", err);

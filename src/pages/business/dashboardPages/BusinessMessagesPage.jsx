@@ -7,28 +7,27 @@ import "./BusinessMessagesPage.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
-  const businessId = user?.businessId;
+  const businessUserId = user?.id;  // מזהה המשתמש (User._id)
   const businessProfilePic = user?.profilePicUrl || "/default-business.png";
   const defaultClientPic   = "/default-client.png";
 
-  const [conversations, setConversations]   = useState([]);
+  const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
-  const [isLoading, setIsLoading]           = useState(true);
-  const [error, setError]                   = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!businessId) return;
+    if (!businessUserId) return;
 
     setIsLoading(true);
     API.get("/api/messages/conversations", { withCredentials: true })
       .then(({ data }) => {
         console.log("raw conversations:", data);
 
-        // 1) מיפוי: חילוץ conversationId ו‐clientId
+        // מיפוי: חילוץ conversationId ו‑clientId
         const list = data.map(conv => {
           const other = conv.participants.find(p =>
-            // אם זה ObjectId, נהפוך למחרוזת
-            p.toString() !== businessId.toString()
+            p.toString() !== businessUserId.toString()
           );
           return {
             conversationId: conv._id,
@@ -37,8 +36,7 @@ export default function BusinessMessagesPage() {
         });
 
         setConversations(list);
-
-        // 2) קבע ברירת מחדל לשיחה ראשונה
+        // ברירת מחדל לשיחה ראשונה
         if (list.length > 0) {
           setActiveConversationId(list[0].conversationId);
         }
@@ -48,8 +46,9 @@ export default function BusinessMessagesPage() {
         setError("❌ לא ניתן לטעון את השיחות, נסה שוב מאוחר יותר");
       })
       .finally(() => setIsLoading(false));
-  }, [businessId]);
+  }, [businessUserId]);
 
+  // זמני טעינה ושגיאות
   if (authLoading) return <div className="loading-screen">🔄 טוען הרשאה…</div>;
   if (isLoading)  return <div className="loading-screen">🔄 טוען שיחות…</div>;
   if (error)      return <div className="error-screen">{error}</div>;

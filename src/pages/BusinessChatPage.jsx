@@ -9,32 +9,34 @@ const API_BASE = "https://api.esclick.co.il";
 
 export default function BusinessChatPage() {
   const { user, loading: authLoading } = useAuth();
-  const businessId = user?.businessId;
+  const businessUserId = user?.id;
 
-  const [convos, setConvos]             = useState([]);
+  const [convos, setConvos]                     = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
-  const [messages, setMessages]         = useState([]);
-  const [newText, setNewText]           = useState("");
+  const [messages, setMessages]                 = useState([]);
+  const [newText, setNewText]                   = useState("");
   const socketRef = useRef(null);
 
+  // 0) הגנה בשלב רינדור
   if (authLoading) {
     return <div className="loading-screen">🔄 מוודא הרשאה…</div>;
   }
-  if (!businessId) {
+  if (!businessUserId) {
     return <div className="error-screen">❌ אין לך הרשאת עסק לצ׳אט הזה</div>;
   }
 
   // 1) טען את רשימת השיחות
   useEffect(() => {
     axios
-      .get(`${API_BASE}/api/conversations`, { withCredentials: true })
+      .get(`${API_BASE}/api/messages`, { withCredentials: true })
       .then(res => {
+        // res.data = [{ _id, participants: [clientUserId, businessUserId] }, ...]
         const convosData = res.data.map(c => {
-          const client = c.participants.find(p => p._id !== businessId);
+          const clientId = c.participants.find(p => p !== businessUserId);
           return {
             conversationId: c._id,
-            clientId: client._id,
-            name: client.name || "לקוח"
+            clientId,
+            name: clientId, // אם תרצו שם: תעשו populate ב-backend
           };
         });
         setConvos(convosData);
@@ -43,7 +45,7 @@ export default function BusinessChatPage() {
         }
       })
       .catch(console.error);
-  }, [businessId]);
+  }, [businessUserId]);
 
   // 2) טען הודעות של שיחה נבחרת
   useEffect(() => {
@@ -52,41 +54,50 @@ export default function BusinessChatPage() {
       return;
     }
     axios
-      .get(`${API_BASE}/api/conversations/${activeConversation.conversationId}`, { withCredentials: true })
+      .get(
+        `${API_BASE}/api/messages/${activeConversation.conversationId}/messages`,
+        { withCredentials: true }
+      )
       .then(res => setMessages(res.data))
       .catch(console.error);
   }, [activeConversation]);
 
-  // 3) Socket.IO
+  // 3) Socket.IO: חיבור, הצטרפות לחדר, קבלת הודעות בזמן אמת
   useEffect(() => {
-    const socket = io(API_BASE, { withCredentials: true });
+    if (!activeConversation) return;
+
+    const socket = io(API_BASE, {
+      withCredentials: true,
+    });
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      socket.emit("registerBusiness", businessId);
+      // מצטרפים לחדר של השיחה הנבחרת
+      socket.emit("joinRoom", activeConversation.conversationId);
     });
 
     socket.on("newMessage", msg => {
-      const clientId = msg.clientId || msg.from;
-      // אם זו שיחה חדשה – הוסף
+      // אם ההודעה שייכת לשיחה הנוכחית, מציגים
+      if (msg.conversationId === activeConversation.conversationId) {
+        setMessages(prev => [...prev, msg]);
+      }
+      // ואם זו שיחה שלא הייתה ברשימה, מוסיפים אותה לסיידבר
       setConvos(prev => {
-        if (!prev.find(c => c.clientId === clientId)) {
-          return [...prev, {
-            clientId,
-            name: msg.name || "לקוח",
-            conversationId: msg.conversationId || ""
-          }];
+        if (!prev.find(c => c.conversationId === msg.conversationId)) {
+          const clientId = msg.from === businessUserId ? msg.to : msg.from;
+          return [
+            ...prev,
+            { conversationId: msg.conversationId, clientId, name: clientId },
+          ];
         }
         return prev;
       });
-
-      if (clientId === activeConversation?.clientId) {
-        setMessages(prev => [...prev, msg]);
-      }
     });
 
-    return () => socket.disconnect();
-  }, [businessId, activeConversation]);
+    return () => {
+      socket.disconnect();
+    };
+  }, [businessUserId, activeConversation]);
 
   // 4) שליחת הודעה
   const sendMessage = () => {
@@ -94,20 +105,19 @@ export default function BusinessChatPage() {
     if (!text || !activeConversation || !socketRef.current) return;
 
     const msg = {
-      from: businessId,
+      conversationId: activeConversation.conversationId,
+      from: businessUserId,
       to: activeConversation.clientId,
       text,
-      conversationId: activeConversation.conversationId,
-      clientId: activeConversation.clientId,
+      timestamp: new Date().toISOString(),
     };
 
     socketRef.current.emit("sendMessage", msg, ack => {
       if (ack.success) {
-        setMessages(prev => [
-          ...prev,
-          { ...msg, id: ack.messageId, timestamp: new Date().toISOString() }
-        ]);
+        setMessages(prev => [...prev, msg]);
         setNewText("");
+      } else {
+        console.error("Failed to send message", ack.error);
       }
     });
   };
@@ -130,7 +140,11 @@ export default function BusinessChatPage() {
             {convos.map(c => (
               <li key={c.conversationId}>
                 <button
-                  className={c.clientId === activeConversation?.clientId ? "active" : ""}
+                  className={
+                    c.conversationId === activeConversation?.conversationId
+                      ? "active"
+                      : ""
+                  }
                   onClick={() => setActiveConversation(c)}
                 >
                   {c.name}
@@ -149,13 +163,18 @@ export default function BusinessChatPage() {
             <div className="messages-list">
               {messages.map((m, idx) => (
                 <div
-                  key={m.id || m._id || idx}
+                  key={m._id || idx}
                   className={`message-item ${
-                    m.from === businessId ? "outgoing" : "incoming"
+                    m.from === businessUserId ? "outgoing" : "incoming"
                   }`}
                 >
                   <p>{m.text}</p>
-                  <small>{new Date(m.timestamp).toLocaleTimeString()}</small>
+                  <small>
+                    {new Date(m.timestamp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </small>
                 </div>
               ))}
             </div>
