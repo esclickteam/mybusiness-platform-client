@@ -1,7 +1,7 @@
 // src/components/ChatLayout.jsx
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import ChatPage from './Chat/ChatPage';
+import ChatPage from './ChatPage.jsx';
 
 /**
  * ChatLayout: משמש ל־ChatRoute בתוך ה־App.jsx
