@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -7,11 +6,11 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const [user, setUser]                   = useState(null);
-  const [loading, setLoading]             = useState(true);
-  const [error, setError]                 = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [initialized, setInitialized]     = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
   // 1. On mount: fetch current user if token exists
@@ -41,11 +40,7 @@ export function AuthProvider({ children }) {
    * @param {{ skipRedirect?: boolean }} options
    * @returns {Promise<object>}  the user object
    */
-  const login = async (
-    identifier,
-    password,
-    options = { skipRedirect: false }
-  ) => {
+  const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
 
@@ -55,16 +50,10 @@ export function AuthProvider({ children }) {
     try {
       if (isEmail) {
         // customer/business login
-        await API.post("/auth/login", {
-          email: clean.toLowerCase(),
-          password
-        });
+        await API.post("/auth/login", { email: clean.toLowerCase(), password });
       } else {
         // staff login
-        await API.post("/auth/staff-login", {
-          username: clean,
-          password
-        });
+        await API.post("/auth/staff-login", { username: clean, password });
       }
 
       // fetch current user
