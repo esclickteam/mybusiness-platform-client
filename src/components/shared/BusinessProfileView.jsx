@@ -1,7 +1,7 @@
-// src/components/BusinessProfileView.jsx
+// src/components/shared/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from '../../api';           // וודא שהנתיב מדויק: src/api.js
+import api from "../../api";           // וודא שהנתיב מדויק: src/api.js
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import "./BusinessProfileView.css";
@@ -21,33 +21,30 @@ export default function BusinessProfileView() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [data, setData]         = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [avgRating, setAvgRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // טעינת פרטי העסק
-  const fetchBusiness = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get(`/api/business/${businessId}`);
-      const biz = res.data.business || res.data;
-      setData(biz);
-    } catch (err) {
-      console.error(err);
-      setError("שגיאה בטעינת העסק");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchBusiness();
+    (async () => {
+      setLoading(true);
+      try {
+        const res = await api.get(`/api/business/${businessId}`);
+        setData(res.data.business || res.data);
+      } catch (err) {
+        console.error(err);
+        setError("שגיאה בטעינת העסק");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [businessId]);
 
+  // תנאים מוקדמים
   if (loading) return <div className="loading">טוען…</div>;
   if (error)   return <div className="error">{error}</div>;
   if (!data)   return <div className="error">העסק לא נמצא</div>;
@@ -64,18 +61,15 @@ export default function BusinessProfileView() {
     city = ""
   } = data;
 
-  // חישוב דירוג ממוצע
-  useEffect(() => {
-    const sum = reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
-    setAvgRating(reviews.length ? sum / reviews.length : 0);
-  }, [reviews]);
+  // חישוב דירוג ממוצע באופן סינכרוני
+  const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
+  const avgRating   = reviews.length ? totalRating / reviews.length : 0;
+  const roundedAvg  = Math.round(avgRating * 10) / 10;
+  const fullAvgStars  = Math.floor(roundedAvg);
+  const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
+  const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
-  const roundedAvg     = Math.round(avgRating * 10) / 10;
-  const fullAvgStars   = Math.floor(roundedAvg);
-  const halfAvgStar    = roundedAvg % 1 ? 1 : 0;
-  const emptyAvgStars  = 5 - fullAvgStars - halfAvgStar;
-
-  const isOwner = user?.role === "business" && user.businessId === businessId;
+  const isOwner   = user?.role === "business" && user.businessId === businessId;
   const canDelete = ["admin", "manager"].includes(user?.role);
 
   // בדיקה אם כבר הגיש ביקורת
@@ -86,15 +80,18 @@ export default function BusinessProfileView() {
     : false;
 
   // Handlers
-  const handleReviewClick = () => setShowReviewModal(true);
-  const closeReviewModal  = () => setShowReviewModal(false);
+  const handleReviewClick  = () => setShowReviewModal(true);
+  const closeReviewModal   = () => setShowReviewModal(false);
+  const handleChatClick    = () => navigate(`/business/${businessId}/chat`);
 
   const handleReviewSubmit = async newReview => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
       await api.post(`/api/business/${businessId}/reviews`, newReview);
-      await fetchBusiness();
+      // רענון הנתונים
+      const res = await api.get(`/api/business/${businessId}`);
+      setData(res.data.business || res.data);
       closeReviewModal();
     } catch (err) {
       if (err.response?.status === 409) {
@@ -112,23 +109,18 @@ export default function BusinessProfileView() {
     if (!window.confirm("האם למחוק ביקורת זו?")) return;
     try {
       await api.delete(`/api/business/${businessId}/reviews/${reviewId}`);
-      await fetchBusiness();
+      const res = await api.get(`/api/business/${businessId}`);
+      setData(res.data.business || res.data);
     } catch (err) {
       console.error(err);
       alert("שגיאה במחיקת הביקורת");
     }
   };
 
-  // ניווט לדף הצ'אט
-  const handleChatClick = () => {
-    navigate(`/business/${businessId}/chat`);
-  };
-
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-
           {isOwner && (
             <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
@@ -144,10 +136,10 @@ export default function BusinessProfileView() {
           <h1 className="business-name">{name}</h1>
 
           <div className="about-phone">
-            {category &&  <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone &&      <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city &&       <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
