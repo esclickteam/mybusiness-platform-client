@@ -1,3 +1,4 @@
+// src/components/Chat/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
@@ -15,17 +16,17 @@ export default function ChatComponent({
   businessProfilePic,
   isBusiness = false
 }) {
-  const [message, setMessage]       = useState('');
-  const [messages, setMessages]     = useState([]);
-  const [isSending, setIsSending]   = useState(false);
-  const [file, setFile]             = useState(null);
+  const [message, setMessage]         = useState('');
+  const [messages, setMessages]       = useState([]);
+  const [isSending, setIsSending]     = useState(false);
+  const [file, setFile]               = useState(null);
   const [typingUsers, setTypingUsers] = useState([]);
   const [socketReady, setSocketReady] = useState(false);
 
   const containerRef = useRef(null);
   const socketRef    = useRef(null);
 
-  // Load history
+  // 1) Load history from REST
   useEffect(() => {
     if (!conversationId) return;
     API.get(`${API_BASE}/conversations/${conversationId}`, { withCredentials: true })
@@ -33,23 +34,25 @@ export default function ChatComponent({
       .catch(err => console.error('Error loading history', err));
   }, [conversationId]);
 
-  // Socket.IO
+  // 2) Socket.IO – connect and join room
   useEffect(() => {
+    console.log({ conversationId, userId, partnerId });
+  
     if (!conversationId) return;
     const socket = io(SOCKET_URL, { withCredentials: true });
     socketRef.current = socket;
-
+  
     socket.on('connect', () => {
       setSocketReady(true);
-      socket.emit('joinRoom', { conversationId });
+      socket.emit('joinRoom', conversationId);
     });
+  
     socket.on('newMessage', msg => {
-      // only add if same conversation
       if (msg.conversationId === conversationId) {
         setMessages(prev => [...prev, msg]);
-        socket.emit('messageDelivered', { messageId: msg.id });
       }
     });
+
     socket.on('typing', ({ from }) =>
       setTypingUsers(prev => Array.from(new Set([...prev, from])))
     );
@@ -58,32 +61,34 @@ export default function ChatComponent({
     );
 
     return () => {
-      socket.off();
+      socket.off('connect');
+      socket.off('newMessage');
+      socket.off('typing');
+      socket.off('stopTyping');
       socket.disconnect();
     };
   }, [conversationId]);
 
-  // Auto-scroll
+  // 3) Auto-scroll on messages or typing indicator change
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // Typing indicator
+  // 4) Emit typing events
   const handleTyping = e => {
     setMessage(e.target.value);
+    if (!socketReady) return;
     const socket = socketRef.current;
-    if (socketReady && socket) {
-      socket.emit('typing', { conversationId, from: userId });
-      clearTimeout(handleTyping.timeout);
-      handleTyping.timeout = setTimeout(() => {
-        socket.emit('stopTyping', { conversationId, from: userId });
-      }, 800);
-    }
+    socket.emit('typing', { conversationId, from: userId });
+    clearTimeout(handleTyping.timeout);
+    handleTyping.timeout = setTimeout(() => {
+      socket.emit('stopTyping', { conversationId, from: userId });
+    }, 800);
   };
 
-  // Send message
+  // 5) Send message (socket or REST fallback)
   const sendMessage = async e => {
     e.preventDefault();
     const content = message.trim();
@@ -103,8 +108,8 @@ export default function ChatComponent({
     setMessages(prev => [...prev, optimisticMsg]);
     setIsSending(true);
 
-    const socket = socketRef.current;
-    if (socketReady && socket) {
+    if (socketReady) {
+      const socket = socketRef.current;
       socket.emit('sendMessage', optimisticMsg, ack => {
         setMessages(prev =>
           prev.map(m =>
@@ -120,7 +125,7 @@ export default function ChatComponent({
       formData.append('conversationId', conversationId);
       formData.append('to', partnerId);
       formData.append('clientId', userId);
-      formData.append('text', content);
+      formData.append('content', content);
       if (file) formData.append('fileData', file);
       try {
         const res = await API.post(`${API_BASE}/send`, formData, {
@@ -142,14 +147,18 @@ export default function ChatComponent({
     setFile(null);
   };
 
+  // Keyboard send
   const onKeyDown = e => {
     if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
   };
+
+  // File selection
   const handleFile = e => {
     const f = e.target.files[0];
     if (f) setFile(f);
   };
 
+  // Show typing indicator
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
@@ -166,7 +175,6 @@ export default function ChatComponent({
       <div className="chat__body" ref={containerRef}>
         {messages.map((m, idx) => {
           const isMine = m.from === userId;
-
           return (
             <div
               key={m.id || idx}
@@ -174,15 +182,10 @@ export default function ChatComponent({
             >
               <div className="chat__bubble">
                 {m.content && <p className="chat__text">{m.content}</p>}
-
                 {m.fileUrl && (
                   <div className="chat__attachment">
                     {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                      <img
-                        src={m.fileUrl}
-                        alt={m.fileName}
-                        className="chat__img"
-                      />
+                      <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
                     ) : (
                       <a
                         href={m.fileUrl}
@@ -195,7 +198,6 @@ export default function ChatComponent({
                     )}
                   </div>
                 )}
-
                 <div className="chat__meta">
                   <span className="chat__time">
                     {new Date(m.timestamp).toLocaleTimeString('he-IL', {
