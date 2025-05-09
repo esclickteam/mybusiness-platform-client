@@ -1,21 +1,24 @@
-// src/components/Chat/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
 import API from '../api';
 import './ChatComponent.css';
+import { useAuth } from '../../context/AuthContext';
 
 const SOCKET_URL = 'https://api.esclick.co.il';
 const API_BASE   = 'https://api.esclick.co.il/api/messages';
 
 export default function ChatComponent({
-  userId,
   partnerId,
   conversationId,
   clientProfilePic,
   businessProfilePic,
   isBusiness = false
 }) {
+  // קבלת מזהה המשתמש המחובר מהקונטקסט
+  const { user } = useAuth();
+  const userId = user?.id;
+
   const [message, setMessage]         = useState('');
   const [messages, setMessages]       = useState([]);
   const [isSending, setIsSending]     = useState(false);
@@ -36,17 +39,16 @@ export default function ChatComponent({
 
   // 2) Socket.IO – connect and join room
   useEffect(() => {
+    if (!conversationId || !userId) return;
     console.log({ conversationId, userId, partnerId });
-  
-    if (!conversationId) return;
     const socket = io(SOCKET_URL, { withCredentials: true });
     socketRef.current = socket;
-  
+
     socket.on('connect', () => {
       setSocketReady(true);
       socket.emit('joinRoom', conversationId);
     });
-  
+
     socket.on('newMessage', msg => {
       if (msg.conversationId === conversationId) {
         setMessages(prev => [...prev, msg]);
@@ -67,19 +69,19 @@ export default function ChatComponent({
       socket.off('stopTyping');
       socket.disconnect();
     };
-  }, [conversationId]);
+  }, [conversationId, userId]);
 
-  // 3) Auto-scroll on messages or typing indicator change
+  // 3) Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // 4) Emit typing events
+  // 4) Typing indicator emitter
   const handleTyping = e => {
     setMessage(e.target.value);
-    if (!socketReady) return;
+    if (!socketReady || !userId) return;
     const socket = socketRef.current;
     socket.emit('typing', { conversationId, from: userId });
     clearTimeout(handleTyping.timeout);
@@ -88,9 +90,10 @@ export default function ChatComponent({
     }, 800);
   };
 
-  // 5) Send message (socket or REST fallback)
+  // 5) Send message
   const sendMessage = async e => {
     e.preventDefault();
+    if (!userId) return;
     const content = message.trim();
     if (!content && !file) return;
 
@@ -128,13 +131,9 @@ export default function ChatComponent({
       formData.append('content', content);
       if (file) formData.append('fileData', file);
       try {
-        const res = await API.post(`${API_BASE}/send`, formData, {
-          withCredentials: true
-        });
+        const res = await API.post(`${API_BASE}/send`, formData, { withCredentials: true });
         setMessages(prev =>
-          prev.map(m =>
-            m.id === tempId ? { ...res.data, delivered: true } : m
-          )
+          prev.map(m => (m.id === tempId ? { ...res.data, delivered: true } : m))
         );
       } catch (err) {
         console.error('Error sending message', err);
@@ -147,18 +146,14 @@ export default function ChatComponent({
     setFile(null);
   };
 
-  // Keyboard send
   const onKeyDown = e => {
     if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
   };
-
-  // File selection
   const handleFile = e => {
     const f = e.target.files[0];
     if (f) setFile(f);
   };
 
-  // Show typing indicator
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
@@ -176,10 +171,7 @@ export default function ChatComponent({
         {messages.map((m, idx) => {
           const isMine = m.from === userId;
           return (
-            <div
-              key={m.id || idx}
-              className={`chat__message ${isMine ? 'mine' : 'theirs'}`}
-            >
+            <div key={m.id || idx} className={`chat__message ${isMine ? 'mine' : 'theirs'}`}>
               <div className="chat__bubble">
                 {m.content && <p className="chat__text">{m.content}</p>}
                 {m.fileUrl && (
@@ -187,12 +179,7 @@ export default function ChatComponent({
                     {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
                       <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
                     ) : (
-                      <a
-                        href={m.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="chat__file-link"
-                      >
+                      <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
                         הורד {m.fileName}
                       </a>
                     )}
@@ -200,10 +187,7 @@ export default function ChatComponent({
                 )}
                 <div className="chat__meta">
                   <span className="chat__time">
-                    {new Date(m.timestamp).toLocaleTimeString('he-IL', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+                    {new Date(m.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                   {m.delivered && <span className="chat__status">✔</span>}
                 </div>
@@ -213,22 +197,10 @@ export default function ChatComponent({
         })}
         {renderTyping()}
       </div>
-
       <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" disabled={isSending && !file && !message.trim()}>
-          <FiSend size={20} />
-        </button>
-        <input
-          type="text"
-          placeholder="כתוב הודעה..."
-          value={message}
-          onChange={handleTyping}
-          onKeyDown={onKeyDown}
-        />
-        <label className="chat__attach">
-          <FiPaperclip size={20} />
-          <input type="file" onChange={handleFile} />
-        </label>
+        <button type="submit" disabled={isSending && !file && !message.trim()}><FiSend size={20} /></button>
+        <input type="text" placeholder="כתוב הודעה..." value={message} onChange={handleTyping} onKeyDown={onKeyDown} />
+        <label className="chat__attach"><FiPaperclip size={20} /><input type="file" onChange={handleFile} /></label>
       </form>
     </div>
   );
