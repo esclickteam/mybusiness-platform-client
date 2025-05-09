@@ -21,13 +21,19 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const userId = user?.id;
 
   // 2) Early-return אם המשתמש לא מאותחל
-  if (!initialized) return null;
-
-  // 3) דיוג ראשון של user
   useEffect(() => {
-    console.log('🔍 Authenticated user:', user);
-    console.log('🔍 Using userId:', userId);
-  }, [user, userId]);
+    if (user && user.id) {
+      console.log('🔍 Authenticated user:', user);
+      console.log('🔍 Using userId:', user.id);
+    } else {
+      console.log('❌ User is not authenticated or id is undefined');
+    }
+  }, [user]);
+
+  // 3) אם המשתמש לא מאותחל, החזר הודעה או המתן
+  if (!initialized || !userId) {
+    return <p>⚠️ המשתמש לא אותחל כראוי, נא להתחבר מחדש</p>;
+  }
 
   // 4) טעינת או יצירת שיחה
   useEffect(() => {
