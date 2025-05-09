@@ -5,7 +5,7 @@ import './ConversationsList.css';  // CSS styles for sidebar
 /**
  * Props:
  *  - isBusiness: boolean, whether current user is a business or a client
- *  - partnerId: when isBusiness===false, the businessId to fetch the single convo for
+ *  - partnerId: when isBusiness===false, the conversationId to fetch messages for
  *  - onSelect: function({ conversationId, partnerId }) callback when selecting a conversation
  */
 export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
@@ -16,25 +16,26 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
   useEffect(() => {
     setLoading(true);
 
+    // עסק רואה רשימת שיחות
+    // לקוח רואה רק את השיחה מול העסק הנבחר
     const url = isBusiness
-      // עסק רואה את כל השיחות עם לקוחותיו
       ? '/api/messages/conversations'
-      // לקוח רואה רק את השיחה מול העסק הנבחר
-      : `/api/messages/client/${partnerId}`;
+      : `/api/messages/conversations/${partnerId}`;
 
     API.get(url, { withCredentials: true })
       .then(res => {
         if (isBusiness) {
+          // שרת מחזיר מערך שיחות עם clientId, clientName, lastMessage, updatedAt, unreadCount
           setConvos(res.data);
         } else {
-          // עבור לקוח – דוחסים את מערך ההודעות לאובייקט שיחה יחיד
+          // שרת מחזיר מערך הודעות; נאחד לאובייקט שיחה אחד
           const msgs = res.data;
           const last = msgs[msgs.length - 1] || {};
           setConvos([{
             conversationId: partnerId,
             businessId:      partnerId,
-            businessName:    last.businessName || 'העסק',
-            lastMessage:     last.text || '',
+            businessName:    last.toBusinessName || last.businessName || 'העסק',
+            lastMessage:     last.content || last.text || '',
             updatedAt:       last.timestamp,
             unreadCount:     0
           }]);
