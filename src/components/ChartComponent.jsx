@@ -1,7 +1,7 @@
 // src/components/ChartComponent.jsx
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import API from "../api";
+import API from '../api';
 import DashboardCards from "./DashboardCards";
 import "./dashboard.css";
 

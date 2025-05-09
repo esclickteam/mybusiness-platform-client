@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API from '../api'; // Axios config
+import API from '../api';
 import './ConversationsList.css';  // CSS styles for sidebar
 
 /**
