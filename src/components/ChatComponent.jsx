@@ -23,12 +23,11 @@ export default function ChatComponent({
   const [isSending, setIsSending]     = useState(false);
   const [file, setFile]               = useState(null);
   const [typingUsers, setTypingUsers] = useState([]);
-  const [socketReady, setSocketReady] = useState(false);
 
   const containerRef = useRef(null);
   const socketRef    = useRef(null);
 
-  // Load history
+  // Load history on conversationId change
   useEffect(() => {
     if (!conversationId) return;
     API.get(`${API_BASE}/conversations/${conversationId}`, { withCredentials: true })
@@ -36,20 +35,17 @@ export default function ChatComponent({
       .catch(err => console.error('Error loading history', err));
   }, [conversationId]);
 
-  // Socket.IO – connect and join room
+  // Initialize socket and join room
   useEffect(() => {
     if (!conversationId || !userId) return;
-    console.log('Socket setup props:', { conversationId, userId, partnerId });
     const socket = io(SOCKET_URL, { withCredentials: true });
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      setSocketReady(true);
       socket.emit('joinRoom', conversationId);
     });
 
     socket.on('newMessage', msg => {
-      console.log('Received newMessage:', msg);
       if (msg.conversationId === conversationId) {
         setMessages(prev => [...prev, msg]);
       }
@@ -78,11 +74,11 @@ export default function ChatComponent({
     }
   }, [messages, typingUsers]);
 
-  // Typing indicator emitter
+  // Typing indicator
   const handleTyping = e => {
     setMessage(e.target.value);
-    if (!socketReady || !userId) return;
     const socket = socketRef.current;
+    if (!socket) return;
     socket.emit('typing', { conversationId, from: userId });
     clearTimeout(handleTyping.timeout);
     handleTyping.timeout = setTimeout(() => {
@@ -90,11 +86,10 @@ export default function ChatComponent({
     }, 800);
   };
 
-  // Send message
+  // Send message (WS or REST fallback)
   const sendMessage = async e => {
-    e.preventDefault();
-    console.log('🔔 sendMessage fired:', { message, file, socketReady, conversationId });
-
+    e?.preventDefault();
+    console.log('🔔 sendMessage fired:', { message, file, conversationId });
     if (!userId) return;
     const content = message.trim();
     if (!content && !file) return;
@@ -113,20 +108,23 @@ export default function ChatComponent({
     setMessages(prev => [...prev, optimisticMsg]);
     setIsSending(true);
 
-    if (socketReady) {
-      const socket = socketRef.current;
+    const socket = socketRef.current;
+    if (socket) {
       socket.emit('sendMessage', optimisticMsg, ack => {
         console.log('sendMessage ack:', ack);
-        setMessages(prev =>
-          prev.map(m =>
-            m.id === tempId
-              ? { ...m, id: ack.messageId, delivered: true }
-              : m
-          )
-        );
+        if (ack.success) {
+          setMessages(prev =>
+            prev.map(m =>
+              m.id === tempId
+                ? { ...m, id: ack.messageId, delivered: true }
+                : m
+            )
+          );
+        }
         setIsSending(false);
       });
     } else {
+      // REST fallback
       const formData = new FormData();
       formData.append('conversationId', conversationId);
       formData.append('to', partnerId);
@@ -137,9 +135,10 @@ export default function ChatComponent({
         console.log('Sending via REST fallback');
         const res = await API.post(`${API_BASE}/send`, formData, { withCredentials: true });
         console.log('REST response:', res.data);
-        setMessages(prev =>
-          prev.map(m => (m.id === tempId ? { ...res.data, delivered: true } : m))
-        );
+        setMessages(prev => [
+          ...prev.filter(m => m.id !== tempId),
+          { ...res.data, delivered: true }
+        ]);
       } catch (err) {
         console.error('❌ Error sending message via REST:', err);
       } finally {
@@ -154,6 +153,7 @@ export default function ChatComponent({
   const onKeyDown = e => {
     if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
   };
+
   const handleFile = e => {
     const f = e.target.files[0];
     if (f) setFile(f);
@@ -172,8 +172,36 @@ export default function ChatComponent({
   return (
     <div className="chat">
       <header className="chat__header">צ'אט</header>
-      <div className="chat__body" ref={containerRef}></div>
-
+      <div className="chat__body" ref={containerRef}>
+        {messages.map((m, idx) => {
+          const isMine = m.from === userId;
+          return (
+            <div key={m.id || idx} className={`chat__message ${isMine ? 'mine' : 'theirs'}`}>
+              <div className="chat__bubble">
+                {m.content && <p className="chat__text">{m.content}</p>}
+                {m.fileUrl && (
+                  <div className="chat__attachment">
+                    {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
+                      <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
+                    ) : (
+                      <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
+                        הורד {m.fileName}
+                      </a>
+                    )}
+                  </div>
+                )}
+                <div className="chat__meta">
+                  <span className="chat__time">
+                    {new Date(m.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  {m.delivered && <span className="chat__status">✔</span>}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {renderTyping()}
+      </div>
       <form className="chat__input" onSubmit={sendMessage}>
         <button
           type="button"
