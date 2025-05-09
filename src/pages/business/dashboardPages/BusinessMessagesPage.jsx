@@ -12,19 +12,30 @@ export default function BusinessMessagesPage() {
   const defaultClientPic   = "/default-client.png";
 
   const [conversations, setConversations]   = useState([]);
-  const [activeClientId, setActiveClientId] = useState(null);
+  const [activeConversationId, setActiveConversationId] = useState(null);
   const [isLoading, setIsLoading]           = useState(true);
   const [error, setError]                   = useState(null);
 
   // 1) Load list of client conversations
   useEffect(() => {
     if (!businessId) return;
+
     setIsLoading(true);
     API.get("/api/messages/conversations", { withCredentials: true })
       .then(({ data }) => {
-        setConversations(data);
-        if (data.length > 0) {
-          setActiveClientId(data[0].clientId);
+        // data = [{ _id, participants: [businessId, clientId] }, ...]
+        const list = data.map(conv => {
+          const other = conv.participants.find(p => p !== businessId);
+          return {
+            conversationId: conv._id,
+            clientId: other,
+          };
+        });
+
+        setConversations(list);
+
+        if (list.length > 0) {
+          setActiveConversationId(list[0].conversationId);
         }
       })
       .catch(err => {
@@ -34,7 +45,7 @@ export default function BusinessMessagesPage() {
       .finally(() => setIsLoading(false));
   }, [businessId]);
 
-  // handle loading / auth / error states
+  // 2) Loading / auth / error states
   if (authLoading) {
     return <div className="loading-screen">🔄 טוען הרשאה…</div>;
   }
@@ -59,13 +70,13 @@ export default function BusinessMessagesPage() {
       <aside className="chat-sidebar">
         <h4>שיחות מלקוחות</h4>
         <ul>
-          {conversations.map(({ clientId, name }) => (
-            <li key={clientId}>
+          {conversations.map(({ conversationId, clientId }) => (
+            <li key={conversationId}>
               <button
-                className={clientId === activeClientId ? "active" : ""}
-                onClick={() => setActiveClientId(clientId)}
+                className={conversationId === activeConversationId ? "active" : ""}
+                onClick={() => setActiveConversationId(conversationId)}
               >
-                {name || "לקוח חסר שם"}
+                {clientId /* כאן אפשר להחליף לשם הלקוח אם ה־API מחזיר name */}
               </button>
             </li>
           ))}
@@ -74,10 +85,10 @@ export default function BusinessMessagesPage() {
 
       {/* Main Chat Area */}
       <main className="chat-main">
-        {activeClientId && (
+        {activeConversationId && (
           <ChatComponent
-            conversationId={activeClientId}
-            partnerId={activeClientId}
+            conversationId={activeConversationId}
+            partnerId={conversations.find(c => c.conversationId === activeConversationId).clientId}
             isBusiness={true}
             clientProfilePic={defaultClientPic}
             businessProfilePic={businessProfilePic}
