@@ -10,8 +10,7 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user } = useAuth();
-  // חשוב: משתמשים ב־user.userId (ולא user.id)
-  const userId = user?.userId;
+  const userId = user?.userId; // חשוב: user.userId
 
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages]       = useState([]);
@@ -27,29 +26,24 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   useEffect(() => {
     if (!userId || !partnerId) return;
 
-    async function fetchOrCreateConversation() {
+    (async () => {
       try {
-        // קבלת כל השיחות של המשתמש
         const { data: convos } = await API.get(
           '/api/messages/conversations',
           { withCredentials: true }
         );
-
-        // מציאת השיחה עם partnerId
         const convo = convos.find(c =>
           c.participants.some(p => p.toString() === partnerId)
         );
 
         if (convo) {
           setConversationId(convo._id);
-          // טען את ההודעות של השיחה
           const { data: msgs } = await API.get(
             `/api/messages/${convo._id}/messages`,
             { withCredentials: true }
           );
           setMessages(msgs);
         } else {
-          // אין שיחה קיימת
           setConversationId(null);
           setMessages([]);
         }
@@ -58,9 +52,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         setConversationId(null);
         setMessages([]);
       }
-    }
-
-    fetchOrCreateConversation();
+    })();
   }, [partnerId, userId]);
 
   // 2) הגדרת Socket.IO
@@ -109,7 +101,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // 3) שליחת הודעה (כולל optimistic UI ויצירת שיחה במידה ואין)
+  // 3) שליחת הודעה (optimistic + יצירת שיחה)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -129,24 +121,22 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     setMessages(prev => [...prev, optimistic]);
 
     try {
+      // קודם הגדר convId
       let convId = conversationId;
-
-      // צור שיחה אם לא קיימת
       if (!convId) {
         const { data } = await API.post(
           '/api/messages',
           { otherId: partnerId },
           { withCredentials: true }
         );
-        convId = data.conversationId;
-        console.log('⏩ created conversationId:', convId, 'for userId:', userId);
+        convId = data.conversationId.toString().trim();
         setConversationId(convId);
+        console.log('⏩ created conversationId:', convId);
       }
 
-      // לוג לפני שליחת ההודעה
+      // עכשיו לוג
       console.log('⏩ sending message to convId:', convId, 'userId:', userId);
 
-      // נסה לשלוח את ההודעה
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
@@ -160,7 +150,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         }
       );
 
-      // עדכן את ה־optimistic עם התשובה האמיתית
       setMessages(prev =>
         prev.map(m =>
           m.id === tempId ? { ...saved, delivered: true } : m
@@ -180,7 +169,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   };
   const handleFile = e => setFile(e.target.files[0] || null);
 
-  // רינדור אינדיקטור מקלידים
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
