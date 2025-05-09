@@ -21,20 +21,23 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
-  // Load or create conversation
+  // Load or create conversation using new API endpoints
   useEffect(() => {
     async function fetchOrCreateConversation() {
       try {
-        const { data } = await API.get('/api/conversations');
+        const { data } = await API.get('/api/messages', { withCredentials: true });
         const convo = data.find(c =>
           c.participants?.some(p => p._id === partnerId)
         );
 
         if (convo) {
-          const convId = convo._id || convo.conversationId;
+          const convId = convo._id;
           setConversationId(convId);
-          const msgs = await API.get(`/api/conversations/${convId}`);
-          setMessages(msgs.data);
+          const msgsResponse = await API.get(
+            `/api/messages/${convId}/messages`,
+            { withCredentials: true }
+          );
+          setMessages(msgsResponse.data);
         } else {
           setConversationId(null);
           setMessages([]);
@@ -49,7 +52,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     if (userId && partnerId) fetchOrCreateConversation();
   }, [partnerId, userId]);
 
-  // Socket.IO setup
+  // Socket.IO setup remains unchanged
   useEffect(() => {
     if (!userId) return;
     const socket = io(SOCKET_URL, {
@@ -106,7 +109,11 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       let convId = conversationId;
 
       if (!convId) {
-        const res = await API.post('/api/conversations', { otherId: partnerId });
+        const res = await API.post(
+          '/api/messages',
+          { otherId: partnerId },
+          { withCredentials: true }
+        );
         convId = res.data.conversationId;
         setConversationId(convId);
       }
@@ -116,9 +123,12 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       form.append('text', text);
 
       const { data: saved } = await API.post(
-        `/api/conversations/${convId}/messages`,
+        `/api/messages/${convId}/messages`,
         form,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true
+        }
       );
 
       setMessages(prev =>
@@ -144,7 +154,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
-    const names = others.map(id => id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'אחר').join(', ');
+    const names = others
+      .map(id => id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'אחר')
+      .join(', ');
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 

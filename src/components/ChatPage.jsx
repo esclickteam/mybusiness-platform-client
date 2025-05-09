@@ -18,13 +18,13 @@ export default function ChatPage({
   initialPartnerId = null
 }) {
   const [selected, setSelected] = useState(null);
-  // selected = { conversationId, partnerId }
+  // selected = { conversationId: string | null, partnerId: string }
 
-  // אם קיבלנו initialPartnerId, נבחר אותו אוטומטית ברגע שהקומפוננטה עולה
+  // אם קיבלנו initialPartnerId מבחוץ – בוחרים אותו אוטומטית
   useEffect(() => {
     if (initialPartnerId && !selected) {
       setSelected({
-        conversationId: null,       // עדיין לא ידוע
+        conversationId: null,       // נפתח שיחה חדשה
         partnerId:      initialPartnerId
       });
     }
@@ -33,9 +33,12 @@ export default function ChatPage({
   return (
     <div className="chat-page">
       <aside>
+        {/* 
+          הסרנו את העברת partnerId ל־ConversationsList 
+          כי היא כבר לא צריכה סינון על ידו – היא מביאה את כל השיחות של המשתמש 
+        */}
         <ConversationsList
           isBusiness={isBusiness}
-          partnerId={initialPartnerId}  // מזהה העסק ללקוח
           onSelect={setSelected}
         />
       </aside>
@@ -45,8 +48,7 @@ export default function ChatPage({
           <ChatComponent
             userId={userId}
             partnerId={selected.partnerId}
-            // אם אין conversationId, משתמשים ב-partnerId כטעמי בחירה ראשונית
-            conversationId={selected.conversationId || selected.partnerId}
+            conversationId={selected.conversationId} 
             clientProfilePic={clientProfilePic}
             businessProfilePic={businessProfilePic}
             isBusiness={isBusiness}
