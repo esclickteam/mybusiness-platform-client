@@ -3,7 +3,8 @@ import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
 import API from '../api';
 import './ChatComponent.css';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
+
 
 const SOCKET_URL = 'https://api.esclick.co.il';
 const API_BASE   = 'https://api.esclick.co.il/api/messages';
