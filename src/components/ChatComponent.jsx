@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
 import API from '../api';
@@ -18,29 +18,24 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const [typingUsers, setTypingUsers] = useState([]);
   const containerRef = useRef(null);
   const socketRef = useRef(null);
+  const userId = user?.id;
 
-  // 2) הגדרת userId
-  const userId = user?.id;  // authMiddleware שם את ה-id
-
-  // 3) Early-return אחרי שהגדרנו את כל ה-Hooks
+  // 2) Early-return אם המשתמש לא מאותחל
   if (!initialized) return null;
 
-  // 4) דיוג ראשון של user
+  // 3) דיוג ראשון של user
   useEffect(() => {
     console.log('🔍 Authenticated user:', user);
     console.log('🔍 Using userId:', userId);
   }, [user, userId]);
 
-  // 5) טעינת או יצירת שיחה
+  // 4) טעינת או יצירת שיחה
   useEffect(() => {
     if (!userId || !partnerId) return;
 
     const fetchConversation = async () => {
       try {
-        console.log('⏩ Fetching convos for userId:', userId);
         const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
-        console.log('⏩ convos:', convos);
-
         const convo = convos.find(c =>
           c.participants.some(p => p.toString() === partnerId)
         );
@@ -48,21 +43,17 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         if (convo) {
           const convId = convo._id.toString();
           setConversationId(convId);
-          console.log('⏩ using existing conversationId:', convId);
 
           const { data: msgs } = await API.get(
             `/messages/${convId}/messages`,
             { withCredentials: true }
           );
-          console.log('⏩ loaded messages:', msgs);
           setMessages(msgs);
         } else {
-          console.log('⏩ no convo found, will create on send');
           setConversationId(null);
           setMessages([]);
         }
       } catch (err) {
-        console.error('❌ error loading conversation:', err);
         setConversationId(null);
         setMessages([]);
       }
@@ -71,11 +62,10 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     fetchConversation();
   }, [partnerId, userId]);
 
-  // 6) Socket.IO + join room
+  // 5) Socket.IO + join room
   useEffect(() => {
     if (!conversationId) return;
 
-    console.log(`⏩ connecting socket for room ${conversationId}`);
     const socket = io(SOCKET_URL, {
       withCredentials: true,
       auth: { token: localStorage.getItem('token') },
@@ -83,37 +73,34 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     socketRef.current = socket;
 
     socket.emit('joinRoom', conversationId);
-    console.log(`⏩ emitted joinRoom: ${conversationId}`);
 
     socket.on('newMessage', msg => {
-      console.log('🔔 newMessage:', msg);
       setMessages(prev => [...prev, msg]);
     });
+
     socket.on('typing', ({ from }) => {
-      console.log('🔔 typing from:', from);
       setTypingUsers(prev => Array.from(new Set([...prev, from])));
     });
+
     socket.on('stopTyping', ({ from }) => {
-      console.log('🔔 stopTyping from:', from);
       setTypingUsers(prev => prev.filter(id => id !== from));
     });
 
     return () => {
-      console.log('⏩ disconnecting socket');
       socket.disconnect();
       socketRef.current = null;
     };
   }, [conversationId]);
 
-  // 7) Auto-scroll
+  // 6) Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // 8) Typing emitter
-  const handleTyping = e => {
+  // 7) Typing emitter
+  const handleTyping = useCallback((e) => {
     setMessage(e.target.value);
     if (!socketRef.current || !conversationId) return;
 
@@ -122,9 +109,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     handleTyping.timeout = setTimeout(() => {
       socketRef.current.emit('stopTyping', { conversationId, from: userId });
     }, 800);
-  };
+  }, [conversationId, userId]);
 
-  // 9) Send message (optimistic + API)
+  // 8) Send message (optimistic + API)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -146,7 +133,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     try {
       let convId = conversationId;
       if (!convId) {
-        console.log('⏩ creating convo with otherId:', partnerId);
         const { data } = await API.post(
           '/messages',
           { otherId: partnerId },
@@ -154,10 +140,8 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         );
         convId = data.conversationId.toString().trim();
         setConversationId(convId);
-        console.log('⏩ created convoId:', convId);
       }
 
-      console.log('⏩ posting message to', convId, 'userId:', userId);
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
@@ -170,7 +154,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           headers: { 'Content-Type': 'multipart/form-data' },
         }
       );
-      console.log('⏩ API saved message:', saved);
+
       setMessages(prev =>
         prev.map(m => (m.id === tempId ? { ...saved, delivered: true } : m))
       );
@@ -186,9 +170,10 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const onKeyDown = e => {
     if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
   };
+
   const handleFile = e => setFile(e.target.files[0] || null);
 
-  // 10) Render typing indicator
+  // 9) Render typing indicator
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
