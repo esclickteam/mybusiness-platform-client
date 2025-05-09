@@ -124,7 +124,7 @@ export default function App() {
           <Route
             path="/business/:businessId/chat"
             element={
-              <BusinessChatRoute
+              <ChatLayout
                 clientProfilePic={clientProfilePic}
                 businessProfilePic={businessProfilePic}
               />

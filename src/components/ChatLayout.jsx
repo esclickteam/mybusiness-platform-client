@@ -1,25 +1,22 @@
+// src/components/ChatLayout.jsx
 import React from 'react';
-import ChatComponent from './ChatComponent';
-import './ChatLayout.css';
+import { useParams } from 'react-router-dom';
+import ChatPage from './Chat/ChatPage';
 
-export default function ChatLayout(props) {
+/**
+ * ChatLayout: משמש ל־ChatRoute בתוך ה־App.jsx
+ * שולף את businessId מה־URL ומעביר אותו ב־props ל־ChatPage
+ * clientProfilePic, businessProfilePic עוברות מה־App.jsx
+ */
+export default function ChatLayout({ clientProfilePic, businessProfilePic }) {
+  const { businessId } = useParams();
+
   return (
-    <div className="chat-layout">
-      {/* הסיידבר */}
-      <aside className="chat-sidebar">
-        <h4>שיחות <span className="chat-sidebar-icon">💬</span></h4>
-        {/* לדוגמה: פריט אחד */}
-        <div className="chat-sidebar-item">
-          סטודיו לעיצוב גרפי<br/>
-          נשמע מעניין, בואי נדבר…
-        </div>
-        {/* כאן תעברי על רשימת השיחות האמיתית */}
-      </aside>
-
-      {/* אזור הצ'אט הראשי */}
-      <section className="chat-main">
-        <ChatComponent {...props} />
-      </section>
-    </div>
+    <ChatPage
+      isBusiness={true}
+      userId={businessId}
+      clientProfilePic={clientProfilePic}
+      businessProfilePic={businessProfilePic}
+    />
   );
 }

@@ -1,44 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import ChatComponent from './ChatComponent';
+import React, { useState } from 'react';
+import ConversationsList from './ConversationsList';
+import ChatComponent     from './ChatComponent';
+import './ChatPage.css'; // אם יש לך עיצובים
 
-const ChatPage = () => {
-  const [partnerId, setPartnerId] = useState(null); // תחילה partnerId הוא null
-  const userId = "6808a79b7e22f6b69b8d2c80"; // מזהה הלקוח
-  const clientProfilePic = "path/to/client/profilePic";
-  const businessProfilePic = "path/to/business/profilePic";
-
-  // נניח שאנחנו טוענים את מזהה העסק (partnerId) מ-API
-  useEffect(() => {
-    // סימולציה של חיבור ל-API שמחזיר את partnerId
-    const fetchPartnerId = async () => {
-      try {
-        // כאן אתה יכול להחליף את זה בבקשת API אמיתית:
-        const partnerIdFromAPI = "partner123"; // נתון לדוגמה
-        setPartnerId(partnerIdFromAPI);
-      } catch (error) {
-        console.error('שגיאה בטעינת partnerId', error);
-      }
-    };
-
-    fetchPartnerId();
-  }, []); // הפונקציה תרוץ רק פעם אחת אחרי שמרנדרים את הקומפוננטה
-
-  // אם partnerId לא הוגדר, מציגים הודעה מתאימה
-  if (!partnerId) {
-    return <div>טוען נתונים...</div>; // שים לב שההודעה מוצגת עד ש-`partnerId` נטען
-  }
+/**
+ * Props:
+ *  - isBusiness: boolean
+ *  - userId: string
+ *  - clientProfilePic, businessProfilePic: string URLs
+ */
+export default function ChatPage({
+  isBusiness,
+  userId,
+  clientProfilePic,
+  businessProfilePic
+}) {
+  const [selected, setSelected] = useState(null);
+  // selected = { conversationId, partnerId }
 
   return (
-    <div>
-      <ChatComponent
-        userId={userId}
-        partnerId={partnerId}  // ודא ש- partnerId מועבר כראוי
-        clientProfilePic={clientProfilePic}
-        businessProfilePic={businessProfilePic}
-        isBusiness={false} // אם זה לקוח, ערך זה יהיה false
-      />
+    <div className="chat-page" style={{ display: 'flex', height: '100vh' }}>
+      <aside style={{ width: 300, borderRight: '1px solid #ddd' }}>
+        <ConversationsList
+          isBusiness={isBusiness}
+          onSelect={setSelected}
+        />
+      </aside>
+
+      <main style={{ flex: 1 }}>
+        {selected ? (
+          <ChatComponent
+            userId={userId}
+            partnerId={selected.partnerId}
+            conversationId={selected.conversationId}
+            clientProfilePic={clientProfilePic}
+            businessProfilePic={businessProfilePic}
+            isBusiness={isBusiness}
+          />
+        ) : (
+          <div style={{ padding: 20 }}>בחר שיחה בסיידבר כדי להתחיל</div>
+        )}
+      </main>
     </div>
   );
-};
-
-export default ChatPage;
+}
