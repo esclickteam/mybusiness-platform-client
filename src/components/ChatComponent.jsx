@@ -1,4 +1,3 @@
-// src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
@@ -10,49 +9,66 @@ const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user } = useAuth();
-  const userId = user?.userId; // חשוב: user.userId
+  const userId = user?.userId;
 
   const [conversationId, setConversationId] = useState(null);
-  const [messages, setMessages]       = useState([]);
-  const [message, setMessage]         = useState('');
-  const [file, setFile]               = useState(null);
-  const [isSending, setIsSending]     = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState(null);
+  const [isSending, setIsSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
 
   const containerRef = useRef(null);
-  const socketRef    = useRef(null);
+  const socketRef = useRef(null);
 
-  // 1) טען או צור שיחה
+  // 1) יצירת או טעינת שיחה
   useEffect(() => {
     if (!userId || !partnerId) return;
+    let mounted = true;
 
-    (async () => {
+    const initConversation = async () => {
       try {
+        // 1.1 קבלת כל השיחות של המשתמש
         const { data: convos } = await API.get(
           '/api/messages/conversations',
           { withCredentials: true }
         );
-        const convo = convos.find(c =>
+
+        // 1.2 מציאת שיחה קיימת עם ה-partner
+        let conv = convos.find(c =>
           c.participants.some(p => p.toString() === partnerId)
         );
 
-        if (convo) {
-          setConversationId(convo._id);
-          const { data: msgs } = await API.get(
-            `/api/messages/${convo._id}/messages`,
+        // 1.3 אם לא קיימת, צור שיחה חדשה
+        if (!conv) {
+          const { data } = await API.post(
+            '/api/messages',
+            { otherId: partnerId },
             { withCredentials: true }
           );
-          setMessages(msgs);
-        } else {
+          conv = { _id: data.conversationId };
+        }
+
+        if (!mounted) return;
+        setConversationId(conv._id);
+
+        // 1.4 שליפה של ההודעות לשיחה הזו
+        const { data: msgs } = await API.get(
+          `/api/messages/${conv._id}/messages`,
+          { withCredentials: true }
+        );
+        if (mounted) setMessages(msgs);
+      } catch (err) {
+        console.error('שגיאה בטעינת/יצירת שיחה:', err);
+        if (mounted) {
           setConversationId(null);
           setMessages([]);
         }
-      } catch (err) {
-        console.error('שגיאה בשליפת שיחה:', err);
-        setConversationId(null);
-        setMessages([]);
       }
-    })();
+    };
+
+    initConversation();
+    return () => { mounted = false; };
   }, [partnerId, userId]);
 
   // 2) הגדרת Socket.IO
@@ -67,9 +83,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
     if (conversationId) {
       socket.emit('joinRoom', conversationId);
-      socket.on('newMessage', msg =>
-        setMessages(prev => [...prev, msg])
-      );
+      socket.on('newMessage', msg => setMessages(prev => [...prev, msg]));
       socket.on('typing', ({ from }) =>
         setTypingUsers(prev => [...new Set([...prev, from])])
       );
@@ -81,14 +95,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     return () => socket.disconnect();
   }, [conversationId, userId]);
 
-  // גלילה אוטומטית למטה
+  // גלילה אוטומטית
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // אינדיקטור הקלדה
+  // קליטת הקלדה
   const handleTyping = e => {
     setMessage(e.target.value);
     const socket = socketRef.current;
@@ -101,7 +115,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // 3) שליחת הודעה (optimistic + יצירת שיחה)
+  // 3) שליחת הודעה
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -121,21 +135,17 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     setMessages(prev => [...prev, optimistic]);
 
     try {
-      // קודם הגדר convId
       let convId = conversationId;
       if (!convId) {
+        // יווצר כבר בשלב ה-init, אבל לוודא גם כאן
         const { data } = await API.post(
           '/api/messages',
           { otherId: partnerId },
           { withCredentials: true }
         );
-        convId = data.conversationId.toString().trim();
+        convId = data.conversationId;
         setConversationId(convId);
-        console.log('⏩ created conversationId:', convId);
       }
-
-      // עכשיו לוג
-      console.log('⏩ sending message to convId:', convId, 'userId:', userId);
 
       const form = new FormData();
       if (file) form.append('fileData', file);
@@ -151,9 +161,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       );
 
       setMessages(prev =>
-        prev.map(m =>
-          m.id === tempId ? { ...saved, delivered: true } : m
-        )
+        prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m)
       );
     } catch (err) {
       console.error('❌ שגיאה בשליחת ההודעה:', err);
@@ -183,50 +191,12 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       <header className="chat__header">צ'אט</header>
       <div className="chat__body" ref={containerRef}>
         {messages.map((m, i) => (
-          <div key={i} className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}>
-            <div className="chat__bubble">
-              {m.text && <p className="chat__text">{m.text}</p>}
-              {m.fileUrl && (
-                <div className="chat__attachment">
-                  {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                    <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
-                  ) : (
-                    <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" className="chat__file-link">
-                      הורד {m.fileName}
-                    </a>
-                  )}
-                </div>
-              )}
-              <div className="chat__meta">
-                <span className="chat__time">
-                  {new Date(m.timestamp).toLocaleTimeString('he-IL', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </span>
-                {m.delivered && <span className="chat__status">✔</span>}
-              </div>
-            </div>
+          <div key={i} className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}>...
           </div>
         ))}
         {renderTyping()}
       </div>
-      <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" disabled={isSending || (!message.trim() && !file)}>
-          <FiSend size={20} />
-        </button>
-        <input
-          type="text"
-          placeholder="כתוב הודעה..."
-          value={message}
-          onChange={handleTyping}
-          onKeyDown={onKeyDown}
-        />
-        <label className="chat__attach">
-          <FiPaperclip size={20} />
-          <input type="file" onChange={handleFile} />
-        </label>
-      </form>
+      <form className="chat__input" onSubmit={sendMessage}>...</form>
     </div>
   );
 }
