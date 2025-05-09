@@ -1,4 +1,3 @@
-// src/pages/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
@@ -11,10 +10,10 @@ export default function BusinessChatPage() {
   const { user, loading: authLoading } = useAuth();
   const businessUserId = user?.id;
 
-  const [convos, setConvos]                     = useState([]);
+  const [convos, setConvos] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
-  const [messages, setMessages]                 = useState([]);
-  const [newText, setNewText]                   = useState("");
+  const [messages, setMessages] = useState([]);
+  const [newText, setNewText] = useState("");
   const socketRef = useRef(null);
 
   // 0) הגנה בשלב רינדור
@@ -30,7 +29,6 @@ export default function BusinessChatPage() {
     axios
       .get(`${API_BASE}/messages`, { withCredentials: true })
       .then(res => {
-        // res.data = [{ _id, participants: [clientUserId, businessUserId] }, ...]
         const convosData = res.data.map(c => {
           const clientId = c.participants.find(p => p !== businessUserId);
           return {
@@ -66,18 +64,18 @@ export default function BusinessChatPage() {
   useEffect(() => {
     if (!activeConversation) return;
 
-    const socket = io(API_BASE, {
-      withCredentials: true,
-    });
+    const socket = io(API_BASE, { withCredentials: true });
     socketRef.current = socket;
 
     socket.on("connect", () => {
       // מצטרפים לחדר של השיחה הנבחרת
+      console.log("📬 Connected to room:", activeConversation.conversationId);
       socket.emit("joinRoom", activeConversation.conversationId);
     });
 
     socket.on("newMessage", msg => {
-      // אם ההודעה שייכת לשיחה הנוכחית, מציגים
+      console.log("📬 New message received:", msg);
+      // אם ההודעה שייכת לשיחה הנוכחית, מציגים אותה
       if (msg.conversationId === activeConversation.conversationId) {
         setMessages(prev => [...prev, msg]);
       }
@@ -115,7 +113,7 @@ export default function BusinessChatPage() {
     socketRef.current.emit("sendMessage", msg, ack => {
       if (ack.success) {
         setMessages(prev => [...prev, msg]);
-        setNewText("");
+        setNewText(""); // מאפס את שדה הטקסט אחרי שליחה
       } else {
         console.error("Failed to send message", ack.error);
       }
@@ -164,9 +162,7 @@ export default function BusinessChatPage() {
               {messages.map((m, idx) => (
                 <div
                   key={m._id || idx}
-                  className={`message-item ${
-                    m.from === businessUserId ? "outgoing" : "incoming"
-                  }`}
+                  className={`message-item ${m.from === businessUserId ? "outgoing" : "incoming"}`}
                 >
                   <p>{m.text}</p>
                   <small>
