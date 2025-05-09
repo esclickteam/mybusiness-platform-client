@@ -20,7 +20,7 @@ export default function BusinessMessagesPage() {
     if (!businessUserId) return;
 
     setIsLoading(true);
-    API.get("/api/messages/conversations", { withCredentials: true })
+    API.get("/api/messages", { withCredentials: true })
       .then(({ data }) => {
         console.log("raw conversations:", data);
 
