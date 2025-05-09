@@ -41,11 +41,14 @@ export default function ChatComponent({
 
     socket.on('connect', () => {
       setSocketReady(true);
-      socket.emit('joinRoom', conversationId);
+      socket.emit('joinRoom', { conversationId });
     });
     socket.on('newMessage', msg => {
-      setMessages(prev => [...prev, msg]);
-      socket.emit('messageDelivered', { messageId: msg.id });
+      // only add if same conversation
+      if (msg.conversationId === conversationId) {
+        setMessages(prev => [...prev, msg]);
+        socket.emit('messageDelivered', { messageId: msg.id });
+      }
     });
     socket.on('typing', ({ from }) =>
       setTypingUsers(prev => Array.from(new Set([...prev, from])))
@@ -83,8 +86,8 @@ export default function ChatComponent({
   // Send message
   const sendMessage = async e => {
     e.preventDefault();
-    const text = message.trim();
-    if (!text && !file) return;
+    const content = message.trim();
+    if (!content && !file) return;
 
     const tempId = Date.now().toString();
     const optimisticMsg = {
@@ -92,7 +95,7 @@ export default function ChatComponent({
       conversationId,
       from: userId,
       to: partnerId,
-      content: text,
+      content,
       fileName: file?.name || null,
       timestamp: new Date().toISOString(),
       delivered: false
@@ -116,11 +119,11 @@ export default function ChatComponent({
       const formData = new FormData();
       formData.append('conversationId', conversationId);
       formData.append('to', partnerId);
-      formData.append('text', text);
       formData.append('clientId', userId);
+      formData.append('text', content);
       if (file) formData.append('fileData', file);
       try {
-        const res = await API.post('/send', formData, {
+        const res = await API.post(`${API_BASE}/send`, formData, {
           withCredentials: true
         });
         setMessages(prev =>
