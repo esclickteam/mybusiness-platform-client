@@ -1,4 +1,3 @@
-// src/components/Chat/ChatPage.jsx
 import React, { useState, useEffect } from 'react';
 import ConversationsList from './ConversationsList';
 import ChatComponent     from './ChatComponent';
@@ -25,8 +24,8 @@ export default function ChatPage({
   useEffect(() => {
     if (initialPartnerId && !selected) {
       setSelected({
-        conversationId: null,       // אין עדיין conversationId קיים
-        partnerId: initialPartnerId
+        conversationId: null,       // עדיין לא ידוע
+        partnerId:      initialPartnerId
       });
     }
   }, [initialPartnerId, selected]);
@@ -36,6 +35,7 @@ export default function ChatPage({
       <aside>
         <ConversationsList
           isBusiness={isBusiness}
+          partnerId={initialPartnerId}  // מזהה העסק ללקוח
           onSelect={setSelected}
         />
       </aside>
@@ -45,6 +45,7 @@ export default function ChatPage({
           <ChatComponent
             userId={userId}
             partnerId={selected.partnerId}
+            // אם אין conversationId, משתמשים ב-partnerId כטעמי בחירה ראשונית
             conversationId={selected.conversationId || selected.partnerId}
             clientProfilePic={clientProfilePic}
             businessProfilePic={businessProfilePic}
