@@ -131,6 +131,18 @@ export default function App() {
             }
           />
 
+<Route
+  path="/client/chat/:businessId"
+  element={
+    <ChatLayout
+      clientProfilePic={clientProfilePic}
+      businessProfilePic={businessProfilePic}
+      isBusiness={false}
+    />
+  }
+/>
+
+
           {/* Business dashboard (protected) */}
           <Route
             path="/business/:businessId/dashboard/*"
