@@ -8,13 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const SOCKET_URL = 'https://api.esclick.co.il';
 const API_BASE   = 'https://api.esclick.co.il/api/conversations';
 
-export default function ChatComponent({
-  partnerId,
-  conversationId,
-  clientProfilePic,
-  businessProfilePic,
-  isBusiness = false,
-}) {
+export default function ChatComponent({ partnerId, conversationId, clientProfilePic, businessProfilePic, isBusiness = false }) {
   const { user } = useAuth();
   const userId = user?.id;
 
@@ -49,7 +43,7 @@ export default function ChatComponent({
     });
 
     socket.on('newMessage', msg => {
-      setMessages(prev => [...prev, { ...msg, conversationId }]);
+      setMessages(prev => [...prev, msg]);
     });
 
     socket.on('typing', ({ from }) => {
@@ -67,9 +61,7 @@ export default function ChatComponent({
 
   // 3) Auto-scroll
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
+    if (containerRef.current) containerRef.current.scrollTop = containerRef.current.scrollHeight;
   }, [messages, typingUsers]);
 
   // 4) Typing events
@@ -100,10 +92,8 @@ export default function ChatComponent({
 
     const socket = socketRef.current;
     if (socket.connected) {
-      socket.emit('sendMessage', { conversationId, text, fileUrl: '' }, ({ success }) => {
-        if (success) {
-          setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: undefined, delivered: true } : m));
-        }
+      socket.emit('sendMessage', { conversationId, text, fileUrl: '' }, ({ success, messageId }) => {
+        setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: messageId, delivered: success } : m));
         setIsSending(false);
       });
     } else {
@@ -112,7 +102,7 @@ export default function ChatComponent({
       form.append('text', text);
       try {
         const { data: saved } = await API.post(`${API_BASE}/${conversationId}/messages`, form, { withCredentials: true });
-        setMessages(prev => prev.map(m => m.id === tempId ? { ...saved, delivered: true, conversationId } : m));
+        setMessages(prev => prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m));
       } catch (err) {
         console.error('Error sending via REST:', err);
       } finally {
@@ -124,18 +114,13 @@ export default function ChatComponent({
     setFile(null);
   };
 
-  const onKeyDown = e => {
-    if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
-  };
-
-  const handleFile = e => {
-    setFile(e.target.files[0] || null);
-  };
+  const onKeyDown = e => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(e); };
+  const handleFile = e => { setFile(e.target.files[0] || null); };
 
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
-    const names = others.map(id => id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : '…').join(', ');
+    const names = others.map(id => (id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : '…')).join(', ');
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
@@ -161,7 +146,7 @@ export default function ChatComponent({
                   </div>
                 )}
                 <div className="chat__meta">
-                  <span className="chat__time">{new Date(m.timestamp).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}</span>
+                  <span className="chat__time">{new Date(m.timestamp).toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' })}</span>
                   {m.delivered && <span className="chat__status">✔</span>}
                 </div>
               </div>
