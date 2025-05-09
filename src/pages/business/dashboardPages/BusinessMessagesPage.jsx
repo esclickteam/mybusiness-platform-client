@@ -17,6 +17,9 @@ export default function BusinessMessagesPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // הוספת log לבדוק אם businessUserId מוגדר כראוי
+    console.log("businessUserId:", businessUserId);
+
     if (!businessUserId) return;
 
     setIsLoading(true);
