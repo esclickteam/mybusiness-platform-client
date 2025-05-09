@@ -28,7 +28,7 @@ import { BusinessServicesProvider } from "../../context/BusinessServicesContext"
 const BusinessDashboardRoutes = () => (
   <Routes>
     {/* Layout משותף לכל דפי הדשבורד */}
-    <Route element={<BusinessDashboardLayout />}>
+    <Route path="" element={<BusinessDashboardLayout />}>
 
       {/* ברירת מחדל — נווט ל"תמצית" הדשבורד */}
       <Route index element={<Navigate to="dashboard" replace />} />
