@@ -13,6 +13,7 @@ export default function BusinessMessagesPage() {
 
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
+  const [messages, setMessages] = useState([]); // הוספת state להודעות
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const socketRef = useRef(null);
@@ -34,7 +35,7 @@ export default function BusinessMessagesPage() {
         
         setConversations(list);
         if (list.length > 0) {
-          setActiveConversationId(list[0].conversationId);
+          setActiveConversationId(list[0].conversationId); // בחר שיחה ראשונית
         }
       })
       .catch(err => {
@@ -49,7 +50,7 @@ export default function BusinessMessagesPage() {
 
     API.get(`/messages/${activeConversationId}/messages`, { withCredentials: true })
       .then(res => {
-        // Process and set messages for active conversation
+        setMessages(res.data); // הגדרת ההודעות ב-state
       })
       .catch(err => console.error(err));
   }, [activeConversationId]);
@@ -62,16 +63,14 @@ export default function BusinessMessagesPage() {
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      socket.emit("joinRoom", activeConversationId);
+      socket.emit("joinRoom", activeConversationId); // הצטרפות לחדר של השיחה הנבחרת
     });
 
     socket.on("newMessage", msg => {
-      // Update only if the message belongs to the active conversation
       if (msg.conversationId === activeConversationId) {
-        // Update messages state for active conversation
-        setMessages(prevMessages => [...prevMessages, msg]);
+        setMessages(prevMessages => [...prevMessages, msg]); // עדכון הודעות ב-state
       } else {
-        // Optionally, add new conversation to list
+        // הוספת שיחה חדשה לסיידבר אם השיחה לא קיימת
         setConversations(prevConvos => [
           ...prevConvos,
           { conversationId: msg.conversationId, clientId: msg.from },
