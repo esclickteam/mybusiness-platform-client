@@ -67,7 +67,7 @@ export default function BusinessChatPage() {
     const socket = io(API_BASE, { withCredentials: true });
     socketRef.current = socket;
 
-    socket.on("connect", () => {
+      console.log(`מחובר ל-Socket עבור שיחה ${activeConversationId}`)("connect", () => {
       // מצטרפים לחדר של השיחה הנבחרת
       console.log("📬 Connected to room:", activeConversation.conversationId);
       socket.emit("joinRoom", activeConversation.conversationId);
