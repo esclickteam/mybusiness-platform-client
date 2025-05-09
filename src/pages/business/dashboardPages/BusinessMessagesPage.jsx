@@ -7,7 +7,8 @@ import "./BusinessMessagesPage.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
-  const businessUserId = user?.id;  // מזהה המשתמש (User._id)
+  // תמיכה בשני המקרים: _id או id
+  const businessUserId = user?._id || user?.id;
   const businessProfilePic = user?.profilePicUrl || "/default-business.png";
   const defaultClientPic   = "/default-client.png";
 
@@ -17,6 +18,7 @@ export default function BusinessMessagesPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log("BusinessMessagesPage user:", user, "businessUserId:", businessUserId);
     if (!businessUserId) return;
 
     setIsLoading(true);
@@ -46,7 +48,7 @@ export default function BusinessMessagesPage() {
         setError("❌ לא ניתן לטעון את השיחות, נסה שוב מאוחר יותר");
       })
       .finally(() => setIsLoading(false));
-  }, [businessUserId]);
+  }, [businessUserId, user]);
 
   // זמני טעינה ושגיאות
   if (authLoading) return <div className="loading-screen">🔄 טוען הרשאה…</div>;
