@@ -22,18 +22,18 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const socketRef = useRef(null);
 
   // Load or create conversation
-  // Load or create conversation
-useEffect(() => {
+  useEffect(() => {
     async function fetchOrCreateConversation() {
       try {
         const { data } = await API.get('/api/conversations');
         const convo = data.find(c =>
           c.participants?.some(p => p._id === partnerId)
         );
-  
+
         if (convo) {
-          setConversationId(convo.conversationId);
-          const msgs = await API.get(`/api/conversations/${convo.conversationId}`);
+          const convId = convo._id || convo.conversationId;
+          setConversationId(convId);
+          const msgs = await API.get(`/api/conversations/${convId}`);
           setMessages(msgs.data);
         } else {
           setConversationId(null);
@@ -45,10 +45,9 @@ useEffect(() => {
         setMessages([]);
       }
     }
-  
+
     if (userId && partnerId) fetchOrCreateConversation();
   }, [partnerId, userId]);
-  
 
   // Socket.IO setup
   useEffect(() => {
@@ -104,20 +103,26 @@ useEffect(() => {
     setMessages(prev => [...prev, optimistic]);
 
     try {
+      let convId = conversationId;
+
+      if (!convId) {
+        const res = await API.post('/api/conversations', { otherId: partnerId });
+        convId = res.data.conversationId;
+        setConversationId(convId);
+      }
+
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
-      form.append('to', partnerId);
-      if (conversationId) form.append('conversationId', conversationId);
 
-      const { data } = await API.post('/api/messages/send', form);
-      const savedMessage = data.message || data;
-      const newConvoId = data.conversationId;
-
-      if (!conversationId && newConvoId) setConversationId(newConvoId);
+      const { data: saved } = await API.post(
+        `/api/conversations/${convId}/messages`,
+        form,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
 
       setMessages(prev =>
-        prev.map(m => (m.id === tempId ? { ...savedMessage, delivered: true } : m))
+        prev.map(m => (m.id === tempId ? { ...saved, delivered: true } : m))
       );
     } catch (err) {
       console.error('❌ שגיאה בשליחת ההודעה:', err);
