@@ -24,9 +24,9 @@ export default function BusinessMessagesPage() {
     }
 
     setIsLoading(true);
-    API.get("/api/messages", { withCredentials: true })
+    API.get("/api/messages/conversations", { withCredentials: true })
       .then(({ data }) => {
-        console.log("raw conversations:", data);
+        // raw conversations logged
 
         // מיפוי: חילוץ conversationId ו-clientId (המזהה השולח השני)
         const list = data.map(conv => {
