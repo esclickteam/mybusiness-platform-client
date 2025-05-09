@@ -22,14 +22,18 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const socketRef = useRef(null);
 
   // Load or create conversation
-  useEffect(() => {
+  // Load or create conversation
+useEffect(() => {
     async function fetchOrCreateConversation() {
       try {
-        const { data } = await API.get(`/api/conversations/${conversationId}`);
-        const convo = data.find(c => c.participants?.some(p => p._id === partnerId));
+        const { data } = await API.get('/api/conversations');
+        const convo = data.find(c =>
+          c.participants?.some(p => p._id === partnerId)
+        );
+  
         if (convo) {
           setConversationId(convo.conversationId);
-          const msgs = await API.get(`/api/messages/conversations/${convo.conversationId}`);
+          const msgs = await API.get(`/api/conversations/${convo.conversationId}`);
           setMessages(msgs.data);
         } else {
           setConversationId(null);
@@ -37,10 +41,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         }
       } catch (err) {
         console.error('שגיאה בשליפת שיחה:', err);
+        setConversationId(null);
+        setMessages([]);
       }
     }
+  
     if (userId && partnerId) fetchOrCreateConversation();
   }, [partnerId, userId]);
+  
 
   // Socket.IO setup
   useEffect(() => {
