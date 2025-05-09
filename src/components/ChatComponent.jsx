@@ -6,39 +6,52 @@ import './ChatComponent.css';
 import { useAuth } from '../context/AuthContext';
 
 const SOCKET_URL = 'https://api.esclick.co.il';
-const API_BASE   = 'https://api.esclick.co.il/api/conversations';
 
-export default function ChatComponent({ partnerId, conversationId, isBusiness = false }) {
+export default function ChatComponent({ partnerId, isBusiness = false }) {
   const { user } = useAuth();
   const userId = user?.id;
 
-  const [message, setMessage]         = useState('');
-  const [messages, setMessages]       = useState([]);
-  const [isSending, setIsSending]     = useState(false);
-  const [file, setFile]               = useState(null);
+  const [conversationId, setConversationId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState(null);
+  const [isSending, setIsSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
 
   const containerRef = useRef(null);
-  const socketRef    = useRef(null);
+  const socketRef = useRef(null);
 
-  // Load conversation history
+  // Load or create conversation
   useEffect(() => {
-    if (!conversationId) return;
-    API.get(`${API_BASE}/${conversationId}/messages`, { withCredentials: true })
-      .then(({ data }) => setMessages(data))
-      .catch(err => console.error('Error loading history', err));
-  }, [conversationId]);
+    async function fetchOrCreateConversation() {
+      try {
+        const { data } = await API.get('/api/messages/conversations');
+        const convo = data.find(c => c.participants?.some(p => p._id === partnerId));
+        if (convo) {
+          setConversationId(convo.conversationId);
+          const msgs = await API.get(`/api/messages/conversations/${convo.conversationId}`);
+          setMessages(msgs.data);
+        } else {
+          setConversationId(null);
+          setMessages([]);
+        }
+      } catch (err) {
+        console.error('שגיאה בשליפת שיחה:', err);
+      }
+    }
+    if (userId && partnerId) fetchOrCreateConversation();
+  }, [partnerId, userId]);
 
   // Socket.IO setup
   useEffect(() => {
-    if (!conversationId || !userId) return;
+    if (!userId) return;
     const socket = io(SOCKET_URL, {
       withCredentials: true,
-      auth: { token: localStorage.getItem('token') }
+      auth: { token: localStorage.getItem('token') },
     });
     socketRef.current = socket;
 
-    socket.on('connect', () => socket.emit('joinRoom', conversationId));
+    if (conversationId) socket.emit('joinRoom', conversationId);
     socket.on('newMessage', msg => setMessages(prev => [...prev, msg]));
     socket.on('typing', ({ from }) => setTypingUsers(prev => [...new Set([...prev, from])]));
     socket.on('stopTyping', ({ from }) => setTypingUsers(prev => prev.filter(id => id !== from)));
@@ -48,70 +61,77 @@ export default function ChatComponent({ partnerId, conversationId, isBusiness = 
 
   // Auto-scroll
   useEffect(() => {
-    if (containerRef.current) containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    if (containerRef.current)
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
   }, [messages, typingUsers]);
 
   // Typing indicator
   const handleTyping = e => {
     setMessage(e.target.value);
     const socket = socketRef.current;
-    if (!socket) return;
+    if (!socket || !conversationId) return;
     socket.emit('typing', { conversationId, from: userId });
     clearTimeout(handleTyping.timeout);
-    handleTyping.timeout = setTimeout(
-      () => socket.emit('stopTyping', { conversationId, from: userId }),
-      800
-    );
+    handleTyping.timeout = setTimeout(() => {
+      socket.emit('stopTyping', { conversationId, from: userId });
+    }, 800);
   };
 
-  // Send message
   const sendMessage = async e => {
     e?.preventDefault();
-    if (!userId || !conversationId) return;
-
     const text = message.trim();
     if (!text && !file) return;
 
-    const tempId = Date.now().toString();
-    const optimistic = { id: tempId, from: userId, to: partnerId, text, fileName: file?.name, timestamp: new Date().toISOString(), delivered: false };
-    setMessages(prev => [...prev, optimistic]);
     setIsSending(true);
+    const tempId = Date.now().toString();
+    const optimistic = {
+      id: tempId,
+      from: userId,
+      to: partnerId,
+      text,
+      fileName: file?.name,
+      timestamp: new Date().toISOString(),
+      delivered: false,
+    };
+    setMessages(prev => [...prev, optimistic]);
 
-    const socket = socketRef.current;
-    if (socket.connected) {
-      socket.emit('sendMessage', { conversationId, text, fileUrl: '' }, ({ success, messageId }) => {
-        setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: messageId, delivered: success } : m));
-        setIsSending(false);
-      });
-    } else {
+    try {
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
-      try {
-        const { data: saved } = await API.post(
-          `${API_BASE}/${conversationId}/messages`,
-          form,
-          { withCredentials: true }
-        );
-        setMessages(prev => prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m));
-      } catch (err) {
-        console.error('Error sending via REST:', err);
-      } finally {
-        setIsSending(false);
-      }
-    }
+      form.append('to', partnerId);
+      if (conversationId) form.append('conversationId', conversationId);
 
-    setMessage('');
-    setFile(null);
+      const { data } = await API.post('/api/messages/send', form);
+      const savedMessage = data.message || data;
+      const newConvoId = data.conversationId;
+
+      if (!conversationId && newConvoId) setConversationId(newConvoId);
+
+      setMessages(prev =>
+        prev.map(m => (m.id === tempId ? { ...savedMessage, delivered: true } : m))
+      );
+    } catch (err) {
+      console.error('❌ שגיאה בשליחת ההודעה:', err);
+    } finally {
+      setIsSending(false);
+      setMessage('');
+      setFile(null);
+    }
   };
 
-  const onKeyDown = e => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(e); };
-  const handleFile = e => { setFile(e.target.files[0] || null); };
+  const onKeyDown = e => {
+    if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
+  };
+
+  const handleFile = e => {
+    setFile(e.target.files[0] || null);
+  };
 
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
-    const names = others.map(id => id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : '…').join(', ');
+    const names = others.map(id => id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'אחר').join(', ');
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
@@ -120,7 +140,7 @@ export default function ChatComponent({ partnerId, conversationId, isBusiness = 
       <header className="chat__header">צ'אט</header>
       <div className="chat__body" ref={containerRef}>
         {messages.map((m, i) => (
-          <div key={i} className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}> 
+          <div key={i} className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}>
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
               {m.fileUrl && (
@@ -135,7 +155,9 @@ export default function ChatComponent({ partnerId, conversationId, isBusiness = 
                 </div>
               )}
               <div className="chat__meta">
-                <span className="chat__time">{new Date(m.timestamp).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}</span>
+                <span className="chat__time">
+                  {new Date(m.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                </span>
                 {m.delivered && <span className="chat__status">✔</span>}
               </div>
             </div>
@@ -144,8 +166,14 @@ export default function ChatComponent({ partnerId, conversationId, isBusiness = 
         {renderTyping()}
       </div>
       <form className="chat__input" onSubmit={sendMessage}>
-        <button type="submit" disabled={isSending && !message.trim()}><FiSend size={20} /></button>
-        <input type="text" placeholder="כתוב הודעה..." value={message} onChange={handleTyping} onKeyDown={onKeyDown} />
+        <button type="submit" disabled={isSending || (!message.trim() && !file)}><FiSend size={20} /></button>
+        <input
+          type="text"
+          placeholder="כתוב הודעה..."
+          value={message}
+          onChange={handleTyping}
+          onKeyDown={onKeyDown}
+        />
         <label className="chat__attach"><FiPaperclip size={20} /><input type="file" onChange={handleFile} /></label>
       </form>
     </div>
