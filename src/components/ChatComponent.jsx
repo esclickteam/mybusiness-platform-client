@@ -129,7 +129,7 @@ export default function ChatComponent({
       formData.append('conversationId', conversationId);
       formData.append('to', partnerId);
       formData.append('clientId', userId);
-      formData.append('content', content);
+      formData.append('text', content);
       if (file) formData.append('fileData', file);
       try {
         const res = await API.post(`${API_BASE}/send`, formData, { withCredentials: true });
