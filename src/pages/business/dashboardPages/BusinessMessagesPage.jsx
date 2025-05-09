@@ -16,16 +16,20 @@ export default function BusinessMessagesPage() {
   const [isLoading, setIsLoading]           = useState(true);
   const [error, setError]                   = useState(null);
 
-  // 1) Load list of client conversations
   useEffect(() => {
     if (!businessId) return;
 
     setIsLoading(true);
     API.get("/api/messages/conversations", { withCredentials: true })
       .then(({ data }) => {
-        // data = [{ _id, participants: [businessId, clientId] }, ...]
+        console.log("raw conversations:", data);
+
+        // 1) מיפוי: חילוץ conversationId ו‐clientId
         const list = data.map(conv => {
-          const other = conv.participants.find(p => p !== businessId);
+          const other = conv.participants.find(p =>
+            // אם זה ObjectId, נהפוך למחרוזת
+            p.toString() !== businessId.toString()
+          );
           return {
             conversationId: conv._id,
             clientId: other,
@@ -34,6 +38,7 @@ export default function BusinessMessagesPage() {
 
         setConversations(list);
 
+        // 2) קבע ברירת מחדל לשיחה ראשונה
         if (list.length > 0) {
           setActiveConversationId(list[0].conversationId);
         }
@@ -45,16 +50,9 @@ export default function BusinessMessagesPage() {
       .finally(() => setIsLoading(false));
   }, [businessId]);
 
-  // 2) Loading / auth / error states
-  if (authLoading) {
-    return <div className="loading-screen">🔄 טוען הרשאה…</div>;
-  }
-  if (isLoading) {
-    return <div className="loading-screen">🔄 טוען שיחות…</div>;
-  }
-  if (error) {
-    return <div className="error-screen">{error}</div>;
-  }
+  if (authLoading) return <div className="loading-screen">🔄 טוען הרשאה…</div>;
+  if (isLoading)  return <div className="loading-screen">🔄 טוען שיחות…</div>;
+  if (error)      return <div className="error-screen">{error}</div>;
   if (!conversations.length) {
     return (
       <div className="empty-chat">
@@ -76,7 +74,7 @@ export default function BusinessMessagesPage() {
                 className={conversationId === activeConversationId ? "active" : ""}
                 onClick={() => setActiveConversationId(conversationId)}
               >
-                {clientId /* כאן אפשר להחליף לשם הלקוח אם ה־API מחזיר name */}
+                {clientId}
               </button>
             </li>
           ))}
