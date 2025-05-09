@@ -6,7 +6,6 @@ import "./BusinessMessagesPage.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
-  // במשתמש ה-JWT יש user.userId, לא id או _id
   const businessUserId = user?.userId;
   const businessProfilePic = user?.profilePicUrl || "/default-business.png";
   const defaultClientPic = "/default-client.png";
@@ -16,17 +15,14 @@ export default function BusinessMessagesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Effect to load conversations
   useEffect(() => {
-    // הוספת log לבדוק אם businessUserId מוגדר כראוי
     console.log("businessUserId:", businessUserId);
 
     if (!businessUserId) return;
 
     setIsLoading(true);
-    API.get(
-      "/messages/conversations", // וודא שזו הכתובת הנכונה
-      { withCredentials: true }
-    )
+    API.get("/messages/conversations", { withCredentials: true })
       .then(({ data }) => {
         console.log("📬 raw conversations payload:", data);
 
@@ -34,9 +30,8 @@ export default function BusinessMessagesPage() {
           console.warn("⚠️ No conversations found!");
         }
 
-        // נניח ש־data זה מערך של המסמכים כפי שמגיע מ־Mongoose
+        // Map conversations
         const list = data.map(conv => {
-          // מוציאים את המזהה של השותף (שאינו העסק)
           const other = conv.participants.find(p => {
             const id =
               typeof p === "string"
@@ -51,10 +46,9 @@ export default function BusinessMessagesPage() {
 
           if (!other) {
             console.error("❌ No valid participant found in conversation:", conv);
-            return null; // מוודאים שלא נקבל ערכים חסרים
+            return null;
           }
 
-          // ממירים את other למחרוזת
           const clientId =
             typeof other === "string"
               ? other
@@ -68,36 +62,36 @@ export default function BusinessMessagesPage() {
             conversationId: conv._id.toString(),
             clientId,
           };
-        }).filter(Boolean); // מסנן ערכים ריקים
+        }).filter(Boolean);
 
         console.log("✅ mapped conversation list:", list);
         setConversations(list);
 
-        // אם יש לפחות שיחה אחת, נפעיל אותה אוטומטית
         if (list.length > 0) {
           setActiveConversationId(list[0].conversationId);
         }
       })
       .catch(err => {
-        console.error("❌ שגיאה בטעינת השיחות:", err);
-        setError("❌ לא ניתן לטעון את השיחות, נסה שוב מאוחר יותר");
+        console.error("❌ Error loading conversations:", err);
+        setError("❌ Could not load conversations, please try again later");
       })
       .finally(() => setIsLoading(false));
   }, [businessUserId]);
 
+  // Effect to log the active conversation ID
   useEffect(() => {
     console.log("📬 activeConversationId:", activeConversationId);
   }, [activeConversationId]);
 
-  if (authLoading) return <div className="loading-screen">🔄 טוען הרשאה…</div>;
-  if (isLoading) return <div className="loading-screen">🔄 טוען שיחות…</div>;
+  if (authLoading) return <div className="loading-screen">🔄 Loading auth...</div>;
+  if (isLoading) return <div className="loading-screen">🔄 Loading conversations...</div>;
   if (error) return <div className="error-screen">{error}</div>;
 
   if (!conversations.length) {
     return (
       <div className="empty-chat">
-        <h3>עדיין אין לך שיחות</h3>
-        <p>כשתקבל הודעה חדשה היא תופיע כאן.</p>
+        <h3>No conversations yet</h3>
+        <p>When you receive a new message, it will appear here.</p>
       </div>
     );
   }
@@ -105,7 +99,7 @@ export default function BusinessMessagesPage() {
   return (
     <div className="messages-page">
       <aside className="chat-sidebar">
-        <h4>שיחות מלקוחות</h4>
+        <h4>Conversations with clients</h4>
         <ul>
           {conversations.map(({ conversationId, clientId }) => (
             <li key={conversationId}>
@@ -116,8 +110,8 @@ export default function BusinessMessagesPage() {
                   setActiveConversationId(conversationId);
                 }}
               >
-                {/* כאן תוכלו להחליף את clientId לשם או אימייל על ידי fetch נוסף */}
-                לקוח: {clientId}
+                {/* Replace clientId with client name or email */}
+                Client: {clientId}
               </button>
             </li>
           ))}
