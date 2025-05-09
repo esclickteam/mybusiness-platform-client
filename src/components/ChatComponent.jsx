@@ -20,7 +20,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const socketRef = useRef(null);
 
   // 2) חכה ל־AuthContext לאיתחול לפני כל לוגיקה
-  if (!initialized) return null;
+  if (!initialized) {
+    return <div>טעינה...</div>;  // ממתינים לאיתחול
+  }
 
   const userId = user?.userId;
 
@@ -225,9 +227,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         {messages.map((m, idx) => (
           <div
             key={idx}
-            className={`chat__message ${
-              m.from === userId ? 'mine' : 'theirs'
-            }`}
+            className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
