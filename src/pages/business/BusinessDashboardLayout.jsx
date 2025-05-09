@@ -7,8 +7,7 @@ import "../../styles/BusinessDashboardLayout.css";
 const tabs = [
   { path: "dashboard", label: "📊 דשבורד" },
   { path: "build",     label: "🧱 עריכת עמוד עסקי" },
-  { path: "cart",      label: "🛒 עגלת קניות" },           // ← נוסיף כאן
-  { path: "messages",  label: "💬 הודעות מלקוחות" },
+    { path: "messages",  label: "💬 הודעות מלקוחות" },
   { path: "collab",    label: "🤝 שיתופי פעולה" },
   { path: "crm",       label: "📇 מערכת CRM" },
   { path: "esclick",   label: "🧠 יועץ עסקליק" },
