@@ -9,9 +9,12 @@ import './ConversationsList.css'; // CSS styles for sidebar
  *  - onSelect: function({ conversationId, partnerId }) callback when selecting a conversation
  */
 export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
-  const [convos, setConvos]   = useState([]);
+  const [convos, setConvos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch]   = useState('');
+  const [search, setSearch] = useState('');
+
+  // Get the current userId from localStorage or context
+  const meId = JSON.parse(localStorage.getItem('user'))?.id;
 
   useEffect(() => {
     setLoading(true);
@@ -23,10 +26,6 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
 
         // ממפים לכל פריט רק את הצד השני בשיחה
         const formatted = all.map(c => {
-          // userId שלנו (מוכנס דרך cookie/JWT)
-          const meId = /* כאן אפשר להוציא את ה־userId מה־context או מחלקיק JWT */
-            JSON.parse(localStorage.getItem('user')).id;
-
           // מוציאים את המשתתף השני
           const other = c.participants.find(p => p._id !== meId) || {};
 
@@ -34,10 +33,10 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
             conversationId: c._id,
             partnerId: other._id,
             partnerName: other.name || '---',
-            // אין כרגע lastMessage ב-endpoint הזה, נשאיר ריק
-            lastMessage: '',
-            updatedAt: '',     // אם תרצה תוכל להוסיף תאריך עדכון במסד
-            unreadCount: 0,    // תוכל להוסיף שדה בהמשך
+            // כאן אנחנו יכולים להוסיף את ההודעה האחרונה אם יש
+            lastMessage: c.messages[c.messages.length - 1]?.text || '',
+            updatedAt: c.updatedAt, // אם תרצה תוכל להוסיף תאריך עדכון במסד
+            unreadCount: 0, // תוכל להוסיף שדה בהמשך
           };
         });
 
@@ -55,8 +54,13 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
     return <div className="sidebar-spinner">טוען שיחות…</div>;
   }
 
+  if (!convos.length) {
+    return <div className="empty-chat">אין שיחות כרגע</div>;
+  }
+
   const filtered = convos.filter(c =>
-    c.partnerName.toLowerCase().includes(search.toLowerCase())
+    c.partnerName.toLowerCase().includes(search.toLowerCase()) ||
+    c.lastMessage.toLowerCase().includes(search.toLowerCase()) // חיפוש גם בהודעה האחרונה
   );
 
   return (

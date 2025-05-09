@@ -34,7 +34,8 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   // 5) טעינת או יצירת שיחה
   useEffect(() => {
     if (!userId || !partnerId) return;
-    (async () => {
+
+    const fetchConversation = async () => {
       try {
         console.log('⏩ Fetching convos for userId:', userId);
         const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
@@ -65,7 +66,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         setConversationId(null);
         setMessages([]);
       }
-    })();
+    };
+
+    fetchConversation();
   }, [partnerId, userId]);
 
   // 6) Socket.IO + join room
