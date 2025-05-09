@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
-  // 1) כל ה-Hooks קורים קודם:
   const { user, initialized } = useAuth();
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -19,16 +18,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
-  // 2) הגדרת userId
   const userId = user?.userId;
 
-  // 3) דיוג ראשון של user
   useEffect(() => {
     console.log('🔍 Authenticated user:', user);
     console.log('🔍 Using userId:', userId);
   }, [user, userId]);
 
-  // 4) טעינת או יצירת שיחה
+  // Load or create conversation
   useEffect(() => {
     if (!userId || !partnerId) return;
     (async () => {
@@ -59,7 +56,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     })();
   }, [partnerId, userId]);
 
-  // 5) Socket.IO + join room
+  // Socket.IO + join room
   useEffect(() => {
     if (!conversationId) return;
     console.log(`⏩ connecting socket for room ${conversationId}`);
@@ -89,20 +86,19 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     };
   }, [conversationId]);
 
-  // 6) Auto-scroll
+  // Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [messages, typingUsers]);
+  }, [messages]);
 
-  // 7) Early-return אחרי שהגדרנו את כל ה-Hooks:
+  // Early-return after initializing
   if (!initialized) {
-    // אפשר להחליף ב־<div>טוען...</div> או spinner
     return null;
   }
 
-  // 8) Typing emitter
+  // Typing emitter
   const handleTyping = e => {
     setMessage(e.target.value);
     if (!socketRef.current || !conversationId) return;
@@ -113,7 +109,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // 9) Send message (optimistic + API)
+  // Send message (optimistic + API)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -166,7 +162,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   };
   const handleFile = e => setFile(e.target.files[0] || null);
 
-  // 10) Render typing indicator
+  // Render typing indicator
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
@@ -176,7 +172,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
-  // 11) הסריאליזציה של ה-JSX
   return (
     <div className="chat">
       <header className="chat__header">צ'אט</header>
