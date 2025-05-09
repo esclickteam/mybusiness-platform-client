@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const SOCKET_URL = 'https://api.esclick.co.il';
 
 export default function ChatComponent({ partnerId, isBusiness = false }) {
-  // 1) כל ה-Hooks קורים קודם:
+  // 1) Hooks תמיד קודם לכל תנאי early-return
   const { user, initialized } = useAuth();
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -19,26 +19,29 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
-  // 2) הגדרת userId
-  const userId = user?.id;  // authMiddleware שם את ה-id
-
-  // 3) Early-return אחרי שהגדרנו את כל ה-Hooks:
+  // 2) חכה ל־AuthContext לאיתחול לפני כל לוגיקה
   if (!initialized) return null;
 
-  // 4) דיוג ראשון של user
+  const userId = user?.userId;
+
+  // 3) לוג לדיבוג
   useEffect(() => {
     console.log('🔍 Authenticated user:', user);
     console.log('🔍 Using userId:', userId);
   }, [user, userId]);
 
-  // 5) טעינת או יצירת שיחה
+  // 4) Load or create conversation
   useEffect(() => {
     if (!userId || !partnerId) return;
+
     (async () => {
       try {
-        console.log('⏩ Fetching convos for userId:', userId);
-        const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
-        console.log('⏩ convos:', convos);
+        console.log('⏩ Fetching conversations for userId:', userId);
+        const { data: convos } = await API.get(
+          '/messages/conversations',
+          { withCredentials: true }
+        );
+        console.log('⏩ Conversations fetched:', convos);
 
         const convo = convos.find(c =>
           c.participants.some(p => p.toString() === partnerId)
@@ -47,32 +50,32 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         if (convo) {
           const convId = convo._id.toString();
           setConversationId(convId);
-          console.log('⏩ using existing conversationId:', convId);
+          console.log('⏩ Using existing conversationId:', convId);
 
           const { data: msgs } = await API.get(
             `/messages/${convId}/messages`,
             { withCredentials: true }
           );
-          console.log('⏩ loaded messages:', msgs);
+          console.log('⏩ Messages loaded:', msgs);
           setMessages(msgs);
         } else {
-          console.log('⏩ no convo found, will create on send');
+          console.log('⏩ No conversation found; will create one on send.');
           setConversationId(null);
           setMessages([]);
         }
       } catch (err) {
-        console.error('❌ error loading conversation:', err);
+        console.error('❌ Error loading conversation:', err);
         setConversationId(null);
         setMessages([]);
       }
     })();
   }, [partnerId, userId]);
 
-  // 6) Socket.IO + join room
+  // 5) Socket.IO setup & join room
   useEffect(() => {
     if (!conversationId) return;
 
-    console.log(`⏩ connecting socket for room ${conversationId}`);
+    console.log(`⏩ Connecting socket for room ${conversationId}`);
     const socket = io(SOCKET_URL, {
       withCredentials: true,
       auth: { token: localStorage.getItem('token') },
@@ -80,48 +83,57 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     socketRef.current = socket;
 
     socket.emit('joinRoom', conversationId);
-    console.log(`⏩ emitted joinRoom: ${conversationId}`);
+    console.log(`⏩ Emitted joinRoom: ${conversationId}`);
 
     socket.on('newMessage', msg => {
-      console.log('🔔 newMessage:', msg);
+      console.log('🔔 Received newMessage via socket:', msg);
       setMessages(prev => [...prev, msg]);
     });
+
     socket.on('typing', ({ from }) => {
-      console.log('🔔 typing from:', from);
+      console.log('🔔 Received typing from:', from);
       setTypingUsers(prev => Array.from(new Set([...prev, from])));
     });
+
     socket.on('stopTyping', ({ from }) => {
-      console.log('🔔 stopTyping from:', from);
+      console.log('🔔 Received stopTyping from:', from);
       setTypingUsers(prev => prev.filter(id => id !== from));
     });
 
     return () => {
-      console.log('⏩ disconnecting socket');
+      console.log('⏩ Disconnecting socket');
       socket.disconnect();
       socketRef.current = null;
     };
   }, [conversationId]);
 
-  // 7) Auto-scroll
+  // 6) Auto-scroll to bottom on new messages or typing indicator
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, typingUsers]);
 
-  // 8) Typing emitter
+  // 7) Typing indicator emitter
   const handleTyping = e => {
     setMessage(e.target.value);
     if (!socketRef.current || !conversationId) return;
 
-    socketRef.current.emit('typing', { conversationId, from: userId });
+    socketRef.current.emit('typing', {
+      conversationId,
+      from: userId,
+    });
+
     clearTimeout(handleTyping.timeout);
     handleTyping.timeout = setTimeout(() => {
-      socketRef.current.emit('stopTyping', { conversationId, from: userId });
+      socketRef.current.emit('stopTyping', {
+        conversationId,
+        from: userId,
+      });
     }, 800);
   };
 
-  // 9) Send message (optimistic + API)
+  // 8) Send message (optimistic + API)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -143,7 +155,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     try {
       let convId = conversationId;
       if (!convId) {
-        console.log('⏩ creating convo with otherId:', partnerId);
+        console.log('⏩ Creating new conversation with otherId:', partnerId);
         const { data } = await API.post(
           '/messages',
           { otherId: partnerId },
@@ -151,10 +163,15 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         );
         convId = data.conversationId.toString().trim();
         setConversationId(convId);
-        console.log('⏩ created convoId:', convId);
+        console.log('⏩ Created conversationId:', convId);
       }
 
-      console.log('⏩ posting message to', convId, 'userId:', userId);
+      console.log(
+        '⏩ Posting message to conversation',
+        convId,
+        'from user',
+        userId
+      );
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
@@ -168,11 +185,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         }
       );
       console.log('⏩ API saved message:', saved);
+
       setMessages(prev =>
-        prev.map(m => (m.id === tempId ? { ...saved, delivered: true } : m))
+        prev.map(m =>
+          m.id === tempId ? { ...saved, delivered: true } : m
+        )
       );
     } catch (err) {
-      console.error('❌ error sending message:', err);
+      console.error('❌ Error sending message:', err);
     } finally {
       setIsSending(false);
       setMessage('');
@@ -185,17 +205,19 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   };
   const handleFile = e => setFile(e.target.files[0] || null);
 
-  // 10) Render typing indicator
+  // 9) Render typing indicator below messages
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
     const names = others
-      .map(id => (id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'משתמש'))
+      .map(id =>
+        id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'משתמש'
+      )
       .join(', ');
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
-  // 11) הסריאליזציה של ה-JSX
+  // 10) JSX render
   return (
     <div className="chat">
       <header className="chat__header">צ'אט</header>
