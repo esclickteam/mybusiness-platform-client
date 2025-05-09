@@ -22,7 +22,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   // 2) הגדרת userId
   const userId = user?.id;  // authMiddleware שם את ה-id
 
-  // 3) Early-return אחרי שהגדרנו את כל ה-Hooks:
+  // 3) Early-return אחרי שהגדרנו את כל ה-Hooks
   if (!initialized) return null;
 
   // 4) דיוג ראשון של user
@@ -195,7 +195,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
-  // 11) הסריאליזציה של ה-JSX
   return (
     <div className="chat">
       <header className="chat__header">צ'אט</header>
@@ -203,20 +202,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         {messages.map((m, idx) => (
           <div
             key={idx}
-            className={`chat__message ${
-              m.from === userId ? 'mine' : 'theirs'
-            }`}
+            className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
               {m.fileUrl && (
                 <div className="chat__attachment">
                   {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                    <img
-                      src={m.fileUrl}
-                      alt={m.fileName}
-                      className="chat__img"
-                    />
+                    <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
                   ) : (
                     <a
                       href={m.fileUrl}
@@ -244,10 +237,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         {renderTyping()}
       </div>
       <form className="chat__input" onSubmit={sendMessage}>
-        <button
-          type="submit"
-          disabled={isSending || (!message.trim() && !file)}
-        >
+        <button type="submit" disabled={isSending || (!message.trim() && !file)}>
           <FiSend size={20} />
         </button>
         <input
