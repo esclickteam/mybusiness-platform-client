@@ -130,10 +130,12 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     e?.preventDefault();
     const text = message.trim();
     if (!text && !file) return;
-
+  
+    console.log('⏩ Sending message with businessName:', businessName);
+  
     setIsSending(true);
     const tempId = Date.now().toString();
-
+  
     // יצירת הודעה אופטימית
     const optimisticMsg = { 
       id: tempId, 
@@ -143,23 +145,24 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       fileName: file?.name,
       timestamp: new Date().toISOString(), 
       delivered: false, 
-      businessName: businessName // ודא שאתה שולח את שם העסק
+      businessName: businessName || 'שם העסק לא זמין' // הגדרת ברירת מחדל אם שם העסק ריק
     };
     setMessages(prev => [...prev, optimisticMsg]);
-
+  
     try {
       let convId = conversationId;
       if (!convId) {
         console.log('⏩ creating convo with otherId:', partnerId);
         const { data } = await API.post(
-          '/messages', { otherId: partnerId, businessName }, // העברת businessName
+          '/messages', 
+          { otherId: partnerId, businessName: businessName || 'שם העסק לא זמין' }, // העברת businessName
           { withCredentials: true }
         );
         convId = data.conversationId.toString().trim();
         setConversationId(convId);
         console.log('⏩ created convId:', convId);
       }
-
+  
       console.log('⏩ posting message to', convId, 'userId:', userId);
       const form = new FormData();
       if (file) form.append('fileData', file);
@@ -175,7 +178,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         }
       );
       console.log('⏩ API saved message:', saved);
-
+  
       // עדכון ההודעות לאחר שההודעה נשמרה בהצלחה
       setMessages(prev => prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m));
     } catch (err) {
@@ -186,6 +189,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       setFile(null);  // נקה את הקובץ
     }
   };
+  
 
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
