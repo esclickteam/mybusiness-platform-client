@@ -25,6 +25,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const createConversation = async (partnerId, businessName) => {
     try {
       // שלח בקשה ליצירת שיחה
+      console.log('⏩ Creating conversation with partnerId:', partnerId, 'businessName:', businessName);
       const response = await API.post('/messages', {
         otherId: partnerId,  // שותף לשיחה
         businessName: businessName // שם העסק
@@ -58,7 +59,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           setMessages(msgs);
 
           if (isBusiness && convo.businessName) {
-            console.log('⏩ businessName:', convo.businessName);
+            console.log('⏩ businessName found:', convo.businessName);
             setBusinessName(convo.businessName);
           } else {
             setBusinessName(convo.businessName || 'שם העסק לא זמין');
