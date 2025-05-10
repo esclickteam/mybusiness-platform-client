@@ -478,6 +478,7 @@ const handleDeleteMainImage = async publicId => {
   
   
   
+  
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
