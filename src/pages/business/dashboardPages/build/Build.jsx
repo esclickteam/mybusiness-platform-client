@@ -138,6 +138,8 @@ useEffect(() => {
 
   // ===== INPUT CHANGE (supports nested fields) =====
   const handleInputChange = ({ target: { name, value } }) => {
+    console.log("Changing:", name, "to", value);  // הדפסת המידע לפני העדכון
+  
     if (name === "businessName") {
       setBusinessDetails(prev => ({
         ...prev,
@@ -159,6 +161,7 @@ useEffect(() => {
       }));
     }
   };
+  
   
   
   
