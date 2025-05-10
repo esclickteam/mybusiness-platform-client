@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from "../../api"; // ודא שהנתיב מדויק: src/api.js
+import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import "./BusinessProfileView.css";
 
-// הגדרת הטאבים
 const TABS = [
   "ראשי",
   "גלריה",
@@ -27,40 +26,34 @@ export default function BusinessProfileView() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // טעינת פרטי העסק
+  // טעינת פרטי העסק - שימוש ב-localStorage
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/business/${businessId}`);
-        const businessData = res.data.business || res.data;
-        setData(businessData); // שמירה בסטייט של כל הנתונים
-      } catch (err) {
-        console.error(err);
-        setError("שגיאה בטעינת העסק");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [businessId]);
-
-  // טעינת הנתונים מ-localStorage אם קיימים
-  useEffect(() => {
+    // לבדוק אם יש נתונים ב-localStorage
     const savedBusinessDetails = localStorage.getItem('businessDetails');
     if (savedBusinessDetails) {
-      const savedData = JSON.parse(savedBusinessDetails);
-      setData(savedData); // עדכון הסטייט עם המידע ששמור ב-localStorage
+      // אם יש, להמיר את המידע שנשמר לאובייקט ולהגיב לו
+      setData(JSON.parse(savedBusinessDetails));
+    } else {
+      // אם אין, לטעון מהשרת
+      (async () => {
+        setLoading(true);
+        try {
+          const res = await api.get(`/business/${businessId}`);
+          const businessData = res.data.business || res.data;
+          setData(businessData); // שמירה בסטייט של כל הנתונים
+          
+          // שמירה ב-localStorage לאחר שהנתונים טוענו מהשרת
+          localStorage.setItem('businessDetails', JSON.stringify(businessData));
+        } catch (err) {
+          console.error(err);
+          setError("שגיאה בטעינת העסק");
+        } finally {
+          setLoading(false);
+        }
+      })();
     }
-  }, []);
+  }, [businessId]);
 
-  // לאחר טעינת הנתונים, נעדכן גם את ה-localStorage
-  useEffect(() => {
-    if (data) {
-      localStorage.setItem('businessDetails', JSON.stringify(data)); // שמירה של כל הנתונים
-    }
-  }, [data]);
-
-  // תנאים מוקדמים
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
   if (!data) return <div className="error">העסק לא נמצא</div>;
@@ -74,12 +67,9 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    address = {}, // הוספת address במידה והם לא נמצאים בתוך city
+    city = ""
   } = data;
 
-  const { city } = address; // חילוץ העיר מתוך address
-
-  // חישוב דירוג ממוצע באופן סינכרוני
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg = Math.round(avgRating * 10) / 10;
@@ -90,14 +80,12 @@ export default function BusinessProfileView() {
   const isOwner = user?.role === "business" && user.businessId === businessId;
   const canDelete = ["admin", "manager"].includes(user?.role);
 
-  // בדיקה אם כבר הגיש ביקורת
   const hasReviewed = user
     ? reviews.some(r =>
         r.user?._id === user._id || r.user?.id === user._id
       )
     : false;
 
-  // Handlers
   const handleReviewClick = () => setShowReviewModal(true);
   const closeReviewModal = () => setShowReviewModal(false);
   const handleChatClick = () => navigate(`/business/${businessId}/chat`);
@@ -107,7 +95,6 @@ export default function BusinessProfileView() {
     setIsSubmitting(true);
     try {
       await api.post(`/business/${businessId}/reviews`, newReview);
-      // רענון הנתונים
       const res = await api.get(`/business/${businessId}`);
       setData(res.data.business || res.data);
       closeReviewModal();
@@ -157,7 +144,7 @@ export default function BusinessProfileView() {
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
             {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>} {/* הצגת העיר */}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
@@ -284,6 +271,7 @@ export default function BusinessProfileView() {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>

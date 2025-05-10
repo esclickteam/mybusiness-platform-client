@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from "../../api"; // ודא שהנתיב מדויק: src/api.js
+import api from "../../api";           // ודא שהנתיב מדויק: src/api.js
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import "./BusinessProfileView.css";
@@ -74,10 +74,8 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    address = {}, // הוספת address במידה והם לא נמצאים בתוך city
+    city = "",
   } = data;
-
-  const { city } = address; // חילוץ העיר מתוך address
 
   // חישוב דירוג ממוצע באופן סינכרוני
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
@@ -157,7 +155,7 @@ export default function BusinessProfileView() {
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
             {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>} {/* הצגת העיר */}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">

@@ -44,19 +44,10 @@ export default function BusinessProfileView() {
     })();
   }, [businessId]);
 
-  // טעינת הנתונים מ-localStorage אם קיימים
-  useEffect(() => {
-    const savedBusinessDetails = localStorage.getItem('businessDetails');
-    if (savedBusinessDetails) {
-      const savedData = JSON.parse(savedBusinessDetails);
-      setData(savedData); // עדכון הסטייט עם המידע ששמור ב-localStorage
-    }
-  }, []);
-
   // לאחר טעינת הנתונים, נעדכן גם את ה-localStorage
   useEffect(() => {
     if (data) {
-      localStorage.setItem('businessDetails', JSON.stringify(data)); // שמירה של כל הנתונים
+      localStorage.setItem('businessDetails', JSON.stringify(data));
     }
   }, [data]);
 
@@ -74,10 +65,8 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    address = {}, // הוספת address במידה והם לא נמצאים בתוך city
+    city = "",
   } = data;
-
-  const { city } = address; // חילוץ העיר מתוך address
 
   // חישוב דירוג ממוצע באופן סינכרוני
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
@@ -157,7 +146,7 @@ export default function BusinessProfileView() {
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
             {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>} {/* הצגת העיר */}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">

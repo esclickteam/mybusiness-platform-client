@@ -132,16 +132,8 @@ useEffect(() => {
     .catch(console.error);
 }, []);
 
-  useEffect(() => {
-  // לאחר טעינת הנתונים, נעדכן גם את ה-localStorage
-  if (data) {
-    localStorage.setItem('businessDetails', JSON.stringify(data)); // שמירה של כל הנתונים כולל העיר
-  }
-}, [data]);
-
+  
          
-
-
 
   // ===== INPUT CHANGE (supports nested fields) =====
 const handleInputChange = ({ target: { name, value } }) => {
@@ -478,7 +470,6 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
-
 
       
   // ===== TOP BAR =====
