@@ -139,10 +139,10 @@ useEffect(() => {
   // ===== INPUT CHANGE (supports nested fields) =====
   const handleInputChange = ({ target: { name, value } }) => {
     if (name === "businessName") {
-      setBusinessDetails(prev => {
-        console.log("Updated businessName:", value); // מדפיס את הערך החדש
-        return { ...prev, businessName: value };
-      });
+      setBusinessDetails(prev => ({
+        ...prev,
+        businessName: value // עדכון שם העסק מיידית
+      }));
     } else if (name.includes('.')) {
       const [parent, child] = name.split('.');
       setBusinessDetails(prev => ({
@@ -159,6 +159,7 @@ useEffect(() => {
       }));
     }
   };
+  
   
   
   
@@ -437,10 +438,8 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(true);  // הגדרת מצב שמירה
   
     try {
-      // מחכים שכל ההעלאות בתור יסתיימו (אם יש כאלו)
       await Promise.all(pendingUploadsRef.current);
   
-      // שולחים את כל השדות, כולל שם העסק
       const res = await API.patch("/business/my", {
         businessName: businessDetails.businessName,  // שם העסק
         category: businessDetails.category,
@@ -452,9 +451,6 @@ const handleDeleteMainImage = async publicId => {
         }
       });
   
-      // בדוק אם ה-API מחזיר את המידע המעודכן
-      console.log("API Response:", res.data);  // הדפסת התשובה מה-API
-  
       if (res.status === 200) {
         // עדכון ה-state אחרי שמירת המידע
         setBusinessDetails(prev => ({
@@ -463,9 +459,7 @@ const handleDeleteMainImage = async publicId => {
         }));
   
         alert("✅ נשמר בהצלחה!");
-        setShowViewProfile(true);  // הצגת פרופיל לאחר שמירה
       }
-  
     } catch (err) {
       console.error("❌ שגיאה בשמירה:", err);
       alert("❌ שמירה נכשלה");
@@ -473,6 +467,7 @@ const handleDeleteMainImage = async publicId => {
       setIsSaving(false);  // שחרור מצב שמירה
     }
   };
+  
   
   
   
