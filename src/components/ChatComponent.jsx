@@ -15,13 +15,12 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const [file, setFile] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
-  const [businessName, setBusinessName] = useState('');  // כאן נשמור את שם העסק
+  const [businessName, setBusinessName] = useState('');
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
   const userId = user?.userId;
 
-  // Load or create conversation
   useEffect(() => {
     if (!userId || !partnerId) return;
     (async () => {
@@ -40,10 +39,11 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           console.log('⏩ loaded messages:', msgs);
           setMessages(msgs);
 
-          // שליפת שם העסק אם מדובר בצ'אט עסקי
           if (isBusiness && convo.businessName) {
-            console.log('⏩ businessName:', convo.businessName); // הדפסה לוודא שהשם נשלף
-            setBusinessName(convo.businessName);  // עדכון שם העסק
+            console.log('⏩ businessName:', convo.businessName);
+            setBusinessName(convo.businessName);
+          } else {
+            setBusinessName(convo.businessName || 'שם העסק לא זמין');
           }
         } else {
           console.log('⏩ no convo found, will create on send');
@@ -58,7 +58,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     })();
   }, [partnerId, userId, isBusiness]);
 
-  // Socket.IO + join room
   useEffect(() => {
     if (!conversationId) return;
     console.log(`⏩ connecting socket for room ${conversationId}`);
@@ -88,19 +87,16 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     };
   }, [conversationId]);
 
-  // Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // Early-return after initializing
   if (!initialized) {
     return null;
   }
 
-  // Typing emitter
   const handleTyping = e => {
     setMessage(e.target.value);
     if (!socketRef.current || !conversationId) return;
@@ -111,7 +107,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // Send message (optimistic + API)
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
@@ -159,12 +154,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }
   };
 
-  const onKeyDown = e => {
-    if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
-  };
-  const handleFile = e => setFile(e.target.files[0] || null);
-
-  // Render typing indicator
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
@@ -233,11 +222,11 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           placeholder="כתוב הודעה..."
           value={message}
           onChange={handleTyping}
-          onKeyDown={onKeyDown}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(e); }}
         />
         <label className="chat__attach">
           <FiPaperclip size={20} />
-          <input type="file" onChange={handleFile} />
+          <input type="file" onChange={e => setFile(e.target.files[0] || null)} />
         </label>
       </form>
     </div>
