@@ -32,6 +32,7 @@ export default function Build() {
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
     name:            "",
+    businessName:    "", // הוספנו את שם העסק
     description:     "",
     phone:           "",
     category:        "",
@@ -44,6 +45,7 @@ export default function Build() {
     reviews:         [],
     faqs:            [],
   });
+  
 
   
 
@@ -225,7 +227,7 @@ const handleLogoChange = e => {
   
     try {
       // 3) שליחה ל־שרת
-      const res = await API.put("/api/business/my/main-images", fd);
+      const res = await API.put("/business/my/main-images", fd);
   
       if (res.status === 200) {
         // 4) חילוץ URL-ים ו־publicIds מה-response
@@ -268,7 +270,7 @@ const handleDeleteMainImage = async publicId => {
   try {
     // encodeURIComponent ימיר "/" ל־"%2F" כך שניתן לשלוח ל־path פרמטר עם תת־תיקיה
     const encodedId = encodeURIComponent(publicId);
-    const res = await API.delete(`/api/business/my/main-images/${encodedId}`);
+    const res = await API.delete(`/business/my/main-images/${encodedId}`);
 
     console.log("🟢 DELETE status:", res.status);
     if (res.status === 204) {
@@ -343,7 +345,7 @@ const handleDeleteMainImage = async publicId => {
   
     try {
       // 3) שליחה לשרת
-      const res = await API.put("/api/business/my/gallery", fd, {
+      const res = await API.put("/business/my/gallery", fd, {
         headers: { "Content-Type": "multipart/form-data" }
       });
   
@@ -383,7 +385,7 @@ const handleDeleteMainImage = async publicId => {
     console.log("🔴 Deleting gallery publicId:", publicId);
   
     try {
-      const res = await API.delete(`/api/business/my/gallery/${encodeURIComponent(publicId)}`);
+      const res = await API.delete(`/business/my/gallery/${encodeURIComponent(publicId)}`);
 
 
         console.log("🟢 DELETE status:", res.status);
@@ -432,9 +434,9 @@ const handleDeleteMainImage = async publicId => {
       await Promise.all(pendingUploadsRef.current);
   
       // שולחים את השדות הנתמכים כולל address עם עיר
-      await API.patch("/api/business/my", {
-
+      await API.patch("/business/my", {
         name:        businessDetails.name,
+        businessName: businessDetails.businessName, // הוספנו את שם העסק
         category:    businessDetails.category,
         description: businessDetails.description,
         phone:       businessDetails.phone,
@@ -482,7 +484,7 @@ const handleDeleteMainImage = async publicId => {
   
         {/* שם העסק + דירוג */}
         <div className="name-rating">
-          <h2>{businessDetails.name || "שם העסק"}</h2>
+          <h2>{businessDetails.businessName || "שם העסק"}</h2> {/* הצגת שם העסק */}
           <div className="rating-badge">
             <span className="star">★</span>
             <span>{avg.toFixed(1)} / 5</span>
@@ -498,20 +500,20 @@ const handleDeleteMainImage = async publicId => {
   
         {/* תיאור וטלפון מתחת לשם */}
         {businessDetails.description && (
-  <p className="preview-description">
-    <strong>תיאור:</strong> {businessDetails.description}
-  </p>
-)}
-{businessDetails.phone && (
-  <p className="preview-phone">
-    <strong>טלפון:</strong> {businessDetails.phone}
-  </p>
-)}
-{businessDetails.address.city && (
-  <p className="preview-city">
-    <strong>עיר:</strong> {businessDetails.address.city}
-  </p>
-)}
+          <p className="preview-description">
+            <strong>תיאור:</strong> {businessDetails.description}
+          </p>
+        )}
+        {businessDetails.phone && (
+          <p className="preview-phone">
+            <strong>טלפון:</strong> {businessDetails.phone}
+          </p>
+        )}
+        {businessDetails.address.city && (
+          <p className="preview-city">
+            <strong>עיר:</strong> {businessDetails.address.city}
+          </p>
+        )}
 
 
 <hr className="divider" />
