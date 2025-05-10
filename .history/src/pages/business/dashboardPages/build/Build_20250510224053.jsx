@@ -141,22 +141,21 @@ useEffect(() => {
   // ===== INPUT CHANGE (supports nested fields) =====
 const handleInputChange = ({ target: { name, value } }) => {
   if (name.includes('.')) {
-    const [parent, child] = name.split('.'); // פיצול השם למרכיבים
+    const [parent, child] = name.split('.');
     setBusinessDetails(prev => ({
       ...prev,
       [parent]: {
         ...prev[parent],
-        [child]: value  // עדכון השדה המקונן
+        [child]: value
       }
     }));
   } else {
     setBusinessDetails(prev => ({
       ...prev,
-      [name]: value  // עדכון שדה רגיל
+      [name]: value
     }));
   }
 };
-
 
 // ===== LOGO UPLOAD =====
 const handleLogoClick = () => {
