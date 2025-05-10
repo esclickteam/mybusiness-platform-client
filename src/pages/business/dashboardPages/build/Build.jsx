@@ -138,11 +138,11 @@ useEffect(() => {
   // ===== INPUT CHANGE (supports nested fields) =====
   const handleInputChange = ({ target: { name, value } }) => {
     if (name === "businessName") {
-      // עדכון ישיר של שם העסק במצב (state)
-      setBusinessDetails(prev => ({
-        ...prev,
-        businessName: value
-      }));
+      setBusinessDetails(prev => {
+        const updatedDetails = { ...prev, businessName: value };
+        console.log(updatedDetails); // בדוק אם ה-state מעודכן כראוי
+        return updatedDetails;
+      });
     } else if (name.includes('.')) {
       const [parent, child] = name.split('.');
       setBusinessDetails(prev => ({
@@ -159,6 +159,7 @@ useEffect(() => {
       }));
     }
   };
+  
   
 
 // ===== LOGO UPLOAD =====
@@ -475,9 +476,15 @@ const handleDeleteMainImage = async publicId => {
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
+    // חישוב דירוג ממוצע
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
       : 0;
+  
+    // הוספת useEffect לעדכון שם העסק
+    useEffect(() => {
+      console.log("Business Name Updated:", businessDetails.businessName);
+    }, [businessDetails.businessName]);  // הגיב לשינוי ב-businessName
   
     return (
       <div className="topbar-preview">
