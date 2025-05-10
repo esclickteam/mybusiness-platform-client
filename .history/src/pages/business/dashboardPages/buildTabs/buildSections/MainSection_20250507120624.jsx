@@ -63,8 +63,8 @@ export default function MainSection({
         </label>
         <input
           type="text"
-          name="businessName"  
-          value={businessDetails.businessName || ""}  
+          name="name"
+          value={businessDetails.name || ""}
           onChange={handleInputChange}
           placeholder="הכנס שם העסק"
           required
@@ -123,7 +123,9 @@ export default function MainSection({
         </label>
         <Select
           options={cityOptions}
-          value={cityOptions.find(o => o.value === businessDetails.address?.city) || null}
+          value={
+            cityOptions.find(o => o.value === businessDetails.address?.city) || null
+          }
           onChange={option =>
             handleInputChange({
               target: { name: "address.city", value: option ? option.value : "" }

@@ -64,7 +64,7 @@ export default function MainSection({
         <input
           type="text"
           name="businessName"  
-          value={businessDetails.businessName || ""}  
+          value={businessDetails.businessName || ""}  {/* שדה חדש */}
           onChange={handleInputChange}
           placeholder="הכנס שם העסק"
           required

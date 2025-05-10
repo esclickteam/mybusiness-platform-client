@@ -433,6 +433,7 @@ const handleDeleteMainImage = async publicId => {
   const handleSave = async () => {
   setIsSaving(true);
   try {
+    // שולחים את businessName לעדכון
     const res = await API.patch("/business/my", {
       businessName: businessDetails.businessName, // שלח את שם העסק
       category: businessDetails.category,
@@ -445,6 +446,7 @@ const handleDeleteMainImage = async publicId => {
     });
 
     if (res.status === 200) {
+      // עדכון ה-state אחרי שמירת המידע
       setBusinessDetails(prev => ({
         ...prev,
         businessName: res.data.businessName || prev.businessName, // עדכון שם העסק
@@ -459,7 +461,6 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
-
       
 
   // ===== TOP BAR =====
