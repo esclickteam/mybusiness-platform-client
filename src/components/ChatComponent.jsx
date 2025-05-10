@@ -116,7 +116,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     const tempId = Date.now().toString();
     const optimisticMsg = { id: tempId, from: userId, to: partnerId,
       text, fileName: file?.name,
-      timestamp: new Date().toISOString(), delivered: false };
+      timestamp: new Date().toISOString(), delivered: false, businessName: businessName };  // שלח את businessName
     setMessages(prev => [...prev, optimisticMsg]);
 
     try {
@@ -124,7 +124,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       if (!convId) {
         console.log('⏩ creating convo with otherId:', partnerId);
         const { data } = await API.post(
-          '/messages', { otherId: partnerId },
+          '/messages', { otherId: partnerId, businessName }, // העברת businessName
           { withCredentials: true }
         );
         convId = data.conversationId.toString().trim();
