@@ -24,7 +24,7 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
         }
       ]);
     } else {
-      fetch("/api/collab-requests/received")
+      fetch("/collab-requests/received")
         .then((res) => res.json())
         .then(setReceivedRequests)
         .catch(console.error);

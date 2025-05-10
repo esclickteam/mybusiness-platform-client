@@ -41,7 +41,7 @@ function AdminUsers() {
   const handleDelete = async (id) => {
     if (!window.confirm("❗ פעולה בלתי הפיכה\nהאם למחוק את המשתמש?")) return;
     try {
-      await API.delete(`/api/admin/users/${id}`);
+      await API.delete(`/admin/users/${id}`);
 
       setUsers((prev) => prev.filter((u) => u._id !== id));
       alert("✅ המשתמש נמחק בהצלחה");
@@ -55,7 +55,7 @@ function AdminUsers() {
   const handleStatusToggle = async (id, currentStatus) => {
     const newStatus = currentStatus === "active" ? "blocked" : "active";
     try {
-      await API.put(`/api/admin/users/${id}`, { status: newStatus });
+      await API.put(`/admin/users/${id}`, { status: newStatus });
 
       setUsers((prev) =>
         prev.map((u) =>

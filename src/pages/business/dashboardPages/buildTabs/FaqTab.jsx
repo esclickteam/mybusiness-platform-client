@@ -33,7 +33,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
         answer: answer || "",
       }));
       console.log("📤 cleanFaqs לשמירה:", cleanFaqs); // בדיקה
-      await API.put("/api/business/my", { faqs: cleanFaqs });
+      await API.put("/business/my", { faqs: cleanFaqs });
       alert("✅ כל השאלות נשמרו!");
     } catch (err) {
       console.error("❌ שגיאה בשמירה:", err);

@@ -17,7 +17,7 @@ export default function GalleryUploader({ onUploaded }) {
     files.forEach(file => formData.append("gallery", file));
 
     try {
-      const res = await axios.put("/api/business/my/gallery", formData, {
+      const res = await axios.put("/business/my/gallery", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       onUploaded(res.data.gallery); // מערך של URLs

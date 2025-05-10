@@ -17,7 +17,7 @@ export default function LogoUploader({ onUploaded }) {
     formData.append("logo", file);
 
     try {
-      const res = await axios.put("/api/business/my/logo", formData, {
+      const res = await axios.put("/business/my/logo", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       onUploaded(res.data.logo);

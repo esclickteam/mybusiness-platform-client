@@ -116,7 +116,7 @@ const BusinessCollabChat = () => {
     setCollabMessages((prev) => [...prev, { ...newMsg, from: "me", pending: true }]);
 
     try {
-      await axios.post("/api/chat/send", newMsg); // לא חובה
+      await axios.post("/chat/send", newMsg); // לא חובה
       setCollabMessages((prev) =>
         prev.map((msg, i) =>
           i === prev.length - 1 ? { ...msg, pending: false } : msg

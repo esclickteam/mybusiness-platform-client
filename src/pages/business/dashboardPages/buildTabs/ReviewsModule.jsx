@@ -157,7 +157,7 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId }) => 
       try {
         if (currentUser && businessId) {
           const res = await axios.get(
-            `/api/reviews/can-review?businessId=${businessId}`
+            `/reviews/can-review?businessId=${businessId}`
           );
           setCanReview(res.data.canReview);
         }

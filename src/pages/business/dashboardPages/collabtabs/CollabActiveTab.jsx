@@ -22,7 +22,7 @@ export default function CollabActiveTab({ isDevUser }) {
         }
       ]);
     } else {
-      fetch("/api/collab-requests/active")
+      fetch("/collab-requests/active")
         .then((res) => res.json())
         .then(setActiveCollabs)
         .catch(console.error);
