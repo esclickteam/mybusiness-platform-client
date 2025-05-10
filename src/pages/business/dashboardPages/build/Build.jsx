@@ -133,30 +133,33 @@ useEffect(() => {
 }, []);
 
   
-  
-  
-  
-  
-  
+         
 
   // ===== INPUT CHANGE (supports nested fields) =====
-const handleInputChange = ({ target: { name, value } }) => {
-  if (name.includes('.')) {
-    const [parent, child] = name.split('.');
-    setBusinessDetails(prev => ({
-      ...prev,
-      [parent]: {
-        ...prev[parent],
-        [child]: value
-      }
-    }));
-  } else {
-    setBusinessDetails(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  }
-};
+  const handleInputChange = ({ target: { name, value } }) => {
+    if (name === "businessName") {
+      // עדכון ישיר של שם העסק במצב (state)
+      setBusinessDetails(prev => ({
+        ...prev,
+        businessName: value
+      }));
+    } else if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setBusinessDetails(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setBusinessDetails(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+  
 
 // ===== LOGO UPLOAD =====
 const handleLogoClick = () => {
