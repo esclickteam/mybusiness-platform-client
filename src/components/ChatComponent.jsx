@@ -15,6 +15,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const [file, setFile] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
+  const [businessName, setBusinessName] = useState('');  // כאן נשמור את שם העסק
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
@@ -43,6 +44,11 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           const { data: msgs } = await API.get(`/messages/${convId}/messages`, { withCredentials: true });
           console.log('⏩ loaded messages:', msgs);
           setMessages(msgs);
+
+          // שליפת שם העסק אם מדובר בצ'אט עסקי
+          if (isBusiness && convo.businessName) {
+            setBusinessName(convo.businessName);  // עדכון שם העסק
+          }
         } else {
           console.log('⏩ no convo found, will create on send');
           setConversationId(null);
@@ -54,7 +60,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         setMessages([]);
       }
     })();
-  }, [partnerId, userId]);
+  }, [partnerId, userId, isBusiness]);
 
   // Socket.IO + join room
   useEffect(() => {
@@ -174,14 +180,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
   return (
     <div className="chat">
-      <header className="chat__header">צ'אט</header>
+      <header className="chat__header">
+        {isBusiness ? 'עסק' : 'לקוח'} - {businessName || 'שם העסק לא זמין'}
+      </header>
       <div className="chat__body" ref={containerRef}>
         {messages.map((m, idx) => (
           <div
             key={idx}
-            className={`chat__message ${
-              m.from === userId ? 'mine' : 'theirs'
-            }`}
+            className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
