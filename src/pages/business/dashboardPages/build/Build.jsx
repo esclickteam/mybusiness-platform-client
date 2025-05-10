@@ -434,7 +434,7 @@ const handleDeleteMainImage = async publicId => {
       await Promise.all(pendingUploadsRef.current);
   
       // שולחים את השדות הנתמכים כולל address עם עיר
-      await API.patch("/business/my", {
+      const res = await API.patch("/business/my", {
         name:        businessDetails.name,
         businessName: businessDetails.businessName, // הוספנו את שם העסק
         category:    businessDetails.category,
@@ -445,8 +445,17 @@ const handleDeleteMainImage = async publicId => {
           city: businessDetails.address.city
         }
       });
-      
-      
+  
+      // בדוק אם ה-API מחזיר את שם העסק
+      console.log("API Response:", res.data);  // זה יעזור לבדוק אם ה-businessName נמצא בתשובה
+  
+      if (res.status === 200) {
+        // עדכון ה-state אחרי שמירת המידע
+        setBusinessDetails(prev => ({
+          ...prev,
+          businessName: res.data.businessName || prev.businessName, // עדכון שם העסק
+        }));
+      }
   
       alert("✅ נשמר בהצלחה!");
       setShowViewProfile(true);
@@ -457,6 +466,7 @@ const handleDeleteMainImage = async publicId => {
       setIsSaving(false);
     }
   };
+  
   
   
 
