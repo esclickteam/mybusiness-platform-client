@@ -21,11 +21,6 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
   const userId = user?.userId;
 
-  useEffect(() => {
-    console.log('🔍 Authenticated user:', user);
-    console.log('🔍 Using userId:', userId);
-  }, [user, userId]);
-
   // Load or create conversation
   useEffect(() => {
     if (!userId || !partnerId) return;
@@ -47,6 +42,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
           // שליפת שם העסק אם מדובר בצ'אט עסקי
           if (isBusiness && convo.businessName) {
+            console.log('⏩ businessName:', convo.businessName); // הדפסה לוודא שהשם נשלף
             setBusinessName(convo.businessName);  // עדכון שם העסק
           }
         } else {
