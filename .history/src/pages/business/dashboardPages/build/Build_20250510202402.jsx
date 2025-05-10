@@ -441,8 +441,7 @@ const handleDeleteMainImage = async publicId => {
       email: businessDetails.email,
       address: {
         city: businessDetails.address.city // עדכון העיר
-      },
-      logo: businessDetails.logo?.file // שליחת הלוגו אם יש
+      }
     });
 
     if (res.status === 200) {
@@ -455,8 +454,7 @@ const handleDeleteMainImage = async publicId => {
         email: res.data.email || prev.email,
         address: {
           city: res.data.address?.city || prev.address.city // עדכון העיר
-        },
-        logo: res.data.logo || prev.logo // עדכון הלוגו אם השתנה
+        }
       }));
     }
 
@@ -468,7 +466,6 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
-
 
 
       

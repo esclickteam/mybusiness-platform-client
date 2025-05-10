@@ -440,23 +440,14 @@ const handleDeleteMainImage = async publicId => {
       phone: businessDetails.phone,
       email: businessDetails.email,
       address: {
-        city: businessDetails.address.city // עדכון העיר
-      },
-      logo: businessDetails.logo?.file // שליחת הלוגו אם יש
+        city: businessDetails.address.city
+      }
     });
 
     if (res.status === 200) {
       setBusinessDetails(prev => ({
         ...prev,
         businessName: res.data.businessName || prev.businessName, // עדכון שם העסק
-        category: res.data.category || prev.category,
-        description: res.data.description || prev.description,
-        phone: res.data.phone || prev.phone,
-        email: res.data.email || prev.email,
-        address: {
-          city: res.data.address?.city || prev.address.city // עדכון העיר
-        },
-        logo: res.data.logo || prev.logo // עדכון הלוגו אם השתנה
       }));
     }
 
@@ -468,8 +459,6 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
-
-
 
       
 
