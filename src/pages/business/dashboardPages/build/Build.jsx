@@ -434,15 +434,15 @@ const handleDeleteMainImage = async publicId => {
 
   // ===== SAVE =====
   const handleSave = async () => {
-    setIsSaving(true); // הגדרת מצב של שמירה
+    setIsSaving(true);  // הגדרת מצב שמירה
   
     try {
-      // מחכים שכל ההעלאות בתור יסתיימו
+      // מחכים שכל ההעלאות בתור יסתיימו (אם יש כאלו)
       await Promise.all(pendingUploadsRef.current);
   
       // שולחים את השדות הנתמכים כולל address עם עיר
       const res = await API.patch("/business/my", {
-        businessName: businessDetails.businessName, // ודא ששדה businessName מועבר
+        businessName: businessDetails.businessName,  // ודא ששדה businessName מועבר
         category: businessDetails.category,
         description: businessDetails.description,
         phone: businessDetails.phone,
@@ -459,20 +459,21 @@ const handleDeleteMainImage = async publicId => {
         // עדכון ה-state אחרי שמירת המידע
         setBusinessDetails(prev => ({
           ...prev,
-          businessName: res.data.businessName || prev.businessName, // עדכון שם העסק עם התשובה מה-API
+          businessName: res.data.businessName || prev.businessName,  // עדכון שם העסק עם התשובה מה-API
         }));
-        
+  
         alert("✅ נשמר בהצלחה!");
-        setShowViewProfile(true); // הצגת פרופיל לאחר שמירה
+        setShowViewProfile(true);  // הצגת פרופיל לאחר שמירה
       }
   
     } catch (err) {
       console.error("❌ שגיאה בשמירה:", err);
       alert("❌ שמירה נכשלה");
     } finally {
-      setIsSaving(false); // שחרור מצב שמירה
+      setIsSaving(false);  // שחרור מצב שמירה
     }
   };
+  
   
   
   
@@ -508,15 +509,16 @@ const handleDeleteMainImage = async publicId => {
         </div>
   
         {/* שם העסק + דירוג */}
-        <div className="name-rating">
-  <h2 key={businessDetails.businessName || "default-name"}>
+<div className="name-rating">
+  <h2>
     {businessDetails.businessName || "שם העסק"} {/* הצגת שם העסק */}
   </h2>
   <div className="rating-badge">
     <span className="star">★</span>
-    <span>{avg.toFixed(1)} / 5</span>
+    <span>{avg.toFixed(1)} / 5</span> {/* הצגת דירוג ממוצע */}
   </div>
 </div>
+
 
   
         {/* קטגוריה מתחת לשם */}
