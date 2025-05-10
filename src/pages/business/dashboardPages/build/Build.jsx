@@ -139,7 +139,6 @@ useEffect(() => {
   // ===== INPUT CHANGE (supports nested fields) =====
   const handleInputChange = ({ target: { name, value } }) => {
     if (name === "businessName") {
-      // עדכון ישיר של businessName ב-state
       setBusinessDetails(prev => {
         console.log("Updated businessName:", value); // מדפיס את הערך החדש
         return { ...prev, businessName: value };
@@ -160,6 +159,7 @@ useEffect(() => {
       }));
     }
   };
+  
   
   
   
