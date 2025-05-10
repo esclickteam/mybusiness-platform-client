@@ -451,7 +451,11 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
-      
+
+
+  
+  
+  
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
