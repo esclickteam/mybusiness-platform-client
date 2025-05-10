@@ -21,6 +21,24 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
   const userId = user?.userId;
 
+  // יצירת שיחה אם אין כזו, וודא ששדה businessName מועבר
+  const createConversation = async (partnerId, businessName) => {
+    try {
+      // שלח בקשה ליצירת שיחה
+      const response = await API.post('/messages', {
+        otherId: partnerId,  // שותף לשיחה
+        businessName: businessName // שם העסק
+      }, { withCredentials: true });
+
+      // קבלת conversationId לאחר יצירת השיחה
+      const convId = response.data.conversationId;
+      setConversationId(convId);
+      console.log('⏩ Created new conversation with ID:', convId);
+    } catch (error) {
+      console.error('❌ Error creating conversation:', error);
+    }
+  };
+
   useEffect(() => {
     if (!userId || !partnerId) return;
     (async () => {
