@@ -52,6 +52,10 @@ export default function MainSection({
   const wrapSelectChange = name => option =>
     handleInputChange({ target: { name, value: option ? option.value : "" } });
 
+  // Safe access to the businessDetails.address
+  const address = businessDetails.address || {};
+  const city = address.city || ""; // Ensure default value if city is undefined
+
   return (
     <>
       <div className="form-column" ref={containerRef}>
@@ -123,9 +127,7 @@ export default function MainSection({
         </label>
         <Select
           options={cityOptions}
-          value={
-            cityOptions.find(o => o.value === businessDetails.address?.city) || null
-          }
+          value={cityOptions.find(o => o.value === city) || null}
           onChange={option =>
             handleInputChange({
               target: { name: "address.city", value: option ? option.value : "" }
