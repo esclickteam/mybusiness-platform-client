@@ -138,7 +138,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         );
         convId = data.conversationId.toString().trim();
         setConversationId(convId);
-        console.log('⏩ created convoId:', convId);
+        console.log('⏩ created convId:', convId);
       }
       console.log('⏩ posting message to', convId, 'userId:', userId);
       const form = new FormData();
