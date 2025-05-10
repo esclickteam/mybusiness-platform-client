@@ -50,7 +50,7 @@ export default function BusinessProfileView() {
   if (!data)   return <div className="error">העסק לא נמצא</div>;
 
   const {
-    businessName,
+    name,
     logo,
     description = "",
     phone = "",
@@ -133,7 +133,7 @@ export default function BusinessProfileView() {
             </div>
           )}
 
-          <h1 className="business-name">{businessName || "שם העסק"}</h1>
+          <h1 className="business-name">{name}</h1>
 
           <div className="about-phone">
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
