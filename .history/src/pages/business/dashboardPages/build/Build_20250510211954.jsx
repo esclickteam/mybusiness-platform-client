@@ -132,22 +132,24 @@ useEffect(() => {
   // ===== INPUT CHANGE (supports nested fields) =====
 const handleInputChange = ({ target: { name, value } }) => {
   if (name.includes('.')) {
-    const [parent, child] = name.split('.');  // אם יש נקודה ב-name, נחלק לשניים
+    // במידה ויש נקודה ב-name (למשל address.city), נחלק את השם לשני חלקים
+    const [parent, child] = name.split('.');
+
     setBusinessDetails(prev => ({
       ...prev,
       [parent]: {
         ...prev[parent],
-        [child]: value,
-      },
+        [child]: value  // עדכון השדה בתוך האובייקט
+      }
     }));
   } else {
+    // עדכון שדה רגיל (ללא מבנים פנימיים)
     setBusinessDetails(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value  // עדכון השדה
     }));
   }
 };
-
 
 
 
