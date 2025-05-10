@@ -79,58 +79,59 @@ const track = p => {
 // טעינת הנתונים הראשונית
 useEffect(() => {
   API.get("/business/my")
-    .then(res => {
-      if (res.status === 200) {
-        const data = res.data.business || res.data;
+  .then(res => {
+    if (res.status === 200) {
+      const data = res.data.business || res.data;
 
-        // תמיכה ב־address מחרוזת או אובייקט
-        const rawAddress = data.address;
-        const city = typeof rawAddress === "string"
-          ? rawAddress
-          : rawAddress?.city || "";
+      // תמיכה ב־address מחרוזת או אובייקט
+      const rawAddress = data.address;
+      const city = typeof rawAddress === "string"
+        ? rawAddress
+        : rawAddress?.city || "";
 
-        // URLs ישנים
-        const urls       = data.mainImages   || [];
-        const galleryUrls= data.gallery      || [];
+      // URLs ישנים
+      const urls       = data.mainImages   || [];
+      const galleryUrls= data.gallery      || [];
 
-        // IDs: אם כבר קיימים במערך – נשמור אותם, אחרת נחלץ מהכתובת
-        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-          ? data.mainImageIds
-          : urls.map(extractPublicIdFromUrl);
-        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-          ? data.galleryImageIds
-          : galleryUrls.map(extractPublicIdFromUrl);
+      // IDs: אם כבר קיימים במערך – נשמור אותם, אחרת נחלץ מהכתובת
+      const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+        ? data.mainImageIds
+        : urls.map(extractPublicIdFromUrl);
+      const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+        ? data.galleryImageIds
+        : galleryUrls.map(extractPublicIdFromUrl);
 
-        setBusinessDetails(prev => ({
-          ...prev,
-          // שדות בסיסיים
-          name:        data.name        || "",
-          description: data.description || "",
-          phone:       data.phone       || "",
-          email:       data.email       || "",
-          category:    data.category    || "",
-          city,
+      // עדכון ה-state עם businessName במקום name
+      setBusinessDetails(prev => ({
+        ...prev,
+        businessName: data.name || "",  // הוספת businessName לשם העסק
+        description: data.description || "",
+        phone: data.phone || "",
+        email: data.email || "",
+        category: data.category || "",
+        city,
 
-          // לוגו
-          logo:   data.logo   || null,
-          logoId: data.logoId || null,
+        // לוגו
+        logo: data.logo || null,
+        logoId: data.logoId || null,
 
-          // גלריה
-          gallery:         galleryUrls,
-          galleryImageIds: galleryIds,
+        // גלריה
+        gallery: galleryUrls,
+        galleryImageIds: galleryIds,
 
-          // תמונות ראשיות
-          mainImages:   urls,
-          mainImageIds: mainIds,
+        // תמונות ראשיות
+        mainImages: urls,
+        mainImageIds: mainIds,
 
-          // שאר השדות
-          faqs:    data.faqs    || [],
-          reviews: data.reviews || []
-        }));
-      }
-    })
-    .catch(console.error);
+        // שאר השדות
+        faqs: data.faqs || [],
+        reviews: data.reviews || []
+      }));
+    }
+  })
+  .catch(console.error);
 }, []);
+
 
   
          
@@ -138,10 +139,10 @@ useEffect(() => {
   // ===== INPUT CHANGE (supports nested fields) =====
   const handleInputChange = ({ target: { name, value } }) => {
     if (name === "businessName") {
+      // עדכון ישיר של businessName ב-state
       setBusinessDetails(prev => {
-        const updatedDetails = { ...prev, businessName: value };
-        console.log(updatedDetails); // בדוק אם ה-state מעודכן כראוי
-        return updatedDetails;
+        console.log("Updated businessName:", value); // מדפיס את הערך החדש
+        return { ...prev, businessName: value };
       });
     } else if (name.includes('.')) {
       const [parent, child] = name.split('.');
@@ -159,6 +160,7 @@ useEffect(() => {
       }));
     }
   };
+  
   
   
 
@@ -484,7 +486,8 @@ const handleDeleteMainImage = async publicId => {
     // הוספת useEffect לעדכון שם העסק
     useEffect(() => {
       console.log("Business Name Updated:", businessDetails.businessName);
-    }, [businessDetails.businessName]);  // הגיב לשינוי ב-businessName
+    }, [businessDetails.businessName]); // יגיב לשינוי ב-businessName
+      
   
     return (
       <div className="topbar-preview">
