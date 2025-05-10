@@ -147,7 +147,7 @@ const handleInputChange = ({ target: { name, value } }) => {
       }
     }));
   } else {
-    // רק אם זה businessName, עדכן את השם של העסק
+    // אם השם הוא "businessName", אנחנו מעדכנים רק אותו
     if (name === "businessName") {
       setBusinessDetails(prev => ({
         ...prev,
@@ -161,7 +161,6 @@ const handleInputChange = ({ target: { name, value } }) => {
     }
   }
 };
-
 
 
 // ===== LOGO UPLOAD =====

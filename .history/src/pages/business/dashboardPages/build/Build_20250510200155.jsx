@@ -31,8 +31,7 @@ export default function Build() {
 
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
-    
-    businessName:    "", 
+        businessName:    "", // הוספנו את שם העסק
     description:     "",
     phone:           "",
     category:        "",
@@ -104,7 +103,7 @@ useEffect(() => {
         setBusinessDetails(prev => ({
           ...prev,
           // שדות בסיסיים
-          businessName: data.businessName  || "",
+          name:        data.name        || "",
           description: data.description || "",
           phone:       data.phone       || "",
           email:       data.email       || "",
@@ -147,22 +146,12 @@ const handleInputChange = ({ target: { name, value } }) => {
       }
     }));
   } else {
-    // רק אם זה businessName, עדכן את השם של העסק
-    if (name === "businessName") {
-      setBusinessDetails(prev => ({
-        ...prev,
-        businessName: value // עדכון רק של businessName
-      }));
-    } else {
-      setBusinessDetails(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setBusinessDetails(prev => ({
+      ...prev,
+      [name]: value
+    }));
   }
 };
-
-
 
 // ===== LOGO UPLOAD =====
 const handleLogoClick = () => {
