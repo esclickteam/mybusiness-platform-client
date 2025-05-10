@@ -507,12 +507,15 @@ const handleDeleteMainImage = async publicId => {
   
         {/* שם העסק + דירוג */}
         <div className="name-rating">
-          <h2>{businessDetails.businessName || "שם העסק"}</h2> {/* הצגת שם העסק */}
-          <div className="rating-badge">
-            <span className="star">★</span>
-            <span>{avg.toFixed(1)} / 5</span>
-          </div>
-        </div>
+  <h2 key={businessDetails.businessName || "default-name"}>
+    {businessDetails.businessName || "שם העסק"} {/* הצגת שם העסק */}
+  </h2>
+  <div className="rating-badge">
+    <span className="star">★</span>
+    <span>{avg.toFixed(1)} / 5</span>
+  </div>
+</div>
+
   
         {/* קטגוריה מתחת לשם */}
         {businessDetails.category && (
