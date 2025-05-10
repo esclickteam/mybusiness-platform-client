@@ -421,45 +421,44 @@ const handleDeleteMainImage = async publicId => {
 
   // ===== SAVE =====
   const handleSave = async () => {
-  setIsSaving(true);
-  try {
-    // מחכים שכל ההעלאות בתור יסתיימו
-    await Promise.all(pendingUploadsRef.current);
-
-    // שולחים את השדות הנתמכים כולל address עם עיר
-    const res = await API.patch("/business/my", {
-      name:        businessDetails.name,
-      businessName: businessDetails.businessName, // הוספנו את שם העסק
-      category:    businessDetails.category,
-      description: businessDetails.description,
-      phone:       businessDetails.phone,
-      email:       businessDetails.email,
-      address: {
-        city: businessDetails.address.city
+    setIsSaving(true);
+    try {
+      // מחכים שכל ההעלאות בתור יסתיימו
+      await Promise.all(pendingUploadsRef.current);
+  
+      // שולחים את השדות הנתמכים כולל address עם עיר
+      const res = await API.patch("/business/my", {
+        name:        businessDetails.name,
+        businessName: businessDetails.businessName, // הוספנו את שם העסק
+        category:    businessDetails.category,
+        description: businessDetails.description,
+        phone:       businessDetails.phone,
+        email:       businessDetails.email,
+        address: {
+          city: businessDetails.address.city
+        }
+      });
+  
+      // בדוק אם ה-API מחזיר את שם העסק
+      console.log("API Response:", res.data);  // זה יעזור לבדוק אם ה-businessName נמצא בתשובה
+  
+      if (res.status === 200) {
+        // עדכון ה-state אחרי שמירת המידע
+        setBusinessDetails(prev => ({
+          ...prev,
+          businessName: res.data.businessName || prev.businessName, // עדכון שם העסק
+        }));
       }
-    });
-
-    // בדוק אם ה-API מחזיר את שם העסק
-    console.log("API Response:", res.data);  // זה יעזור לבדוק אם ה-businessName נמצא בתשובה
-
-    if (res.status === 200) {
-      // עדכון ה-state אחרי שמירת המידע
-      setBusinessDetails(prev => ({
-        ...prev,
-        businessName: res.data.businessName || prev.businessName, // עדכון שם העסק
-      }));
+  
+      alert("✅ נשמר בהצלחה!");
+      setShowViewProfile(true);
+    } catch (err) {
+      console.error("❌ שגיאה בשמירה:", err);
+      alert("❌ שמירה נכשלה");
+    } finally {
+      setIsSaving(false);
     }
-
-    alert("✅ נשמר בהצלחה!");
-    setShowViewProfile(true);
-  } catch (err) {
-    console.error("❌ שגיאה בשמירה:", err);
-    alert("❌ שמירה נכשלה");
-  } finally {
-    setIsSaving(false);
-  }
-};
-
+  };
   
   
   
