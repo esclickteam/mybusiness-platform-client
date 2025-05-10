@@ -84,54 +84,54 @@ useEffect(() => {
 
         // תמיכה ב־address מחרוזת או אובייקט
         const rawAddress = data.address;
-const city = (typeof rawAddress === "object" && rawAddress !== null)
-  ? rawAddress.city || ""   // אם address הוא אובייקט, ניגש ל־city
-  : (typeof rawAddress === "string" ? rawAddress : ""); // אם address הוא מחרוזת או undefined, נשתמש בו ישירות או ב־""
-
-
+        const city = (typeof rawAddress === "object" && rawAddress !== null)
+          ? rawAddress.city || ""   // אם address הוא אובייקט, ניגש ל־city
+          : (typeof rawAddress === "string" ? rawAddress : ""); // אם address הוא מחרוזת או undefined, נשתמש בו ישירות או ב־""
 
         // URLs ישנים
-        const urls        = data.mainImages   || [];
-        const galleryUrls= data.gallery      || [];
+        const urls = data.mainImages || [];
+        const galleryUrls = data.gallery || [];
 
         // IDs: אם כבר קיימים במערך – נשמור אותם, אחרת נחלץ מהכתובת
         const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
           ? data.mainImageIds
-          : urls.map(extractPublicIdFromUrl);
+          : urls.map(extractPublicIdFromUrl); // ודא ש־extractPublicIdFromUrl פועלת כראוי
+
         const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
           ? data.galleryImageIds
-          : galleryUrls.map(extractPublicIdFromUrl);
+          : galleryUrls.map(extractPublicIdFromUrl); // ודא ש־extractPublicIdFromUrl פועלת כראוי
 
         setBusinessDetails(prev => ({
           ...prev,
           // שדות בסיסיים
-          businessName: data.businessName  || "",
+          businessName: data.businessName || "",
           description: data.description || "",
-          phone:       data.phone       || "",
-          email:       data.email       || "",
-          category:    data.category    || "",
-          city,
+          phone: data.phone || "",
+          email: data.email || "",
+          category: data.category || "",
+          city,  // העיר שנבדקה
 
           // לוגו
-          logo:   data.logo   || null,
+          logo: data.logo || null,
           logoId: data.logoId || null,
 
           // גלריה
-          gallery:         galleryUrls,
+          gallery: galleryUrls,
           galleryImageIds: galleryIds,
 
           // תמונות ראשיות
-          mainImages:   urls,
+          mainImages: urls,
           mainImageIds: mainIds,
 
           // שאר השדות
-          faqs:    data.faqs    || [],
+          faqs: data.faqs || [],
           reviews: data.reviews || []
         }));
       }
     })
-    .catch(console.error);
-}, []);
+    .catch(console.error); // טיפול בשגיאות API
+}, []); // הרץ פעם אחת בזמן הטעינה
+
 
       
 
