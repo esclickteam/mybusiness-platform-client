@@ -132,9 +132,18 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
     setIsSending(true);
     const tempId = Date.now().toString();
-    const optimisticMsg = { id: tempId, from: userId, to: partnerId,
-      text, fileName: file?.name,
-      timestamp: new Date().toISOString(), delivered: false, businessName: businessName };  // שלח את businessName
+
+    // יצירת הודעה אופטימית
+    const optimisticMsg = { 
+      id: tempId, 
+      from: userId, 
+      to: partnerId,
+      text, 
+      fileName: file?.name,
+      timestamp: new Date().toISOString(), 
+      delivered: false, 
+      businessName: businessName // ודא שאתה שולח את שם העסק
+    };
     setMessages(prev => [...prev, optimisticMsg]);
 
     try {
@@ -149,10 +158,13 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         setConversationId(convId);
         console.log('⏩ created convId:', convId);
       }
+
       console.log('⏩ posting message to', convId, 'userId:', userId);
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
+      
+      // שליחה ל־API
       const { data: saved } = await API.post(
         `/messages/${convId}/messages`,
         form,
@@ -162,13 +174,15 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         }
       );
       console.log('⏩ API saved message:', saved);
+
+      // עדכון ההודעות לאחר שההודעה נשמרה בהצלחה
       setMessages(prev => prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m));
     } catch (err) {
       console.error('❌ error sending message:', err);
     } finally {
       setIsSending(false);
-      setMessage('');
-      setFile(null);
+      setMessage(''); // נקה את הודעת הטקסט
+      setFile(null);  // נקה את הקובץ
     }
   };
 
