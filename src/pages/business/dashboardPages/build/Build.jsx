@@ -79,94 +79,80 @@ const track = p => {
 // טעינת הנתונים הראשונית
 useEffect(() => {
   API.get("/business/my")
-  .then(res => {
-    if (res.status === 200) {
-      const data = res.data.business || res.data;
+    .then(res => {
+      if (res.status === 200) {
+        const data = res.data.business || res.data;
 
-      // תמיכה ב־address מחרוזת או אובייקט
-      const rawAddress = data.address;
-      const city = typeof rawAddress === "string"
-        ? rawAddress
-        : rawAddress?.city || "";
+        // תמיכה ב־address מחרוזת או אובייקט
+        const rawAddress = data.address;
+        const city = typeof rawAddress === "string"
+          ? rawAddress
+          : rawAddress?.city || "";
 
-      // URLs ישנים
-      const urls       = data.mainImages   || [];
-      const galleryUrls= data.gallery      || [];
+        // URLs ישנים
+        const urls       = data.mainImages   || [];
+        const galleryUrls= data.gallery      || [];
 
-      // IDs: אם כבר קיימים במערך – נשמור אותם, אחרת נחלץ מהכתובת
-      const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-        ? data.mainImageIds
-        : urls.map(extractPublicIdFromUrl);
-      const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-        ? data.galleryImageIds
-        : galleryUrls.map(extractPublicIdFromUrl);
+        // IDs: אם כבר קיימים במערך – נשמור אותם, אחרת נחלץ מהכתובת
+        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+          ? data.mainImageIds
+          : urls.map(extractPublicIdFromUrl);
+        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+          ? data.galleryImageIds
+          : galleryUrls.map(extractPublicIdFromUrl);
 
-      // עדכון ה-state עם businessName במקום name
-      setBusinessDetails(prev => ({
-        ...prev,
-        businessName: data.name || "",  // הוספת businessName לשם העסק
-        description: data.description || "",
-        phone: data.phone || "",
-        email: data.email || "",
-        category: data.category || "",
-        city,
+        setBusinessDetails(prev => ({
+          ...prev,
+          // שדות בסיסיים
+          name:        data.name        || "",
+          description: data.description || "",
+          phone:       data.phone       || "",
+          email:       data.email       || "",
+          category:    data.category    || "",
+          city,
 
-        // לוגו
-        logo: data.logo || null,
-        logoId: data.logoId || null,
+          // לוגו
+          logo:   data.logo   || null,
+          logoId: data.logoId || null,
 
-        // גלריה
-        gallery: galleryUrls,
-        galleryImageIds: galleryIds,
+          // גלריה
+          gallery:         galleryUrls,
+          galleryImageIds: galleryIds,
 
-        // תמונות ראשיות
-        mainImages: urls,
-        mainImageIds: mainIds,
+          // תמונות ראשיות
+          mainImages:   urls,
+          mainImageIds: mainIds,
 
-        // שאר השדות
-        faqs: data.faqs || [],
-        reviews: data.reviews || []
-      }));
-    }
-  })
-  .catch(console.error);
+          // שאר השדות
+          faqs:    data.faqs    || [],
+          reviews: data.reviews || []
+        }));
+      }
+    })
+    .catch(console.error);
 }, []);
-
 
   
          
 
   // ===== INPUT CHANGE (supports nested fields) =====
-  const handleInputChange = ({ target: { name, value } }) => {
-    console.log("Changing:", name, "to", value);  // הדפסת המידע לפני העדכון
-  
-    if (name === "businessName") {
-      setBusinessDetails(prev => ({
-        ...prev,
-        businessName: value // עדכון שם העסק מיידית
-      }));
-    } else if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setBusinessDetails(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }));
-    } else {
-      setBusinessDetails(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
-  
-  
-  
-  
-  
-  
+const handleInputChange = ({ target: { name, value } }) => {
+  if (name.includes('.')) {
+    const [parent, child] = name.split('.');
+    setBusinessDetails(prev => ({
+      ...prev,
+      [parent]: {
+        ...prev[parent],
+        [child]: value
+      }
+    }));
+  } else {
+    setBusinessDetails(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+};
 
 // ===== LOGO UPLOAD =====
 const handleLogoClick = () => {
@@ -438,57 +424,54 @@ const handleDeleteMainImage = async publicId => {
 
   // ===== SAVE =====
   const handleSave = async () => {
-    setIsSaving(true);  // הגדרת מצב שמירה
-  
+    setIsSaving(true);
     try {
+      // מחכים שכל ההעלאות בתור יסתיימו
       await Promise.all(pendingUploadsRef.current);
   
+      // שולחים את השדות הנתמכים כולל address עם עיר
       const res = await API.patch("/business/my", {
-        businessName: businessDetails.businessName,  // שם העסק
-        category: businessDetails.category,
+        name:        businessDetails.name,
+        businessName: businessDetails.businessName, // הוספנו את שם העסק
+        category:    businessDetails.category,
         description: businessDetails.description,
-        phone: businessDetails.phone,
-        email: businessDetails.email,
+        phone:       businessDetails.phone,
+        email:       businessDetails.email,
         address: {
           city: businessDetails.address.city
         }
       });
   
+      // בדוק אם ה-API מחזיר את שם העסק
+      console.log("API Response:", res.data);  // זה יעזור לבדוק אם ה-businessName נמצא בתשובה
+  
       if (res.status === 200) {
         // עדכון ה-state אחרי שמירת המידע
         setBusinessDetails(prev => ({
           ...prev,
-          businessName: res.data.businessName || prev.businessName,  // עדכון שם העסק
+          businessName: res.data.businessName || prev.businessName, // עדכון שם העסק
         }));
-  
-        alert("✅ נשמר בהצלחה!");
       }
+  
+      alert("✅ נשמר בהצלחה!");
+      setShowViewProfile(true);
     } catch (err) {
       console.error("❌ שגיאה בשמירה:", err);
       alert("❌ שמירה נכשלה");
     } finally {
-      setIsSaving(false);  // שחרור מצב שמירה
+      setIsSaving(false);
     }
   };
-  
-  
-  
-  
-  
-  
-  
   
   
   
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
-    // חישוב דירוג ממוצע
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
       : 0;
   
-            
     return (
       <div className="topbar-preview">
         {/* לוגו */}
@@ -506,17 +489,13 @@ const handleDeleteMainImage = async publicId => {
         </div>
   
         {/* שם העסק + דירוג */}
-<div className="name-rating">
-  <h2>
-    {businessDetails.businessName || "שם העסק"} {/* הצגת שם העסק */}
-  </h2>
-  <div className="rating-badge">
-    <span className="star">★</span>
-    <span>{avg.toFixed(1)} / 5</span> {/* הצגת דירוג ממוצע */}
-  </div>
-</div>
-
-
+        <div className="name-rating">
+          <h2>{businessDetails.businessName || "שם העסק"}</h2> {/* הצגת שם העסק */}
+          <div className="rating-badge">
+            <span className="star">★</span>
+            <span>{avg.toFixed(1)} / 5</span>
+          </div>
+        </div>
   
         {/* קטגוריה מתחת לשם */}
         {businessDetails.category && (
