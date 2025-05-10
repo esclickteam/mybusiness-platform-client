@@ -84,9 +84,9 @@ useEffect(() => {
 
         // תמיכה ב־address מחרוזת או אובייקט
         const rawAddress = data.address;
-        const city = (typeof rawAddress === "object" && rawAddress !== null)
-          ? rawAddress.city || ""   // אם address הוא אובייקט, ניגש ל־city
-          : (typeof rawAddress === "string" ? rawAddress : ""); 
+const city = (typeof rawAddress === "object" && rawAddress !== null)
+  ? rawAddress.city || ""   // אם address הוא אובייקט, ניגש ל־city
+  : (typeof rawAddress === "string" ? rawAddress : ""); 
 
 
 
