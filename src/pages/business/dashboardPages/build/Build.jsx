@@ -488,12 +488,7 @@ const handleDeleteMainImage = async publicId => {
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
       : 0;
   
-    // הוספת useEffect לעדכון שם העסק
-    useEffect(() => {
-      console.log("Business Name Updated:", businessDetails.businessName);
-    }, [businessDetails.businessName]); // יגיב לשינוי ב-businessName
-      
-  
+            
     return (
       <div className="topbar-preview">
         {/* לוגו */}
