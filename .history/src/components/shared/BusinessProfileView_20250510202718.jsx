@@ -1,3 +1,4 @@
+// src/components/shared/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";           // וודא שהנתיב מדויק: src/api.js
@@ -20,34 +21,35 @@ export default function BusinessProfileView() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [data, setData]         = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // טעינת פרטי העסק
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/business/${businessId}`);
-        const businessData = res.data.business || res.data;
-        setData(businessData); // שמירה בסטייט של כל הנתונים
-      } catch (err) {
-        console.error(err);
-        setError("שגיאה בטעינת העסק");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [businessId]);
+  (async () => {
+    setLoading(true);
+    try {
+      const res = await api.get(`/business/${businessId}`);
+      const businessData = res.data.business || res.data;
+      setData(businessData); // שמירה בסטייט של כל הנתונים
+    } catch (err) {
+      console.error(err);
+      setError("שגיאה בטעינת העסק");
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, [businessId]);
+
 
   // תנאים מוקדמים
   if (loading) return <div className="loading">טוען…</div>;
-  if (error) return <div className="error">{error}</div>;
-  if (!data) return <div className="error">העסק לא נמצא</div>;
+  if (error)   return <div className="error">{error}</div>;
+  if (!data)   return <div className="error">העסק לא נמצא</div>;
 
   const {
     businessName,
@@ -58,18 +60,18 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    city = "" // העיר שנלקחת מהנתונים
+    city = ""
   } = data;
 
   // חישוב דירוג ממוצע באופן סינכרוני
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
-  const avgRating = reviews.length ? totalRating / reviews.length : 0;
-  const roundedAvg = Math.round(avgRating * 10) / 10;
-  const fullAvgStars = Math.floor(roundedAvg);
-  const halfAvgStar = roundedAvg % 1 ? 1 : 0;
+  const avgRating   = reviews.length ? totalRating / reviews.length : 0;
+  const roundedAvg  = Math.round(avgRating * 10) / 10;
+  const fullAvgStars  = Math.floor(roundedAvg);
+  const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
-  const isOwner = user?.role === "business" && user.businessId === businessId;
+  const isOwner   = user?.role === "business" && user.businessId === businessId;
   const canDelete = ["admin", "manager"].includes(user?.role);
 
   // בדיקה אם כבר הגיש ביקורת
@@ -80,9 +82,9 @@ export default function BusinessProfileView() {
     : false;
 
   // Handlers
-  const handleReviewClick = () => setShowReviewModal(true);
-  const closeReviewModal = () => setShowReviewModal(false);
-  const handleChatClick = () => navigate(`/business/${businessId}/chat`);
+  const handleReviewClick  = () => setShowReviewModal(true);
+  const closeReviewModal   = () => setShowReviewModal(false);
+  const handleChatClick    = () => navigate(`/business/${businessId}/chat`);
 
   const handleReviewSubmit = async newReview => {
     if (isSubmitting) return;
@@ -139,7 +141,7 @@ export default function BusinessProfileView() {
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
             {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>} {/* הצגת העיר */}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
