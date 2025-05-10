@@ -427,39 +427,25 @@ const handleDeleteMainImage = async publicId => {
   // ===== SAVE =====
   const handleSave = async () => {
   setIsSaving(true);
-  
   try {
-    // בדיקה אם יש שם לעסק
+    // אם אין שם עסק, הצג הודעת שגיאה
     if (!businessDetails.businessName) {
       alert("הכנס שם לעסק!");
       setIsSaving(false);
       return;
     }
 
-    // בדיקת שדות נוספים אם נדרשים
-    if (!businessDetails.category) {
-      alert("הכנס קטגוריה לעסק!");
-      setIsSaving(false);
-      return;
-    }
-
-    if (!businessDetails.phone) {
-      alert("הכנס טלפון לעסק!");
-      setIsSaving(false);
-      return;
-    }
-
-    // שליחת הבקשה לשרת
     const res = await API.patch("/business/my", {
-      businessName: businessDetails.businessName,
+      businessName: businessDetails.businessName, // ודא שהשדה נשלח
       category: businessDetails.category,
       description: businessDetails.description,
       phone: businessDetails.phone,
       email: businessDetails.email,
-      address: { city: businessDetails.address.city }
+      address: {
+        city: businessDetails.address.city
+      }
     });
 
-    // אם השמירה הצליחה
     if (res.status === 200) {
       setBusinessDetails(prev => ({
         ...prev,
@@ -488,7 +474,9 @@ const handleDeleteMainImage = async publicId => {
   }
 };
 
-
+  
+  
+  
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
