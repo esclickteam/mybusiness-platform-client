@@ -51,25 +51,27 @@ export default function ChatComponent({
     if (!initialized || !userId || !partnerId) return;
     (async () => {
       try {
-        // 2a) Fetch existing conversations
+        // Fetch existing conversations
         const { data: convos } = await API.get(
-          '/messages/conversations',
+          '/conversations',
           { withCredentials: true }
         );
-        let convo = Array.isArray(convos) && convos.find(c =>
-          c.participants.includes(userId) && c.participants.includes(partnerId)
-        );
+        const convo = Array.isArray(convos) &&
+          convos.find(c =>
+            c.participants.includes(userId) &&
+            c.participants.includes(partnerId)
+          );
 
         if (convo) {
           setConversationId(convo.conversationId);
-          // 2b) Load existing messages
+          // Load existing messages
           const { data: msgs } = await API.get(
             `/conversations/${convo.conversationId}`,
             { withCredentials: true }
           );
           setMessages(msgs);
         } else {
-          // 2c) Create new conversation via send endpoint
+          // Create new conversation via send endpoint
           const { data } = await API.post(
             '/send',
             { to: partnerId, text: '' },

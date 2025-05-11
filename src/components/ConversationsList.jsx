@@ -19,19 +19,18 @@ export default function ConversationsList({ isBusiness, onSelect }) {
   useEffect(() => {
     setLoading(true);
 
-    // קריאה ל־GET /api/messages/conversations (API.baseURL = '/api/messages')
-    API.get('/messages/conversations', { withCredentials: true })
+    // GET /api/messages/conversations via baseURL '/api/messages'
+    API.get('/conversations', { withCredentials: true })
       .then(res => {
         const all = Array.isArray(res.data) ? res.data : [];
 
         const formatted = all.map(c => {
           const other = c.participants.find(p => p !== meId) || '';
-
           return {
             conversationId: c.conversationId,
             partnerId:      other,
             partnerName:    isBusiness
-              ? other   // אפשר להחליף בהמשך בקריאה לשם המשתמש
+              ? other
               : (c.businessName || '---'),
             lastMessage: c.lastMessage?.text || '',
             updatedAt:   c.updatedAt,
