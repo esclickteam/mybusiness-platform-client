@@ -1,4 +1,3 @@
-// src/components/shared/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";           // וודא שהנתיב מדויק: src/api.js
@@ -17,9 +16,12 @@ const TABS = [
 ];
 
 export default function BusinessProfileView() {
-  const { businessId } = useParams();
+  const { businessId: paramId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // השתמש ב-paramId או ב-businessId שמגיע מה-AuthContext
+  const bizId = paramId || user?.businessId;
 
   const [data, setData]               = useState(null);
   const [loading, setLoading]         = useState(true);
@@ -30,10 +32,15 @@ export default function BusinessProfileView() {
 
   // טעינת פרטי העסק
   useEffect(() => {
+    if (!bizId) {
+      setError("Invalid business ID");
+      setLoading(false);
+      return;
+    }
     (async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/business/${businessId}`);
+        const res = await api.get(`/business/${bizId}`);
         setData(res.data.business || res.data);
       } catch (err) {
         console.error(err);
@@ -42,7 +49,7 @@ export default function BusinessProfileView() {
         setLoading(false);
       }
     })();
-  }, [businessId]);
+  }, [bizId]);
 
   // תנאים מוקדמים
   if (loading) return <div className="loading">טוען…</div>;
@@ -62,7 +69,7 @@ export default function BusinessProfileView() {
     address: { city = "" } = {}
   } = data;
 
-  // חישוב דירוג ממוצע באופן סינכרוני
+  // חישוב דירוג ממוצע
   const totalRating   = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
   const avgRating     = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg    = Math.round(avgRating * 10) / 10;
@@ -70,28 +77,26 @@ export default function BusinessProfileView() {
   const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
-  const isOwner   = user?.role === "business" && user.businessId === businessId;
+  const isOwner   = user?.role === "business" && user.businessId === bizId;
   const canDelete = ["admin", "manager"].includes(user?.role);
 
   // בדיקה אם כבר הגיש ביקורת
   const hasReviewed = user
-    ? reviews.some(r =>
-        r.user?._id === user._id || r.user?.id === user._id
-      )
+    ? reviews.some(r => r.user?._id === user._id || r.user?.id === user._id)
     : false;
 
   // Handlers
   const handleReviewClick  = () => setShowReviewModal(true);
   const closeReviewModal   = () => setShowReviewModal(false);
-  const handleChatClick    = () => navigate(`/business/${businessId}/chat`);
+  const handleChatClick    = () => navigate(`/business/${bizId}/chat`);
 
   const handleReviewSubmit = async newReview => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      await api.post(`/business/${businessId}/reviews`, newReview);
+      await api.post(`/business/${bizId}/reviews`, newReview);
       // רענון הנתונים
-      const res = await api.get(`/business/${businessId}`);
+      const res = await api.get(`/business/${bizId}`);
       setData(res.data.business || res.data);
       closeReviewModal();
     } catch (err) {
@@ -109,8 +114,8 @@ export default function BusinessProfileView() {
   const handleDeleteReview = async reviewId => {
     if (!window.confirm("האם למחוק ביקורת זו?")) return;
     try {
-      await api.delete(`/business/${businessId}/reviews/${reviewId}`);
-      const res = await api.get(`/business/${businessId}`);
+      await api.delete(`/business/${bizId}/reviews/${reviewId}`);
+      const res = await api.get(`/business/${bizId}`);
       setData(res.data.business || res.data);
     } catch (err) {
       console.error(err);
@@ -123,7 +128,7 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
           {isOwner && (
-            <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
+            <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
@@ -259,7 +264,7 @@ export default function BusinessProfileView() {
               <div className="modal-content">
                 <h2>הוסף ביקורת</h2>
                 <ReviewForm
-                  businessId={businessId}
+                  businessId={bizId}
                   onSubmit={handleReviewSubmit}
                   isSubmitting={isSubmitting}
                 />
