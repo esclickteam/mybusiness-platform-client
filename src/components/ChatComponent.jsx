@@ -154,17 +154,19 @@ export default function ChatComponent({
     setIsSending(true);
     const tempId = Date.now().toString();
 
-    // Optimistic UI update
-    const optimistic = {
-      id: tempId,
+    // Create message data with businessName
+    const messageData = {
       from: userId,
       to: partnerId,
       text: trimmed,
-      fileName: file?.name,
+      businessName: user?.businessName || 'שם העסק לא זמין', // Add businessName here
       timestamp: new Date().toISOString(),
-      delivered: false
+      fileName: file?.name,
+      delivered: false,
     };
-    setMessages(prev => [...prev, optimistic]);
+
+    // Optimistic UI update
+    setMessages(prev => [...prev, messageData]);
 
     try {
       const form = new FormData();
@@ -182,7 +184,7 @@ export default function ChatComponent({
 
       setMessages(prev =>
         prev.map(m =>
-          m.id === tempId
+          m.timestamp === messageData.timestamp
             ? { ...saved, delivered: true }
             : m
         )
@@ -205,7 +207,7 @@ export default function ChatComponent({
       <div className="chat__body" ref={containerRef}>
         {messages.map(m => (
           <div
-            key={m._id || m.id || `${m.timestamp}-${Date.now()}`} // שימוש ב-ID או שילוב של timestamp ו- Date.now()
+            key={m._id || m.timestamp || `${m.timestamp}-${Date.now()}`} // Ensure unique key
             className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">
