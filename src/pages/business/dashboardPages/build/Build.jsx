@@ -174,47 +174,49 @@ const handleLogoClick = () => {
   logoInputRef.current?.click();
 };
 
-const handleLogoChange = e => {
+const handleLogoChange = async e => {
   const file = e.target.files?.[0];
   if (!file) return;
   e.target.value = null;
 
-  // 🧹 ניקוי preview קודם אם היה blob
+  // שחרור הזכרון של preview קודם אם היה blob
   if (businessDetails.logo?.preview?.startsWith('blob:')) {
     URL.revokeObjectURL(businessDetails.logo.preview);
   }
 
+  // יצירת preview חדש
   const preview = URL.createObjectURL(file);
-
-  // ⬇️ עדכון זמני ל־state
   setBusinessDetails(prev => ({
     ...prev,
-    logo: { file, preview }
+    logo: { preview }
   }));
 
-  // ⬆️ שליחה ל־API
+  // בניית FormData והעלאה לשרת
   const fd = new FormData();
   fd.append('logo', file);
 
-  track(
-    API.put('/business/my/logo', fd)
-      .then(res => {
-        if (res.status === 200) {
-          setBusinessDetails(prev => ({
-            ...prev,
-            logo: {
-              preview:  res.data.logo,
-              publicId: res.data.logoId
-            }
-          }));
+  try {
+    const res = await API.put('/business/my/logo', fd);
+    if (res.status === 200) {
+      // לאחר העלאה מוצלחת, עדכון preview ו-publicId מהשרת
+      setBusinessDetails(prev => ({
+        ...prev,
+        logo: {
+          preview:  res.data.logo,
+          publicId: res.data.logoId
         }
-      })
-      .catch(console.error)
-      .finally(() => {
-        URL.revokeObjectURL(preview);
-      })
-  );
+      }));
+    } else {
+      console.warn('Logo upload failed:', res);
+    }
+  } catch (err) {
+    console.error('Error uploading logo:', err);
+  } finally {
+    // שחרור הזכרון של ה-blob URL שנוצר
+    URL.revokeObjectURL(preview);
+  }
 };
+
 
   
   
