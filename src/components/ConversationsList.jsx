@@ -30,9 +30,9 @@ export default function ConversationsList({ isBusiness, onSelect }) {
             partnerName: isBusiness
               ? other
               : (c.businessName || '---'),
-            lastMessage: '',  // הודעות ייטענו בצ'אט
+            lastMessage: c.lastMessage || 'אין הודעה אחרונה', // הודעה ברירת מחדל אם אין הודעה אחרונה
             updatedAt: c.updatedAt || '',
-            unreadCount: 0,
+            unreadCount: c.unreadCount || 0,  // דאג לבדוק אם קיימת קריאת הודעה שלא נקראה
           };
         });
 
@@ -66,7 +66,7 @@ export default function ConversationsList({ isBusiness, onSelect }) {
 
       {filtered.map(c => (
         <div
-          key={`${c.conversationId}-${Math.random()}`} // שימוש ב-Math.random() כדי להבטיח ייחודיות
+          key={c.conversationId}  // מפתח ייחודי על בסיס conversationId
           className="sidebar-item"
           onClick={() => onSelect({
             conversationId: c.conversationId,

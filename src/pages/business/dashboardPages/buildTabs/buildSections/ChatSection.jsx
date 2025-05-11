@@ -1,18 +1,24 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
-import React, { useState } from "react";
-import { useAuth }      from "../../../../../context/AuthContext";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../../../../context/AuthContext";
 import "./ChatSection.css";
 import ConversationsList from "@components/ConversationsList";
-import ChatComponent     from "@components/ChatComponent";
+import ChatComponent from "@components/ChatComponent";
 
 export default function ChatSection({ renderTopBar }) {
   const { user, initialized } = useAuth();
   const [selected, setSelected] = useState({
     conversationId: null,
-    partnerId:      null
+    partnerId: null,
   });
 
-  if (!initialized) return null;
+  const [loading, setLoading] = useState(true); // אפשר להוסיף סטייט לטעינה
+
+  useEffect(() => {
+    if (!initialized) return;
+    setLoading(false); // אחרי סיום ההתחInitial שים את הסטייט ב- false
+  }, [initialized]);
+
+  if (!initialized || loading) return <div className="loading-screen">🔄 טוען שיחות…</div>;
 
   return (
     <div className="chat-section">

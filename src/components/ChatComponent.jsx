@@ -98,10 +98,10 @@ export default function ChatComponent({
     socket.emit('joinRoom', conversationId);
     socket.on('newMessage', msg => setMessages(prev => [...prev, msg]));
     socket.on('typing', ({ from }) =>
-      setTypingUsers(prev => Array.from(new Set([...prev, from])))
+      setTypingUsers(prev => Array.from(new Set([...prev, from]))),
     );
     socket.on('stopTyping', ({ from }) =>
-      setTypingUsers(prev => prev.filter(id => id !== from))
+      setTypingUsers(prev => prev.filter(id => id !== from)),
     );
     return () => {
       socket.disconnect();
@@ -160,6 +160,15 @@ export default function ChatComponent({
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', trimmed);
+      
+      // Check file size before sending
+      const MAX_FILE_SIZE = 5 * 1024 * 1024;  // 5MB
+      if (file && file.size > MAX_FILE_SIZE) {
+        alert('הקובץ גדול מדי. יש להעלות קובץ בגודל קטן יותר.');
+        setIsSending(false);
+        return;
+      }
+
       const { data: saved } = await API.post(
         `/messages/conversations/${conversationId}/messages`,
         form
@@ -186,7 +195,7 @@ export default function ChatComponent({
       <div className="chat__body" ref={containerRef}>
         {messages.map(m => (
           <div
-            key={m._id || m.timestamp}
+            key={m._id || m.timestamp}  // Ensure unique keys for React
             className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">

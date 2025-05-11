@@ -6,7 +6,7 @@ import "./BusinessMessagesPage.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
-  const businessUserId = user?.userId;                     // מחרוזת
+  const businessUserId = user?.userId;
   const businessProfilePic = user?.profilePicUrl || "/default-business.png";
   const defaultClientPic = "/default-client.png";
 
@@ -31,7 +31,8 @@ export default function BusinessMessagesPage() {
             return other
               ? { 
                   conversationId: conv._id.toString(), 
-                  clientId: other 
+                  clientId: other, 
+                  clientName: other  // כעת נשמור גם את מזהה הלקוח 
                 }
               : null;
           })
@@ -58,13 +59,13 @@ export default function BusinessMessagesPage() {
       <aside className="chat-sidebar">
         <h4>שיחות מלקוחות</h4>
         <ul>
-          {conversations.map(({ conversationId, clientId }) => (
+          {conversations.map(({ conversationId, clientId, clientName }) => (
             <li key={conversationId} className="chat-list-item">
               <button
                 className={conversationId === activeConversationId ? "active" : ""}
                 onClick={() => setActiveConversationId(conversationId)}
               >
-                לקוח: {clientId}
+                לקוח: {clientName || clientId}
               </button>
             </li>
           ))}
