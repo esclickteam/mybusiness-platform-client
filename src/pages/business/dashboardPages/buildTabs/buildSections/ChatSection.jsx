@@ -10,17 +10,29 @@ export default function ChatSection() {
   const [conversations, setConversations] = useState([]);
   const [selectedConvo, setSelectedConvo] = useState(null);
 
-  // טוען את רשימת השיחות של העסק
   useEffect(() => {
     if (!initialized) return;
+
+    console.log("🔍 fetching conversations for", user.userId);
     API.get("/messages/conversations", { withCredentials: true })
-      .then(res => setConversations(res.data))
-      .catch(console.error);
-  }, [initialized]);
+      .then(res => {
+        console.log("📨 conversations payload:", res.data);
+        // res.data אמור להיות מערך של שיחות
+        setConversations(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch(err => {
+        console.error("❌ error loading conversations:", err);
+      });
+  }, [initialized, user.userId]);
+
+  // לצור L og של ה־state אחרי עדכון
+  useEffect(() => {
+    console.log("🔥 conversations state now:", conversations);
+  }, [conversations]);
 
   if (!initialized) return null;
 
-  // מוציא את השותף לשיחה (כל ID חוץ ממני)
+  // partnerId = כל ID ב־participants חוץ ממני
   const partnerId = selectedConvo
     ? selectedConvo.participants.find(id => id !== user.userId)
     : null;
@@ -31,9 +43,8 @@ export default function ChatSection() {
         <h3>שיחות נכנסות</h3>
         {conversations.length > 0 ? (
           conversations.map(convo => {
-            const label =
-              convo.businessName ||
-              convo.participants.find(id => id !== user.userId);
+            // label = אם שמור businessName, אחרת ID
+            const label = convo.businessName || convo.participants.find(id => id !== user.userId);
             return (
               <div
                 key={convo._id}
