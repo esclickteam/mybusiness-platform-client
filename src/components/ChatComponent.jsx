@@ -205,7 +205,7 @@ export default function ChatComponent({
       <div className="chat__body" ref={containerRef}>
         {messages.map(m => (
           <div
-            key={m._id || m.id || m.timestamp}
+            key={m._id || m.id || `${m.timestamp}-${Date.now()}`} // שימוש ב-ID או שילוב של timestamp ו- Date.now()
             className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">
