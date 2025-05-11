@@ -28,7 +28,7 @@ export default function ChatComponent({
     ? (user?.businessName || 'העסק')
     : (user?.name || 'הלקוח');
 
-  // Fetch partner name
+  // Fetch partner name with fallback
   useEffect(() => {
     if (!partnerId) return;
     const endpoint = isBusiness
@@ -40,9 +40,12 @@ export default function ChatComponent({
         const name = isBusiness
           ? (data.name || data.fullName)
           : data.businessName;
-        setPartnerName(name || '---');
+        setPartnerName(name || partnerId);
       })
-      .catch(() => setPartnerName('---'));
+      .catch(err => {
+        console.warn('Partner lookup failed:', err);
+        setPartnerName(isBusiness ? partnerId : '---');
+      });
   }, [partnerId, isBusiness]);
 
   // Load or create conversation, then fetch messages
@@ -50,17 +53,13 @@ export default function ChatComponent({
     if (!initialized || !userId || !partnerId) return;
     (async () => {
       try {
-        const { data: convos } = await API.get(
-          '/messages/conversations'
-        );
-
+        const { data: convos } = await API.get('/messages/conversations');
         const existing = Array.isArray(convos)
           ? convos.find(c =>
               c.participants.includes(userId) &&
               c.participants.includes(partnerId)
             )
           : null;
-
         let convId = existing?._id;
         if (!convId) {
           const { data: created } = await API.post(
@@ -69,9 +68,7 @@ export default function ChatComponent({
           );
           convId = created.conversationId;
         }
-
         setConversationId(convId);
-
         if (convId) {
           const { data: msgs } = await API.get(
             `/messages/conversations/${convId}/messages`
@@ -92,27 +89,20 @@ export default function ChatComponent({
       auth: { token: sessionStorage.getItem('token') },
     });
     socketRef.current = socket;
-
     socket.on('connect', () =>
       console.log('⚡ Socket connected, joined room:', conversationId)
     );
     socket.on('connect_error', err =>
       console.error('⚠️ Socket.IO error:', err)
     );
-
     socket.emit('joinRoom', conversationId);
-
-    socket.on('newMessage', msg => {
-      console.log('📥 newMessage', msg);
-      setMessages(prev => [...prev, msg]);
-    });
+    socket.on('newMessage', msg => setMessages(prev => [...prev, msg]));
     socket.on('typing', ({ from }) =>
       setTypingUsers(prev => Array.from(new Set([...prev, from])))
     );
     socket.on('stopTyping', ({ from }) =>
       setTypingUsers(prev => prev.filter(id => id !== from))
     );
-
     return () => {
       socket.disconnect();
       socketRef.current = null;
@@ -128,7 +118,7 @@ export default function ChatComponent({
 
   if (!initialized) return null;
 
-  // Typing
+  // Typing indicator
   const handleTyping = e => {
     setText(e.target.value);
     if (socketRef.current) {
@@ -145,7 +135,6 @@ export default function ChatComponent({
       }, 800);
     }
   };
-
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
@@ -155,30 +144,26 @@ export default function ChatComponent({
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
-  // Send
+  // Send message
   const sendMessage = async e => {
     e.preventDefault();
     const trimmed = text.trim();
     if (!trimmed && !file) return;
-
     setIsSending(true);
     const timestamp = new Date().toISOString();
-    // Optimistic update
+    // Optimistic UI
     setMessages(prev => [
       ...prev,
       { from: userId, to: partnerId, text: trimmed, timestamp, delivered: false },
     ]);
-
     try {
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', trimmed);
-
       const { data: saved } = await API.post(
         `/messages/conversations/${conversationId}/messages`,
         form
       );
-
       setMessages(prev =>
         prev.map(m =>
           m.timestamp === timestamp ? { ...saved, delivered: true } : m
@@ -202,9 +187,7 @@ export default function ChatComponent({
         {messages.map(m => (
           <div
             key={m._id || m.timestamp}
-            className={`chat__message ${
-              m.from === userId ? 'mine' : 'theirs'
-            }`}
+            className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">
               <div className="chat__sender-name">
