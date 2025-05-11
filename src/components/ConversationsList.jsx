@@ -19,15 +19,15 @@ export default function ConversationsList({ isBusiness, onSelect }) {
   useEffect(() => {
     setLoading(true);
 
-    // GET /api/messages/conversations via baseURL '/api/messages'
-    API.get('/conversations', { withCredentials: true })
+    // GET /api/messages/conversations
+    API.get('/messages/conversations', { withCredentials: true })
       .then(res => {
         const all = Array.isArray(res.data) ? res.data : [];
 
         const formatted = all.map(c => {
           const other = c.participants.find(p => p !== meId) || '';
           return {
-            conversationId: c.conversationId,
+            conversationId: c.conversationId,  // or c._id if you use _id
             partnerId:      other,
             partnerName:    isBusiness
               ? other
