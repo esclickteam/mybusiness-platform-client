@@ -1,42 +1,50 @@
+// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react()], // הוספת פלאגין React
-  base: '/', // הגדרת הבסיס ליישום
+  plugins: [
+    react(),            // פלאגין React
+  ],
+  base: '/',            // הגדרת הבסיס ליישום
   resolve: {
     alias: {
-      '@api': path.resolve(__dirname, 'src/api.js'),
-      '@components': path.resolve(__dirname, 'src/components'),
-      '@pages': path.resolve(__dirname, 'src/pages'),
-      '#minpath': path.resolve(__dirname, 'node_modules/minpath/index.js'),
-      '#minproc': path.resolve(__dirname, 'node_modules/minproc/index.js'),
-      '#minurl': path.resolve(__dirname, 'node_modules/minurl/index.js'),
+      '@api':         path.resolve(__dirname, 'src/api.js'),
+      '@components':  path.resolve(__dirname, 'src/components'),
+      '@pages':       path.resolve(__dirname, 'src/pages'),
+      '#minpath':     path.resolve(__dirname, 'node_modules/minpath/index.js'),
+      '#minproc':     path.resolve(__dirname, 'node_modules/minproc/index.js'),
+      '#minurl':      path.resolve(__dirname, 'node_modules/minurl/index.js'),
       'react-markdown': 'markdown-to-jsx'
     }
   },
   optimizeDeps: {
-    exclude: ['framer-motion'], // מומלץ להחריג מודולים שלא מתאימים
-    include: ['chart.js', 'react-chartjs-2'] // מודולים שצריכים לכלול אותם בתהליך האופטימיזציה
+    exclude: ['framer-motion'],               // חריגים מתהליך האופטימיזציה
+    include: ['chart.js', 'react-chartjs-2']  // כלול במפורש
   },
   server: {
-    port: 3000, // הגדרת פורט השרת
+    port: 3000,   // פורט ה־Dev Server
     proxy: {
       '/api': {
         target: 'https://api.esclick.co.il',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api')
-      },
+      }
+    },
+    watch: {
+      // התעלמות מתיקיית .history (מונע HMR כשקבצים שם משתנים)
+      ignored: ['**/.history/**']
     }
   },
   build: {
     rollupOptions: {
-      input: path.resolve(__dirname, 'index.html') // נתיב לקובץ ה־HTML הראשי
+      input: path.resolve(__dirname, 'index.html')  // קובץ ה־HTML הראשי
     }
   },
   define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) // הגדרת משתנה סביבתי ל־NODE_ENV
+    // הגדרת NODE_ENV לשימוש בקוד שלך
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
   }
 });
