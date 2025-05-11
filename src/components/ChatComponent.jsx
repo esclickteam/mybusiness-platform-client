@@ -15,107 +15,93 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   const [file, setFile] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
-  const [businessName, setBusinessName] = useState('');
+  const [partnerName, setPartnerName] = useState('');
   const containerRef = useRef(null);
   const socketRef = useRef(null);
 
+  // מזהה המשתמש הנוכחי
   const userId = user?.userId;
+  // השם שיוצג עבור המשתמש הנוכחי
+  const currentName = isBusiness
+    ? (user?.businessName || 'העסק')
+    : (user?.name || 'הלקוח');
 
-  // יצירת שיחה אם אין כזו, וודא ששדה businessName מועבר
-  const createConversation = async (partnerId, businessName) => {
-    try {
-      // שלח בקשה ליצירת שיחה
-      console.log('⏩ Creating conversation with partnerId:', partnerId, 'businessName:', businessName);
-      const response = await API.post('/messages', {
-        otherId: partnerId,  // שותף לשיחה
-        businessName: businessName // שם העסק
-      }, { withCredentials: true });
+  // טוען את השם של השותף לשיחה (עסק <-> לקוח)
+  useEffect(() => {
+    if (!partnerId) return;
+    const endpoint = isBusiness
+      ? `/users/${partnerId}`
+      : `/business/${partnerId}`;
+    API.get(endpoint)
+      .then(res => {
+        const data = isBusiness ? res.data.user : res.data.business;
+        const name = isBusiness
+          ? (data.name || data.fullName)
+          : data.businessName;
+        setPartnerName(name || '');
+      })
+      .catch(console.error);
+  }, [partnerId, isBusiness]);
 
-      // קבלת conversationId לאחר יצירת השיחה
-      const convId = response.data.conversationId;
-      setConversationId(convId);
-      console.log('⏩ Created new conversation with ID:', convId);
-    } catch (error) {
-      console.error('❌ Error creating conversation:', error);
-    }
-  };
-
+  // טוען או יוצר שיחה וקורא את ההודעות הראשוניות
   useEffect(() => {
     if (!userId || !partnerId) return;
     (async () => {
       try {
-        console.log('⏩ Fetching convos for userId:', userId);
         const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
-        console.log('⏩ convos:', convos);
         const convo = convos.find(c =>
           c.participants.some(p => p.toString() === partnerId)
         );
         if (convo) {
-          const convId = convo._id.toString();
-          setConversationId(convId);
-          console.log('⏩ using existing conversationId:', convId);
-          const { data: msgs } = await API.get(`/messages/${convId}/messages`, { withCredentials: true });
-          console.log('⏩ loaded messages:', msgs);
+          setConversationId(convo._id);
+          const { data: msgs } = await API.get(
+            `/messages/${convo._id}/messages`,
+            { withCredentials: true }
+          );
           setMessages(msgs);
-
-          if (isBusiness && convo.businessName) {
-            console.log('⏩ businessName found:', convo.businessName);
-            setBusinessName(convo.businessName);
-          } else {
-            setBusinessName(convo.businessName || 'שם העסק לא זמין');
-          }
-        } else {
-          console.log('⏩ no convo found, will create on send');
-          setConversationId(null);
-          setMessages([]);
         }
       } catch (err) {
-        console.error('❌ error loading conversation:', err);
-        setConversationId(null);
-        setMessages([]);
+        console.error('Error loading conversation:', err);
       }
     })();
-  }, [partnerId, userId, isBusiness]);
+  }, [partnerId, userId]);
 
+  // הגדרת Socket.IO
   useEffect(() => {
     if (!conversationId) return;
-    console.log(`⏩ connecting socket for room ${conversationId}`);
     const socket = io(SOCKET_URL, {
       withCredentials: true,
       auth: { token: localStorage.getItem('token') },
     });
     socketRef.current = socket;
     socket.emit('joinRoom', conversationId);
-    console.log(`⏩ emitted joinRoom: ${conversationId}`);
+
     socket.on('newMessage', msg => {
-      console.log('🔔 newMessage:', msg);
       setMessages(prev => [...prev, msg]);
     });
     socket.on('typing', ({ from }) => {
-      console.log('🔔 typing from:', from);
       setTypingUsers(prev => Array.from(new Set([...prev, from])));
     });
     socket.on('stopTyping', ({ from }) => {
-      console.log('🔔 stopTyping from:', from);
       setTypingUsers(prev => prev.filter(id => id !== from));
     });
+
     return () => {
-      console.log('⏩ disconnecting socket');
       socket.disconnect();
       socketRef.current = null;
     };
   }, [conversationId]);
 
+  // גלילה לתחתית בהודעות חדשות
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages]);
 
-  if (!initialized) {
-    return null;
-  }
+  if (!initialized) return null;
 
+  // טיפול בטייפינג
   const handleTyping = e => {
     setMessage(e.target.value);
     if (!socketRef.current || !conversationId) return;
@@ -126,49 +112,43 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
+  // שליחת הודעה
   const sendMessage = async e => {
     e?.preventDefault();
     const text = message.trim();
     if (!text && !file) return;
-  
-    console.log('⏩ Sending message with businessName:', businessName);
-  
+
     setIsSending(true);
     const tempId = Date.now().toString();
-  
-    // יצירת הודעה אופטימית
-    const optimisticMsg = { 
-      id: tempId, 
-      from: userId, 
+
+    // הודעה אופטימית
+    const optimisticMsg = {
+      id: tempId,
+      from: userId,
       to: partnerId,
-      text, 
+      text,
       fileName: file?.name,
-      timestamp: new Date().toISOString(), 
-      delivered: false, 
-      businessName: businessName || 'שם העסק לא זמין' // הגדרת ברירת מחדל אם שם העסק ריק
+      timestamp: new Date().toISOString(),
+      delivered: false,
     };
     setMessages(prev => [...prev, optimisticMsg]);
-  
+
     try {
       let convId = conversationId;
       if (!convId) {
-        console.log('⏩ creating convo with otherId:', partnerId);
         const { data } = await API.post(
-          '/messages', 
-          { otherId: partnerId, businessName: businessName || 'שם העסק לא זמין' }, // העברת businessName
+          '/messages',
+          { otherId: partnerId },
           { withCredentials: true }
         );
-        convId = data.conversationId.toString().trim();
+        convId = data.conversationId;
         setConversationId(convId);
-        console.log('⏩ created convId:', convId);
       }
-  
-      console.log('⏩ posting message to', convId, 'userId:', userId);
+
       const form = new FormData();
       if (file) form.append('fileData', file);
       form.append('text', text);
-      
-      // שליחה ל־API
+
       const { data: saved } = await API.post(
         `/messages/${convId}/messages`,
         form,
@@ -177,25 +157,25 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           headers: { 'Content-Type': 'multipart/form-data' },
         }
       );
-      console.log('⏩ API saved message:', saved);
-  
-      // עדכון ההודעות לאחר שההודעה נשמרה בהצלחה
-      setMessages(prev => prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m));
+
+      setMessages(prev =>
+        prev.map(m => (m.id === tempId ? { ...saved, delivered: true } : m))
+      );
     } catch (err) {
-      console.error('❌ error sending message:', err);
+      console.error('Error sending message:', err);
     } finally {
       setIsSending(false);
-      setMessage(''); // נקה את הודעת הטקסט
-      setFile(null);  // נקה את הקובץ
+      setMessage('');
+      setFile(null);
     }
   };
-  
 
+  // הצגת טייפינג
   const renderTyping = () => {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
     const names = others
-      .map(id => (id === partnerId ? (isBusiness ? 'לקוח' : 'עסק') : 'משתמש'))
+      .map(id => (id === partnerId ? partnerName : 'מישהו'))
       .join(', ');
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
@@ -203,8 +183,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
   return (
     <div className="chat">
       <header className="chat__header">
-        {isBusiness ? 'עסק' : 'לקוח'} - {businessName || 'שם העסק לא זמין'}
+        {currentName} – {partnerName || '...'}
       </header>
+
       <div className="chat__body" ref={containerRef}>
         {messages.map((m, idx) => (
           <div
@@ -216,11 +197,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
               {m.fileUrl && (
                 <div className="chat__attachment">
                   {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                    <img
-                      src={m.fileUrl}
-                      alt={m.fileName}
-                      className="chat__img"
-                    />
+                    <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
                   ) : (
                     <a
                       href={m.fileUrl}
@@ -247,6 +224,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
         ))}
         {renderTyping()}
       </div>
+
       <form className="chat__input" onSubmit={sendMessage}>
         <button
           type="submit"
@@ -259,11 +237,16 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           placeholder="כתוב הודעה..."
           value={message}
           onChange={handleTyping}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(e); }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
+          }}
         />
         <label className="chat__attach">
           <FiPaperclip size={20} />
-          <input type="file" onChange={e => setFile(e.target.files[0] || null)} />
+          <input
+            type="file"
+            onChange={e => setFile(e.target.files[0] || null)}
+          />
         </label>
       </form>
     </div>
