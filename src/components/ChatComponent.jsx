@@ -53,7 +53,7 @@ export default function ChatComponent({
       try {
         // Fetch existing conversations
         const { data: convos } = await API.get(
-          '/conversations',
+          '/messages/conversations',
           { withCredentials: true }
         );
         const convo = Array.isArray(convos) &&
