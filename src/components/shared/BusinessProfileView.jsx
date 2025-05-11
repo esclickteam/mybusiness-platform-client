@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from "../../api";           // וודא שהנתיב מדויק: src/api.js
+import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import "./BusinessProfileView.css";
 
-// הגדרת הטאבים
 const TABS = [
   "ראשי",
   "גלריה",
@@ -20,17 +19,15 @@ export default function BusinessProfileView() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // השתמש ב-paramId או ב-businessId שמגיע מה-AuthContext
   const bizId = paramId || user?.businessId;
 
-  const [data, setData]               = useState(null);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState(null);
-  const [currentTab, setCurrentTab]   = useState("ראשי");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [isSubmitting, setIsSubmitting]       = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // טעינת פרטי העסק
   useEffect(() => {
     if (!bizId) {
       setError("Invalid business ID");
@@ -51,15 +48,13 @@ export default function BusinessProfileView() {
     })();
   }, [bizId]);
 
-  // תנאים מוקדמים
   if (loading) return <div className="loading">טוען…</div>;
   if (error)   return <div className="error">{error}</div>;
   if (!data)   return <div className="error">העסק לא נמצא</div>;
 
-  // עדכון ה-destructuring לפי הפורמט החדש
   const {
     businessName,
-    logo,
+    logo: logoUrl,
     description = "",
     phone = "",
     category = "",
@@ -69,7 +64,6 @@ export default function BusinessProfileView() {
     address: { city = "" } = {}
   } = data;
 
-  // חישוב דירוג ממוצע
   const totalRating   = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
   const avgRating     = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg    = Math.round(avgRating * 10) / 10;
@@ -80,12 +74,10 @@ export default function BusinessProfileView() {
   const isOwner   = user?.role === "business" && user.businessId === bizId;
   const canDelete = ["admin", "manager"].includes(user?.role);
 
-  // בדיקה אם כבר הגיש ביקורת
   const hasReviewed = user
     ? reviews.some(r => r.user?._id === user._id || r.user?.id === user._id)
     : false;
 
-  // Handlers
   const handleReviewClick  = () => setShowReviewModal(true);
   const closeReviewModal   = () => setShowReviewModal(false);
   const handleChatClick    = () => navigate(`/business/${bizId}/chat`);
@@ -95,7 +87,6 @@ export default function BusinessProfileView() {
     setIsSubmitting(true);
     try {
       await api.post(`/business/${bizId}/reviews`, newReview);
-      // רענון הנתונים
       const res = await api.get(`/business/${bizId}`);
       setData(res.data.business || res.data);
       closeReviewModal();
@@ -133,9 +124,9 @@ export default function BusinessProfileView() {
             </Link>
           )}
 
-          {logo && (
+          {logoUrl && (
             <div className="profile-logo-wrapper">
-              <img className="profile-logo" src={logo} alt="לוגו העסק" />
+              <img className="profile-logo" src={logoUrl} alt="לוגו העסק" />
             </div>
           )}
 

@@ -106,14 +106,13 @@ export default function Build() {
           email:           data.email         || "",
           category:        data.category      || "",
           address:         { city },
-          
+
           // לוגו: שמירה של URL קבוע ו-publicId
           logo: {
-            preview:  data.logoUrl        || null,
+            preview:  data.logo           || null,
             publicId: data.logoPublicId  || null
           },
 
-          // שאר המערכים
           gallery:         galleryUrls,
           galleryImageIds: galleryIds,
           mainImages:      urls,
@@ -126,6 +125,7 @@ export default function Build() {
     .catch(console.error)
     .finally(() => setFirstLoad(false));
 }, []);
+
 
 
   // Autosave אחרי debounce
@@ -151,17 +151,19 @@ export default function Build() {
         const updated = res.data.business;  // מתוך { business: updatedBiz }
         setBusinessDetails(prev => ({
           ...prev,
-          // ממזגים את כל השדות המעודכנים
-          businessName:   updated.businessName,
-          category:       updated.category,
-          description:    updated.description,
-          phone:          updated.phone,
-          email:          updated.email,
-          address:        { city: updated.address.city || prev.address.city },
-          // משאירים את הלוגו וה-IDs כפי שהם ב-state
-          logo:           prev.logo,
-          logoPublicId:   prev.logoPublicId,
-          // אם יש שדות נוספים ב־updated שתרצה למזג, הוסף אותם כאן...
+          businessName: updated.businessName,
+          category:     updated.category,
+          description:  updated.description,
+          phone:        updated.phone,
+          email:        updated.email,
+          address:      { city: updated.address.city || prev.address.city },
+          logo:         prev.logo,            // משמרים את אובייקט הלוגו כפי שהוא ב-state
+          gallery:         prev.gallery,
+          galleryImageIds: prev.galleryImageIds,
+          mainImages:      prev.mainImages,
+          mainImageIds:    prev.mainImageIds,
+          faqs:            prev.faqs,
+          reviews:         prev.reviews,
         }));
       }
     } catch (err) {
@@ -184,9 +186,7 @@ export default function Build() {
 
 
   
-         
-
-  // ===== INPUT CHANGE (supports nested fields) =====
+           // ===== INPUT CHANGE (supports nested fields) =====
 const handleInputChange = ({ target: { name, value } }) => {
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
@@ -207,47 +207,35 @@ const handleLogoClick = () => {
   logoInputRef.current?.click();
 };
 
-const handleLogoChange = async e => {
-  const file = e.target.files?.[0];
+// בתוך ה־component שלך
+const handleLogoChange = async (e) => {
+  const file = e.target.files[0];
   if (!file) return;
-  e.target.value = null;
-
-  // יצירת preview חדש
-  const blobUrl = URL.createObjectURL(file);
+  // 1) טרם ההעלאה – הצגת Preview מיידי
+  const previewUrl = URL.createObjectURL(file);
   setBusinessDetails(prev => ({
     ...prev,
-    logo: { preview: blobUrl }
+    logo: { file, preview: previewUrl },
   }));
 
-  // העלאה לשרת
-  const fd = new FormData();
-  fd.append('logo', file);
-
+  // 2) העלאה לשרת
+  const formData = new FormData();
+  formData.append('logo', file);
   try {
-    const res = await API.patch('/business/my/logo', fd, {
+    const res = await API.patch('/business/my/logo', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    if (res.status === 200) {
-      const { logoUrl, logoPublicId } = res.data;
-      // עדכון state עם ה־URL ו־publicId מהשרת
-      setBusinessDetails(prev => ({
-        ...prev,
-        logo: {
-          preview:  logoUrl,
-          publicId: logoPublicId
-        }
-      }));
-    } else {
-      console.warn('Logo upload failed:', res);
-    }
+    // מניח ש־res.data.business.logo הוא ה־URL ב־Cloudinary
+    setBusinessDetails(prev => ({
+      ...prev,
+      logo: { preview: res.data.business.logo, publicId: res.data.business.logoPublicId }
+    }));
   } catch (err) {
-    console.error('Error uploading logo:', err);
-    // אפשר להחזיר ל־prev.preview המקורי או להראות שגיאה למשתמש
-  } finally {
-    // שחרור הזכרון של ה־blob URL הישן
-    URL.revokeObjectURL(blobUrl);
+    console.error('❌ שגיאה בהעלאת לוגו:', err);
+    alert('שגיאה בהעלאת לוגו');
   }
 };
+
 
 
     
@@ -534,17 +522,18 @@ const handleDeleteMainImage = async publicId => {
       <div className="topbar-preview">
         {/* לוגו */}
         <div className="logo-circle" onClick={handleLogoClick}>
-          {businessDetails.logo?.preview
-            ? <img src={businessDetails.logo.preview} className="logo-img" />
-            : <span>לוגו</span>}
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            ref={logoInputRef}
-            onChange={handleLogoChange}
-          />
-        </div>
+  {businessDetails.logo?.preview
+    ? <img src={businessDetails.logo.preview} className="logo-img" />
+    : <span>לוגו</span>}
+  <input
+    type="file"
+    accept="image/*"
+    style={{ display: "none" }}
+    ref={logoInputRef}
+    onChange={handleLogoChange}
+  />
+</div>
+
   
         {/* שם העסק + דירוג */}
         <div className="name-rating">
