@@ -1,3 +1,5 @@
+// src/components/ConversationsList.jsx
+
 import React, { useState, useEffect } from 'react';
 import API from '../api';
 import './ConversationsList.css'; // CSS styles for sidebar
@@ -5,13 +7,12 @@ import './ConversationsList.css'; // CSS styles for sidebar
 /**
  * Props:
  *  - isBusiness: boolean, whether current user is a business or a client
- *  - partnerId: when isBusiness===false, the other party’s userId to filter for
  *  - onSelect: function({ conversationId, partnerId }) callback when selecting a conversation
  */
-export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
-  const [convos, setConvos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+export default function ConversationsList({ isBusiness, onSelect }) {
+  const [convos, setConvos]     = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [search, setSearch]     = useState('');
 
   // Get the current userId from localStorage or context
   const meId = JSON.parse(localStorage.getItem('user'))?.id;
@@ -19,28 +20,30 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
   useEffect(() => {
     setLoading(true);
 
-    // קוראים ל־GET /messages
-    API.get('/messages', { withCredentials: true })
+    // 1) תקן כאן לקריאה למערך השיחות
+    API.get('/messages/conversations', { withCredentials: true })
       .then(res => {
-        const all = res.data; // כל השיחות: [{ _id, participants: [{ _id, name }] }, ...]
+        const all = Array.isArray(res.data) ? res.data : [];
 
-        // ממפים לכל פריט רק את הצד השני בשיחה
         const formatted = all.map(c => {
-          // מוציאים את המשתתף השני
-          const other = c.participants.find(p => p._id !== meId) || {};
+          // אם זה עסק, partnerId זה המשתמש; אם לקוח, זה העסק
+          const other = c.participants.find(p => p !== meId) || '';
+          const partnerName = isBusiness
+            ? (c.participantsMeta?.find(u => u._id === other)?.name || '---')
+            : (c.businessName || '---');
 
           return {
             conversationId: c._id,
-            partnerId: other._id,
-            partnerName: other.name || '---',
-            // כאן אנחנו יכולים להוסיף את ההודעה האחרונה אם יש
-            lastMessage: c.messages[c.messages.length - 1]?.text || '',
-            updatedAt: c.updatedAt, // אם תרצה תוכל להוסיף תאריך עדכון במסד
-            unreadCount: 0, // תוכל להוסיף שדה בהמשך
+            partnerId,
+            partnerName,
+            lastMessage: c.messages?.length
+              ? c.messages[c.messages.length - 1].text
+              : '',
+            updatedAt: c.updatedAt,
+            unreadCount: 0,
           };
         });
 
-        // במצב לקוח/עסק – אותו מיפוי
         setConvos(formatted);
       })
       .catch(err => {
@@ -48,19 +51,14 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
         setConvos([]);
       })
       .finally(() => setLoading(false));
-  }, [isBusiness, partnerId]);
+  }, [isBusiness, meId]);
 
-  if (loading) {
-    return <div className="sidebar-spinner">טוען שיחות…</div>;
-  }
-
-  if (!convos.length) {
-    return <div className="empty-chat">אין שיחות כרגע</div>;
-  }
+  if (loading) return <div className="sidebar-spinner">טוען שיחות…</div>;
+  if (!convos.length) return <div className="empty-chat">אין שיחות כרגע</div>;
 
   const filtered = convos.filter(c =>
     c.partnerName.toLowerCase().includes(search.toLowerCase()) ||
-    c.lastMessage.toLowerCase().includes(search.toLowerCase()) // חיפוש גם בהודעה האחרונה
+    c.lastMessage.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -81,7 +79,7 @@ export default function ConversationsList({ isBusiness, partnerId, onSelect }) {
           onClick={() =>
             onSelect({
               conversationId: c.conversationId,
-              partnerId:       c.partnerId
+              partnerId:      c.partnerId
             })
           }
         >
