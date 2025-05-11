@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ChatComponent from "../../../components/ChatComponent";
 import API from "../../../api";
-import "./BusinessMessagesPage.css";
+import "./ChatSection.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
