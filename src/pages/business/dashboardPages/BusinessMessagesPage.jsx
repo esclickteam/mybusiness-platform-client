@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ChatComponent from "../../../components/ChatComponent";
 import API from "../../../api";
-import './buildTabs/buildSections/ChatSection.css';
-
+import "./BusinessMessagesPage.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
-  const businessUserId = user?.userId;
+  const businessUserId = user?.userId;                     // מחרוזת
   const businessProfilePic = user?.profilePicUrl || "/default-business.png";
   const defaultClientPic = "/default-client.png";
 
@@ -32,8 +31,7 @@ export default function BusinessMessagesPage() {
             return other
               ? { 
                   conversationId: conv._id.toString(), 
-                  clientId: other, 
-                  clientName: other  // כעת נשמור גם את מזהה הלקוח 
+                  clientId: other 
                 }
               : null;
           })
@@ -60,13 +58,13 @@ export default function BusinessMessagesPage() {
       <aside className="chat-sidebar">
         <h4>שיחות מלקוחות</h4>
         <ul>
-          {conversations.map(({ conversationId, clientId, clientName }) => (
+          {conversations.map(({ conversationId, clientId }) => (
             <li key={conversationId} className="chat-list-item">
               <button
                 className={conversationId === activeConversationId ? "active" : ""}
                 onClick={() => setActiveConversationId(conversationId)}
               >
-                לקוח: {clientName || clientId}
+                לקוח: {clientId}
               </button>
             </li>
           ))}
