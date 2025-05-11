@@ -21,12 +21,12 @@ export default function BusinessProfileView() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [data, setData]               = useState(null);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState(null);
-  const [currentTab, setCurrentTab]   = useState("ראשי");
+  const [data, setData]         = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
+  const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [isSubmitting, setIsSubmitting]       = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // טעינת פרטי העסק
   useEffect(() => {
@@ -49,9 +49,8 @@ export default function BusinessProfileView() {
   if (error)   return <div className="error">{error}</div>;
   if (!data)   return <div className="error">העסק לא נמצא</div>;
 
-  // עדכון ה-destructuring לפי הפורמט החדש
   const {
-    businessName,
+    name,
     logo,
     description = "",
     phone = "",
@@ -59,13 +58,13 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    address: { city = "" } = {}
+    city = ""
   } = data;
 
   // חישוב דירוג ממוצע באופן סינכרוני
-  const totalRating   = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
-  const avgRating     = reviews.length ? totalRating / reviews.length : 0;
-  const roundedAvg    = Math.round(avgRating * 10) / 10;
+  const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
+  const avgRating   = reviews.length ? totalRating / reviews.length : 0;
+  const roundedAvg  = Math.round(avgRating * 10) / 10;
   const fullAvgStars  = Math.floor(roundedAvg);
   const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
@@ -134,13 +133,13 @@ export default function BusinessProfileView() {
             </div>
           )}
 
-          <h1 className="business-name">{businessName}</h1>
+          <h1 className="business-name">{name}</h1>
 
           <div className="about-phone">
-            {category &&    <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone &&       <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city &&        <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
