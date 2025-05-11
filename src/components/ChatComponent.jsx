@@ -146,7 +146,7 @@ export default function ChatComponent({
   };
 
   // Send message (text + optional file)
-  const sendMessage = async e => {
+  const sendMessage = async (e) => {
     e.preventDefault();
     const trimmed = text.trim();
     if (!trimmed && !file) return;
@@ -154,18 +154,20 @@ export default function ChatComponent({
     setIsSending(true);
     const tempId = Date.now().toString();
 
-    // Create message data with businessName
+    // יצירת נתוני ההודעה
     const messageData = {
       from: userId,
       to: partnerId,
       text: trimmed,
-      businessName: user?.businessName || 'שם העסק לא זמין', // Add businessName here
+      businessName: user?.businessName || 'שם העסק לא זמין', // הוספת שם העסק כאן
       timestamp: new Date().toISOString(),
       fileName: file?.name,
       delivered: false,
     };
 
-    // Optimistic UI update
+    console.log('Sending message data:', messageData); // לוג למעקב אחרי הנתונים
+
+    // עדכון ה־UI עם הודעה אופטימית
     setMessages(prev => [...prev, messageData]);
 
     try {
@@ -173,6 +175,7 @@ export default function ChatComponent({
       if (file) form.append('fileData', file);
       form.append('text', trimmed);
 
+      // שליחת הנתונים ל־API
       const { data: saved } = await API.post(
         `/messages/conversations/${conversationId}/messages`,
         form,
@@ -185,7 +188,7 @@ export default function ChatComponent({
       setMessages(prev =>
         prev.map(m =>
           m.timestamp === messageData.timestamp
-            ? { ...saved, delivered: true }
+            ? { ...saved, delivered: true } // עדכון עם נתוני השרת
             : m
         )
       );
@@ -205,45 +208,49 @@ export default function ChatComponent({
       </header>
 
       <div className="chat__body" ref={containerRef}>
-        {messages.map(m => (
-          <div
-            key={m._id || m.id || `${m.timestamp}-${conversationId}-${Math.random()}`} // מבטיח ייחודיות
-  className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
-          >
-            <div className="chat__bubble">
-              {m.text && <p className="chat__text">{m.text}</p>}
-              {m.fileUrl && (
-                <div className="chat__attachment">
-                  {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                    <img
-                      src={m.fileUrl}
-                      alt={m.fileName}
-                      className="chat__img"
-                    />
-                  ) : (
-                    <a
-                      href={m.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="chat__file-link"
-                    >
-                      הורד {m.fileName}
-                    </a>
-                  )}
+        {messages.map(m => {
+          const senderName = m.from === userId ? partnerName : currentName; // הצגת שם השולח
+          return (
+            <div
+              key={m._id || m.id || `${m.timestamp}-${conversationId}-${Math.random()}`} // מבטיח ייחודיות
+              className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
+            >
+              <div className="chat__bubble">
+                <div className="chat__sender-name">{senderName}</div> {/* הצגת שם השולח */}
+                {m.text && <p className="chat__text">{m.text}</p>}
+                {m.fileUrl && (
+                  <div className="chat__attachment">
+                    {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
+                      <img
+                        src={m.fileUrl}
+                        alt={m.fileName}
+                        className="chat__img"
+                      />
+                    ) : (
+                      <a
+                        href={m.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="chat__file-link"
+                      >
+                        הורד {m.fileName}
+                      </a>
+                    )}
+                  </div>
+                )}
+                <div className="chat__meta">
+                  <span className="chat__time">
+                    {new Date(m.timestamp).toLocaleTimeString('he-IL', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </span>
+                  {m.delivered && <span className="chat__status">✔</span>}
                 </div>
-              )}
-              <div className="chat__meta">
-                <span className="chat__time">
-                  {new Date(m.timestamp).toLocaleTimeString('he-IL', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </span>
-                {m.delivered && <span className="chat__status">✔</span>}
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         {renderTyping()}
       </div>
 
