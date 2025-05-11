@@ -2,30 +2,27 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
-import ChatComponent from "@components/ChatComponent"; // הקומפוננטה שמציגה את הצ'אט
+import ChatComponent from "@components/ChatComponent";
 import "./ChatSection.css";
 
-export default function ChatSection({ renderTopBar }) {
+export default function ChatSection() {
   const { user, initialized } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [selectedConvo, setSelectedConvo] = useState(null);
 
+  // טוען את רשימת השיחות של העסק
   useEffect(() => {
     if (!initialized) return;
-
     API.get("/messages/conversations", { withCredentials: true })
-      .then(res => {
-        console.log("📨 fetched conversations:", res.data);
-        setConversations(res.data);
-      })
-      .catch(err => console.error("❌ load convos error:", err));
+      .then(res => setConversations(res.data))
+      .catch(console.error);
   }, [initialized]);
 
   if (!initialized) return null;
 
-  // מזהה של השותף לשיחה
+  // מוציא את השותף לשיחה (כל ID חוץ ממני)
   const partnerId = selectedConvo
-    ? selectedConvo.participants.find(p => p !== user.userId)
+    ? selectedConvo.participants.find(id => id !== user.userId)
     : null;
 
   return (
@@ -34,8 +31,9 @@ export default function ChatSection({ renderTopBar }) {
         <h3>שיחות נכנסות</h3>
         {conversations.length > 0 ? (
           conversations.map(convo => {
-            // שדה לתצוגה: או שם העסק (businessName), או ID, או תוכלו להוסיף clientName
-            const label = convo.businessName || convo.participants.find(p => p !== user.userId);
+            const label =
+              convo.businessName ||
+              convo.participants.find(id => id !== user.userId);
             return (
               <div
                 key={convo._id}
@@ -53,22 +51,15 @@ export default function ChatSection({ renderTopBar }) {
         )}
       </aside>
 
-      <section className="chat-main">
+      <main className="chat-main">
         {partnerId ? (
-          <ChatComponent
-            partnerId={partnerId}
-            isBusiness={true}
-          />
+          <ChatComponent partnerId={partnerId} isBusiness={true} />
         ) : (
           <div className="chat-placeholder">
             בחרי שיחה מהרשימה כדי להתחיל
           </div>
         )}
-      </section>
-
-      <div className="preview-column">
-        {renderTopBar()}
-      </div>
+      </main>
     </div>
   );
 }
