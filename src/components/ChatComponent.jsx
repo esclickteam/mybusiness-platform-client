@@ -207,8 +207,8 @@ export default function ChatComponent({
       <div className="chat__body" ref={containerRef}>
         {messages.map(m => (
           <div
-            key={m._id || m.timestamp || `${m.timestamp}-${Date.now()}`} // Ensure unique key
-            className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
+            key={m._id || m.id || `${m.timestamp}-${conversationId}-${Math.random()}`} // מבטיח ייחודיות
+  className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">
               {m.text && <p className="chat__text">{m.text}</p>}
