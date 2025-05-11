@@ -1,6 +1,6 @@
 // src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../../../context/AuthContext";
+import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
 import ChatTab from "../ChatTab.jsx";
 import "./ChatSection.css";
