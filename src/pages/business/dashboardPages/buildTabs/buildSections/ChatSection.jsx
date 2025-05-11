@@ -2,83 +2,73 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
-import ChatTab from "../ChatTab.jsx";
+import ChatComponent from "@components/ChatComponent"; // הקומפוננטה שמציגה את הצ'אט
 import "./ChatSection.css";
 
-export default function ChatSection({ businessDetails, setBusinessDetails, renderTopBar }) {
+export default function ChatSection({ renderTopBar }) {
   const { user, initialized } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [selectedConvo, setSelectedConvo] = useState(null);
 
   useEffect(() => {
     if (!initialized) return;
-    // קורא ל־endpoint שמחזיר את רשימת השיחות
-    API.get("/messages", { withCredentials: true })
+
+    API.get("/messages/conversations", { withCredentials: true })
       .then(res => {
-        // אם השרת עוטף ב־{ conversations: [...] } תחליפי ל־res.data.conversations
+        console.log("📨 fetched conversations:", res.data);
         setConversations(res.data);
       })
-      .catch(console.error);
+      .catch(err => console.error("❌ load convos error:", err));
   }, [initialized]);
 
   if (!initialized) return null;
 
-  // מוציא את ה־partnerId: כל משתתף חוץ ממני
+  // מזהה של השותף לשיחה
   const partnerId = selectedConvo
-    ? selectedConvo.participants.find(id => id !== user.userId)
+    ? selectedConvo.participants.find(p => p !== user.userId)
     : null;
 
   return (
-    <>
-      <div className="form-column">
-        <aside className="chat-sidebar">
-          <h3>שיחות נכנסות</h3>
+    <div className="chat-section">
+      <aside className="chat-sidebar">
+        <h3>שיחות נכנסות</h3>
+        {conversations.length > 0 ? (
+          conversations.map(convo => {
+            // שדה לתצוגה: או שם העסק (businessName), או ID, או תוכלו להוסיף clientName
+            const label = convo.businessName || convo.participants.find(p => p !== user.userId);
+            return (
+              <div
+                key={convo._id}
+                className={`chat-sidebar__item ${
+                  selectedConvo?._id === convo._id ? "active" : ""
+                }`}
+                onClick={() => setSelectedConvo(convo)}
+              >
+                {label}
+              </div>
+            );
+          })
+        ) : (
+          <p className="chat-sidebar__empty">אין שיחות להצגה</p>
+        )}
+      </aside>
 
-          {conversations.length > 0 ? (
-            conversations.map(convo => {
-              const pid = convo.participants.find(id => id !== user.userId);
-              // תווית להצגה: אפשר כאן לקחת convo.clientName או convo.businessName
-              const label = convo.clientName || convo.businessName || pid;
-              return (
-                <div
-                  key={convo._id}
-                  className={`chat-sidebar__item ${
-                    selectedConvo?._id === convo._id ? "active" : ""
-                  }`}
-                  onClick={() => setSelectedConvo(convo)}
-                >
-                  {label}
-                </div>
-              );
-            })
-          ) : (
-            <p className="chat-sidebar__empty">אין שיחות להצגה</p>
-          )}
-        </aside>
-
-        {partnerId && (
-          <ChatTab
-            businessDetails={businessDetails}
-            setBusinessDetails={setBusinessDetails}
-            isPreview={false}
+      <section className="chat-main">
+        {partnerId ? (
+          <ChatComponent
             partnerId={partnerId}
             isBusiness={true}
           />
+        ) : (
+          <div className="chat-placeholder">
+            בחרי שיחה מהרשימה כדי להתחיל
+          </div>
         )}
-      </div>
+      </section>
 
       <div className="preview-column">
         {renderTopBar()}
-        {partnerId && (
-          <ChatTab
-            businessDetails={businessDetails}
-            setBusinessDetails={setBusinessDetails}
-            isPreview={true}
-            partnerId={partnerId}
-            isBusiness={true}
-          />
-        )}
       </div>
-    </>
+    </div>
   );
 }
