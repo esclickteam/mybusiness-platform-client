@@ -1,5 +1,4 @@
 // src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
@@ -13,36 +12,35 @@ export default function ChatSection({ renderTopBar }) {
 
   useEffect(() => {
     if (!initialized) return;
-
-    // Now fetching all conversations (including businessName)
-    API.get("/messages", { withCredentials: true })
-      .then(res => setConversations(Array.isArray(res.data) ? res.data : []))
+    API.get("/messages/conversations", { withCredentials: true })
+      .then(res => {
+        setConversations(Array.isArray(res.data) ? res.data : []);
+      })
       .catch(console.error);
   }, [initialized]);
 
   if (!initialized) return null;
 
-  // מזהה השותף לשיחה
   const partnerId = selectedConvo
     ? selectedConvo.participants.find(id => id !== user.userId)
     : null;
 
-  // מזהה השיחה שנבחרה
   const conversationId = selectedConvo?._id || null;
 
   return (
     <div className="chat-section">
-      {/* סיידבר עם רשימת שיחות */}
       <aside className="chat-sidebar">
         <h3>שיחות נכנסות</h3>
         {conversations.length > 0 ? (
           conversations.map(convo => {
             const otherId = convo.participants.find(id => id !== user.userId);
-            const label   = convo.businessName || otherId;
+            const label = convo.businessName || otherId;
             return (
               <div
                 key={convo._id}
-                className={`chat-sidebar__item ${selectedConvo?._id === convo._id ? 'active' : ''}`}
+                className={`chat-sidebar__item ${
+                  selectedConvo?._id === convo._id ? "active" : ""
+                }`}
                 onClick={() => setSelectedConvo(convo)}
               >
                 {label}
@@ -54,7 +52,6 @@ export default function ChatSection({ renderTopBar }) {
         )}
       </aside>
 
-      {/* חלון הצ'אט */}
       <main className="chat-main">
         {conversationId ? (
           <ChatComponent
@@ -63,14 +60,13 @@ export default function ChatSection({ renderTopBar }) {
             isBusiness={true}
           />
         ) : (
-          <div className="chat-placeholder">בחרי שיחה מהרשימה כדי להתחיל</div>
+          <div className="chat-placeholder">
+            בחרי שיחה מהרשימה כדי להתחיל
+          </div>
         )}
       </main>
 
-      {/* תצוגת פריוויו עליון */}
-      <div className="preview-column">
-        {renderTopBar?.()}
-      </div>
+      <div className="preview-column">{renderTopBar?.()}</div>
     </div>
   );
 }
