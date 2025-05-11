@@ -1,4 +1,5 @@
 // src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
+
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
@@ -12,17 +13,22 @@ export default function ChatSection({ renderTopBar }) {
 
   useEffect(() => {
     if (!initialized) return;
-    API.get("/messages/conversations", { withCredentials: true })
+
+    // Now fetching all conversations (including businessName)
+    API.get("/messages", { withCredentials: true })
       .then(res => setConversations(Array.isArray(res.data) ? res.data : []))
       .catch(console.error);
   }, [initialized]);
 
   if (!initialized) return null;
 
-  // מזהה של השותף לשיחה
+  // מזהה השותף לשיחה
   const partnerId = selectedConvo
     ? selectedConvo.participants.find(id => id !== user.userId)
     : null;
+
+  // מזהה השיחה שנבחרה
+  const conversationId = selectedConvo?._id || null;
 
   return (
     <div className="chat-section">
@@ -31,8 +37,8 @@ export default function ChatSection({ renderTopBar }) {
         <h3>שיחות נכנסות</h3>
         {conversations.length > 0 ? (
           conversations.map(convo => {
-            const label = convo.businessName ||
-              convo.participants.find(id => id !== user.userId);
+            const otherId = convo.participants.find(id => id !== user.userId);
+            const label   = convo.businessName || otherId;
             return (
               <div
                 key={convo._id}
@@ -50,10 +56,15 @@ export default function ChatSection({ renderTopBar }) {
 
       {/* חלון הצ'אט */}
       <main className="chat-main">
-        {partnerId
-          ? <ChatComponent partnerId={partnerId} isBusiness />
-          : <div className="chat-placeholder">בחרי שיחה מהרשימה כדי להתחיל</div>
-        }
+        {conversationId ? (
+          <ChatComponent
+            partnerId={partnerId}
+            conversationId={conversationId}
+            isBusiness={true}
+          />
+        ) : (
+          <div className="chat-placeholder">בחרי שיחה מהרשימה כדי להתחיל</div>
+        )}
       </main>
 
       {/* תצוגת פריוויו עליון */}

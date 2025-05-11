@@ -1,3 +1,5 @@
+// src/components/ChatComponent.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
@@ -7,26 +9,27 @@ import { useAuth } from '../context/AuthContext';
 
 const SOCKET_URL = 'https://api.esclick.co.il';
 
-export default function ChatComponent({ partnerId, isBusiness = false }) {
+export default function ChatComponent({
+  partnerId,
+  isBusiness = false
+}) {
   const { user, initialized } = useAuth();
   const [conversationId, setConversationId] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
-  const [file, setFile] = useState(null);
-  const [isSending, setIsSending] = useState(false);
-  const [typingUsers, setTypingUsers] = useState([]);
-  const [partnerName, setPartnerName] = useState('');
-  const containerRef = useRef(null);
-  const socketRef = useRef(null);
+  const [messages, setMessages]             = useState([]);
+  const [text, setText]                     = useState('');
+  const [file, setFile]                     = useState(null);
+  const [isSending, setIsSending]           = useState(false);
+  const [typingUsers, setTypingUsers]       = useState([]);
+  const [partnerName, setPartnerName]       = useState('');
+  const containerRef                        = useRef(null);
+  const socketRef                           = useRef(null);
 
-  // מזהה המשתמש הנוכחי
   const userId = user?.userId;
-  // השם שיוצג עבור המשתמש הנוכחי
   const currentName = isBusiness
     ? (user?.businessName || 'העסק')
     : (user?.name || 'הלקוח');
 
-  // טוען את השם של השותף לשיחה
+  // 1) Load partner's display name
   useEffect(() => {
     if (!partnerId) return;
     const endpoint = isBusiness
@@ -43,50 +46,52 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       .catch(console.error);
   }, [partnerId, isBusiness]);
 
-  // טוען או יוצר שיחה וקורא את ההודעות הראשוניות
+  // 2) Load or create conversation, then load its messages
   useEffect(() => {
-    if (!initialized || !userId || !partnerId) return;
+    if (!initialized || !userId || !partnerId || !partnerName) return;
 
     (async () => {
       try {
-        // בודק אם כבר קיימת שיחה
+        // Fetch existing conversations
         const { data: convos } = await API.get(
           '/messages/conversations',
           { withCredentials: true }
         );
-        const existing = convos.find(c =>
-          c.participants.some(p => p.toString() === partnerId)
+        // Find conversation that includes this partner
+        let convo = convos.find(c =>
+          c.participants.some(p => p === partnerId)
         );
 
-        if (existing) {
-          setConversationId(existing._id);
+        if (convo) {
+          // If found, set ID and load past messages
+          setConversationId(convo._id);
           const { data: msgs } = await API.get(
-            `/messages/${existing._id}/messages`,
+            `/messages/${convo._id}/messages`,
             { withCredentials: true }
           );
           setMessages(msgs);
         } else {
-          // אין שיחה קיימת — יוצר שיחה חדשה
+          // Otherwise, create new conversation
           const { data } = await API.post(
             '/messages',
-            { otherId: partnerId, businessName: partnerName },
+            { otherId: partnerId },
             { withCredentials: true }
           );
           setConversationId(data.conversationId);
           setMessages([]);
         }
       } catch (err) {
-        console.error('Error loading or creating conversation:', err);
+        console.error('Error loading/creating conversation:', err);
       }
     })();
-  }, [initialized, partnerId, userId, partnerName]);
+  }, [initialized, userId, partnerId, partnerName]);
 
-  // הגדרת Socket.IO
+  // 3) Setup Socket.IO for real-time updates
   useEffect(() => {
     if (!conversationId) return;
     const socket = io(SOCKET_URL, {
       withCredentials: true,
-      auth: { token: localStorage.getItem('token') },
+      auth: { token: localStorage.getItem('token') }
     });
     socketRef.current = socket;
     socket.emit('joinRoom', conversationId);
@@ -107,7 +112,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     };
   }, [conversationId]);
 
-  // גלילה לתחתית בהודעות חדשות
+  // 4) Auto-scroll to bottom on new messages
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -116,10 +121,10 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
   if (!initialized) return null;
 
-  // טיפול בטייפינג
+  // Typing indicator handlers
   const handleTyping = e => {
-    setMessage(e.target.value);
-    if (!socketRef.current || !conversationId) return;
+    setText(e.target.value);
+    if (!socketRef.current) return;
     socketRef.current.emit('typing', { conversationId, from: userId });
     clearTimeout(handleTyping.timeout);
     handleTyping.timeout = setTimeout(() => {
@@ -127,53 +132,51 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     }, 800);
   };
 
-  // שליחת הודעה
+  const renderTyping = () => {
+    const others = typingUsers.filter(id => id !== userId);
+    if (!others.length) return null;
+    const names = others
+      .map(id => (id === partnerId ? partnerName : 'מישהו'))
+      .join(', ');
+    return <div className="chat__typing">…{names} מקלידים…</div>;
+  };
+
+  // Send message (text + optional file)
   const sendMessage = async e => {
-    e?.preventDefault();
-    const text = message.trim();
-    if (!text && !file) return;
+    e.preventDefault();
+    const trimmed = text.trim();
+    if (!trimmed && !file) return;
 
     setIsSending(true);
     const tempId = Date.now().toString();
 
-    // הודעה אופטימית
-    const optimisticMsg = {
+    // Optimistic UI update
+    const optimistic = {
       id: tempId,
-      from: userId,
-      to: partnerId,
-      text,
+      from:     userId,
+      to:       partnerId,
+      text:     trimmed,
       fileName: file?.name,
       timestamp: new Date().toISOString(),
-      delivered: false,
-      businessName: partnerName
+      delivered: false
     };
-    setMessages(prev => [...prev, optimisticMsg]);
+    setMessages(prev => [...prev, optimistic]);
 
     try {
-      let convId = conversationId;
-      // חיבור מחדש אם צריך
-      if (!convId) {
-        const { data } = await API.post(
-          '/messages',
-          { otherId: partnerId, businessName: partnerName },
-          { withCredentials: true }
-        );
-        convId = data.conversationId;
-        setConversationId(convId);
-      }
-
       const form = new FormData();
       if (file) form.append('fileData', file);
-      form.append('text', text);
+      form.append('text', trimmed);
 
       const { data: saved } = await API.post(
-        `/messages/${convId}/messages`,
+        `/messages/${conversationId}/messages`,
         form,
         {
           withCredentials: true,
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { 'Content-Type': 'multipart/form-data' }
         }
       );
+
+      // Replace optimistic with real message
       setMessages(prev =>
         prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m)
       );
@@ -181,19 +184,9 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       console.error('Error sending message:', err);
     } finally {
       setIsSending(false);
-      setMessage('');
+      setText('');
       setFile(null);
     }
-  };
-
-  // הצגת טייפינג
-  const renderTyping = () => {
-    const others = typingUsers.filter(id => id !== userId);
-    if (!others.length) return null;
-    const names = others
-      .map(id => id === partnerId ? partnerName : 'מישהו')
-      .join(', ');
-    return <div className="chat__typing">…{names} מקלידים…</div>;
   };
 
   return (
@@ -213,7 +206,11 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
               {m.fileUrl && (
                 <div className="chat__attachment">
                   {/\.(jpe?g|gif|png)$/i.test(m.fileName) ? (
-                    <img src={m.fileUrl} alt={m.fileName} className="chat__img" />
+                    <img
+                      src={m.fileUrl}
+                      alt={m.fileName}
+                      className="chat__img"
+                    />
                   ) : (
                     <a
                       href={m.fileUrl}
@@ -230,7 +227,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
                 <span className="chat__time">
                   {new Date(m.timestamp).toLocaleTimeString('he-IL', {
                     hour: '2-digit',
-                    minute: '2-digit',
+                    minute: '2-digit'
                   })}
                 </span>
                 {m.delivered && <span className="chat__status">✔</span>}
@@ -244,14 +241,14 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       <form className="chat__input" onSubmit={sendMessage}>
         <button
           type="submit"
-          disabled={isSending || (!message.trim() && !file)}
+          disabled={isSending || (!text.trim() && !file)}
         >
           <FiSend size={20} />
         </button>
         <input
           type="text"
           placeholder="כתוב הודעה..."
-          value={message}
+          value={text}
           onChange={handleTyping}
           onKeyDown={e => {
             if (e.key === 'Enter' && !e.shiftKey) sendMessage(e);
