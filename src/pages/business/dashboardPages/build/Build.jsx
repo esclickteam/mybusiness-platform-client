@@ -31,7 +31,7 @@ export default function Build() {
 
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
-                
+    name:            "",
     businessName:    "", // הוספנו את שם העסק
     description:     "",
     phone:           "",
@@ -83,50 +83,48 @@ useEffect(() => {
       if (res.status === 200) {
         const data = res.data.business || res.data;
 
-        // אם address לא קיים, אתחול לאובייקט ריק
-        const rawAddress = data.address || {};  // אם address לא קיים, אתחל לאובייקט ריק
-        const city = rawAddress.city || "";  // אם city לא קיים, נשתמש במיתר ריק
+        // תמיכה ב־address מחרוזת או אובייקט
+        const rawAddress = data.address;
+        const city = typeof rawAddress === "string"
+          ? rawAddress
+          : rawAddress?.city || "";
 
         // URLs ישנים
-        const urls = data.mainImages || [];
-        const galleryUrls = data.gallery || [];
+        const urls       = data.mainImages   || [];
+        const galleryUrls= data.gallery      || [];
 
         // IDs: אם כבר קיימים במערך – נשמור אותם, אחרת נחלץ מהכתובת
-        const mainIds =
-          Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-            ? data.mainImageIds
-            : urls.map(extractPublicIdFromUrl);
+        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+          ? data.mainImageIds
+          : urls.map(extractPublicIdFromUrl);
+        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+          ? data.galleryImageIds
+          : galleryUrls.map(extractPublicIdFromUrl);
 
-        const galleryIds =
-          Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-            ? data.galleryImageIds
-            : galleryUrls.map(extractPublicIdFromUrl);
-
-        // עדכון ה-businessDetails
         setBusinessDetails(prev => ({
           ...prev,
           // שדות בסיסיים
-          businessName: data.businessName || "",
+          name:        data.name        || "",
           description: data.description || "",
-          phone: data.phone || "",
-          email: data.email || "",
-          category: data.category || "",
-          city,  // העיר שנבדקה
+          phone:       data.phone       || "",
+          email:       data.email       || "",
+          category:    data.category    || "",
+          city,
 
           // לוגו
-          logo: data.logo || null,
+          logo:   data.logo   || null,
           logoId: data.logoId || null,
 
           // גלריה
-          gallery: galleryUrls,
+          gallery:         galleryUrls,
           galleryImageIds: galleryIds,
 
           // תמונות ראשיות
-          mainImages: urls,
+          mainImages:   urls,
           mainImageIds: mainIds,
 
           // שאר השדות
-          faqs: data.faqs || [],
+          faqs:    data.faqs    || [],
           reviews: data.reviews || []
         }));
       }
@@ -134,63 +132,27 @@ useEffect(() => {
     .catch(console.error);
 }, []);
 
-          
+  
+         
 
   // ===== INPUT CHANGE (supports nested fields) =====
 const handleInputChange = ({ target: { name, value } }) => {
   if (name.includes('.')) {
-    const [parent, child] = name.split('.'); // פיצול השם למרכיבים
-
-    setBusinessDetails(prev => {
-      const updatedDetails = {
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value  // עדכון השדה המקונן
-        }
-      };
-
-      // אם יש צורך, אם address לא קיים ניצור אובייקט חדש
-      if (!updatedDetails.address) {
-        updatedDetails.address = {};
+    const [parent, child] = name.split('.');
+    setBusinessDetails(prev => ({
+      ...prev,
+      [parent]: {
+        ...prev[parent],
+        [child]: value
       }
-
-      // הדפסת הערכים לפני השמירה ב-localStorage
-      console.log('Before saving to localStorage:', updatedDetails);
-      
-      // שמירת המידע ב־localStorage
-      localStorage.setItem('businessDetails', JSON.stringify(updatedDetails));
-      
-      // הדפסת הערכים אחרי השמירה ב-localStorage
-      console.log('After saving to localStorage:', localStorage.getItem('businessDetails'));
-
-      return updatedDetails;
-    });
+    }));
   } else {
-    setBusinessDetails(prev => {
-      const updatedDetails = {
-        ...prev,
-        [name]: value  // עדכון שדה רגיל
-      };
-
-      // הדפסת הערכים לפני השמירה ב-localStorage
-      console.log('Before saving to localStorage:', updatedDetails);
-      
-      // שמירת המידע ב־localStorage
-      localStorage.setItem('businessDetails', JSON.stringify(updatedDetails));
-      
-      // הדפסת הערכים אחרי השמירה ב-localStorage
-      console.log('After saving to localStorage:', localStorage.getItem('businessDetails'));
-
-      return updatedDetails;
-    });
+    setBusinessDetails(prev => ({
+      ...prev,
+      [name]: value
+    }));
   }
 };
-
-
-
-
-
 
 // ===== LOGO UPLOAD =====
 const handleLogoClick = () => {
@@ -450,10 +412,7 @@ const handleDeleteMainImage = async publicId => {
     }
   };
   
-  
-                  
-    
-    
+                          
   
   const handleEditImage = idx => {
     console.log("Edit gallery image:", idx);
@@ -463,59 +422,28 @@ const handleDeleteMainImage = async publicId => {
   // ===== SAVE =====
   const handleSave = async () => {
   setIsSaving(true);
-  
   try {
-    // בדיקה אם יש שם לעסק
-    if (!businessDetails.businessName) {
-      alert("הכנס שם לעסק!");
-      setIsSaving(false);
-      return;
-    }
-
-    // בדיקת שדות נוספים אם נדרשים
-    if (!businessDetails.category) {
-      alert("הכנס קטגוריה לעסק!");
-      setIsSaving(false);
-      return;
-    }
-
-    if (!businessDetails.phone) {
-      alert("הכנס טלפון לעסק!");
-      setIsSaving(false);
-      return;
-    }
-
-    // שליחת הבקשה לשרת
+    // שולחים את businessName לעדכון
     const res = await API.patch("/business/my", {
-      businessName: businessDetails.businessName,
+      businessName: businessDetails.businessName, // שלח את שם העסק
       category: businessDetails.category,
       description: businessDetails.description,
       phone: businessDetails.phone,
       email: businessDetails.email,
-      address: { city: businessDetails.address.city }
+      address: {
+        city: businessDetails.address.city
+      }
     });
 
-    // אם השמירה הצליחה
     if (res.status === 200) {
+      // עדכון ה-state אחרי שמירת המידע
       setBusinessDetails(prev => ({
         ...prev,
-        businessName: res.data.businessName || prev.businessName,
-        address: { city: res.data.address.city || prev.address.city }
+        businessName: res.data.businessName || prev.businessName, // עדכון שם העסק
       }));
-
-      // שמירה ב-localStorage
-      localStorage.setItem('businessDetails', JSON.stringify({
-        businessName: res.data.businessName,
-        category: res.data.category,
-        description: res.data.description,
-        phone: res.data.phone,
-        email: res.data.email,
-        address: { city: res.data.address.city }
-      }));
-
-      alert("✅ נשמר בהצלחה!");
     }
 
+    alert("✅ נשמר בהצלחה!");
   } catch (err) {
     console.error("❌ שגיאה בשמירה:", err);
     alert("❌ שמירה נכשלה");
@@ -523,8 +451,7 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
-
-
+      
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
