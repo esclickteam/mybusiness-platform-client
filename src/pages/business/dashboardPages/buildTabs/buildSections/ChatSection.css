@@ -1,44 +1,74 @@
 /* ChatSection.css */
+
+/* מיכל הצ'אט הראשי: תצוגה גמישה בתצורת שורה, תופס גובה מלא */
 .chat-section {
   display: flex;
   height: 100%;
+  overflow: hidden;       /* מונע גלילה חיצונית */
 }
 
+/* הסיידבר עם רשימת השיחות */
 .chat-sidebar {
   width: 240px;
   border-right: 1px solid #ddd;
   padding: 1rem;
   background: #fafafa;
+  overflow-y: auto;       /* גלילה פנימית אם יש יותר מדי פריטים */
 }
 
+/* כותרת */
 .chat-sidebar h3 {
   margin-bottom: 0.5rem;
 }
 
+/* פריט ברשימה */
 .chat-sidebar__item {
   padding: 0.5rem;
   margin-bottom: 0.25rem;
   cursor: pointer;
   border-radius: 4px;
+  transition: background-color 0.2s;
 }
-
-.chat-sidebar__item.active,
-.chat-sidebar__item:hover {
+.chat-sidebar__item:hover,
+.chat-sidebar__item.active {
   background-color: #e0d4f7;
 }
 
+/* הודעה שאין פריטים להצגה */
 .chat-sidebar__empty {
   color: #888;
   font-style: italic;
+  margin-top: 1rem;
 }
 
+/* האזור המרכזי של הצ'אט */
 .chat-main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;       /* מונע גלילה חיצונית */
 }
 
+/* כותרת הצ'אט (שם פרטי) */
+.chat-main .chat__header {
+  padding: 1rem;
+  background: #7b4de8;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* חלל ההודעות עצמו */
+.chat-main .chat__body {
+  flex: 1;                /* יתפוס את כל השטח הפנוי */
+  padding: 1rem;
+  background: #faf8fe;
+  overflow-y: auto;       /* גלילה פנימית של ההודעות */
+}
+
+/* Placeholder לפני בחירת שיחה */
 .chat-placeholder {
   margin: auto;
   color: #555;
+  font-size: 1rem;
 }

@@ -11,6 +11,12 @@
   direction: rtl;
 }
 
+.build-wrapper > .chat-section {
+  flex: 1;             /* יתפוס את השטח הפנוי */
+  display: flex;
+}
+
+
 /* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
   width: 450px;
