@@ -525,85 +525,81 @@ const handleDeleteMainImage = async publicId => {
       
 
   // ===== TOP BAR =====
-  const renderTopBar = () => {
-    const avg = businessDetails.reviews.length
-      ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
-      : 0;
-  
-    return (
-      <div className="topbar-preview">
-        {/* לוגו */}
-        <div className="logo-circle" onClick={handleLogoClick}>
-          {businessDetails.logo?.preview
-            ? <img src={businessDetails.logo.preview} className="logo-img" />
-            : <span>לוגו</span>}
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            ref={logoInputRef}
-            onChange={handleLogoChange}
-          />
-        </div>
-  
-        {/* שם העסק + דירוג */}
-        <div className="name-rating">
-          <h2>{businessDetails.businessName || "שם העסק"}</h2> {/* הצגת שם העסק */}
-          <div className="rating-badge">
-            <span className="star">★</span>
-            <span>{avg.toFixed(1)} / 5</span>
-          </div>
-        </div>
-  
-        {/* קטגוריה מתחת לשם */}
-        {businessDetails.category && (
-          <p className="preview-category">
-            <strong>קטגוריה:</strong> {businessDetails.category}
-          </p>
-        )}
-  
-        {/* תיאור וטלפון מתחת לשם */}
-        {businessDetails.description && (
-          <p className="preview-description">
-            <strong>תיאור:</strong> {businessDetails.description}
-          </p>
-        )}
-        {businessDetails.phone && (
-          <p className="preview-phone">
-            <strong>טלפון:</strong> {businessDetails.phone}
-          </p>
-        )}
-        {businessDetails.address.city && (
-          <p className="preview-city">
-            <strong>עיר:</strong> {businessDetails.address.city}
-          </p>
-        )}
 
-
-<hr className="divider" />
-
-  
-        {/* כפתורי הטאבים */}
-        <div className="tabs">
-          {TABS.map(tab => (
-            <button
-              key={tab}
-              type="button"
-              className={`tab ${tab === currentTab ? "active" : ""}`}
-              onClick={() => setCurrentTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-  
-  
+  // 1) הפונקציה מציגה את הפריוויו
+  // 1) הפונקציה שמציגה את הפריוויו (משמאל אחרי ההיפוך)
+const renderPreview = () => {
+  const avg = businessDetails.reviews.length > 0
+    ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
+    : 0;
 
   return (
-    <div className="build-wrapper">
+    <aside className="preview-panel">
+      <div className="logo-circle" onClick={handleLogoClick}>
+        {businessDetails.logo?.preview
+          ? <img src={businessDetails.logo.preview} className="logo-img" />
+          : <span>לוגו</span>}
+        <input
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          ref={logoInputRef}
+          onChange={handleLogoChange}
+        />
+      </div>
+
+      <div className="name-rating">
+        <h2>{businessDetails.businessName || "שם העסק"}</h2>
+        <div className="rating-badge">
+          <span className="star">★</span>
+          <span>{avg.toFixed(1)} / 5</span>
+        </div>
+      </div>
+
+      {businessDetails.category && (
+        <p className="preview-category">
+          <strong>קטגוריה:</strong> {businessDetails.category}
+        </p>
+      )}
+      {businessDetails.description && (
+        <p className="preview-description">
+          <strong>תיאור:</strong> {businessDetails.description}
+        </p>
+      )}
+      {businessDetails.phone && (
+        <p className="preview-phone">
+          <strong>טלפון:</strong> {businessDetails.phone}
+        </p>
+      )}
+      {businessDetails.address.city && (
+        <p className="preview-city">
+          <strong>עיר:</strong> {businessDetails.address.city}
+        </p>
+      )}
+
+      <hr className="divider" />
+
+      <div className="tabs">
+        {TABS.map(tab => (
+          <button
+            key={tab}
+            type="button"
+            className={`tab ${tab === currentTab ? "active" : ""}`}
+            onClick={() => setCurrentTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    </aside>
+  );
+};
+
+// 2) ה־return המעודכן: עמודת העריכה משמאל ועמודת הפריוויו מימין
+return (
+  <div className="build-wrapper" style={{ display: 'flex', gap: 24 }}>
+    {/* ====== עמודת העריכה ====== */}
+    <div className="editor-panel" style={{ flex: 1 }}>
       {currentTab === "ראשי" && (
         <MainSection
           businessDetails={businessDetails}
@@ -614,14 +610,11 @@ const handleDeleteMainImage = async publicId => {
           handleSave={handleSave}
           showViewProfile={showViewProfile}
           navigate={navigate}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
           logoInputRef={logoInputRef}
           mainImagesInputRef={mainImagesInputRef}
           isSaving={isSaving}
         />
       )}
-
       {currentTab === "גלריה" && (
         <GallerySection
           businessDetails={businessDetails}
@@ -629,41 +622,32 @@ const handleDeleteMainImage = async publicId => {
           handleGalleryChange={handleGalleryChange}
           handleDeleteImage={handleDeleteGalleryImage}
           handleEditImage={handleEditImage}
-          renderTopBar={renderTopBar}
         />
       )}
-
       {currentTab === "ביקורות" && (
         <ReviewsSection
           reviews={businessDetails.reviews}
           setReviews={r => setBusinessDetails(prev => ({ ...prev, reviews: r }))}
           currentUser={currentUser}
-          renderTopBar={renderTopBar}
         />
       )}
-
       {currentTab === "חנות / יומן" && (
         <ShopSection
           setBusinessDetails={setBusinessDetails}
           handleSave={handleSave}
-          renderTopBar={renderTopBar}
         />
       )}
-
       {currentTab === "צ'אט עם העסק" && (
         <ChatSection
           businessDetails={businessDetails}
           setBusinessDetails={setBusinessDetails}
-          renderTopBar={renderTopBar}
         />
       )}
-
       {currentTab === "שאלות ותשובות" && (
         <FaqSection
           faqs={businessDetails.faqs}
           setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
           currentUser={currentUser}
-          renderTopBar={renderTopBar}
         />
       )}
 
@@ -671,12 +655,18 @@ const handleDeleteMainImage = async publicId => {
         <div className="popup-overlay">
           <div className="popup-content">
             <h3>בחר גודל תמונה</h3>
-            <button type="button" onClick={() => updateImageSize("full")}>גודל מלא</button>
-            <button type="button" onClick={() => updateImageSize("custom")}>גודל מותאם</button>
-            <button type="button" onClick={closePopup}>ביטול</button>
+            <button onClick={() => updateImageSize("full")}>גודל מלא</button>
+            <button onClick={() => updateImageSize("custom")}>מותאם</button>
+            <button onClick={closePopup}>ביטול</button>
           </div>
         </div>
       )}
     </div>
-  );
+
+    {/* ====== עמודת הפריוויו ====== */}
+    {renderPreview()}
+  </div>
+);
+
 }
+
