@@ -423,43 +423,27 @@ const handleDeleteMainImage = async publicId => {
   const handleSave = async () => {
   setIsSaving(true);
   try {
-    // אריזת ה־payload
-    const payload = {
-      businessName: businessDetails.businessName,
-      category:     businessDetails.category,
-      description:  businessDetails.description,
-      phone:        businessDetails.phone,
-      email:        businessDetails.email,
+    // שולחים את businessName לעדכון
+    const res = await API.patch("/business/my", {
+      businessName: businessDetails.businessName, // שלח את שם העסק
+      category: businessDetails.category,
+      description: businessDetails.description,
+      phone: businessDetails.phone,
+      email: businessDetails.email,
       address: {
         city: businessDetails.address.city
       }
-    };
-
-    // קריאה ל־PATCH
-    const res = await API.patch("/business/my", payload);
+    });
 
     if (res.status === 200) {
-      // צריכה להיות התשובה: האובייקט המעודכן במלואו
-      const updated = res.data; // או res.data.business אם השרת עוטף תחת `business`
-
-      // עדכון כל השדות ב־state
+      // עדכון ה-state אחרי שמירת המידע
       setBusinessDetails(prev => ({
         ...prev,
-        businessName: updated.businessName ?? prev.businessName,
-        category:     updated.category     ?? prev.category,
-        description:  updated.description  ?? prev.description,
-        phone:        updated.phone        ?? prev.phone,
-        email:        updated.email        ?? prev.email,
-        address: {
-          ...prev.address,
-          city: updated.address?.city    ?? prev.address.city
-        }
+        businessName: res.data.businessName || prev.businessName, // עדכון שם העסק
       }));
-
-      alert("✅ נשמר בהצלחה!");
-    } else {
-      alert("❌ שמירה נכשלה: " + res.statusText);
     }
+
+    alert("✅ נשמר בהצלחה!");
   } catch (err) {
     console.error("❌ שגיאה בשמירה:", err);
     alert("❌ שמירה נכשלה");
@@ -467,7 +451,6 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
-
       
 
   // ===== TOP BAR =====
