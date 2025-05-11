@@ -179,31 +179,29 @@ const handleLogoChange = async e => {
   if (!file) return;
   e.target.value = null;
 
-  // שחרור הזכרון של preview קודם אם היה blob
-  if (businessDetails.logo?.preview?.startsWith('blob:')) {
-    URL.revokeObjectURL(businessDetails.logo.preview);
-  }
-
   // יצירת preview חדש
-  const preview = URL.createObjectURL(file);
+  const blobUrl = URL.createObjectURL(file);
   setBusinessDetails(prev => ({
     ...prev,
-    logo: { preview }
+    logo: { preview: blobUrl }
   }));
 
-  // בניית FormData והעלאה לשרת
+  // העלאה לשרת
   const fd = new FormData();
   fd.append('logo', file);
 
   try {
-    const res = await API.put('/business/my/logo', fd);
+    const res = await API.patch('/business/my/logo', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
     if (res.status === 200) {
-      // לאחר העלאה מוצלחת, עדכון preview ו-publicId מהשרת
+      const { logoUrl, logoPublicId } = res.data;
+      // עדכון state עם ה־URL ו־publicId מהשרת
       setBusinessDetails(prev => ({
         ...prev,
         logo: {
-          preview:  res.data.logo,
-          publicId: res.data.logoId
+          preview:  logoUrl,
+          publicId: logoPublicId
         }
       }));
     } else {
@@ -211,17 +209,15 @@ const handleLogoChange = async e => {
     }
   } catch (err) {
     console.error('Error uploading logo:', err);
+    // אפשר להחזיר ל־prev.preview המקורי או להראות שגיאה למשתמש
   } finally {
-    // שחרור הזכרון של ה-blob URL שנוצר
-    URL.revokeObjectURL(preview);
+    // שחרור הזכרון של ה־blob URL הישן
+    URL.revokeObjectURL(blobUrl);
   }
 };
 
 
-  
-  
-
-
+    
   // ===== MAIN IMAGES =====
   // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
 
