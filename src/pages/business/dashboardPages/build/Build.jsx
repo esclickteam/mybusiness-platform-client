@@ -130,7 +130,7 @@ export default function Build() {
           email:        businessDetails.email,
           address:      { city: businessDetails.address.city },
         };
-        const res = await API.patch("/business/my", payload);
+        const res = await API.patch("/business/my/details", payload);
         setBusinessDetails(prev => ({ ...prev, ...res.data }));
       } catch (err) {
         console.error("Autosave failed:", err);
