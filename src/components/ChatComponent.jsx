@@ -31,61 +31,48 @@ export default function ChatComponent({
 
   // 1) Load partner's display name
   useEffect(() => {
-  if (!partnerId) return;
-
-  // בדיוק: אם אני עסק, אני רוצה להציג שם של המשתמש
-  //        אם אני לקוח, אני רוצה להציג שם של העסק
-  const endpoint = isBusiness
-    ? `/users/${partnerId}`
-    : `/business/${partnerId}`;
-
-  API.get(endpoint, { withCredentials: true })
-    .then(res => {
-      const data = isBusiness
-        ? res.data.user      // { user: { name, ... } }
-        : res.data.business; // { business: { businessName, ... } }
-
-      const name = isBusiness
-        ? (data.name || data.fullName)
-        : data.businessName;
-
-      setPartnerName(name || '');
-    })
-    .catch(err => {
-      console.error('Error loading partner name:', err);
-      setPartnerName('---');
-    });
-}, [partnerId, isBusiness]);
+    if (!partnerId) return;
+    const endpoint = isBusiness
+      ? `/users/${partnerId}`
+      : `/business/${partnerId}`;
+    API.get(endpoint, { withCredentials: true })
+      .then(res => {
+        const data = isBusiness ? res.data.user : res.data.business;
+        const name = isBusiness
+          ? (data.name || data.fullName)
+          : data.businessName;
+        setPartnerName(name || '');
+      })
+      .catch(() => setPartnerName('---'));
+  }, [partnerId, isBusiness]);
 
   // 2) Load or create conversation, then load its messages
   useEffect(() => {
-    if (!initialized || !userId || !partnerId || !partnerName) return;
-
+    if (!initialized || !userId || !partnerId) return;
     (async () => {
       try {
-        // Fetch existing conversations
+        // 2a) Fetch existing conversations
         const { data: convos } = await API.get(
-          '/messages/conversations',
+          '/conversations',
           { withCredentials: true }
         );
-        // Find conversation that includes this partner
-        let convo = convos.find(c =>
-          c.participants.some(p => p === partnerId)
+        let convo = Array.isArray(convos) && convos.find(c =>
+          c.participants.includes(userId) && c.participants.includes(partnerId)
         );
 
         if (convo) {
-          // If found, set ID and load past messages
-          setConversationId(convo._id);
+          setConversationId(convo.conversationId);
+          // 2b) Load existing messages
           const { data: msgs } = await API.get(
-            `/messages/${convo._id}/messages`,
+            `/conversations/${convo.conversationId}`,
             { withCredentials: true }
           );
           setMessages(msgs);
         } else {
-          // Otherwise, create new conversation
+          // 2c) Create new conversation via send endpoint
           const { data } = await API.post(
-            '/messages',
-            { otherId: partnerId },
+            '/send',
+            { to: partnerId, text: '' },
             { withCredentials: true }
           );
           setConversationId(data.conversationId);
@@ -95,7 +82,7 @@ export default function ChatComponent({
         console.error('Error loading/creating conversation:', err);
       }
     })();
-  }, [initialized, userId, partnerId, partnerName]);
+  }, [initialized, userId, partnerId]);
 
   // 3) Setup Socket.IO for real-time updates
   useEffect(() => {
@@ -163,11 +150,11 @@ export default function ChatComponent({
 
     // Optimistic UI update
     const optimistic = {
-      id: tempId,
-      from:     userId,
-      to:       partnerId,
-      text:     trimmed,
-      fileName: file?.name,
+      id:        tempId,
+      from:      userId,
+      to:        partnerId,
+      text:      trimmed,
+      fileName:  file?.name,
       timestamp: new Date().toISOString(),
       delivered: false
     };
@@ -179,7 +166,7 @@ export default function ChatComponent({
       form.append('text', trimmed);
 
       const { data: saved } = await API.post(
-        `/messages/${conversationId}/messages`,
+        '/send',
         form,
         {
           withCredentials: true,
@@ -187,9 +174,12 @@ export default function ChatComponent({
         }
       );
 
-      // Replace optimistic with real message
       setMessages(prev =>
-        prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m)
+        prev.map(m =>
+          m.id === tempId
+            ? { ...saved.message, delivered: true }
+            : m
+        )
       );
     } catch (err) {
       console.error('Error sending message:', err);
@@ -207,9 +197,9 @@ export default function ChatComponent({
       </header>
 
       <div className="chat__body" ref={containerRef}>
-        {messages.map((m, idx) => (
+        {messages.map(m => (
           <div
-            key={idx}
+            key={m.id || m.timestamp}
             className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">

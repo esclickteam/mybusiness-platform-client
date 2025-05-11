@@ -18,25 +18,24 @@ export default function ConversationsList({ isBusiness, onSelect }) {
 
   useEffect(() => {
     setLoading(true);
-    API.get('/messages/conversations', { withCredentials: true })
+
+    // קריאה ל־GET /api/messages/conversations (API.baseURL = '/api/messages')
+    API.get('/conversations', { withCredentials: true })
       .then(res => {
         const all = Array.isArray(res.data) ? res.data : [];
 
         const formatted = all.map(c => {
           const other = c.participants.find(p => p !== meId) || '';
-          const partnerName = isBusiness
-            ? (c.participantsMeta?.find(u => u._id === other)?.name || '---')
-            : (c.businessName || '---');
 
           return {
-            conversationId: c._id,
-            partnerId:      other,        // ← התיקון החשוב
-            partnerName,
-            lastMessage: c.messages?.length
-              ? c.messages[c.messages.length - 1].text
-              : '',
-            updatedAt:      c.updatedAt,
-            unreadCount:    0,
+            conversationId: c.conversationId,
+            partnerId:      other,
+            partnerName:    isBusiness
+              ? other   // אפשר להחליף בהמשך בקריאה לשם המשתמש
+              : (c.businessName || '---'),
+            lastMessage: c.lastMessage?.text || '',
+            updatedAt:   c.updatedAt,
+            unreadCount: 0,
           };
         });
 
