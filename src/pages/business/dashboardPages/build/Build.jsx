@@ -75,80 +75,113 @@ export default function Build() {
 
   // טעינת הנתונים הראשונית
   useEffect(() => {
-    API.get("/business/my")
-      .then(res => {
-        if (res.status === 200) {
-          const data = res.data.business || res.data;
-          const rawAddress = data.address;
-          const city = typeof rawAddress === "string" ? rawAddress : rawAddress?.city || "";
-          const urls        = data.mainImages || [];
-          const galleryUrls = data.gallery    || [];
-          const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-            ? data.mainImageIds
-            : urls.map(extractPublicIdFromUrl);
-          const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-            ? data.galleryImageIds
-            : galleryUrls.map(extractPublicIdFromUrl);
+  API.get("/business/my")
+    .then(res => {
+      if (res.status === 200) {
+        const data = res.data.business || res.data;
 
-          setBusinessDetails(prev => ({
-            ...prev,
-            businessName: data.businessName || "",
-            description:  data.description || "",
-            phone:        data.phone       || "",
-            email:        data.email       || "",
-            category:     data.category    || "",
-            address:      { city },
-            logo:         data.logo        || null,
-            logoId:       data.logoId      || null,
-            gallery:         galleryUrls,
-            galleryImageIds: galleryIds,
-            mainImages:      urls,
-            mainImageIds:    mainIds,
-            faqs:    data.faqs    || [],
-            reviews: data.reviews || []
-          }));
-        }
-      })
-      .catch(console.error)
-      .finally(() => setFirstLoad(false));
-  }, []);
+        // כתובת העיר
+        const rawAddress = data.address;
+        const city = typeof rawAddress === "string"
+          ? rawAddress
+          : rawAddress?.city || "";
+
+        // תמונות ראשיות
+        const urls = data.mainImages || [];
+        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+          ? data.mainImageIds
+          : urls.map(extractPublicIdFromUrl);
+
+        // גלריה
+        const galleryUrls = data.gallery || [];
+        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+          ? data.galleryImageIds
+          : galleryUrls.map(extractPublicIdFromUrl);
+
+        setBusinessDetails(prev => ({
+          ...prev,
+          businessName:    data.businessName  || "",
+          description:     data.description   || "",
+          phone:           data.phone         || "",
+          email:           data.email         || "",
+          category:        data.category      || "",
+          address:         { city },
+          
+          // לוגו: שמירה של URL קבוע ו-publicId
+          logo: {
+            preview:  data.logoUrl        || null,
+            publicId: data.logoPublicId  || null
+          },
+
+          // שאר המערכים
+          gallery:         galleryUrls,
+          galleryImageIds: galleryIds,
+          mainImages:      urls,
+          mainImageIds:    mainIds,
+          faqs:            data.faqs      || [],
+          reviews:         data.reviews   || []
+        }));
+      }
+    })
+    .catch(console.error)
+    .finally(() => setFirstLoad(false));
+}, []);
+
 
   // Autosave אחרי debounce
   useEffect(() => {
-    if (firstLoad) return;
+  if (firstLoad) return;
 
-    clearTimeout(saveTimeout.current);
+  clearTimeout(saveTimeout.current);
 
-    saveTimeout.current = setTimeout(async () => {
-      setIsSaving(true);
-      try {
-        const payload = {
-          businessName: businessDetails.businessName,
-          category:     businessDetails.category,
-          description:  businessDetails.description,
-          phone:        businessDetails.phone,
-          email:        businessDetails.email,
-          address:      { city: businessDetails.address.city },
-        };
-        const res = await API.patch("/business/my/details", payload);
-        setBusinessDetails(prev => ({ ...prev, ...res.data }));
-      } catch (err) {
-        console.error("Autosave failed:", err);
-      } finally {
-        setIsSaving(false);
+  saveTimeout.current = setTimeout(async () => {
+    setIsSaving(true);
+    try {
+      const payload = {
+        businessName: businessDetails.businessName,
+        category:     businessDetails.category,
+        description:  businessDetails.description,
+        phone:        businessDetails.phone,
+        email:        businessDetails.email,
+        address:      { city: businessDetails.address.city },
+      };
+
+      const res = await API.patch("/business/my/details", payload);
+      if (res.status === 200) {
+        const updated = res.data.business;  // מתוך { business: updatedBiz }
+        setBusinessDetails(prev => ({
+          ...prev,
+          // ממזגים את כל השדות המעודכנים
+          businessName:   updated.businessName,
+          category:       updated.category,
+          description:    updated.description,
+          phone:          updated.phone,
+          email:          updated.email,
+          address:        { city: updated.address.city || prev.address.city },
+          // משאירים את הלוגו וה-IDs כפי שהם ב-state
+          logo:           prev.logo,
+          logoPublicId:   prev.logoPublicId,
+          // אם יש שדות נוספים ב־updated שתרצה למזג, הוסף אותם כאן...
+        }));
       }
-    }, 1000);
+    } catch (err) {
+      console.error("Autosave failed:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  }, 1000);
 
-    return () => clearTimeout(saveTimeout.current);
-  }, [
-    businessDetails.businessName,
-    businessDetails.category,
-    businessDetails.description,
-    businessDetails.phone,
-    businessDetails.email,
-    businessDetails.address.city,
-    firstLoad
-  ]);
+  return () => clearTimeout(saveTimeout.current);
+}, [
+  businessDetails.businessName,
+  businessDetails.category,
+  businessDetails.description,
+  businessDetails.phone,
+  businessDetails.email,
+  businessDetails.address.city,
+  firstLoad
+]);
+
 
   
          
@@ -457,17 +490,25 @@ const handleDeleteMainImage = async publicId => {
 
       // עדכון כל השדות ב־state
       setBusinessDetails(prev => ({
-        ...prev,
-        businessName: updated.businessName ?? prev.businessName,
-        category:     updated.category     ?? prev.category,
-        description:  updated.description  ?? prev.description,
-        phone:        updated.phone        ?? prev.phone,
-        email:        updated.email        ?? prev.email,
-        address: {
-          ...prev.address,
-          city: updated.address?.city    ?? prev.address.city
-        }
-      }));
+  ...prev,
+  businessName: updated.businessName  ?? prev.businessName,
+  category:     updated.category      ?? prev.category,
+  description:  updated.description   ?? prev.description,
+  phone:        updated.phone         ?? prev.phone,
+  email:        updated.email         ?? prev.email,
+  address: {
+    ...prev.address,
+    city: updated.address?.city      ?? prev.address.city
+  },
+  logo: {
+    // אם קיבלנו מהשרת URL חדש, נעדכן את ה־preview אליו,
+    // אחרת נשמור את ה־preview הקיים (למשל blob בזמן העלאה)
+    preview:    updated.logoUrl       ?? prev.logo?.preview,
+    // אם קיבלנו publicId מהשרת, נעדכן אותו; אחרת נשמור את הישן
+    publicId:   updated.logoPublicId ?? prev.logo?.publicId
+  }
+}));
+
 
       alert("✅ נשמר בהצלחה!");
     } else {
