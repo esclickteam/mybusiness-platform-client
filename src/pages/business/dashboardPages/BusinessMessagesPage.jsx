@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ChatComponent from "../../../components/ChatComponent";
 import API from "../../../api";
-import './buildSections/ChatSection.css';  // ייבוא נכון אם הקובץ נמצא בתיקיית buildSections
+import './buildTabs/buildSections/ChatSection.css';
 
 
 export default function BusinessMessagesPage() {
