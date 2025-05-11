@@ -13,14 +13,14 @@ export default function ChatComponent({
 }) {
   const { user, initialized } = useAuth();
   const [conversationId, setConversationId] = useState(null);
-  const [messages, setMessages]             = useState([]);
-  const [text, setText]                     = useState('');
-  const [file, setFile]                     = useState(null);
-  const [isSending, setIsSending]           = useState(false);
-  const [typingUsers, setTypingUsers]       = useState([]);
-  const [partnerName, setPartnerName]       = useState('');
-  const containerRef                        = useRef(null);
-  const socketRef                           = useRef(null);
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const [file, setFile] = useState(null);
+  const [isSending, setIsSending] = useState(false);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [partnerName, setPartnerName] = useState('');
+  const containerRef = useRef(null);
+  const socketRef = useRef(null);
 
   const userId = user?.userId;
   const currentName = isBusiness
@@ -95,7 +95,7 @@ export default function ChatComponent({
     if (!conversationId) return;
     const socket = io(SOCKET_URL, {
       withCredentials: true,
-      auth: { token: localStorage.getItem('token') }
+      auth: { token: sessionStorage.getItem('token') }
     });
     socketRef.current = socket;
     socket.emit('joinRoom', conversationId);
@@ -156,11 +156,11 @@ export default function ChatComponent({
 
     // Optimistic UI update
     const optimistic = {
-      id:        tempId,
-      from:      userId,
-      to:        partnerId,
-      text:      trimmed,
-      fileName:  file?.name,
+      id: tempId,
+      from: userId,
+      to: partnerId,
+      text: trimmed,
+      fileName: file?.name,
       timestamp: new Date().toISOString(),
       delivered: false
     };
