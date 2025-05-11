@@ -64,7 +64,7 @@ export default function MainSection({
         <input
           type="text"
           name="businessName"
-          value={businessDetails.businessName || ""}
+          value={businessDetails.businessName || ""} // השתמש ב-businessName במקום name
           onChange={handleInputChange}
           placeholder="הכנס שם העסק"
           required
@@ -123,7 +123,7 @@ export default function MainSection({
         </label>
         <Select
           options={cityOptions}
-          value={cityOptions.find(o => o.value === businessDetails.address?.city) || null}
+          value={cityOptions.find(o => o.value === businessDetails.address?.city) || null} // משתמש ב-optional chaining
           onChange={option =>
             handleInputChange({
               target: { name: "address.city", value: option ? option.value : "" }

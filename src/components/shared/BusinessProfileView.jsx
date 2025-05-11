@@ -1,10 +1,12 @@
+// src/components/shared/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from "../../api";
+import api from "../../api";           // וודא שהנתיב מדויק: src/api.js
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import "./BusinessProfileView.css";
 
+// הגדרת הטאבים
 const TABS = [
   "ראשי",
   "גלריה",
@@ -15,29 +17,23 @@ const TABS = [
 ];
 
 export default function BusinessProfileView() {
-  const { businessId: paramId } = useParams();
+  const { businessId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const bizId = paramId || user?.businessId;
-
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [data, setData]         = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // טעינת פרטי העסק
   useEffect(() => {
-    if (!bizId) {
-      setError("Invalid business ID");
-      setLoading(false);
-      return;
-    }
     (async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/business/${bizId}`);
+        const res = await api.get(`/business/${businessId}`);
         setData(res.data.business || res.data);
       } catch (err) {
         console.error(err);
@@ -46,48 +42,55 @@ export default function BusinessProfileView() {
         setLoading(false);
       }
     })();
-  }, [bizId]);
+  }, [businessId]);
 
+  // תנאים מוקדמים
   if (loading) return <div className="loading">טוען…</div>;
   if (error)   return <div className="error">{error}</div>;
   if (!data)   return <div className="error">העסק לא נמצא</div>;
 
   const {
-    businessName,
-    logo: logoUrl,
+    name,
+    logo,
     description = "",
     phone = "",
     category = "",
     mainImages = [],
     gallery = [],
     reviews = [],
-    address: { city = "" } = {}
+    city = ""
   } = data;
 
-  const totalRating   = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
-  const avgRating     = reviews.length ? totalRating / reviews.length : 0;
-  const roundedAvg    = Math.round(avgRating * 10) / 10;
+  // חישוב דירוג ממוצע באופן סינכרוני
+  const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
+  const avgRating   = reviews.length ? totalRating / reviews.length : 0;
+  const roundedAvg  = Math.round(avgRating * 10) / 10;
   const fullAvgStars  = Math.floor(roundedAvg);
   const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
-  const isOwner   = user?.role === "business" && user.businessId === bizId;
+  const isOwner   = user?.role === "business" && user.businessId === businessId;
   const canDelete = ["admin", "manager"].includes(user?.role);
 
+  // בדיקה אם כבר הגיש ביקורת
   const hasReviewed = user
-    ? reviews.some(r => r.user?._id === user._id || r.user?.id === user._id)
+    ? reviews.some(r =>
+        r.user?._id === user._id || r.user?.id === user._id
+      )
     : false;
 
+  // Handlers
   const handleReviewClick  = () => setShowReviewModal(true);
   const closeReviewModal   = () => setShowReviewModal(false);
-  const handleChatClick    = () => navigate(`/business/${bizId}/chat`);
+  const handleChatClick    = () => navigate(`/business/${businessId}/chat`);
 
   const handleReviewSubmit = async newReview => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      await api.post(`/business/${bizId}/reviews`, newReview);
-      const res = await api.get(`/business/${bizId}`);
+      await api.post(`/business/${businessId}/reviews`, newReview);
+      // רענון הנתונים
+      const res = await api.get(`/business/${businessId}`);
       setData(res.data.business || res.data);
       closeReviewModal();
     } catch (err) {
@@ -105,8 +108,8 @@ export default function BusinessProfileView() {
   const handleDeleteReview = async reviewId => {
     if (!window.confirm("האם למחוק ביקורת זו?")) return;
     try {
-      await api.delete(`/business/${bizId}/reviews/${reviewId}`);
-      const res = await api.get(`/business/${bizId}`);
+      await api.delete(`/business/${businessId}/reviews/${reviewId}`);
+      const res = await api.get(`/business/${businessId}`);
       setData(res.data.business || res.data);
     } catch (err) {
       console.error(err);
@@ -119,24 +122,24 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
           {isOwner && (
-            <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
+            <Link to={`/business/${businessId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
 
-          {logoUrl && (
+          {logo && (
             <div className="profile-logo-wrapper">
-              <img className="profile-logo" src={logoUrl} alt="לוגו העסק" />
+              <img className="profile-logo" src={logo} alt="לוגו העסק" />
             </div>
           )}
 
-          <h1 className="business-name">{businessName}</h1>
+          <h1 className="business-name">{name}</h1>
 
           <div className="about-phone">
-            {category &&    <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone &&       <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city &&        <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
@@ -255,7 +258,7 @@ export default function BusinessProfileView() {
               <div className="modal-content">
                 <h2>הוסף ביקורת</h2>
                 <ReviewForm
-                  businessId={bizId}
+                  businessId={businessId}
                   onSubmit={handleReviewSubmit}
                   isSubmitting={isSubmitting}
                 />
