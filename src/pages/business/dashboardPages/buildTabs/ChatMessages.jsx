@@ -1,5 +1,5 @@
 import React from 'react';
-import './ChatMessages.css';
+import "./ChatSection.css";
 import VoiceBubble from './VoiceBubble'; // ✅ הוספת קומפוננטת נגן
 
 const ChatMessages = ({ messages, currentClientId }) => {

@@ -14,24 +14,32 @@
   padding: 1rem;
   background: #fafafa;
   overflow-y: auto;       /* גלילה פנימית אם יש יותר מדי פריטים */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* צלליות עדינות */
 }
 
 /* כותרת */
 .chat-sidebar h3 {
   margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: #7b4de8;
+  font-weight: bold;
 }
 
 /* פריט ברשימה */
 .chat-sidebar__item {
-  padding: 0.5rem;
-  margin-bottom: 0.25rem;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
   cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  border-radius: 8px;
+  transition: background-color 0.2s, transform 0.2s ease;
+  display: flex;
+  align-items: center;
 }
+
 .chat-sidebar__item:hover,
 .chat-sidebar__item.active {
   background-color: #e0d4f7;
+  transform: scale(1.03); /* אפקט התפשטות עדין */
 }
 
 /* הודעה שאין פריטים להצגה */
@@ -39,6 +47,8 @@
   color: #888;
   font-style: italic;
   margin-top: 1rem;
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 /* האזור המרכזי של הצ'אט */
@@ -56,6 +66,7 @@
   color: white;
   font-weight: bold;
   text-align: center;
+  border-bottom: 2px solid #ddd;
 }
 
 /* חלל ההודעות עצמו */
@@ -64,11 +75,40 @@
   padding: 1rem;
   background: #faf8fe;
   overflow-y: auto;       /* גלילה פנימית של ההודעות */
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); /* צלליות פנימיות */
 }
 
 /* Placeholder לפני בחירת שיחה */
 .chat-placeholder {
   margin: auto;
   color: #555;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #666;
+}
+
+/* ✅ רספונסיביות */
+@media (max-width: 768px) {
+  .chat-section {
+    flex-direction: column;
+  }
+
+  .chat-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .chat-main {
+    padding: 1rem;
+  }
+
+  .chat-sidebar__item {
+    font-size: 1rem;
+  }
+
+  .chat-placeholder {
+    font-size: 1.2rem;
+  }
 }
