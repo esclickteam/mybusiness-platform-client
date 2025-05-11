@@ -4,7 +4,7 @@ import { FaMapMarkerAlt, FaPhoneAlt, FaTags, FaInfoCircle } from "react-icons/fa
 import "./BusinessCard.css";
 
 export default function BusinessCard({ business, onClick }) {
-  const { _id, name, logo, description, category, phone, address = {} } = business;
+  const { _id, businessName, logo, description, category, phone, address = {} } = business;
   const { city } = address;
   const navigate = useNavigate();
 
@@ -20,11 +20,11 @@ export default function BusinessCard({ business, onClick }) {
     <div className="business-card" onClick={handleCardClick} style={{ cursor: "pointer" }}>
       {logo && (
         <div className="business-card__media">
-          <img src={logo} alt={`${name} logo`} loading="lazy" />
+          <img src={logo} alt={`${businessName} logo`} loading="lazy" />
         </div>
       )}
 
-      <h2 className="business-card__title">{name}</h2>
+      <h2 className="business-card__title">{businessName}</h2>
 
       {category && (
         <p className="business-card__info">
