@@ -19,22 +19,23 @@ export default function ConversationsList({ isBusiness, onSelect }) {
   useEffect(() => {
     setLoading(true);
 
-    // GET /api/messages/conversations
-    API.get('/messages/conversations', { withCredentials: true })
+    // GET /api/conversations
+    API.get('/conversations', { withCredentials: true })
       .then(res => {
         const all = Array.isArray(res.data) ? res.data : [];
 
         const formatted = all.map(c => {
           const other = c.participants.find(p => p !== meId) || '';
           return {
-            conversationId: c.conversationId,  // or c._id if you use _id
+            conversationId: c._id,
             partnerId:      other,
             partnerName:    isBusiness
               ? other
               : (c.businessName || '---'),
-            lastMessage: c.lastMessage?.text || '',
-            updatedAt:   c.updatedAt,
-            unreadCount: 0,
+            // הודעות ייטענו ברכיב הצ'אט
+            lastMessage:   '',
+            updatedAt:     c.updatedAt || '',
+            unreadCount:   0,
           };
         });
 

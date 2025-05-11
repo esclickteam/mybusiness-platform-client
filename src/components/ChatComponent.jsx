@@ -1,5 +1,3 @@
-// src/components/ChatComponent.jsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { FiSend, FiPaperclip } from 'react-icons/fi';
@@ -53,7 +51,7 @@ export default function ChatComponent({
       try {
         // Fetch existing conversations
         const { data: convos } = await API.get(
-          '/messages/conversations',
+          '/conversations',
           { withCredentials: true }
         );
         const convo = Array.isArray(convos) &&
@@ -62,24 +60,27 @@ export default function ChatComponent({
             c.participants.includes(partnerId)
           );
 
+        let convId;
         if (convo) {
-          setConversationId(convo.conversationId);
-          // Load existing messages
-          const { data: msgs } = await API.get(
-            `/conversations/${convo.conversationId}`,
-            { withCredentials: true }
-          );
-          setMessages(msgs);
+          convId = convo._id;
         } else {
-          // Create new conversation via send endpoint
-          const { data } = await API.post(
-            '/send',
-            { to: partnerId, text: '' },
+          // Create new conversation
+          const { data: created } = await API.post(
+            '/conversations',
+            { otherId: partnerId },
             { withCredentials: true }
           );
-          setConversationId(data.conversationId);
-          setMessages([]);
+          convId = created.conversationId;
         }
+
+        setConversationId(convId);
+
+        // Load existing messages
+        const { data: msgs } = await API.get(
+          `/conversations/${convId}/messages`,
+          { withCredentials: true }
+        );
+        setMessages(msgs);
       } catch (err) {
         console.error('Error loading/creating conversation:', err);
       }
@@ -168,7 +169,7 @@ export default function ChatComponent({
       form.append('text', trimmed);
 
       const { data: saved } = await API.post(
-        '/send',
+        `/conversations/${conversationId}/messages`,
         form,
         {
           withCredentials: true,
@@ -179,7 +180,7 @@ export default function ChatComponent({
       setMessages(prev =>
         prev.map(m =>
           m.id === tempId
-            ? { ...saved.message, delivered: true }
+            ? { ...saved, delivered: true }
             : m
         )
       );
