@@ -2,31 +2,27 @@
 
 import React, { useState, useEffect } from 'react';
 import API from '../api';
-import './ConversationsList.css'; // CSS styles for sidebar
+import './ConversationsList.css';
 
 /**
  * Props:
- *  - isBusiness: boolean, whether current user is a business or a client
- *  - onSelect: function({ conversationId, partnerId }) callback when selecting a conversation
+ *  - isBusiness: boolean
+ *  - onSelect: ({ conversationId, partnerId }) => void
  */
 export default function ConversationsList({ isBusiness, onSelect }) {
-  const [convos, setConvos]     = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [search, setSearch]     = useState('');
+  const [convos, setConvos]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch]   = useState('');
 
-  // Get the current userId from localStorage or context
   const meId = JSON.parse(localStorage.getItem('user'))?.id;
 
   useEffect(() => {
     setLoading(true);
-
-    // 1) תקן כאן לקריאה למערך השיחות
     API.get('/messages/conversations', { withCredentials: true })
       .then(res => {
         const all = Array.isArray(res.data) ? res.data : [];
 
         const formatted = all.map(c => {
-          // אם זה עסק, partnerId זה המשתמש; אם לקוח, זה העסק
           const other = c.participants.find(p => p !== meId) || '';
           const partnerName = isBusiness
             ? (c.participantsMeta?.find(u => u._id === other)?.name || '---')
@@ -34,13 +30,13 @@ export default function ConversationsList({ isBusiness, onSelect }) {
 
           return {
             conversationId: c._id,
-            partnerId,
+            partnerId:      other,        // ← התיקון החשוב
             partnerName,
             lastMessage: c.messages?.length
               ? c.messages[c.messages.length - 1].text
               : '',
-            updatedAt: c.updatedAt,
-            unreadCount: 0,
+            updatedAt:      c.updatedAt,
+            unreadCount:    0,
           };
         });
 
@@ -76,12 +72,10 @@ export default function ConversationsList({ isBusiness, onSelect }) {
         <div
           key={c.conversationId}
           className="sidebar-item"
-          onClick={() =>
-            onSelect({
-              conversationId: c.conversationId,
-              partnerId:      c.partnerId
-            })
-          }
+          onClick={() => onSelect({
+            conversationId: c.conversationId,
+            partnerId:      c.partnerId
+          })}
         >
           <div className="sidebar-item__content">
             <strong>{c.partnerName}</strong>
