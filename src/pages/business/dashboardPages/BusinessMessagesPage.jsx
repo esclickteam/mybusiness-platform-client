@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ChatComponent from "../../../components/ChatComponent";
 import API from "../../../api";
-import "./ChatSection.css";
+import './buildSections/ChatSection.css';  // ייבוא נכון אם הקובץ נמצא בתיקיית buildSections
+
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
