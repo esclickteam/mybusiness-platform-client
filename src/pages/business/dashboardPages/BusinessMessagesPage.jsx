@@ -6,7 +6,7 @@ import "./BusinessMessagesPage.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
-  const businessUserId = user?.userId;
+  const businessUserId = user?.userId;                     // מחרוזת
   const businessProfilePic = user?.profilePicUrl || "/default-business.png";
   const defaultClientPic = "/default-client.png";
 
@@ -15,22 +15,30 @@ export default function BusinessMessagesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load conversations list
+  // 1) טען רשימת שיחות
   useEffect(() => {
     if (!businessUserId) return;
     setIsLoading(true);
-    API.get("/messages/conversations")
+
+    API.get("/messages/conversations", { withCredentials: true })
       .then(({ data }) => {
         const list = data
           .map(conv => {
-            const other = conv.participants.find(p => p !== businessUserId);
+            // המר את כל ה־ObjectId לשורות
+            const parts = conv.participants.map(p => p.toString());
+            // מצא את הקצה השני שאינו העסק
+            const other = parts.find(id => id !== businessUserId);
             return other
-              ? { conversationId: conv._id.toString(), clientId: other }
+              ? { 
+                  conversationId: conv._id.toString(), 
+                  clientId: other 
+                }
               : null;
           })
           .filter(Boolean);
+
         setConversations(list);
-        if (list.length) {
+        if (list.length > 0) {
           setActiveConversationId(list[0].conversationId);
         }
       })
@@ -51,7 +59,7 @@ export default function BusinessMessagesPage() {
         <h4>שיחות מלקוחות</h4>
         <ul>
           {conversations.map(({ conversationId, clientId }) => (
-            <li key={conversationId}>
+            <li key={conversationId} className="chat-list-item">
               <button
                 className={conversationId === activeConversationId ? "active" : ""}
                 onClick={() => setActiveConversationId(conversationId)}
@@ -64,7 +72,7 @@ export default function BusinessMessagesPage() {
       </aside>
 
       <main className="chat-main">
-        {activeConversationId && (
+        {activeConversationId ? (
           <ChatComponent
             partnerId={
               conversations.find(c => c.conversationId === activeConversationId)
@@ -74,6 +82,8 @@ export default function BusinessMessagesPage() {
             businessProfilePic={businessProfilePic}
             clientProfilePic={defaultClientPic}
           />
+        ) : (
+          <div className="empty-chat">אין שיחות להצגה</div>
         )}
       </main>
     </div>
