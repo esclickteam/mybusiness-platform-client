@@ -20,7 +20,7 @@ export default function ConversationsList({ isBusiness, onSelect }) {
     setLoading(true);
 
     // קריאה ל־GET /api/messages/conversations (API.baseURL = '/api/messages')
-    API.get('/conversations', { withCredentials: true })
+    API.get('/messages/conversations', { withCredentials: true })
       .then(res => {
         const all = Array.isArray(res.data) ? res.data : [];
 
