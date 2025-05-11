@@ -31,11 +31,11 @@ export default function Build() {
 
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
-    name:            "",
-    businessName:    "", // הוספנו את שם העסק
+    businessName:    "",
     description:     "",
     phone:           "",
     category:        "",
+    email:           "",
     address:         { city: "" },
     logo:            null,
     gallery:         [],
@@ -45,114 +45,129 @@ export default function Build() {
     reviews:         [],
     faqs:            [],
   });
-  
 
-  
-
-  const [isSaving, setIsSaving]       = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [showViewProfile, setShowViewProfile] = useState(false);
-
-  const [editIndex, setEditIndex]     = useState(null);
+  const [editIndex, setEditIndex] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  // Autosave setup
+  const [firstLoad, setFirstLoad] = useState(true);
+  const saveTimeout = useRef(null);
 
   const logoInputRef       = useRef();
   const mainImagesInputRef = useRef();
   const galleryInputRef    = useRef();
   const pendingUploadsRef  = useRef([]);
 
-  // עוזר ל-track עליות אסינכרוניות
-  // Helper above your component
-function extractPublicIdFromUrl(url) {
-  // מניחים שה‐URL נגמר ב־<publicId>.<format>?… או ב־<publicId>.<format>
-  const filename = url.split("/").pop().split("?")[0];
-  return filename.substring(0, filename.lastIndexOf("."));
-}
+  function extractPublicIdFromUrl(url) {
+    const filename = url.split("/").pop().split("?")[0];
+    return filename.substring(0, filename.lastIndexOf("."));
+  }
 
-const track = p => {
-  pendingUploadsRef.current.push(p);
-  p.finally(() => {
-    pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
-  });
-  return p;
-};
+  const track = p => {
+    pendingUploadsRef.current.push(p);
+    p.finally(() => {
+      pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
+    });
+    return p;
+  };
 
-// טעינת הנתונים הראשונית
-useEffect(() => {
-  API.get("/business/my")
-    .then(res => {
-      if (res.status === 200) {
-        const data = res.data.business || res.data;
+  // טעינת הנתונים הראשונית
+  useEffect(() => {
+    API.get("/business/my")
+      .then(res => {
+        if (res.status === 200) {
+          const data = res.data.business || res.data;
+          const rawAddress = data.address;
+          const city = typeof rawAddress === "string" ? rawAddress : rawAddress?.city || "";
+          const urls        = data.mainImages || [];
+          const galleryUrls = data.gallery    || [];
+          const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+            ? data.mainImageIds
+            : urls.map(extractPublicIdFromUrl);
+          const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+            ? data.galleryImageIds
+            : galleryUrls.map(extractPublicIdFromUrl);
 
-        // תמיכה ב־address מחרוזת או אובייקט
-        const rawAddress = data.address;
-        const city = typeof rawAddress === "string"
-          ? rawAddress
-          : rawAddress?.city || "";
+          setBusinessDetails(prev => ({
+            ...prev,
+            businessName: data.businessName || "",
+            description:  data.description || "",
+            phone:        data.phone       || "",
+            email:        data.email       || "",
+            category:     data.category    || "",
+            address:      { city },
+            logo:         data.logo        || null,
+            logoId:       data.logoId      || null,
+            gallery:         galleryUrls,
+            galleryImageIds: galleryIds,
+            mainImages:      urls,
+            mainImageIds:    mainIds,
+            faqs:    data.faqs    || [],
+            reviews: data.reviews || []
+          }));
+        }
+      })
+      .catch(console.error)
+      .finally(() => setFirstLoad(false));
+  }, []);
 
-        // URLs ישנים
-        const urls       = data.mainImages   || [];
-        const galleryUrls= data.gallery      || [];
+  // Autosave אחרי debounce
+  useEffect(() => {
+    if (firstLoad) return;
 
-        // IDs: אם כבר קיימים במערך – נשמור אותם, אחרת נחלץ מהכתובת
-        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-          ? data.mainImageIds
-          : urls.map(extractPublicIdFromUrl);
-        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-          ? data.galleryImageIds
-          : galleryUrls.map(extractPublicIdFromUrl);
+    clearTimeout(saveTimeout.current);
 
-        setBusinessDetails(prev => ({
-          ...prev,
-          // שדות בסיסיים
-          name:        data.name        || "",
-          description: data.description || "",
-          phone:       data.phone       || "",
-          email:       data.email       || "",
-          category:    data.category    || "",
-          city,
-
-          // לוגו
-          logo:   data.logo   || null,
-          logoId: data.logoId || null,
-
-          // גלריה
-          gallery:         galleryUrls,
-          galleryImageIds: galleryIds,
-
-          // תמונות ראשיות
-          mainImages:   urls,
-          mainImageIds: mainIds,
-
-          // שאר השדות
-          faqs:    data.faqs    || [],
-          reviews: data.reviews || []
-        }));
+    saveTimeout.current = setTimeout(async () => {
+      setIsSaving(true);
+      try {
+        const payload = {
+          businessName: businessDetails.businessName,
+          category:     businessDetails.category,
+          description:  businessDetails.description,
+          phone:        businessDetails.phone,
+          email:        businessDetails.email,
+          address:      { city: businessDetails.address.city },
+        };
+        const res = await API.patch("/business/my", payload);
+        setBusinessDetails(prev => ({ ...prev, ...res.data }));
+      } catch (err) {
+        console.error("Autosave failed:", err);
+      } finally {
+        setIsSaving(false);
       }
-    })
-    .catch(console.error);
-}, []);
+    }, 1000);
+
+    return () => clearTimeout(saveTimeout.current);
+  }, [
+    businessDetails.businessName,
+    businessDetails.category,
+    businessDetails.description,
+    businessDetails.phone,
+    businessDetails.email,
+    businessDetails.address.city,
+    firstLoad
+  ]);
 
   
          
 
   // ===== INPUT CHANGE (supports nested fields) =====
 const handleInputChange = ({ target: { name, value } }) => {
-  if (name.includes('.')) {
-    const [parent, child] = name.split('.');
-    setBusinessDetails(prev => ({
-      ...prev,
-      [parent]: {
-        ...prev[parent],
-        [child]: value
-      }
-    }));
-  } else {
-    setBusinessDetails(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  }
-};
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setBusinessDetails(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setBusinessDetails(prev => ({ ...prev, [name]: value }));
+    }
+  };
 
 // ===== LOGO UPLOAD =====
 const handleLogoClick = () => {

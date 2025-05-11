@@ -15,6 +15,7 @@ ehthumbs.db
 
 # VSCode
 .vscode/
+.history/              # הוספת תיקיית Local History להתעלמות
 
 # מערכת הפצה (Vercel / Railway)
 .vercel
