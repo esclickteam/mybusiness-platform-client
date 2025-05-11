@@ -1,21 +1,33 @@
 // src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../../../../context/AuthContext";
 import API from "@api";
 import ChatTab from "../ChatTab.jsx";
 import "./ChatSection.css";
 
 export default function ChatSection({ businessDetails, setBusinessDetails, renderTopBar }) {
+  const { user, initialized } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [selectedConvo, setSelectedConvo] = useState(null);
 
-  // 1) טוענים את כל השיחות של העסק
   useEffect(() => {
-    API.get("/messages/conversations", { withCredentials: true })
-      .then(res => setConversations(res.data))
+    if (!initialized) return;
+    // קורא ל־endpoint שמחזיר את רשימת השיחות
+    API.get("/messages", { withCredentials: true })
+      .then(res => {
+        // אם השרת עוטף ב־{ conversations: [...] } תחליפי ל־res.data.conversations
+        setConversations(res.data);
+      })
       .catch(console.error);
-  }, []);
+  }, [initialized]);
 
-  // 2) צד שמאל – רשימת השיחות
+  if (!initialized) return null;
+
+  // מוציא את ה־partnerId: כל משתתף חוץ ממני
+  const partnerId = selectedConvo
+    ? selectedConvo.participants.find(id => id !== user.userId)
+    : null;
+
   return (
     <>
       <div className="form-column">
@@ -24,11 +36,9 @@ export default function ChatSection({ businessDetails, setBusinessDetails, rende
 
           {conversations.length > 0 ? (
             conversations.map(convo => {
-              // מניח שב־convo יש participantNames ו־participants
-              // מוציא את ה־ID של הלקוח שמשוחח עם העסק
-              const partnerId = convo.participants.find(p => p !== businessDetails.ownerId);
-              // תווית פשוטה: שם הלקוח (אפשר לשנות לפי מה שעובר ב־convo)
-              const label = convo.clientName || partnerId;
+              const pid = convo.participants.find(id => id !== user.userId);
+              // תווית להצגה: אפשר כאן לקחת convo.clientName או convo.businessName
+              const label = convo.clientName || convo.businessName || pid;
               return (
                 <div
                   key={convo._id}
@@ -46,27 +56,25 @@ export default function ChatSection({ businessDetails, setBusinessDetails, rende
           )}
         </aside>
 
-        {/* 3) ברגע שבוחרים שיחה – טוענים ChatTab */}
-        {selectedConvo && (
+        {partnerId && (
           <ChatTab
             businessDetails={businessDetails}
             setBusinessDetails={setBusinessDetails}
             isPreview={false}
-            partnerId={selectedConvo.participants.find(p => p !== businessDetails.ownerId)}
+            partnerId={partnerId}
             isBusiness={true}
           />
         )}
       </div>
 
-      {/* 4) תצוגת פריוויו בצד ימין */}
       <div className="preview-column">
         {renderTopBar()}
-        {selectedConvo && (
+        {partnerId && (
           <ChatTab
             businessDetails={businessDetails}
             setBusinessDetails={setBusinessDetails}
             isPreview={true}
-            partnerId={selectedConvo.participants.find(p => p !== businessDetails.ownerId)}
+            partnerId={partnerId}
             isBusiness={true}
           />
         )}

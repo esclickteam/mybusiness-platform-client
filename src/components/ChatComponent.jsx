@@ -26,7 +26,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     ? (user?.businessName || 'העסק')
     : (user?.name || 'הלקוח');
 
-  // טוען את השם של השותף לשיחה (עסק <-> לקוח)
+  // טוען את השם של השותף לשיחה
   useEffect(() => {
     if (!partnerId) return;
     const endpoint = isBusiness
@@ -45,26 +45,41 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
 
   // טוען או יוצר שיחה וקורא את ההודעות הראשוניות
   useEffect(() => {
-    if (!userId || !partnerId) return;
+    if (!initialized || !userId || !partnerId) return;
+
     (async () => {
       try {
-        const { data: convos } = await API.get('/messages/conversations', { withCredentials: true });
-        const convo = convos.find(c =>
+        // בודק אם כבר קיימת שיחה
+        const { data: convos } = await API.get(
+          '/messages/conversations',
+          { withCredentials: true }
+        );
+        const existing = convos.find(c =>
           c.participants.some(p => p.toString() === partnerId)
         );
-        if (convo) {
-          setConversationId(convo._id);
+
+        if (existing) {
+          setConversationId(existing._id);
           const { data: msgs } = await API.get(
-            `/messages/${convo._id}/messages`,
+            `/messages/${existing._id}/messages`,
             { withCredentials: true }
           );
           setMessages(msgs);
+        } else {
+          // אין שיחה קיימת — יוצר שיחה חדשה
+          const { data } = await API.post(
+            '/messages',
+            { otherId: partnerId, businessName: partnerName },
+            { withCredentials: true }
+          );
+          setConversationId(data.conversationId);
+          setMessages([]);
         }
       } catch (err) {
-        console.error('Error loading conversation:', err);
+        console.error('Error loading or creating conversation:', err);
       }
     })();
-  }, [partnerId, userId]);
+  }, [initialized, partnerId, userId, partnerName]);
 
   // הגדרת Socket.IO
   useEffect(() => {
@@ -130,15 +145,17 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
       fileName: file?.name,
       timestamp: new Date().toISOString(),
       delivered: false,
+      businessName: partnerName
     };
     setMessages(prev => [...prev, optimisticMsg]);
 
     try {
       let convId = conversationId;
+      // חיבור מחדש אם צריך
       if (!convId) {
         const { data } = await API.post(
           '/messages',
-          { otherId: partnerId },
+          { otherId: partnerId, businessName: partnerName },
           { withCredentials: true }
         );
         convId = data.conversationId;
@@ -157,9 +174,8 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
           headers: { 'Content-Type': 'multipart/form-data' },
         }
       );
-
       setMessages(prev =>
-        prev.map(m => (m.id === tempId ? { ...saved, delivered: true } : m))
+        prev.map(m => m.id === tempId ? { ...saved, delivered: true } : m)
       );
     } catch (err) {
       console.error('Error sending message:', err);
@@ -175,7 +191,7 @@ export default function ChatComponent({ partnerId, isBusiness = false }) {
     const others = typingUsers.filter(id => id !== userId);
     if (!others.length) return null;
     const names = others
-      .map(id => (id === partnerId ? partnerName : 'מישהו'))
+      .map(id => id === partnerId ? partnerName : 'מישהו')
       .join(', ');
     return <div className="chat__typing">…{names} מקלידים…</div>;
   };
