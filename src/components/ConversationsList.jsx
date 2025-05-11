@@ -8,9 +8,9 @@ import './ConversationsList.css';
  *  - onSelect: ({ conversationId, partnerId }) => void
  */
 export default function ConversationsList({ isBusiness, onSelect }) {
-  const [convos, setConvos]   = useState([]);
+  const [convos, setConvos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch]   = useState('');
+  const [search, setSearch] = useState('');
 
   const meId = JSON.parse(localStorage.getItem('user'))?.id;
 
@@ -26,13 +26,13 @@ export default function ConversationsList({ isBusiness, onSelect }) {
           const other = c.participants.find(p => p !== meId) || '';
           return {
             conversationId: c.conversationId,
-            partnerId:      other,
-            partnerName:    isBusiness
+            partnerId: other,
+            partnerName: isBusiness
               ? other
               : (c.businessName || '---'),
-            lastMessage:    '',  // הודעות ייטענו בצ'אט
-            updatedAt:      c.updatedAt || '',
-            unreadCount:    0,
+            lastMessage: '',  // הודעות ייטענו בצ'אט
+            updatedAt: c.updatedAt || '',
+            unreadCount: 0,
           };
         });
 
@@ -66,11 +66,11 @@ export default function ConversationsList({ isBusiness, onSelect }) {
 
       {filtered.map(c => (
         <div
-          key={c.conversationId}
+          key={c.conversationId || `conversation-${Date.now()}`} // מפתח גיבוי אם אין conversationId
           className="sidebar-item"
           onClick={() => onSelect({
             conversationId: c.conversationId,
-            partnerId:      c.partnerId
+            partnerId: c.partnerId
           })}
         >
           <div className="sidebar-item__content">
