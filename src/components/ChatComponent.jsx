@@ -27,7 +27,7 @@ export default function ChatComponent({
     ? (user?.businessName || 'העסק')
     : (user?.name || 'הלקוח');
 
-  // 1) Load partner's display name
+  // Load partner's display name
   useEffect(() => {
     if (!partnerId) return;
     const endpoint = isBusiness
@@ -44,7 +44,7 @@ export default function ChatComponent({
       .catch(() => setPartnerName('---'));
   }, [partnerId, isBusiness]);
 
-  // 2) Load or create conversation, then load its messages
+  // Load or create conversation, then load its messages
   useEffect(() => {
     if (!initialized || !userId || !partnerId) return;
     (async () => {
@@ -54,6 +54,7 @@ export default function ChatComponent({
           '/messages/conversations',
           { withCredentials: true }
         );
+
         const convo = Array.isArray(convos) &&
           convos.find(c =>
             c.participants.includes(userId) &&
@@ -61,8 +62,8 @@ export default function ChatComponent({
           );
 
         let convId;
-        if (convo) {
-          convId = convo.conversationId;
+        if (convo && convo._id) {
+          convId = convo._id;
         } else {
           // Create new conversation
           const { data: created } = await API.post(
@@ -75,19 +76,21 @@ export default function ChatComponent({
 
         setConversationId(convId);
 
-        // Load existing messages
-        const { data: msgs } = await API.get(
-          `/messages/conversations/${convId}/messages`,
-          { withCredentials: true }
-        );
-        setMessages(msgs);
+        // Load existing messages only if convId defined
+        if (convId) {
+          const { data: msgs } = await API.get(
+            `/messages/conversations/${convId}/messages`,
+            { withCredentials: true }
+          );
+          setMessages(msgs);
+        }
       } catch (err) {
         console.error('Error loading/creating conversation:', err);
       }
     })();
   }, [initialized, userId, partnerId]);
 
-  // 3) Setup Socket.IO for real-time updates
+  // Setup Socket.IO for real-time updates
   useEffect(() => {
     if (!conversationId) return;
     const socket = io(SOCKET_URL, {
@@ -113,7 +116,7 @@ export default function ChatComponent({
     };
   }, [conversationId]);
 
-  // 4) Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -202,7 +205,7 @@ export default function ChatComponent({
       <div className="chat__body" ref={containerRef}>
         {messages.map(m => (
           <div
-            key={m.id || m.timestamp}
+            key={m._id || m.id || m.timestamp}
             className={`chat__message ${m.from === userId ? 'mine' : 'theirs'}`}
           >
             <div className="chat__bubble">
