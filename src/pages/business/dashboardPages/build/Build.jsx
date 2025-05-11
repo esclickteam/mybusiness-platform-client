@@ -449,7 +449,7 @@ const handleDeleteMainImage = async publicId => {
     };
 
     // קריאה ל־PATCH
-    const res = await API.patch("/business/my", payload);
+    const res = await API.patch('/business/my/details', payload)
 
     if (res.status === 200) {
       // צריכה להיות התשובה: האובייקט המעודכן במלואו
