@@ -11,7 +11,7 @@
   direction: rtl;
 }
 
-.build-wrapper > .chat-section {
+.build-wrapper .chat-section {
   flex: 1;             /* יתפוס את השטח הפנוי */
   display: flex;
 }
