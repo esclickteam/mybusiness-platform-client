@@ -31,20 +31,31 @@ export default function ChatComponent({
 
   // 1) Load partner's display name
   useEffect(() => {
-    if (!partnerId) return;
-    const endpoint = isBusiness
-      ? `/users/${partnerId}`
-      : `/business/${partnerId}`;
-    API.get(endpoint)
-      .then(res => {
-        const data = isBusiness ? res.data.user : res.data.business;
-        const name = isBusiness
-          ? (data.name || data.fullName)
-          : data.businessName;
-        setPartnerName(name || '');
-      })
-      .catch(console.error);
-  }, [partnerId, isBusiness]);
+  if (!partnerId) return;
+
+  // בדיוק: אם אני עסק, אני רוצה להציג שם של המשתמש
+  //        אם אני לקוח, אני רוצה להציג שם של העסק
+  const endpoint = isBusiness
+    ? `/users/${partnerId}`
+    : `/business/${partnerId}`;
+
+  API.get(endpoint, { withCredentials: true })
+    .then(res => {
+      const data = isBusiness
+        ? res.data.user      // { user: { name, ... } }
+        : res.data.business; // { business: { businessName, ... } }
+
+      const name = isBusiness
+        ? (data.name || data.fullName)
+        : data.businessName;
+
+      setPartnerName(name || '');
+    })
+    .catch(err => {
+      console.error('Error loading partner name:', err);
+      setPartnerName('---');
+    });
+}, [partnerId, isBusiness]);
 
   // 2) Load or create conversation, then load its messages
   useEffect(() => {
