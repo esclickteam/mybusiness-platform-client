@@ -51,7 +51,7 @@ export default function ChatComponent({
       try {
         // Fetch existing conversations
         const { data: convos } = await API.get(
-          '/conversations',
+          '/messages/conversations',
           { withCredentials: true }
         );
         const convo = Array.isArray(convos) &&
@@ -62,11 +62,11 @@ export default function ChatComponent({
 
         let convId;
         if (convo) {
-          convId = convo._id;
+          convId = convo.conversationId;
         } else {
           // Create new conversation
           const { data: created } = await API.post(
-            '/conversations',
+            '/messages/conversations',
             { otherId: partnerId },
             { withCredentials: true }
           );
@@ -77,7 +77,7 @@ export default function ChatComponent({
 
         // Load existing messages
         const { data: msgs } = await API.get(
-          `/conversations/${convId}/messages`,
+          `/messages/conversations/${convId}/messages`,
           { withCredentials: true }
         );
         setMessages(msgs);
@@ -169,7 +169,7 @@ export default function ChatComponent({
       form.append('text', trimmed);
 
       const { data: saved } = await API.post(
-        `/conversations/${conversationId}/messages`,
+        `/messages/conversations/${conversationId}/messages`,
         form,
         {
           withCredentials: true,

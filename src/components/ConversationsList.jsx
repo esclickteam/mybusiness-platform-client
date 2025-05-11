@@ -1,5 +1,3 @@
-// src/components/ConversationsList.jsx
-
 import React, { useState, useEffect } from 'react';
 import API from '../api';
 import './ConversationsList.css';
@@ -19,23 +17,22 @@ export default function ConversationsList({ isBusiness, onSelect }) {
   useEffect(() => {
     setLoading(true);
 
-    // GET /api/conversations
-    API.get('/conversations', { withCredentials: true })
+    // GET /api/messages/conversations
+    API.get('/messages/conversations', { withCredentials: true })
       .then(res => {
         const all = Array.isArray(res.data) ? res.data : [];
 
         const formatted = all.map(c => {
           const other = c.participants.find(p => p !== meId) || '';
           return {
-            conversationId: c._id,
+            conversationId: c.conversationId,
             partnerId:      other,
             partnerName:    isBusiness
               ? other
               : (c.businessName || '---'),
-            // הודעות ייטענו ברכיב הצ'אט
-            lastMessage:   '',
-            updatedAt:     c.updatedAt || '',
-            unreadCount:   0,
+            lastMessage:    '',  // הודעות ייטענו בצ'אט
+            updatedAt:      c.updatedAt || '',
+            unreadCount:    0,
           };
         });
 
