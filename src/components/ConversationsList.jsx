@@ -66,7 +66,7 @@ export default function ConversationsList({ isBusiness, onSelect }) {
 
       {filtered.map(c => (
         <div
-          key={c.conversationId || `conversation-${Date.now()}`} // מפתח גיבוי אם אין conversationId
+          key={`${c.conversationId}-${Date.now()}`} // שילוב של conversationId ו- timestamp על מנת להבטיח ייחודיות
           className="sidebar-item"
           onClick={() => onSelect({
             conversationId: c.conversationId,
