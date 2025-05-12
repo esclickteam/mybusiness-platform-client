@@ -3,7 +3,21 @@ import React, { useState, useEffect } from "react";
 import API from "../api";
 import "./ConversationsList.css";
 
-export default function ConversationsList({ onSelect }) {
+/**
+ * Props:
+ *  - onSelect: function({ conversationId, partnerId })
+ *  - selectedConversationId: string | null
+ *  - userId: string
+ *  - clientProfilePic: string URL
+ *  - businessProfilePic: string URL
+ */
+export default function ConversationsList({
+  onSelect,
+  selectedConversationId,
+  userId,
+  clientProfilePic,
+  businessProfilePic,
+}) {
   const [convos, setConvos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -11,9 +25,9 @@ export default function ConversationsList({ onSelect }) {
   useEffect(() => {
     setLoading(true);
     setError("");
-    API.get("/messages", { withCredentials: true })
-      .then(res => setConvos(res.data))
-      .catch(err => {
+    API.get("/messages/conversations", { withCredentials: true })
+      .then((res) => setConvos(res.data))
+      .catch((err) => {
         console.error("❌ fetch convos:", err);
         setError("שגיאה בטעינת שיחות");
       })
@@ -26,26 +40,30 @@ export default function ConversationsList({ onSelect }) {
 
   return (
     <div className="conversations-list">
-      {convos.map(c => {
-        // נניח ש־participants הוא מערך שני מזהים, האחד הוא המשתמש הנוכחי והשני הוא הפרטנר
-        const partnerId = c.participants.find(p => p !== c.currentUserId);
-        const name = c.businessName || "שיחה";
-
-        // שליפת ההודעה האחרונה, אם קיימת
-        const lastMsg = c.messages?.length
-          ? c.messages[c.messages.length - 1].text
-          : "";
+      {convos.map((c) => {
+        // מציאת המזהה של הפרטנר
+        const partnerId = c.participants.find((p) => p !== userId);
+        // האם הצד השני הוא עסק?
+        const isPartnerBusiness = Boolean(c.businessName);
+        // בחירת תמונת הפרופיל
+        const picUrl = isPartnerBusiness
+          ? businessProfilePic
+          : clientProfilePic;
+        // שם התצוגה
+        const name = c.businessName || partnerId || "משתמש";
 
         return (
           <div
             key={c._id}
-            className="conversation-item"
-            onClick={() =>
-              onSelect({ conversationId: c._id, partnerId })
-            }
+            className={`conversation-item ${
+              c._id === selectedConversationId ? "selected" : ""
+            }`}
+            onClick={() => onSelect({ conversationId: c._id, partnerId })}
           >
-            <strong>{name}</strong>
-            {lastMsg && <span className="last-message">{lastMsg}</span>}
+            <img src={picUrl} alt="avatar" className="avatar" />
+            <div className="info">
+              <strong>{name}</strong>
+            </div>
           </div>
         );
       })}

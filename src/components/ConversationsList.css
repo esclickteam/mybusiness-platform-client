@@ -1,20 +1,58 @@
 /* 📁 src/components/ConversationsList.css */
+
+.conversations-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
 .conversation-item {
-  padding: 0.6rem 0.8rem;
-  margin-bottom: 0.5rem;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
   cursor: pointer;
-  background: #fff;
-  transition: background 0.2s;
+  transition: background-color 0.2s ease;
 }
+
+.conversation-item.selected {
+  background-color: #f0f0f0;
+}
+
 .conversation-item:hover {
-  background: #ede7fe;
+  background-color: #fafafa;
 }
-.conversation-item strong {
-  display: block;
-  margin-bottom: 0.2rem;
+
+.conversation-item .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
 }
-.conversation-item .last-message {
-  font-size: 0.9rem;
-  color: #555;
+
+.conversation-item .info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.conversation-item .info strong {
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.error-banner {
+  color: #b00020;
+  background-color: #ffe5e5;
+  padding: 8px;
+  border-radius: 4px;
+  margin: 8px 0;
+  font-size: 14px;
+  text-align: center;
 }
