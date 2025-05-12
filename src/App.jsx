@@ -1,11 +1,12 @@
 // src/App.jsx
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import {
   Routes,
   Route,
   Navigate,
   useLocation,
   useParams,
+  useNavigate,
 } from "react-router-dom";
 import Header from "./components/Header";
 import ChatPage from "./components/ChatPage";
@@ -13,6 +14,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 import { useAuth } from "./context/AuthContext";
+import API from "./api";
+import ConversationsList from "./components/ConversationsList";
 
 import "./styles/index.css";
 
@@ -55,7 +58,6 @@ const EditSiteContent    = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles        = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage    = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
-// ScrollToTop
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => window.scrollTo(0, 0), [pathname]);
@@ -63,15 +65,10 @@ function ScrollToTop() {
 }
 
 export default function App() {
-  const { user } = useAuth();
-  const clientProfilePic   = "/default-client.png";
-  const businessProfilePic = "/default-business.png";
-
   return (
     <>
       <Header />
       <ScrollToTop />
-
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
           {/* Public pages */}
@@ -108,11 +105,18 @@ export default function App() {
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-          {/* Chat routes -> ChatPage wrappers */}
+          {/* Business Chat list */}
+          <Route
+            path="/business/:businessId/chat"
+            element={<BusinessChatListWrapper />}
+          />
+          {/* Business Chat detail */}
           <Route
             path="/business/:businessId/chat/:clientId"
             element={<BusinessChatWrapper />}
           />
+
+          {/* Client Chat */}
           <Route
             path="/client/chat/:businessId"
             element={<ClientChatWrapper />}
@@ -250,6 +254,7 @@ export default function App() {
           <Route
             path="/admin/affiliate-payouts"
             element={
+
               <ProtectedRoute roles={["admin"]}>
                 <AdminPayoutPage />
               </ProtectedRoute>
@@ -267,7 +272,33 @@ export default function App() {
   );
 }
 
-// Wrappers for ChatPage
+// Wrapper for business showing list of conversations
+function BusinessChatListWrapper() {
+  const { businessId } = useParams();
+  const [convos, setConvos] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    API.get('/messages', { withCredentials: true })
+      .then(res => setConvos(res.data))
+      .catch(console.error);
+  }, []);
+
+  const handleSelect = convo => {
+    const clientId = convo.participants.find(id => id !== businessId);
+    navigate(`/business/${businessId}/chat/${clientId}`);
+  };
+
+  return (
+    <ConversationsList
+      conversations={convos}
+      isBusiness={true}
+      onSelect={handleSelect}
+    />
+  );
+}
+
+// Wrapper for a specific business-client chat
 function BusinessChatWrapper() {
   const { businessId, clientId } = useParams();
   const clientProfilePic   = "/default-client.png";
@@ -276,14 +307,15 @@ function BusinessChatWrapper() {
   return (
     <ChatPage
       isBusiness={true}
-      userId={businessId}           // העסק
+      userId={businessId}
       clientProfilePic={clientProfilePic}
       businessProfilePic={businessProfilePic}
-      initialPartnerId={clientId}   // הלקוח
+      initialPartnerId={clientId}
     />
   );
 }
 
+// Wrapper for client chatting with a business
 function ClientChatWrapper() {
   const { businessId } = useParams();
   const { user }       = useAuth();
