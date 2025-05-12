@@ -1,3 +1,4 @@
+// src/pages/business/dashboardPages/BusinessMessagesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ChatComponent from "../../../components/ChatComponent";
@@ -27,6 +28,7 @@ export default function BusinessMessagesPage() {
             const otherId = participants.find(id => id !== businessUserId);
             if (!otherId) return null;
             return {
+              // השתמש ב-_id של המסמך ולא conv.conversationId
               conversationId: conv._id.toString(),
               partnerId: otherId,
               name: conv.businessName || "שיחה",
