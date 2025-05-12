@@ -1,7 +1,6 @@
-// src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
-import API from "../api";                      // axios.create({ baseURL: process.env.REACT_APP_API_URL + "/api", withCredentials: true })
+import API from "../api";  // axios.create({ baseURL: process.env.REACT_APP_API_URL + "/api", withCredentials: true })
 import "./ChatComponent.css";
 
 const SOCKET_URL = process.env.REACT_APP_API_URL || "https://api.esclick.co.il";
@@ -13,28 +12,39 @@ export default function ChatComponent({
   isBusiness = false,
 }) {
   const [conversationId, setConversationId] = useState(initialConversationId);
-  const [messages, setMessages]            = useState([]);
-  const [text, setText]                    = useState("");
-  const [file, setFile]                    = useState(null);
-  const [isLoading, setIsLoading]          = useState(false);
-  const [error, setError]                  = useState("");
-  const [isSending, setIsSending]          = useState(false);
-  const [typingUsers, setTypingUsers]      = useState([]);
-  const socketRef                          = useRef(null);
-  const bottomRef                          = useRef(null);
-  const typingTimeout                      = useRef();
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [file, setFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const socketRef = useRef(null);
+  const bottomRef = useRef(null);
+  const typingTimeout = useRef();
 
-  // Scroll to bottom on new message
+  // Scroll to bottom on new messages
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
   useEffect(() => scrollToBottom(), [messages, scrollToBottom]);
 
-  // Ensure conversation exists
+  // Reset chat when partner changes
+  useEffect(() => {
+    setConversationId(initialConversationId);
+    setMessages([]);
+    setError("");
+  }, [partnerId, initialConversationId]);
+
+  // Ensure a conversation exists (create if needed)
   const ensureConversation = useCallback(async () => {
     if (!conversationId && partnerId) {
       try {
-        const res = await API.post("/messages/conversations", { otherId: partnerId });
+        const res = await API.post(
+          "/messages/conversations",
+          { otherId: partnerId },
+          { withCredentials: true }
+        );
         setConversationId(res.data.conversationId);
         return res.data.conversationId;
       } catch {
@@ -44,7 +54,7 @@ export default function ChatComponent({
     return conversationId;
   }, [conversationId, partnerId]);
 
-  // Load history & (re)initialize socket
+  // Load history & initialize socket
   useEffect(() => {
     let mounted = true;
 
@@ -60,17 +70,21 @@ export default function ChatComponent({
         .catch(() => mounted && setError("שגיאה בטעינת היסטוריה"))
         .finally(() => mounted && setIsLoading(false));
 
+      // disconnect existing socket, if any
       socketRef.current?.disconnect();
 
+      // init new socket
       const socket = io(SOCKET_URL, { withCredentials: true });
       socketRef.current = socket;
 
       socket.on("connect", () => {
         socket.emit("joinRoom", convId);
       });
+
       socket.on("newMessage", msg => {
         setMessages(prev => [...prev, msg]);
       });
+
       socket.on("typing", user => {
         setTypingUsers(prev =>
           prev.includes(user) ? prev : [...prev, user]
@@ -86,6 +100,7 @@ export default function ChatComponent({
     return () => {
       mounted = false;
       socketRef.current?.disconnect();
+      clearTimeout(typingTimeout.current);
     };
   }, [conversationId, ensureConversation]);
 
@@ -127,7 +142,7 @@ export default function ChatComponent({
     }
   };
 
-  // Retry load history
+  // Retry load (reset conversation to force refetch)
   const retryLoad = () => {
     setError("");
     setConversationId(null);
@@ -146,6 +161,10 @@ export default function ChatComponent({
       <div className="messages-list">
         {messages.map((m, i) => {
           const isSelf = m.from === userId;
+          // determine display name for other party
+          const otherName = isBusiness ? "לקוח" : m.businessName || "הם";
+          const senderName = isSelf ? "אתה" : otherName;
+
           return (
             <div
               key={`${m._id || m.timestamp}-${i}`}
@@ -153,10 +172,10 @@ export default function ChatComponent({
             >
               <div className="message-body">
                 <div className="message-meta">
-                  <strong>{isSelf ? "אתה" : "הם"}</strong>
+                  <strong>{senderName}</strong>
                   <span className="timestamp">
                     {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                      hour:   "2-digit",
+                      hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </span>

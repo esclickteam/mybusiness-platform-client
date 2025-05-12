@@ -8,7 +8,7 @@ import "./ConversationsList.css";
  *  - onSelect: function({ conversationId, partnerId })
  *  - selectedConversationId: string | null
  *  - userId: string
- *  - clientProfilePic: string URL
+ *  - clientProfilePic: string URL  // can pass if you ever want to re-enable avatars
  *  - businessProfilePic: string URL
  */
 export default function ConversationsList({
@@ -45,10 +45,6 @@ export default function ConversationsList({
         const partnerId = c.participants.find((p) => p !== userId);
         // האם הצד השני הוא עסק?
         const isPartnerBusiness = Boolean(c.businessName);
-        // בחירת תמונת הפרופיל
-        const picUrl = isPartnerBusiness
-          ? businessProfilePic
-          : clientProfilePic;
         // שם התצוגה
         const name = c.businessName || partnerId || "משתמש";
 
@@ -60,7 +56,7 @@ export default function ConversationsList({
             }`}
             onClick={() => onSelect({ conversationId: c._id, partnerId })}
           >
-            <img src={picUrl} alt="avatar" className="avatar" />
+            
             <div className="info">
               <strong>{name}</strong>
             </div>
