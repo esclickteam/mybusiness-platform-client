@@ -1,6 +1,7 @@
+// src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
-import API from "../api";
+import API from "../api";                      // axios.create({ baseURL: process.env.REACT_APP_API_URL + "/api", withCredentials: true })
 import "./ChatComponent.css";
 
 const SOCKET_URL = process.env.REACT_APP_API_URL || "https://api.esclick.co.il";
@@ -8,89 +9,120 @@ const SOCKET_URL = process.env.REACT_APP_API_URL || "https://api.esclick.co.il";
 export default function ChatComponent({
   userId,
   partnerId,
-  conversationId,
+  initialConversationId = null,
   clientProfilePic,
   businessProfilePic,
-  isBusiness,
+  isBusiness = false,
 }) {
-  const [messages, setMessages] = useState([]);
-  const [text, setText] = useState("");
-  const [file, setFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [isSending, setIsSending] = useState(false);
-  const [typingUsers, setTypingUsers] = useState([]);
-  const socketRef = useRef(null);
-  const bottomRef = useRef(null);
-  const typingTimeout = useRef();
+  const [conversationId, setConversationId] = useState(initialConversationId);
+  const [messages, setMessages]            = useState([]);
+  const [text, setText]                    = useState("");
+  const [file, setFile]                    = useState(null);
+  const [isLoading, setIsLoading]          = useState(false);
+  const [error, setError]                  = useState("");
+  const [isSending, setIsSending]          = useState(false);
+  const [typingUsers, setTypingUsers]      = useState([]);
+  const socketRef                          = useRef(null);
+  const bottomRef                          = useRef(null);
+  const typingTimeout                      = useRef();
 
-  // Scroll to bottom
+  // scroll to bottom on new message
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
   useEffect(() => scrollToBottom(), [messages, scrollToBottom]);
 
-  // Load chat history and initialize socket
+  // 1) Ensure conversation exists
+  const ensureConversation = useCallback(async () => {
+    if (!conversationId && partnerId) {
+      try {
+        const res = await API.post("/messages/conversations", { otherId: partnerId });
+        setConversationId(res.data.conversationId);
+        return res.data.conversationId;
+      } catch {
+        setError("שגיאה ביצירת שיחה");
+      }
+    }
+    return conversationId;
+  }, [conversationId, partnerId]);
+
+  // 2) Load history & (re)initialize socket whenever conversationId changes
   useEffect(() => {
-    if (!conversationId) return;
-    setIsLoading(true);
-    setError("");
+    let mounted = true;
 
-    API.get(`/messages/${conversationId}/messages`, { withCredentials: true })
-      .then(res => {
-        setMessages(res.data);
-      })
-      .catch(() => setError("שגיאה בטעינת היסטוריה"))
-      .finally(() => setIsLoading(false));
+    const init = async () => {
+      const convId = await ensureConversation();
+      if (!convId) return;
 
-    socketRef.current = io(SOCKET_URL, { withCredentials: true });
-    socketRef.current.on("connect", () => {
-      console.log("Socket connected:", socketRef.current.id);
-      console.log("Emitting joinRoom for:", conversationId);
-      socketRef.current.emit("joinRoom", conversationId);
-    });
+      setIsLoading(true);
+      setError("");
 
-    socketRef.current.on("newMessage", msg => {
-      console.log("Received newMessage:", msg);
-      setMessages(prev => [...prev, msg]);
-    });
-    socketRef.current.on("typing", user => {
-      console.log("Received typing from:", user);
-      setTypingUsers(prev => prev.includes(user) ? prev : [...prev, user]);
-      clearTimeout(typingTimeout.current);
-      typingTimeout.current = setTimeout(() => {
-        setTypingUsers(prev => prev.filter(u => u !== user));
-      }, 2000);
-    });
+      // fetch history
+      API.get(`/messages/${convId}/messages`)
+        .then(res => mounted && setMessages(res.data))
+        .catch(() => mounted && setError("שגיאה בטעינת היסטוריה"))
+        .finally(() => mounted && setIsLoading(false));
 
-    return () => socketRef.current?.disconnect();
-  }, [conversationId]);
+      // cleanup old socket
+      socketRef.current?.disconnect();
 
-  // Handle typing
+      // init new socket
+      const socket = io(SOCKET_URL, { withCredentials: true });
+      socketRef.current = socket;
+
+      socket.on("connect", () => {
+        socket.emit("joinRoom", convId);
+      });
+      socket.on("newMessage", msg => {
+        setMessages(prev => [...prev, msg]);
+      });
+      socket.on("typing", user => {
+        setTypingUsers(prev =>
+          prev.includes(user) ? prev : [...prev, user]
+        );
+        clearTimeout(typingTimeout.current);
+        typingTimeout.current = setTimeout(() => {
+          setTypingUsers(prev => prev.filter(u => u !== user));
+        }, 2000);
+      });
+    };
+
+    init();
+    return () => {
+      mounted = false;
+      socketRef.current?.disconnect();
+    };
+  }, [conversationId, ensureConversation]);
+
+  // handle typing indicator
   const handleTyping = e => {
     setText(e.target.value);
     socketRef.current?.emit("typing", isBusiness ? "עסק" : "לקוח");
   };
 
-  // Send message
+  // 3) Send message (auto-create convo if needed)
   const sendMessage = async () => {
-    console.log("sendMessage called:", { text, file, conversationId });
-    if ((!text.trim() && !file) || !conversationId) return;
+    if ((!text.trim() && !file) || isSending) return;
     setIsSending(true);
     setError("");
 
-    const payload = new FormData();
-    payload.append("to", partnerId);
-    payload.append("text", text);
-    if (file) payload.append("fileData", file);
+    const convId = await ensureConversation();
+    if (!convId) {
+      setIsSending(false);
+      return;
+    }
+
+    const form = new FormData();
+    form.append("text", text);
+    if (file) form.append("fileData", file);
 
     try {
       const res = await API.post(
-        `/messages/${conversationId}/messages`,
-        payload,
+        `/messages/${convId}/messages`,
+        form,
         { withCredentials: true }
       );
-      setMessages(prev => [...prev, { ...res.data, fromSelf: true }]);
+      setMessages(prev => [...prev, res.data]);
       setText("");
       setFile(null);
     } catch {
@@ -100,35 +132,83 @@ export default function ChatComponent({
     }
   };
 
+  // retry load history
+  const retryLoad = () => {
+    setError("");
+    setConversationId(null);  // triggers re-init
+  };
+
   return (
     <div className="chat-component">
       {isLoading && <div className="spinner">טעינה…</div>}
-      {error && <div className="error-banner">{error} (רענן)</div>}
+      {error && (
+        <div className="error-banner">
+          {error}
+          <button onClick={retryLoad} className="retry-btn">נסה שוב</button>
+        </div>
+      )}
 
       <div className="messages-list">
-        {messages.map((m, i) => (
-          <div key={`${m._id || m.timestamp}-${i}`} className={`message-item ${m.fromSelf ? "self" : ""}`}>
-            <div className="message-meta">
-              <strong>{m.fromSelf ? "אתה" : partnerId === m.from ? "אתה" : "הם"}</strong>
-              <span className="timestamp">
-                {new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
-              </span>
+        {messages.map((m, i) => {
+          const isSelf = m.from === userId;
+          const picUrl = isSelf ? clientProfilePic : businessProfilePic;
+          return (
+            <div
+              key={`${m._id || m.timestamp}-${i}`}
+              className={`message-item ${isSelf ? "self" : ""}`}
+            >
+              <img src={picUrl} alt="profile" className="avatar" />
+              <div className="message-body">
+                <div className="message-meta">
+                  <strong>{isSelf ? "אתה" : "הם"}</strong>
+                  <span className="timestamp">
+                    {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                      hour:   "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                {m.fileUrl && (
+                  <img
+                    src={m.fileUrl}
+                    alt="attachment"
+                    className="attachment"
+                  />
+                )}
+                <p className="message-text">{m.text}</p>
+              </div>
             </div>
-            {m.fileUrl && <img src={m.fileUrl} alt="attachment" className="attachment" />}
-            <p className="message-text">{m.text}</p>
-          </div>
-        ))}
+          );
+        })}
         <div ref={bottomRef} />
       </div>
 
       {typingUsers.length > 0 && (
-        <div className="typing-indicator">{typingUsers.join(", ")} מקליד…</div>
+        <div className="typing-indicator">
+          {typingUsers.join(", ")} מקליד…
+        </div>
       )}
 
       <div className="input-area">
-        <input type="text" value={text} onChange={handleTyping} placeholder="הודעה…" onKeyDown={e => e.key === "Enter" && sendMessage()} disabled={isSending} />
-        <input type="file" onChange={e => setFile(e.target.files[0])} disabled={isSending} />
-        <button onClick={sendMessage} disabled={isSending}>{isSending ? "שולח…" : "שלח"}</button>
+        <input
+          type="text"
+          value={text}
+          onChange={handleTyping}
+          placeholder="הודעה…"
+          onKeyDown={e => e.key === "Enter" && sendMessage()}
+          disabled={isSending || isLoading}
+        />
+        <input
+          type="file"
+          onChange={e => setFile(e.target.files[0])}
+          disabled={isSending || isLoading}
+        />
+        <button
+          onClick={sendMessage}
+          disabled={isSending || isLoading}
+        >
+          {isSending ? "שולח…" : "שלח"}
+        </button>
       </div>
     </div>
   );
