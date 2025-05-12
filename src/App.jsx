@@ -8,7 +8,7 @@ import {
   useParams,
 } from "react-router-dom";
 import Header from "./components/Header";
-import ChatPage from "./pages/ChatPage";
+import ChatPage from "./components/ChatPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
