@@ -1,4 +1,3 @@
-// 📁 src/components/ConversationsList.jsx
 import React, { useState, useEffect } from "react";
 import API from "../api";
 import "./ConversationsList.css";
@@ -56,7 +55,6 @@ export default function ConversationsList({
             }`}
             onClick={() => onSelect({ conversationId: c._id, partnerId })}
           >
-            
             <div className="info">
               <strong>{name}</strong>
             </div>

@@ -10,53 +10,53 @@ import {
 } from "react-router-dom";
 import Header from "./components/Header";
 import ChatPage from "./components/ChatPage";
+import ConversationsList from "./components/ConversationsList";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
 import { useAuth } from "./context/AuthContext";
 import API from "./api";
-import ConversationsList from "./components/ConversationsList";
 
 import "./styles/index.css";
 
 // Lazy-loaded public pages
-const HomePage           = lazy(() => import("./pages/Home"));
-const About              = lazy(() => import("./pages/About"));
-const SearchBusinesses   = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy      = lazy(() => import("./pages/PrivacyPolicy"));
-const HowItWorks         = lazy(() => import("./pages/HowItWorks"));
-const Plans              = lazy(() => import("./pages/business/Plans"));
-const Checkout           = lazy(() => import("./pages/Checkout"));
-const FAQ                = lazy(() => import("./pages/FAQ"));
-const Accessibility      = lazy(() => import("./pages/Accessibility"));
-const Terms              = lazy(() => import("./pages/Terms"));
-const Contact            = lazy(() => import("./pages/Contact"));
-const BusinessSupport    = lazy(() => import("./pages/BusinessSupport"));
-const BusinessOverview   = lazy(() => import("./pages/business/Business"));
-const BusinessesList     = lazy(() => import("./pages/BusinessesList"));
-const QuickJobsBoard     = lazy(() => import("./pages/QuickJobsBoard"));
-const QuickJobForm       = lazy(() => import("./pages/QuickJobForm"));
-const Login              = lazy(() => import("./pages/Login"));
-const Register           = lazy(() => import("./pages/Register"));
-const ResetPassword      = lazy(() => import("./pages/ResetPassword"));
-const ChangePassword     = lazy(() => import("./pages/ChangePassword"));
-const StaffLogin         = lazy(() => import("./pages/StaffLogin"));
-const BusinessProfileView= lazy(() => import("./components/shared/BusinessProfileView"));
-const ClientDashboard    = lazy(() => import("./pages/client/ClientDashboard"));
-const StaffDashboard     = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession        = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile       = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks            = lazy(() => import("./pages/staff/MyTasks"));
-const MySales            = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard   = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard     = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs          = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans         = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings      = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers         = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent    = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles        = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage    = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const HomePage            = lazy(() => import("./pages/Home"));
+const About               = lazy(() => import("./pages/About"));
+const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
+const PrivacyPolicy       = lazy(() => import("./pages/PrivacyPolicy"));
+const HowItWorks          = lazy(() => import("./pages/HowItWorks"));
+const Plans               = lazy(() => import("./pages/business/Plans"));
+const Checkout            = lazy(() => import("./pages/Checkout"));
+const FAQ                 = lazy(() => import("./pages/FAQ"));
+const Accessibility       = lazy(() => import("./pages/Accessibility"));
+const Terms               = lazy(() => import("./pages/Terms"));
+const Contact             = lazy(() => import("./pages/Contact"));
+const BusinessSupport     = lazy(() => import("./pages/BusinessSupport"));
+const BusinessOverview    = lazy(() => import("./pages/business/Business"));
+const BusinessesList      = lazy(() => import("./pages/BusinessesList"));
+const QuickJobsBoard      = lazy(() => import("./pages/QuickJobsBoard"));
+const QuickJobForm        = lazy(() => import("./pages/QuickJobForm"));
+const Login               = lazy(() => import("./pages/Login"));
+const Register            = lazy(() => import("./pages/Register"));
+const ResetPassword       = lazy(() => import("./pages/ResetPassword"));
+const ChangePassword      = lazy(() => import("./pages/ChangePassword"));
+const StaffLogin          = lazy(() => import("./pages/StaffLogin"));
+const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
+const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
+const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks             = lazy(() => import("./pages/staff/MyTasks"));
+const MySales             = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard    = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard      = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs           = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans          = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings       = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -105,12 +105,11 @@ export default function App() {
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-          {/* Business Chat list */}
+          {/* Business Chat */}
           <Route
             path="/business/:businessId/chat"
             element={<BusinessChatListWrapper />}
           />
-          {/* Business Chat detail */}
           <Route
             path="/business/:businessId/chat/:clientId"
             element={<BusinessChatWrapper />}
@@ -122,7 +121,7 @@ export default function App() {
             element={<ClientChatWrapper />}
           />
 
-          {/* Dashboards */}
+          {/* Protected dashboards */}
           <Route
             path="/business/:businessId/dashboard/*"
             element={
@@ -268,25 +267,22 @@ function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const selectedConversationId = pathname.includes("/chat/")
+    ? pathname.split("/").pop()
+    : null;
 
   useEffect(() => {
     API.get("/messages/conversations", { withCredentials: true })
-      .then(res => {
-        console.log("Loaded convos:", res.data);
-        setConvos(res.data);
-      })
+      .then(res => setConvos(res.data))
       .catch(console.error);
   }, []);
 
-  const handleSelect = convo => {
-    if (!convo.partnerId || !convo.conversationId) {
-      console.error("Invalid convo", convo);
-      return;
-    }
-    navigate(
-      `/business/${businessId}/chat/${convo.partnerId}`,
-      { state: { conversationId: convo.conversationId } }
-    );
+  const handleSelect = ({ conversationId, partnerId }) => {
+    navigate(`/business/${businessId}/chat/${partnerId}`, {
+      state: { conversationId },
+    });
   };
 
   return (
@@ -294,6 +290,10 @@ function BusinessChatListWrapper() {
       conversations={convos}
       isBusiness={true}
       onSelect={handleSelect}
+      selectedConversationId={selectedConversationId}
+      userId={businessId}
+      clientProfilePic="/default-client.png"
+      businessProfilePic="/default-business.png"
     />
   );
 }
@@ -301,21 +301,15 @@ function BusinessChatListWrapper() {
 // Wrapper for a specific business-client chat
 function BusinessChatWrapper() {
   const { businessId, clientId } = useParams();
-  const clientProfilePic   = "/default-client.png";
-  const businessProfilePic = "/default-business.png";
-
-  // get conversationId from navigation state (if set)
-  const location = useLocation();
-  const { conversationId } = location.state || {};
+  const { state } = useLocation();
+  const initialConversationId = state?.conversationId || null;
 
   return (
     <ChatPage
       isBusiness={true}
       userId={businessId}
-      clientProfilePic={clientProfilePic}
-      businessProfilePic={businessProfilePic}
-      initialPartnerId={clientId}
-      initialConversationId={conversationId}
+      partnerId={clientId}
+      initialConversationId={initialConversationId}
     />
   );
 }
@@ -324,16 +318,13 @@ function BusinessChatWrapper() {
 function ClientChatWrapper() {
   const { businessId } = useParams();
   const { user }       = useAuth();
-  const clientProfilePic   = "/default-client.png";
-  const businessProfilePic = "/default-business.png";
 
   return (
     <ChatPage
       isBusiness={false}
-      userId={user.id}
-      clientProfilePic={clientProfilePic}
-      businessProfilePic={businessProfilePic}
-      initialPartnerId={businessId}
+      userId={user.userId}
+      partnerId={businessId}
+      initialConversationId={null}
     />
   );
 }

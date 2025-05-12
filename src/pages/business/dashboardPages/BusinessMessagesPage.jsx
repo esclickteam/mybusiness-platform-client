@@ -27,10 +27,9 @@ export default function BusinessMessagesPage() {
             const otherId = participants.find(id => id !== businessUserId);
             if (!otherId) return null;
             return {
-              conversationId: conv.conversationId.toString(),
+              conversationId: conv._id.toString(),
               partnerId: otherId,
               name: conv.businessName || "שיחה",
-              lastMessage: conv.lastMessage?.text || "",
             };
           })
           .filter(Boolean);
@@ -51,20 +50,25 @@ export default function BusinessMessagesPage() {
   if (isLoading) return <div className="loading-screen">🔄 טוען שיחות…</div>;
   if (error) return <div className="error-screen">{error}</div>;
 
+  const activePartnerId =
+    conversations.find(c => c.conversationId === activeConversationId)
+      ?.partnerId || null;
+
   return (
     <div className="messages-page">
       <aside className="chat-sidebar">
         <h4>שיחות מלקוחות</h4>
         <ul className="chat-list">
-          {conversations.map(({ conversationId, partnerId, name, lastMessage }) => (
+          {conversations.map(({ conversationId, partnerId, name }) => (
             <li key={conversationId} className="chat-list-item">
               <button
-                className={conversationId === activeConversationId ? "active" : ""}
+                className={
+                  conversationId === activeConversationId ? "active" : ""
+                }
                 onClick={() => setActiveConversationId(conversationId)}
               >
                 <div className="chat-info">
                   <strong>{name}</strong>
-                  {lastMessage && <p className="last-message">{lastMessage}</p>}
                 </div>
               </button>
             </li>
@@ -73,13 +77,11 @@ export default function BusinessMessagesPage() {
       </aside>
 
       <main className="chat-main">
-        {activeConversationId ? (
+        {activeConversationId && activePartnerId ? (
           <ChatComponent
-            conversationId={activeConversationId}
-            partnerId={
-              conversations.find(c => c.conversationId === activeConversationId)
-                .partnerId
-            }
+            userId={businessUserId}
+            partnerId={activePartnerId}
+            initialConversationId={activeConversationId}
             isBusiness={true}
           />
         ) : (

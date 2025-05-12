@@ -34,6 +34,9 @@ export default function ChatComponent({
     setConversationId(initialConversationId);
     setMessages([]);
     setError("");
+    setText("");
+    setFile(null);
+    setTypingUsers([]);
   }, [partnerId, initialConversationId]);
 
   // Ensure a conversation exists (create if needed)
@@ -59,18 +62,19 @@ export default function ChatComponent({
     let mounted = true;
 
     const init = async () => {
+      if (!partnerId) return; // no partner, skip
       const convId = await ensureConversation();
       if (!convId) return;
 
       setIsLoading(true);
       setError("");
 
-      API.get(`/messages/${convId}/messages`)
+      API.get(`/messages/${convId}/messages`, { withCredentials: true })
         .then(res => mounted && setMessages(res.data))
         .catch(() => mounted && setError("שגיאה בטעינת היסטוריה"))
         .finally(() => mounted && setIsLoading(false));
 
-      // disconnect existing socket, if any
+      // disconnect existing socket
       socketRef.current?.disconnect();
 
       // init new socket
@@ -80,11 +84,9 @@ export default function ChatComponent({
       socket.on("connect", () => {
         socket.emit("joinRoom", convId);
       });
-
       socket.on("newMessage", msg => {
         setMessages(prev => [...prev, msg]);
       });
-
       socket.on("typing", user => {
         setTypingUsers(prev =>
           prev.includes(user) ? prev : [...prev, user]
@@ -102,17 +104,17 @@ export default function ChatComponent({
       socketRef.current?.disconnect();
       clearTimeout(typingTimeout.current);
     };
-  }, [conversationId, ensureConversation]);
+  }, [partnerId, conversationId, ensureConversation]);
 
   // Handle typing indicator
   const handleTyping = e => {
     setText(e.target.value);
-    socketRef.current?.emit("typing", isBusiness ? "עסק" : "לקוח");
+    if (socketRef.current) socketRef.current.emit("typing", isBusiness ? "עסק" : "לקוח");
   };
 
   // Send message (auto-create convo if needed)
   const sendMessage = async () => {
-    if ((!text.trim() && !file) || isSending) return;
+    if ((!text.trim() && !file) || isSending || !partnerId) return;
     setIsSending(true);
     setError("");
 
@@ -161,7 +163,6 @@ export default function ChatComponent({
       <div className="messages-list">
         {messages.map((m, i) => {
           const isSelf = m.from === userId;
-          // determine display name for other party
           const otherName = isBusiness ? "לקוח" : m.businessName || "הם";
           const senderName = isSelf ? "אתה" : otherName;
 
@@ -208,16 +209,16 @@ export default function ChatComponent({
           onChange={handleTyping}
           placeholder="הודעה…"
           onKeyDown={e => e.key === "Enter" && sendMessage()}
-          disabled={isSending || isLoading}
+          disabled={!partnerId || isSending || isLoading}
         />
         <input
           type="file"
           onChange={e => setFile(e.target.files[0])}
-          disabled={isSending || isLoading}
+          disabled={!partnerId || isSending || isLoading}
         />
         <button
           onClick={sendMessage}
-          disabled={isSending || isLoading}
+          disabled={!partnerId || isSending || isLoading}
         >
           {isSending ? "שולח…" : "שלח"}
         </button>
