@@ -90,10 +90,10 @@ export default function ChatComponent({
 
     try {
       const res = await API.post(
-        '/messages/send',
-        payload,
-        { withCredentials: true }
-      );
+  `/messages/${conversationId}/messages`,
+  payload,
+  { withCredentials: true }
+);
       const { message: msg } = res.data;
       setMessages(prev => [...prev, { ...msg, fromSelf: true }]);
       setText("");
