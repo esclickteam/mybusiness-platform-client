@@ -110,7 +110,7 @@ export default function App() {
 
           {/* Chat routes -> ChatPage wrappers */}
           <Route
-            path="/business/:businessId/chat"
+            path="/business/:businessId/chat/:clientId"
             element={<BusinessChatWrapper />}
           />
           <Route
@@ -269,17 +269,17 @@ export default function App() {
 
 // Wrappers for ChatPage
 function BusinessChatWrapper() {
-  const { businessId } = useParams();
+  const { businessId, clientId } = useParams();
   const clientProfilePic   = "/default-client.png";
   const businessProfilePic = "/default-business.png";
 
   return (
     <ChatPage
       isBusiness={true}
-      userId={businessId}
+      userId={businessId}           // העסק
       clientProfilePic={clientProfilePic}
       businessProfilePic={businessProfilePic}
-      initialPartnerId={businessId}
+      initialPartnerId={clientId}   // הלקוח
     />
   );
 }
