@@ -21,7 +21,7 @@ export default function ChatComponent({
   const [typingUsers, setTypingUsers] = useState([]);
   const socketRef = useRef(null);
   const bottomRef = useRef(null);
-  let typingTimeout = useRef();
+  const typingTimeout = useRef();
 
   // Scroll to bottom
   const scrollToBottom = useCallback(() => {
@@ -32,28 +32,30 @@ export default function ChatComponent({
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Load partner name
+  // Load partner name (Business)
   useEffect(() => {
     if (!partnerId) return;
-    API.get(`/users/${partnerId}`, { withCredentials: true })
-      .then(res => setPartnerName(res.data.name || ""))
-      .catch(() => {});
+    API.get(`/business/${partnerId}`, { withCredentials: true })
+      .then(res => setPartnerName(res.data.businessName || ""))
+      .catch(() => setPartnerName(''));
   }, [partnerId]);
 
-  // Load history + socket events
+  // Load history + socket
   useEffect(() => {
     if (!conversationId) return;
     setIsLoading(true);
     setError("");
-    API.get(`/messages/${conversationId}`, { withCredentials: true })
+
+    // Fetch messages
+    API.get(`/messages/${conversationId}/messages`, { withCredentials: true })
       .then(res => setMessages(res.data))
       .catch(() => setError("שגיאה בטעינת היסטוריה"))
       .finally(() => setIsLoading(false));
 
     socketRef.current = io(SOCKET_URL, { withCredentials: true });
     socketRef.current.emit("join", conversationId);
-
-    socketRef.current.on("message", msg => {
+    
+    socketRef.current.on("newMessage", msg => {
       setMessages(prev => [...prev, msg]);
     });
 
@@ -65,13 +67,13 @@ export default function ChatComponent({
       }, 2000);
     });
 
-    return () => socketRef.current.disconnect();
+    return () => socketRef.current?.disconnect();
   }, [conversationId]);
 
   // Emit typing
   const handleTyping = e => {
     setText(e.target.value);
-    socketRef.current.emit("typing", isBusiness ? 'עסק' : 'לקוח');
+    socketRef.current?.emit("typing", isBusiness ? 'עסק' : 'לקוח');
   };
 
   // Send message + file
@@ -81,20 +83,19 @@ export default function ChatComponent({
     setError("");
 
     const payload = new FormData();
-    payload.append('conversationId', conversationId);
     payload.append('text', text);
     payload.append('to', partnerId);
-    payload.append('fromBusiness', isBusiness);
-    payload.append('timestamp', new Date().toISOString());
-    if (file) payload.append('file', file);
+    payload.append('type', file ? 'file' : 'text');
+    if (file) payload.append('fileData', file);
 
     try {
-      const res = await API.post("/messages", payload, {
-        withCredentials: true,
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await API.post(
+        `/messages/${conversationId}/messages`,
+        payload,
+        { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } }
+      );
       const msg = res.data;
-      socketRef.current.emit("sendMessage", msg);
+      socketRef.current?.emit("newMessage", msg);
       setMessages(prev => [...prev, { ...msg, fromSelf: true }]);
       setText("");
       setFile(null);
@@ -105,33 +106,21 @@ export default function ChatComponent({
     }
   };
 
-  // Retry loading
-  const retry = () => {
-    if (conversationId) {
-      setError("");
-      setIsLoading(true);
-      API.get(`/messages/${conversationId}`, { withCredentials: true })
-        .then(res => setMessages(res.data))
-        .catch(() => setError("שגיאה בטעינת היסטוריה"))
-        .finally(() => setIsLoading(false));
-    }
-  };
-
   return (
     <div className="chat-component">
       {isLoading && <div className="spinner">טעינה…</div>}
-      {error && <div className="error-banner" onClick={retry}>{error} (נסה שוב)</div>}
+      {error && <div className="error-banner" onClick={() => window.location.reload()}>{error} (רענן)</div>}
 
       <div className="messages-list">
         {messages.map(m => (
           <div
-            key={m._id || m.timestamp}
+            key={m.timestamp}
             className={`message-item ${m.fromSelf ? "self" : ""}`}
           >
             <div className="message-meta">
               <strong>{m.fromSelf ? "אתה" : partnerName}</strong>
               <span className="timestamp">
-                {m.timestamp && new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
               </span>
             </div>
             {m.fileUrl && <img src={m.fileUrl} alt="attachment" className="attachment" />}
