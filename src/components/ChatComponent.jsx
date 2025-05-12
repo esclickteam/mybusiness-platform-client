@@ -62,12 +62,20 @@ export default function ChatComponent({
     socketRef.current = io(SOCKET_URL, { withCredentials: true });
     // join room once socket is connected
     socketRef.current.on('connect', () => {
+      console.log('Socket connected:', socketRef.current.id);
+      console.log('Emitting joinRoom for:', conversationId);
       socketRef.current.emit('joinRoom', conversationId);
     });
+    
+    // log incoming messages
     socketRef.current.on("newMessage", msg => {
+      console.log('Received newMessage:', msg);
       setMessages(prev => [...prev, msg]);
     });
+    
+    // log typing events
     socketRef.current.on("typing", user => {
+      console.log('Received typing from:', user);
       setTypingUsers(prev => prev.includes(user) ? prev : [...prev, user]);
       clearTimeout(typingTimeout.current);
       typingTimeout.current = setTimeout(() => {
