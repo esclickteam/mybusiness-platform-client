@@ -1,4 +1,3 @@
-// 📁 src/pages/business/dashboardPages/BusinessMessagesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ChatComponent from "../../../components/ChatComponent";
@@ -22,20 +21,19 @@ export default function BusinessMessagesPage() {
 
     API.get("/messages/conversations", { withCredentials: true })
       .then(res => {
-        const list = res.data.map(conv => {
-          const participants = conv.participants.map(p => p.toString());
-          const otherId = participants.find(id => id !== businessUserId);
-          return otherId
-            ? {
-                conversationId: conv._id.toString(),
-                partnerId: otherId,
-                name: conv.businessName || "שיחה",
-                lastMessage: conv.messages?.length
-                  ? conv.messages[conv.messages.length - 1].text
-                  : ""
-              }
-            : null;
-        }).filter(Boolean);
+        const list = res.data
+          .map(conv => {
+            const participants = conv.participants.map(p => p.toString());
+            const otherId = participants.find(id => id !== businessUserId);
+            if (!otherId) return null;
+            return {
+              conversationId: conv.conversationId.toString(),
+              partnerId: otherId,
+              name: conv.businessName || "שיחה",
+              lastMessage: conv.lastMessage?.text || "",
+            };
+          })
+          .filter(Boolean);
 
         setConversations(list);
         if (list.length > 0) {

@@ -1,4 +1,3 @@
-// 📁 src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import API from "../api";
@@ -23,7 +22,7 @@ export default function ChatComponent({
   const bottomRef = useRef(null);
   const typingTimeout = useRef();
 
-  // Scroll to bottom
+  // Scroll to bottom when messages change
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
@@ -32,7 +31,7 @@ export default function ChatComponent({
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Load partner name (Business)
+  // Load partner name
   useEffect(() => {
     if (!partnerId) return;
     API.get(`/business/${partnerId}`, { withCredentials: true })
@@ -40,21 +39,22 @@ export default function ChatComponent({
       .catch(() => setPartnerName(''));
   }, [partnerId]);
 
-  // Load history + socket
+  // Load conversation history and init socket
   useEffect(() => {
     if (!conversationId) return;
     setIsLoading(true);
     setError("");
 
-    // Fetch messages
-    API.get(`/messages/${conversationId}/messages`, { withCredentials: true })
+    // Fetch history
+    API.get(`/messages/conversations/${conversationId}`, { withCredentials: true })
       .then(res => setMessages(res.data))
       .catch(() => setError("שגיאה בטעינת היסטוריה"))
       .finally(() => setIsLoading(false));
 
+    // Setup socket.io
     socketRef.current = io(SOCKET_URL, { withCredentials: true });
-    socketRef.current.emit("join", conversationId);
-    
+    socketRef.current.emit("joinRoom", conversationId);
+
     socketRef.current.on("newMessage", msg => {
       setMessages(prev => [...prev, msg]);
     });
@@ -70,32 +70,31 @@ export default function ChatComponent({
     return () => socketRef.current?.disconnect();
   }, [conversationId]);
 
-  // Emit typing
+  // Handle typing indicator
   const handleTyping = e => {
     setText(e.target.value);
     socketRef.current?.emit("typing", isBusiness ? 'עסק' : 'לקוח');
   };
 
-  // Send message + file
+  // Send message (text or file)
   const sendMessage = async () => {
     if (!text.trim() && !file) return;
     setIsSending(true);
     setError("");
 
     const payload = new FormData();
-    payload.append('text', text);
     payload.append('to', partnerId);
-    payload.append('type', file ? 'file' : 'text');
+    payload.append('text', text);
+    payload.append('conversationId', conversationId);
     if (file) payload.append('fileData', file);
 
     try {
       const res = await API.post(
-        `/messages/${conversationId}/messages`,
+        '/messages/send',
         payload,
-        { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } }
+        { withCredentials: true }
       );
-      const msg = res.data;
-      socketRef.current?.emit("newMessage", msg);
+      const { message: msg } = res.data;
       setMessages(prev => [...prev, { ...msg, fromSelf: true }]);
       setText("");
       setFile(null);
