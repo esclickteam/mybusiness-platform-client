@@ -23,19 +23,12 @@ export default function ChatComponent({
   const bottomRef = useRef(null);
   const typingTimeout = useRef();
 
-  useEffect(() => {
-    if (propConversationId) setConversationId(propConversationId);
-  }, [propConversationId]);
-
-  useEffect(() => {
-    if (!conversationId && partnerId) {
-      setIsLoading(true);
-      API.post(`/messages`, { otherId: partnerId }, { withCredentials: true })
-        .then(res => setConversationId(res.data.conversationId))
-        .catch(() => setError("שגיאה ביצירת שיחה"))
-        .finally(() => setIsLoading(false));
-    }
-  }, [conversationId, partnerId]);
+  // Conversation creation is handled by parent; no local creation here
+useEffect(() => {
+  if (!conversationId) {
+    console.warn('No conversationId provided — chat will not initialize');
+  }
+}, [conversationId]);
 
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
