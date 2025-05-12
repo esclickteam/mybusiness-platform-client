@@ -10,7 +10,6 @@ export default function ChatComponent({
   partnerId,
   isBusiness,
 }) {
-  // Manage conversationId locally (create if missing)
   const [conversationId, setConversationId] = useState(propConversationId || null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -24,35 +23,25 @@ export default function ChatComponent({
   const bottomRef = useRef(null);
   const typingTimeout = useRef();
 
-  // Sync prop into state
   useEffect(() => {
-    if (propConversationId) {
-      setConversationId(propConversationId);
-    }
+    if (propConversationId) setConversationId(propConversationId);
   }, [propConversationId]);
 
-  // If no conversationId, create one
   useEffect(() => {
     if (!conversationId && partnerId) {
       setIsLoading(true);
-      API.post(
-        `/messages`,
-        { otherId: partnerId },
-        { withCredentials: true }
-      )
+      API.post(`/messages`, { otherId: partnerId }, { withCredentials: true })
         .then(res => setConversationId(res.data.conversationId))
         .catch(() => setError("שגיאה ביצירת שיחה"))
         .finally(() => setIsLoading(false));
     }
   }, [conversationId, partnerId]);
 
-  // Scroll helper
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
   useEffect(() => scrollToBottom(), [messages, scrollToBottom]);
 
-  // Load partner name
   useEffect(() => {
     if (!partnerId) return;
     API.get(`/business/${partnerId}`, { withCredentials: true })
@@ -60,16 +49,12 @@ export default function ChatComponent({
       .catch(() => setPartnerName(""));
   }, [partnerId]);
 
-  // Load history & init socket
   useEffect(() => {
     if (!conversationId) return;
     setIsLoading(true);
     setError("");
 
-    API.get(
-      `/messages/${conversationId}/messages`,
-      { withCredentials: true }
-    )
+    API.get(`/messages/${conversationId}/messages`, { withCredentials: true })
       .then(res => setMessages(res.data))
       .catch(() => setError("שגיאה בטעינת היסטוריה"))
       .finally(() => setIsLoading(false));
@@ -90,13 +75,11 @@ export default function ChatComponent({
     return () => socketRef.current?.disconnect();
   }, [conversationId]);
 
-  // Handle typing indicator
   const handleTyping = e => {
     setText(e.target.value);
     socketRef.current?.emit("typing", isBusiness ? "עסק" : "לקוח");
   };
 
-  // Send message
   const sendMessage = async () => {
     console.log("sendMessage called:", { text, file, conversationId });
     if ((!text.trim() && !file) || !conversationId) return;
@@ -134,8 +117,11 @@ export default function ChatComponent({
       )}
 
       <div className="messages-list">
-        {messages.map(m => (
-          <div key={m.timestamp} className={`message-item ${m.fromSelf ? "self" : ""}`}>
+        {messages.map((m, i) => (
+          <div
+            key={`${m._id || m.timestamp}-${i}`}
+            className={`message-item ${m.fromSelf ? "self" : ""}`}
+          >
             <div className="message-meta">
               <strong>{m.fromSelf ? "אתה" : partnerName}</strong>
               <span className="timestamp">
