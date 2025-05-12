@@ -6,18 +6,18 @@ import API from "@api";
 import "./ChatSection.css";
 
 export default function ChatSection({ renderTopBar }) {
-  const { initialized } = useAuth();
-  const [selected, setSelected] = useState({ conversationId: null, partnerId: null });
+  const { user, initialized } = useAuth();
+  const [selected, setSelected]       = useState({ conversationId: null, partnerId: null });
   const [conversations, setConversations] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isLoading, setIsLoading]     = useState(false);
+  const [error, setError]             = useState("");
 
   // Fetch conversations list
   useEffect(() => {
     if (!initialized) return;
     setIsLoading(true);
     setError("");
-    API.get("/messages", { withCredentials: true })
+    API.get("/messages/conversations", { withCredentials: true })
       .then(res => setConversations(res.data))
       .catch(() => setError("שגיאה בטעינת שיחות"))
       .finally(() => setIsLoading(false));
@@ -35,22 +35,23 @@ export default function ChatSection({ renderTopBar }) {
         {error && <div className="error-banner">{error}</div>}
         {!isLoading && !error && (
           <ul className="convo-list">
-            {conversations.map(conv => (
-              <li
-                key={conv._id}
-                className={
-                  selected.conversationId === conv._id ? "selected" : ""
-                }
-                onClick={() =>
-                  setSelected({
-                    conversationId: conv._id,
-                    partnerId: conv.participants.find(p => p !== initialized.userId) || null,
-                  })
-                }
-              >
-                {conv.businessName || "שיחה"}
-              </li>
-            ))}
+            {conversations.map(conv => {
+              const partnerId = conv.participants.find(p => p !== user.userId);
+              return (
+                <li
+                  key={conv._id}
+                  className={selected.conversationId === conv._id ? "selected" : ""}
+                  onClick={() =>
+                    setSelected({
+                      conversationId: conv._id,
+                      partnerId: partnerId || null,
+                    })
+                  }
+                >
+                  {conv.businessName || partnerId || "שיחה"}
+                </li>
+              );
+            })}
           </ul>
         )}
       </aside>
@@ -58,8 +59,9 @@ export default function ChatSection({ renderTopBar }) {
       <main className="chat-main">
         {selected.conversationId ? (
           <ChatComponent
-            conversationId={selected.conversationId}
+            userId={user.userId}
             partnerId={selected.partnerId}
+            conversationId={selected.conversationId}
             isBusiness={true}
           />
         ) : (

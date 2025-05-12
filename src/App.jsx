@@ -270,7 +270,7 @@ function BusinessChatListWrapper() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get("/messages", { withCredentials: true })
+    API.get("/messages/conversations", { withCredentials: true })
       .then(res => {
         console.log("Loaded convos:", res.data);
         setConvos(res.data);
