@@ -10,8 +10,6 @@ export default function ChatComponent({
   userId,
   partnerId,
   initialConversationId = null,
-  clientProfilePic,
-  businessProfilePic,
   isBusiness = false,
 }) {
   const [conversationId, setConversationId] = useState(initialConversationId);
@@ -26,13 +24,13 @@ export default function ChatComponent({
   const bottomRef                          = useRef(null);
   const typingTimeout                      = useRef();
 
-  // scroll to bottom on new message
+  // Scroll to bottom on new message
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
   useEffect(() => scrollToBottom(), [messages, scrollToBottom]);
 
-  // 1) Ensure conversation exists
+  // Ensure conversation exists
   const ensureConversation = useCallback(async () => {
     if (!conversationId && partnerId) {
       try {
@@ -46,7 +44,7 @@ export default function ChatComponent({
     return conversationId;
   }, [conversationId, partnerId]);
 
-  // 2) Load history & (re)initialize socket whenever conversationId changes
+  // Load history & (re)initialize socket
   useEffect(() => {
     let mounted = true;
 
@@ -57,16 +55,13 @@ export default function ChatComponent({
       setIsLoading(true);
       setError("");
 
-      // fetch history
       API.get(`/messages/${convId}/messages`)
         .then(res => mounted && setMessages(res.data))
         .catch(() => mounted && setError("שגיאה בטעינת היסטוריה"))
         .finally(() => mounted && setIsLoading(false));
 
-      // cleanup old socket
       socketRef.current?.disconnect();
 
-      // init new socket
       const socket = io(SOCKET_URL, { withCredentials: true });
       socketRef.current = socket;
 
@@ -94,13 +89,13 @@ export default function ChatComponent({
     };
   }, [conversationId, ensureConversation]);
 
-  // handle typing indicator
+  // Handle typing indicator
   const handleTyping = e => {
     setText(e.target.value);
     socketRef.current?.emit("typing", isBusiness ? "עסק" : "לקוח");
   };
 
-  // 3) Send message (auto-create convo if needed)
+  // Send message (auto-create convo if needed)
   const sendMessage = async () => {
     if ((!text.trim() && !file) || isSending) return;
     setIsSending(true);
@@ -132,10 +127,10 @@ export default function ChatComponent({
     }
   };
 
-  // retry load history
+  // Retry load history
   const retryLoad = () => {
     setError("");
-    setConversationId(null);  // triggers re-init
+    setConversationId(null);
   };
 
   return (
@@ -151,13 +146,11 @@ export default function ChatComponent({
       <div className="messages-list">
         {messages.map((m, i) => {
           const isSelf = m.from === userId;
-          const picUrl = isSelf ? clientProfilePic : businessProfilePic;
           return (
             <div
               key={`${m._id || m.timestamp}-${i}`}
               className={`message-item ${isSelf ? "self" : ""}`}
             >
-              <img src={picUrl} alt="profile" className="avatar" />
               <div className="message-body">
                 <div className="message-meta">
                   <strong>{isSelf ? "אתה" : "הם"}</strong>
