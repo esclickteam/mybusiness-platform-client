@@ -1,91 +1,20 @@
-/* ConversationsList.css */
-
-/* Spinner shown during loading of conversations */
-.sidebar-spinner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    font-size: 1.1rem;
-    color: #6b4fc4;
-  }
-  
-  /* Search input container */
-  .sidebar-search {
-    padding: 0.5rem;
-    border-bottom: 1px solid #ddd;
-    background: #fafafa;
-  }
-  .sidebar-search input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 0.9rem;
-  }
-  
-  /* Conversation list items */
-  .sidebar-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  .sidebar-item:hover {
-    background: #f5f5f5;
-  }
-  
-  .sidebar-item__content {
-    flex-grow: 1;
-    overflow: hidden;
-  }
-  .sidebar-item__content strong {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 1rem;
-  }
-  .sidebar-item__content p {
-    margin: 0.25rem 0 0;
-    font-size: 0.85rem;
-    color: #555;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  /* Unread message badge */
-  .sidebar-item__badge {
-    background: #e53e3e;
-    color: white;
-    font-size: 0.75rem;
-    padding: 0 6px;
-    border-radius: 12px;
-    margin-left: 0.5rem;
-  }
-  
-  /* Timestamp */
-  .sidebar-item small {
-    margin-left: 0.5rem;
-    color: #888;
-    font-size: 0.75rem;
-    white-space: nowrap;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 100%;
-    }
-    .sidebar-item {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .sidebar-item small {
-      margin-top: 0.25rem;
-    }
-  }
-  
+/* 📁 src/components/ConversationsList.css */
+.conversation-item {
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #fff;
+  transition: background 0.2s;
+}
+.conversation-item:hover {
+  background: #ede7fe;
+}
+.conversation-item strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.conversation-item .last-message {
+  font-size: 0.9rem;
+  color: #555;
+}

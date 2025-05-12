@@ -1,114 +1,46 @@
-/* ChatSection.css */
-
-/* מיכל הצ'אט הראשי: תצוגה גמישה בתצורת שורה, תופס גובה מלא */
+/* 📁 src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.css */
 .chat-section {
   display: flex;
   height: 100%;
-  overflow: hidden;       /* מונע גלילה חיצונית */
 }
 
-/* הסיידבר עם רשימת השיחות */
 .chat-sidebar {
-  width: 240px;
-  border-right: 1px solid #ddd;
+  width: 280px;
+  background: #f3edff;
   padding: 1rem;
-  background: #fafafa;
-  overflow-y: auto;       /* גלילה פנימית אם יש יותר מדי פריטים */
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* צלליות עדינות */
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
 }
 
-/* כותרת */
 .chat-sidebar h3 {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   font-size: 1.2rem;
-  color: #7b4de8;
-  font-weight: bold;
+  color: #6b4fc4;
 }
 
-/* פריט ברשימה */
-.chat-sidebar__item {
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.2s, transform 0.2s ease;
+.loading-screen {
   display: flex;
   align-items: center;
-}
-
-.chat-sidebar__item:hover,
-.chat-sidebar__item.active {
-  background-color: #e0d4f7;
-  transform: scale(1.03); /* אפקט התפשטות עדין */
-}
-
-/* הודעה שאין פריטים להצגה */
-.chat-sidebar__empty {
-  color: #888;
-  font-style: italic;
-  margin-top: 1rem;
+  justify-content: center;
+  height: 100%;
   font-size: 1.1rem;
-  text-align: center;
 }
 
-/* האזור המרכזי של הצ'אט */
 .chat-main {
   flex: 1;
+  background: #fff;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  overflow: hidden;       /* מונע גלילה חיצונית */
 }
 
-/* כותרת הצ'אט (שם פרטי) */
-.chat-main .chat__header {
-  padding: 1rem;
-  background: #7b4de8;
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  border-bottom: 2px solid #ddd;
-}
-
-/* חלל ההודעות עצמו */
-.chat-main .chat__body {
-  flex: 1;                /* יתפוס את כל השטח הפנוי */
-  padding: 1rem;
-  background: #faf8fe;
-  overflow-y: auto;       /* גלילה פנימית של ההודעות */
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); /* צלליות פנימיות */
-}
-
-/* Placeholder לפני בחירת שיחה */
 .chat-placeholder {
   margin: auto;
-  color: #555;
-  font-size: 1.1rem;
-  text-align: center;
-  font-weight: 600;
-  color: #666;
+  color: #777;
 }
 
-/* ✅ רספונסיביות */
-@media (max-width: 768px) {
-  .chat-section {
-    flex-direction: column;
-  }
-
-  .chat-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #ddd;
-  }
-
-  .chat-main {
-    padding: 1rem;
-  }
-
-  .chat-sidebar__item {
-    font-size: 1rem;
-  }
-
-  .chat-placeholder {
-    font-size: 1.2rem;
-  }
+.preview-column {
+  width: 300px;
+  padding: 1rem;
+  border-left: 1px solid #eee;
 }

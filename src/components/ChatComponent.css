@@ -1,190 +1,45 @@
-/* src/components/Chat/ChatComponent.css */
-
-.chat {
+/* 📁 src/components/ChatComponent.css */
+.chat-component {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  direction: rtl;
 }
-
-.chat__header {
-  background: #6a4fc4;
-  color: #fff;
-  padding: 1rem 1.25rem;
-  font-size: 1.25rem;
-  font-weight: 500;
-  text-align: center;
-}
-
-.chat__body {
+.messages-list {
   flex: 1;
-  background: #f9f5ff;
-  padding: 1rem;
   overflow-y: auto;
-  scroll-behavior: smooth;
+  padding: 0.5rem;
 }
-
-/* הודעות */
-.chat__message {
-  display: flex;
-  margin-bottom: 0.75rem;
-  max-width: 75%;
-}
-
-.chat__message.mine {
-  margin-left: auto;
-  justify-content: flex-end;
-}
-
-.chat__message.theirs {
-  margin-right: auto;
-  justify-content: flex-start;
-}
-
-.chat__bubble {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* בועות טקסט */
-.chat__text {
-  padding: 0.75rem 1rem;
-  border-radius: 16px;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  word-wrap: break-word;
-  background: #fff;
-  color: #333;
-}
-
-.chat__message.mine .chat__text {
-  background: #6a4fc4;
-  color: #fff;
-  border-bottom-left-radius: 4px;
-}
-
-.chat__message.theirs .chat__text {
-  background: #e6e0f8;
-  color: #333;
-  border-bottom-right-radius: 4px;
-}
-
-/* קבצים מצורפים */
-.chat__attachment {
-  margin-top: 0.5rem;
-}
-
-.chat__img {
-  max-width: 200px;
-  max-height: 200px;
+.message-item {
+  margin-bottom: 0.5rem;
+  max-width: 70%;
+  padding: 0.5rem;
   border-radius: 8px;
-  object-fit: cover;
+  background: #f1f0f0;
 }
-
-.chat__file-link {
-  color: #6a4fc4;
-  text-decoration: underline;
-  font-size: 0.85rem;
-  cursor: pointer;
+.message-item.self {
+  background: #dcf8c6;
+  margin-left: auto;
 }
-
-.chat__meta {
+.input-area {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border-top: 1px solid #ddd;
 }
-
-.chat__time,
-.chat__status {
-  font-size: 0.75rem;
-  color: #999;
-}
-
-.chat__status {
-  color: #6a4fc4;
-}
-
-.chat__typing {
-  font-style: italic;
-  text-align: center;
-  margin-top: 0.5rem;
-  color: #666;
-}
-
-/* שורת הקלט */
-.chat__input {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  border-top: 1px solid #eee;
-  background: #fff;
-  gap: 0.75rem;
-}
-
-.chat__input input[type="text"] {
+.input-area input {
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 24px;
-  font-size: 1rem;
-  outline: none;
-  transition: border-color 0.3s ease;
+  border-radius: 4px;
 }
-
-.chat__input input[type="text"]:focus {
-  border-color: #6a4fc4;
-}
-
-.chat__input button {
-  background: #6a4fc4;
+.input-area button {
+  margin-left: 0.5rem;
+  padding: 0 1rem;
   border: none;
+  background: #6b4fc4;
   color: #fff;
-  padding: 0.6rem 0.9rem;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.chat__input button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.chat__attach {
-  position: relative;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 4px;
   cursor: pointer;
 }
-
-.chat__attach input[type="file"] {
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
-/* רספונסיביות */
-@media (max-width: 768px) {
-  .chat {
-    border-radius: 0;
-  }
-  .chat__body {
-    padding: 0.75rem 0.5rem;
-  }
-  .chat__input {
-    padding: 0.75rem;
-  }
+.input-area button:hover {
+  opacity: 0.9;
 }
