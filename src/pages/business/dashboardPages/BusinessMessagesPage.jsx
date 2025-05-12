@@ -1,3 +1,4 @@
+// 📁 src/pages/business/dashboardPages/BusinessMessagesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import ChatComponent from "../../../components/ChatComponent";
@@ -6,36 +7,35 @@ import "./BusinessMessagesPage.css";
 
 export default function BusinessMessagesPage() {
   const { user, loading: authLoading } = useAuth();
-  const businessUserId = user?.userId;                     // מחרוזת
-  const businessProfilePic = user?.profilePicUrl || "/default-business.png";
-  const defaultClientPic = "/default-client.png";
+  const businessUserId = user?.userId;
 
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   // 1) טען רשימת שיחות
   useEffect(() => {
     if (!businessUserId) return;
     setIsLoading(true);
+    setError("");
 
-    API.get("/messages/conversations", { withCredentials: true })
-      .then(({ data }) => {
-        const list = data
-          .map(conv => {
-            // המר את כל ה־ObjectId לשורות
-            const parts = conv.participants.map(p => p.toString());
-            // מצא את הקצה השני שאינו העסק
-            const other = parts.find(id => id !== businessUserId);
-            return other
-              ? { 
-                  conversationId: conv._id.toString(), 
-                  clientId: other 
-                }
-              : null;
-          })
-          .filter(Boolean);
+    API.get("/messages", { withCredentials: true })
+      .then(res => {
+        const list = res.data.map(conv => {
+          const participants = conv.participants.map(p => p.toString());
+          const otherId = participants.find(id => id !== businessUserId);
+          return otherId
+            ? {
+                conversationId: conv._id.toString(),
+                partnerId: otherId,
+                name: conv.businessName || "שיחה",
+                lastMessage: conv.messages?.length
+                  ? conv.messages[conv.messages.length - 1].text
+                  : ""
+              }
+            : null;
+        }).filter(Boolean);
 
         setConversations(list);
         if (list.length > 0) {
@@ -43,8 +43,8 @@ export default function BusinessMessagesPage() {
         }
       })
       .catch(err => {
-        console.error("Error loading conversations:", err);
-        setError("❌ Couldn't load conversations, please try later");
+        console.error("❌ Error loading conversations:", err);
+        setError("שגיאה בטעינת שיחות, נסה שוב מאוחר יותר");
       })
       .finally(() => setIsLoading(false));
   }, [businessUserId]);
@@ -57,14 +57,17 @@ export default function BusinessMessagesPage() {
     <div className="messages-page">
       <aside className="chat-sidebar">
         <h4>שיחות מלקוחות</h4>
-        <ul>
-          {conversations.map(({ conversationId, clientId }) => (
+        <ul className="chat-list">
+          {conversations.map(({ conversationId, partnerId, name, lastMessage }) => (
             <li key={conversationId} className="chat-list-item">
               <button
                 className={conversationId === activeConversationId ? "active" : ""}
                 onClick={() => setActiveConversationId(conversationId)}
               >
-                לקוח: {clientId}
+                <div className="chat-info">
+                  <strong>{name}</strong>
+                  {lastMessage && <p className="last-message">{lastMessage}</p>}
+                </div>
               </button>
             </li>
           ))}
@@ -74,13 +77,12 @@ export default function BusinessMessagesPage() {
       <main className="chat-main">
         {activeConversationId ? (
           <ChatComponent
+            conversationId={activeConversationId}
             partnerId={
               conversations.find(c => c.conversationId === activeConversationId)
-                ?.clientId
+                .partnerId
             }
             isBusiness={true}
-            businessProfilePic={businessProfilePic}
-            clientProfilePic={defaultClientPic}
           />
         ) : (
           <div className="empty-chat">אין שיחות להצגה</div>
