@@ -122,7 +122,7 @@ export default function App() {
             element={<ClientChatWrapper />}
           />
 
-          {/* Business dashboard (protected) */}
+          {/* Dashboards */}
           <Route
             path="/business/:businessId/dashboard/*"
             element={
@@ -131,8 +131,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* Client dashboard */}
           <Route
             path="/client/dashboard"
             element={
@@ -141,8 +139,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* Staff dashboards */}
           <Route
             path="/staff/dashboard"
             element={
@@ -183,8 +179,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* Manager dashboard */}
           <Route
             path="/manager/dashboard"
             element={
@@ -193,8 +187,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* Admin dashboard */}
           <Route
             path="/admin/dashboard"
             element={
@@ -278,22 +270,23 @@ function BusinessChatListWrapper() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get('/messages', { withCredentials: true })
-      .then(res => setConvos(res.data))
+    API.get("/messages", { withCredentials: true })
+      .then(res => {
+        console.log("Loaded convos:", res.data);
+        setConvos(res.data);
+      })
       .catch(console.error);
   }, []);
 
   const handleSelect = convo => {
-    if (!convo.participants || !Array.isArray(convo.participants)) {
+    if (!convo.partnerId || !convo.conversationId) {
       console.error("Invalid convo", convo);
       return;
     }
-    const clientId = convo.participants.find(id => id !== businessId);
-    if (!clientId) {
-      console.error("No clientId", convo.participants);
-      return;
-    }
-    navigate(`/business/${businessId}/chat/${clientId}`);
+    navigate(
+      `/business/${businessId}/chat/${convo.partnerId}`,
+      { state: { conversationId: convo.conversationId } }
+    );
   };
 
   return (
@@ -311,6 +304,10 @@ function BusinessChatWrapper() {
   const clientProfilePic   = "/default-client.png";
   const businessProfilePic = "/default-business.png";
 
+  // get conversationId from navigation state (if set)
+  const location = useLocation();
+  const { conversationId } = location.state || {};
+
   return (
     <ChatPage
       isBusiness={true}
@@ -318,6 +315,7 @@ function BusinessChatWrapper() {
       clientProfilePic={clientProfilePic}
       businessProfilePic={businessProfilePic}
       initialPartnerId={clientId}
+      initialConversationId={conversationId}
     />
   );
 }
