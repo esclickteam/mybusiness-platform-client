@@ -20,7 +20,7 @@ export default function BusinessMessagesPage() {
     setIsLoading(true);
     setError("");
 
-    API.get("/messages", { withCredentials: true })
+    API.get("/messages/conversations", { withCredentials: true })
       .then(res => {
         const list = res.data.map(conv => {
           const participants = conv.participants.map(p => p.toString());
