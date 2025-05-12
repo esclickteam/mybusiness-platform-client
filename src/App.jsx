@@ -254,7 +254,6 @@ export default function App() {
           <Route
             path="/admin/affiliate-payouts"
             element={
-
               <ProtectedRoute roles={["admin"]}>
                 <AdminPayoutPage />
               </ProtectedRoute>
@@ -285,7 +284,15 @@ function BusinessChatListWrapper() {
   }, []);
 
   const handleSelect = convo => {
+    if (!convo.participants || !Array.isArray(convo.participants)) {
+      console.error("Invalid convo", convo);
+      return;
+    }
     const clientId = convo.participants.find(id => id !== businessId);
+    if (!clientId) {
+      console.error("No clientId", convo.participants);
+      return;
+    }
     navigate(`/business/${businessId}/chat/${clientId}`);
   };
 
