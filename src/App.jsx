@@ -8,10 +8,11 @@ import {
   useParams,
 } from "react-router-dom";
 import Header from "./components/Header";
-import ChatLayout from "./components/ChatLayout";
+import ChatPage from "./pages/ChatPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatTestPage from "./pages/business/dashboardPages/buildTabs/ChatTestPage";
+import { useAuth } from "./context/AuthContext";
 
 import "./styles/index.css";
 
@@ -54,29 +55,16 @@ const EditSiteContent    = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles        = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage    = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
-// ScrollToTop component to scroll to top on route change
+// ScrollToTop
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => window.scrollTo(0, 0), [pathname]);
   return null;
 }
 
-// BusinessChatRoute: Pulls businessId from URL and renders ChatLayout
-function BusinessChatRoute({ clientProfilePic, businessProfilePic }) {
-  const { businessId } = useParams();
-  return (
-    <ChatLayout
-      userId={businessId}
-      clientProfilePic={clientProfilePic}
-      businessProfilePic={businessProfilePic}
-      isBusiness={true}
-    />
-  );
-}
-
 export default function App() {
-  // Replace these with your actual profile-pic sources, e.g. from context or Redux
-  const clientProfilePic = "/default-client.png";
+  const { user } = useAuth();
+  const clientProfilePic   = "/default-client.png";
   const businessProfilePic = "/default-business.png";
 
   return (
@@ -92,12 +80,12 @@ export default function App() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/search" element={<SearchBusinesses />} />
 
-          {/* Business information */}
+          {/* Business info */}
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/plans" element={<Plans />} />
           <Route path="/checkout" element={<Checkout />} />
 
-          {/* Support / info */}
+          {/* Support */}
           <Route path="/faq" element={<FAQ />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/terms" element={<Terms />} />
@@ -120,28 +108,15 @@ export default function App() {
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-          {/* Chat with sidebar */}
+          {/* Chat routes -> ChatPage wrappers */}
           <Route
             path="/business/:businessId/chat"
-            element={
-              <ChatLayout
-                clientProfilePic={clientProfilePic}
-                businessProfilePic={businessProfilePic}
-              />
-            }
+            element={<BusinessChatWrapper />}
           />
-
-<Route
-  path="/client/chat/:businessId"
-  element={
-    <ChatLayout
-      clientProfilePic={clientProfilePic}
-      businessProfilePic={businessProfilePic}
-      isBusiness={false}
-    />
-  }
-/>
-
+          <Route
+            path="/client/chat/:businessId"
+            element={<ClientChatWrapper />}
+          />
 
           {/* Business dashboard (protected) */}
           <Route
@@ -289,5 +264,39 @@ export default function App() {
         </Routes>
       </Suspense>
     </>
+  );
+}
+
+// Wrappers for ChatPage
+function BusinessChatWrapper() {
+  const { businessId } = useParams();
+  const clientProfilePic   = "/default-client.png";
+  const businessProfilePic = "/default-business.png";
+
+  return (
+    <ChatPage
+      isBusiness={true}
+      userId={businessId}
+      clientProfilePic={clientProfilePic}
+      businessProfilePic={businessProfilePic}
+      initialPartnerId={businessId}
+    />
+  );
+}
+
+function ClientChatWrapper() {
+  const { businessId } = useParams();
+  const { user }       = useAuth();
+  const clientProfilePic   = "/default-client.png";
+  const businessProfilePic = "/default-business.png";
+
+  return (
+    <ChatPage
+      isBusiness={false}
+      userId={user.id}
+      clientProfilePic={clientProfilePic}
+      businessProfilePic={businessProfilePic}
+      initialPartnerId={businessId}
+    />
   );
 }
