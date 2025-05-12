@@ -60,7 +60,10 @@ export default function ChatComponent({
       .finally(() => setIsLoading(false));
 
     socketRef.current = io(SOCKET_URL, { withCredentials: true });
-    socketRef.current.emit("joinRoom", conversationId);
+    // join room once socket is connected
+    socketRef.current.on('connect', () => {
+      socketRef.current.emit('joinRoom', conversationId);
+    });
     socketRef.current.on("newMessage", msg => {
       setMessages(prev => [...prev, msg]);
     });
