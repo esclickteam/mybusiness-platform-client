@@ -9,12 +9,17 @@ import './ChatPage.css';
  * Props:
  *  - isBusiness: boolean
  *  - userId: string
- *  - clientProfilePic, businessProfilePic: string URLs
+ *  - clientName: string
+ *  - businessName: string
+ *  - clientProfilePic: string (URL)
+ *  - businessProfilePic: string (URL)
  *  - initialPartnerId: string (start a new chat with this partner)
  */
 export default function ChatPage({
   isBusiness,
   userId,
+  clientName,
+  businessName,
   clientProfilePic,
   businessProfilePic,
   initialPartnerId = null,
@@ -74,8 +79,8 @@ export default function ChatPage({
               partnerId={selected.partnerId}
               initialConversationId={selected.conversationId}
               isBusiness={isBusiness}
-              businessName={businessProfilePic}
-              clientName={clientProfilePic}
+              businessName={businessName}
+              clientName={clientName}
             />
           ) : (
             <div className="loading-chat">טוען שיחה…</div>
