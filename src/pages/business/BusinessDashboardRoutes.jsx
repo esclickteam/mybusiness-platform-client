@@ -21,6 +21,7 @@ import CRMSettingsTab       from "./dashboardPages/crmpages/CRMSettingsTab";
 import GoalsPage            from "./dashboardPages/GoalsPage";
 
 // ✅ העמוד להצגת שיחות העסק עם לקוחות
+import BusinessMessagesPage from "./dashboardPages/BusinessMessagesPage";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
@@ -73,6 +74,8 @@ const BusinessDashboardRoutes = () => (
       <Route path="chat-test" element={<ChatTab isPreview />} />
       <Route path="chat/:partnerId" element={<BusinessChat />} />
 
+      {/* הודעות מהלקוחות */}
+      <Route path="messages" element={<BusinessMessagesPage />} />
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />
