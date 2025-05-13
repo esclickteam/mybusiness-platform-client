@@ -22,79 +22,88 @@ import GoalsPage from "./dashboardPages/GoalsPage";
 import ClientMessagesDashboard from "../../components/ClientMessagesDashboard";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
+import { useAuth } from "../../context/AuthContext"; // ייבוא ה-AuthContext
 
-const BusinessDashboardRoutes = () => (
-  <Routes>
-    {/* Layout משותף לכל דפי הדשבורד */}
-    <Route path="" element={<BusinessDashboardLayout />}>
-      {/* ברירת מחדל — נווט ל"תמצית" הדשבורד */}
-      <Route index element={<Navigate to="dashboard" replace />} />
+const BusinessDashboardRoutes = () => {
+  const { user } = useAuth(); // השגת פרטי המשתמש
 
-      {/* תמצית הדשבורד */}
-      <Route path="dashboard" element={<DashboardPage />} />
+  return (
+    <Routes>
+      {/* Layout משותף לכל דפי הדשבורד */}
+      <Route path="" element={<BusinessDashboardLayout />}>
+        {/* ברירת מחדל — נווט ל"תמצית" הדשבורד */}
+        <Route index element={<Navigate to="dashboard" replace />} />
 
-      {/* עריכת העסק */}
-      <Route
-        path="edit"
-        element={
-          <BusinessServicesProvider>
-            <BuildBusinessPage />
-          </BusinessServicesProvider>
-        }
-      />
-      <Route
-        path="build"
-        element={
-          <BusinessServicesProvider>
-            <BuildBusinessPage />
-          </BusinessServicesProvider>
-        }
-      />
+        {/* תמצית הדשבורד */}
+        <Route path="dashboard" element={<DashboardPage />} />
 
-      {/* סל הקניות */}
-      <Route
-        path="cart"
-        element={
-          <BusinessServicesProvider>
-            <CartPage />
-          </BusinessServicesProvider>
-        }
-      />
+        {/* עריכת העסק */}
+        <Route
+          path="edit"
+          element={
+            <BusinessServicesProvider>
+              <BuildBusinessPage />
+            </BusinessServicesProvider>
+          }
+        />
+        <Route
+          path="build"
+          element={
+            <BusinessServicesProvider>
+              <BuildBusinessPage />
+            </BusinessServicesProvider>
+          }
+        />
 
-      {/* לשוניות נוספות */}
-      <Route path="collab" element={<Collab />} />
-      <Route path="upgrade" element={<Upgrade />} />
-      <Route path="esclick" element={<EsclickAdvisor />} />
-      <Route path="goals" element={<GoalsPage />} />
+        {/* סל הקניות */}
+        <Route
+          path="cart"
+          element={
+            <BusinessServicesProvider>
+              <CartPage />
+            </BusinessServicesProvider>
+          }
+        />
 
-      {/* הודעות מלקוחות */}
-      <Route
-        path="messages"
-        element={<ClientMessagesDashboard businessId="YOUR_BUSINESS_ID" />}
-      />
-      
-      {/* שיחה פרטנית */}
-      <Route
-        path="messages/:conversationId"
-        element={<ClientMessagesDashboard businessId="YOUR_BUSINESS_ID" />}
-      />
+        {/* לשוניות נוספות */}
+        <Route path="collab" element={<Collab />} />
+        <Route path="upgrade" element={<Upgrade />} />
+        <Route path="esclick" element={<EsclickAdvisor />} />
+        <Route path="goals" element={<GoalsPage />} />
 
-      {/* שותפים ואפיליאייט */}
-      <Route path="affiliate" element={<AffiliatePage />} />
+        {/* הודעות מלקוחות */}
+        <Route
+          path="messages"
+          element={
+            <ClientMessagesDashboard businessId={user?.businessId} />
+          }
+        />
+        
+        {/* שיחה פרטנית */}
+        <Route
+          path="messages/:conversationId"
+          element={
+            <ClientMessagesDashboard businessId={user?.businessId} />
+          }
+        />
 
-      {/* CRM */}
-      <Route path="crm" element={<CRMMain />}>
-        <Route index element={<Navigate to="appointments" replace />} />
-        <Route path="appointments" element={<CRMAppointmentsTab />} />
-        <Route path="clients" element={<CRMClientsTab />} />
-        <Route path="services" element={<CRMServicesTab />} />
-        <Route path="settings" element={<CRMSettingsTab />} />
+        {/* שותפים ואפיליאייט */}
+        <Route path="affiliate" element={<AffiliatePage />} />
+
+        {/* CRM */}
+        <Route path="crm" element={<CRMMain />}>
+          <Route index element={<Navigate to="appointments" replace />} />
+          <Route path="appointments" element={<CRMAppointmentsTab />} />
+          <Route path="clients" element={<CRMClientsTab />} />
+          <Route path="services" element={<CRMServicesTab />} />
+          <Route path="settings" element={<CRMSettingsTab />} />
+        </Route>
+
+        {/* ברירת מחדל לתיקון נתיב */}
+        <Route path="*" element={<Navigate to="dashboard" replace />} />
       </Route>
-
-      {/* ברירת מחדל לתיקון נתיב */}
-      <Route path="*" element={<Navigate to="dashboard" replace />} />
-    </Route>
-  </Routes>
-);
+    </Routes>
+  );
+};
 
 export default BusinessDashboardRoutes;
