@@ -26,6 +26,50 @@
   font-size: 1.1rem;
 }
 
+/* Conversations list */
+.convo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.convo-item {
+  padding: 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.convo-item:hover {
+  background-color: #f0e0ff;
+}
+
+.convo-item.selected {
+  background-color: #e4d7ff;
+}
+
+.no-conversations {
+  padding: 1rem;
+  text-align: center;
+  color: #666;
+}
+
+/* Loading & Error */
+.spinner {
+  padding: 1rem;
+  text-align: center;
+  color: #6b4fc4;
+}
+
+.error-banner {
+  padding: 0.75rem;
+  background: #ffe6e6;
+  color: #a00;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
 .chat-main {
   flex: 1;
   background: #fff;

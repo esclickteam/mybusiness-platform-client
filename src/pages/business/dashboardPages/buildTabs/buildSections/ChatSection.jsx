@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import ChatComponent from "@components/ChatComponent";
@@ -34,9 +33,9 @@ export default function ChatSection({ renderTopBar }) {
     return <div className="loading-screen">🔄 טוען שיחות…</div>;
   }
 
-  // helper: determine partner ID and name
+  // Determine partner in each conversation
   const getPartner = (conv) => {
-    const isUserBusiness = user.userId === conv.business._id;
+    const isUserBusiness = user.id === conv.business._id;
     const partnerId = isUserBusiness ? conv.customer._id : conv.business._id;
     const partnerName = isUserBusiness
       ? conv.customer.name || "לקוח"
@@ -50,14 +49,19 @@ export default function ChatSection({ renderTopBar }) {
         <h3>שיחות נכנסות</h3>
         {isLoading && <div className="spinner">טעינה…</div>}
         {error && <div className="error-banner">{error}</div>}
-        {!isLoading && !error && (
+        {!isLoading && !error && conversations.length === 0 && (
+          <div className="no-conversations">אין שיחות להצגה</div>
+        )}
+        {!isLoading && !error && conversations.length > 0 && (
           <ul className="convo-list">
             {conversations.map(conv => {
               const { partnerId, partnerName } = getPartner(conv);
               return (
                 <li
                   key={conv._id}
-                  className={selected.conversationId === conv._id ? "selected" : ""}
+                  className={
+                    `convo-item ${selected.conversationId === conv._id ? "selected" : ""}`
+                  }
                   onClick={() => {
                     console.log("שיחה נבחרה: ", conv._id);
                     setSelected({ conversationId: conv._id, partnerId });
@@ -74,7 +78,7 @@ export default function ChatSection({ renderTopBar }) {
       <main className="chat-main">
         {selected.conversationId ? (
           <ChatComponent
-            userId={user.userId}
+            userId={user.id}
             partnerId={selected.partnerId}
             initialConversationId={selected.conversationId}
             isBusiness={true}

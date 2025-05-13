@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
-import API from "../api";  // axios.create({ baseURL: process.env.REACT_APP_API_URL + "/api", withCredentials: true })
+import API from "../api";
 import "./ChatComponent.css";
 
 const SOCKET_URL = process.env.REACT_APP_API_URL || "https://api.esclick.co.il";
@@ -31,7 +31,7 @@ export default function ChatComponent({
   }, []);
   useEffect(() => scrollToBottom(), [messages, scrollToBottom]);
 
-  // Reset state when partner or initial ID changes
+  // Reset on partner or convId change
   useEffect(() => {
     setConversationId(initialConversationId);
     setMessages([]);
@@ -61,7 +61,7 @@ export default function ChatComponent({
     return conversationId;
   }, [conversationId, partnerId]);
 
-  // Initialize: load history and socket
+  // Load history & init socket
   useEffect(() => {
     let mounted = true;
     const init = async () => {
@@ -72,7 +72,7 @@ export default function ChatComponent({
       setIsLoading(true);
       setError("");
 
-      // Fetch existing messages
+      // Fetch messages
       API.get(`/chat/conversations/${convId}/messages`, { withCredentials: true })
         .then(res => mounted && setMessages(res.data))
         .catch(err => {
@@ -86,7 +86,7 @@ export default function ChatComponent({
       const socket = io(SOCKET_URL, { withCredentials: true });
       socketRef.current = socket;
 
-      socket.on("connect", () => socket.emit("joinRoom", convId));
+      socket.on("connect", () => socket.emit("joinConversation", convId));
       socket.on("newMessage", msg => setMessages(prev => [...prev, msg]));
       socket.on("typing", user => {
         setTypingUsers(prev => prev.includes(user) ? prev : [...prev, user]);
@@ -104,7 +104,7 @@ export default function ChatComponent({
     };
   }, [partnerId, ensureConversation]);
 
-  // Typing
+  // Handle typing
   const handleTyping = e => {
     setText(e.target.value);
     socketRef.current?.emit("typing", isBusiness ? clientName : businessName);
@@ -164,13 +164,13 @@ export default function ChatComponent({
 
       <div className="messages-list">
         {messages.map((m, i) => {
-          const isSelf = m.from === userId;
+          const isSelf = m.sender === userId;
           const senderName = isSelf
             ? "אתה"
             : isBusiness ? clientName : businessName;
           return (
             <div
-              key={`${m._id||m.timestamp}-${i}`}
+              key={`${m._id || m.timestamp}-${i}`}
               className={`message-item ${isSelf ? "self" : ""}`}
             >
               <div className="message-body">
@@ -183,7 +183,9 @@ export default function ChatComponent({
                     })}
                   </span>
                 </div>
-                {m.fileUrl && <img src={m.fileUrl} alt="attachment" className="attachment" />}
+                {m.fileUrl && (
+                  <img src={m.fileUrl} alt="attachment" className="attachment" />
+                )}
                 <p className="message-text">{m.text}</p>
               </div>
             </div>
