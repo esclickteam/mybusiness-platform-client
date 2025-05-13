@@ -20,9 +20,6 @@ import CRMSettingsTab       from "./dashboardPages/crmpages/CRMSettingsTab";
 
 import GoalsPage            from "./dashboardPages/GoalsPage";
 
-// ✅ העמוד להצגת שיחות העסק עם לקוחות
-import BusinessMessagesPage from "./dashboardPages/BusinessMessagesPage";
-
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
 const BusinessDashboardRoutes = () => (
