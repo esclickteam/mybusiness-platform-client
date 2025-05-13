@@ -31,7 +31,9 @@ export default function Build() {
 
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
-    businessName:    "",
+    
+    _id:             null,      // <-- הוסף
+  businessName:    "",
     description:     "",
     phone:           "",
     category:        "",
@@ -81,10 +83,10 @@ export default function Build() {
         const data = res.data.business || res.data;
 
         // כתובת העיר
-        const rawAddress = data.address;
+        const rawAddress = data.address || {};
         const city = typeof rawAddress === "string"
           ? rawAddress
-          : rawAddress?.city || "";
+          : rawAddress.city || "";
 
         // תמונות ראשיות
         const urls = data.mainImages || [];
@@ -100,23 +102,21 @@ export default function Build() {
 
         setBusinessDetails(prev => ({
           ...prev,
-          businessName:    data.businessName  || "",
-          description:     data.description   || "",
-          phone:           data.phone         || "",
-          email:           data.email         || "",
-          category:        data.category      || "",
+          _id:             data._id || null,
+          businessName:    data.businessName || "",
+          category:        data.category    || "",
+          description:     data.description || "",
+          phone:           data.phone       || "",
+          email:           data.email       || "",
           address:         { city },
-
-          // לוגו: שמירה של URL קבוע ו-publicId
           logo: {
-            preview:  data.logo           || null,
-            publicId: data.logoPublicId  || null
+            preview:  data.logoUrl      || null,
+            publicId: data.logoPublicId || null
           },
-
-          gallery:         galleryUrls,
-          galleryImageIds: galleryIds,
           mainImages:      urls,
           mainImageIds:    mainIds,
+          gallery:         galleryUrls,
+          galleryImageIds: galleryIds,
           faqs:            data.faqs      || [],
           reviews:         data.reviews   || []
         }));
@@ -128,12 +128,15 @@ export default function Build() {
 
 
 
+
+
   // Autosave אחרי debounce
-  useEffect(() => {
+  // Autosave אחרי debounce
+useEffect(() => {
   if (firstLoad) return;
+  if (!businessDetails._id) return;
 
   clearTimeout(saveTimeout.current);
-
   saveTimeout.current = setTimeout(async () => {
     setIsSaving(true);
     try {
@@ -147,17 +150,18 @@ export default function Build() {
       };
 
       const res = await API.patch("/business/my", payload);
+
       if (res.status === 200) {
-        const updated = res.data.business;  // מתוך { business: updatedBiz }
+        const updated = res.data.business;
         setBusinessDetails(prev => ({
           ...prev,
-          businessName: updated.businessName,
-          category:     updated.category,
-          description:  updated.description,
-          phone:        updated.phone,
-          email:        updated.email,
-          address:      { city: updated.address.city || prev.address.city },
-          logo:         prev.logo,            // משמרים את אובייקט הלוגו כפי שהוא ב-state
+          businessName:    updated.businessName,
+          category:        updated.category,
+          description:     updated.description,
+          phone:           updated.phone,
+          email:           updated.email,
+          address:         { city: updated.address.city ?? prev.address.city },
+          logo:            prev.logo,
           gallery:         prev.gallery,
           galleryImageIds: prev.galleryImageIds,
           mainImages:      prev.mainImages,
@@ -175,6 +179,7 @@ export default function Build() {
 
   return () => clearTimeout(saveTimeout.current);
 }, [
+  businessDetails._id,
   businessDetails.businessName,
   businessDetails.category,
   businessDetails.description,
@@ -183,6 +188,8 @@ export default function Build() {
   businessDetails.address.city,
   firstLoad
 ]);
+
+
 
 
   
@@ -457,47 +464,44 @@ const handleDeleteMainImage = async publicId => {
   const handleSave = async () => {
   setIsSaving(true);
   try {
-    // אריזת ה־payload
     const payload = {
       businessName: businessDetails.businessName,
       category:     businessDetails.category,
       description:  businessDetails.description,
       phone:        businessDetails.phone,
       email:        businessDetails.email,
-      address: {
-        city: businessDetails.address.city
-      }
+      address:      { city: businessDetails.address.city },
     };
 
-    // קריאה ל־PATCH
-    const res = await API.patch('/business/my/details', payload)
+    let res;
+    if (businessDetails._id) {
+      // עסק כבר קיים → עדכון חלקי
+      res = await API.patch("/business/my", payload);
+    } else {
+      // ראשון ליצור עסק חדש
+      res = await API.post("/business/create", payload);
+    }
 
-    if (res.status === 200) {
-      // צריכה להיות התשובה: האובייקט המעודכן במלואו
-      const updated = res.data; // או res.data.business אם השרת עוטף תחת `business`
-
-      // עדכון כל השדות ב־state
+    if (res.status === 200 || res.status === 201) {
+      const biz = res.data.business;
       setBusinessDetails(prev => ({
-  ...prev,
-  businessName: updated.businessName  ?? prev.businessName,
-  category:     updated.category      ?? prev.category,
-  description:  updated.description   ?? prev.description,
-  phone:        updated.phone         ?? prev.phone,
-  email:        updated.email         ?? prev.email,
-  address: {
-    ...prev.address,
-    city: updated.address?.city      ?? prev.address.city
-  },
-  logo: {
-    // אם קיבלנו מהשרת URL חדש, נעדכן את ה־preview אליו,
-    // אחרת נשמור את ה־preview הקיים (למשל blob בזמן העלאה)
-    preview:    updated.logoUrl       ?? prev.logo?.preview,
-    // אם קיבלנו publicId מהשרת, נעדכן אותו; אחרת נשמור את הישן
-    publicId:   updated.logoPublicId ?? prev.logo?.publicId
-  }
-}));
-
-
+        ...prev,
+        _id:           biz._id,          // ← קיים תמיד עכשיו
+        businessName:  biz.businessName,
+        category:      biz.category,
+        description:   biz.description,
+        phone:         biz.phone,
+        email:         biz.email,
+        address:       { city: biz.address.city },
+        logo:          prev.logo,        // שאר שדות תשמרנה
+        gallery:       prev.gallery,
+        galleryImageIds: prev.galleryImageIds,
+        mainImages:    prev.mainImages,
+        mainImageIds:  prev.mainImageIds,
+        faqs:          prev.faqs,
+        reviews:       prev.reviews,
+      }));
+      setShowViewProfile(true);
       alert("✅ נשמר בהצלחה!");
     } else {
       alert("❌ שמירה נכשלה: " + res.statusText);
@@ -509,6 +513,7 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
+
 
       
 
