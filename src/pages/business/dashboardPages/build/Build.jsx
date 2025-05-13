@@ -28,69 +28,68 @@ export default function Build() {
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState("ראשי");
-  const [businessDetails, setBusinessDetails] = useState({
-    businessName:    "",
-    description:     "",
-    phone:           "",
-    category:        "",
-    email:           "",
-    address:         { city: "" },
-    logo:            null,
-    gallery:         [],
-    galleryImageIds: [],
-    mainImages:      [],
-    mainImageIds:    [],
-    reviews:         [],
-    faqs:            [],
+const [businessDetails, setBusinessDetails] = useState({
+  _id:             null,
+  businessName:    "",
+  description:     "",
+  phone:           "",
+  category:        "",
+  email:           "",
+  address:         { city: "" },
+  logo:            null,
+  gallery:         [],
+  galleryImageIds: [],
+  mainImages:      [],
+  mainImageIds:    [],
+  reviews:         [],
+  faqs:            [],
+  stats:           null   // הוסף שדה סטטיסטיקות
+});
+
+const [isSaving, setIsSaving] = useState(false);
+const [showViewProfile, setShowViewProfile] = useState(false);
+const [editIndex, setEditIndex] = useState(null);
+const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+// Autosave setup
+const [firstLoad, setFirstLoad] = useState(true);
+const saveTimeout = useRef(null);
+
+const logoInputRef       = useRef();
+const mainImagesInputRef = useRef();
+const galleryInputRef    = useRef();
+const pendingUploadsRef  = useRef([]);
+
+function extractPublicIdFromUrl(url) {
+  const filename = url.split("/").pop().split("?")[0];
+  return filename.substring(0, filename.lastIndexOf("."));
+}
+
+const track = p => {
+  pendingUploadsRef.current.push(p);
+  p.finally(() => {
+    pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
   });
+  return p;
+};
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [showViewProfile, setShowViewProfile] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  // Autosave setup
-  const [firstLoad, setFirstLoad] = useState(true);
-  const saveTimeout = useRef(null);
-
-  const logoInputRef       = useRef();
-  const mainImagesInputRef = useRef();
-  const galleryInputRef    = useRef();
-  const pendingUploadsRef  = useRef([]);
-
-  function extractPublicIdFromUrl(url) {
-    const filename = url.split("/").pop().split("?")[0];
-    return filename.substring(0, filename.lastIndexOf("."));
-  }
-
-  const track = p => {
-    pendingUploadsRef.current.push(p);
-    p.finally(() => {
-      pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
-    });
-    return p;
-  };
-
-  // טעינת הנתונים הראשונית
-  useEffect(() => {
+// טעינת הנתונים הראשונית
+useEffect(() => {
   API.get("/business/my")
     .then(res => {
       if (res.status === 200) {
         const data = res.data.business || res.data;
 
-        // כתובת העיר
         const rawAddress = data.address;
         const city = typeof rawAddress === "string"
           ? rawAddress
           : rawAddress?.city || "";
 
-        // תמונות ראשיות
         const urls = data.mainImages || [];
         const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
           ? data.mainImageIds
           : urls.map(extractPublicIdFromUrl);
 
-        // גלריה
         const galleryUrls = data.gallery || [];
         const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
           ? data.galleryImageIds
@@ -98,6 +97,7 @@ export default function Build() {
 
         setBusinessDetails(prev => ({
           ...prev,
+          _id:             data._id,           // שמירת ה-ID
           businessName:    data.businessName  || "",
           description:     data.description   || "",
           phone:           data.phone         || "",
@@ -105,7 +105,6 @@ export default function Build() {
           category:        data.category      || "",
           address:         { city },
 
-          // לוגו: שמירה של URL קבוע ו-publicId
           logo: {
             preview:  data.logo           || null,
             publicId: data.logoPublicId  || null
@@ -123,6 +122,23 @@ export default function Build() {
     .catch(console.error)
     .finally(() => setFirstLoad(false));
 }, []);
+
+// קריאת סטטיסטיקות ברגע שיש _id
+useEffect(() => {
+  if (!businessDetails._id) return;
+  API.get(`/business/${businessDetails._id}/stats`)
+    .then(res => {
+      if (res.status === 200) {
+        setBusinessDetails(prev => ({
+          ...prev,
+          stats: res.data
+        }));
+      }
+    })
+    .catch(console.error);
+}, [businessDetails._id]);
+
+
 
 
 

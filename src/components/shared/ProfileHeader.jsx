@@ -19,7 +19,7 @@ const ProfileHeader = ({ businessDetails }) => {
       ).toFixed(1)
     : null;
 
-  const { name, logo, category, area, about } = businessDetails;
+  const { businessName, logo, category, area, about } = businessDetails;
 
   return (
     <div className="profile-top-section">
@@ -30,7 +30,7 @@ const ProfileHeader = ({ businessDetails }) => {
           className="profile-image"
         />
         <div className="profile-name-section">
-          <h1 className="business-name">{name || "שם העסק"}</h1>
+          <h1 className="business-name">{businessName || "שם העסק"}</h1>
 
           {/* הצגת קטגוריה ואזור רק אם קיימים */}
           {(category || area) && (
