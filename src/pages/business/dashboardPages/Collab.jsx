@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
-import BusinessChat from "./BusinessChat";
 import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabSentRequestsTab from "./collabtabs/CollabSentRequestsTab";
