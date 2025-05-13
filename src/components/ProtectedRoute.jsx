@@ -7,12 +7,12 @@ import Unauthorized from "./Unauthorized";
 export default function ProtectedRoute({
   children,
   roles = [],
-  requiredPackage = null
+  requiredPackage = null,
 }) {
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
 
-  // 1. Show loading indicator until auth is fully initialized
+  // 1. Loading state
   if (loading || !initialized) {
     return (
       <div style={{ textAlign: "center", padding: "2rem" }}>
@@ -21,15 +21,12 @@ export default function ProtectedRoute({
     );
   }
 
-  // helper: which roles use the staff-login flow
-  const staffRoles = ["worker", "manager", "מנהל", "admin"];
-
-  // 2. If not authenticated at all → redirect to appropriate login
+  // 2. Redirect if not authenticated
   if (!user) {
-    // if this route is protected for any staff role → staff-login
+    const staffRoles = ["worker", "manager", "מנהל", "admin"];
     const needsStaffLogin = roles
-      .map(r => r.toLowerCase())
-      .some(r => staffRoles.includes(r));
+      .map((r) => r.toLowerCase())
+      .some((r) => staffRoles.includes(r));
 
     const loginPath = needsStaffLogin ? "/staff-login" : "/login";
     return <Navigate to={loginPath} replace state={{ from: location }} />;
@@ -37,10 +34,9 @@ export default function ProtectedRoute({
 
   // 3. Role-based authorization
   if (roles.length > 0) {
-    const normalizedRoles = roles.map(r => r.toLowerCase());
-    const normalizedUserRole = (user.role || "").toLowerCase();
-
-    if (!normalizedRoles.includes(normalizedUserRole)) {
+    const normalizedRoles = roles.map((r) => r.toLowerCase());
+    const userRole = (user.role || "").toLowerCase();
+    if (!normalizedRoles.includes(userRole)) {
       return <Unauthorized />;
     }
   }
@@ -50,16 +46,15 @@ export default function ProtectedRoute({
     return <Navigate to="/plans" replace />;
   }
 
-  // 5. Business-onboarding flow
-  const normalizedUserRole = (user.role || "").toLowerCase();
+  // 5. Business onboarding
   if (
-    roles.map(r => r.toLowerCase()).includes("business") &&
-    normalizedUserRole === "business" &&
+    roles.map((r) => r.toLowerCase()).includes("business") &&
+    user.role.toLowerCase() === "business" &&
     !user.businessId
   ) {
     return <Navigate to="/create-business" replace />;
   }
 
-  // 6. Authorized → render protected content
-  return children;
+  // 6. Authorized: render children
+  return <React.Fragment>{children}</React.Fragment>;
 }

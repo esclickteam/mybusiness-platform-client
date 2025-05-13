@@ -1,12 +1,13 @@
 // src/pages/Register.jsx
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Register.css";
 
-const Register = () => {
+function Register() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,23 +17,23 @@ const Register = () => {
     userType: "customer",
   });
   const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const { login } = useAuth();
 
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }
 
-  const isValidPhone = (phone) => /^05\d{8}$/.test(phone);
+  function isValidPhone(phone) {
+    return /^05\d{8}$/.test(phone);
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
     const { name, email, phone, password, confirmPassword, userType } = formData;
 
-    // בדיקות בסיס
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       setError("⚠️ יש למלא את כל השדות הנדרשים");
       return;
     }
@@ -46,65 +47,43 @@ const Register = () => {
         return;
       }
       if (!isValidPhone(phone.trim())) {
-        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב‑05)");
+        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב-05)");
         return;
       }
     }
 
     try {
-      // שליחה לשרת להרשמה
       await API.post("/auth/register", {
         name: name.trim(),
         email: email.trim().toLowerCase(),
         phone: userType === "business" ? phone.trim() : "",
         password,
         userType,
-        role: userType === "business" ? "business" : "customer",
       });
 
-      // אחרי הרשמה – מבצעים login דרך ה‐AuthContext
       const user = await login(email.trim(), password);
 
-      // ניתוב לפי תפקיד ו־businessId
-      let dashboardPath = "/";
-switch (user.role) {
-  case "admin":
-    dashboardPath = "/admin/dashboard";
-    break;
-  case "manager":
-    dashboardPath = "/manager/dashboard";
-    break;
-  case "worker":
-    dashboardPath = "/staff/dashboard";
-    break;
-  case "business":
-    // אם ל־business אין businessId, יש להעביר אותו ליצירת עמוד עסקי
-    dashboardPath = user.businessId
-      ? `/business/${user.businessId}/dashboard`
-      : "/create-business";
-    break;
-  case "customer":
-    dashboardPath = "/client/dashboard";
-    break;
-  default:
-    dashboardPath = "/";
-}
-
-navigate(dashboardPath); // ניתוב לפי ה-role
-
-
-      navigate(dashboardPath);
-    } catch (err) {
-      console.error("❌ Registration error:", err.response?.data || err.message);
-      if (err.response?.status === 400) {
-        setError(err.response.data.error || "❌ אימייל כבר רשום במערכת");
-      } else if (err.response?.status === 401) {
-        setError("❌ לא מצליח להתחבר לאחר הרשמה, נסה שוב");
-      } else {
-        setError("❌ שגיאה בלתי צפויה. נסה שוב מאוחר יותר.");
+      let path = "/";
+      switch (user.role) {
+        case "admin": path = "/admin/dashboard"; break;
+        case "manager": path = "/manager/dashboard"; break;
+        case "worker": path = "/staff/dashboard"; break;
+        case "business":
+          path = user.businessId
+            ? `/business/${user.businessId}/dashboard`
+            : "/create-business";
+          break;
+        case "customer": path = "/client/dashboard"; break;
       }
+      navigate(path);
+    } catch (err) {
+      const status = err.response?.status;
+      if (status === 400) setError(err.response.data.error || "❌ אימייל כבר רשום במערכת");
+      else if (status === 401) setError("❌ לא מצליח להתחבר לאחר הרשמה, נסה שוב");
+      else setError("❌ שגיאה בלתי צפויה. נסה שוב מאוחר יותר.");
+      console.error("Registration error:", err);
     }
-  };
+  }
 
   return (
     <div className="register-container">
@@ -112,16 +91,16 @@ navigate(dashboardPath); // ניתוב לפי ה-role
       <p>בחר את סוג החשבון שלך והזן את הפרטים</p>
       <form onSubmit={handleSubmit}>
         <input
-          type="text"
           name="name"
+          type="text"
           placeholder="שם מלא"
           value={formData.name}
           onChange={handleChange}
           required
         />
         <input
-          type="email"
           name="email"
+          type="email"
           placeholder="אימייל"
           value={formData.email}
           onChange={handleChange}
@@ -129,8 +108,8 @@ navigate(dashboardPath); // ניתוב לפי ה-role
         />
         {formData.userType === "business" && (
           <input
-            type="tel"
             name="phone"
+            type="tel"
             placeholder="טלפון"
             value={formData.phone}
             onChange={handleChange}
@@ -138,16 +117,16 @@ navigate(dashboardPath); // ניתוב לפי ה-role
           />
         )}
         <input
-          type="password"
           name="password"
+          type="password"
           placeholder="סיסמה"
           value={formData.password}
           onChange={handleChange}
           required
         />
         <input
-          type="password"
           name="confirmPassword"
+          type="password"
           placeholder="אימות סיסמה"
           value={formData.confirmPassword}
           onChange={handleChange}
@@ -155,34 +134,31 @@ navigate(dashboardPath); // ניתוב לפי ה-role
         />
 
         <div className="radio-container">
-          <div className="radio-option">
+          <label>
             <input
               type="radio"
-              id="customer"
               name="userType"
               value="customer"
               checked={formData.userType === "customer"}
               onChange={handleChange}
             />
-            <label htmlFor="customer">הרשמה כלקוח</label>
-          </div>
-          <div className="radio-option">
+            הרשמה כלקוח
+          </label>
+          <label>
             <input
               type="radio"
-              id="business"
               name="userType"
               value="business"
               checked={formData.userType === "business"}
               onChange={handleChange}
             />
-            <label htmlFor="business">הרשמה כבעל עסק</label>
-          </div>
+            הרשמה כבעל עסק
+          </label>
         </div>
 
         <button type="submit" className="register-button">
           הירשם
         </button>
-
         {error && <p className="error-message">{error}</p>}
       </form>
 
@@ -191,6 +167,6 @@ navigate(dashboardPath); // ניתוב לפי ה-role
       </div>
     </div>
   );
-};
+}
 
 export default Register;

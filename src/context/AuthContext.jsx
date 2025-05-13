@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -21,8 +22,15 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
-        const res = await API.get("/auth/me");
-        setUser(res.data);
+        const { data } = await API.get("/auth/me");
+        setUser({
+          id:               data.userId,
+          name:             data.name,
+          email:            data.email,
+          role:             data.role,
+          subscriptionPlan: data.subscriptionPlan,
+          businessId:       data.businessId || null,
+        });
       } catch {
         setUser(null);
       } finally {
@@ -34,11 +42,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * generic login (handles both customer/business by email, and staff by username)
-   * @param {string} identifier  email or username
-   * @param {string} password
-   * @param {{ skipRedirect?: boolean }} options
-   * @returns {Promise<object>}  the user object
+   * generic login (handles both customer/business by email and staff by username)
    */
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
@@ -49,36 +53,44 @@ export function AuthProvider({ children }) {
 
     try {
       if (isEmail) {
-        // customer/business login
         await API.post("/auth/login", { email: clean.toLowerCase(), password });
       } else {
-        // staff login
         await API.post("/auth/staff-login", { username: clean, password });
       }
 
-      // fetch current user
-      const me = await API.get("/auth/me");
-      setUser(me.data);
+      const { data } = await API.get("/auth/me");
+      setUser({
+        id:               data.userId,
+        name:             data.name,
+        email:            data.email,
+        role:             data.role,
+        subscriptionPlan: data.subscriptionPlan,
+        businessId:       data.businessId || null,
+      });
 
-      // auto-redirect unless skipped
-      if (!options.skipRedirect && me.data) {
-        const role = me.data.role;
-        const path =
-          role === "business"
-            ? `/business/${me.data.businessId}/dashboard`
-            : role === "customer"
-            ? "/client/dashboard"
-            : role === "worker"
-            ? "/staff/dashboard"
-            : role === "manager" || role === "מנהל"
-            ? "/manager/dashboard"
-            : role === "admin"
-            ? "/admin/dashboard"
-            : "/";
+      if (!options.skipRedirect && data) {
+        let path = "/";
+        switch (data.role) {
+          case "business":
+            path = `/business/${data.businessId}/dashboard`;
+            break;
+          case "customer":
+            path = "/client/dashboard";
+            break;
+          case "worker":
+            path = "/staff/dashboard";
+            break;
+          case "manager":
+            path = "/manager/dashboard";
+            break;
+          case "admin":
+            path = "/admin/dashboard";
+            break;
+        }
         navigate(path, { replace: true });
       }
 
-      return me.data;
+      return data;
     } catch (e) {
       setError(
         e.response?.status === 401
@@ -91,10 +103,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  /**
-   * staffLogin wrapper: delegates to generic login but skips auto-redirect
-   * so that StaffLogin page can handle navigation itself
-   */
   const staffLogin = (username, password) =>
     login(username, password, { skipRedirect: true });
 
@@ -129,7 +137,7 @@ export function AuthProvider({ children }) {
         error,
         login,
         staffLogin,
-        logout
+        logout,
       }}
     >
       {successMessage && (

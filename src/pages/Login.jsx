@@ -19,7 +19,7 @@ export default function Login() {
     setLoginError("");
 
     if (!email.trim() || !password) {
-      setLoginError("יש למלא אימייל וסיסמה");
+      setLoginError("⚠️ יש למלא אימייל וסיסמה");
       return;
     }
 
@@ -40,18 +40,20 @@ export default function Login() {
         case "admin":
         case "worker":
         case "manager":
-        case "מנהל":
           navigate("/dashboard", { replace: true });
           break;
         default:
-          setLoginError("אין לך הרשאה להתחבר כאן");
+          setLoginError("❌ אין לך הרשאה להתחבר כאן");
       }
     } catch (err) {
       console.error("Login failed:", err);
-      if (err.response?.status === 403) {
-        setLoginError("אין לך הרשאה להתחבר כאן");
+      const status = err.response?.status;
+      if (status === 403) {
+        setLoginError("❌ אין לך הרשאה להתחבר כאן");
+      } else if (status === 401) {
+        setLoginError("❌ אימייל או סיסמה שגויים");
       } else {
-        setLoginError(err.response?.data?.error || "אימייל או סיסמה שגויים");
+        setLoginError(err.response?.data?.error || "❌ שגיאה בשרת, נסה שוב");
       }
     } finally {
       setLoading(false);
@@ -94,7 +96,7 @@ export default function Login() {
             שכחת את הסיסמה?
           </span>
           <p className="signup-link">
-            לא רשום?{" "}
+            לא רשום?{' '}
             <Link to="/register" className="signup-link-text">
               הירשם עכשיו
             </Link>
