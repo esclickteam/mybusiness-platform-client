@@ -260,7 +260,7 @@ export default function App() {
             }
           />
 
-                    <Route path="/chat-test-direct" element={<ChatTestPage />} />
+                
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
