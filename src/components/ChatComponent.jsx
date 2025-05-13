@@ -31,7 +31,7 @@ export default function ChatComponent({
   }, []);
   useEffect(() => scrollToBottom(), [messages, scrollToBottom]);
 
-  // Reset state when partner changes
+  // Reset state when partner or initial ID changes
   useEffect(() => {
     setConversationId(initialConversationId);
     setMessages([]);
@@ -41,7 +41,7 @@ export default function ChatComponent({
     setTypingUsers([]);
   }, [partnerId, initialConversationId]);
 
-  // Ensure a conversation exists on the server
+  // Ensure conversation exists
   const ensureConversation = useCallback(async () => {
     if (!conversationId && partnerId) {
       try {
@@ -61,7 +61,7 @@ export default function ChatComponent({
     return conversationId;
   }, [conversationId, partnerId]);
 
-  // Load message history & set up socket listeners
+  // Initialize: load history and socket
   useEffect(() => {
     let mounted = true;
     const init = async () => {
@@ -73,15 +73,15 @@ export default function ChatComponent({
       setError("");
 
       // Fetch existing messages
-      API.get(`/chat/${convId}/messages`, { withCredentials: true })
+      API.get(`/chat/conversations/${convId}/messages`, { withCredentials: true })
         .then(res => mounted && setMessages(res.data))
         .catch(err => {
-          console.error('Error loading history', err);
+          console.error('Error loading messages', err);
           mounted && setError("שגיאה בטעינת היסטוריה");
         })
         .finally(() => mounted && setIsLoading(false));
 
-      // Connect socket and join room
+      // Setup socket
       socketRef.current?.disconnect();
       const socket = io(SOCKET_URL, { withCredentials: true });
       socketRef.current = socket;
@@ -104,13 +104,13 @@ export default function ChatComponent({
     };
   }, [partnerId, ensureConversation]);
 
-  // Emit typing event
+  // Typing
   const handleTyping = e => {
     setText(e.target.value);
     socketRef.current?.emit("typing", isBusiness ? clientName : businessName);
   };
 
-  // Send message via API
+  // Send message
   const sendMessage = async () => {
     if ((!text.trim() && !file) || isSending || !partnerId) return;
     setIsSending(true);
@@ -128,7 +128,7 @@ export default function ChatComponent({
 
     try {
       const res = await API.post(
-        `/chat/${convId}/messages`,
+        `/chat/conversations/${convId}/messages`,
         form,
         { withCredentials: true }
       );
@@ -150,7 +150,6 @@ export default function ChatComponent({
 
   return (
     <div className="chat-component">
-      {/* Header */}
       <header className="chat-header">
         <h2>{isBusiness ? clientName : businessName}</h2>
       </header>
@@ -163,14 +162,12 @@ export default function ChatComponent({
         </div>
       )}
 
-      {/* Messages list */}
       <div className="messages-list">
         {messages.map((m, i) => {
           const isSelf = m.from === userId;
           const senderName = isSelf
             ? "אתה"
             : isBusiness ? clientName : businessName;
-
           return (
             <div
               key={`${m._id||m.timestamp}-${i}`}
@@ -186,9 +183,7 @@ export default function ChatComponent({
                     })}
                   </span>
                 </div>
-                {m.fileUrl && (
-                  <img src={m.fileUrl} alt="attachment" className="attachment" />
-                )}
+                {m.fileUrl && <img src={m.fileUrl} alt="attachment" className="attachment" />}
                 <p className="message-text">{m.text}</p>
               </div>
             </div>
@@ -197,14 +192,12 @@ export default function ChatComponent({
         <div ref={bottomRef} />
       </div>
 
-      {/* Typing indicator */}
       {typingUsers.length > 0 && (
         <div className="typing-indicator">
           {typingUsers.join(", ")} מקליד…
         </div>
       )}
 
-      {/* Input area */}
       <div className="input-area">
         <input
           type="text"
@@ -219,10 +212,7 @@ export default function ChatComponent({
           onChange={e => setFile(e.target.files[0])}
           disabled={!partnerId || isSending || isLoading}
         />
-        <button
-          onClick={sendMessage}
-          disabled={!partnerId || isSending || isLoading}
-        >
+        <button onClick={sendMessage} disabled={!partnerId || isSending || isLoading}>
           {isSending ? "שולח…" : "שלח"}
         </button>
       </div>
