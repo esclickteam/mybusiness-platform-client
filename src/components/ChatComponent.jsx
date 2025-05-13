@@ -170,8 +170,7 @@ export default function ChatComponent({
           return (
             <div
               key={`${m._id||m.timestamp}-${i}`}
-              className={`message-item ${isSelf ? "self" : ""}`}
-            >
+              className={`message-item ${isSelf ? "self" : ""}`}>
               <div className="message-body">
                 <div className="message-meta">
                   <strong>{senderName}</strong>
