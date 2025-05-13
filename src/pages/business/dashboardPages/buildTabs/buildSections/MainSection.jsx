@@ -29,6 +29,7 @@ export default function MainSection({
 }) {
   // Render only after business has loaded
   if (!businessDetails._id) return null;
+
   const containerRef = useRef();
 
   // Close react-select menus on outside click
@@ -39,83 +40,14 @@ export default function MainSection({
       }
     };
     document.addEventListener("mousedown", onClickOutside);
-    return (
-    <div className="build-wrapper">
-      {currentTab === "ראשי" && businessDetails._id && (
-        <MainSection
-          businessDetails={businessDetails}
-          handleInputChange={handleInputChange}
-          handleMainImagesChange={handleMainImagesChange}
-          handleDeleteImage={handleDeleteMainImage}
-          handleEditImage={openMainImageEdit}
-          handleSave={handleSave}
-          showViewProfile={showViewProfile}
-          navigate={navigate}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
-          logoInputRef={logoInputRef}
-          mainImagesInputRef={mainImagesInputRef}
-          isSaving={isSaving}
-        />
-      )}
-
-      {currentTab === "גלריה" && (
-        <GallerySection
-          businessDetails={businessDetails}
-          galleryInputRef={galleryInputRef}
-          handleGalleryChange={handleGalleryChange}
-          handleDeleteImage={handleDeleteGalleryImage}
-          handleEditImage={handleEditImage}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
-      {currentTab === "ביקורות" && (
-        <ReviewsSection
-          reviews={businessDetails.reviews}
-          setReviews={r => setBusinessDetails(prev => ({ ...prev, reviews: r }))}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
-      {currentTab === "חנות / יומן" && (
-        <ShopSection
-          setBusinessDetails={setBusinessDetails}
-          handleSave={handleSave}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
-      {currentTab === "שאלות ותשובות" && (
-        <FaqSection
-          faqs={businessDetails.faqs}
-          setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
-      {isPopupOpen && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <h3>בחר גודל תמונה</h3>
-            <button type="button" onClick={() => updateImageSize("full")}>גודל מלא</button>
-            <button type="button" onClick={() => updateImageSize("custom")}>גודל מותאם</button>
-            <button type="button" onClick={closePopup}>ביטול</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
   // Build preview+ID objects from state arrays
-  const wrappedMainImages =
-    (businessDetails.mainImages || []).map((url, idx) => ({
-      preview: url,
-      publicId: (businessDetails.mainImageIds || [])[idx] || null
-    }));
+  const wrappedMainImages = (businessDetails.mainImages || []).map((url, idx) => ({
+    preview: url,
+    publicId: (businessDetails.mainImageIds || [])[idx] || null
+  }));
 
   // Deduplicate & limit to 5
   const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 5);
