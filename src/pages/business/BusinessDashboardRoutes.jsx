@@ -19,7 +19,7 @@ import CRMSettingsTab from "./dashboardPages/crmpages/CRMSettingsTab";
 import GoalsPage from "./dashboardPages/GoalsPage";
 
 // רכיב שיציג את הודעות הלקוחות בצד העסק
-import ClientMessagesDashboard from "./dashboardPages/buildTabs/buildSections/ClientMessagesDashboard";
+import ClientMessagesDashboard from "../../components/ClientMessagesDashboard";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
