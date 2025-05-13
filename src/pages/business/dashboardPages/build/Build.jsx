@@ -146,7 +146,7 @@ export default function Build() {
         address:      { city: businessDetails.address.city },
       };
 
-      const res = await API.patch("/business/my/details", payload);
+      const res = await API.patch("/business/my", payload);
       if (res.status === 200) {
         const updated = res.data.business;  // מתוך { business: updatedBiz }
         setBusinessDetails(prev => ({
