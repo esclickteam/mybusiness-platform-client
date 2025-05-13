@@ -17,9 +17,16 @@ export default function ChatSection({ renderTopBar }) {
     if (!initialized) return;
     setIsLoading(true);
     setError("");
+    console.log("טעינת שיחות...");
     API.get("/chat/conversations", { withCredentials: true })
-      .then(res => setConversations(res.data))
-      .catch(() => setError("שגיאה בטעינת שיחות"))
+      .then(res => {
+        console.log("שיחות שהתקבלו: ", res.data);
+        setConversations(res.data);
+      })
+      .catch(err => {
+        console.error("שגיאה בטעינת שיחות", err);
+        setError("שגיאה בטעינת שיחות");
+      })
       .finally(() => setIsLoading(false));
   }, [initialized]);
 
@@ -51,7 +58,10 @@ export default function ChatSection({ renderTopBar }) {
                 <li
                   key={conv._id}
                   className={selected.conversationId === conv._id ? "selected" : ""}
-                  onClick={() => setSelected({ conversationId: conv._id, partnerId })}
+                  onClick={() => {
+                    console.log("שיחה נבחרה: ", conv._id);
+                    setSelected({ conversationId: conv._id, partnerId });
+                  }}
                 >
                   {partnerName}
                 </li>
