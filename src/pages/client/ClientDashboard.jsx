@@ -1,10 +1,11 @@
+// src/pages/client/ClientDashboard.jsx
 import React, { useState } from "react";
 import "./ClientDashboard.css";
-import { useAuth } from "../../context/AuthContext";              
-import OrdersPage from "../OrdersPage";
-import SearchBusinessPage from "../SearchBusinessPage";
-import FavoritesPage from "../FavoritesPage";
-import ChatPage from "../../components/ChatPage";  
+import { useAuth } from "../../context/AuthContext";
+import OrdersPage from "./OrdersPage";
+import SearchBusinessPage from "./SearchBusinessPage";
+import FavoritesPage from "./FavoritesPage";
+import ChatPage from "../../components/ChatPage";
 
 export default function ClientDashboard() {
   const { user } = useAuth();
