@@ -155,50 +155,54 @@ useEffect(() => {
 
   // Autosave אחרי debounce
   useEffect(() => {
-  if (firstLoad) return;
+  if (firstLoad) return; // מונע קריאה ראשונית לפני טעינת הנתונים
 
-  clearTimeout(saveTimeout.current);
+  clearTimeout(saveTimeout.current); // מנקה את ה-timeout הקודם
 
   saveTimeout.current = setTimeout(async () => {
-    setIsSaving(true);
+    setIsSaving(true); // מציין שהתהליך בשמירה
     try {
       const payload = {
-        businessName: businessDetails.businessName,
-        category:     businessDetails.category,
-        description:  businessDetails.description,
-        phone:        businessDetails.phone,
-        email:        businessDetails.email,
-        address:      { city: businessDetails.address.city },
+        businessName: businessDetails.businessName || "שם העסק לא זמין", // ערך ברירת מחדל
+        category: businessDetails.category || "", // ערך ברירת מחדל
+        description: businessDetails.description || "", // ערך ברירת מחדל
+        phone: businessDetails.phone || "", // ערך ברירת מחדל
+        email: businessDetails.email || "", // ערך ברירת מחדל
+        address: {
+          city: businessDetails.address.city || "", // ערך ברירת מחדל
+        },
       };
 
-      const res = await API.patch("/business/my", payload);
+      const res = await API.patch("/business/my", payload); // קריאה ל-API
       if (res.status === 200) {
-        const updated = res.data.business;  // מתוך { business: updatedBiz }
+        const updated = res.data.business;
         setBusinessDetails(prev => ({
           ...prev,
-          businessName: updated.businessName,
-          category:     updated.category,
-          description:  updated.description,
-          phone:        updated.phone,
-          email:        updated.email,
-          address:      { city: updated.address.city || prev.address.city },
-          logo:         prev.logo,            // משמרים את אובייקט הלוגו כפי שהוא ב-state
-          gallery:         prev.gallery,
+          businessName: updated.businessName || prev.businessName,
+          category: updated.category || prev.category,
+          description: updated.description || prev.description,
+          phone: updated.phone || prev.phone,
+          email: updated.email || prev.email,
+          address: { city: updated.address.city || prev.address.city },
+          logo: prev.logo,
+          gallery: prev.gallery,
           galleryImageIds: prev.galleryImageIds,
-          mainImages:      prev.mainImages,
-          mainImageIds:    prev.mainImageIds,
-          faqs:            prev.faqs,
-          reviews:         prev.reviews,
+          mainImages: prev.mainImages,
+          mainImageIds: prev.mainImageIds,
+          faqs: prev.faqs,
+          reviews: prev.reviews,
         }));
+      } else {
+        console.error("שגיאה בשרת: " + res.statusText);
       }
     } catch (err) {
       console.error("Autosave failed:", err);
     } finally {
-      setIsSaving(false);
+      setIsSaving(false); // עצירת סטטוס שמירה
     }
-  }, 1000);
+  }, 1000); // דיווח אחרי 1 שנייה
 
-  return () => clearTimeout(saveTimeout.current);
+  return () => clearTimeout(saveTimeout.current); // מנקה timeout כשהרכיב מבוטל
 }, [
   businessDetails.businessName,
   businessDetails.category,
@@ -206,8 +210,9 @@ useEffect(() => {
   businessDetails.phone,
   businessDetails.email,
   businessDetails.address.city,
-  firstLoad
+  firstLoad,
 ]);
+
 
 
   
