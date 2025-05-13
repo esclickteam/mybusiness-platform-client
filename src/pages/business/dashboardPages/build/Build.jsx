@@ -609,24 +609,24 @@ const handleDeleteMainImage = async publicId => {
   
 
   return (
-    <div className="build-wrapper">
-      {currentTab === "ראשי" && (
-        <MainSection
-          businessDetails={businessDetails}
-          handleInputChange={handleInputChange}
-          handleMainImagesChange={handleMainImagesChange}
-          handleDeleteImage={handleDeleteMainImage}
-          handleEditImage={openMainImageEdit}
-          handleSave={handleSave}
-          showViewProfile={showViewProfile}
-          navigate={navigate}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
-          logoInputRef={logoInputRef}
-          mainImagesInputRef={mainImagesInputRef}
-          isSaving={isSaving}
-        />
-      )}
+  <div className="build-wrapper">
+    {currentTab === "ראשי" && businessDetails._id && (
+      <MainSection
+        businessDetails={businessDetails}
+        handleInputChange={handleInputChange}
+        handleMainImagesChange={handleMainImagesChange}
+        handleDeleteImage={handleDeleteMainImage}
+        handleEditImage={openMainImageEdit}
+        handleSave={handleSave}
+        showViewProfile={showViewProfile}
+        navigate={navigate}
+        currentUser={currentUser}
+        renderTopBar={renderTopBar}
+        logoInputRef={logoInputRef}
+        mainImagesInputRef={mainImagesInputRef}
+        isSaving={isSaving}
+      />
+    )}
 
       {currentTab === "גלריה" && (
         <GallerySection
