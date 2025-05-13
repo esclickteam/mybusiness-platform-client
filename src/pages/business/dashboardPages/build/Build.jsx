@@ -125,18 +125,29 @@ useEffect(() => {
 
 // קריאת סטטיסטיקות ברגע שיש _id
 useEffect(() => {
-  if (!businessDetails._id) return;
+  if (!businessDetails._id) {
+    console.warn("אין מזהה עסק, לא ניתן לטעון סטטיסטיקות");
+    return;
+  }
+
+  // קריאה ל-API כדי להוריד את הסטטיסטיקות
   API.get(`/business/${businessDetails._id}/stats`)
     .then(res => {
       if (res.status === 200) {
+        // עדכון הסטטיסטיקות במצב ה-businessDetails
         setBusinessDetails(prev => ({
           ...prev,
           stats: res.data
         }));
+      } else {
+        console.error("שגיאה בטעינת נתוני סטטיסטיקות:", res);
       }
     })
-    .catch(console.error);
-}, [businessDetails._id]);
+    .catch(err => {
+      console.error("שגיאה בטעינת נתוני סטטיסטיקות:", err);
+    });
+}, [businessDetails._id]); // מתעדכן רק כשיש שינוי במזהה העסק
+
 
 
 
