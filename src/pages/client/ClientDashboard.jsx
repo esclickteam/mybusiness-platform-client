@@ -1,26 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./ClientDashboard.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import OrdersPage from "../pages/client/OrdersPage";
+import SearchBusinessPage from "../pages/client/SearchBusinessPage";
+import FavoritesPage from "../pages/client/FavoritesPage";
+import ChatPage from "../components/ChatPage";
 
-function ClientDashboard() {
+export default function ClientDashboard() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("orders");
-  const [userName, setUserName] = useState("לקוח");
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user?.name) {
-      setUserName(user.name);
-    }
-  }, []);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "orders":
-        return <p>📄 כאן תוכל לצפות בהזמנות שביצעת.</p>;
+        return <OrdersPage />;
       case "messages":
-        return <p>💬 כאן תוכל לנהל שיחות עם בעלי עסקים.</p>;
+        return (
+          <ChatPage
+            isBusiness={false}
+            userId={user.userId}
+            clientProfilePic={user.avatarUrl}
+            businessProfilePic={null}
+            initialPartnerId={null}
+          />
+        );
       case "favorites":
-        return <p>⭐ כאן תוכל לצפות בעסקים ששמרת.</p>;
+        return <FavoritesPage />;
+      case "search":
+        return <SearchBusinessPage />;
       default:
         return null;
     }
@@ -28,13 +36,16 @@ function ClientDashboard() {
 
   return (
     <div className="client-dashboard">
-      <h1 className="client-dashboard-title">שלום {userName} 👋</h1>
+      <h1 className="client-dashboard-title">שלום {user.name} 👋</h1>
       <p className="client-dashboard-subtitle">מה תרצה לעשות היום?</p>
 
       <div className="client-tabs">
-        <Link to="/search">
-          <button className="client-tab-button">🔎 חיפוש עסקים</button>
-        </Link>
+        <button
+          className={`client-tab-button ${activeTab === "search" ? "active" : ""}`}
+          onClick={() => setActiveTab("search")}
+        >
+          🔎 חיפוש עסקים
+        </button>
 
         <button
           className={`client-tab-button ${activeTab === "orders" ? "active" : ""}`}
@@ -64,5 +75,3 @@ function ClientDashboard() {
     </div>
   );
 }
-
-export default ClientDashboard;
