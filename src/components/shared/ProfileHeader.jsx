@@ -1,3 +1,4 @@
+// src/components/shared/ProfileHeader.jsx
 import React from "react";
 import "./ProfileHeader.css";
 
@@ -22,39 +23,34 @@ const ProfileHeader = ({ businessDetails }) => {
   const { businessName, logo, category, area, about } = businessDetails;
 
   return (
-    <div className="profile-top-section">
-      <div className="profile-header">
+    <div className="profile-header">
+      <div className="profile-header__logo">
         <img
           src={getImageUrl(logo) || "/images/placeholder.jpg"}
-          alt="לוגו עסק"
-          className="profile-image"
+          alt="לוגו העסק"
+          className="profile-header__img"
         />
-        <div className="profile-name-section">
-          <h1 className="business-name">{businessName || "שם העסק"}</h1>
-
-          {/* הצגת קטגוריה ואזור רק אם קיימים */}
-          {(category || area) && (
-            <p className="category-area">
-              {category}
-              {category && area ? ` | ${area}` : area}
-            </p>
-          )}
-
-          {averageRating && (
-            <p className="rating-badge">⭐ {averageRating} / 5</p>
-          )}
-        </div>
       </div>
-
-      {about && (
-        <div className="about-section">
-          <p className="about-snippet">
+      <div className="profile-header__info">
+        <h1 className="profile-header__name">
+          {businessName || "שם העסק"}
+        </h1>
+        {averageRating && (
+          <div className="profile-header__rating">
+            <span>⭐</span> <span>{averageRating} / 5</span>
+          </div>
+        )}
+        {(category || area) && (
+          <p className="profile-header__meta">
+            {category || ""}{area && ` | ${area}`}
+          </p>
+        )}
+        {about && (
+          <p className="profile-header__about">
             {about.length > 100 ? about.slice(0, 100) + "..." : about}
           </p>
-        </div>
-      )}
-
-      <hr className="profile-divider" />
+        )}
+      </div>
     </div>
   );
 };
