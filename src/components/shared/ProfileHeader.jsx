@@ -11,16 +11,11 @@ const ProfileHeader = ({ businessDetails }) => {
     return item.url || item.preview || "";
   };
 
-  const averageRating = businessDetails.reviews?.length
-    ? (
-        businessDetails.reviews.reduce(
-          (sum, r) => sum + Number(r.rating || 0),
-          0
-        ) / businessDetails.reviews.length
-      ).toFixed(1)
-    : null;
+  const { businessName, logo, reviews = [], category, area, about } = businessDetails;
 
-  const { businessName, logo, category, area, about } = businessDetails;
+  const averageRating = reviews.length
+    ? (reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) / reviews.length).toFixed(1)
+    : null;
 
   return (
     <div className="profile-header">
@@ -35,16 +30,19 @@ const ProfileHeader = ({ businessDetails }) => {
         <h1 className="profile-header__name">
           {businessName || "שם העסק"}
         </h1>
+
         {averageRating && (
           <div className="profile-header__rating">
             <span>⭐</span> <span>{averageRating} / 5</span>
           </div>
         )}
+
         {(category || area) && (
           <p className="profile-header__meta">
             {category || ""}{area && ` | ${area}`}
           </p>
         )}
+
         {about && (
           <p className="profile-header__about">
             {about.length > 100 ? about.slice(0, 100) + "..." : about}
