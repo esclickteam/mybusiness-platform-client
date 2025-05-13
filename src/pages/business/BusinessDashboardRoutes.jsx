@@ -72,7 +72,16 @@ const BusinessDashboardRoutes = () => (
 
       {/* Preview לצ'אט */}
       <Route path="chat-test" element={<ChatTab isPreview />} />
-      <Route path="chat/:partnerId" element={<BusinessChat />} />
+      <Route path="chat/:conversationId" element={
+  <ChatSection
+    isBusiness={true}
+    renderTopBar={() => (
+      <div style={{ padding: "1rem", borderBottom: "1px solid #ddd" }}>
+        <h2>שיחות נכנסות</h2>
+      </div>
+    )}
+  />
+} />
 
       {/* הודעות מהלקוחות – כאן מטעינים את ה־ChatSection ויש גם תת-נתיב */}
       <Route
