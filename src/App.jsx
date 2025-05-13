@@ -43,6 +43,8 @@ const ChangePassword      = lazy(() => import("./pages/ChangePassword"));
 const StaffLogin          = lazy(() => import("./pages/StaffLogin"));
 const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
 const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
+const OrdersPage          = lazy(() => import("./pages/client/OrdersPage"));
+const FavoritesPage       = lazy(() => import("./pages/client/FavoritesPage"));
 const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
 const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
 const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
@@ -115,7 +117,7 @@ export default function App() {
             element={<BusinessChatWrapper />}
           />
 
-          {/* Client Chat */}
+          {/* Client Chat (outside dashboard) */}
           <Route
             path="/client/chat/:businessId"
             element={<ClientChatWrapper />}
@@ -130,14 +132,24 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Client dashboard עם nested routes */}
           <Route
-            path="/client/dashboard"
+            path="/client/dashboard/*"
             element={
               <ProtectedRoute roles={["customer"]}>
                 <ClientDashboard />
               </ProtectedRoute>
             }
-          />
+          >
+            {/* נתיב ברירת מחדל מפנה ל־search */}
+            <Route index element={<Navigate to="search" replace />} />
+            <Route path="search" element={<SearchBusinesses />} />
+            <Route path="orders" element={<OrdersPage />} />
+            <Route path="messages" element={<ClientChatWrapper />} />
+            <Route path="favorites" element={<FavoritesPage />} />
+          </Route>
+
           <Route
             path="/staff/dashboard"
             element={
@@ -317,7 +329,7 @@ function BusinessChatWrapper() {
 // Wrapper for client chatting with a business
 function ClientChatWrapper() {
   const { businessId } = useParams();
-  const { user }       = useAuth();
+  const { user } = useAuth();
 
   return (
     <ChatPage

@@ -1,35 +1,11 @@
 // src/pages/client/ClientDashboard.jsx
-import React, { useState } from "react";
+import React from "react";
+import { NavLink, Outlet } from "react-router-dom";
 import "./ClientDashboard.css";
 import { useAuth } from "../../context/AuthContext";
-import SearchBusinesses from '../SearchBusinesses';
 
 export default function ClientDashboard() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("orders");
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "orders":
-        return <OrdersPage />;
-      case "messages":
-        return (
-          <ChatPage
-            isBusiness={false}
-            userId={user.userId}
-            clientProfilePic={user.avatarUrl}
-            businessProfilePic={null}
-            initialPartnerId={null}
-          />
-        );
-      case "favorites":
-        return <FavoritesPage />;
-      case "search":
-        return <SearchBusinessPage />;
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="client-dashboard">
@@ -37,37 +13,45 @@ export default function ClientDashboard() {
       <p className="client-dashboard-subtitle">מה תרצה לעשות היום?</p>
 
       <div className="client-tabs">
-        <button
-          className={`client-tab-button ${activeTab === "search" ? "active" : ""}`}
-          onClick={() => setActiveTab("search")}
+        <NavLink
+          to="search"
+          className={({ isActive }) =>
+            `client-tab-button ${isActive ? "active" : ""}`
+          }
         >
           🔎 חיפוש עסקים
-        </button>
+        </NavLink>
 
-        <button
-          className={`client-tab-button ${activeTab === "orders" ? "active" : ""}`}
-          onClick={() => setActiveTab("orders")}
+        <NavLink
+          to="orders"
+          className={({ isActive }) =>
+            `client-tab-button ${isActive ? "active" : ""}`
+          }
         >
           📄 ההזמנות שלי
-        </button>
+        </NavLink>
 
-        <button
-          className={`client-tab-button ${activeTab === "messages" ? "active" : ""}`}
-          onClick={() => setActiveTab("messages")}
+        <NavLink
+          to="messages"
+          className={({ isActive }) =>
+            `client-tab-button ${isActive ? "active" : ""}`
+          }
         >
           💬 ההודעות שלי
-        </button>
+        </NavLink>
 
-        <button
-          className={`client-tab-button ${activeTab === "favorites" ? "active" : ""}`}
-          onClick={() => setActiveTab("favorites")}
+        <NavLink
+          to="favorites"
+          className={({ isActive }) =>
+            `client-tab-button ${isActive ? "active" : ""}`
+          }
         >
           ⭐ מועדפים
-        </button>
+        </NavLink>
       </div>
 
       <div className="client-tab-content">
-        {renderTabContent()}
+        <Outlet />
       </div>
     </div>
   );
