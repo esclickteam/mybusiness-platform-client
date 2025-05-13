@@ -8,10 +8,10 @@ const SOCKET_URL = process.env.REACT_APP_API_URL || "https://api.esclick.co.il";
 export default function ChatComponent({
   userId,
   partnerId,
-  conversationId: initialConversationId = null,  // prop renamed
+  conversationId: initialConversationId = null,
   isBusiness = false,
-  businessName = "",   // for client view
-  clientName   = "לקוח" // for business view
+  businessName = "",
+  clientName = "לקוח"
 }) {
   const [conversationId, setConversationId] = useState(initialConversationId);
   const [messages, setMessages]           = useState([]);
@@ -50,9 +50,11 @@ export default function ChatComponent({
           { otherId: partnerId },
           { withCredentials: true }
         );
-        setConversationId(res.data.conversationId);
-        return res.data.conversationId;
-      } catch {
+        const convId = res.data.conversationId;
+        setConversationId(convId);
+        return convId;
+      } catch (err) {
+        console.error('Error creating conversation', err);
         setError("שגיאה ביצירת שיחה");
       }
     }
@@ -73,7 +75,10 @@ export default function ChatComponent({
       // Fetch existing messages
       API.get(`/chat/${convId}/messages`, { withCredentials: true })
         .then(res => mounted && setMessages(res.data))
-        .catch(() => mounted && setError("שגיאה בטעינת היסטוריה"))
+        .catch(err => {
+          console.error('Error loading history', err);
+          mounted && setError("שגיאה בטעינת היסטוריה");
+        })
         .finally(() => mounted && setIsLoading(false));
 
       // Connect socket and join room
@@ -81,9 +86,9 @@ export default function ChatComponent({
       const socket = io(SOCKET_URL, { withCredentials: true });
       socketRef.current = socket;
 
-      socket.on("connect",    () => socket.emit("joinRoom", convId));
+      socket.on("connect", () => socket.emit("joinRoom", convId));
       socket.on("newMessage", msg => setMessages(prev => [...prev, msg]));
-      socket.on("typing",     user => {
+      socket.on("typing", user => {
         setTypingUsers(prev => prev.includes(user) ? prev : [...prev, user]);
         clearTimeout(typingTimeout.current);
         typingTimeout.current = setTimeout(() => {
@@ -97,7 +102,7 @@ export default function ChatComponent({
       socketRef.current?.disconnect();
       clearTimeout(typingTimeout.current);
     };
-  }, [partnerId, conversationId, ensureConversation]);
+  }, [partnerId, ensureConversation]);
 
   // Emit typing event
   const handleTyping = e => {
@@ -130,7 +135,8 @@ export default function ChatComponent({
       setMessages(prev => [...prev, res.data]);
       setText("");
       setFile(null);
-    } catch {
+    } catch (err) {
+      console.error('Error sending message', err);
       setError("שגיאה בשליחת ההודעה");
     } finally {
       setIsSending(false);
@@ -163,14 +169,13 @@ export default function ChatComponent({
           const isSelf = m.from === userId;
           const senderName = isSelf
             ? "אתה"
-            : isBusiness
-              ? clientName
-              : businessName;
+            : isBusiness ? clientName : businessName;
 
           return (
             <div
               key={`${m._id||m.timestamp}-${i}`}
-              className={`message-item ${isSelf ? "self" : ""}`}>
+              className={`message-item ${isSelf ? "self" : ""}`}
+            >
               <div className="message-body">
                 <div className="message-meta">
                   <strong>{senderName}</strong>
@@ -182,11 +187,7 @@ export default function ChatComponent({
                   </span>
                 </div>
                 {m.fileUrl && (
-                  <img
-                    src={m.fileUrl}
-                    alt="attachment"
-                    className="attachment"
-                  />
+                  <img src={m.fileUrl} alt="attachment" className="attachment" />
                 )}
                 <p className="message-text">{m.text}</p>
               </div>
