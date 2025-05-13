@@ -1,16 +1,25 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import { useNavigate } from "react-router-dom";
 import { FaMapMarkerAlt, FaPhoneAlt, FaTags, FaInfoCircle } from "react-icons/fa";
 import "./BusinessCard.css";
 
-export default function BusinessCard({ business, onClick }) {
-  const { _id, businessName, logo, description, category, phone, address = {} } = business;
-  const { city } = address;
+export default function BusinessCard({ business = {}, onClick }) {
+  const {
+    _id,
+    businessName = "שם העסק",
+    logo = "/images/placeholder.jpg",
+    description = "",
+    category = "",
+    phone = "",
+    address = {}
+  } = business;
+  const { city = "" } = address;
   const navigate = useNavigate();
 
   const handleCardClick = () => {
     if (onClick) {
-      onClick();
+      onClick(_id);
     } else {
       navigate(`/business/${_id}`);
     }
@@ -18,11 +27,14 @@ export default function BusinessCard({ business, onClick }) {
 
   return (
     <div className="business-card" onClick={handleCardClick} style={{ cursor: "pointer" }}>
-      {logo && (
-        <div className="business-card__media">
-          <img src={logo} alt={`${businessName} logo`} loading="lazy" />
-        </div>
-      )}
+      <div className="business-card__media">
+        <img
+          src={logo}
+          alt={`${businessName} logo`}
+          loading="lazy"
+          className="business-card__img"
+        />
+      </div>
 
       <h2 className="business-card__title">{businessName}</h2>
 
@@ -62,3 +74,16 @@ export default function BusinessCard({ business, onClick }) {
     </div>
   );
 }
+
+BusinessCard.propTypes = {
+  business: PropTypes.shape({
+    _id: PropTypes.string,
+    businessName: PropTypes.string,
+    logo: PropTypes.string,
+    description: PropTypes.string,
+    category: PropTypes.string,
+    phone: PropTypes.string,
+    address: PropTypes.shape({ city: PropTypes.string })
+  }),
+  onClick: PropTypes.func
+};

@@ -13,7 +13,7 @@ const categoryOptions = ALL_CATEGORIES.map(cat => ({ value: cat, label: cat }));
 const cityOptions = CITIES.map(city => ({ value: city, label: city }));
 
 export default function MainSection({
-  businessDetails,
+  businessDetails = {},
   handleInputChange,
   handleMainImagesChange,
   handleDeleteImage,
@@ -41,10 +41,11 @@ export default function MainSection({
   }, []);
 
   // Build preview+ID objects from state arrays
-  const wrappedMainImages = (businessDetails.mainImages || []).map((url, idx) => ({
-    preview: url,
-    publicId: (businessDetails.mainImageIds || [])[idx] || null
-  }));
+  const wrappedMainImages =
+    (businessDetails.mainImages || []).map((url, idx) => ({
+      preview: url,
+      publicId: (businessDetails.mainImageIds || [])[idx] || null
+    }));
 
   // Deduplicate & limit to 5
   const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 5);
@@ -52,6 +53,15 @@ export default function MainSection({
   // wrap Select onChange to mimic native input event
   const wrapSelectChange = name => option =>
     handleInputChange({ target: { name, value: option ? option.value : "" } });
+
+  const {
+    businessName = "",
+    description = "",
+    phone = "",
+    category = "",
+    address = {}
+  } = businessDetails;
+  const { city = "" } = address;
 
   return (
     <>
@@ -65,7 +75,7 @@ export default function MainSection({
         <input
           type="text"
           name="businessName"
-          value={businessDetails.businessName || ""}
+          value={businessName}
           onChange={handleInputChange}
           placeholder="הכנס שם העסק"
           required
@@ -76,7 +86,7 @@ export default function MainSection({
         <label>תיאור:</label>
         <textarea
           name="description"
-          value={businessDetails.description || ""}
+          value={description}
           onChange={handleInputChange}
           placeholder="הכנס תיאור קצר"
           disabled={isSaving}
@@ -87,7 +97,7 @@ export default function MainSection({
         <input
           type="text"
           name="phone"
-          value={businessDetails.phone || ""}
+          value={phone}
           onChange={handleInputChange}
           placeholder="הכנס טלפון"
           disabled={isSaving}
@@ -99,7 +109,7 @@ export default function MainSection({
         </label>
         <Select
           options={categoryOptions}
-          value={categoryOptions.find(o => o.value === businessDetails.category) || null}
+          value={categoryOptions.find(o => o.value === category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
@@ -124,12 +134,8 @@ export default function MainSection({
         </label>
         <Select
           options={cityOptions}
-          value={cityOptions.find(o => o.value === businessDetails.address?.city) || null}
-          onChange={option =>
-            handleInputChange({
-              target: { name: "address.city", value: option ? option.value : "" }
-            })
-          }
+          value={cityOptions.find(o => o.value === city) || null}
+          onChange={wrapSelectChange("address.city")}
           isDisabled={isSaving}
           placeholder="הקלד עיר"
           isClearable
