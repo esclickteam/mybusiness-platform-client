@@ -1,5 +1,5 @@
-// src/components/shared/ProfileHeader.jsx
 import React from "react";
+import PropTypes from 'prop-types';
 import "./ProfileHeader.css";
 
 const ProfileHeader = ({ businessDetails }) => {
@@ -22,7 +22,7 @@ const ProfileHeader = ({ businessDetails }) => {
       <div className="profile-header__logo">
         <img
           src={getImageUrl(logo) || "/images/placeholder.jpg"}
-          alt="לוגו העסק"
+          alt={businessName ? `${businessName} Logo` : "לוגו העסק"}
           className="profile-header__img"
         />
       </div>
@@ -51,6 +51,22 @@ const ProfileHeader = ({ businessDetails }) => {
       </div>
     </div>
   );
+};
+
+ProfileHeader.propTypes = {
+  businessDetails: PropTypes.shape({
+    businessName: PropTypes.string,
+    logo: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({ url: PropTypes.string, preview: PropTypes.string })
+    ]),
+    reviews: PropTypes.arrayOf(
+      PropTypes.shape({ rating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]) })
+    ),
+    category: PropTypes.string,
+    area: PropTypes.string,
+    about: PropTypes.string
+  })
 };
 
 export default ProfileHeader;
