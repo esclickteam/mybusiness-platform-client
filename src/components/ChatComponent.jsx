@@ -8,10 +8,10 @@ const SOCKET_URL = process.env.REACT_APP_API_URL || "https://api.esclick.co.il";
 export default function ChatComponent({
   userId,
   partnerId,
-  initialConversationId = null,
+  conversationId: initialConversationId = null,  // prop renamed
   isBusiness = false,
-  businessName = "",   // passed for client view
-  clientName   = "לקוח" // passed for business view
+  businessName = "",   // for client view
+  clientName   = "לקוח" // for business view
 }) {
   const [conversationId, setConversationId] = useState(initialConversationId);
   const [messages, setMessages]           = useState([]);
@@ -25,13 +25,13 @@ export default function ChatComponent({
   const bottomRef      = useRef(null);
   const typingTimeout  = useRef();
 
-  // Scroll to bottom
+  // Scroll to bottom on new messages
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
   useEffect(() => scrollToBottom(), [messages, scrollToBottom]);
 
-  // Reset on partner change
+  // Reset state when partner changes
   useEffect(() => {
     setConversationId(initialConversationId);
     setMessages([]);
@@ -41,7 +41,7 @@ export default function ChatComponent({
     setTypingUsers([]);
   }, [partnerId, initialConversationId]);
 
-  // Ensure conversation exists on server
+  // Ensure a conversation exists on the server
   const ensureConversation = useCallback(async () => {
     if (!conversationId && partnerId) {
       try {
@@ -59,7 +59,7 @@ export default function ChatComponent({
     return conversationId;
   }, [conversationId, partnerId]);
 
-  // Load history & setup socket
+  // Load message history & set up socket listeners
   useEffect(() => {
     let mounted = true;
     const init = async () => {
@@ -70,13 +70,13 @@ export default function ChatComponent({
       setIsLoading(true);
       setError("");
 
-      // fetch existing messages
+      // Fetch existing messages
       API.get(`/chat/${convId}/messages`, { withCredentials: true })
         .then(res => mounted && setMessages(res.data))
         .catch(() => mounted && setError("שגיאה בטעינת היסטוריה"))
         .finally(() => mounted && setIsLoading(false));
 
-      // connect socket
+      // Connect socket and join room
       socketRef.current?.disconnect();
       const socket = io(SOCKET_URL, { withCredentials: true });
       socketRef.current = socket;
@@ -99,13 +99,13 @@ export default function ChatComponent({
     };
   }, [partnerId, conversationId, ensureConversation]);
 
-  // Notify typing
+  // Emit typing event
   const handleTyping = e => {
     setText(e.target.value);
     socketRef.current?.emit("typing", isBusiness ? clientName : businessName);
   };
 
-  // Send a new message
+  // Send message via API
   const sendMessage = async () => {
     if ((!text.trim() && !file) || isSending || !partnerId) return;
     setIsSending(true);
@@ -157,6 +157,7 @@ export default function ChatComponent({
         </div>
       )}
 
+      {/* Messages list */}
       <div className="messages-list">
         {messages.map((m, i) => {
           const isSelf = m.from === userId;
@@ -196,12 +197,14 @@ export default function ChatComponent({
         <div ref={bottomRef} />
       </div>
 
+      {/* Typing indicator */}
       {typingUsers.length > 0 && (
         <div className="typing-indicator">
           {typingUsers.join(", ")} מקליד…
         </div>
       )}
 
+      {/* Input area */}
       <div className="input-area">
         <input
           type="text"

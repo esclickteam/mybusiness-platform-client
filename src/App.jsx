@@ -289,7 +289,7 @@ function BusinessChatListWrapper() {
     : null;
 
   useEffect(() => {
-    API.get("/messages/conversations", { withCredentials: true })
+    API.get("/chat/conversations",    { withCredentials: true })
       .then(res => setConvos(res.data))
       .catch(console.error);
   }, []);

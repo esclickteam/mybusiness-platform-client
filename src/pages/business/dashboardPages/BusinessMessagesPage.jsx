@@ -20,7 +20,7 @@ export default function BusinessMessagesPage() {
     setIsLoading(true);
     setError("");
 
-    API.get("/messages/conversations", { withCredentials: true })
+    API.get("/chat/conversations",    { withCredentials: true })
       .then(res => {
         const list = res.data
           .map(conv => {
