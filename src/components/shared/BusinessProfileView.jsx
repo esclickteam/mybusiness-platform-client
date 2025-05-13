@@ -10,7 +10,7 @@ const TABS = [
   "גלריה",
   "ביקורות",
   "שאלות תשובות",
-  "צ'אט עם העסק",
+  "הודעות מלקוחות",  // עדכון טאב צ'אט עם העסק ל"הודעות מלקוחות"
   "חנות / יומן",
 ];
 
@@ -49,8 +49,8 @@ export default function BusinessProfileView() {
   }, [bizId]);
 
   if (loading) return <div className="loading">טוען…</div>;
-  if (error)   return <div className="error">{error}</div>;
-  if (!data)   return <div className="error">העסק לא נמצא</div>;
+  if (error) return <div className="error">{error}</div>;
+  if (!data) return <div className="error">העסק לא נמצא</div>;
 
   const {
     businessName,
@@ -64,54 +64,18 @@ export default function BusinessProfileView() {
     address: { city = "" } = {}
   } = data;
 
-  const totalRating   = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
-  const avgRating     = reviews.length ? totalRating / reviews.length : 0;
-  const roundedAvg    = Math.round(avgRating * 10) / 10;
-  const fullAvgStars  = Math.floor(roundedAvg);
-  const halfAvgStar   = roundedAvg % 1 ? 1 : 0;
+  const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
+  const avgRating = reviews.length ? totalRating / reviews.length : 0;
+  const roundedAvg = Math.round(avgRating * 10) / 10;
+  const fullAvgStars = Math.floor(roundedAvg);
+  const halfAvgStar = roundedAvg % 1 ? 1 : 0;
   const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
 
-  const isOwner   = user?.role === "business" && user.businessId === bizId;
-  const canDelete = ["admin", "manager"].includes(user?.role);
+  const isOwner = user?.role === "business" && user.businessId === bizId;
 
-  const hasReviewed = user
-    ? reviews.some(r => r.user?._id === user._id || r.user?.id === user._id)
-    : false;
-
-  const handleReviewClick  = () => setShowReviewModal(true);
-  const closeReviewModal   = () => setShowReviewModal(false);
-  const handleChatClick    = () => navigate(`/business/${bizId}/chat`);
-
-  const handleReviewSubmit = async newReview => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    try {
-      await api.post(`/business/${bizId}/reviews`, newReview);
-      const res = await api.get(`/business/${bizId}`);
-      setData(res.data.business || res.data);
-      closeReviewModal();
-    } catch (err) {
-      if (err.response?.status === 409) {
-        alert("כבר הגשת ביקורת על העסק הזה");
-      } else {
-        console.error(err);
-        alert("שגיאה בשליחת הביקורת");
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDeleteReview = async reviewId => {
-    if (!window.confirm("האם למחוק ביקורת זו?")) return;
-    try {
-      await api.delete(`/business/${bizId}/reviews/${reviewId}`);
-      const res = await api.get(`/business/${bizId}`);
-      setData(res.data.business || res.data);
-    } catch (err) {
-      console.error(err);
-      alert("שגיאה במחיקת הביקורת");
-    }
+  const handleChatClick = () => {
+    // נווט להודעות מלקוחות בדשבורד
+    navigate(`/business/messages`);
   };
 
   return (
@@ -133,10 +97,10 @@ export default function BusinessProfileView() {
           <h1 className="business-name">{businessName}</h1>
 
           <div className="about-phone">
-            {category &&    <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone &&       <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city &&        <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
@@ -186,16 +150,6 @@ export default function BusinessProfileView() {
 
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {!isOwner && user && !hasReviewed && (
-                  <div className="reviews-header">
-                    <button onClick={handleReviewClick} className="add-review-btn">
-                      {!isSubmitting ? 'הוסף ביקורת' : 'טוען…'}
-                    </button>
-                  </div>
-                )}
-                {hasReviewed && ['client','business'].includes(user.role) && (
-                  <p className="no-data">כבר הגשת ביקורת על העסק הזה</p>
-                )}
                 {reviews.length
                   ? reviews.map((r, i) => {
                       const dateStr = r.createdAt
@@ -224,11 +178,6 @@ export default function BusinessProfileView() {
                             </div>
                           </div>
                           <p className="review-comment simple">{r.comment}</p>
-                          {canDelete && (
-                            <button className="delete-review-btn" onClick={() => handleDeleteReview(r._id)}>
-                              מחק
-                            </button>
-                          )}
                         </div>
                       );
                     })
@@ -237,10 +186,10 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {currentTab === "צ'אט עם העסק" && (
+            {currentTab === "הודעות מלקוחות" && (
               <div className="chat-button-container">
                 <button className="chat-button" onClick={handleChatClick}>
-                  פתח צ'אט עם העסק
+                  הודעות מלקוחות
                 </button>
               </div>
             )}
@@ -249,20 +198,6 @@ export default function BusinessProfileView() {
               <div className="shop-calendar">…תוכן חנות / יומן…</div>
             )}
           </div>
-
-          {showReviewModal && (
-            <div className="review-modal">
-              <div className="modal-content">
-                <h2>הוסף ביקורת</h2>
-                <ReviewForm
-                  businessId={bizId}
-                  onSubmit={handleReviewSubmit}
-                  isSubmitting={isSubmitting}
-                />
-                <button onClick={closeReviewModal}>סגור</button>
-              </div>
-            </div>
-          )}
 
         </div>
       </div>
