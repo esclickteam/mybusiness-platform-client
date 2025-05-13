@@ -8,8 +8,6 @@ import {
   useNavigate,
 } from "react-router-dom";
 import Header from "./components/Header";
-import ChatPage from "./components/ChatPage";
-import ConversationsList from "./components/ConversationsList";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 
