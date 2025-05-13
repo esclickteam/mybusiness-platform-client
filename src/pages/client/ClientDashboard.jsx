@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import "./ClientDashboard.css";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import OrdersPage from "../pages/client/OrdersPage";
-import SearchBusinessPage from "../pages/client/SearchBusinessPage";
-import FavoritesPage from "../pages/client/FavoritesPage";
-import ChatPage from "../components/ChatPage";
+import { useAuth } from "../../context/AuthContext";              
+import OrdersPage from "../OrdersPage";
+import SearchBusinessPage from "../SearchBusinessPage";
+import FavoritesPage from "../FavoritesPage";
+import ChatPage from "../../components/ChatPage";  
 
 export default function ClientDashboard() {
   const { user } = useAuth();
