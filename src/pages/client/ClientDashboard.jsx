@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import "./ClientDashboard.css";
 import { useAuth } from "../../context/AuthContext";
-import SearchBusinessPage from "./SearchBusinessPage";
+import SearchBusinessesPage from "./SearchBusinesses";
 
 export default function ClientDashboard() {
   const { user } = useAuth();
