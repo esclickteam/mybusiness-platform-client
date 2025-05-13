@@ -8,7 +8,6 @@ import MainSection    from "../buildTabs/buildSections/MainSection";
 import GallerySection from "../buildTabs/buildSections/GallerySection";
 import ReviewsSection from "../buildTabs/buildSections/ReviewsSection";
 import ShopSection    from "../buildTabs/buildSections/ShopSection";
-import ChatSection    from "../buildTabs/buildSections/ChatSection";
 import FaqSection     from "../buildTabs/buildSections/FaqSection";
 
 import { useAuth } from "../../../../context/AuthContext";
@@ -18,8 +17,7 @@ const TABS = [
   "גלריה",
   "ביקורות",
   "חנות / יומן",
-  "צ'אט עם העסק",
-  "שאלות ותשובות",
+    "שאלות ותשובות",
 ];
 
 // המקסימום המותרים בגלריה
@@ -361,52 +359,55 @@ const handleDeleteMainImage = async publicId => {
   // בתוך Build.jsx
 
   const handleGalleryChange = async e => {
-    // 1) קבצים נבחרים
-    const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
-    if (!files.length) return;
-    e.target.value = null;
-  
-    // (אופציונלי) תצוגת פריוויו מקומי; לא שומרים ב־state הקבוע
-    const tempPreviews = files.map(f => URL.createObjectURL(f));
-  
-    // 2) בניית FormData
-    const fd = new FormData();
-    files.forEach(f => fd.append("gallery", f));
-  
-    try {
-      // 3) שליחה לשרת
-      const res = await API.put("/business/my/gallery", fd, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-  
-      if (res.status === 200) {
-        // 4) חילוץ URL-ים ו־publicIds מה-response
-        const urls = (res.data.gallery         || []).slice(0, GALLERY_MAX);
-        const ids  = (res.data.galleryImageIds || []).slice(0, GALLERY_MAX);
-  
-        // 5) עדכון נקי ב־state: רק שני המערכים
-        setBusinessDetails(prev => ({
-          ...prev,
-          gallery:         urls,
-          galleryImageIds: ids
-        }));
-      } else {
-        console.warn("העלאת גלריה נכשלה:", res);
-        alert("❌ שגיאה בהעלאת גלריה");
-      }
-    } catch (err) {
-      console.error("שגיאה בהעלאת גלריה:", err);
+  // 1) קבצים נבחרים (עד GALLERY_MAX)
+  const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
+  if (!files.length) return;
+  e.target.value = null;
+
+  // 2) פריוויו מקומי ואופטימיסטי ב־UI
+  const tempPreviews = files.map(f => URL.createObjectURL(f));
+  setBusinessDetails(prev => ({
+    ...prev,
+    gallery: dedupeByPreview([...prev.gallery, ...tempPreviews]).slice(0, GALLERY_MAX),
+    // galleryImageIds נשמרים כמו שהם עד לקבלת התשובה מהשרת
+  }));
+
+  // 3) בניית FormData
+  const fd = new FormData();
+  files.forEach(f => fd.append("gallery", f));
+
+  try {
+    // 4) שליחה לשרת (ועקיבה אחרי ההבטחה)
+    const res = await track(API.put("/business/my/gallery", fd, {
+      headers: { "Content-Type": "multipart/form-data" }
+    }));
+
+    if (res.status === 200) {
+      // 5) חילוץ URL-ים ו־publicIds
+      const urls = (res.data.gallery || []).slice(0, GALLERY_MAX);
+      const ids  = (res.data.galleryImageIds || []).slice(0, GALLERY_MAX);
+
+      // 6) עדכון ה־state עם נתוני השרת, מסוננים מפי-דופס
+      setBusinessDetails(prev => ({
+        ...prev,
+        gallery: dedupeByPreview(urls).slice(0, GALLERY_MAX),
+        galleryImageIds: ids
+      }));
+    } else {
+      console.warn("העלאת גלריה נכשלה:", res);
       alert("❌ שגיאה בהעלאת גלריה");
-    } finally {
-      // 6) שחרור זיכרון ה־blob URLs
-      tempPreviews.forEach(URL.revokeObjectURL);
     }
-  };
+  } catch (err) {
+    console.error("שגיאה בהעלאת גלריה:", err);
+    alert("❌ שגיאה בהעלאת גלריה");
+  } finally {
+    // 7) שחרור זיכרון של ה־blob URLs
+    tempPreviews.forEach(URL.revokeObjectURL);
+  }
+};
+
   
-   // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
-  
-    
-  
+        
   
     
    const handleDeleteGalleryImage = async publicId => {
@@ -639,14 +640,7 @@ const handleDeleteMainImage = async publicId => {
         />
       )}
 
-      {currentTab === "צ'אט עם העסק" && (
-        <ChatSection
-          businessDetails={businessDetails}
-          setBusinessDetails={setBusinessDetails}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
+      
       {currentTab === "שאלות ותשובות" && (
         <FaqSection
           faqs={businessDetails.faqs}
