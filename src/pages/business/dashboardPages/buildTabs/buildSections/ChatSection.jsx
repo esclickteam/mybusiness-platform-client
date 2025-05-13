@@ -1,4 +1,3 @@
-// 📁 src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import ChatComponent from "@components/ChatComponent";
@@ -8,22 +7,30 @@ import "./ChatSection.css";
 export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const { user, initialized } = useAuth();
 
-  const [clients, setClients]         = useState([]);
-  const [newPartnerId, setNewPartnerId] = useState("");
-  const [selected, setSelected]       = useState({ conversationId: null, partnerId: null });
-  const [conversations, setConversations] = useState([]);
-  const [isLoading, setIsLoading]     = useState(false);
-  const [error, setError]             = useState("");
+  const [clients, setClients]             = useState([]);
+  const [newPartnerId, setNewPartnerId]  = useState("");
+  const [selected, setSelected]          = useState({ conversationId: null, partnerId: null });
+  const [conversations, setConversations]= useState([]);
+  const [isLoading, setIsLoading]        = useState(false);
+  const [error, setError]                = useState("");
 
-  // טוען את רשימת הלקוחות לעסק
+  // 1. טוען את כל הלקוחות (עסק חדש יראה את כל הלקוחות)
   useEffect(() => {
     if (!initialized) return;
+
+    setIsLoading(true);
     API.get("/business/clients", { withCredentials: true })
-      .then(res => setClients(res.data))
-      .catch(err => console.error("שגיאה בטעינת לקוחות", err));
+      .then(res => {
+        setClients(res.data);
+      })
+      .catch(err => {
+        console.error("שגיאה בטעינת לקוחות", err);
+        setError("לא ניתן לטעון לקוחות");
+      })
+      .finally(() => setIsLoading(false));
   }, [initialized]);
 
-  // טוען שיחות קיימות
+  // 2. טוען שיחות קיימות
   useEffect(() => {
     if (!initialized) return;
     fetchConversations();
@@ -43,7 +50,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     }
   };
 
-  // פותח או מוצא שיחה עם הלקוח הנבחר
+  // 3. פותח או מוצא שיחה עם הלקוח הנבחר
   const startNewConversation = async () => {
     if (!newPartnerId) return;
     setIsLoading(true);
@@ -72,7 +79,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
       <aside className="chat-sidebar">
         <h3>שיחות</h3>
 
-        {/* בחירת לקוח מתוך Dropdown */}
+        {/* dropdown של כל הלקוחות */}
         <div className="new-conversation">
           <select
             value={newPartnerId}
@@ -86,10 +93,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
               </option>
             ))}
           </select>
-          <button
-            onClick={startNewConversation}
-            disabled={!newPartnerId || isLoading}
-          >
+          <button onClick={startNewConversation} disabled={!newPartnerId || isLoading}>
             התחל שיחה
           </button>
         </div>
@@ -102,11 +106,9 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
 
         <ul className="convo-list">
           {conversations.map(conv => {
-            const isUserBus = isBusiness || user.id === conv.business._id;
-            const partnerId = isUserBus ? conv.customer._id : conv.business._id;
-            const partnerName = isUserBus
-              ? conv.customer.name
-              : conv.business.businessName;
+            const isUserBus = isBusiness || user.userId === conv.business._id;
+            const partnerId   = isUserBus ? conv.customer._id : conv.business._id;
+            const partnerName = isUserBus ? conv.customer.name : conv.business.businessName;
             return (
               <li
                 key={conv._id}
@@ -125,7 +127,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
       <main className="chat-main">
         {selected.conversationId ? (
           <ChatComponent
-            userId={user.id}
+            userId={user.userId}
             partnerId={selected.partnerId}
             initialConversationId={selected.conversationId}
             isBusiness={isBusiness}
