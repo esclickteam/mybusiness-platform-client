@@ -42,9 +42,12 @@ const ResetPassword       = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword      = lazy(() => import("./pages/ChangePassword"));
 const StaffLogin          = lazy(() => import("./pages/StaffLogin"));
 const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
+
 const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
 const OrdersPage          = lazy(() => import("./pages/client/OrdersPage"));
 const FavoritesPage       = lazy(() => import("./pages/client/FavoritesPage"));
+const MessagesPage        = lazy(() => import("./pages/client/MessagesPage"));
+
 const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
 const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
 const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
@@ -146,7 +149,7 @@ export default function App() {
             <Route index element={<Navigate to="search" replace />} />
             <Route path="search" element={<SearchBusinesses />} />
             <Route path="orders" element={<OrdersPage />} />
-            <Route path="messages" element={<ClientChatWrapper />} />
+            <Route path="messages" element={<MessagesPage />} />
             <Route path="favorites" element={<FavoritesPage />} />
           </Route>
 
