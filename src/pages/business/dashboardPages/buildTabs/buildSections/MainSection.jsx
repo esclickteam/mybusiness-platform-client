@@ -17,6 +17,7 @@ export default function MainSection({
   handleInputChange,
   handleMainImagesChange,
   handleDeleteImage,
+  handleLogoChange,
   handleSave,
   showViewProfile,
   navigate,
@@ -64,7 +65,7 @@ export default function MainSection({
         <input
           type="text"
           name="businessName"
-          value={businessDetails.businessName || ""} // השתמש ב-businessName במקום name
+          value={businessDetails.businessName || ""}
           onChange={handleInputChange}
           placeholder="הכנס שם העסק"
           required
@@ -123,7 +124,7 @@ export default function MainSection({
         </label>
         <Select
           options={cityOptions}
-          value={cityOptions.find(o => o.value === businessDetails.address?.city) || null} // משתמש ב-optional chaining
+          value={cityOptions.find(o => o.value === businessDetails.address?.city) || null}
           onChange={option =>
             handleInputChange({
               target: { name: "address.city", value: option ? option.value : "" }
@@ -154,7 +155,7 @@ export default function MainSection({
           accept="image/*"
           style={{ display: "none" }}
           ref={logoInputRef}
-          onChange={handleInputChange}
+          onChange={handleLogoChange}
           disabled={isSaving}
         />
         <button
@@ -213,7 +214,7 @@ export default function MainSection({
             type="button"
             className="save-btn"
             style={{ marginTop: "0.5rem" }}
-            onClick={() => navigate(`/business/${currentUser.businessId}`)}
+            onClick={() => navigate(`/business/${businessDetails._id}`)}
             disabled={isSaving}
           >
             👀 צפה בפרופיל
