@@ -1,27 +1,28 @@
+// 📁 src/pages/business/dashboardPages/BusinessDashboardRoutes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 
-import BuildBusinessPage    from "./dashboardPages/build/Build";
-import DashboardPage        from "./dashboardPages/DashboardPage";
-import Collab               from "./dashboardPages/Collab";
-import Upgrade              from "./dashboardPages/Upgrade";
-import CartPage             from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
-import ChatTab              from "./dashboardPages/buildTabs/ChatTab";
-import BusinessChat         from "./dashboardPages/BusinessChatComponent";
-import AffiliatePage        from "./dashboardPages/AffiliatePage";
-import EsclickAdvisor       from "./dashboardPages/EsclickAdvisor";
+import BuildBusinessPage  from "./dashboardPages/build/Build";
+import DashboardPage      from "./dashboardPages/DashboardPage";
+import Collab             from "./dashboardPages/Collab";
+import Upgrade            from "./dashboardPages/Upgrade";
+import CartPage           from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
+import ChatTab            from "./dashboardPages/buildTabs/ChatTab";
+import BusinessChat       from "./dashboardPages/BusinessChatComponent";
+import AffiliatePage      from "./dashboardPages/AffiliatePage";
+import EsclickAdvisor     from "./dashboardPages/EsclickAdvisor";
 
-import CRMMain              from "./dashboardPages/crmpages/CRMMain";
-import CRMAppointmentsTab   from "./dashboardPages/crmpages/CRMAppointmentsTab";
-import CRMClientsTab        from "./dashboardPages/crmpages/CRMClientsTab";
-import CRMServicesTab       from "./dashboardPages/crmpages/CRMServicesTab";
-import CRMSettingsTab       from "./dashboardPages/crmpages/CRMSettingsTab";
+import CRMMain            from "./dashboardPages/crmpages/CRMMain";
+import CRMAppointmentsTab from "./dashboardPages/crmpages/CRMAppointmentsTab";
+import CRMClientsTab      from "./dashboardPages/crmpages/CRMClientsTab";
+import CRMServicesTab     from "./dashboardPages/crmpages/CRMServicesTab";
+import CRMSettingsTab     from "./dashboardPages/crmpages/CRMSettingsTab";
 
-import GoalsPage            from "./dashboardPages/GoalsPage";
+import GoalsPage          from "./dashboardPages/GoalsPage";
 
-// ✅ העמוד להצגת שיחות העסק עם לקוחות
-import BusinessMessagesPage from "./dashboardPages/BusinessMessagesPage";
+// ✅ במקום BusinessMessagesPage – נרנדר ChatSection
+import ChatSection       from "./dashboardPages/buildTabs/buildSections/ChatSection";
 
 import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
 
@@ -29,7 +30,6 @@ const BusinessDashboardRoutes = () => (
   <Routes>
     {/* Layout משותף לכל דפי הדשבורד */}
     <Route path="" element={<BusinessDashboardLayout />}>
-
       {/* ברירת מחדל — נווט ל"תמצית" הדשבורד */}
       <Route index element={<Navigate to="dashboard" replace />} />
 
@@ -74,8 +74,20 @@ const BusinessDashboardRoutes = () => (
       <Route path="chat-test" element={<ChatTab isPreview />} />
       <Route path="chat/:partnerId" element={<BusinessChat />} />
 
-      {/* הודעות מהלקוחות */}
-      <Route path="messages" element={<BusinessMessagesPage />} />
+      {/* הודעות מהלקוחות – כאן מטעינים את ה־ChatSection */}
+      <Route
+        path="messages"
+        element={
+          <ChatSection
+            isBusiness={true}
+            renderTopBar={() => (
+              <div style={{ padding: "1rem", borderBottom: "1px solid #ddd" }}>
+                <h2>שיחות נכנסות</h2>
+              </div>
+            )}
+          />
+        }
+      />
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />
