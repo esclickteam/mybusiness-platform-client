@@ -1,8 +1,8 @@
 // src/pages/ChatPage.jsx
 import React, { useState, useEffect } from 'react';
-import ConversationsList from './ConversationsList';
-import ChatComponent     from './ChatComponent';
-import API               from '../api';
+import ConversationsList from '../components/ConversationsList';
+import ChatComponent from '../components/ChatComponent';
+import API from '../api';
 import './ChatPage.css';
 
 /**
@@ -39,7 +39,7 @@ export default function ChatPage({
     if (!selected || !selected.partnerId || selected.conversationId) return;
 
     API.post(
-      '/messages/conversations',
+      '/chat/conversations',
       { otherId: selected.partnerId },
       { withCredentials: true }
     )
@@ -72,10 +72,10 @@ export default function ChatPage({
             <ChatComponent
               userId={userId}
               partnerId={selected.partnerId}
-              conversationId={selected.conversationId}
-              clientProfilePic={clientProfilePic}
-              businessProfilePic={businessProfilePic}
+              initialConversationId={selected.conversationId}
               isBusiness={isBusiness}
+              businessName={businessProfilePic}
+              clientName={clientProfilePic}
             />
           ) : (
             <div className="loading-chat">טוען שיחה…</div>

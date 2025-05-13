@@ -1,4 +1,4 @@
-// 📁 src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
+// src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import ChatComponent from "@components/ChatComponent";
@@ -7,17 +7,17 @@ import "./ChatSection.css";
 
 export default function ChatSection({ renderTopBar }) {
   const { user, initialized } = useAuth();
-  const [selected, setSelected]       = useState({ conversationId: null, partnerId: null });
+  const [selected, setSelected] = useState({ conversationId: null, partnerId: null });
   const [conversations, setConversations] = useState([]);
-  const [isLoading, setIsLoading]     = useState(false);
-  const [error, setError]             = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Fetch conversations list
   useEffect(() => {
     if (!initialized) return;
     setIsLoading(true);
     setError("");
-    API.get("/messages/conversations", { withCredentials: true })
+    API.get("/chat/conversations", { withCredentials: true })
       .then(res => setConversations(res.data))
       .catch(() => setError("שגיאה בטעינת שיחות"))
       .finally(() => setIsLoading(false));
@@ -26,6 +26,16 @@ export default function ChatSection({ renderTopBar }) {
   if (!initialized) {
     return <div className="loading-screen">🔄 טוען שיחות…</div>;
   }
+
+  // helper: determine partner ID and name
+  const getPartner = (conv) => {
+    const isUserBusiness = user.userId === conv.business._id;
+    const partnerId = isUserBusiness ? conv.customer._id : conv.business._id;
+    const partnerName = isUserBusiness
+      ? conv.customer.name || "לקוח"
+      : conv.business.businessName || "עסק";
+    return { partnerId, partnerName };
+  };
 
   return (
     <div className="chat-section">
@@ -36,19 +46,14 @@ export default function ChatSection({ renderTopBar }) {
         {!isLoading && !error && (
           <ul className="convo-list">
             {conversations.map(conv => {
-              const partnerId = conv.participants.find(p => p !== user.userId);
+              const { partnerId, partnerName } = getPartner(conv);
               return (
                 <li
                   key={conv._id}
                   className={selected.conversationId === conv._id ? "selected" : ""}
-                  onClick={() =>
-                    setSelected({
-                      conversationId: conv._id,
-                      partnerId: partnerId || null,
-                    })
-                  }
+                  onClick={() => setSelected({ conversationId: conv._id, partnerId })}
                 >
-                  {conv.businessName || partnerId || "שיחה"}
+                  {partnerName}
                 </li>
               );
             })}
@@ -61,7 +66,7 @@ export default function ChatSection({ renderTopBar }) {
           <ChatComponent
             userId={user.userId}
             partnerId={selected.partnerId}
-            conversationId={selected.conversationId}
+            initialConversationId={selected.conversationId}
             isBusiness={true}
           />
         ) : (

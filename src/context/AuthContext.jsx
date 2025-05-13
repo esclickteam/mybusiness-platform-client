@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await API.get("/auth/me");
         setUser({
-          id:               data.userId,
+          userId:           data.userId,
           name:             data.name,
           email:            data.email,
           role:             data.role,
@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
 
       const { data } = await API.get("/auth/me");
       setUser({
-        id:               data.userId,
+        userId:           data.userId,
         name:             data.name,
         email:            data.email,
         role:             data.role,

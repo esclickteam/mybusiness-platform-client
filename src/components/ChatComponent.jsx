@@ -14,16 +14,16 @@ export default function ChatComponent({
   clientName   = "לקוח" // passed for business view
 }) {
   const [conversationId, setConversationId] = useState(initialConversationId);
-  const [messages, setMessages] = useState([]);
-  const [text, setText] = useState("");
-  const [file, setFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [isSending, setIsSending] = useState(false);
-  const [typingUsers, setTypingUsers] = useState([]);
-  const socketRef = useRef(null);
-  const bottomRef = useRef(null);
-  const typingTimeout = useRef();
+  const [messages, setMessages]           = useState([]);
+  const [text, setText]                   = useState("");
+  const [file, setFile]                   = useState(null);
+  const [isLoading, setIsLoading]         = useState(false);
+  const [error, setError]                 = useState("");
+  const [isSending, setIsSending]         = useState(false);
+  const [typingUsers, setTypingUsers]     = useState([]);
+  const socketRef      = useRef(null);
+  const bottomRef      = useRef(null);
+  const typingTimeout  = useRef();
 
   // Scroll to bottom
   const scrollToBottom = useCallback(() => {
@@ -41,12 +41,12 @@ export default function ChatComponent({
     setTypingUsers([]);
   }, [partnerId, initialConversationId]);
 
-  // Ensure conversation
+  // Ensure conversation exists on server
   const ensureConversation = useCallback(async () => {
     if (!conversationId && partnerId) {
       try {
         const res = await API.post(
-          "/messages/conversations",
+          "/chat/conversations",
           { otherId: partnerId },
           { withCredentials: true }
         );
@@ -59,7 +59,7 @@ export default function ChatComponent({
     return conversationId;
   }, [conversationId, partnerId]);
 
-  // Load & socket
+  // Load history & setup socket
   useEffect(() => {
     let mounted = true;
     const init = async () => {
@@ -70,18 +70,20 @@ export default function ChatComponent({
       setIsLoading(true);
       setError("");
 
-      API.get(`/messages/${convId}/messages`, { withCredentials: true })
+      // fetch existing messages
+      API.get(`/chat/${convId}/messages`, { withCredentials: true })
         .then(res => mounted && setMessages(res.data))
         .catch(() => mounted && setError("שגיאה בטעינת היסטוריה"))
         .finally(() => mounted && setIsLoading(false));
 
+      // connect socket
       socketRef.current?.disconnect();
       const socket = io(SOCKET_URL, { withCredentials: true });
       socketRef.current = socket;
 
-      socket.on("connect", () => socket.emit("joinRoom", convId));
+      socket.on("connect",    () => socket.emit("joinRoom", convId));
       socket.on("newMessage", msg => setMessages(prev => [...prev, msg]));
-      socket.on("typing", user => {
+      socket.on("typing",     user => {
         setTypingUsers(prev => prev.includes(user) ? prev : [...prev, user]);
         clearTimeout(typingTimeout.current);
         typingTimeout.current = setTimeout(() => {
@@ -97,20 +99,23 @@ export default function ChatComponent({
     };
   }, [partnerId, conversationId, ensureConversation]);
 
-  // Typing
+  // Notify typing
   const handleTyping = e => {
     setText(e.target.value);
     socketRef.current?.emit("typing", isBusiness ? clientName : businessName);
   };
 
-  // Send
+  // Send a new message
   const sendMessage = async () => {
     if ((!text.trim() && !file) || isSending || !partnerId) return;
     setIsSending(true);
     setError("");
 
     const convId = await ensureConversation();
-    if (!convId) { setIsSending(false); return; }
+    if (!convId) {
+      setIsSending(false);
+      return;
+    }
 
     const form = new FormData();
     form.append("text", text);
@@ -118,7 +123,7 @@ export default function ChatComponent({
 
     try {
       const res = await API.post(
-        `/messages/${convId}/messages`,
+        `/chat/${convId}/messages`,
         form,
         { withCredentials: true }
       );
@@ -132,7 +137,10 @@ export default function ChatComponent({
     }
   };
 
-  const retryLoad = () => { setError(""); setConversationId(null); };
+  const retryLoad = () => {
+    setError("");
+    setConversationId(null);
+  };
 
   return (
     <div className="chat-component">
@@ -154,23 +162,32 @@ export default function ChatComponent({
           const isSelf = m.from === userId;
           const senderName = isSelf
             ? "אתה"
-            : isBusiness ? clientName : businessName;
+            : isBusiness
+              ? clientName
+              : businessName;
 
           return (
             <div
               key={`${m._id||m.timestamp}-${i}`}
-              className={`message-item ${isSelf?"self":""}`}
+              className={`message-item ${isSelf ? "self" : ""}`}
             >
               <div className="message-body">
                 <div className="message-meta">
                   <strong>{senderName}</strong>
                   <span className="timestamp">
                     {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                      hour: "2-digit", minute: "2-digit"
+                      hour:   "2-digit",
+                      minute: "2-digit"
                     })}
                   </span>
                 </div>
-                {m.fileUrl && <img src={m.fileUrl} alt="attachment" className="attachment" />}
+                {m.fileUrl && (
+                  <img
+                    src={m.fileUrl}
+                    alt="attachment"
+                    className="attachment"
+                  />
+                )}
                 <p className="message-text">{m.text}</p>
               </div>
             </div>
@@ -179,7 +196,11 @@ export default function ChatComponent({
         <div ref={bottomRef} />
       </div>
 
-      {typingUsers.length>0 && <div className="typing-indicator">{typingUsers.join(", ")} מקליד…</div>}
+      {typingUsers.length > 0 && (
+        <div className="typing-indicator">
+          {typingUsers.join(", ")} מקליד…
+        </div>
+      )}
 
       <div className="input-area">
         <input
@@ -187,19 +208,19 @@ export default function ChatComponent({
           value={text}
           onChange={handleTyping}
           placeholder="הודעה…"
-          onKeyDown={e=>e.key==="Enter"&&sendMessage()}
-          disabled={!partnerId||isSending||isLoading}
+          onKeyDown={e => e.key === "Enter" && sendMessage()}
+          disabled={!partnerId || isSending || isLoading}
         />
         <input
           type="file"
-          onChange={e=>setFile(e.target.files[0])}
-          disabled={!partnerId||isSending||isLoading}
+          onChange={e => setFile(e.target.files[0])}
+          disabled={!partnerId || isSending || isLoading}
         />
         <button
           onClick={sendMessage}
-          disabled={!partnerId||isSending||isLoading}
+          disabled={!partnerId || isSending || isLoading}
         >
-          {isSending?"שולח…":"שלח"}
+          {isSending ? "שולח…" : "שלח"}
         </button>
       </div>
     </div>

@@ -7,7 +7,7 @@ import "./ConversationsList.css";
  *  - onSelect: function({ conversationId, partnerId })
  *  - selectedConversationId: string | null
  *  - userId: string
- *  - clientProfilePic: string URL  // can pass if you ever want to re-enable avatars
+ *  - clientProfilePic: string URL
  *  - businessProfilePic: string URL
  */
 export default function ConversationsList({
@@ -19,12 +19,13 @@ export default function ConversationsList({
 }) {
   const [convos, setConvos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError]   = useState("");
 
   useEffect(() => {
     setLoading(true);
     setError("");
-    API.get("/messages/conversations", { withCredentials: true })
+    // קריאה לנתיב החדש /chat/conversations
+    API.get("/chat/conversations", { withCredentials: true })
       .then((res) => setConvos(res.data))
       .catch((err) => {
         console.error("❌ fetch convos:", err);
@@ -34,18 +35,20 @@ export default function ConversationsList({
   }, []);
 
   if (loading) return <p>טוען…</p>;
-  if (error) return <p className="error-banner">{error}</p>;
+  if (error)   return <p className="error-banner">{error}</p>;
   if (!convos.length) return <p>אין שיחות להצגה</p>;
 
   return (
     <div className="conversations-list">
       {convos.map((c) => {
-        // מציאת המזהה של הפרטנר
-        const partnerId = c.participants.find((p) => p !== userId);
-        // האם הצד השני הוא עסק?
-        const isPartnerBusiness = Boolean(c.businessName);
-        // שם התצוגה
-        const name = c.businessName || partnerId || "משתמש";
+        // קביעת הפרטנר לפי תפקיד המשתמש
+        const partnerId = userId === c.business
+          ? c.customer
+          : c.business;
+        // קביעת השם להצגה
+        const partnerName = userId === c.business
+          ? (c.customer.name || "משתמש")
+          : (c.business.businessName || "עסק");
 
         return (
           <div
@@ -56,7 +59,7 @@ export default function ConversationsList({
             onClick={() => onSelect({ conversationId: c._id, partnerId })}
           >
             <div className="info">
-              <strong>{name}</strong>
+              <strong>{partnerName}</strong>
             </div>
           </div>
         );
