@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import {
   Routes,
@@ -9,8 +8,11 @@ import {
   useNavigate,
 } from "react-router-dom";
 import Header from "./components/Header";
+import ChatPage from "./components/ChatPage";
+import ConversationsList from "./components/ConversationsList";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
+
 import { useAuth } from "./context/AuthContext";
 import API from "./api";
 
@@ -107,7 +109,7 @@ export default function App() {
           {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-          {/* Business Chat */}
+          {/* Business Chat routes */}
           <Route
             path="/business/:businessId/chat"
             element={<BusinessChatListWrapper />}
@@ -132,8 +134,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* Client dashboard עם nested routes */}
           <Route
             path="/client/dashboard/*"
             element={
@@ -142,7 +142,6 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            {/* נתיב ברירת מחדל מפנה ל־search */}
             <Route index element={<Navigate to="search" replace />} />
             <Route path="search" element={<SearchBusinesses />} />
             <Route path="orders" element={<OrdersPage />} />
@@ -263,8 +262,7 @@ export default function App() {
             }
           />
 
-          {/* Chat test page */}
-          <Route path="/chat-test-direct" element={<ChatTestPage />} />
+                    <Route path="/chat-test-direct" element={<ChatTestPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -286,7 +284,7 @@ function BusinessChatListWrapper() {
     : null;
 
   useEffect(() => {
-    API.get("/chat/conversations",    { withCredentials: true })
+    API.get("/chat/conversations", { withCredentials: true })
       .then(res => setConvos(res.data))
       .catch(console.error);
   }, []);
@@ -313,15 +311,17 @@ function BusinessChatListWrapper() {
 // Wrapper for a specific business-client chat
 function BusinessChatWrapper() {
   const { businessId, clientId } = useParams();
-  const { state } = useLocation();
-  const initialConversationId = state?.conversationId || null;
+  const { user } = useAuth();
 
   return (
     <ChatPage
       isBusiness={true}
       userId={businessId}
-      partnerId={clientId}
-      initialConversationId={initialConversationId}
+      businessName={user.businessName}
+      clientName="לקוח"
+      businessProfilePic={user.profilePic || "/default-business.png"}
+      clientProfilePic="/default-client.png"
+      initialPartnerId={clientId}
     />
   );
 }
@@ -335,8 +335,11 @@ function ClientChatWrapper() {
     <ChatPage
       isBusiness={false}
       userId={user.userId}
-      partnerId={businessId}
-      initialConversationId={null}
+      businessName="העסק"
+      clientName={user.name}
+      businessProfilePic="/default-business.png"
+      clientProfilePic={user.profilePic}
+      initialPartnerId={businessId}
     />
   );
 }
