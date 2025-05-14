@@ -1,4 +1,6 @@
 // src/components/FaqTab.jsx
+"use client";
+
 import React, { useState } from 'react';
 import '../build/Build.css';
 import './FaqTab.css';
@@ -34,7 +36,6 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
     try {
       const response = await API.post('/business/my/faqs', { question, answer });
       const added = response.data.faq ?? response.data;
-      // עדכון מידי של ה־state עם prev
       setFaqs(prev => [added, ...prev]);
       setNewFaq({ question: '', answer: '' });
     } catch (err) {
@@ -45,7 +46,6 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   const handleDelete = async (id) => {
     try {
       await API.delete(`/business/my/faqs/${id}`);
-      // עדכון מידי עם prev
       setFaqs(prev => prev.filter(faq => (faq.faqId ?? faq._id) !== id));
     } catch (err) {
       console.error('❌ שגיאה במחיקת שאלה:', err);
@@ -59,7 +59,6 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
     try {
       const response = await API.put(`/business/my/faqs/${id}`, { question, answer });
       const updated = response.data.faq ?? response.data;
-      // עדכון מידי עם prev
       setFaqs(prev =>
         prev.map(faq =>
           (faq.faqId ?? faq._id) === id ? updated : faq
@@ -174,9 +173,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                     </button>
                     {openAnswers.includes(id) && (
                       <div className="faq-answer-wrapper open">
-                        <p>
-                          <strong>תשובה:</strong> {faq.answer}
-                        </p>
+                        <p><strong>תשובה:</strong> {faq.answer}</p>
                       </div>
                     )}
                   </>
