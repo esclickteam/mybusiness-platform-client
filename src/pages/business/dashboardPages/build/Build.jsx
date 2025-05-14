@@ -75,43 +75,52 @@ export default function Build() {
 
   // טעינת הנתונים הראשונית
   useEffect(() => {
-    API.get("/business/my")
-      .then(res => {
-        if (res.status === 200) {
-          const data = res.data.business || res.data;
-          const rawAddress = data.address;
-          const city = typeof rawAddress === "string" ? rawAddress : rawAddress?.city || "";
-          const urls        = data.mainImages || [];
-          const galleryUrls = data.gallery    || [];
-          const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-            ? data.mainImageIds
-            : urls.map(extractPublicIdFromUrl);
-          const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-            ? data.galleryImageIds
-            : galleryUrls.map(extractPublicIdFromUrl);
+  API.get("/business/my")
+    .then(res => {
+      if (res.status === 200) {
+        const data = res.data.business || res.data;
+        const rawAddress = data.address;
+        const city = typeof rawAddress === "string"
+          ? rawAddress
+          : rawAddress?.city || "";
 
-          setBusinessDetails(prev => ({
-            ...prev,
-            businessName: data.businessName || "",
-            description:  data.description || "",
-            phone:        data.phone       || "",
-            email:        data.email       || "",
-            category:     data.category    || "",
-            address:      { city },
-            logo:         data.logo        || null,
-            logoId:       data.logoId      || null,
-            gallery:         galleryUrls,
-            galleryImageIds: galleryIds,
-            mainImages:      urls,
-            mainImageIds:    mainIds,
-            faqs:    data.faqs    || [],
-            reviews: data.reviews || []
-          }));
-        }
-      })
-      .catch(console.error)
-      .finally(() => setFirstLoad(false));
-  }, []);
+        const urls        = data.mainImages     || [];
+        const galleryUrls = data.gallery        || [];
+        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+          ? data.mainImageIds
+          : urls.map(extractPublicIdFromUrl);
+        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+          ? data.galleryImageIds
+          : galleryUrls.map(extractPublicIdFromUrl);
+
+        // הכנת אובייקט לוגו עם preview ו־publicId
+        const logoObj = data.logo
+          ? { preview: data.logo, publicId: data.logoId }
+          : null;
+
+        setBusinessDetails(prev => ({
+          ...prev,
+          businessName:    data.businessName    || "",
+          description:     data.description     || "",
+          phone:           data.phone           || "",
+          email:           data.email           || "",
+          category:        data.category        || "",
+          address:         { city },
+          logo:            logoObj,
+          logoId:          data.logoId          || null,
+          gallery:         galleryUrls,
+          galleryImageIds: galleryIds,
+          mainImages:      urls,
+          mainImageIds:    mainIds,
+          faqs:            data.faqs            || [],
+          reviews:         data.reviews         || []
+        }));
+      }
+    })
+    .catch(console.error)
+    .finally(() => setFirstLoad(false));
+}, []);
+
 
   // Autosave אחרי debounce
   // Autosave אחרי debounce
@@ -503,18 +512,22 @@ const handleDeleteMainImage = async publicId => {
       : 0;
   
     return (
-      <div className="topbar-preview">
-        {/* לוגו */}
-        <div className="logo-circle" onClick={handleLogoClick}>
-          {businessDetails.logo?.preview
-            ? <img src={businessDetails.logo.preview} className="logo-img" />
-            : <span>לוגו</span>}
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            ref={logoInputRef}
-            onChange={handleLogoChange}
+  <div className="topbar-preview">
+    {/* לוגו */}
+    <div className="logo-circle" onClick={handleLogoClick}>
+      {businessDetails.logo?.preview ? (
+        <img src={businessDetails.logo.preview} className="logo-img" />
+      ) : businessDetails.logo ? (
+        <img src={businessDetails.logo} className="logo-img" />
+      ) : (
+        <span>לוגו</span>
+      )}
+      <input
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        ref={logoInputRef}
+        onChange={handleLogoChange}
           />
         </div>
   
