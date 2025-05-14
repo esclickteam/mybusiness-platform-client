@@ -11,19 +11,23 @@
 
 /* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
-  position: relative;
-  z-index: 10;     /* גבוה יותר מה-form כדי להופיע מעליו */
+  /* קביעת רוחב קבוע ושיבוט ללא גידול או כיווץ */
   flex: 0 0 450px;
   width: 450px;
   max-width: 450px;
+
   background-color: #f0dbff;
   border: 8px solid black;
   border-radius: 40px;
   padding: 1.5rem;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-  /* תסיר margin:auto כדי שה-flex יטפל במיקום */
-  margin: 0;
+  margin: 0 auto;
+  flex-shrink: 0;
   overflow: visible;
+
+  /* מיקום מעל האלמנט השמאלי כדי למנוע חיתוך */
+  position: relative;
+  z-index: 1;
 }
 
 
@@ -110,13 +114,14 @@
 /* --- צד שמאל: טופס עריכה --- */
 .form-column {
   position: relative;
-  z-index: 1;      /* נמוך יותר מה-preview */
+  z-index: 0;            /* תוודא שהטופס תמיד מתחת לפריוויו */
+  
   width: 520px;
   background-color: white;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  margin: 0;
+  margin: 0 auto;
   flex-grow: 1;
   min-width: 300px;
 }
