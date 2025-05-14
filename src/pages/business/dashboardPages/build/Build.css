@@ -23,15 +23,21 @@
 
 /* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
-  flex: 0 0 450px;
-  max-width: 450px;
-  background-color: #f0dbff;
-  /* במקום border: */
+  /* ... שאר ההגדרות ... */
   box-shadow: 0 0 0 8px black;
   border-radius: 40px;
-  padding: 1.5rem;
-  align-self: flex-start;
+
+  /* padding כללי גדול יותר, ובמיוחד למטה */
+  padding: 2rem 1.5rem 4rem;  /* עליון 2rem, שמאל־ימין 1.5rem, תחתון 4rem */
+
+  /* אם צריך שהעמודה תגדל לגובה מלא */
+  align-self: stretch;
+
+  /* לאפשר גלילה פנימית אם התוכן גבוה מדי */
+  overflow-y: auto;
+  max-height: 90vh;  /* או כל גובה שרלוונטי לך */
 }
+
 
 
 /* --- שם + דירוג + תיאור + טלפון בפרופיל --- */
