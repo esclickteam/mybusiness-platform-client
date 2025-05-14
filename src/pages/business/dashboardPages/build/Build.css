@@ -1,6 +1,14 @@
 /* === מבנה עמוד כללי === */
 .build-wrapper {
-  overflow: visible;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 2rem;
+  background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
+  min-height: 100vh;
+  flex-wrap: wrap;
+  gap: 2rem;
+  direction: rtl;
 }
 
 .build-wrapper .chat-section {
