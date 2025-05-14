@@ -13,7 +13,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
   const isValidUuid = (id) =>
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
 
-  // עדכון ה-FAQ עם מזהה ייחודי במידה ולא קיים
+  // Update missing UUIDs
   useEffect(() => {
     const upgradedFaqs = faqs.map((faq) => {
       if (!isValidUuid(faq.id)) {
@@ -27,14 +27,15 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
     }
   }, [faqs, setFaqs]);
 
-  // שמירה של כל השאלות לשרת
+  // Save all FAQs to server (bulk)
   const saveFaqsToServer = async () => {
     try {
-      const cleanFaqs = faqs.map(({ id, _id, question, answer }) => ({
+      const cleanFaqs = faqs.map(({ id, question, answer }) => ({
+        id,
         question: question || '',
-        answer: answer || '',
+        answer:   answer || '',
       }));
-      console.log('📤 cleanFaqs לשמירה:', cleanFaqs); // בדיקה
+      console.log('📤 cleanFaqs לשמירה:', cleanFaqs);
       await API.put('/business/my/faqs', { faqs: cleanFaqs });
       alert('✅ כל השאלות נשמרו!');
     } catch (err) {
@@ -58,9 +59,8 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
     e.preventDefault();
     if (!newFaq.question.trim() || !newFaq.answer.trim()) return;
 
-    const newEntry = { ...newFaq, id: uuidv4(), userId: currentUser.id };
+    const newEntry = { ...newFaq, id: uuidv4() };
     try {
-      // הוספת השאלה ל-API
       await API.post('/business/my/faqs', newEntry);
       setFaqs([newEntry, ...faqs]);
       setNewFaq({ question: '', answer: '' });
@@ -84,9 +84,14 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
 
     try {
       const updated = faqs.map((faq) =>
-        faq.id === id ? { ...faq, question: editedFaq.question, answer: editedFaq.answer } : faq
+        faq.id === id
+          ? { ...faq, question: editedFaq.question, answer: editedFaq.answer }
+          : faq
       );
-      await API.put(`/business/my/faqs/${id}`, { question: editedFaq.question, answer: editedFaq.answer });
+      await API.put(`/business/my/faqs/${id}`, {
+        question: editedFaq.question,
+        answer:   editedFaq.answer
+      });
       setFaqs(updated);
       setEditFaqId(null);
       setEditedFaq({ question: '', answer: '' });
@@ -126,8 +131,8 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
           <p>אין עדיין שאלות</p>
         ) : (
           faqs.map((faq) => (
-            <div key={faq.id || uuidv4()} className="faq-card">
-              {!isPreview && faq.userId === currentUser.id && (
+            <div key={faq.id} className="faq-card">
+              {!isPreview && faq.id && (
                 <div className="faq-actions-inline">
                   <button
                     className="inline-btn edit"
@@ -172,7 +177,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
                   <button onClick={() => toggleAnswer(faq.id)} className="toggle-answer-btn">
                     {openAnswers.includes(faq.id) ? 'הסתר תשובה' : 'הצג תשובה'}
                   </button>
-                  <div className={`faq-answer-wrapper ${openAnswers.includes(faq.id) ? 'open' : ''}`}>
+                  <div className={`faq-answer-wrapper ${openAnswers.includes(faq.id) ? 'open' : ''}`}>              
                     {openAnswers.includes(faq.id) && (
                       <p>
                         <strong>תשובה:</strong> {faq.answer}
@@ -186,7 +191,6 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
         )}
       </div>
 
-      {/* 💾 כפתור שמור כללי */}
       {!isPreview && faqs.length > 0 && (
         <button className="save-all-button" onClick={saveFaqsToServer}>
           💾 שמור
