@@ -1,5 +1,3 @@
-// src/pages/business/dashboardPages/Profile.jsx
-
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./Profile.css";
@@ -21,7 +19,6 @@ const TABS = [
   "שאלות ותשובות",
 ];
 
-// מבחינת שדה תיאור, אנחנו מאחדים בין `about` במונגו ל־`description` בצד הלקוח
 const fallbackBusiness = {
   name: "עסק לדוגמה",
   description: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
@@ -34,11 +31,7 @@ const fallbackBusiness = {
     { url: "https://via.placeholder.com/300", type: "image" },
   ],
   story: [
-    {
-      url: "https://via.placeholder.com/150",
-      type: "image",
-      uploadedAt: Date.now(),
-    },
+    { url: "https://via.placeholder.com/150", type: "image", uploadedAt: Date.now() },
   ],
   services: [
     { name: "ייעוץ", description: "שיחת ייעוץ ראשונית", price: 150 },
@@ -48,16 +41,13 @@ const fallbackBusiness = {
     { user: "שירה", comment: "שירות מהמם!", rating: 5 },
     { user: "אלון", comment: "ממש מקצועיים!", rating: 5 },
   ],
-  faqs: [
-    { q: "איך אפשר להזמין?", a: "פשוט דרך הכפתור באתר" },
-    { q: "האם השירות כולל מע״מ?", a: "כן" },
-  ],
 };
 
 export default function Profile() {
   const [businessData, setBusinessData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [currentTab, setCurrentTab] = useState("ראשי");
+  const [faqs, setFaqs]                 = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [currentTab, setCurrentTab]     = useState("ראשי");
 
   useEffect(() => {
     async function fetchBusiness() {
@@ -66,19 +56,19 @@ export default function Profile() {
 
       try {
         const { data } = await API.get(`/business/my${suffix}`);
-
-        // מאחדים את השדות מהמונגו (about → description) לפורמט צד-לקוח
-        setBusinessData({
+        const merged = {
           ...fallbackBusiness,
           ...data,
           description: data.about ?? fallbackBusiness.description,
-          reviews:
-            Array.isArray(data.reviews) && data.reviews.length > 0
-              ? data.reviews
-              : fallbackBusiness.reviews,
-        });
+          reviews: Array.isArray(data.reviews) && data.reviews.length > 0
+            ? data.reviews
+            : fallbackBusiness.reviews,
+        };
+        setBusinessData(merged);
+        setFaqs(Array.isArray(data.faqs) ? data.faqs : []);
       } catch (err) {
         setBusinessData(fallbackBusiness);
+        setFaqs([]);
       } finally {
         setLoading(false);
       }
@@ -93,10 +83,8 @@ export default function Profile() {
 
   return (
     <div className="profile-wrapper">
-      {/* 1. Header עליון – לוגו, שם, דירוג, תיאור, טלפון */}
       <ProfileHeader businessDetails={businessData} />
 
-      {/* 2. כפתורי הטאבים */}
       <div className="tabs">
         {TABS.map((tab) => (
           <button
@@ -109,7 +97,6 @@ export default function Profile() {
         ))}
       </div>
 
-      {/* 3. תוכן הטאב הנבחר */}
       {currentTab === "ראשי" && (
         <section>
           <MainTab isForm={false} businessDetails={businessData} />
@@ -154,10 +141,9 @@ export default function Profile() {
       {currentTab === "שאלות ותשובות" && (
         <section>
           <FaqTab
-            faqs={businessData.faqs}
-            setFaqs={() => {}}
-            isPreview
-            currentUser={null}
+            faqs={faqs}
+            setFaqs={setFaqs}
+            isPreview={false}
           />
         </section>
       )}
