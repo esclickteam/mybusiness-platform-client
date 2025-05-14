@@ -27,12 +27,9 @@ export default function MainSection({
   isSaving,
   renderTopBar
 }) {
-  // Render only after business has loaded
-  if (!businessDetails._id) return null;
-
+  // Hooks must be called unconditionally
   const containerRef = useRef();
 
-  // Close react-select menus on outside click
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -42,6 +39,9 @@ export default function MainSection({
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
+
+  // Render only after business has loaded
+  if (!businessDetails._id) return null;
 
   // Build preview+ID objects from state arrays
   const wrappedMainImages = (businessDetails.mainImages || []).map((url, idx) => ({
