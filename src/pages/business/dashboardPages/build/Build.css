@@ -32,7 +32,12 @@
   margin: 0 auto;
   flex-shrink: 0;
   overflow: visible;
+
+  /* מיקום מעל האלמנט השמאלי כדי למנוע חיתוך */
+  position: relative;
+  z-index: 1;
 }
+
 
 
 /* --- שם + דירוג + תיאור + טלפון בפרופיל --- */
@@ -116,6 +121,9 @@
 
 /* --- צד שמאל: טופס עריכה --- */
 .form-column {
+  position: relative;
+  z-index: 0;            /* תוודא שהטופס תמיד מתחת לפריוויו */
+  
   width: 520px;
   background-color: white;
   padding: 2rem;
@@ -139,6 +147,7 @@
   border: 1px solid #ccc;
   margin-top: 0.3rem;
 }
+
 
 /* --- כפתור שמירה --- */
 .save-btn {
