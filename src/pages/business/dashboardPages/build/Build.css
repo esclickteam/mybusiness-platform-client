@@ -19,7 +19,11 @@
 
 /* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
+  /* קביעת רוחב קבוע ושיבוט ללא גידול או כיווץ */
+  flex: 0 0 450px;
   width: 450px;
+  max-width: 450px;
+
   background-color: #f0dbff;
   border: 8px solid black;
   border-radius: 40px;
@@ -29,6 +33,7 @@
   flex-shrink: 0;
   overflow: visible;
 }
+
 
 /* --- שם + דירוג + תיאור + טלפון בפרופיל --- */
 .name-rating {
