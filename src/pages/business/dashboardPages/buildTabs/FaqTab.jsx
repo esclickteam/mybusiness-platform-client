@@ -27,26 +27,26 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const { question, answer } = newFaq;
-  if (!question.trim() || !answer.trim()) return;
+    e.preventDefault();
+    const { question, answer } = newFaq;
+    if (!question.trim() || !answer.trim()) return;
 
-  try {
-    const response = await API.post('/business/my/faqs', { question, answer });
-    const added = response.data.faq ?? response.data;
-    // השתמש ב־prev ולא ב־safeFaqs כדי לעדכן מיד את ה־state
-    setFaqs(prev => [added, ...prev]);
-    setNewFaq({ question: '', answer: '' });
-  } catch (err) {
-    console.error('❌ שגיאה בהוספת שאלה:', err);
-  }
-};
-
+    try {
+      const response = await API.post('/business/my/faqs', { question, answer });
+      const added = response.data.faq ?? response.data;
+      // עדכון מידי של ה־state עם prev
+      setFaqs(prev => [added, ...prev]);
+      setNewFaq({ question: '', answer: '' });
+    } catch (err) {
+      console.error('❌ שגיאה בהוספת שאלה:', err);
+    }
+  };
 
   const handleDelete = async (id) => {
     try {
       await API.delete(`/business/my/faqs/${id}`);
-      setFaqs(prev => safeFaqs.filter(faq => (faq.faqId ?? faq._id) !== id));
+      // גם כאן משתמשים ב-prev כדי לעדכן מיד
+      setFaqs(prev => prev.filter(faq => (faq.faqId ?? faq._id) !== id));
     } catch (err) {
       console.error('❌ שגיאה במחיקת שאלה:', err);
     }
@@ -59,8 +59,9 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
     try {
       const response = await API.put(`/business/my/faqs/${id}`, { question, answer });
       const updated = response.data.faq ?? response.data;
+      // עדכון מידי עם prev
       setFaqs(prev =>
-        safeFaqs.map(faq =>
+        prev.map(faq =>
           (faq.faqId ?? faq._id) === id ? updated : faq
         )
       );
