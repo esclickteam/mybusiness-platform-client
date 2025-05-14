@@ -9,10 +9,7 @@
   flex-wrap: wrap;
   gap: 2rem;
   direction: rtl;
-
-  /* הוסף פה את הבורדר */
-  border: 8px solid black;
-  border-radius: 40px;
+  /* border הוסר מפה */
 }
 
 
@@ -27,12 +24,12 @@
 /* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
   flex: 0 0 450px;
-  width: 450px;
   max-width: 450px;
   background-color: #f0dbff;
-  /* הסר או הגדר ל־none */
-  border: none;
-  border-radius: 40px;
+  border: 8px solid black;      /* כאן הבורדר */
+  border-radius: 40px;          /* ועיגול הפינות */
+  padding: 1.5rem;              /* קצת פנימי כדי שהטקסט לא ייגע בקו */
+  align-self: flex-start;       /* גובה יעטוף רק את התוכן */
 }
 
 /* --- שם + דירוג + תיאור + טלפון בפרופיל --- */
