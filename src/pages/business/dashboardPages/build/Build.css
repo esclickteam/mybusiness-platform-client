@@ -26,11 +26,13 @@
   flex: 0 0 450px;
   max-width: 450px;
   background-color: #f0dbff;
-  border: 8px solid black;      /* כאן הבורדר */
-  border-radius: 40px;          /* ועיגול הפינות */
-  padding: 1.5rem;              /* קצת פנימי כדי שהטקסט לא ייגע בקו */
-  align-self: flex-start;       /* גובה יעטוף רק את התוכן */
+  /* במקום border: */
+  box-shadow: 0 0 0 8px black;
+  border-radius: 40px;
+  padding: 1.5rem;
+  align-self: flex-start;
 }
+
 
 /* --- שם + דירוג + תיאור + טלפון בפרופיל --- */
 .name-rating {
