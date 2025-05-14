@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/DashboardPage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
@@ -45,10 +44,19 @@ const DashboardPage = () => {
         return;
       }
 
+      // ודא שיש מזהה עסק תקין
+      const businessUserId = user.businessId;
+      if (!businessUserId) {
+        setError("⚠️ מזהה העסק לא זוהה.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        // השתמש במזהה המשתמש כדי לשלוף סטטיסטיקות
-        const businessUserId = user.id;
-        const response = await API.get(`/business/${businessUserId}/stats`, { withCredentials: true });
+        const response = await API.get(
+          `/business/${businessUserId}/stats`,
+          { withCredentials: true }
+        );
         setStats(response.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת נתונים:", err);
