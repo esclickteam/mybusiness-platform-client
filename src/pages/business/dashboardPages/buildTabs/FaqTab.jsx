@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../build/Build.css';
 import './FaqTab.css';
-import { v4 as uuidv4 } from 'uuid';
 import API from '@api';
 
-const FaqTab = ({ faqs, setFaqs, isPreview }) => {
+const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   const [openAnswers, setOpenAnswers] = useState([]);
   const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
   const [editFaqId, setEditFaqId] = useState(null);
@@ -26,12 +25,13 @@ const FaqTab = ({ faqs, setFaqs, isPreview }) => {
     if (!newFaq.question.trim() || !newFaq.answer.trim()) return;
 
     try {
-      const { data } = await API.post('/business/my/faqs', {
+      const response = await API.post('/business/my/faqs', {
         question: newFaq.question,
         answer:   newFaq.answer
       });
-      // data.faq contains { question, answer, faqId }
-      setFaqs([data.faq, ...faqs]);
+      // השרת מחזיר את ה-FAQ החדש ב-body (response.data)
+      const added = response.data.faq ?? response.data;
+      setFaqs((prev = []) => [added, ...prev]);
       setNewFaq({ question: '', answer: '' });
     } catch (err) {
       console.error('❌ שגיאה בהוספת שאלה:', err);
@@ -41,7 +41,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview }) => {
   const handleDelete = async (faqId) => {
     try {
       await API.delete(`/business/my/faqs/${faqId}`);
-      setFaqs(faqs.filter((faq) => faq.faqId !== faqId));
+      setFaqs((prev = []) => prev.filter((faq) => faq.faqId !== faqId));
     } catch (err) {
       console.error('❌ שגיאה במחיקת שאלה:', err);
     }
@@ -51,12 +51,12 @@ const FaqTab = ({ faqs, setFaqs, isPreview }) => {
     if (!editedFaq.question.trim() || !editedFaq.answer.trim()) return;
 
     try {
-      const { data } = await API.put(`/business/my/faqs/${faqId}`, {
+      const response = await API.put(`/business/my/faqs/${faqId}`, {
         question: editedFaq.question,
         answer:   editedFaq.answer
       });
-      // data.faq contains the updated FAQ
-      setFaqs(faqs.map((faq) => faq.faqId === faqId ? data.faq : faq));
+      const updated = response.data.faq ?? response.data;
+      setFaqs((prev = []) => prev.map((faq) => faq.faqId === faqId ? updated : faq));
       setEditFaqId(null);
       setEditedFaq({ question: '', answer: '' });
     } catch (err) {
@@ -66,7 +66,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview }) => {
 
   const saveFaqsToServer = async () => {
     try {
-      const payload = faqs.map(({ faqId, question, answer }) => ({ faqId, question, answer }));
+      const payload = (faqs || []).map(({ faqId, question, answer }) => ({ faqId, question, answer }));
       await API.put('/business/my/faqs', { faqs: payload });
       alert('✅ כל השאלות נשמרו!');
     } catch (err) {
@@ -102,71 +102,73 @@ const FaqTab = ({ faqs, setFaqs, isPreview }) => {
 
       <h3>שאלות ותשובות</h3>
       <div className="faq-list">
-        {faqs.length === 0 ? (
+        {(faqs || []).length === 0 ? (
           <p>אין עדיין שאלות</p>
         ) : (
-          faqs.map((faq) => (
-            <div key={faq.faqId} className="faq-card">
-              {!isPreview && (
-                <div className="faq-actions-inline">
-                  <button
-                    className="inline-btn edit"
-                    onClick={() => {
-                      setEditFaqId(faq.faqId);
-                      setEditedFaq({ question: faq.question, answer: faq.answer });
-                    }}
-                  >
-                    ✏️ ערוך
-                  </button>
-                  <button
-                    className="inline-btn delete"
-                    onClick={() => handleDelete(faq.faqId)}
-                  >
-                    🗑️ מחק
-                  </button>
-                </div>
-              )}
+          (faqs || []).map((faq) => (
+            faq && (
+              <div key={faq.faqId} className="faq-card">
+                {!isPreview && (
+                  <div className="faq-actions-inline">
+                    <button
+                      className="inline-btn edit"
+                      onClick={() => {
+                        setEditFaqId(faq.faqId);
+                        setEditedFaq({ question: faq.question, answer: faq.answer });
+                      }}
+                    >
+                      ✏️ ערוך
+                    </button>
+                    <button
+                      className="inline-btn delete"
+                      onClick={() => handleDelete(faq.faqId)}
+                    >
+                      🗑️ מחק
+                    </button>
+                  </div>
+                )}
 
-              {editFaqId === faq.faqId ? (
-                <div className="faq-edit">
-                  <input
-                    type="text"
-                    value={editedFaq.question}
-                    onChange={(e) => setEditedFaq((prev) => ({ ...prev, question: e.target.value }))}
-                    placeholder="עדכן את השאלה"
-                  />
-                  <textarea
-                    value={editedFaq.answer}
-                    onChange={(e) => setEditedFaq((prev) => ({ ...prev, answer: e.target.value }))}
-                    placeholder="עדכן את התשובה"
-                  />
-                  <button className="save-edit-btn" onClick={() => handleSaveEdit(faq.faqId)}>
-                    💾 שמור עריכה
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className="faq-header">
-                    <strong>שאלה:</strong> {faq.question}
+                {editFaqId === faq.faqId ? (
+                  <div className="faq-edit">
+                    <input
+                      type="text"
+                      value={editedFaq.question}
+                      onChange={(e) => setEditedFaq((prev) => ({ ...prev, question: e.target.value }))}
+                      placeholder="עדכן את השאלה"
+                    />
+                    <textarea
+                      value={editedFaq.answer}
+                      onChange={(e) => setEditedFaq((prev) => ({ ...prev, answer: e.target.value }))}
+                      placeholder="עדכן את התשובה"
+                    />
+                    <button className="save-edit-btn" onClick={() => handleSaveEdit(faq.faqId)}>
+                      💾 שמור עריכה
+                    </button>
                   </div>
-                  <button onClick={() => toggleAnswer(faq.faqId)} className="toggle-answer-btn">
-                    {openAnswers.includes(faq.faqId) ? 'הסתר תשובה' : 'הצג תשובה'}
-                  </button>
-                  <div className={`faq-answer-wrapper ${openAnswers.includes(faq.faqId) ? 'open' : ''}`}>
-                    {openAnswers.includes(faq.faqId) && (
-                      <p>
-                        <strong>תשובה:</strong> {faq.answer}
-                      </p>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    <div className="faq-header">
+                      <strong>שאלה:</strong> {faq.question}
+                    </div>
+                    <button onClick={() => toggleAnswer(faq.faqId)} className="toggle-answer-btn">
+                      {openAnswers.includes(faq.faqId) ? 'הסתר תשובה' : 'הצג תשובה'}
+                    </button>
+                    <div className={`faq-answer-wrapper ${openAnswers.includes(faq.faqId) ? 'open' : ''}`}>
+                      {openAnswers.includes(faq.faqId) && (
+                        <p>
+                          <strong>תשובה:</strong> {faq.answer}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )
           ))
         )}
       </div>
 
-      {!isPreview && faqs.length > 0 && (
+      {!isPreview && (faqs || []).length > 0 && (
         <button className="save-all-button" onClick={saveFaqsToServer}>
           💾 שמור
         </button>
