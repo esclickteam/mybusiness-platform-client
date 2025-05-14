@@ -27,19 +27,21 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { question, answer } = newFaq;
-    if (!question.trim() || !answer.trim()) return;
+  e.preventDefault();
+  const { question, answer } = newFaq;
+  if (!question.trim() || !answer.trim()) return;
 
-    try {
-      const response = await API.post('/business/my/faqs', { question, answer });
-      const added = response.data.faq ?? response.data; // ההודעה החדשה
-      setFaqs(prev => [added, ...safeFaqs]);
-      setNewFaq({ question: '', answer: '' });
-    } catch (err) {
-      console.error('❌ שגיאה בהוספת שאלה:', err);
-    }
-  };
+  try {
+    const response = await API.post('/business/my/faqs', { question, answer });
+    const added = response.data.faq ?? response.data;
+    // עדכון מיידי של ה-state על סמך prev
+    setFaqs(prev => [added, ...prev]);
+    setNewFaq({ question: '', answer: '' });
+  } catch (err) {
+    console.error('❌ שגיאה בהוספת שאלה:', err);
+  }
+};
+
 
   const handleDelete = async (id) => {
     try {
