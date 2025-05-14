@@ -3,15 +3,18 @@
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
-  align-items: flex-start;
   padding: 2rem;
   background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
-  /* מעכשיו אין ש־שכיבה למטה: */
-  flex-wrap: nowrap;
+  min-height: 100vh;
+  flex-wrap: wrap;
   gap: 2rem;
   direction: rtl;
-  overflow-x: auto; /* יוסיף סקרול אופקי במקום גלישה למטה */
+
+  /* הוסף פה את הבורדר */
+  border: 8px solid black;
+  border-radius: 40px;
 }
+
 
 
 
@@ -23,18 +26,13 @@
 
 /* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
-  flex: 1 1 450px;       /* גמיש: יכול לגדול ויכול לכווץ עד גודל בסיס 450px */
-  max-width: 450px;      
-  min-width: 250px;      /* לא יכיווץ מתחת לזה */
-  
+  flex: 0 0 450px;
+  width: 450px;
+  max-width: 450px;
   background-color: #f0dbff;
-  border: 8px solid black;
+  /* הסר או הגדר ל־none */
+  border: none;
   border-radius: 40px;
-  padding: 1.5rem;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-  overflow: visible;     
-  position: relative;
-  z-index: 1;            /* מעל הטופס במידת הצורך */
 }
 
 /* --- שם + דירוג + תיאור + טלפון בפרופיל --- */
