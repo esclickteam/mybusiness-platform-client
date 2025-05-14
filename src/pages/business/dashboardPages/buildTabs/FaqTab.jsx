@@ -34,7 +34,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   try {
     const response = await API.post('/business/my/faqs', { question, answer });
     const added = response.data.faq ?? response.data;
-    // עדכון מיידי של ה-state על סמך prev
+    // השתמש ב־prev ולא ב־safeFaqs כדי לעדכן מיד את ה־state
     setFaqs(prev => [added, ...prev]);
     setNewFaq({ question: '', answer: '' });
   } catch (err) {
