@@ -45,7 +45,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   const handleDelete = async (id) => {
     try {
       await API.delete(`/business/my/faqs/${id}`);
-      // גם כאן משתמשים ב-prev כדי לעדכן מיד
+      // עדכון מידי עם prev
       setFaqs(prev => prev.filter(faq => (faq.faqId ?? faq._id) !== id));
     } catch (err) {
       console.error('❌ שגיאה במחיקת שאלה:', err);
