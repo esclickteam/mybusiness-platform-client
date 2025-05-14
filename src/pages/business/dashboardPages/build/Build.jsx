@@ -484,10 +484,12 @@ const handleDeleteMainImage = async publicId => {
           ...prev.address,
           city: updated.address?.city ?? prev.address.city
         },
-        // משאירים כאן את הלוגו מהקודם כך שלא ייעלם
-        logo:     prev.logo,
-        logoId:   prev.logoId
+        logo: prev.logo,
+        logoId: prev.logoId
       }));
+
+      // הצג כפתור "צפה בפרופיל" לאחר שמירה מוצלחת
+      setShowViewProfile(true);
 
       alert("✅ נשמר בהצלחה!");
     } else {
