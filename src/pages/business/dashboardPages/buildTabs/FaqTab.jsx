@@ -13,6 +13,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
   const isValidUuid = (id) =>
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
 
+  // עדכון ה-FAQ עם מזהה ייחודי במידה ולא קיים
   useEffect(() => {
     const upgradedFaqs = faqs.map((faq) => {
       if (!isValidUuid(faq.id)) {
@@ -24,20 +25,21 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
     if (hasUpgrades) {
       setFaqs(upgradedFaqs);
     }
-  }, []);
+  }, [faqs, setFaqs]);
 
+  // שמירה של כל השאלות לשרת
   const saveFaqsToServer = async () => {
     try {
       const cleanFaqs = faqs.map(({ id, _id, question, answer }) => ({
-        question: question || "",
-        answer: answer || "",
+        question: question || '',
+        answer: answer || '',
       }));
-      console.log("📤 cleanFaqs לשמירה:", cleanFaqs); // בדיקה
-      await API.put("/business/my", { faqs: cleanFaqs });
-      alert("✅ כל השאלות נשמרו!");
+      console.log('📤 cleanFaqs לשמירה:', cleanFaqs); // בדיקה
+      await API.put('/business/my/faqs', { faqs: cleanFaqs });
+      alert('✅ כל השאלות נשמרו!');
     } catch (err) {
-      console.error("❌ שגיאה בשמירה:", err);
-      alert("❌ שגיאה בשמירה");
+      console.error('❌ שגיאה בשמירה:', err);
+      alert('❌ שגיאה בשמירה');
     }
   };
 
@@ -52,29 +54,45 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
     setNewFaq((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newFaq.question.trim() || !newFaq.answer.trim()) return;
 
     const newEntry = { ...newFaq, id: uuidv4(), userId: currentUser.id };
-    setFaqs([newEntry, ...faqs]);
-    setNewFaq({ question: '', answer: '' });
+    try {
+      // הוספת השאלה ל-API
+      await API.post('/business/my/faqs', newEntry);
+      setFaqs([newEntry, ...faqs]);
+      setNewFaq({ question: '', answer: '' });
+    } catch (err) {
+      console.error('❌ שגיאה בהוספת שאלה:', err);
+    }
   };
 
-  const handleDelete = (id) => {
-    const updated = faqs.filter((faq) => faq.id !== id);
-    setFaqs(updated);
+  const handleDelete = async (id) => {
+    try {
+      await API.delete(`/business/my/faqs/${id}`);
+      const updated = faqs.filter((faq) => faq.id !== id);
+      setFaqs(updated);
+    } catch (err) {
+      console.error('❌ שגיאה במחיקת שאלה:', err);
+    }
   };
 
-  const handleSaveEdit = (id) => {
+  const handleSaveEdit = async (id) => {
     if (!editedFaq.question.trim() || !editedFaq.answer.trim()) return;
 
-    const updated = faqs.map((faq) =>
-      faq.id === id ? { ...faq, question: editedFaq.question, answer: editedFaq.answer } : faq
-    );
-    setFaqs(updated);
-    setEditFaqId(null);
-    setEditedFaq({ question: '', answer: '' });
+    try {
+      const updated = faqs.map((faq) =>
+        faq.id === id ? { ...faq, question: editedFaq.question, answer: editedFaq.answer } : faq
+      );
+      await API.put(`/business/my/faqs/${id}`, { question: editedFaq.question, answer: editedFaq.answer });
+      setFaqs(updated);
+      setEditFaqId(null);
+      setEditedFaq({ question: '', answer: '' });
+    } catch (err) {
+      console.error('❌ שגיאה בשמירת עריכה:', err);
+    }
   };
 
   return (
@@ -142,10 +160,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
                     onChange={(e) => setEditedFaq((prev) => ({ ...prev, answer: e.target.value }))}
                     placeholder="עדכן את התשובה"
                   />
-                  <button
-                    className="save-edit-btn"
-                    onClick={() => handleSaveEdit(faq.id)}
-                  >
+                  <button className="save-edit-btn" onClick={() => handleSaveEdit(faq.id)}>
                     💾 שמור עריכה
                   </button>
                 </div>
@@ -154,10 +169,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
                   <div className="faq-header">
                     <strong>שאלה:</strong> {faq.question}
                   </div>
-                  <button
-                    onClick={() => toggleAnswer(faq.id)}
-                    className="toggle-answer-btn"
-                  >
+                  <button onClick={() => toggleAnswer(faq.id)} className="toggle-answer-btn">
                     {openAnswers.includes(faq.id) ? 'הסתר תשובה' : 'הצג תשובה'}
                   </button>
                   <div className={`faq-answer-wrapper ${openAnswers.includes(faq.id) ? 'open' : ''}`}>
