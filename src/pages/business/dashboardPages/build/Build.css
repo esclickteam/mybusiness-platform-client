@@ -101,20 +101,18 @@
 
 /* --- צד שמאל: טופס עריכה --- */
 .form-column {
-  flex: 1 1 auto;       /* יתפוס את כל השטח שנותר */
-  min-width: 300px;      /* לא יקטן מתחת לזה */
-  /* הסר/הסר את המגבלה על רוחב מקסימלי */
-  max-width: none;
-  
+  flex: 1 1 520px;      /* גמיש: יכול לגדול ויכול לכווץ עד בסיס 520px */
+  max-width: 520px;
+  min-width: 300px;     /* לא יכיווץ מתחת לזה */
   background-color: white;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-
-  /* גורם לגובה שלה להתיישר לגובה ה־preview */
+  position: relative;
+  z-index: 0;
+  /* יגרום לגובה העמודה להתיישר לגובה מלא לצד התצוגה */
   align-self: stretch;
 }
-
 
 .form-column label {
   display: block;
