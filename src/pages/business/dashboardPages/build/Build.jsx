@@ -361,47 +361,43 @@ const handleDeleteMainImage = async publicId => {
   // בתוך Build.jsx
 
   const handleGalleryChange = async e => {
-    // 1) קבצים נבחרים
-    const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
-    if (!files.length) return;
-    e.target.value = null;
-  
-    // (אופציונלי) תצוגת פריוויו מקומי; לא שומרים ב־state הקבוע
-    const tempPreviews = files.map(f => URL.createObjectURL(f));
-  
-    // 2) בניית FormData
-    const fd = new FormData();
-    files.forEach(f => fd.append("gallery", f));
-  
-    try {
-      // 3) שליחה לשרת
-      const res = await API.put("/business/my/gallery", fd, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-  
-      if (res.status === 200) {
-        // 4) חילוץ URL-ים ו־publicIds מה-response
-        const urls = (res.data.gallery         || []).slice(0, GALLERY_MAX);
-        const ids  = (res.data.galleryImageIds || []).slice(0, GALLERY_MAX);
-  
-        // 5) עדכון נקי ב־state: רק שני המערכים
-        setBusinessDetails(prev => ({
-          ...prev,
-          gallery:         urls,
-          galleryImageIds: ids
-        }));
-      } else {
-        console.warn("העלאת גלריה נכשלה:", res);
-        alert("❌ שגיאה בהעלאת גלריה");
-      }
-    } catch (err) {
-      console.error("שגיאה בהעלאת גלריה:", err);
-      alert("❌ שגיאה בהעלאת גלריה");
-    } finally {
-      // 6) שחרור זיכרון ה־blob URLs
-      tempPreviews.forEach(URL.revokeObjectURL);
+  const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
+  if (!files.length) return;
+  e.target.value = null;
+
+  // 1️⃣ פריוויו מקומי
+  const tempPreviews = files.map(f => URL.createObjectURL(f));
+  setBusinessDetails(prev => ({
+    ...prev,
+    gallery: [...prev.gallery, ...tempPreviews]
+  }));
+
+  // 2️⃣ ממשיכים להעלות לשרת
+  const fd = new FormData();
+  files.forEach(f => fd.append("gallery", f));
+  try {
+    const res = await API.put("/business/my/gallery", fd, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+    if (res.status === 200) {
+      // 3️⃣ קבלת כתובות מהשרת + cache-busting
+      const urls = (res.data.gallery || []).map(u => `${u}?v=${Date.now()}`);
+      const ids  = res.data.galleryImageIds || [];
+      setBusinessDetails(prev => ({
+        ...prev,
+        gallery:         urls,
+        galleryImageIds: ids
+      }));
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("❌ שגיאה בהעלאת גלריה");
+  } finally {
+    // 4️⃣ שחרור הזכרון של הפריוויוים המקומיים
+    tempPreviews.forEach(URL.revokeObjectURL);
+  }
+};
+
   
    // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
   
