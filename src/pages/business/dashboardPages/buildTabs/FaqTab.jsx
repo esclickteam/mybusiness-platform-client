@@ -108,7 +108,7 @@ const FaqTab = ({ faqs, setFaqs, isPreview, currentUser }) => {
           <p>אין עדיין שאלות</p>
         ) : (
           faqs.map((faq) => (
-            <div key={faq.id} className="faq-card">
+            <div key={faq.id || uuidv4()} className="faq-card">
               {!isPreview && faq.userId === currentUser.id && (
                 <div className="faq-actions-inline">
                   <button
