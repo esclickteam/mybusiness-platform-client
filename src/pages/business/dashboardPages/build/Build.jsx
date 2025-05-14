@@ -243,43 +243,48 @@ const handleLogoChange = async e => {
   // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
 
   const handleMainImagesChange = async e => {
-    // 1) קבצים (עד 5)
-    const files = Array.from(e.target.files || []).slice(0, 5);
-    if (!files.length) return;
-    e.target.value = null;
-  
-    // (אופציונלי) פריוויו מקומי בלבד, לא ב־state הקבוע
-    const tempPreviews = files.map(f => URL.createObjectURL(f));
-  
-    // 2) בניית FormData
-    const fd = new FormData();
-    files.forEach(f => fd.append("main-images", f));
-  
-    try {
-      // 3) שליחה ל־שרת
-      const res = await API.put("/business/my/main-images", fd);
-  
-      if (res.status === 200) {
-        // 4) חילוץ URL-ים ו־publicIds מה-response
-        const urls = (res.data.mainImages   || []).slice(0, 5);
-        const ids  = (res.data.mainImageIds || []).slice(0, 5);
-  
-        // 5) שמירה נקייה ב־state: רק מערכים של נתונים
-        setBusinessDetails(prev => ({
-          ...prev,
-          mainImages:   urls,  // [ "https://...jpg", ... ]
-          mainImageIds: ids    // [ "folder/xyz123", ... ]
-        }));
-      } else {
-        console.warn("העלאת תמונות ראשיות נכשלה:", res);
-      }
-    } catch (err) {
-      console.error("שגיאה בהעלאת תמונות ראשיות:", err);
-    } finally {
-      // 6) שחרור הזכרון של ה־blob URLs
-      tempPreviews.forEach(URL.revokeObjectURL);
+  // 1) קבצים (עד 5)
+  const files = Array.from(e.target.files || []).slice(0, 5);
+  if (!files.length) return;
+  e.target.value = null;
+
+  // 2) פריוויו מקומי - עדכון state עם התמונות החדשות
+  const tempPreviews = files.map(f => URL.createObjectURL(f));
+  setBusinessDetails(prev => ({
+    ...prev,
+    mainImages: [...prev.mainImages, ...tempPreviews]  // הוספת התמונות לפריוויו
+  }));
+
+  // 3) בניית FormData לשליחה לשרת
+  const fd = new FormData();
+  files.forEach(f => fd.append("main-images", f));
+
+  try {
+    // 4) שליחה לשרת
+    const res = await API.put("/business/my/main-images", fd);
+
+    if (res.status === 200) {
+      // 5) חילוץ URL-ים ו־publicIds מה-response
+      const urls = (res.data.mainImages || []).slice(0, 5);
+      const ids = (res.data.mainImageIds || []).slice(0, 5);
+
+      // 6) עדכון ה-state עם התוצאות מהשרת
+      setBusinessDetails(prev => ({
+        ...prev,
+        mainImages: urls,  // עדכון עם הכתובות שהתקבלו מהשרת
+        mainImageIds: ids  // עדכון עם ה-publicIds
+      }));
+    } else {
+      console.warn("העלאת תמונות ראשיות נכשלה:", res);
     }
-  };
+  } catch (err) {
+    console.error("שגיאה בהעלאת תמונות ראשיות:", err);
+  } finally {
+    // 7) שחרור הזיכרון של ה־blob URLs (לאחר סיום)
+    tempPreviews.forEach(URL.revokeObjectURL);
+  }
+};
+
   
   
   
