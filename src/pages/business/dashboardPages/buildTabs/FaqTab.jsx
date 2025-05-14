@@ -1,37 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../build/Build.css';
 import './FaqTab.css';
 import API from '@api';
 
 const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   const [openAnswers, setOpenAnswers] = useState([]);
-  const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
-  const [editFaqId, setEditFaqId] = useState(null);
-  const [editedFaq, setEditedFaq] = useState({ question: '', answer: '' });
+  const [newFaq, setNewFaq]           = useState({ question: '', answer: '' });
+  const [editFaqId, setEditFaqId]     = useState(null);
+  const [editedFaq, setEditedFaq]     = useState({ question: '', answer: '' });
 
   const toggleAnswer = (faqId) => {
-    setOpenAnswers((prev) =>
-      prev.includes(faqId) ? prev.filter((x) => x !== faqId) : [...prev, faqId]
+    setOpenAnswers(prev =>
+      prev.includes(faqId)
+        ? prev.filter(x => x !== faqId)
+        : [...prev, faqId]
     );
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewFaq((prev) => ({ ...prev, [name]: value }));
+    setNewFaq(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newFaq.question.trim() || !newFaq.answer.trim()) return;
+    const { question, answer } = newFaq;
+    if (!question.trim() || !answer.trim()) return;
 
     try {
-      const response = await API.post('/business/my/faqs', {
-        question: newFaq.question,
-        answer:   newFaq.answer
-      });
-      // השרת מחזיר את ה-FAQ החדש ב-body (response.data)
+      const response = await API.post('/business/my/faqs', { question, answer });
       const added = response.data.faq ?? response.data;
-      setFaqs((prev = []) => [added, ...prev]);
+      setFaqs(prev => [added, ...(prev || [])]);
       setNewFaq({ question: '', answer: '' });
     } catch (err) {
       console.error('❌ שגיאה בהוספת שאלה:', err);
@@ -41,22 +40,20 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   const handleDelete = async (faqId) => {
     try {
       await API.delete(`/business/my/faqs/${faqId}`);
-      setFaqs((prev = []) => prev.filter((faq) => faq.faqId !== faqId));
+      setFaqs(prev => (prev || []).filter(faq => faq.faqId !== faqId));
     } catch (err) {
       console.error('❌ שגיאה במחיקת שאלה:', err);
     }
   };
 
   const handleSaveEdit = async (faqId) => {
-    if (!editedFaq.question.trim() || !editedFaq.answer.trim()) return;
+    const { question, answer } = editedFaq;
+    if (!question.trim() || !answer.trim()) return;
 
     try {
-      const response = await API.put(`/business/my/faqs/${faqId}`, {
-        question: editedFaq.question,
-        answer:   editedFaq.answer
-      });
+      const response = await API.put(`/business/my/faqs/${faqId}`, { question, answer });
       const updated = response.data.faq ?? response.data;
-      setFaqs((prev = []) => prev.map((faq) => faq.faqId === faqId ? updated : faq));
+      setFaqs(prev => (prev || []).map(faq => faq.faqId === faqId ? updated : faq));
       setEditFaqId(null);
       setEditedFaq({ question: '', answer: '' });
     } catch (err) {
@@ -105,8 +102,8 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
         {(faqs || []).length === 0 ? (
           <p>אין עדיין שאלות</p>
         ) : (
-          (faqs || []).map((faq) => (
-            faq && (
+          (faqs || []).map(faq =>
+            faq ? (
               <div key={faq.faqId} className="faq-card">
                 {!isPreview && (
                   <div className="faq-actions-inline">
@@ -133,15 +130,18 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                     <input
                       type="text"
                       value={editedFaq.question}
-                      onChange={(e) => setEditedFaq((prev) => ({ ...prev, question: e.target.value }))}
+                      onChange={e => setEditedFaq(prev => ({ ...prev, question: e.target.value }))}
                       placeholder="עדכן את השאלה"
                     />
                     <textarea
                       value={editedFaq.answer}
-                      onChange={(e) => setEditedFaq((prev) => ({ ...prev, answer: e.target.value }))}
+                      onChange={e => setEditedFaq(prev => ({ ...prev, answer: e.target.value }))}
                       placeholder="עדכן את התשובה"
                     />
-                    <button className="save-edit-btn" onClick={() => handleSaveEdit(faq.faqId)}>
+                    <button
+                      className="save-edit-btn"
+                      onClick={() => handleSaveEdit(faq.faqId)}
+                    >
                       💾 שמור עריכה
                     </button>
                   </div>
@@ -150,21 +150,26 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                     <div className="faq-header">
                       <strong>שאלה:</strong> {faq.question}
                     </div>
-                    <button onClick={() => toggleAnswer(faq.faqId)} className="toggle-answer-btn">
-                      {openAnswers.includes(faq.faqId) ? 'הסתר תשובה' : 'הצג תשובה'}
+                    <button
+                      onClick={() => toggleAnswer(faq.faqId)}
+                      className="toggle-answer-btn"
+                    >
+                      {openAnswers.includes(faq.faqId)
+                        ? 'הסתר תשובה'
+                        : 'הצג תשובה'}
                     </button>
-                    <div className={`faq-answer-wrapper ${openAnswers.includes(faq.faqId) ? 'open' : ''}`}>
-                      {openAnswers.includes(faq.faqId) && (
+                    {openAnswers.includes(faq.faqId) && (
+                      <div className="faq-answer-wrapper open">
                         <p>
                           <strong>תשובה:</strong> {faq.answer}
                         </p>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
-            )
-          ))
+            ) : null
+          )
         )}
       </div>
 
