@@ -440,7 +440,6 @@ const handleDeleteMainImage = async publicId => {
   const handleSave = async () => {
   setIsSaving(true);
   try {
-    // אריזת ה־payload
     const payload = {
       businessName: businessDetails.businessName,
       category:     businessDetails.category,
@@ -452,14 +451,11 @@ const handleDeleteMainImage = async publicId => {
       }
     };
 
-    // קריאה ל־PATCH
     const res = await API.patch("/business/my", payload);
 
     if (res.status === 200) {
-      // התשובה: האובייקט המעודכן במלואו
-      const updated = res.data; // או res.data.business אם השרת עוטף תחת `business`
+      const updated = res.data;
 
-      // עדכון כל השדות ב־state, כולל לוגו
       setBusinessDetails(prev => ({
         ...prev,
         businessName: updated.businessName ?? prev.businessName,
@@ -471,11 +467,9 @@ const handleDeleteMainImage = async publicId => {
           ...prev.address,
           city: updated.address?.city ?? prev.address.city
         },
-        // שמירה של הלוגו כך שלא ייעלם
-        logo: updated.logo
-          ? { preview: updated.logo, publicId: updated.logoId }
-          : prev.logo,
-        logoId: updated.logoId ?? prev.logoId
+        // משאירים כאן את הלוגו מהקודם כך שלא ייעלם
+        logo:     prev.logo,
+        logoId:   prev.logoId
       }));
 
       alert("✅ נשמר בהצלחה!");
@@ -489,6 +483,7 @@ const handleDeleteMainImage = async publicId => {
     setIsSaving(false);
   }
 };
+
 
 
       
