@@ -6,7 +6,6 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { SSEProvider } from './context/SSEContext';  // ← ייבוא ה‐Provider החדש
 
-import './styles/AccessibilityWidget.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
