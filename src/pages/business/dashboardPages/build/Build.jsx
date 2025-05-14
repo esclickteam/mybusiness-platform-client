@@ -114,41 +114,49 @@ export default function Build() {
   }, []);
 
   // Autosave אחרי debounce
-  useEffect(() => {
-    if (firstLoad) return;
+  // Autosave אחרי debounce
+useEffect(() => {
+  if (firstLoad) return;
 
-    clearTimeout(saveTimeout.current);
-
-    saveTimeout.current = setTimeout(async () => {
-      setIsSaving(true);
-      try {
-        const payload = {
-          businessName: businessDetails.businessName,
-          category:     businessDetails.category,
-          description:  businessDetails.description,
-          phone:        businessDetails.phone,
-          email:        businessDetails.email,
-          address:      { city: businessDetails.address.city },
-        };
-        const res = await API.patch("/business/my", payload);
-        setBusinessDetails(prev => ({ ...prev, ...res.data }));
-      } catch (err) {
-        console.error("Autosave failed:", err);
-      } finally {
-        setIsSaving(false);
+  clearTimeout(saveTimeout.current);
+  saveTimeout.current = setTimeout(async () => {
+    setIsSaving(true);
+    try {
+      const payload = {
+        businessName: businessDetails.businessName,
+        category:     businessDetails.category,
+        description:  businessDetails.description,
+        phone:        businessDetails.phone,
+        email:        businessDetails.email,
+        address:      { city: businessDetails.address.city },
+      };
+      const res = await API.patch("/business/my", payload);
+      if (res.status === 200) {
+        setBusinessDetails(prev => ({
+          ...prev,
+          ...res.data,        // עדכונים מהשרת
+          logo:   prev.logo,  // שומרים לוגו קיים
+          logoId: prev.logoId
+        }));
       }
-    }, 1000);
+    } catch (err) {
+      console.error("Autosave failed:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  }, 1000);
 
-    return () => clearTimeout(saveTimeout.current);
-  }, [
-    businessDetails.businessName,
-    businessDetails.category,
-    businessDetails.description,
-    businessDetails.phone,
-    businessDetails.email,
-    businessDetails.address.city,
-    firstLoad
-  ]);
+  return () => clearTimeout(saveTimeout.current);
+}, [
+  businessDetails.businessName,
+  businessDetails.category,
+  businessDetails.description,
+  businessDetails.phone,
+  businessDetails.email,
+  businessDetails.address.city,
+  firstLoad
+]);
+
 
   
          
