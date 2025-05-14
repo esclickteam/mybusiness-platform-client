@@ -153,8 +153,8 @@
 /* --- טאבים --- */
 .tabs {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.5rem;
   margin-top: 1.2rem;
 }
 .tab {
