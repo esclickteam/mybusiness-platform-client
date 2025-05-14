@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import API from "@api";
-import FaqTab from "@components/FaqTab";
+import FaqTab from "../FaqTab";
 
 export default function FaqSection({ currentUser, renderTopBar }) {
   const [faqs, setFaqs] = useState([]);
