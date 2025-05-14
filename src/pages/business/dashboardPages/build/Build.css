@@ -4,19 +4,14 @@
   flex-direction: row-reverse;
   justify-content: space-between;
   align-items: flex-start;
-  /* מעבירים את המסגרת לכאן: */
-  border: 8px solid black;
-  border-radius: 40px;
-  /* מקזזים padding פנימי כדי שההצמדה תהיה מדויקת */
-  padding: calc(2rem - 8px);
+  padding: 2rem;
   background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
-  /* מבטל גלישה למטה */
-  overflow: visible;
+  /* מעכשיו אין ש־שכיבה למטה: */
   flex-wrap: nowrap;
   gap: 2rem;
   direction: rtl;
+  overflow-x: auto; /* יוסיף סקרול אופקי במקום גלישה למטה */
 }
-
 
 
 
