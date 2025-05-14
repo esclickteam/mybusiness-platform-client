@@ -65,7 +65,8 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
 
   const saveFaqsToServer = async () => {
     try {
-      const payload = (faqs || []).map(({ faqId, question, answer }) => ({ faqId, question, answer }));
+      const safeFaqs = Array.isArray(faqs) ? faqs : [];  // Ensure faqs is an array
+      const payload = safeFaqs.map(({ faqId, question, answer }) => ({ faqId, question, answer }));
       await API.put('/business/my/faqs', { faqs: payload });
       alert('✅ כל השאלות נשמרו!');
     } catch (err) {
@@ -101,10 +102,10 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
 
       <h3>שאלות ותשובות</h3>
       <div className="faq-list">
-        {(faqs || []).length === 0 ? (
+        {faqs.length === 0 ? (
           <p>אין עדיין שאלות</p>
         ) : (
-          (faqs || []).map(faq => (
+          faqs.map(faq => (
             faq && (
               <div key={faq.faqId} className="faq-card">
                 {!isPreview && (
@@ -175,7 +176,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
         )}
       </div>
 
-      {!isPreview && (faqs || []).length > 0 && (
+      {!isPreview && faqs.length > 0 && (
         <button className="save-all-button" onClick={saveFaqsToServer}>
           💾 שמור
         </button>
