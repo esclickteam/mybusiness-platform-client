@@ -3,14 +3,16 @@
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
-  align-items: flex-start;    /* מוודא שהעמודות מתחילות מלמעלה ולא יימתחו לגובה */
+  align-items: flex-start;    /* מוודא שהעמודות תמיד מתחילות מלמעלה */
   padding: 2rem;
   background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
-  /* הוסר min-height:100vh כדי שהגובה ייקבע לפי תוכן העמודות */
+  overflow: visible;           /* מאפשר לילד לצאת מחוץ לגבולות ולהציג את הפינות המעוגלות */
+  /* הסרנו כאן לגמרי את min-height:100vh */
   flex-wrap: wrap;
   gap: 2rem;
   direction: rtl;
 }
+
 
 
 .build-wrapper .chat-section {
