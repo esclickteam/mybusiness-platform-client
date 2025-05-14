@@ -1,3 +1,4 @@
+// src/components/FaqTab.jsx
 import React, { useState } from 'react';
 import '../build/Build.css';
 import './FaqTab.css';
@@ -9,11 +10,14 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   const [editFaqId, setEditFaqId] = useState(null);
   const [editedFaq, setEditedFaq] = useState({ question: '', answer: '' });
 
-  const toggleAnswer = (faqId) => {
+  // guard: ודא ש־faqs זה מערך
+  const safeFaqs = Array.isArray(faqs) ? faqs : [];
+
+  const toggleAnswer = (id) => {
     setOpenAnswers(prev =>
-      prev.includes(faqId)
-        ? prev.filter(x => x !== faqId)
-        : [...prev, faqId]
+      prev.includes(id)
+        ? prev.filter(x => x !== id)
+        : [...prev, id]
     );
   };
 
@@ -29,31 +33,35 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
 
     try {
       const response = await API.post('/business/my/faqs', { question, answer });
-      const added = response.data.faq ?? response.data;
-      setFaqs(prev => [added, ...(prev || [])]);
+      const added = response.data.faq ?? response.data; // ההודעה החדשה
+      setFaqs(prev => [added, ...safeFaqs]);
       setNewFaq({ question: '', answer: '' });
     } catch (err) {
       console.error('❌ שגיאה בהוספת שאלה:', err);
     }
   };
 
-  const handleDelete = async (faqId) => {
+  const handleDelete = async (id) => {
     try {
-      await API.delete(`/business/my/faqs/${faqId}`);
-      setFaqs(prev => (prev || []).filter(faq => faq.faqId !== faqId));
+      await API.delete(`/business/my/faqs/${id}`);
+      setFaqs(prev => safeFaqs.filter(faq => (faq.faqId ?? faq._id) !== id));
     } catch (err) {
       console.error('❌ שגיאה במחיקת שאלה:', err);
     }
   };
 
-  const handleSaveEdit = async (faqId) => {
+  const handleSaveEdit = async (id) => {
     const { question, answer } = editedFaq;
     if (!question.trim() || !answer.trim()) return;
 
     try {
-      const response = await API.put(`/business/my/faqs/${faqId}`, { question, answer });
+      const response = await API.put(`/business/my/faqs/${id}`, { question, answer });
       const updated = response.data.faq ?? response.data;
-      setFaqs(prev => (prev || []).map(faq => faq.faqId === faqId ? updated : faq));
+      setFaqs(prev =>
+        safeFaqs.map(faq =>
+          (faq.faqId ?? faq._id) === id ? updated : faq
+        )
+      );
       setEditFaqId(null);
       setEditedFaq({ question: '', answer: '' });
     } catch (err) {
@@ -63,9 +71,11 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
 
   const saveFaqsToServer = async () => {
     try {
-      console.log("faqs before save:", faqs);
-      const safeFaqs = Array.isArray(faqs) ? faqs : [];  // Ensure faqs is an array
-      const payload = safeFaqs.map(({ faqId, question, answer }) => ({ faqId, question, answer }));
+      const payload = safeFaqs.map(f => ({
+        id: f.faqId ?? f._id,
+        question: f.question,
+        answer: f.answer
+      }));
       await API.put('/business/my/faqs', { faqs: payload });
       alert('✅ כל השאלות נשמרו!');
     } catch (err) {
@@ -101,18 +111,19 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
 
       <h3>שאלות ותשובות</h3>
       <div className="faq-list">
-        {faqs.length === 0 ? (
+        {safeFaqs.length === 0 ? (
           <p>אין עדיין שאלות</p>
         ) : (
-          (faqs || []).map(faq => (
-            faq && (
-              <div key={faq.faqId} className="faq-card">
+          safeFaqs.map(faq => {
+            const id = faq.faqId ?? faq._id;
+            return (
+              <div key={id} className="faq-card">
                 {!isPreview && (
                   <div className="faq-actions-inline">
                     <button
                       className="inline-btn edit"
                       onClick={() => {
-                        setEditFaqId(faq.faqId);
+                        setEditFaqId(id);
                         setEditedFaq({ question: faq.question, answer: faq.answer });
                       }}
                     >
@@ -120,14 +131,14 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                     </button>
                     <button
                       className="inline-btn delete"
-                      onClick={() => handleDelete(faq.faqId)}
+                      onClick={() => handleDelete(id)}
                     >
                       🗑️ מחק
                     </button>
                   </div>
                 )}
 
-                {editFaqId === faq.faqId ? (
+                {editFaqId === id ? (
                   <div className="faq-edit">
                     <input
                       type="text"
@@ -142,7 +153,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                     />
                     <button
                       className="save-edit-btn"
-                      onClick={() => handleSaveEdit(faq.faqId)}
+                      onClick={() => handleSaveEdit(id)}
                     >
                       💾 שמור עריכה
                     </button>
@@ -153,14 +164,12 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                       <strong>שאלה:</strong> {faq.question}
                     </div>
                     <button
-                      onClick={() => toggleAnswer(faq.faqId)}
+                      onClick={() => toggleAnswer(id)}
                       className="toggle-answer-btn"
                     >
-                      {openAnswers.includes(faq.faqId)
-                        ? 'הסתר תשובה'
-                        : 'הצג תשובה'}
+                      {openAnswers.includes(id) ? 'הסתר תשובה' : 'הצג תשובה'}
                     </button>
-                    {openAnswers.includes(faq.faqId) && (
+                    {openAnswers.includes(id) && (
                       <div className="faq-answer-wrapper open">
                         <p>
                           <strong>תשובה:</strong> {faq.answer}
@@ -170,14 +179,14 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                   </>
                 )}
               </div>
-            )
-          ))
+            );
+          })
         )}
       </div>
 
-      {!isPreview && faqs.length > 0 && (
+      {!isPreview && safeFaqs.length > 0 && (
         <button className="save-all-button" onClick={saveFaqsToServer}>
-          💾 שמור
+          💾 שמור הכל
         </button>
       )}
     </div>
