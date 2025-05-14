@@ -367,6 +367,8 @@ const handleDeleteMainImage = async publicId => {
 
   // 1️⃣ פריוויו מקומי
   const tempPreviews = files.map(f => URL.createObjectURL(f));
+
+  // עדכון ה-state עם הפריוויו המקומי באופן מיידי
   setBusinessDetails(prev => ({
     ...prev,
     gallery: [...prev.gallery, ...tempPreviews]
@@ -383,6 +385,8 @@ const handleDeleteMainImage = async publicId => {
       // 3️⃣ קבלת כתובות מהשרת + cache-busting
       const urls = (res.data.gallery || []).map(u => `${u}?v=${Date.now()}`);
       const ids  = res.data.galleryImageIds || [];
+
+      // עדכון ה-state עם הכתובות שהתקבלו מהשרת
       setBusinessDetails(prev => ({
         ...prev,
         gallery:         urls,
@@ -397,6 +401,7 @@ const handleDeleteMainImage = async publicId => {
     tempPreviews.forEach(URL.revokeObjectURL);
   }
 };
+
 
   
    // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
