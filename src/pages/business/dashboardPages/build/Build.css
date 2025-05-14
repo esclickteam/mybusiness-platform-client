@@ -58,7 +58,14 @@
   text-align: center;
   margin: 0.3rem 0;
   font-size: 0.95rem;
+
+  /* מאפשר שבר שורות במקום חיתוך */
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
+
+
+
 
 /* --- מחיצה בין עליון לתחתון --- */
 .divider {
