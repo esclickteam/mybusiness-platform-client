@@ -1,21 +1,16 @@
 /* === מבנה עמוד כללי === */
-.preview-column {
-  /* במקום: border: 8px solid black; */
-  border: none;
-  outline: 8px solid black;
-  outline-offset: -8px;    /* מושך את ה-outline פנימה כך שתיישב בדיוק על הקצוות */
-  border-radius: 40px;
-  
-  /* שאר ההגדרות שלך נשמרות */
-  flex: 1 1 450px;
-  max-width: 450px;
-  min-width: 250px;
-  background-color: #f0dbff;
-  padding: 1.5rem;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-  overflow: visible;
-  position: relative;
-  z-index: 10;  /* תעלה מעל כל דבר אחר */
+.build-wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2rem;
+  background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
+  /* מעכשיו אין ש־שכיבה למטה: */
+  flex-wrap: nowrap;
+  gap: 2rem;
+  direction: rtl;
+  overflow-x: auto; /* יוסיף סקרול אופקי במקום גלישה למטה */
 }
 
 
