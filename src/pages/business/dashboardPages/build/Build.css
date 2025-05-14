@@ -26,12 +26,13 @@
   flex: 0 0 450px;
   max-width: 450px;
   background-color: #f0dbff;
-  /* במקום border: */
   box-shadow: 0 0 0 8px black;
   border-radius: 40px;
-  padding: 1.5rem;
+  /* padding: עליון, ימין־שמאל, תחתון */
+  padding: 1.5rem 1.5rem 4rem;
   align-self: flex-start;
 }
+
 
 
 /* --- שם + דירוג + תיאור + טלפון בפרופיל --- */
