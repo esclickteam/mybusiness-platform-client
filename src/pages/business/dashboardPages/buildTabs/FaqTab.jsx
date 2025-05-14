@@ -3,7 +3,14 @@ import '../build/Build.css';
 import './FaqTab.css';
 import API from '@api';
 
-const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
+const FaqTab = ({ faqs, setFaqs, isPreview }) => {
+  // Ensure we always work with an array
+  const list = Array.isArray(faqs)
+    ? faqs
+    : Array.isArray(faqs?.faqs)
+      ? faqs.faqs
+      : [];
+
   const [openAnswers, setOpenAnswers] = useState([]);
   const [newFaq, setNewFaq]           = useState({ question: '', answer: '' });
   const [editFaqId, setEditFaqId]     = useState(null);
@@ -30,7 +37,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
     try {
       const response = await API.post('/business/my/faqs', { question, answer });
       const added = response.data.faq ?? response.data;
-      setFaqs(prev => [added, ...(prev || [])]);
+      setFaqs(prev => [added, ...(Array.isArray(prev) ? prev : [])]);
       setNewFaq({ question: '', answer: '' });
     } catch (err) {
       console.error('❌ שגיאה בהוספת שאלה:', err);
@@ -40,7 +47,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   const handleDelete = async (faqId) => {
     try {
       await API.delete(`/business/my/faqs/${faqId}`);
-      setFaqs(prev => (prev || []).filter(faq => faq.faqId !== faqId));
+      setFaqs(prev => (Array.isArray(prev) ? prev.filter(faq => faq.faqId !== faqId) : []));
     } catch (err) {
       console.error('❌ שגיאה במחיקת שאלה:', err);
     }
@@ -53,7 +60,11 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
     try {
       const response = await API.put(`/business/my/faqs/${faqId}`, { question, answer });
       const updated = response.data.faq ?? response.data;
-      setFaqs(prev => (prev || []).map(faq => faq.faqId === faqId ? updated : faq));
+      setFaqs(prev => (
+        Array.isArray(prev)
+          ? prev.map(faq => faq.faqId === faqId ? updated : faq)
+          : []
+      ));
       setEditFaqId(null);
       setEditedFaq({ question: '', answer: '' });
     } catch (err) {
@@ -63,7 +74,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
 
   const saveFaqsToServer = async () => {
     try {
-      const payload = (faqs || []).map(({ faqId, question, answer }) => ({ faqId, question, answer }));
+      const payload = list.map(({ faqId, question, answer }) => ({ faqId, question, answer }));
       await API.put('/business/my/faqs', { faqs: payload });
       alert('✅ כל השאלות נשמרו!');
     } catch (err) {
@@ -99,10 +110,10 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
 
       <h3>שאלות ותשובות</h3>
       <div className="faq-list">
-        {(faqs || []).length === 0 ? (
+        {list.length === 0 ? (
           <p>אין עדיין שאלות</p>
         ) : (
-          (faqs || []).map(faq =>
+          list.map(faq => (
             faq ? (
               <div key={faq.faqId} className="faq-card">
                 {!isPreview && (
@@ -154,9 +165,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                       onClick={() => toggleAnswer(faq.faqId)}
                       className="toggle-answer-btn"
                     >
-                      {openAnswers.includes(faq.faqId)
-                        ? 'הסתר תשובה'
-                        : 'הצג תשובה'}
+                      {openAnswers.includes(faq.faqId) ? 'הסתר תשובה' : 'הצג תשובה'}
                     </button>
                     {openAnswers.includes(faq.faqId) && (
                       <div className="faq-answer-wrapper open">
@@ -169,11 +178,11 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
                 )}
               </div>
             ) : null
-          )
+          ))
         )}
       </div>
 
-      {!isPreview && (faqs || []).length > 0 && (
+      {!isPreview && list.length > 0 && (
         <button className="save-all-button" onClick={saveFaqsToServer}>
           💾 שמור
         </button>
