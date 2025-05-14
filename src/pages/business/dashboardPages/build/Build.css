@@ -12,29 +12,24 @@
 }
 
 .build-wrapper .chat-section {
-  flex: 1;             /* יתפוס את השטח הפנוי */
+  flex: 1 1 300px;       /* יתפוס את השטח הפנוי, יכול לכווץ עד 300px */
   display: flex;
 }
 
 /* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
-  /* מאפשר גם לכווץ (shrink) במקום רק לשמור על רוחב קבוע */
-  flex: 0 1 450px;
-  width: 450px;
-  max-width: 450px;
-  min-width: 0;              /* קריטי ב־flex כדי לאפשר לכווץ */
-
+  flex: 1 1 450px;       /* גמיש: יכול לגדול ויכול לכווץ עד גודל בסיס 450px */
+  max-width: 450px;      
+  min-width: 250px;      /* לא יכיווץ מתחת לזה */
+  
   background-color: #f0dbff;
   border: 8px solid black;
   border-radius: 40px;
   padding: 1.5rem;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-  margin: 0 auto;
-  overflow: visible;
-
-  /* מיקום מעל האלמנט השמאלי כדי למנוע חיתוך */
+  overflow: visible;     
   position: relative;
-  z-index: 1;
+  z-index: 1;            /* מעל הטופס במידת הצורך */
 }
 
 /* --- שם + דירוג + תיאור + טלפון בפרופיל --- */
@@ -65,10 +60,9 @@
   text-align: center;
   margin: 0.3rem 0;
   font-size: 0.95rem;
-
-  white-space: normal;        /* מאפשר שבר שורות */
-  overflow-wrap: anywhere;    /* שובר במקום לקצוץ */
-  word-break: break-word;     /* תוספת לשבירת מילים ארוכות */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* --- מחיצה בין עליון לתחתון --- */
@@ -105,17 +99,15 @@
 
 /* --- צד שמאל: טופס עריכה --- */
 .form-column {
-  position: relative;
-  z-index: 0;            /* תוודא שהטופס תמיד מתחת לפריוויו */
-
-  width: 520px;
+  flex: 1 1 520px;       /* גמיש: יכול לגדול ויכול לכווץ עד בסיס 520px */
+  max-width: 520px;
+  min-width: 300px;      /* לא יכיווץ מתחת לזה */
   background-color: white;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  margin: 0 auto;
-  flex-grow: 1;
-  min-width: 0;          /* מאפשר לכיווץ פנימי ב־flex */
+  position: relative;
+  z-index: 0;
 }
 .form-column label {
   display: block;
@@ -202,12 +194,7 @@
 }
 
 /* === גלריה בעריכה === */
-.gallery-preview {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  width: 100%;
-}
+.gallery-preview,
 .gallery-grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -241,7 +228,6 @@
   transform: scale(1.05);
   background-color: #f3e5ff;
 }
-/* כפתורי מחיקה ועריכה */
 .form-column .gallery-preview .delete-btn,
 .form-column .gallery-preview .edit-btn {
   position: absolute;
@@ -272,7 +258,7 @@
 /* === פופאפ בחירת גודל תמונה === */
 .popup-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
@@ -306,13 +292,13 @@
     padding: 1rem;
   }
   .preview-column {
-    width: 100%;
-    max-width: 420px;
+    flex: 1 1 100%;
+    max-width: none;
     border-width: 4px;
   }
   .form-column {
-    width: 100%;
-    max-width: 600px;
+    flex: 1 1 100%;
+    max-width: none;
     padding: 1.5rem;
   }
   .tabs {
@@ -322,11 +308,10 @@
     font-size: 1rem;
     padding: 1rem 2rem;
   }
-  .form-column .gallery-preview {
-    gap: 0.5rem;
-  }
+  .form-column .gallery-preview,
   .form-column .gallery-preview .gallery-item-wrapper,
   .form-column .gallery-preview .gallery-placeholder {
+    gap: 0.5rem;
     aspect-ratio: 1 / 1;
   }
   .preview-column .preview-images {
@@ -338,7 +323,6 @@
 .city-select-container {
   position: relative;
 }
-
 .city-dropdown {
   position: absolute;
   top: 100%;
@@ -353,7 +337,6 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   width: 100%;
 }
-
 .preview-city {
   text-align: center;
   width: 100%;
@@ -373,8 +356,6 @@
   border-top: 4px solid #3498db;
   animation: spin 1s linear infinite;
 }
-
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
