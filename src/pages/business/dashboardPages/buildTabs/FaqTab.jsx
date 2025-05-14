@@ -4,11 +4,10 @@ import './FaqTab.css';
 import API from '@api';
 
 const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
-  // No local list — rely directly on props
   const [openAnswers, setOpenAnswers] = useState([]);
-  const [newFaq, setNewFaq]           = useState({ question: '', answer: '' });
-  const [editFaqId, setEditFaqId]     = useState(null);
-  const [editedFaq, setEditedFaq]     = useState({ question: '', answer: '' });
+  const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
+  const [editFaqId, setEditFaqId] = useState(null);
+  const [editedFaq, setEditedFaq] = useState({ question: '', answer: '' });
 
   const toggleAnswer = (faqId) => {
     setOpenAnswers(prev =>
@@ -31,7 +30,6 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
     try {
       const response = await API.post('/business/my/faqs', { question, answer });
       const added = response.data.faq ?? response.data;
-      // update parent state only
       setFaqs(prev => [added, ...(prev || [])]);
       setNewFaq({ question: '', answer: '' });
     } catch (err) {
@@ -105,7 +103,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
         {faqs.length === 0 ? (
           <p>אין עדיין שאלות</p>
         ) : (
-          faqs.map(faq => (
+          (faqs || []).map(faq => (
             faq && (
               <div key={faq.faqId} className="faq-card">
                 {!isPreview && (
