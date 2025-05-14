@@ -63,6 +63,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
 
   const saveFaqsToServer = async () => {
     try {
+      console.log("faqs before save:", faqs);
       const safeFaqs = Array.isArray(faqs) ? faqs : [];  // Ensure faqs is an array
       const payload = safeFaqs.map(({ faqId, question, answer }) => ({ faqId, question, answer }));
       await API.put('/business/my/faqs', { faqs: payload });
