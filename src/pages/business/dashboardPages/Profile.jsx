@@ -20,7 +20,6 @@ const TABS = [
   "שאלות ותשובות",
 ];
 
-// ברירת מחדל - רק לדמו
 const fallbackBusiness = {
   name: "עסק לדוגמה",
   description: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
@@ -50,8 +49,6 @@ export default function Profile() {
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
-
-  // מצב לחנות/יומן
   const [shopMode, setShopMode] = useState(null);
 
   useEffect(() => {
@@ -129,9 +126,8 @@ export default function Profile() {
         <section>
           <ReviewsModule
             reviews={businessData.reviews}
-            setReviews={() => {}} // פונקציה ריקה למניעת שגיאות
+            setReviews={() => {}}   // פונקציה ריקה למניעת שגיאות אם אין עריכה
             isPreview
-            currentUser={null}
           />
         </section>
       )}
@@ -140,7 +136,7 @@ export default function Profile() {
         <section>
           <ChatTab
             businessDetails={businessData}
-            setBusinessDetails={() => {}} // פונקציה ריקה
+            setBusinessDetails={() => {}} // פונקציה ריקה, אין עריכה
             isPreview
           />
         </section>
