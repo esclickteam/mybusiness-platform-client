@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
-import AppointmentsMain from "../Appointments/AppointmentsMain";
+import AppointmentsMain from '../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/AppointmentsMain';
 import "./BusinessProfileView.css";
 
 const TABS = [
