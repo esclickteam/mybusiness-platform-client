@@ -20,7 +20,7 @@ import CRMSettingsTab       from "./dashboardPages/crmpages/CRMSettingsTab";
 
 import GoalsPage            from "./dashboardPages/GoalsPage";
 
-import { BusinessServicesProvider } from "../../context/BusinessServicesContext";
+import { BusinessServicesProvider } from '@context/BusinessServicesContext';
 
 const BusinessDashboardRoutes = () => (
   <Routes>

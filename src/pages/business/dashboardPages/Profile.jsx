@@ -10,7 +10,7 @@ import ShopAndCalendar from "./buildTabs/shopAndCalendar/ShopAndCalendar";
 import ReviewsModule from "./buildTabs/ReviewsModule";
 import FaqTab from "./buildTabs/FaqTab";
 import ChatTab from "./buildTabs/ChatTab";
-import { BusinessServicesProvider } from "../../../context/BusinessServicesContext";
+import { BusinessServicesProvider } from '@context/BusinessServicesContext';
 
 const TABS = [
   "ראשי",

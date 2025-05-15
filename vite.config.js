@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -13,6 +12,7 @@ export default defineConfig({
       '@api':         path.resolve(__dirname, 'src/api.js'),
       '@components':  path.resolve(__dirname, 'src/components'),
       '@pages':       path.resolve(__dirname, 'src/pages'),
+      '@context':     path.resolve(__dirname, 'src/context'),
       '#minpath':     path.resolve(__dirname, 'node_modules/minpath/index.js'),
       '#minproc':     path.resolve(__dirname, 'node_modules/minproc/index.js'),
       '#minurl':      path.resolve(__dirname, 'node_modules/minurl/index.js'),

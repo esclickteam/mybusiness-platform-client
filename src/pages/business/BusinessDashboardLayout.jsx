@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { BusinessServicesProvider } from "../../context/BusinessServicesContext"; // <-- ייבוא הקונטקסט
+import { BusinessServicesProvider } from '@context/BusinessServicesContext';
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [

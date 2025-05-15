@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar.jsx";
-import { BusinessServicesProvider } from "../../../../../context/BusinessServicesContext";
+import { BusinessServicesProvider } from '@context/BusinessServicesContext';
 
 export default function ShopSection({
   shopMode,               // הערך מה–API: מערך/אובייקט של שירותים
