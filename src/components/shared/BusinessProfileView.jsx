@@ -1,4 +1,3 @@
-// src/components/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
@@ -11,7 +10,7 @@ const TABS = [
   "גלריה",
   "ביקורות",
   "שאלות תשובות",
-  "הודעות מלקוחות", // טאב צ'אט
+  "הודעות מלקוחות",
   "חנות / יומן",
 ];
 
@@ -23,7 +22,7 @@ export default function BusinessProfileView() {
   const bizId = paramId || user?.businessId;
 
   const [data, setData] = useState(null);
-  const [faqs, setFaqs] = useState([]); // FAQS
+  const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentTab, setCurrentTab] = useState("ראשי");
@@ -43,7 +42,6 @@ export default function BusinessProfileView() {
         const business = res.data.business || res.data;
         setData(business);
         setFaqs(business.faqs || []);
-        // אם בעתיד תעדיף לקרוא ל־/business/:id/faqs – תחליף פה את הקריאה
       } catch (err) {
         console.error(err);
         setError("שגיאה בטעינת העסק");
@@ -66,7 +64,7 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    address: { city = "" } = {}
+    address: { city = "" } = {},
   } = data;
 
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
@@ -80,6 +78,23 @@ export default function BusinessProfileView() {
 
   const handleChatClick = () => {
     navigate(`/business/messages`);
+  };
+
+  // === שליחת ביקורת ===
+  const handleReviewSubmit = async (formData) => {
+    setIsSubmitting(true);
+    try {
+      await api.post(`/business/${bizId}/reviews`, formData);
+      setShowReviewModal(false);
+      // רענון רשימת ביקורות
+      const res = await api.get(`/business/${bizId}`);
+      const business = res.data.business || res.data;
+      setData(business);
+    } catch (err) {
+      alert("שגיאה בשליחת ביקורת");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -154,6 +169,17 @@ export default function BusinessProfileView() {
 
             {currentTab === "ביקורות" && (
               <div className="reviews">
+                {/* כפתור הוספת ביקורת - רק ללקוח! */}
+                {!isOwner && user && (
+                  <div className="reviews-header">
+                    <button
+                      className="add-review-btn"
+                      onClick={() => setShowReviewModal(true)}
+                    >
+                      הוסף ביקורת
+                    </button>
+                  </div>
+                )}
                 {reviews.length
                   ? reviews.map((r, i) => {
                       const dateStr = r.createdAt
@@ -187,6 +213,21 @@ export default function BusinessProfileView() {
                     })
                   : <p className="no-data">אין ביקורות</p>
                 }
+                {/* מודאל הוספת ביקורת */}
+                {showReviewModal && (
+                  <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
+                    <div className="modal-inner" onClick={e => e.stopPropagation()}>
+                      <ReviewForm
+                        businessId={bizId}
+                        onSubmit={handleReviewSubmit}
+                        isSubmitting={isSubmitting}
+                      />
+                      <button className="modal-close" onClick={() => setShowReviewModal(false)}>
+                        סגור
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
