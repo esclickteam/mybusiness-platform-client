@@ -11,12 +11,13 @@
 
 .client-service-card img {
   display: block;
-  width: 200px;            /* רוחב קבוע */
-  height: 120px;           /* גובה קבוע */
-  object-fit: cover;       /* שומר על יחס ההיבטים וחותך במידת הצורך */
-  border-radius: 12px;     /* רדיוס לפי העיצוב שלך */
-  margin: 0 auto 12px;     /* ריכוז אופקי + מרווח תחתון */
+  width: 100%;
+  aspect-ratio: 3/4;      /* יחס רוחב:גובה של 3:4 (אנכי) */
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
 }
+
 
 .client-service-card:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
