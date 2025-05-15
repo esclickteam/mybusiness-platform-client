@@ -1,3 +1,5 @@
+// src/pages/business/dashboardPages/Profile.jsx
+
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./Profile.css";
@@ -45,9 +47,9 @@ const fallbackBusiness = {
 
 export default function Profile() {
   const [businessData, setBusinessData] = useState(null);
-  const [faqs, setFaqs]                 = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [currentTab, setCurrentTab]     = useState("ראשי");
+  const [faqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentTab, setCurrentTab] = useState("ראשי");
 
   useEffect(() => {
     async function fetchBusiness() {
