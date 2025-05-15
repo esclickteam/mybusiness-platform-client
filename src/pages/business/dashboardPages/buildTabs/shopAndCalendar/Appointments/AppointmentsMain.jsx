@@ -10,16 +10,15 @@ const AppointmentsMain = ({
   onNext,
   workHours = {},
 }) => {
-  const [expandedDesc, setExpandedDesc] = useState({});
-
   useEffect(() => {
-    if (!services || services.length === 0) {
+    if ((!services || services.length === 0) && setServices) {
       const fromCalendar = JSON.parse(localStorage.getItem("demoServices_calendar") || "[]");
       if (fromCalendar.length > 0) {
         setServices(fromCalendar);
       }
     }
-  }, [services, setServices]);
+    // eslint-disable-next-line
+  }, []);
 
   const handleDelete = (indexToDelete) => {
     const updated = services.filter((_, i) => i !== indexToDelete);
@@ -69,11 +68,10 @@ const AppointmentsMain = ({
   return (
     <div className="services-page-wrapper">
       <div className="services-form-box">
-                <ServiceList
+        <ServiceList
           services={services}
           setServices={setServices}
           handleDelete={handleDelete}
-          onNext={onNext}
         />
 
         {/* מעבר ליומן */}
@@ -84,36 +82,6 @@ const AppointmentsMain = ({
           </button>
         )}
       </div>
-
-      {/* שירותים שהוגדרו – מציג רק רשימה, אין כותרת נוספת */}
-      {services.length > 0 && (
-        <div className="defined-services-section">
-          <div className="defined-services-title">השירותים שהוגדרו:</div>
-          <div className="services-grid">
-            {services.map((srv, i) => (
-              <div className="service-card" key={i}>
-                <button
-                  className="delete-service-btn"
-                  onClick={() => handleDelete(i)}
-                  title="מחיקת שירות"
-                  aria-label="מחק שירות"
-                  type="button"
-                >🗑️</button>
-                <div className="service-name">{srv.name}</div>
-                <div className="service-price">{srv.price} ₪</div>
-                <div className="service-duration">{formatDuration(srv.duration)}</div>
-                <div className="service-type">סוג: {srv.type === "delivery" ? "שירות עד הבית" : "תיאום בעסק"}</div>
-                {srv.description && (
-                  <div className="service-desc">
-                    <span style={{ color: "#8456c8", fontWeight: 600 }}>תיאור: </span>
-                    {srv.description}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

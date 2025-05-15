@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import './ServiceList.css';
 
-const ServiceList = ({ services, setServices, handleDelete }) => {
+const ServiceList = ({
+  services,
+  setServices,
+  handleDelete = () => {}, // דיפולט כדי למנוע שגיאה
+  onNext = () => {}        // דיפולט אם תשתמש בזה
+}) => {
   const [newService, setNewService] = useState({
     name: '',
     hours: '0',
@@ -100,7 +105,7 @@ const ServiceList = ({ services, setServices, handleDelete }) => {
           value={newService.minutes}
           onChange={(e) => setNewService({ ...newService, minutes: e.target.value })}
         >
-          {['0','15','30','45'].map(m => <option key={m}>{m}</option>)}
+          {['0', '15', '30', '45'].map(m => <option key={m}>{m}</option>)}
         </select>
         <span>דקות</span>
       </div>
