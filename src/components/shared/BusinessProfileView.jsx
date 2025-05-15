@@ -1,9 +1,9 @@
-// src/components/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
+import AppointmentsMain from "../Appointments/AppointmentsMain";
 import "./BusinessProfileView.css";
 
 const TABS = [
@@ -12,7 +12,7 @@ const TABS = [
   "ביקורות",
   "שאלות תשובות",
   "הודעות מלקוחות",
-  "  יומן",
+  "יומן",
 ];
 
 export default function BusinessProfileView() {
@@ -65,12 +65,12 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    shop = {},
     address: { city = "" } = {},
+    services = [],
+    calendar = {}
   } = data;
 
-  const products = data.products || shop.products || [];
-
+  const products = data.products || data.shop?.products || [];
 
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
@@ -85,16 +85,13 @@ export default function BusinessProfileView() {
     navigate(`/business/messages`);
   };
 
-  // === שליחת ביקורת ===
-  const handleReviewSubmit = async  (formData) => {
+  const handleReviewSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
       await api.post(`/business/${bizId}/reviews`, formData);
       setShowReviewModal(false);
-      // רענון רשימת ביקורות
       const res = await api.get(`/business/${bizId}`);
-      const business = res.data.business || res.data;
-      setData(business);
+      setData(res.data.business || res.data);
     } catch (err) {
       alert("שגיאה בשליחת ביקורת");
     } finally {
@@ -177,7 +174,6 @@ export default function BusinessProfileView() {
             {/* ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
-                {/* כפתור הוספת ביקורת - רק ללקוח! */}
                 {!isOwner && user && (
                   <div className="reviews-header">
                     <button
@@ -221,7 +217,6 @@ export default function BusinessProfileView() {
                     })
                   : <p className="no-data">אין ביקורות</p>
                 }
-                {/* מודאל הוספת ביקורת */}
                 {showReviewModal && (
                   <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
                     <div className="modal-inner" onClick={e => e.stopPropagation()}>
@@ -239,7 +234,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* שאלות ותשובות ציבורי */}
+            {/* שאלות ותשובות */}
             {currentTab === "שאלות תשובות" && (
               <div className="faqs-public">
                 {faqs.length === 0 ? (
@@ -255,7 +250,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* הודעות מלקוחות */}
+            {/* הודעות */}
             {currentTab === "הודעות מלקוחות" && (
               <div className="chat-button-container">
                 <button className="chat-button" onClick={handleChatClick}>
@@ -264,29 +259,14 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* חנות / יומן */}
-            {currentTab === "  יומן" && (
-              <div className="public-shop">
-                <h2 style={{marginBottom:'1rem', textAlign: 'center'}}>החנות שלכם 🛒</h2>
-                {products && products.length > 0 ? (
-                  <div className="products-list-public">
-                    {products.map((p, i) => (
-                      <div className="product-card-public" key={p._id || p.id || i}>
-                        {p.image && (
-                          <img src={p.image} alt={p.name} className="product-image-public" />
-                        )}
-                        <div className="product-info-public">
-                          <h4 className="product-title">{p.name}</h4>
-                          <div className="product-price">{p.price} ₪</div>
-                          {p.description && <div className="product-description">{p.description}</div>}
-                          {p.category && <div className="product-category">קטגוריה: {p.category}</div>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="no-data">אין מוצרים להצגה</p>
-                )}
+            {/* יומן במקום חנות */}
+            {currentTab === "יומן" && (
+              <div className="public-calendar">
+                <AppointmentsMain
+                  isPreview={false}
+                  services={services}
+                  workHours={calendar}
+                />
               </div>
             )}
           </div>
