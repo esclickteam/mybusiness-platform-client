@@ -10,7 +10,7 @@ const BASE_URL = isProd
 const API = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,        // שולח את ה־HttpOnly cookie אוטומטית
-  timeout: 5000,                // timeout לאחר 5 שניות
+  timeout: 20000,                // timeout לאחר 5 שניות
   headers: {
     Accept: "application/json",
   },
