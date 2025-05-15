@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '@api'; // axios instance עם withCredentials: true ו-baseURL מותאם ל-/api/business
-import { useBusinessServices } from '../../../../../../context/BusinessServicesContext';
+import { useBusinessServices } from '../../../context/BusinessServicesContext';
 import './ShopTab.css';
 
 const ShopTab = () => {
