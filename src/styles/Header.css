@@ -255,3 +255,33 @@ a.active-link        {
   90%  { opacity: 1; transform: translateX(-50%) translateY(0); }
   100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
 }
+
+/* כפתור התחברות במובייל בתוך ה־Drawer */
+.mobile-auth {
+  padding: 16px;
+  border-bottom: 1px solid #e0d3f2;
+}
+
+.mobile-auth .login-button {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 1rem;
+  background: #5e17eb;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background .2s;
+}
+
+.mobile-auth .login-button:hover {
+  background: #4315c7;
+}
+
+/* תבטל החבאה של הכפתור בקשיחות */
+@media (max-width: 768px) {
+  .mobile-auth {
+    display: block;
+  }
+}

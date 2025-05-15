@@ -59,7 +59,7 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      await logout(); // מתוך AuthContext
+      await logout();
     } catch (err) {
       console.error("❌ Logout failed:", err);
     }
@@ -87,7 +87,7 @@ export default function Header() {
         <div className="auth-controls desktop-only">
           {!user && (
             <Link to="/login" className="login-button">
-             התחברות
+              התחברות
             </Link>
           )}
 
@@ -124,6 +124,19 @@ export default function Header() {
                 <span className="back-text">חזור</span>
               </button>
             </div>
+
+            {/* כפתור התחברות במובייל */}
+            {!user && (
+              <div className="mobile-auth">
+                <Link
+                  to="/login"
+                  className="login-button"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  התחברות
+                </Link>
+              </div>
+            )}
 
             <div className="menu-scroll">
               {user && (
