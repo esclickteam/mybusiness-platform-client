@@ -30,21 +30,23 @@ const AppointmentsMain = ({
 
   // --- מחיקה מהשרת ---
   const handleDelete = (serviceIndex) => {
-    const srv = services[serviceIndex];
-    if (srv && srv._id) {
-      API.delete(`/business/my/services/${srv._id}`)
-        .then(res => {
-          // מחזיר { success: true, services: [...] }
-          setServices(res.data.services || []);
-        })
-        .catch(err => alert(err.message));
-    } else {
-      // דמו בלבד
-      const updated = services.filter((_, i) => i !== serviceIndex);
-      setServices(updated);
-      localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
-    }
-  };
+  const srv = services[serviceIndex];
+  if (srv && srv._id) {
+    // מחיקה לפי ID במקום אינדקס
+    API.delete(`/business/my/services/${srv._id}`)
+      .then(res => {
+        // השרת מחזיר { success: true, services: [...] }
+        setServices(res.data.services || []);
+      })
+      .catch(err => alert(err.message));
+  } else {
+    // לוקאלי (דמו)
+    const updated = services.filter((_, i) => i !== serviceIndex);
+    setServices(updated);
+    localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
+  }
+};
+
 
   // עיצוב משך זמן
   const formatDuration = (minutes) => {
