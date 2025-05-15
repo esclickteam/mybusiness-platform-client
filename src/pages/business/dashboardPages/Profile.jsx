@@ -1,3 +1,5 @@
+// src/pages/business/dashboardPages/Profile.jsx
+
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./Profile.css";
@@ -18,6 +20,7 @@ const TABS = [
   "שאלות ותשובות",
 ];
 
+// ברירת מחדל - רק לדמו
 const fallbackBusiness = {
   name: "עסק לדוגמה",
   description: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
@@ -55,16 +58,16 @@ export default function Profile() {
     async function fetchBusiness() {
       const token = localStorage.getItem("token");
       const suffix = token ? "" : "?dev=true";
-
       try {
         const { data } = await API.get(`/business/my${suffix}`);
         const merged = {
           ...fallbackBusiness,
           ...data,
           description: data.about ?? fallbackBusiness.description,
-          reviews: Array.isArray(data.reviews) && data.reviews.length > 0
-            ? data.reviews
-            : fallbackBusiness.reviews,
+          reviews:
+            Array.isArray(data.reviews) && data.reviews.length > 0
+              ? data.reviews
+              : fallbackBusiness.reviews,
         };
         setBusinessData(merged);
         setFaqs(Array.isArray(data.faqs) ? data.faqs : []);
@@ -126,7 +129,7 @@ export default function Profile() {
         <section>
           <ReviewsModule
             reviews={businessData.reviews}
-            setReviews={() => {}}
+            setReviews={() => {}} // פונקציה ריקה למניעת שגיאות
             isPreview
             currentUser={null}
           />
@@ -137,7 +140,7 @@ export default function Profile() {
         <section>
           <ChatTab
             businessDetails={businessData}
-            setBusinessDetails={() => {}}
+            setBusinessDetails={() => {}} // פונקציה ריקה
             isPreview
           />
         </section>
