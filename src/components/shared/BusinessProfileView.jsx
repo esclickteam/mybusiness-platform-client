@@ -86,7 +86,7 @@ export default function BusinessProfileView() {
   };
 
   // === שליחת ביקורת ===
-  const handleReviewSubmit = async (formData) => {
+  const handleReviewSubmit = async  (formData) => {
     setIsSubmitting(true);
     try {
       await api.post(`/business/${bizId}/reviews`, formData);
