@@ -17,7 +17,7 @@ const ShopTab = () => {
   });
   const [imagePreview, setImagePreview] = useState(null);
 
-  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState('');
   const [paymentKeys, setPaymentKeys] = useState({});
   const [paymentMethod, setPaymentMethod] = useState('both');
   const [shippingType, setShippingType] = useState('free');
@@ -109,7 +109,7 @@ const ShopTab = () => {
   };
 
   // --- סליקה ---
-  const handleProviderSelect = prov => setSelectedProvider(prov);
+  const handleProviderSelect = e => setSelectedProvider(e.target.value);
   const handleKeyChange = e => {
     setPaymentKeys(prev => ({ ...prev, [selectedProvider]: e.target.value }));
   };
@@ -208,16 +208,26 @@ const ShopTab = () => {
       {/* הגדרות סליקה */}
       <div className="payment-settings">
         <h4>💳 הגדרת סליקה לעסק</h4>
-        <div className="payment-providers">
+        <select
+          value={selectedProvider || ""}
+          onChange={handleProviderSelect}
+          className="provider-select"
+        >
+          <option value="" disabled>בחר ספק סליקה</option>
           {allProviders.map(provider => (
-            <button key={provider} type="button" onClick={() => handleProviderSelect(provider)} className={selectedProvider === provider ? 'active' : ''}>
+            <option key={provider} value={provider}>
               {provider}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
         {selectedProvider && (
           <div className="payment-inputs">
-            <input type="text" placeholder={`מפתח עבור ${selectedProvider}`} value={paymentKeys[selectedProvider] || ''} onChange={handleKeyChange} />
+            <input
+              type="text"
+              placeholder={`מפתח עבור ${selectedProvider}`}
+              value={paymentKeys[selectedProvider] || ''}
+              onChange={handleKeyChange}
+            />
             <p className="payment-info">שמור את המפתח לאימות תשלומים.</p>
           </div>
         )}
