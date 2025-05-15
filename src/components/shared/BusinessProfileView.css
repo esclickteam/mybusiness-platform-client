@@ -279,7 +279,49 @@ html, body, #root {
   line-height: 1.4;
 }
 
-/* === רספונסיביות === */
+/* === שאלות ותשובות ציבורי (טאב FAQ) === */
+.faqs-public {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 1.5rem;
+  padding: 0;
+}
+.faq-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(150,90,220,0.08);
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.5rem 0.7rem;
+  transition: box-shadow 0.2s, background 0.2s;
+  border-right: 4px solid #b46af1;
+}
+.faq-card:hover {
+  box-shadow: 0 2px 10px rgba(90,40,180,0.08);
+  background: #faf6ff;
+}
+.faq-q {
+  font-weight: bold;
+  color: #6d19d4;
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+}
+.faq-a {
+  color: #444;
+  font-size: 0.98rem;
+  margin-bottom: 0.1rem;
+  padding-right: 0.7rem;
+  line-height: 1.5;
+}
+
+/* טקסט שאין נתונים */
+.no-data {
+  text-align: center;
+  color: #b8b8b8;
+  margin-top: 1.5rem;
+  font-size: 1.05rem;
+}
+
+/* רספונסיביות FAQ */
 @media (max-width: 768px) {
   .public-main-images {
     grid-template-columns: repeat(2, 1fr);
@@ -289,6 +331,10 @@ html, body, #root {
   }
   .review-card.improved {
     max-width: 100%;
+  }
+  .faqs-public, .faq-card {
+    max-width: 100%;
+    padding: 1rem 0.7rem 0.7rem;
   }
 }
 

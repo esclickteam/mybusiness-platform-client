@@ -1,3 +1,4 @@
+// src/components/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
@@ -10,7 +11,7 @@ const TABS = [
   "גלריה",
   "ביקורות",
   "שאלות תשובות",
-  "הודעות מלקוחות",  // עדכון טאב צ'אט עם העסק ל"הודעות מלקוחות"
+  "הודעות מלקוחות", // טאב צ'אט
   "חנות / יומן",
 ];
 
@@ -22,6 +23,7 @@ export default function BusinessProfileView() {
   const bizId = paramId || user?.businessId;
 
   const [data, setData] = useState(null);
+  const [faqs, setFaqs] = useState([]); // FAQS
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentTab, setCurrentTab] = useState("ראשי");
@@ -38,7 +40,10 @@ export default function BusinessProfileView() {
       setLoading(true);
       try {
         const res = await api.get(`/business/${bizId}`);
-        setData(res.data.business || res.data);
+        const business = res.data.business || res.data;
+        setData(business);
+        setFaqs(business.faqs || []);
+        // אם בעתיד תעדיף לקרוא ל־/business/:id/faqs – תחליף פה את הקריאה
       } catch (err) {
         console.error(err);
         setError("שגיאה בטעינת העסק");
@@ -74,7 +79,6 @@ export default function BusinessProfileView() {
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
   const handleChatClick = () => {
-    // נווט להודעות מלקוחות בדשבורד
     navigate(`/business/messages`);
   };
 
@@ -186,6 +190,22 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* שאלות ותשובות ציבורי */}
+            {currentTab === "שאלות תשובות" && (
+              <div className="faqs-public">
+                {faqs.length === 0 ? (
+                  <p className="no-data">אין עדיין שאלות ותשובות</p>
+                ) : (
+                  faqs.map(faq => (
+                    <div key={faq.faqId || faq._id} className="faq-card">
+                      <div className="faq-q"><strong>שאלה:</strong> {faq.question}</div>
+                      <div className="faq-a"><strong>תשובה:</strong> {faq.answer}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
             {currentTab === "הודעות מלקוחות" && (
               <div className="chat-button-container">
                 <button className="chat-button" onClick={handleChatClick}>
@@ -198,7 +218,6 @@ export default function BusinessProfileView() {
               <div className="shop-calendar">…תוכן חנות / יומן…</div>
             )}
           </div>
-
         </div>
       </div>
     </div>
