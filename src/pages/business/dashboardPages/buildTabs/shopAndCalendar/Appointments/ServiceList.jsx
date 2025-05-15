@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import API from '@api'; // ודא שיש לך axios instance מוגדר
 import './ServiceList.css';
 
 const ServiceList = ({
   services,
   setServices,
-  handleDelete = () => {}, // דיפולט כדי למנוע שגיאה
-  onNext = () => {}        // דיפולט אם תשתמש בזה
+  handleDelete = () => {},
+  onNext = () => {}
 }) => {
   const [newService, setNewService] = useState({
     name: '',
@@ -17,32 +18,57 @@ const ServiceList = ({
     imagePreview: '',
     appointmentType: 'at_business'
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleAddService = () => {
+  const handleAddService = async () => {
     const duration = parseInt(newService.hours) * 60 + parseInt(newService.minutes);
     if (!newService.name || duration === 0) return;
 
-    const serviceToAdd = {
-      ...newService,
+    setLoading(true);
+
+    // תמיכה בשליחת תמונה - אם יש צורך
+    let serviceToAdd = {
+      name: newService.name,
       duration,
+      price: newService.price,
+      description: newService.description,
+      appointmentType: newService.appointmentType,
     };
 
-    const updated = [...services, serviceToAdd];
-    setServices(updated);
-
-    // ✅ שמירה גם לצד היומן
-    localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
-
-    setNewService({
-      name: '',
-      hours: '0',
-      minutes: '30',
-      price: '',
-      description: '',
-      image: null,
-      imagePreview: '',
-      appointmentType: 'at_business'
-    });
+    // אם יש קובץ תמונה, השתמש ב־FormData (יש לבנות API מתאים בשרת)
+    // כרגע הקוד ישלח JSON רגיל
+    try {
+      const res = await API.post('/business/my/services', serviceToAdd);
+      // בהנחה שהשרת מחזיר את כל מערך השירותים המעודכן
+      setServices(res.data);
+      setNewService({
+        name: '',
+        hours: '0',
+        minutes: '30',
+        price: '',
+        description: '',
+        image: null,
+        imagePreview: '',
+        appointmentType: 'at_business'
+      });
+    } catch (err) {
+      // fallback לדמו (פיתוח בלבד)
+      const updated = [...services, { ...serviceToAdd, ...newService }];
+      setServices(updated);
+      localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
+      setNewService({
+        name: '',
+        hours: '0',
+        minutes: '30',
+        price: '',
+        description: '',
+        image: null,
+        imagePreview: '',
+        appointmentType: 'at_business'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleImageChange = (e) => {
@@ -131,14 +157,16 @@ const ServiceList = ({
         <img src={newService.imagePreview} alt="תצוגה" className="preview-img" />
       )}
 
-      <button onClick={handleAddService}>➕ הוספת שירות</button>
+      <button onClick={handleAddService} disabled={loading}>
+        {loading ? "שומר..." : "➕ הוספת שירות"}
+      </button>
 
       <hr />
 
       <h3>השירותים שהוגדרו:</h3>
       <div className="services-grid">
         {services.map((srv, i) => (
-          <div key={i} className="service-card">
+          <div key={srv._id || i} className="service-card">
             {srv.imagePreview && <img src={srv.imagePreview} alt={srv.name} />}
             <div className="card-content">
               <h4>{srv.name}</h4>

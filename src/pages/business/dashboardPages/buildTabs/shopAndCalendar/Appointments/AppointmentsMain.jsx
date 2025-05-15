@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API from '@api'; // ודא שזאת הקריאה שלך לאקסיוס instance
 import ServiceList from './ServiceList';
 import ClientServiceCard from './ClientServiceCard';
 import './AppointmentsMain.css';
@@ -10,19 +11,34 @@ const AppointmentsMain = ({
   onNext,
   workHours = {},
 }) => {
+  // --- שליפה מהשרת ---
   useEffect(() => {
-    if ((!services || services.length === 0) && setServices) {
-      const fromCalendar = JSON.parse(localStorage.getItem("demoServices_calendar") || "[]");
-      if (fromCalendar.length > 0) {
-        setServices(fromCalendar);
-      }
+    if (!isPreview && setServices) {
+      API.get('/business/my/services')
+        .then(res => setServices(res.data))
+        .catch(err => {
+          // אם אין שירותים בשרת - נטען דמו מהמקומי
+          const fromCalendar = JSON.parse(localStorage.getItem("demoServices_calendar") || "[]");
+          setServices(fromCalendar);
+        });
     }
     // eslint-disable-next-line
   }, []);
 
-  const handleDelete = (indexToDelete) => {
-    const updated = services.filter((_, i) => i !== indexToDelete);
-    setServices(updated);
+  // --- מחיקה מהשרת ---
+  const handleDelete = (serviceIdOrIndex) => {
+    // אם השירות מהשרת - יש לו _id, אחרת יש להפעיל מחיקה לוקלית (לשימוש בדמו)
+    const srv = services[serviceIdOrIndex];
+    if (srv && srv._id) {
+      API.delete(`/business/my/services/${srv._id}`)
+        .then(res => setServices(res.data))
+        .catch(err => alert(err.message));
+    } else {
+      // דמו בלבד
+      const updated = services.filter((_, i) => i !== serviceIdOrIndex);
+      setServices(updated);
+      localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
+    }
   };
 
   // עיצוב משך זמן
@@ -55,7 +71,7 @@ const AppointmentsMain = ({
           ) : (
             <div className="services-grid">
               {services.map((srv, i) => (
-                <ClientServiceCard key={i} service={srv} workHours={workHours} />
+                <ClientServiceCard key={srv._id || i} service={srv} workHours={workHours} />
               ))}
             </div>
           )}
