@@ -10,7 +10,6 @@ const AppointmentsMain = ({
   onNext,
   workHours = {},
 }) => {
-  // תיאור נפתח (אם תומך)
   const [expandedDesc, setExpandedDesc] = useState({});
 
   useEffect(() => {
@@ -27,14 +26,14 @@ const AppointmentsMain = ({
     setServices(updated);
   };
 
-  // פורמט משך השירות - עברית מקצועית
+  // עיצוב משך זמן
   const formatDuration = (minutes) => {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return h > 0 ? `${h}:${m.toString().padStart(2, '0')} שעות` : `${m} דקות`;
   };
 
-  // PREVIEW MODE - תצוגה ללקוח
+  // --- תצוגה ללקוח (preview) ---
   if (isPreview) {
     return (
       <div className="services-page-wrapper">
@@ -66,7 +65,7 @@ const AppointmentsMain = ({
     );
   }
 
-  // FORM MODE - עריכת שירותים
+  // --- מצב עריכה/הוספה ---
   return (
     <div className="services-page-wrapper">
       <div className="services-form-box">
@@ -77,6 +76,8 @@ const AppointmentsMain = ({
           handleDelete={handleDelete}
           onNext={onNext}
         />
+
+        {/* מעבר ליומן */}
         {services.length > 0 && (
           <button className="go-to-calendar-btn" onClick={onNext}>
             <span role="img" aria-label="calendar">📅</span>
@@ -85,10 +86,7 @@ const AppointmentsMain = ({
         )}
       </div>
 
-      {/* הפרדה */}
-      <hr className="hr-sep" />
-
-      {/* שירותים שהוגדרו */}
+      {/* שירותים שהוגדרו – מציג רק רשימה, אין כותרת נוספת */}
       {services.length > 0 && (
         <div className="defined-services-section">
           <div className="defined-services-title">השירותים שהוגדרו:</div>
