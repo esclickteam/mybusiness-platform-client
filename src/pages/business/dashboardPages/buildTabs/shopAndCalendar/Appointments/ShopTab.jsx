@@ -33,8 +33,8 @@ const ShopTab = () => {
     const fetchData = async () => {
       try {
         const [prodRes, couponRes] = await Promise.all([
-          API.get('/my/products'),
-          API.get('/my/coupons'),
+          API.get('/business/my/products'),
+          API.get('/business/my/coupons'),
         ]);
         setProducts(prodRes.data || []);
         setCoupons(couponRes.data || []);
@@ -84,7 +84,7 @@ const ShopTab = () => {
       Object.entries(formData).forEach(([key, val]) => {
         if (val != null) data.append(key, val);
       });
-      const res = await API.post('/my/products', data, {
+      const res = await API.post('/business/my/products', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setProducts(prev => [...prev, res.data]);
@@ -100,7 +100,7 @@ const ShopTab = () => {
   const handleDeleteProduct = async productId => {
     if (!productId || !window.confirm('האם למחוק מוצר זה?')) return;
     try {
-      await API.delete(`/my/products/${productId}`);
+      await API.delete(`/business/my/products/${productId}`);
       setProducts(prev => prev.filter(p => (p._id || p.id) !== productId));
     } catch (err) {
       console.error('שגיאה במחיקת מוצר:', err);
@@ -119,7 +119,7 @@ const ShopTab = () => {
     e.preventDefault();
     if (!coupon.code || !coupon.discount) return;
     try {
-      const res = await API.post('/my/coupons', coupon);
+      const res = await API.post('/business/my/coupons', coupon);
       setCoupons(prev => [...prev, res.data]);
       setCoupon({ code: '', discount: '', start: '', expiry: '' });
     } catch (err) {
@@ -131,7 +131,7 @@ const ShopTab = () => {
   const handleDeleteCoupon = async id => {
     if (!window.confirm('האם למחוק קופון זה?')) return;
     try {
-      await API.delete(`/my/coupons/${id}`);
+      await API.delete(`/business/my/coupons/${id}`);
       setCoupons(prev => prev.filter(c => c.id !== id && c._id !== id));
     } catch (err) {
       console.error('שגיאה במחיקת קופון:', err);
@@ -268,7 +268,10 @@ const ShopTab = () => {
             <tbody>
               {coupons.map((c, i) => (
                 <tr key={c._id || c.id || i}>
-                  <td>{c.code}</td><td>{c.discount}%</td><td>{c.start}</td><td>{c.expiry}</td>
+                  <td>{c.code}</td>
+                  <td>{c.discount}%</td>
+                  <td>{c.start ? new Date(c.start).toLocaleDateString() : '-'}</td>
+                  <td>{c.expiry ? new Date(c.expiry).toLocaleDateString() : '-'}</td>
                   <td><button type="button" onClick={() => handleDeleteCoupon(c._id || c.id)}>🗑️</button></td>
                 </tr>
               ))}
