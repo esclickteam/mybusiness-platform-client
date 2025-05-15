@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useBusinessServices } from '../../../../../../context/BusinessServicesContext';
-import { useAuth } from '../../../../../../context/AuthContext'; // תוודא שיש לך את זה
+import { useAuth } from '../../../../../../context/AuthContext';
 import './ShopTab.css';
 
 const ShopTab = () => {
   const { products, setProducts } = useBusinessServices();
-  const { token } = useAuth(); // להוציא JWT אם צריך
+  const { token } = useAuth();
   const [categories, setCategories] = useState(['כללי']);
   const [newCategory, setNewCategory] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
-    image: null,   // קובץ אמיתי
+    image: null,
     category: 'כללי'
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -52,7 +52,7 @@ const ShopTab = () => {
     }
   };
 
-  // --- הוספת מוצר אמיתי עם FormData ---
+  // --- הוספת מוצר ---
   const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.price) return;
@@ -64,12 +64,11 @@ const ShopTab = () => {
       data.append('category', formData.category);
       if (formData.image) data.append('image', formData.image);
 
-      const res = await fetch('/api/business/my/products', {
+      const res = await fetch('/business/my/products', {
         method: 'POST',
         body: data,
         headers: {
           Authorization: `Bearer ${token}`
-          // אל תוסיף Content-Type כאן!
         }
       });
       if (!res.ok) throw new Error('שגיאה בהעלאת מוצר');
@@ -84,10 +83,20 @@ const ShopTab = () => {
   };
 
   // --- מחיקת מוצר ---
-  const handleDeleteProduct = (index) => {
-    const updated = [...products];
-    updated.splice(index, 1);
-    setProducts(updated);
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm("האם למחוק מוצר זה?")) return;
+    try {
+      const res = await fetch(`/business/my/products/${productId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error('שגיאה במחיקת מוצר');
+      setProducts(products.filter(p => (p._id || p.id) !== productId));
+    } catch {
+      alert('שגיאה במחיקת מוצר');
+    }
   };
 
   // --- סליקה ---
@@ -257,8 +266,10 @@ const ShopTab = () => {
           <h3>📦 מוצרים קיימים</h3>
           <div className="product-cards-list">
             {products.map((p, i) => (
-              <div key={i} className="product-card-admin">
-                <button className="delete-btn" onClick={() => handleDeleteProduct(i)}>🗑️</button>
+              <div key={p._id || p.id || i} className="product-card-admin">
+                <button className="delete-btn" onClick={() => handleDeleteProduct(p._id || p.id)}>
+                  🗑️
+                </button>
                 {p.image && (
                   <img
                     src={typeof p.image === 'string' ? p.image : URL.createObjectURL(p.image)}
