@@ -48,6 +48,9 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("ראשי");
 
+  // מצב לחנות/יומן
+  const [shopMode, setShopMode] = useState(null);
+
   useEffect(() => {
     async function fetchBusiness() {
       const token = localStorage.getItem("token");
@@ -110,7 +113,12 @@ export default function Profile() {
 
       {currentTab === "חנות / יומן" && (
         <section>
-          <ShopAndCalendar isPreview businessDetails={businessData} />
+          <ShopAndCalendar
+            isPreview={false}
+            shopMode={shopMode}
+            setShopMode={setShopMode}
+            setBusinessDetails={setBusinessData}
+          />
         </section>
       )}
 
