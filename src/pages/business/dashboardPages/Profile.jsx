@@ -1,5 +1,3 @@
-// src/pages/business/dashboardPages/Profile.jsx
-
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./Profile.css";
@@ -10,7 +8,6 @@ import ShopAndCalendar from "./buildTabs/shopAndCalendar/ShopAndCalendar";
 import ReviewsModule from "./buildTabs/ReviewsModule";
 import FaqTab from "./buildTabs/FaqTab";
 import ChatTab from "./buildTabs/ChatTab";
-import { BusinessServicesProvider } from '@context/BusinessServicesContext';
 
 const TABS = [
   "ראשי",
@@ -113,9 +110,7 @@ export default function Profile() {
 
       {currentTab === "חנות / יומן" && (
         <section>
-          <BusinessServicesProvider>
-            <ShopAndCalendar isPreview businessDetails={businessData} />
-          </BusinessServicesProvider>
+          <ShopAndCalendar isPreview businessDetails={businessData} />
         </section>
       )}
 

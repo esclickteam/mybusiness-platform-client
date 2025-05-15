@@ -9,7 +9,7 @@ import CalendarSetup    from './Appointments/CalendarSetup';
 import ShopTab          from './Appointments/ShopTab';
 import ShopPreview      from './Appointments/ShopPreview';
 import PaymentSection   from './Appointments/PaymentSection';
-import { useBusinessServices, BusinessServicesProvider } from '@context/BusinessServicesContext';
+import { useBusinessServices } from '@context/BusinessServicesContext';
 
 const ShopAndCalendar = ({
   isPreview = false,
@@ -108,9 +108,7 @@ const ShopAndCalendar = ({
         />
       )}
       {!isPreview && mode === 'store' && (
-        <BusinessServicesProvider>
-          <ShopTab isPreview={false} />
-        </BusinessServicesProvider>
+        <ShopTab isPreview={false} />
       )}
 
       {/* 4) PREVIEW */}

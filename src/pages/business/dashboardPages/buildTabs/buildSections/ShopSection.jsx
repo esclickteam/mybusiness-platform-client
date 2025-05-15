@@ -1,6 +1,6 @@
+// src/pages/business/dashboardPages/buildTabs/buildSections/ShopSection.jsx
 import React, { useState, useEffect } from "react";
 import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar.jsx";
-import { BusinessServicesProvider } from '@context/BusinessServicesContext';
 
 export default function ShopSection({
   shopMode,               // הערך מה–API: מערך/אובייקט של שירותים
@@ -12,7 +12,7 @@ export default function ShopSection({
   // UI-mode מקומי שנשאר null עד שהמשתמש יבחר חנות/יומן
   const [mode, setMode] = useState(null);
 
-  // אופציונלי: אם shopMode שמגיע מה–API מייצג בעצם חנות (למשל מערך non-empty),
+  // אופציונלי: אם shopMode שמגיע מה–API מייצג חנות (למשל מערך non-empty),
   // אפשר לסנכרן אליו
   useEffect(() => {
     if (Array.isArray(shopMode) && shopMode.length > 0) {
@@ -27,7 +27,7 @@ export default function ShopSection({
   };
 
   return (
-    <BusinessServicesProvider>
+    <>
       <div className="form-column">
         {/* הפורם בו המשתמש בוחר ועורך */}
         <ShopAndCalendar
@@ -54,6 +54,6 @@ export default function ShopSection({
           </div>
         </div>
       </div>
-    </BusinessServicesProvider>
+    </>
   );
 }

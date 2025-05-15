@@ -20,8 +20,6 @@ import CRMSettingsTab       from "./dashboardPages/crmpages/CRMSettingsTab";
 
 import GoalsPage            from "./dashboardPages/GoalsPage";
 
-import { BusinessServicesProvider } from '@context/BusinessServicesContext';
-
 const BusinessDashboardRoutes = () => (
   <Routes>
     {/* Layout משותף לכל דפי הדשבורד */}
@@ -34,32 +32,11 @@ const BusinessDashboardRoutes = () => (
       <Route path="dashboard" element={<DashboardPage />} />
 
       {/* עריכת העסק */}
-      <Route
-        path="edit"
-        element={
-          <BusinessServicesProvider>
-            <BuildBusinessPage />
-          </BusinessServicesProvider>
-        }
-      />
-      <Route
-        path="build"
-        element={
-          <BusinessServicesProvider>
-            <BuildBusinessPage />
-          </BusinessServicesProvider>
-        }
-      />
+      <Route path="edit" element={<BuildBusinessPage />} />
+      <Route path="build" element={<BuildBusinessPage />} />
 
       {/* סל הקניות */}
-      <Route
-        path="cart"
-        element={
-          <BusinessServicesProvider>
-            <CartPage />
-          </BusinessServicesProvider>
-        }
-      />
+      <Route path="cart" element={<CartPage />} />
 
       {/* לשוניות נוספות */}
       <Route path="collab"  element={<Collab />} />
@@ -70,7 +47,6 @@ const BusinessDashboardRoutes = () => (
       {/* Preview לצ'אט */}
       <Route path="chat-test" element={<ChatTab isPreview />} />
       <Route path="chat/:partnerId" element={<BusinessChat />} />
-
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />
