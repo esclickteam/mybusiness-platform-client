@@ -47,18 +47,22 @@ export default function Build() {
   });
 
   const [isSaving, setIsSaving] = useState(false);
-  const [showViewProfile, setShowViewProfile] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+const [showViewProfile, setShowViewProfile] = useState(false);
+const [editIndex, setEditIndex] = useState(null);
+const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  // Autosave setup
-  const [firstLoad, setFirstLoad] = useState(true);
-  const saveTimeout = useRef(null);
+// Autosave setup
+const [firstLoad, setFirstLoad] = useState(true);
+const saveTimeout = useRef(null);
 
-  const logoInputRef       = useRef();
-  const mainImagesInputRef = useRef();
-  const galleryInputRef    = useRef();
-  const pendingUploadsRef  = useRef([]);
+const logoInputRef       = useRef();
+const mainImagesInputRef = useRef();
+const galleryInputRef    = useRef();
+const pendingUploadsRef  = useRef([]);
+
+// הוספת סטייט עבור shopMode
+const [shopMode, setShopMode] = useState(null);
+
 
   function extractPublicIdFromUrl(url) {
     const filename = url.split("/").pop().split("?")[0];
@@ -631,12 +635,14 @@ const handleDeleteMainImage = async publicId => {
       )}
 
       {currentTab === "חנות / יומן" && (
-        <ShopSection
-          setBusinessDetails={setBusinessDetails}
-          handleSave={handleSave}
-          renderTopBar={renderTopBar}
-        />
-      )}
+  <ShopSection
+    setBusinessDetails={setBusinessDetails}
+    handleSave={handleSave}
+    renderTopBar={renderTopBar}
+    shopMode={shopMode} // אם יש משתנה shopMode - העבר אותו גם
+  />
+)}
+
 
       {currentTab === "צ'אט עם העסק" && (
         <ChatSection
