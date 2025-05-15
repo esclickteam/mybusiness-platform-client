@@ -114,11 +114,11 @@ export default function Profile() {
       {currentTab === "חנות / יומן" && (
         <section>
           <ShopAndCalendar
-            isPreview={false}
-            shopMode={shopMode}
-            setShopMode={setShopMode}
-            setBusinessDetails={setBusinessData}
-          />
+  isPreview={false}
+  shopMode={shopMode}
+  setShopMode={setShopMode}
+  setBusinessDetails={setBusinessData}
+/>
         </section>
       )}
 

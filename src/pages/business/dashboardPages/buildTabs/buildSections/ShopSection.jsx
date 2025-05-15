@@ -9,32 +9,46 @@ export default function ShopSection({
   handleSave,
   renderTopBar
 }) {
-  // UI-mode מקומי
+  // מצב בחירה לוקאלי (UI בלבד)
   const [mode, setMode] = useState(null);
 
-  // אם מגיע מערך של חנות (לדוג׳ מוצר ראשון), אפשר להגדיר default ל-"store"
+  // אם shopMode מה-API מייצג חנות — הגדר default ל-"store"
   useEffect(() => {
     if (Array.isArray(shopMode) && shopMode.length > 0) {
       setMode("store");
     }
   }, [shopMode]);
 
-  // שינוי מצב מעדכן גם לוקאל וגם להורה
-  const handleModeChange = newMode => {
-    setMode(newMode);
-    setParentMode && setParentMode(newMode);
-  };
+  // מעבר בין מצבים - משנה רק לוקאלית (ולא מעדכן API)
+  const handleModeChange = newMode => setMode(newMode);
 
   return (
     <>
       <div className="form-column">
-        {/* הפורם בו המשתמש בוחר ועורך */}
-        <ShopAndCalendar
-          isPreview={false}
-          shopMode={shopMode}
-          setShopMode={setParentMode || (() => {})}  // הגנה: תמיד פונקציה
-          setBusinessDetails={setBusinessDetails || (() => {})}
-        />
+        {/* כפתורי בחירה (חנות/יומן) */}
+        <div className="shop-type-btns">
+          <button
+            className={`mode-btn${mode === "appointments" ? " active" : ""}`}
+            onClick={() => handleModeChange("appointments")}
+          >
+            יומן
+          </button>
+          <button
+            className={`mode-btn${mode === "store" ? " active" : ""}`}
+            onClick={() => handleModeChange("store")}
+          >
+            חנות
+          </button>
+        </div>
+        {/* רנדר רק אם נבחר מצב */}
+        {mode && (
+          <ShopAndCalendar
+            isPreview={false}
+            shopMode={mode}
+            setShopMode={setMode} // מעדכן מצב רק פה, לא ב-parent
+            setBusinessDetails={setBusinessDetails || (() => {})}
+          />
+        )}
         <button onClick={handleSave}>💾 שמור</button>
       </div>
 
@@ -44,12 +58,14 @@ export default function ShopSection({
           <div className="phone-frame">
             <div className="phone-body">
               {/* תצוגת Preview */}
-              <ShopAndCalendar
-                isPreview={true}
-                shopMode={mode}
-                setShopMode={() => {}}                // preview: תמיד פונקציה ריקה
-                setBusinessDetails={() => {}}         // preview: תמיד פונקציה ריקה
-              />
+              {mode && (
+                <ShopAndCalendar
+                  isPreview={true}
+                  shopMode={mode}
+                  setShopMode={() => {}}
+                  setBusinessDetails={() => {}}
+                />
+              )}
             </div>
           </div>
         </div>
