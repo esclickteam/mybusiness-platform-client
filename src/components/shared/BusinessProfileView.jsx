@@ -265,7 +265,7 @@ export default function BusinessProfileView() {
             )}
 
             {/* חנות / יומן */}
-            {currentTab === "חנות / יומן" && (
+            {currentTab === "  יומן" && (
               <div className="public-shop">
                 <h2 style={{marginBottom:'1rem', textAlign: 'center'}}>החנות שלכם 🛒</h2>
                 {products && products.length > 0 ? (
