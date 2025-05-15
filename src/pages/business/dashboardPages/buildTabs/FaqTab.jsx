@@ -6,13 +6,22 @@ import '../build/Build.css';
 import './FaqTab.css';
 import API from '@api';
 
-const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
+// ערך דיפולטי בטוח ל־setFaqs!
+const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
+  // DEBUG: תראה בקונסולה בכל Mount מה קיבלת
+  React.useEffect(() => {
+    console.log("FaqTab mount! faqs:", faqs, "setFaqs typeof:", typeof setFaqs);
+    if (typeof setFaqs !== "function") {
+      console.error("❌ setFaqs שהועבר ל־FaqTab הוא לא פונקציה!", setFaqs);
+    }
+  }, [faqs, setFaqs]);
+
   const [openAnswers, setOpenAnswers] = useState([]);
   const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
   const [editFaqId, setEditFaqId] = useState(null);
   const [editedFaq, setEditedFaq] = useState({ question: '', answer: '' });
 
-  // guard: ודא ש־faqs זה מערך
+  // ודא ש־faqs תמיד מערך
   const safeFaqs = Array.isArray(faqs) ? faqs : [];
 
   const toggleAnswer = (id) => {
@@ -36,7 +45,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
     try {
       const response = await API.post('/business/my/faqs', { question, answer });
       const added = response.data.faq ?? response.data;
-      setFaqs(prev => [added, ...prev]);
+      setFaqs(prev => [added, ...(prev || [])]); // הגנה: prev תמיד מערך
       setNewFaq({ question: '', answer: '' });
     } catch (err) {
       console.error('❌ שגיאה בהוספת שאלה:', err);
@@ -46,7 +55,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
   const handleDelete = async (id) => {
     try {
       await API.delete(`/business/my/faqs/${id}`);
-      setFaqs(prev => prev.filter(faq => (faq.faqId ?? faq._id) !== id));
+      setFaqs(prev => (prev || []).filter(faq => (faq.faqId ?? faq._id) !== id));
     } catch (err) {
       console.error('❌ שגיאה במחיקת שאלה:', err);
     }
@@ -60,7 +69,7 @@ const FaqTab = ({ faqs = [], setFaqs, isPreview }) => {
       const response = await API.put(`/business/my/faqs/${id}`, { question, answer });
       const updated = response.data.faq ?? response.data;
       setFaqs(prev =>
-        prev.map(faq =>
+        (prev || []).map(faq =>
           (faq.faqId ?? faq._id) === id ? updated : faq
         )
       );
