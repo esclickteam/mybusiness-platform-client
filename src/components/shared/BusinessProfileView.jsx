@@ -69,7 +69,8 @@ export default function BusinessProfileView() {
     address: { city = "" } = {},
   } = data;
 
-  const products = shop.products || [];
+  const products = data.products || shop.products || [];
+
 
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
