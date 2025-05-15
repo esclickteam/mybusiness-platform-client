@@ -1,3 +1,4 @@
+// src/components/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
@@ -64,8 +65,12 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
+    shop = {},
     address: { city = "" } = {},
   } = data;
+
+  // מוצרים
+  const products = shop.products || [];
 
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
@@ -255,8 +260,47 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* חנות / יומן */}
             {currentTab === "חנות / יומן" && (
-              <div className="shop-calendar">…תוכן חנות / יומן…</div>
+              <div className="shop-calendar">
+                <h2 style={{marginBottom:'1rem', textAlign: 'center'}}>החנות שלכם 🛒</h2>
+                {Array.isArray(products) && products.length ? (
+                  <div className="products-list" style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                    gap: "1.2rem",
+                  }}>
+                    {products.map(product => (
+                      <div className="product-card-public" key={product._id || product.id} style={{
+                        background: "#fff",
+                        borderRadius: "16px",
+                        padding: "1rem",
+                        boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+                        textAlign: "center"
+                      }}>
+                        {product.image && (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            style={{
+                              width: 120,
+                              height: 120,
+                              objectFit: "cover",
+                              borderRadius: 12,
+                              marginBottom: 8
+                            }}
+                          />
+                        )}
+                        <h4 style={{margin: "0.4rem 0"}}>{product.name}</h4>
+                        <div style={{fontWeight: "bold", color: "#6a27c5", fontSize: "1.1rem"}}>{product.price} ₪</div>
+                        <div style={{fontSize: "0.95rem", color: "#555", margin: "0.5rem 0"}}>{product.description}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{textAlign: "center", color: "#aaa", fontSize: "1.1rem"}}>אין מוצרים להצגה</p>
+                )}
+              </div>
             )}
           </div>
         </div>
