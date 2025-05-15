@@ -254,12 +254,13 @@ export default function BusinessProfileView() {
             {currentTab === "יומן" && (
               <div className="public-calendar">
                 <AppointmentsMain
-                  isPreview={false}
+                  isPreview={true}
                   services={services}
                   workHours={calendar}
                 />
               </div>
             )}
+            
           </div>
         </div>
       </div>
