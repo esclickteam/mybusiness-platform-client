@@ -69,8 +69,7 @@ const AppointmentsMain = ({
   return (
     <div className="services-page-wrapper">
       <div className="services-form-box">
-        <h2 className="services-form-title">הוספת שירות</h2>
-        <ServiceList
+                <ServiceList
           services={services}
           setServices={setServices}
           handleDelete={handleDelete}
