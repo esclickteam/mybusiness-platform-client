@@ -7,6 +7,7 @@ const ShopTab = () => {
   const { products, setProducts } = useBusinessServices();
   const [categories, setCategories] = useState(['כללי']);
   const [newCategory, setNewCategory] = useState('');
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -15,26 +16,34 @@ const ShopTab = () => {
     category: 'כללי',
   });
   const [imagePreview, setImagePreview] = useState(null);
+
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [paymentKeys, setPaymentKeys] = useState({});
-  const [coupon, setCoupon] = useState({ code: '', discount: '', start: '', expiry: '' });
-  const [coupons, setCoupons] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState('both');
   const [shippingType, setShippingType] = useState('free');
   const [shippingCost, setShippingCost] = useState(0);
 
-  // -- טען מוצרים בתחילת הטאב --
+  const [coupon, setCoupon] = useState({ code: '', discount: '', start: '', expiry: '' });
+  const [coupons, setCoupons] = useState([]);
+
+  const allProviders = ['Tranzila', 'Meshulam', 'Max', 'PayPlus', 'Cardcom', 'Isracard', 'Hyp'];
+
+  // --- טען מוצרים וקופונים בהתחלה ---
   useEffect(() => {
-    async function fetchProducts() {
+    const fetchData = async () => {
       try {
-        const res = await API.get('/my/products');
-        setProducts(res.data);
+        const [prodRes, couponRes] = await Promise.all([
+          API.get('/my/products'),
+          API.get('/my/coupons'),
+        ]);
+        setProducts(prodRes.data || []);
+        setCoupons(couponRes.data || []);
       } catch (err) {
-        console.error('שגיאה בטעינת מוצרים:', err);
-        alert('שגיאה בטעינת מוצרים');
+        console.error('שגיאה בטעינת נתונים:', err);
+        alert('שגיאה בטעינת נתונים');
       }
-    }
-    fetchProducts();
+    };
+    fetchData();
   }, [setProducts]);
 
   // --- קטגוריות ---
@@ -72,12 +81,9 @@ const ShopTab = () => {
     if (!formData.name || !formData.price) return;
     try {
       const data = new FormData();
-      data.append('name', formData.name);
-      data.append('description', formData.description);
-      data.append('price', formData.price);
-      data.append('category', formData.category);
-      if (formData.image) data.append('image', formData.image);
-
+      Object.entries(formData).forEach(([key, val]) => {
+        if (val != null) data.append(key, val);
+      });
       const res = await API.post('/my/products', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -92,11 +98,7 @@ const ShopTab = () => {
 
   // --- מחיקת מוצר ---
   const handleDeleteProduct = async productId => {
-    if (!productId) {
-      console.error('No productId provided to delete');
-      return;
-    }
-    if (!window.confirm('האם למחוק מוצר זה?')) return;
+    if (!productId || !window.confirm('האם למחוק מוצר זה?')) return;
     try {
       await API.delete(`/my/products/${productId}`);
       setProducts(prev => prev.filter(p => (p._id || p.id) !== productId));
@@ -113,17 +115,29 @@ const ShopTab = () => {
   };
 
   // --- קופונים ---
-  const handleAddCoupon = e => {
+  const handleAddCoupon = async e => {
     e.preventDefault();
     if (!coupon.code || !coupon.discount) return;
-    setCoupons(prev => [...prev, coupon]);
-    setCoupon({ code: '', discount: '', start: '', expiry: '' });
-  };
-  const handleDeleteCoupon = idx => {
-    setCoupons(prev => prev.filter((_, i) => i !== idx));
+    try {
+      const res = await API.post('/my/coupons', coupon);
+      setCoupons(prev => [...prev, res.data]);
+      setCoupon({ code: '', discount: '', start: '', expiry: '' });
+    } catch (err) {
+      console.error('שגיאה ביצירת קופון:', err);
+      alert('שגיאה ביצירת קופון');
+    }
   };
 
-  const allProviders = ['Tranzila', 'Meshulam', 'Max', 'PayPlus', 'Cardcom', 'Isracard', 'Hyp'];
+  const handleDeleteCoupon = async id => {
+    if (!window.confirm('האם למחוק קופון זה?')) return;
+    try {
+      await API.delete(`/my/coupons/${id}`);
+      setCoupons(prev => prev.filter(c => c.id !== id && c._id !== id));
+    } catch (err) {
+      console.error('שגיאה במחיקת קופון:', err);
+      alert('שגיאה במחיקת קופון');
+    }
+  };
 
   return (
     <div className="shop-editor">
@@ -253,9 +267,9 @@ const ShopTab = () => {
             </thead>
             <tbody>
               {coupons.map((c, i) => (
-                <tr key={i}>
+                <tr key={c._id || c.id || i}>
                   <td>{c.code}</td><td>{c.discount}%</td><td>{c.start}</td><td>{c.expiry}</td>
-                  <td><button type="button" onClick={() => handleDeleteCoupon(i)}>🗑️</button></td>
+                  <td><button type="button" onClick={() => handleDeleteCoupon(c._id || c.id)}>🗑️</button></td>
                 </tr>
               ))}
             </tbody>
