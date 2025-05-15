@@ -12,7 +12,7 @@ const TABS = [
   "ביקורות",
   "שאלות תשובות",
   "הודעות מלקוחות",
-  "חנות / יומן",
+  "  יומן",
 ];
 
 export default function BusinessProfileView() {

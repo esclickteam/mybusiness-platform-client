@@ -1,4 +1,3 @@
-// src/components/PublicBusinessTabs.jsx
 import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import './PublicBusinessTabs.css';
@@ -9,7 +8,7 @@ const TABS = [
   { to: 'reviews', label: 'ביקורות' },
   { to: 'faq',     label: 'שאלות ותשובות' },
   { to: 'chat',    label: 'צ\'אט עם העסק' },
-  { to: 'shop',    label: 'חנות / יומן' },
+  { to: 'shop',    label: 'יומן' }, // שונה ל"יומן"
 ];
 
 export default function PublicBusinessTabs() {
