@@ -1,37 +1,23 @@
 import React, { useState } from "react";
 import ClientCalendar from "./ClientCalendar";
-import "./ClientServiceCard.css"; // 👈 ודא שזה מחובר!
+import "./ClientServiceCard.css";
 
-const ClientServiceCard = ({ service, workHours }) => {
+const ClientServiceCard = ({
+  service,
+  workHours,
+  formatDuration
+}) => {
   const [mode, setMode] = useState("list");
-
-  const userEmail = localStorage.getItem("userEmail") || "";
-  const isDemoUser = userEmail === "newuser@example.com";
-
-  let demoHours = {};
-  try {
-    const raw = localStorage.getItem("demoWorkHours");
-    if (raw) {
-      demoHours = JSON.parse(raw);
-    }
-  } catch (e) {
-    console.warn("⚠️ demoWorkHours לא תקין", e);
-  }
-
-  const hoursToUse = isDemoUser ? demoHours : workHours;
-
-  const formatDuration = (minutes) => {
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return `${h}:${m.toString().padStart(2, "0")} שעות`;
-  };
 
   return (
     <div className="client-service-card">
       {mode === "list" ? (
         <>
           <h4>{service.name}</h4>
-          {service.price && <p>{service.price} ₪</p>}
+          {service.description && (
+            <p className="service-description">{service.description}</p>
+          )}
+          {service.price && <p className="price">{service.price} ₪</p>}
           <p>⏱️ {formatDuration(service.duration)}</p>
 
           <button
@@ -43,7 +29,7 @@ const ClientServiceCard = ({ service, workHours }) => {
         </>
       ) : (
         <ClientCalendar
-          workHours={hoursToUse}
+          workHours={workHours}
           selectedService={service}
           onBackToList={() => setMode("list")}
         />

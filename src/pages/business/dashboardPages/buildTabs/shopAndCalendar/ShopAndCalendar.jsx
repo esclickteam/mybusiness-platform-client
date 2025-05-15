@@ -19,6 +19,9 @@ const ShopAndCalendar = ({
 }) => {
   const { services, setServices, products } = useBusinessServices();
 
+  // הבטחה ש־services הוא תמיד מערך
+  const safeServices = Array.isArray(services) ? services : [];
+
   // mode נשאר null עד לחיצה על חנות/יומן, אחר כך 'store' / 'appointments' / 'calendar'
   const mode = shopMode;
   const setMode = setShopMode;
@@ -35,11 +38,11 @@ const ShopAndCalendar = ({
     if (!isPreview && setBusinessDetails) {
       setBusinessDetails(prev => ({
         ...prev,
-        services,
+        services: safeServices,
         products
       }));
     }
-  }, [services, products, isPreview, setBusinessDetails]);
+  }, [safeServices, products, isPreview, setBusinessDetails]);
 
   // טעינת שעות לדמו ב־preview
   useEffect(() => {
@@ -85,20 +88,18 @@ const ShopAndCalendar = ({
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      {/* הכפתור חזרה הוסר */}
-
       {/* 3) FORM – לא Preview */}
       {!isPreview && mode === 'appointments' && (
         <AppointmentsMain
           isPreview={false}
-          services={services}
+          services={safeServices}
           setServices={setServices}
           onNext={() => setMode('calendar')}
         />
       )}
       {!isPreview && mode === 'calendar' && (
         <CalendarSetup
-          services={services}
+          services={safeServices}
           setServices={setServices}
         />
       )}
@@ -135,7 +136,7 @@ const ShopAndCalendar = ({
       {isPreview && (mode === 'appointments' || mode === 'calendar') && (
         <AppointmentsMain
           isPreview={true}
-          services={services}
+          services={safeServices}
           workHours={demoHours}
         />
       )}

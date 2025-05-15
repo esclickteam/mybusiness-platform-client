@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import API from '@api'; // ודא שיש לך axios instance מוגדר
+import API from '@api'; // ודא ש־API.baseURL = '/api/business'
 import './ServiceList.css';
 
 const ServiceList = ({
@@ -21,26 +21,24 @@ const ServiceList = ({
   const [loading, setLoading] = useState(false);
 
   const handleAddService = async () => {
-    const duration = parseInt(newService.hours) * 60 + parseInt(newService.minutes);
+    const duration = parseInt(newService.hours, 10) * 60 + parseInt(newService.minutes, 10);
     if (!newService.name || duration === 0) return;
 
     setLoading(true);
 
-    // תמיכה בשליחת תמונה - אם יש צורך
-    let serviceToAdd = {
+    const serviceToAdd = {
       name: newService.name,
       duration,
       price: newService.price,
       description: newService.description,
-      appointmentType: newService.appointmentType,
+      appointmentType: newService.appointmentType
     };
 
-    // אם יש קובץ תמונה, השתמש ב־FormData (יש לבנות API מתאים בשרת)
-    // כרגע הקוד ישלח JSON רגיל
     try {
-      const res = await API.post('/business/my/services', serviceToAdd);
-      // בהנחה שהשרת מחזיר את כל מערך השירותים המעודכן
-      setServices(res.data);
+      // שולח אל POST /api/business/my/services
+      const res = await API.post('/my/services', serviceToAdd);
+      // מצפה לקבל { success: true, services: [...] }
+      setServices(res.data.services || []);
       setNewService({
         name: '',
         hours: '0',
@@ -52,7 +50,7 @@ const ServiceList = ({
         appointmentType: 'at_business'
       });
     } catch (err) {
-      // fallback לדמו (פיתוח בלבד)
+      // fallback לדמו
       const updated = [...services, { ...serviceToAdd, ...newService }];
       setServices(updated);
       localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
@@ -92,7 +90,6 @@ const ServiceList = ({
     <div className="service-list">
       <h3 className="section-title">הוספת שירות</h3>
 
-      {/* סוג שירות */}
       <label>סוג השירות:</label>
       <div className="appointment-type-selector">
         <button
@@ -124,14 +121,18 @@ const ServiceList = ({
           value={newService.hours}
           onChange={(e) => setNewService({ ...newService, hours: e.target.value })}
         >
-          {[...Array(13).keys()].map(h => <option key={h}>{h}</option>)}
+          {[...Array(13).keys()].map(h => (
+            <option key={h} value={h}>{h}</option>
+          ))}
         </select>
         <span>שעות</span>
         <select
           value={newService.minutes}
           onChange={(e) => setNewService({ ...newService, minutes: e.target.value })}
         >
-          {['0', '15', '30', '45'].map(m => <option key={m}>{m}</option>)}
+          {['0', '15', '30', '45'].map(m => (
+            <option key={m} value={m}>{m}</option>
+          ))}
         </select>
         <span>דקות</span>
       </div>
@@ -173,7 +174,7 @@ const ServiceList = ({
               <p className="description">{srv.description}</p>
               {srv.price && <p className="price">{srv.price} ₪</p>}
               <span>{formatDuration(srv.duration)}</span>
-              <p style={{ marginTop: '8px', fontSize: '13px', color: '#666' }}>
+              <p style={{ marginTop: 8, fontSize: 13, color: '#666' }}>
                 סוג: {srv.appointmentType === 'on_site' ? 'שירות עד הבית' : 'תיאום בעסק'}
               </p>
             </div>
