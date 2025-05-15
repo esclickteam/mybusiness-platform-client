@@ -14,12 +14,11 @@
 }
 
 /* 🌟 הוספנו כאן סגנון לתמונת השירות */
-.client-service-card__img {
+.service-card img {
   width: 100%;
-  height: auto;
-  border-radius: 8px 8px 0 0;
+  height: 140px;
   object-fit: cover;
-  margin-bottom: 12px;
+  border-radius: 12px;
 }
 
 .client-service-card h4 {
