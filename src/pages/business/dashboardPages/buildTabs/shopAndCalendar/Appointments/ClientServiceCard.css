@@ -11,12 +11,14 @@
 
 .client-service-card img {
   display: block;
-  width: 100%;
-  aspect-ratio: 3/4;      /* יחס רוחב:גובה של 3:4 (אנכי) */
+  width: 70%;            /* תופס 70% מרוחב הכרטיס */
+  max-width: 120px;       /* אסור להתקרב יותר מ–120px */
+  aspect-ratio: 3/4;      /* שומר על יחס אנכי של 3:4 */
   object-fit: cover;
   border-radius: 12px;
-  margin-bottom: 12px;
+  margin: 0 auto 12px;
 }
+
 
 
 .client-service-card:hover {
