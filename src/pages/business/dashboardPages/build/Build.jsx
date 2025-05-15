@@ -17,7 +17,7 @@ const TABS = [
   "ראשי",
   "גלריה",
   "ביקורות",
-  "חנות / יומן",
+  " יומן",
   "צ'אט עם העסק",
   "שאלות ותשובות",
 ];
@@ -634,7 +634,7 @@ const handleDeleteMainImage = async publicId => {
         />
       )}
 
-      {currentTab === "חנות / יומן" && (
+      {currentTab === " יומן" && (
   <ShopSection
     setBusinessDetails={setBusinessDetails}
     handleSave={handleSave}
