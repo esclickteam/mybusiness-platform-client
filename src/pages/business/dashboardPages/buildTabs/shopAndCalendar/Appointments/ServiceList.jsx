@@ -36,7 +36,7 @@ const ServiceList = ({
 
     try {
       // שולח אל POST /api/business/my/services
-      const res = await API.post('/my/services', serviceToAdd);
+       const res = await API.post('/business/my/services', serviceToAdd);
       // מצפה לקבל { success: true, services: [...] }
       setServices(res.data.services || []);
       setNewService({
