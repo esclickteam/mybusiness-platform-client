@@ -21,14 +21,14 @@ const ServiceList = ({
   const [loading, setLoading] = useState(false);
 
   const handleAddService = async () => {
-    const duration = parseInt(newService.hours, 10) * 60 +
-                     parseInt(newService.minutes, 10);
+    const duration =
+      parseInt(newService.hours, 10) * 60 +
+      parseInt(newService.minutes, 10);
     if (!newService.name || duration === 0) return;
 
     setLoading(true);
     try {
       let res;
-      // אם הועלתה תמונה, נשלח FormData
       if (newService.image) {
         const formData = new FormData();
         formData.append('name', newService.name);
@@ -38,13 +38,10 @@ const ServiceList = ({
         formData.append('appointmentType', newService.appointmentType);
         formData.append('image', newService.image);
 
-        res = await API.post(
-          '/my/services',
-          formData,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
+        res = await API.post('/my/services', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
-        // אחרת נשלח JSON
         res = await API.post('/my/services', {
           name: newService.name,
           duration,
@@ -54,7 +51,6 @@ const ServiceList = ({
         });
       }
 
-      // השרת מחזיר { success: true, services: [...] }
       setServices(res.data.services || []);
       setNewService({
         name: '',
@@ -160,14 +156,14 @@ const ServiceList = ({
       <label>העלאת תמונה לשירות (לא חובה):</label>
       <input type="file" onChange={handleImageChange} />
       {newService.imagePreview && (
-        <img
-          src={newService.imagePreview}
-          alt="תצוגה"
-          className="preview-img"
-        />
+        <img src={newService.imagePreview} alt="תצוגה" className="preview-img" />
       )}
 
-      <button onClick={handleAddService} disabled={loading}>
+      <button
+        type="button"            // ← הקפד להוסיף type="button"
+        onClick={handleAddService}
+        disabled={loading}
+      >
         {loading ? 'שומר...' : '➕ הוספת שירות'}
       </button>
 
@@ -182,18 +178,15 @@ const ServiceList = ({
             )}
             <div className="card-content">
               <h4>{srv.name}</h4>
-              {srv.description && (
-                <p className="description">{srv.description}</p>
-              )}
+              {srv.description && <p className="description">{srv.description}</p>}
               {srv.price && <p className="price">{srv.price} ₪</p>}
               <span>{formatDuration(srv.duration)}</span>
               <p style={{ marginTop: 8, fontSize: 13, color: '#666' }}>
-                סוג: {srv.appointmentType === 'on_site'
-                  ? 'שירות עד הבית'
-                  : 'תיאום בעסק'}
+                סוג: {srv.appointmentType === 'on_site' ? 'שירות עד הבית' : 'תיאום בעסק'}
               </p>
             </div>
             <button
+              type="button"
               className="delete-btn"
               onClick={() => handleDelete(i)}
             >
