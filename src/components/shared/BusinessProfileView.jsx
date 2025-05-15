@@ -69,7 +69,6 @@ export default function BusinessProfileView() {
     address: { city = "" } = {},
   } = data;
 
-  // מוצרים
   const products = shop.products || [];
 
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
@@ -150,6 +149,7 @@ export default function BusinessProfileView() {
           </div>
 
           <div className="tab-content">
+            {/* ראשי */}
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {mainImages.length
@@ -161,6 +161,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* גלריה */}
             {currentTab === "גלריה" && (
               <div className="public-main-images">
                 {gallery.length
@@ -172,6 +173,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {/* כפתור הוספת ביקורת - רק ללקוח! */}
@@ -252,6 +254,7 @@ export default function BusinessProfileView() {
               </div>
             )}
 
+            {/* הודעות מלקוחות */}
             {currentTab === "הודעות מלקוחות" && (
               <div className="chat-button-container">
                 <button className="chat-button" onClick={handleChatClick}>
@@ -262,43 +265,26 @@ export default function BusinessProfileView() {
 
             {/* חנות / יומן */}
             {currentTab === "חנות / יומן" && (
-              <div className="shop-calendar">
+              <div className="public-shop">
                 <h2 style={{marginBottom:'1rem', textAlign: 'center'}}>החנות שלכם 🛒</h2>
-                {Array.isArray(products) && products.length ? (
-                  <div className="products-list" style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                    gap: "1.2rem",
-                  }}>
-                    {products.map(product => (
-                      <div className="product-card-public" key={product._id || product.id} style={{
-                        background: "#fff",
-                        borderRadius: "16px",
-                        padding: "1rem",
-                        boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-                        textAlign: "center"
-                      }}>
-                        {product.image && (
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            style={{
-                              width: 120,
-                              height: 120,
-                              objectFit: "cover",
-                              borderRadius: 12,
-                              marginBottom: 8
-                            }}
-                          />
+                {products && products.length > 0 ? (
+                  <div className="products-list-public">
+                    {products.map((p, i) => (
+                      <div className="product-card-public" key={p._id || p.id || i}>
+                        {p.image && (
+                          <img src={p.image} alt={p.name} className="product-image-public" />
                         )}
-                        <h4 style={{margin: "0.4rem 0"}}>{product.name}</h4>
-                        <div style={{fontWeight: "bold", color: "#6a27c5", fontSize: "1.1rem"}}>{product.price} ₪</div>
-                        <div style={{fontSize: "0.95rem", color: "#555", margin: "0.5rem 0"}}>{product.description}</div>
+                        <div className="product-info-public">
+                          <h4 className="product-title">{p.name}</h4>
+                          <div className="product-price">{p.price} ₪</div>
+                          {p.description && <div className="product-description">{p.description}</div>}
+                          {p.category && <div className="product-category">קטגוריה: {p.category}</div>}
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p style={{textAlign: "center", color: "#aaa", fontSize: "1.1rem"}}>אין מוצרים להצגה</p>
+                  <p className="no-data">אין מוצרים להצגה</p>
                 )}
               </div>
             )}

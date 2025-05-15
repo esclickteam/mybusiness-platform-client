@@ -356,73 +356,98 @@ html, body, #root {
 }
 
 /* === חנות – תצוגת מוצרים בטאב חנות / יומן === */
-.shop-calendar {
+.public-shop {
   width: 100%;
-  max-width: 900px;
+  max-width: 950px;
   margin: 0 auto;
-  padding: 0 0 1.5rem;
+  padding-bottom: 2rem;
 }
-.products-list {
+
+.products-list-public {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  margin-top: 1.2rem;
+  margin-top: 1.3rem;
   margin-bottom: 1.2rem;
 }
+
 .product-card-public {
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(110,60,200,0.10);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(110,60,200,0.10);
   padding: 1.2rem 1rem 1rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: box-shadow 0.22s, transform 0.17s;
-  min-height: 300px;
+  min-height: 290px;
 }
+
 .product-card-public:hover {
-  box-shadow: 0 4px 16px rgba(90, 23, 220, 0.14);
-  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 4px 18px rgba(90, 23, 220, 0.16);
+  transform: translateY(-2px) scale(1.017);
   background: #f8f3ff;
 }
-.product-card-public img {
+
+.product-image-public {
   width: 110px;
   height: 110px;
   border-radius: 12px;
   object-fit: cover;
-  margin-bottom: 0.6rem;
-  box-shadow: 0 1px 6px rgba(150,90,220,0.07);
+  margin-bottom: 0.65rem;
+  box-shadow: 0 1px 6px rgba(150,90,220,0.09);
 }
-.product-card-public h4 {
-  margin: 0.5rem 0 0.2rem 0;
-  font-size: 1.15rem;
+
+.product-info-public {
+  width: 100%;
+  text-align: center;
+}
+
+.product-title {
+  margin: 0.4rem 0 0.2rem 0;
+  font-size: 1.18rem;
   color: #5e17eb;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.01em;
 }
-.product-card-public .product-price {
+
+.product-price {
   font-weight: bold;
   color: #964fd6;
   font-size: 1.07rem;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.15rem;
 }
-.product-card-public .product-desc {
+
+.product-description {
   color: #474747;
-  font-size: 0.98rem;
-  text-align: center;
-  margin-top: 0.1rem;
-  margin-bottom: 0.2rem;
+  font-size: 1.01rem;
+  margin: 0.13rem 0 0.17rem 0;
   line-height: 1.4;
 }
 
-/* רספונסיביות חנות */
+.product-category {
+  color: #b06bfa;
+  font-size: 0.96rem;
+  margin-top: 0.02rem;
+}
+
+/* טקסט אין מוצרים */
+.no-data {
+  text-align: center;
+  color: #b8b8b8;
+  margin-top: 1.5rem;
+  font-size: 1.08rem;
+}
+
+/* רספונסיביות */
 @media (max-width: 900px) {
-  .products-list { grid-template-columns: repeat(2, 1fr); }
+  .products-list-public { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 600px) {
-  .products-list { grid-template-columns: 1fr; }
+  .products-list-public { grid-template-columns: 1fr; }
   .product-card-public {
-    min-height: 220px;
+    min-height: 180px;
     padding: 1rem 0.5rem;
   }
 }
+

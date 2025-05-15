@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { useBusinessServices } from '../../../../../../context/BusinessServicesContext';
+import { useAuth } from '../../../../../../context/AuthContext'; // תוודא שיש לך את זה
 import './ShopTab.css';
 
 const ShopTab = () => {
   const { products, setProducts } = useBusinessServices();
+  const { token } = useAuth(); // להוציא JWT אם צריך
   const [categories, setCategories] = useState(['כללי']);
   const [newCategory, setNewCategory] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
-    image: '',
+    image: null,   // קובץ אמיתי
     category: 'כללי'
   });
+  const [imagePreview, setImagePreview] = useState(null);
+
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [paymentKeys, setPaymentKeys] = useState({});
   const [coupon, setCoupon] = useState({ code: '', discount: '', start: '', expiry: '' });
@@ -21,6 +25,7 @@ const ShopTab = () => {
   const [shippingType, setShippingType] = useState('free');
   const [shippingCost, setShippingCost] = useState(0);
 
+  // --- קטגוריות ---
   const handleAddCategory = () => {
     if (newCategory && !categories.includes(newCategory)) {
       setCategories([...categories, newCategory]);
@@ -35,60 +40,77 @@ const ShopTab = () => {
     }
   };
 
+  // --- שינויי טופס ---
   const handleFormChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result });
-      };
-      if (files[0]) reader.readAsDataURL(files[0]);
+      const file = files[0] || null;
+      setFormData({ ...formData, image: file });
+      setImagePreview(file ? URL.createObjectURL(file) : null);
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
-  const handleAddProduct = (e) => {
+  // --- הוספת מוצר אמיתי עם FormData ---
+  const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.price) return;
-    setProducts([...products, formData]);
-    setFormData({ name: '', description: '', price: '', image: '', category: 'כללי' });
+    try {
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('description', formData.description);
+      data.append('price', formData.price);
+      data.append('category', formData.category);
+      if (formData.image) data.append('image', formData.image);
+
+      const res = await fetch('/api/business/my/products', {
+        method: 'POST',
+        body: data,
+        headers: {
+          Authorization: `Bearer ${token}`
+          // אל תוסיף Content-Type כאן!
+        }
+      });
+      if (!res.ok) throw new Error('שגיאה בהעלאת מוצר');
+      const newProduct = await res.json();
+
+      setProducts([...products, newProduct]);
+      setFormData({ name: '', description: '', price: '', image: null, category: 'כללי' });
+      setImagePreview(null);
+    } catch (err) {
+      alert('שגיאה בהוספת מוצר');
+    }
   };
 
+  // --- מחיקת מוצר ---
   const handleDeleteProduct = (index) => {
     const updated = [...products];
     updated.splice(index, 1);
     setProducts(updated);
   };
 
-  const handleProviderSelect = (provider) => {
-    setSelectedProvider(provider);
-  };
+  // --- סליקה ---
+  const handleProviderSelect = (provider) => setSelectedProvider(provider);
+  const handleKeyChange = (e) => setPaymentKeys({ ...paymentKeys, [selectedProvider]: e.target.value });
 
-  const handleKeyChange = (e) => {
-    setPaymentKeys({ ...paymentKeys, [selectedProvider]: e.target.value });
-  };
-
+  // --- קופונים ---
   const handleAddCoupon = () => {
     if (!coupon.code || !coupon.discount) return;
     setCoupons([...coupons, coupon]);
     setCoupon({ code: '', discount: '', start: '', expiry: '' });
   };
-
   const handleDeleteCoupon = (i) => {
     const updated = [...coupons];
     updated.splice(i, 1);
     setCoupons(updated);
   };
 
-  const allProviders = [
-    'Tranzila', 'Meshulam', 'Max', 'PayPlus', 'Cardcom', 'Isracard', 'Hyp'
-  ];
+  const allProviders = ['Tranzila', 'Meshulam', 'Max', 'PayPlus', 'Cardcom', 'Isracard', 'Hyp'];
 
   return (
     <div className="shop-editor">
       <h2 className="title">🔧 ניהול החנות שלך</h2>
-
       <div className="category-section">
         <label>📁 קטגוריות</label>
         <div className="category-manager">
@@ -117,7 +139,7 @@ const ShopTab = () => {
           {categories.map((cat, i) => <option key={i} value={cat}>{cat}</option>)}
         </select>
         <input type="file" name="image" accept="image/*" onChange={handleFormChange} />
-        {formData.image && <img src={formData.image} alt="תצוגה" className="preview-image" />}
+        {imagePreview && <img src={imagePreview} alt="תצוגה" className="preview-image" />}
         <button type="submit">💾 שמירה</button>
       </form>
 
@@ -237,7 +259,13 @@ const ShopTab = () => {
             {products.map((p, i) => (
               <div key={i} className="product-card-admin">
                 <button className="delete-btn" onClick={() => handleDeleteProduct(i)}>🗑️</button>
-                {p.image && <img src={p.image} alt={p.name} className="product-image" />}
+                {p.image && (
+                  <img
+                    src={typeof p.image === 'string' ? p.image : URL.createObjectURL(p.image)}
+                    alt={p.name}
+                    className="product-image"
+                  />
+                )}
                 <div className="card-content">
                   <h4>{p.name}</h4>
                   <p className="description">{p.description}</p>
