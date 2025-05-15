@@ -1,218 +1,249 @@
-/* עיצוב רשימת שירותים */
-.services-preview {
-  padding: 20px;
+/* עיצוב כללי */
+.services-page-wrapper {
+  background: #f8eeff;
+  padding: 40px 0 30px 0;
+  min-height: 100vh;
 }
 
-.services-grid {
+.services-form-box {
+  background: #f7f0ff;
+  border-radius: 28px;
+  box-shadow: 0 6px 36px rgba(146,70,205,0.13);
+  max-width: 650px;
+  margin: 0 auto 36px auto;
+  padding: 38px 32px 22px 32px;
+  border: 1.5px solid #e3cbff;
+  position: relative;
+}
+
+.services-form-title {
+  text-align: center;
+  font-size: 2.5em;
+  font-weight: 900;
+  color: #7329b8;
+  margin-bottom: 38px;
+  letter-spacing: 1.5px;
+  word-spacing: 2px;
+}
+
+.type-toggle-group {
   display: flex;
-  flex-wrap: wrap;
+  gap: 1.1em;
   justify-content: center;
-  gap: 12px;
-  margin-top: 1rem;
+  margin-bottom: 1.9em;
+}
+.type-toggle-btn {
+  background: #fff;
+  border: 2px solid #d2a6fc;
+  color: #692fc2;
+  font-size: 1.13em;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 0.75em 2.6em;
+  cursor: pointer;
+  transition: all .18s cubic-bezier(.44,.13,.48,.87);
+  box-shadow: 0 1.5px 12px rgba(120,55,180,0.07);
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.type-toggle-btn.selected, .type-toggle-btn:hover, .type-toggle-btn:focus {
+  background: linear-gradient(90deg, #b378e9 0%, #ad3bfd 95%);
+  color: #fff;
+  border-color: #9c46e5;
+  box-shadow: 0 4px 19px rgba(132,50,200,0.18);
+  outline: none;
+}
+
+/* קווי הפרדה דקים */
+.hr-sep {
+  border: none;
+  height: 1.5px;
+  background: linear-gradient(to left, #e3cbff 0%, #fff 50%, #e3cbff 100%);
+  margin: 34px 0 24px 0;
+}
+
+/* קלטים */
+.services-form-label {
+  font-weight: 700;
+  font-size: 1.12em;
+  color: #8843c6;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+.services-form-input,
+.services-form-textarea,
+.services-form-select {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  border: 1.5px solid #cdb8f7;
+  font-size: 1.14em;
+  color: #55278d;
+  padding: 14px 12px;
+  margin-bottom: 14px;
+  outline: none;
+  transition: border 0.18s;
+  box-shadow: 0 1.5px 7px rgba(120,55,180,0.06);
+}
+.services-form-input:focus,
+.services-form-textarea:focus,
+.services-form-select:focus {
+  border-color: #964cff;
+}
+
+/* שדות זמן משולבים */
+.time-inputs-row {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.time-label {
+  min-width: 40px;
+  font-size: 1.07em;
+  color: #8456c8;
+}
+
+/* כפתור הוספה */
+.add-service-btn {
+  background: linear-gradient(90deg, #9852ee 20%, #742cd7 100%);
+  color: #fff;
+  font-size: 1.18em;
+  font-weight: 800;
+  border: none;
+  border-radius: 17px;
+  padding: 14px 0;
+  margin-top: 10px;
+  margin-bottom: 7px;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 0 3px 16px rgba(145,63,220,0.12);
+  transition: background .19s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6em;
+}
+.add-service-btn:hover, .add-service-btn:focus {
+  background: linear-gradient(90deg, #a168ee 20%, #9738e8 100%);
+}
+
+/* כפתור מעבר */
+.go-to-calendar-btn {
+  background: linear-gradient(90deg, #7b37da 0%, #a35fff 90%);
+  color: #fff;
+  font-size: 1.13em;
+  font-weight: 700;
+  border: none;
+  border-radius: 30px;
+  padding: 15px 40px;
+  cursor: pointer;
+  box-shadow: 0 4px 19px rgba(131,51,204,0.18);
+  transition: background .18s;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  margin: 36px auto 0 auto;
+}
+
+/* טעויות */
+.input-error {
+  color: #be233f;
+  font-size: 1.06em;
+  margin-bottom: 7px;
+  margin-top: -7px;
+  display: block;
+}
+
+/* רשימת שירותים */
+.defined-services-section {
+  margin-top: 15px;
+  padding-bottom: 20px;
+}
+.defined-services-title {
+  font-size: 1.2em;
+  font-weight: 800;
+  color: #682bba;
+  margin-bottom: 18px;
+  text-align: right;
+  margin-right: 18px;
 }
 
 /* כרטיס שירות */
 .service-card {
-  width: 170px;
-  background: white;
-  border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
-  text-align: center;
-  min-height: 300px;
+  background: #fff;
+  border: 1.5px solid #ded0fa;
+  border-radius: 22px;
+  padding: 24px 22px 16px 22px;
+  box-shadow: 0 3px 17px rgba(139,59,202,0.11);
+  max-width: 340px;
+  margin: 0 auto 28px auto;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: flex-end;
   position: relative;
-  transition: transform 0.2s ease;
+  transition: box-shadow 0.16s;
 }
-
 .service-card:hover {
-  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(137,39,170,0.13);
+}
+.service-card .delete-service-btn {
+  position: absolute;
+  left: 17px;
+  top: 18px;
+  background: linear-gradient(90deg, #f2b6e3 0%, #e6c5ff 100%);
+  border: none;
+  color: #863a99;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 1.3em;
+  cursor: pointer;
+  box-shadow: 0 1.5px 7px rgba(202,79,167,0.09);
+  transition: background 0.13s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.service-card .delete-service-btn:hover {
+  background: linear-gradient(90deg, #ee80c3 0%, #c589e9 100%);
 }
 
-.service-card img {
-  width: 100%;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 10px;
+.service-card .service-name {
+  font-size: 1.33em;
+  font-weight: 800;
+  color: #7e2fbe;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.service-card .service-price {
+  color: #8439b9;
+  font-size: 1.12em;
+  font-weight: 700;
+  margin-bottom: 8px;
+  margin-top: 6px;
+  text-align: right;
+}
+.service-card .service-duration {
+  font-size: 1.07em;
+  color: #6d379a;
   margin-bottom: 6px;
 }
-
-/* תוכן כרטיס */
-.card-content {
-  font-size: 13px;
-  line-height: 1.4;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.service-card .service-type {
+  font-size: 1.05em;
+  color: #9d80b9;
+  font-weight: 600;
+  margin-top: 6px;
 }
 
-.card-content h4 {
-  font-size: 14px;
-  font-weight: bold;
-  margin: 0;
-  white-space: normal;
-}
-
-.card-content .price {
-  font-size: 14px;
-  font-weight: bold;
-  color: #5b2a91;
-  margin-top: 4px;
-}
-
-/* תיאור השירות – קיצור + פתיחה חלקה */
-.description {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.4;
-  max-height: 2.8em;
-  transition: all 0.3s ease;
-  white-space: normal;
-  margin: 4px 0;
-  color: #333;
-  font-size: 13px;
-}
-
-.description.expanded {
-  -webkit-line-clamp: unset;
-  line-clamp: unset;
-  max-height: none;
-  overflow: visible;
-}
-
-/* כפתור המשך קריאה */
-.read-more-dots {
-  color: #a36eff;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  display: inline-block;
-  user-select: none;
-  margin-top: 2px;
-}
-
-.read-more-dots:hover {
-  text-decoration: underline;
-}
-
-/* משך זמן */
-.service-duration {
-  font-size: 12px;
-  color: #555;
-}
-
-/* תחתית כרטיס */
-.card-footer {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: 10px;
-}
-
-/* כפתור יומן */
-.go-calendar-btn {
-  width: 100%;
-  padding: 10px;
-  background: linear-gradient(90deg, #a36eff, #c59bff);
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.go-calendar-btn:hover {
-  background: linear-gradient(90deg, #944dff, #b984ff);
-  transform: translateY(-2px);
-}
-
-/* כפתור "הבא" */
-.next-btn {
-  background: linear-gradient(90deg, #6f44c6, #a07ff5);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 2rem;
-  cursor: pointer;
-  display: block;
-  margin-inline: auto;
-  transition: 0.3s ease;
-}
-
-.next-btn:hover {
-  background: #5d39a6;
-}
-
-/* מודל */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  max-width: 300px;
-  width: 90%;
-  text-align: right;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.close-modal {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: #555;
-}
-
-/* כותרות */
-.section-title,
-.edit-title {
-  color: #5b2a91;
-  font-weight: bold;
-  margin-bottom: 12px;
-}
-
-.empty-preview {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem 1rem;
-  min-height: 200px;
-}
-
-.no-services-card {
-  background-color: #f7f0ff;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
-  text-align: center;
+@media (max-width: 650px) {
+  .services-form-box {
+    padding: 20px 8px 18px 8px;
+  }
+  .service-card {
+    padding: 14px 10px 10px 10px;
+  }
 }

@@ -10,6 +10,7 @@ const AppointmentsMain = ({
   onNext,
   workHours = {},
 }) => {
+  // תיאור נפתח (אם תומך)
   const [expandedDesc, setExpandedDesc] = useState({});
 
   useEffect(() => {
@@ -26,54 +27,95 @@ const AppointmentsMain = ({
     setServices(updated);
   };
 
+  // פורמט משך השירות - עברית מקצועית
   const formatDuration = (minutes) => {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
-    return `${h}:${m.toString().padStart(2, '0')} שעות`;
+    return h > 0 ? `${h}:${m.toString().padStart(2, '0')} שעות` : `${m} דקות`;
   };
 
+  // PREVIEW MODE - תצוגה ללקוח
   if (isPreview) {
     return (
-      <div className="services-preview">
-        <h2 className="edit-title">📋 רשימת השירותים</h2>
-        {(!services || services.length === 0) ? (
-          <div className="empty-preview">
-            <div className="no-services-card">
-              <p style={{ textAlign: 'center', fontWeight: '500' }}>📝 לא הוגדרו שירותים עדיין.</p>
-              <p style={{ textAlign: 'center', fontSize: '0.85rem', color: '#888' }}>
-                השירותים שתזין יופיעו כאן בתצוגה חיה
-              </p>
-              <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '14px' }}>
-                <strong>⏰ שעות פעילות:</strong><br />
-                ימים א׳–ה׳ | 09:00–17:00<br />
-                הפסקות: 12:30–13:00
+      <div className="services-page-wrapper">
+        <div className="services-preview services-form-box">
+          <h2 className="services-form-title">📋 רשימת השירותים</h2>
+          {(!services || services.length === 0) ? (
+            <div className="empty-preview">
+              <div className="no-services-card">
+                <p style={{ textAlign: 'center', fontWeight: '500' }}>📝 לא הוגדרו שירותים עדיין.</p>
+                <p style={{ textAlign: 'center', fontSize: '0.95em', color: '#888' }}>
+                  השירותים שתזין יופיעו כאן בתצוגה חיה
+                </p>
+                <div style={{ textAlign: 'center', marginTop: '1.2rem', fontSize: '15px' }}>
+                  <strong>⏰ שעות פעילות:</strong><br />
+                  ימים א׳–ה׳ | 09:00–17:00<br />
+                  הפסקות: 12:30–13:00
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="services-grid">
-            {services.map((srv, i) => (
-              <ClientServiceCard key={i} service={srv} workHours={workHours} />
-            ))}
-          </div>
-        )}
+          ) : (
+            <div className="services-grid">
+              {services.map((srv, i) => (
+                <ClientServiceCard key={i} service={srv} workHours={workHours} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
+  // FORM MODE - עריכת שירותים
   return (
-    <div className="form-column">
-      <h2 className="edit-title">🎨 עיצוב הכרטיס</h2>
-      <ServiceList
-        services={services}
-        setServices={setServices}
-        handleDelete={handleDelete}
-        onNext={onNext}
-      />
+    <div className="services-page-wrapper">
+      <div className="services-form-box">
+        <h2 className="services-form-title">הוספת שירות</h2>
+        <ServiceList
+          services={services}
+          setServices={setServices}
+          handleDelete={handleDelete}
+          onNext={onNext}
+        />
+        {services.length > 0 && (
+          <button className="go-to-calendar-btn" onClick={onNext}>
+            <span role="img" aria-label="calendar">📅</span>
+            מעבר להגדרת יומן
+          </button>
+        )}
+      </div>
+
+      {/* הפרדה */}
+      <hr className="hr-sep" />
+
+      {/* שירותים שהוגדרו */}
       {services.length > 0 && (
-        <button className="next-btn" onClick={onNext}>
-          מעבר להגדרת יומן 📅
-        </button>
+        <div className="defined-services-section">
+          <div className="defined-services-title">השירותים שהוגדרו:</div>
+          <div className="services-grid">
+            {services.map((srv, i) => (
+              <div className="service-card" key={i}>
+                <button
+                  className="delete-service-btn"
+                  onClick={() => handleDelete(i)}
+                  title="מחיקת שירות"
+                  aria-label="מחק שירות"
+                  type="button"
+                >🗑️</button>
+                <div className="service-name">{srv.name}</div>
+                <div className="service-price">{srv.price} ₪</div>
+                <div className="service-duration">{formatDuration(srv.duration)}</div>
+                <div className="service-type">סוג: {srv.type === "delivery" ? "שירות עד הבית" : "תיאום בעסק"}</div>
+                {srv.description && (
+                  <div className="service-desc">
+                    <span style={{ color: "#8456c8", fontWeight: 600 }}>תיאור: </span>
+                    {srv.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

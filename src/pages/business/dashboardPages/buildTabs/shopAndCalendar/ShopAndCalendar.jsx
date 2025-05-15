@@ -85,12 +85,7 @@ const ShopAndCalendar = ({
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      {/* 2) כפתור חזרה */}
-      {!isPreview && (
-        <button className="back-button" onClick={() => setMode(null)}>
-          🔙 חזרה לבחירת שירות
-        </button>
-      )}
+      {/* הכפתור חזרה הוסר */}
 
       {/* 3) FORM – לא Preview */}
       {!isPreview && mode === 'appointments' && (
