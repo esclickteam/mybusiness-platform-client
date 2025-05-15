@@ -10,7 +10,11 @@ export default function FaqSection({ currentUser, renderTopBar }) {
 
   useEffect(() => {
     API.get("/business/my/faqs")
-      .then(res => setFaqs(res.data))
+      .then(res => {
+        // טיפול במקרה שבו res.data הוא { faqs: [...] } ולא מערך ישיר
+        const faqsArr = Array.isArray(res.data) ? res.data : res.data.faqs || [];
+        setFaqs(faqsArr);
+      })
       .catch(err => console.error("❌ שגיאה בטעינת שאלות:", err));
   }, []);
 
