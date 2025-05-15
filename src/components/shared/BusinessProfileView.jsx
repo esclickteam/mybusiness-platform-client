@@ -19,7 +19,6 @@ export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-
   const bizId = paramId || user?.businessId;
 
   const [data, setData] = useState(null);
@@ -70,8 +69,6 @@ export default function BusinessProfileView() {
     calendar = {}
   } = data;
 
-  const products = data.products || data.shop?.products || [];
-
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg = Math.round(avgRating * 10) / 10;
@@ -85,7 +82,7 @@ export default function BusinessProfileView() {
     navigate(`/business/messages`);
   };
 
-  const handleReviewSubmit = async (formData) => {
+  const handleReviewSubmit = async formData => {
     setIsSubmitting(true);
     try {
       await api.post(`/business/${bizId}/reviews`, formData);
@@ -147,7 +144,6 @@ export default function BusinessProfileView() {
           </div>
 
           <div className="tab-content">
-            {/* ראשי */}
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {mainImages.length
@@ -159,7 +155,6 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* גלריה */}
             {currentTab === "גלריה" && (
               <div className="public-main-images">
                 {gallery.length
@@ -171,7 +166,6 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* ביקורות */}
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {!isOwner && user && (
@@ -234,7 +228,6 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* שאלות ותשובות */}
             {currentTab === "שאלות תשובות" && (
               <div className="faqs-public">
                 {faqs.length === 0 ? (
@@ -250,7 +243,6 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* הודעות */}
             {currentTab === "הודעות מלקוחות" && (
               <div className="chat-button-container">
                 <button className="chat-button" onClick={handleChatClick}>
@@ -259,7 +251,6 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* יומן במקום חנות */}
             {currentTab === "יומן" && (
               <div className="public-calendar">
                 <AppointmentsMain
