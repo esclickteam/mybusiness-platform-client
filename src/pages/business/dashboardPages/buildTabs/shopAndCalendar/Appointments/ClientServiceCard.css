@@ -9,16 +9,17 @@
   text-align: center;
 }
 
-.client-service-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-/* 🌟 הוספנו כאן סגנון לתמונת השירות */
-.service-card img {
+.client-service-card img {
+  display: block;
   width: 100%;
-  height: 140px;
+  max-height: 200px;
   object-fit: cover;
   border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.client-service-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .client-service-card h4 {
