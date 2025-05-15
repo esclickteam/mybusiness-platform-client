@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API from '@api'; // ודא ש־API.baseURL = '/api/business'
+import API from '@api'; // ודא ש־API.baseURL = '/api'
 import ServiceList from './ServiceList';
 import ClientServiceCard from './ClientServiceCard';
 import './AppointmentsMain.css';
@@ -14,7 +14,7 @@ const AppointmentsMain = ({
   // --- שליפה מהשרת ---
   useEffect(() => {
     if (!isPreview && setServices) {
-      API.get('/my/services')
+      API.get('/business/my/services')
         .then(res => {
           // השרת מחזיר { services: [...] }
           setServices(res.data.services || []);
@@ -32,7 +32,7 @@ const AppointmentsMain = ({
   const handleDelete = (serviceIndex) => {
     const srv = services[serviceIndex];
     if (srv && srv._id) {
-      API.delete(`/my/services/${srv._id}`)
+      API.delete(`/business/my/services/${srv._id}`)
         .then(res => {
           // מחזיר { success: true, services: [...] }
           setServices(res.data.services || []);
