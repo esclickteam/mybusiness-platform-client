@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import API from '@api'; // ודא ש־API.baseURL='/api/business'
+import API from '@api'; // ודא ש־API.baseURL = '/api'
 import './ServiceList.css';
 
 const ServiceList = ({
@@ -38,11 +38,15 @@ const ServiceList = ({
         formData.append('appointmentType', newService.appointmentType);
         formData.append('image', newService.image);
 
-        res = await API.post('/my/services', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        // עידכון הנתיב ל־/business/my/services
+        res = await API.post(
+          '/business/my/services',
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
       } else {
-        res = await API.post('/my/services', {
+        // JSON רגיל גם ל־/business/my/services
+        res = await API.post('/business/my/services', {
           name: newService.name,
           duration,
           price: newService.price,
@@ -160,7 +164,7 @@ const ServiceList = ({
       )}
 
       <button
-        type="button"            // ← הקפד להוסיף type="button"
+        type="button"
         onClick={handleAddService}
         disabled={loading}
       >
