@@ -236,26 +236,39 @@ const ShopTab = () => {
       {/* סוגי תשלום */}
       <div className="payment-methods">
         <h4>⚙️ סוג תשלום זמין ללקוחות</h4>
-        <div className="options">
-          <label><input type="radio" value="online" checked={paymentMethod === 'online'} onChange={() => setPaymentMethod('online')} /> תשלום אונליין בלבד</label>
-          <label><input type="radio" value="phone" checked={paymentMethod === 'phone'} onChange={() => setPaymentMethod('phone')} /> תשלום טלפוני בלבד</label>
-          <label><input type="radio" value="both" checked={paymentMethod === 'both'} onChange={() => setPaymentMethod('both')} /> שניהם</label>
-        </div>
+        <select
+          className="select-input"
+          value={paymentMethod}
+          onChange={e => setPaymentMethod(e.target.value)}
+        >
+          <option value="online">תשלום אונליין בלבד</option>
+          <option value="phone">תשלום טלפוני בלבד</option>
+          <option value="both">שניהם</option>
+        </select>
       </div>
 
       {/* הגדרות משלוח */}
       <div className="shipping-settings">
         <h4>🚚 אפשרות משלוח</h4>
         <p className="note">עלות המשלוח תתווסף למחיר הסופי של ההזמנה.</p>
-        <div className="options">
-          <label>
-            <input type="radio" value="free" checked={shippingType === 'free'} onChange={() => { setShippingType('free'); setShippingCost(0); }} /> משלוח חינם
-          </label>
-          <label>
-            <input type="radio" value="paid" checked={shippingType === 'paid'} onChange={() => setShippingType('paid')} /> משלוח בתשלום
-          </label>
-          {shippingType === 'paid' && <input type="number" className="shipping-cost-input" value={shippingCost} onChange={e => setShippingCost(Number(e.target.value))} placeholder="סכום ₪" min="0" />}
-        </div>
+        <select
+          className="select-input"
+          value={shippingType}
+          onChange={e => setShippingType(e.target.value)}
+        >
+          <option value="free">משלוח חינם</option>
+          <option value="paid">משלוח בתשלום</option>
+        </select>
+        {shippingType === 'paid' && (
+          <input
+            type="number"
+            className="shipping-cost-input"
+            value={shippingCost}
+            onChange={e => setShippingCost(Number(e.target.value))}
+            placeholder="סכום ₪"
+            min="0"
+          />
+        )}
       </div>
 
       {/* קופונים */}
