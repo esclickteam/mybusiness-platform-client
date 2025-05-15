@@ -49,7 +49,7 @@ export default function ShopSection({
             setBusinessDetails={setBusinessDetails || (() => {})}
           />
         )}
-        <button onClick={handleSave}>💾 שמור</button>
+        {/* כפתור שמירה הוסר */}
       </div>
 
       <div className="preview-column">
