@@ -111,12 +111,6 @@ export default function BusinessProfileView() {
             </Link>
           )}
           {logoUrl && (
-            <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
-              ✏️ ערוך פרטי העסק
-            </Link>
-          )}
-
-          {logoUrl && (
             <div className="profile-logo-wrapper">
               <img className="profile-logo" src={logoUrl} alt="לוגו העסק" />
             </div>
