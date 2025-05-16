@@ -21,22 +21,10 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
 
   const [paymentStep, setPaymentStep] = useState("summary");
   const [selectedPayment, setSelectedPayment] = useState("");
-  const [availablePayments, setAvailablePayments] = useState([]);
-  const [slikaDetails, setSlikaDetails] = useState({});
 
   const dateKey = selectedDate.toDateString();
   const config = workHours[dateKey];
   const serviceDuration = selectedService?.duration || 30;
-
-  useEffect(() => {
-    const allCalendar = JSON.parse(localStorage.getItem("demoPaymentMethods_calendar") || "[]");
-    const allShop = JSON.parse(localStorage.getItem("demoPaymentMethods_shop") || "[]");
-    const slikaCal = JSON.parse(localStorage.getItem("demoSlikaDetails_calendar") || "{}");
-    const slikaShop = JSON.parse(localStorage.getItem("demoSlikaDetails_shop") || "{}");
-
-    setAvailablePayments([...new Set([...allCalendar, ...allShop])]);
-    setSlikaDetails(slikaCal.link ? slikaCal : slikaShop);
-  }, []);
 
   useEffect(() => {
     if (config?.start && config?.end) {
@@ -50,25 +38,25 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
 
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
     const toMin = t => {
-      const [h, m="00"] = t.trim().split(":");
+      const [h, m = "00"] = t.trim().split(":");
       return +h * 60 + +m;
     };
     const fromMin = m => {
-      const h = Math.floor(m/60), mm = m%60;
-      return `${h.toString().padStart(2,"0")}:${mm.toString().padStart(2,"0")}`;
+      const h = Math.floor(m / 60), mm = m % 60;
+      return `${h.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}`;
     };
 
     const start = toMin(startTime), end = toMin(endTime);
     const breaksArr = breaks
-      .split(/[\n,]/).map(s=>s.trim()).filter(Boolean)
-      .map(b=>{
-        const [f,t] = b.replace(/\s/g,"").split("-");
+      .split(/[\n,]/).map(s => s.trim()).filter(Boolean)
+      .map(b => {
+        const [f, t] = b.replace(/\s/g, "").split("-");
         return f && t ? [toMin(f), toMin(t)] : null;
       }).filter(Boolean);
 
     const slots = [];
     for (let t = start; t + serviceDuration <= end; t += serviceDuration) {
-      const inBreak = breaksArr.some(([f,to]) => t < to && t + serviceDuration > f);
+      const inBreak = breaksArr.some(([f, to]) => t < to && t + serviceDuration > f);
       if (!inBreak) slots.push(fromMin(t));
     }
     return slots;
@@ -113,10 +101,14 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
           <div className="calendar-fullwidth">
             <Calendar
               locale="he-IL"
+              calendarType="US"                 
+              showNeighboringMonth={true}        
+              showFixedNumberOfWeeks={true}      
               value={selectedDate}
               onChange={setSelectedDate}
-              formatShortWeekday={(loc, d) => format(d, "EEEEE", { locale: he })}
-              showNeighboringMonth={true}
+              formatShortWeekday={(loc, d) =>
+                format(d, "EEEEE", { locale: he })
+              }
             />
           </div>
           <div className="selected-date-info">
@@ -128,7 +120,7 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
                 <h5>🕒 שעות פנויות:</h5>
                 {availableSlots.length ? (
                   <div className="slot-list">
-                    {availableSlots.map((t,i) => (
+                    {availableSlots.map((t, i) => (
                       <div key={i} className="slot-item">
                         <button onClick={() => handleSelectSlot(t)}>{t}</button>
                       </div>
@@ -154,8 +146,8 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
               <p>📅 תאריך: {selectedSlot.date}</p>
               <p>🕓 שעה: {selectedSlot.time}</p>
               <p>
-                ⏱️ משך: {Math.floor(selectedSlot.duration/60)}:
-                {(selectedSlot.duration%60).toString().padStart(2,"0")}
+                ⏱️ משך: {Math.floor(selectedSlot.duration / 60)}:
+                {(selectedSlot.duration % 60).toString().padStart(2, "0")}
               </p>
               <p>💰 עלות: {selectedSlot.price} ₪</p>
 

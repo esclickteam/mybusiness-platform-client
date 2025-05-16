@@ -1,8 +1,10 @@
+/* ClientCalendar.css */
+
 /* =================================================================== */
 /* 1. RTL ל־wrapper + LTR לכלי ה־Calendar הפנימי                          */
 /* =================================================================== */
 .client-calendar-wrapper {
-  direction: rtl !important;   /* שבוע מתחיל מימין */
+  direction: rtl !important;   /* התוכן זורם מימין לשמאל */
   text-align: right;
   padding: 1rem;
   background: #fff;
@@ -12,48 +14,7 @@
 }
 
 .client-calendar-wrapper .react-calendar {
-  direction: ltr !important;   /* גריד פנימי ב-LTR */
-}
-
-/* כותרת השבועות ותאריכים בגריד פנימי ב-LTR */
-.client-calendar-wrapper .react-calendar__month-view__weekdays,
-.client-calendar-wrapper .react-calendar__month-view__days {
-  display: grid !important;
-  grid-template-columns: repeat(7, 1fr) !important;
-  gap: 6px !important;
-  direction: ltr !important;
-}
-
-/* אותיות ימי השבוע בעברית */
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday abbr {
-  display: none !important;
-}
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(1)::before { content: "א"; }
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(2)::before { content: "ב"; }
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(3)::before { content: "ג"; }
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(4)::before { content: "ד"; }
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(5)::before { content: "ה"; }
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(6)::before { content: "ו"; }
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(7)::before { content: "ש"; }
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday::before {
-  display: inline-block;
-  font-size: 0.9em;
-  font-weight: 500;
-  padding: 0.5rem 0;
-}
-
-/* תאי תאריכים */
-.client-calendar-wrapper .react-calendar__tile {
-  padding: 0.5em 0 !important;
-  line-height: 1.4 !important;
-}
-.client-calendar-wrapper .react-calendar__tile--now {
-  background: rgba(0,110,220,0.1) !important;
-}
-.client-calendar-wrapper .react-calendar__tile--active {
-  background: #006edc !important;
-  color: #fff !important;
-  border-radius: 0.25em !important;
+  direction: ltr !important;   /* גריד התאריכים בפנים יפעל ב-LTR */
 }
 
 /* =================================================================== */
@@ -66,11 +27,11 @@
   margin-bottom: 1em;
 }
 
-.client-calendar-wrapper .react-calendar__navigation button.react-calendar__navigation__arrow {
+.client-calendar-wrapper .react-calendar__navigation button {
   background: none;
   border: none;
   padding: 0.5em 1em;
-  font-size: 1.2em;
+  font-size: 1.1em;
   color: #006edc;
   cursor: pointer;
 }
@@ -78,14 +39,45 @@
 .client-calendar-wrapper .react-calendar__navigation__label {
   background: #e0e0e0;
   color: #333;
-  padding: 0.5em 1em;
+  padding: 0.4em 1em;
   border-radius: 0.25em;
   font-weight: 500;
   margin: 0 0.5em;
 }
 
 /* =================================================================== */
-/* 3. RTL רק לטקסטים הפנימיים (טופס, שעות, סיכום)                         */
+/* 3. כותרת השבועות ותאריכים - מ-Sunday(א) עד Saturday(ש)                */
+/* =================================================================== */
+/* אין צורך ב־grid-template-columns ידני — React-Calendar דואג לזה לפי calendarType="US" */
+/* רק נסנכרן את הסגנון */
+.client-calendar-wrapper .react-calendar__month-view__weekdays {
+  margin-bottom: 0.5em;
+}
+
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday {
+  font-weight: 500;
+}
+
+/* =================================================================== */
+/* 4. סגנון תאי התאריכים                                                   */
+/* =================================================================== */
+.client-calendar-wrapper .react-calendar__tile {
+  padding: 0.5em 0;
+  line-height: 1.4;
+}
+
+.client-calendar-wrapper .react-calendar__tile--now {
+  background: rgba(0,110,220,0.1);
+}
+
+.client-calendar-wrapper .react-calendar__tile--active {
+  background: #006edc;
+  color: #fff;
+  border-radius: 0.25em;
+}
+
+/* =================================================================== */
+/* 5. RTL רק לטקסטים הפנימיים (טופס, שעות, סיכום)                         */
 /* =================================================================== */
 .client-calendar-wrapper .selected-date-info,
 .client-calendar-wrapper .booking-form,
@@ -176,7 +168,6 @@
   font-size: 14px;
   background: #fff;
   resize: none;
-  direction: rtl;
 }
 .booking-form input:focus,
 .booking-form textarea:focus {
