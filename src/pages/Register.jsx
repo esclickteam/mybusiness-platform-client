@@ -14,6 +14,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     userType: "customer",
+    businessName: "",        // ← חדש
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
 
-    const { name, email, phone, password, confirmPassword, userType } = formData;
+    const { name, email, phone, password, confirmPassword, userType, businessName } = formData;
 
     // בדיקות בסיס
     if (!name || !email || !password || !confirmPassword) {
@@ -41,6 +42,10 @@ const Register = () => {
       return;
     }
     if (userType === "business") {
+      if (!businessName.trim()) {
+        setError("⚠️ יש להזין שם עסק כדי להירשם כבעל עסק");
+        return;
+      }
       if (!phone.trim()) {
         setError("⚠️ יש להזין מספר טלפון כדי להירשם כבעל עסק");
         return;
@@ -60,6 +65,7 @@ const Register = () => {
         password,
         userType,
         role: userType === "business" ? "business" : "customer",
+        businessName: userType === "business" ? businessName.trim() : undefined, // ← הוסף כאן
       });
 
       // אחרי הרשמה – מבצעים login דרך ה‐AuthContext
@@ -67,33 +73,30 @@ const Register = () => {
 
       // ניתוב לפי תפקיד ו־businessId
       let dashboardPath = "/";
-switch (user.role) {
-  case "admin":
-    dashboardPath = "/admin/dashboard";
-    break;
-  case "manager":
-    dashboardPath = "/manager/dashboard";
-    break;
-  case "worker":
-    dashboardPath = "/staff/dashboard";
-    break;
-  case "business":
-    // אם ל־business אין businessId, יש להעביר אותו ליצירת עמוד עסקי
-    dashboardPath = user.businessId
-      ? `/business/${user.businessId}/dashboard`
-      : "/create-business";
-    break;
-  case "customer":
-    dashboardPath = "/client/dashboard";
-    break;
-  default:
-    dashboardPath = "/";
-}
+      switch (user.role) {
+        case "admin":
+          dashboardPath = "/admin/dashboard";
+          break;
+        case "manager":
+          dashboardPath = "/manager/dashboard";
+          break;
+        case "worker":
+          dashboardPath = "/staff/dashboard";
+          break;
+        case "business":
+          dashboardPath = user.businessId
+            ? `/business/${user.businessId}/dashboard`
+            : "/create-business";
+          break;
+        case "customer":
+          dashboardPath = "/client/dashboard";
+          break;
+        default:
+          dashboardPath = "/";
+      }
 
-navigate(dashboardPath); // ניתוב לפי ה-role
+      navigate(dashboardPath); // ניתוב לפי ה-role
 
-
-      navigate(dashboardPath);
     } catch (err) {
       console.error("❌ Registration error:", err.response?.data || err.message);
       if (err.response?.status === 400) {
@@ -128,13 +131,33 @@ navigate(dashboardPath); // ניתוב לפי ה-role
           required
         />
         {formData.userType === "business" && (
+          <>
+            <input
+              type="text"
+              name="businessName"
+              placeholder="שם העסק"
+              value={formData.businessName}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="tel"
+              name="phone"
+              placeholder="טלפון"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+          </>
+        )}
+        {formData.userType !== "business" && (
           <input
             type="tel"
             name="phone"
-            placeholder="טלפון"
+            placeholder="טלפון (לא חובה)"
             value={formData.phone}
             onChange={handleChange}
-            required
+            style={{ display: "none" }} // מוסתר, או שתוריד לגמרי ללקוחות
           />
         )}
         <input
