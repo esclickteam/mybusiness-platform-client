@@ -39,7 +39,7 @@ const ResetPassword       = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword      = lazy(() => import("./pages/ChangePassword"));
 const StaffLogin          = lazy(() => import("./pages/StaffLogin"));
 const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
-
+const BookingPage         = lazy(() => import("./pages/BookingPage"));
 const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
 const OrdersPage          = lazy(() => import("./pages/client/OrdersPage"));
 const FavoritesPage       = lazy(() => import("./pages/client/FavoritesPage"));
@@ -78,6 +78,9 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/search" element={<SearchBusinesses />} />
+
+          {/* Booking Page */}
+          <Route path="/book" element={<BookingPage />} />
 
           {/* Business info */}
           <Route path="/how-it-works" element={<HowItWorks />} />
