@@ -1,80 +1,81 @@
-.calendar-container {
-  width: 100%;
-  max-width: 600px;
-  margin: auto;
-  font-family: 'Alef', sans-serif;
-  border: 1px solid #ddd;
+.year-calendar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+}
+
+.month-block {
+  background: #fff8e0;
+  border: 1px solid #f0e0c0;
   border-radius: 8px;
   overflow: hidden;
+  font-family: 'Alef', sans-serif;
 }
 
-/* כותרת חודש ושנה */
-.calendar-header {
-  text-align: center;
-  padding: 16px 0;
-  background: #f5f5f5;
-}
-.calendar-header .month-hebrew {
-  font-size: 1.8rem;
-  font-weight: bold;
-}
-.calendar-header .year {
-  font-size: 1rem;
-  color: #666;
-  margin-top: 4px;
-}
-
-/* שבועות */
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background: #fafafa;
-  border-bottom: 1px solid #ddd;
-}
-.weekday {
+.month-title {
+  background: #f2f0ed;
   text-align: center;
   padding: 8px 0;
-  font-weight: 600;
-  color: #333;
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 
-/* גריד של תאריכים */
-.calendar-dates {
+.month-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #faf8f5;
+  border-bottom: 1px solid #ece4d8;
+}
+
+.weekday {
+  text-align: center;
+  padding: 4px 0;
+  font-size: 0.8rem;
+  color: #555;
+  border-right: 1px solid #ece4d8;
+}
+.weekday:last-child {
+  border-right: none;
+}
+
+.month-cells {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
-.date-cell {
-  border-bottom: 1px solid #eee;
-  border-right: 1px solid #eee;
-  min-height: 80px;
+
+.month-cell {
+  min-height: 60px;
+  border-bottom: 1px solid #ece4d8;
+  border-right: 1px solid #ece4d8;
   position: relative;
+  padding: 4px;
 }
-.date-cell:nth-child(7n) { /* ביטול גבול ימני לשבת */
+.month-cell:nth-child(7n) {
   border-right: none;
 }
-.date-cell:nth-last-child(-n+7) { /* ביטול גבול תחתון בשורה האחרונה */
+.month-cell:nth-last-child(-n+7) {
   border-bottom: none;
 }
 
-/* המספר עצמו */
-.date-number {
+.day-number {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  font-size: 1.2rem;
+  top: 4px;
+  left: 4px;
+  font-size: 1rem;
   font-weight: bold;
   color: #333;
 }
 
-/* רספונסיביות קלה */
+/* רספונסיביות: עמודות ירדו ל־2 על מסכים צרים */
+@media (max-width: 800px) {
+  .year-calendar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* ו-1 עמודה על מובייל */
 @media (max-width: 480px) {
-  .calendar-container {
-    max-width: 100%;
-  }
-  .date-cell {
-    min-height: 60px;
-  }
-  .date-number {
-    font-size: 1rem;
+  .year-calendar {
+    grid-template-columns: 1fr;
   }
 }

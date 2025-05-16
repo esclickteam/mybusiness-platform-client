@@ -1,14 +1,12 @@
 // src/pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.jsx
 import React, { useState, useEffect } from "react";
-import Calendar from "react-calendar";
 import { format } from "date-fns";
 import { he } from "date-fns/locale";
-import "react-calendar/dist/Calendar.css";
 import "./ClientCalendar.css";
 import AppointmentPayment from "./AppointmentPayment";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
 
-const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
+export default function ClientCalendar({ workHours = {}, selectedService, onBackToList }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -104,23 +102,16 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
       {mode === "slots" && (
         <>
           <h3>📅 בחר תאריך</h3>
-          <div className="calendar-fullwidth">
-            <Calendar
-              locale="he-IL"
-              showNeighboringMonth={false}
-              showFixedNumberOfWeeks={true}
-              value={selectedDate}
-              onChange={setSelectedDate}
-              formatShortWeekday={(loc, d) => format(d, "EEEEE", { locale: he })}
-            />
-          </div>
 
-          {/* לוח שנה חודשי קבוע שמופיע רק אחרי שבחרנו שירות */}
+          {/* לוח שנה חודשי נבחר */}
           {selectedService && (
             <div className="month-overview">
               <MonthCalendar
                 year={selectedDate.getFullYear()}
-                month={selectedDate.getMonth()}
+                onDateClick={date => {
+                  setSelectedDate(date);
+                  setMode("slots");
+                }}
               />
             </div>
           )}
@@ -223,6 +214,4 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
       )}
     </div>
   );
-};
-
-export default ClientCalendar;
+}
