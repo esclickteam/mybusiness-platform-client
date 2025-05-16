@@ -249,3 +249,12 @@
     max-width: 100%;
   }
 }
+
+.react-calendar__month-view__days__day,
+.react-calendar__month-view__days__day--neighboringMonth,
+.react-calendar__month-view__days__day--weekend,
+.react-calendar__month-view__days__day--neighboringMonth.react-calendar__month-view__days__day--weekend {
+  color: #222 !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
