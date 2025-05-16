@@ -6,7 +6,7 @@ import { he } from "date-fns/locale";
 import "react-calendar/dist/Calendar.css";
 import "./ClientCalendar.css";
 import AppointmentPayment from "./AppointmentPayment";
-import MonthCalendar from "../../../../components/MonthCalendar";
+import MonthCalendar from "../../../../../components/MonthCalendar";
 
 const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
