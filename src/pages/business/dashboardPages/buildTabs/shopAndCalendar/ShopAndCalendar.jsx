@@ -11,14 +11,14 @@ import ShopPreview      from './Appointments/ShopPreview';
 import PaymentSection   from './Appointments/PaymentSection';
 import { useBusinessServices } from '@context/BusinessServicesContext';
 
-const ShopAndCalendar = ({
+export default function ShopAndCalendar({
   isPreview = false,
   shopMode,
   setShopMode,
   setBusinessDetails,
   workHours = {},
   setWorkHours = () => {}
-}) => {
+}) {
   const { services, setServices, products } = useBusinessServices();
 
   // הבטחה ש־services הוא תמיד מערך
