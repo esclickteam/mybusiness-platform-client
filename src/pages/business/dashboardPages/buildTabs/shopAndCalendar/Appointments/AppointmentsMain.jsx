@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import API from '@api';
 import ServiceList from './ServiceList';
 import ClientServiceCard from './ClientServiceCard';
-import CalendarSetup from './CalendarSetup'; // ייבוא קומפוננטת הגדרת שעות פעילות
+import CalendarSetup from './CalendarSetup';
 import './AppointmentsMain.css';
 
 const AppointmentsMain = ({
@@ -11,9 +11,8 @@ const AppointmentsMain = ({
   setServices,
   onNext,
   workHours = {},
-  setWorkHours,   // תוסיף prop אם אתה רוצה לשמור ברמת ההורה
+  setWorkHours,
 }) => {
-  // --- הוספת סטייט לתצוגת הגדרת יומן ---
   const [showCalendarSetup, setShowCalendarSetup] = useState(false);
 
   // --- שליפה מהשרת ---
@@ -97,11 +96,11 @@ const AppointmentsMain = ({
     return (
       <CalendarSetup
         initialHours={workHours}
-        onSave={async (newHours) => {
-          // שלח לשרת/שמור לסטייט
+        onSave={async ({ workHours }) => {
+          // שמור שעות פעילות לשרת ולסטייט
           try {
-            await API.post('/business/update-work-hours', { workHours: newHours });
-            if (setWorkHours) setWorkHours(newHours);
+            await API.post('/business/update-work-hours', { workHours });
+            if (setWorkHours) setWorkHours(workHours);
             setShowCalendarSetup(false);
             alert("שעות הפעילות נשמרו בהצלחה!");
           } catch (err) {
