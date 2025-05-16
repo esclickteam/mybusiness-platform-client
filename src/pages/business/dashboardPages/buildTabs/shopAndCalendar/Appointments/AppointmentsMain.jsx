@@ -109,7 +109,12 @@ const AppointmentsMain = ({
               (acc, { day, start, end }) => ({ ...acc, [day]: { start, end } }),
               {}
             );
-            setWorkHours(updatedMap);
+            // בדיקה לפני קריאה ל-setWorkHours
+            if (typeof setWorkHours === 'function') {
+              setWorkHours(updatedMap);
+            } else {
+              console.warn('setWorkHours is not a function:', setWorkHours);
+            }
             setShowCalendarSetup(false);
             alert('שעות הפעילות נשמרו בהצלחה!');
           } catch (error) {
