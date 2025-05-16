@@ -92,16 +92,19 @@ const AppointmentsMain = ({
       <CalendarSetup
         initialHours={workHours}
         onSave={async newHours => {
-          // Build array of valid hours
-          const hoursArray = Object.entries(newHours)
-            .filter(([day, item]) => item?.start && item?.end)
-            .map(([day, item]) => ({ day, start: item.start, end: item.end }));
+          // Build array of all 7 days, defaulting missing to empty strings
+          const hoursArray = Object.entries(newHours).map(([day, item]) => ({
+            day,
+            start: item?.start || '',
+            end:   item?.end   || ''
+          }));
 
           console.log('🚀 Sending workHours:', hoursArray);
           try {
             const res = await API.post('/business/update-work-hours', { workHours: hoursArray });
             console.log('✅ Server response:', res.data);
-            // Update local state back to object format
+
+            // Reflect back into state map
             const updatedMap = hoursArray.reduce(
               (acc, { day, start, end }) => ({ ...acc, [day]: { start, end } }),
               {}
