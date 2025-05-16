@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import he from 'date-fns/locale/he';
 import 'react-datepicker/dist/react-datepicker.css';
-import api from '../../api';   // axios instance עם baseURL ו־withCredentials
+import api from '../api';
 
 registerLocale('he', he);
 
