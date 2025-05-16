@@ -1,55 +1,73 @@
-.year-calendar {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding: 16px;
-}
-
-.month-block {
-  background: #fff8e0;
+/* הכל בתוך לוח שנה אחד */
+.calendar-year-wrapper {
+  background: #fff8e5;
   border: 1px solid #f0e0c0;
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 12px;
+  padding: 16px;
   font-family: 'Alef', sans-serif;
 }
 
-.month-title {
-  background: #f2f0ed;
+/* כותרת השנה במרכז */
+.calendar-year-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+/* הגריד של 12 החודשים */
+.calendar-year-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* כל יחידת חודש */
+.month-block {
+  background: #fffcee;
+  border: 1px solid #ece4cc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* כותרת חודש בתוך יחידת חודש */
+.month-block-title {
+  background: #f2f0e8;
   text-align: center;
   padding: 8px 0;
   font-weight: bold;
-  font-size: 1.1rem;
 }
 
+/* שורת ימי השבוע */
 .month-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  background: #faf8f5;
-  border-bottom: 1px solid #ece4d8;
+  background: #faf8f3;
+  border-bottom: 1px solid #e7e1d1;
 }
-
 .weekday {
   text-align: center;
   padding: 4px 0;
   font-size: 0.8rem;
   color: #555;
-  border-right: 1px solid #ece4d8;
+  border-right: 1px solid #e7e1d1;
 }
 .weekday:last-child {
   border-right: none;
 }
 
+/* תאי ימים */
 .month-cells {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
-
 .month-cell {
   min-height: 60px;
-  border-bottom: 1px solid #ece4d8;
-  border-right: 1px solid #ece4d8;
   position: relative;
+  border-right: 1px solid #e7e1d1;
+  border-bottom: 1px solid #e7e1d1;
   padding: 4px;
+  cursor: pointer;
 }
 .month-cell:nth-child(7n) {
   border-right: none;
@@ -58,6 +76,7 @@
   border-bottom: none;
 }
 
+/* מספר היום */
 .day-number {
   position: absolute;
   top: 4px;
@@ -67,15 +86,14 @@
   color: #333;
 }
 
-/* רספונסיביות: עמודות ירדו ל־2 על מסכים צרים */
+/* רספונסיביות */
 @media (max-width: 800px) {
-  .year-calendar {
+  .calendar-year-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-/* ו-1 עמודה על מובייל */
 @media (max-width: 480px) {
-  .year-calendar {
+  .calendar-year-grid {
     grid-template-columns: 1fr;
   }
 }
