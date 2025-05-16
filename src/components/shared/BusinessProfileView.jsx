@@ -39,43 +39,40 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-  if (!bizId) {
-    setError("Invalid business ID");
-    setLoading(false);
-    return;
-  }
-  (async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/business/${bizId}`);
-      const biz = res.data.business || res.data;
-
-      // העמסה ראשית
-      setData(biz);
-      setFaqs(biz.faqs || []);
-      setSchedule(biz.schedule || {});
-
-      // services מתוך המודל
-      const svcs = biz.services || [];
-      setServices(svcs);
-
-      // קטגוריות ייחודיות מתוך services
-      const uniqueCats = Array.from(
-        new Set(svcs.map((s) => s.category).filter(Boolean))
-      );
-      setCategories(uniqueCats);
-    } catch (err) {
-      console.error(err);
-      setError("שגיאה בטעינת הנתונים");
-    } finally {
+    if (!bizId) {
+      setError("Invalid business ID");
       setLoading(false);
+      return;
     }
-  })();
-}, [bizId]);
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await api.get(`/business/${bizId}`);
+        const biz = res.data.business || res.data;
+
+        setData(biz);
+        setFaqs(biz.faqs || []);
+        setSchedule(biz.schedule || {});
+
+        const svcs = biz.services || [];
+        setServices(svcs);
+
+        const uniqueCats = Array.from(
+          new Set(svcs.map((s) => s.category).filter(Boolean))
+        );
+        setCategories(uniqueCats);
+      } catch (err) {
+        console.error(err);
+        setError("שגיאה בטעינת הנתונים");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [bizId]);
 
   if (loading) return <div className="loading">טוען…</div>;
-  if (error)   return <div className="error">{error}</div>;
-  if (!data)  return <div className="error">העסק לא נמצא</div>;
+  if (error) return <div className="error">{error}</div>;
+  if (!data) return <div className="error">העסק לא נמצא</div>;
 
   const {
     businessName,
@@ -90,11 +87,11 @@ export default function BusinessProfileView() {
   } = data;
 
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
-  const avgRating   = reviews.length ? totalRating / reviews.length : 0;
-  const roundedAvg  = Math.round(avgRating * 10) / 10;
-  const fullStars   = Math.floor(roundedAvg);
-  const halfStar    = roundedAvg % 1 ? 1 : 0;
-  const emptyStars  = 5 - fullStars - halfStar;
+  const avgRating = reviews.length ? totalRating / reviews.length : 0;
+  const roundedAvg = Math.round(avgRating * 10) / 10;
+  const fullStars = Math.floor(roundedAvg);
+  const halfStar = roundedAvg % 1 ? 1 : 0;
+  const emptyStars = 5 - fullStars - halfStar;
 
   const isOwner = user?.role === "business" && user.businessId === bizId;
   const handleChatClick = () => navigate(`/business/${bizId}/messages`);
@@ -135,10 +132,10 @@ export default function BusinessProfileView() {
           <h1 className="business-name">{businessName}</h1>
 
           <div className="about-phone">
-            {category    && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone       && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city        && <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
@@ -208,32 +205,21 @@ export default function BusinessProfileView() {
                 {reviews.length ? (
                   reviews.map((r, i) => (
                     <div key={r._id || i} className="review-card improved">
-                      {/* כאן את תוכן הביקורת */}
+                      {/* תוכן הביקורת */}
                     </div>
                   ))
                 ) : (
                   <p className="no-data">אין ביקורות</p>
                 )}
                 {showReviewModal && (
-                  <div
-                    className="modal-bg"
-                    onClick={() => setShowReviewModal(false)}
-                  >
-                    <div
-                      className="modal-inner"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                  <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
+                    <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
                       <ReviewForm
                         businessId={bizId}
                         onSubmit={handleReviewSubmit}
                         isSubmitting={isSubmitting}
                       />
-                      <button
-                        className="modal-close"
-                        onClick={() => setShowReviewModal(false)}
-                      >
-                        סגור
-                      </button>
+                      <button className="modal-close" onClick={() => setShowReviewModal(false)}>סגור</button>
                     </div>
                   </div>
                 )}
@@ -247,12 +233,8 @@ export default function BusinessProfileView() {
                 ) : (
                   faqs.map((faq) => (
                     <div key={faq.faqId || faq._id} className="faq-card">
-                      <div className="faq-q">
-                        <strong>שאלה:</strong> {faq.question}
-                      </div>
-                      <div className="faq-a">
-                        <strong>תשובה:</strong> {faq.answer}
-                      </div>
+                      <div className="faq-q"><strong>שאלה:</strong> {faq.question}</div>
+                      <div className="faq-a"><strong>תשובה:</strong> {faq.answer}</div>
                     </div>
                   ))
                 )}
@@ -261,9 +243,7 @@ export default function BusinessProfileView() {
 
             {currentTab === "הודעות מלקוחות" && (
               <div className="chat-button-container">
-                <button className="chat-button" onClick={handleChatClick}>
-                  הודעות מלקוחות
-                </button>
+                <button className="chat-button" onClick={handleChatClick}>הודעות מלקוחות</button>
               </div>
             )}
 
@@ -276,24 +256,19 @@ export default function BusinessProfileView() {
                 />
 
                 {!selectedService && (
-                  <p className="choose-prompt">
-                    אנא בחרי שירות כדי להציג את היומן
-                  </p>
+                  <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
                 )}
 
                 {selectedService && (
                   <>
-                    <button
-                      className="back-btn"
-                      onClick={() => setSelectedService(null)}
-                    >
-                      ← שנה שירות
-                    </button>
-                    <ClientCalendar
-                      workHours={schedule}
-                      selectedService={selectedService}
-                      onBackToList={() => setSelectedService(null)}
-                    />
+                    <button className="back-btn" onClick={() => setSelectedService(null)}>← שנה שירות</button>
+                    <div className="calendar-fullwidth">
+                      <ClientCalendar
+                        workHours={schedule}
+                        selectedService={selectedService}
+                        onBackToList={() => setSelectedService(null)}
+                      />
+                    </div>
                   </>
                 )}
               </div>

@@ -564,3 +564,12 @@ html, body, #root {
   }
 }
 
+.calendar-fullwidth {
+  width: 100%;
+  max-width: 700px;
+  margin: 1rem auto;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
