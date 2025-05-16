@@ -23,6 +23,17 @@ export function AuthProvider({ children }) {
       setLoading(true);
       try {
         const { data } = await API.get("/auth/me");
+
+        // אם בעל עסק ועדיין אין businessId, מושכים מה־/business/my
+        if (data.role === "business" && !data.businessId) {
+          try {
+            const { data: biz } = await API.get("/business/my");
+            data.businessId = biz._id || biz.businessId || null;
+          } catch {
+            console.warn("Could not fetch business profile on init");
+          }
+        }
+
         setUser({
           userId:           data.userId,
           name:             data.name,
@@ -59,6 +70,17 @@ export function AuthProvider({ children }) {
       }
 
       const { data } = await API.get("/auth/me");
+
+      // אם בעל עסק ועדיין אין businessId, מושכים מה־/business/my
+      if (data.role === "business" && !data.businessId) {
+        try {
+          const { data: biz } = await API.get("/business/my");
+          data.businessId = biz._id || biz.businessId || null;
+        } catch {
+          console.warn("Could not fetch business profile on login");
+        }
+      }
+
       setUser({
         userId:           data.userId,
         name:             data.name,

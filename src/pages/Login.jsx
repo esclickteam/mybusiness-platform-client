@@ -1,13 +1,12 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import API from "../api";                  // כדי לשלוף פרופיל עסקי במידת הצורך
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, error: authError } = useAuth();
   const [email, setEmail]           = useState("");
   const [password, setPassword]     = useState("");
   const [loading, setLoading]       = useState(false);
@@ -27,50 +26,11 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      // קוראים ל-login בלי רידיירקט אוטומטי
-      const userData = await login(cleanEmail, password, { skipRedirect: true });
-
-      let bizId = userData.businessId;
-      // אם אין לנו businessId – מושכים אותו מ-/business/my
-      if (userData.role.toLowerCase() === "business" && !bizId) {
-        try {
-          const { data: biz } = await API.get("/business/my");
-          bizId = biz._id || biz.businessId || null;
-        } catch {
-          // כשלנו לשלוף פרופיל עסקי
-          setLoginError("לא נמצא פרופיל עסקי. אנא פנה לתמיכה.");
-          setLoading(false);
-          return;
-        }
-      }
-
-      const role = (userData.role || "").toLowerCase();
-      switch (role) {
-        case "business":
-          navigate(`/business/${bizId}/dashboard`, { replace: true });
-          break;
-        case "customer":
-          navigate("/client/dashboard", { replace: true });
-          break;
-        case "worker":
-          navigate("/staff/dashboard",   { replace: true });
-          break;
-        case "manager":
-          navigate("/manager/dashboard", { replace: true });
-          break;
-        case "admin":
-          navigate("/admin/dashboard",   { replace: true });
-          break;
-        default:
-          setLoginError("אין לך הרשאה להתחבר כאן");
-      }
-    } catch (err) {
-      console.error("Login failed:", err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        setLoginError("אימייל/שם משתמש או סיסמה שגויים");
-      } else {
-        setLoginError("שגיאה בשרת, נסה שוב מאוחר יותר");
-      }
+      await login(cleanEmail, password);
+      // הניווט יתבצע אוטומטית מתוך AuthContext
+    } catch {
+      // אם AuthContext הגדר שגיאה, מציגים אותה, אחרת הודעת ברירת מחדל
+      setLoginError(authError || "אימייל או סיסמה שגויים");
     } finally {
       setLoading(false);
     }
