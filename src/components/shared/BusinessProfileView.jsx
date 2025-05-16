@@ -1,7 +1,7 @@
 // src/pages/business/dashboardPages/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from "../../../api";
+import api from "../../api";
 import { useAuth } from "../../../context/AuthContext";
 import ReviewForm from "./buildTabs/ReviewForm";
 
