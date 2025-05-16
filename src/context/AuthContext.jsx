@@ -23,10 +23,28 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await API.get("/auth/me");
 
-        if (data.role === "business" && !data.businessId) {
-          const resp = await API.get("/business/my");
-          const bizObj = resp.data.business || resp.data;
-          data.businessId = bizObj._id || bizObj.businessId || null;
+        // נסה לתקן businessId חסר (משתמש עסקי בלבד)
+        let realBusinessId = data.businessId || null;
+        if (data.role === "business" && !realBusinessId) {
+          try {
+            const resp = await API.get("/business/my");
+            const bizObj = resp.data.business || resp.data;
+            realBusinessId = bizObj._id || bizObj.businessId || null;
+            if (realBusinessId) data.businessId = realBusinessId;
+          } catch (e) {
+            // לא הצלחנו לשלוף את העסק
+            realBusinessId = null;
+          }
+        }
+
+        // בדיקה מחמירה - אם זה עסק ואין businessId → הודעת שגיאה + לא להמשיך
+        if (data.role === "business" && !realBusinessId) {
+          console.warn("🔴 אין businessId למשתמש עסקי!", data);
+          setUser(null);
+          setError("⚠️ לעסק שלך אין מזהה עסק (businessId) תקין. פנה לתמיכה או צור עסק חדש.");
+          setLoading(false);
+          setInitialized(true);
+          return;
         }
 
         setUser({
@@ -35,9 +53,9 @@ export function AuthProvider({ children }) {
           email:            data.email,
           role:             data.role,
           subscriptionPlan: data.subscriptionPlan,
-          businessId:       data.businessId || null,
+          businessId:       realBusinessId,
         });
-      } catch {
+      } catch (e) {
         setUser(null);
       } finally {
         setLoading(false);
@@ -64,10 +82,24 @@ export function AuthProvider({ children }) {
 
       const { data } = await API.get("/auth/me");
 
-      if (data.role === "business" && !data.businessId) {
-        const resp = await API.get("/business/my");
-        const bizObj = resp.data.business || resp.data;
-        data.businessId = bizObj._id || bizObj.businessId || null;
+      // נסה לתקן businessId חסר (משתמש עסקי בלבד)
+      let realBusinessId = data.businessId || null;
+      if (data.role === "business" && !realBusinessId) {
+        try {
+          const resp = await API.get("/business/my");
+          const bizObj = resp.data.business || resp.data;
+          realBusinessId = bizObj._id || bizObj.businessId || null;
+          if (realBusinessId) data.businessId = realBusinessId;
+        } catch (e) {
+          realBusinessId = null;
+        }
+      }
+
+      if (data.role === "business" && !realBusinessId) {
+        setUser(null);
+        setError("⚠️ לעסק שלך אין מזהה עסק (businessId) תקין. פנה לתמיכה או צור עסק חדש.");
+        setLoading(false);
+        return null;
       }
 
       setUser({
@@ -76,14 +108,14 @@ export function AuthProvider({ children }) {
         email:            data.email,
         role:             data.role,
         subscriptionPlan: data.subscriptionPlan,
-        businessId:       data.businessId || null,
+        businessId:       realBusinessId,
       });
 
       if (!options.skipRedirect && data) {
         let path = "/";
         switch (data.role) {
           case "business":
-            path = "/business/" + data.businessId + "/dashboard";
+            path = "/business/" + realBusinessId + "/dashboard";
             break;
           case "customer":
             path = "/client/dashboard";
@@ -152,6 +184,9 @@ export function AuthProvider({ children }) {
     >
       {successMessage && (
         <div className="global-success-toast">{successMessage}</div>
+      )}
+      {error && (
+        <div className="global-error-toast">{error}</div>
       )}
       {children}
     </AuthContext.Provider>
