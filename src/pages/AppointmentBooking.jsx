@@ -6,7 +6,7 @@ import api from '../api';
 
 registerLocale('he', he);
 
-export default function AppointmentBooking({ serviceId }) {
+export default function AppointmentBooking({ businessId, serviceId }) {
   const [date, setDate] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [slot, setSlot] = useState('');
@@ -14,15 +14,15 @@ export default function AppointmentBooking({ serviceId }) {
   const [booking, setBooking] = useState(false);
   const [error, setError] = useState('');
 
-  // כשיוזר בוחר שירות חדש – אפס תאריך, שעות וטעויות
+  // אפס סטייט כשמשתנה השירות או העסק
   useEffect(() => {
     setDate(null);
     setAvailableSlots([]);
     setSlot('');
     setError('');
-  }, [serviceId]);
+  }, [businessId, serviceId]);
 
-  // ברגע שמגדירים תאריך, נבקש מהשרת זמני תורים זמינים
+  // בקשת זמני תורים פנויות
   useEffect(() => {
     if (!date) return;
     setLoadingSlots(true);
@@ -31,7 +31,11 @@ export default function AppointmentBooking({ serviceId }) {
     setError('');
 
     api.get('/appointments/slots', {
-      params: { serviceId, date: date.toISOString().slice(0,10) }
+      params: {
+        businessId,
+        serviceId,
+        date: date.toISOString().slice(0,10)
+      }
     })
     .then(res => {
       const slots = res.data.slots || [];
@@ -44,7 +48,7 @@ export default function AppointmentBooking({ serviceId }) {
       setError('שגיאה בשליפת זמינות');
     })
     .finally(() => setLoadingSlots(false));
-  }, [date, serviceId]);
+  }, [date, businessId, serviceId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,6 +60,7 @@ export default function AppointmentBooking({ serviceId }) {
     setError('');
     try {
       await api.post('/appointments', {
+        businessId,
         serviceId,
         date: date.toISOString().slice(0,10),
         time: slot
@@ -79,7 +84,7 @@ export default function AppointmentBooking({ serviceId }) {
         <DatePicker
           locale="he"
           selected={date}
-          onChange={d => setDate(d)}
+          onChange={setDate}
           inline
           minDate={new Date()}
           placeholderText="בחרי תאריך"

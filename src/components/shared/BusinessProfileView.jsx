@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
-import AppointmentsMain from '../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/AppointmentsMain';
+import AppointmentsMain from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/AppointmentsMain";
 import "./BusinessProfileView.css";
 
 const TABS = [
@@ -66,7 +66,7 @@ export default function BusinessProfileView() {
     reviews = [],
     address: { city = "" } = {},
     services = [],
-    calendar = {}
+    schedule = {}
   } = data;
 
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
@@ -79,7 +79,7 @@ export default function BusinessProfileView() {
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
   const handleChatClick = () => {
-    navigate(`/business/messages`);
+    navigate(`/business/${bizId}/messages`);
   };
 
   const handleReviewSubmit = async formData => {
@@ -101,6 +101,16 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
           {isOwner && (
+            <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
+              ✏️ ערוך פרטי העסק
+            </Link>
+          )}
+          { !isOwner && (
+            <Link to={`/book/${bizId}`} className="go-to-calendar-btn">
+              קבע תור
+            </Link>
+          )}
+          {logoUrl && (
             <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
@@ -255,8 +265,9 @@ export default function BusinessProfileView() {
               <div className="public-calendar">
                 <AppointmentsMain
                   isPreview={true}
+                  businessId={bizId}
                   services={services}
-                  workHours={calendar}
+                  workHours={schedule}
                 />
               </div>
             )}

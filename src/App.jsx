@@ -80,7 +80,7 @@ export default function App() {
           <Route path="/search" element={<SearchBusinesses />} />
 
           {/* Booking Page */}
-          <Route path="/book" element={<BookingPage />} />
+          <Route path="/book/:businessId" element={<BookingPage />} />
 
           {/* Business info */}
           <Route path="/how-it-works" element={<HowItWorks />} />
