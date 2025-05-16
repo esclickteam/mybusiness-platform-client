@@ -23,14 +23,15 @@ export function AuthProvider({ children }) {
       setLoading(true);
       try {
         const { data } = await API.get("/auth/me");
+        console.log("🔍 initialize /auth/me returned:", data);
 
-        // אם בעל עסק ועדיין אין businessId, מושכים מה־/business/my
         if (data.role === "business" && !data.businessId) {
           try {
             const { data: biz } = await API.get("/business/my");
             data.businessId = biz._id || biz.businessId || null;
+            console.log("🔍 initialize fetched businessId:", data.businessId);
           } catch {
-            console.warn("Could not fetch business profile on init");
+            console.warn("⚠️ Could not fetch business profile on init");
           }
         }
 
@@ -49,6 +50,7 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     };
+
     initialize();
   }, []);
 
@@ -70,14 +72,15 @@ export function AuthProvider({ children }) {
       }
 
       const { data } = await API.get("/auth/me");
+      console.log("🔍 login /auth/me returned:", data);
 
-      // אם בעל עסק ועדיין אין businessId, מושכים מה־/business/my
       if (data.role === "business" && !data.businessId) {
         try {
           const { data: biz } = await API.get("/business/my");
           data.businessId = biz._id || biz.businessId || null;
+          console.log("🔍 login fetched businessId:", data.businessId);
         } catch {
-          console.warn("Could not fetch business profile on login");
+          console.warn("⚠️ Could not fetch business profile on login");
         }
       }
 
@@ -94,7 +97,7 @@ export function AuthProvider({ children }) {
         let path = "/";
         switch (data.role) {
           case "business":
-            path = `/business/${data.businessId}/dashboard`;
+            path = "/business/" + data.businessId + "/dashboard";
             break;
           case "customer":
             path = "/client/dashboard";
@@ -109,6 +112,7 @@ export function AuthProvider({ children }) {
             path = "/admin/dashboard";
             break;
         }
+        console.log("🔀 AuthContext navigating to:", path);
         navigate(path, { replace: true });
       }
 
@@ -134,7 +138,7 @@ export function AuthProvider({ children }) {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
     } catch (e) {
-      console.warn("Logout failed:", e);
+      console.warn("⚠️ Logout failed:", e);
     } finally {
       setUser(null);
       setLoading(false);
