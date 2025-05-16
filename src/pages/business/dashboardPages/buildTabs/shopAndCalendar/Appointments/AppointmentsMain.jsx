@@ -93,24 +93,29 @@ const AppointmentsMain = ({
 
   // --- מצב עריכה/הוספה + ניהול שעות פעילות ---
   if (showCalendarSetup) {
-    return (
-      <CalendarSetup
-        initialHours={workHours}
-        onSave={async ({ workHours }) => {
-          // שמור שעות פעילות לשרת ולסטייט
-          try {
-            await API.post('/business/update-work-hours', { workHours });
-            if (setWorkHours) setWorkHours(workHours);
-            setShowCalendarSetup(false);
-            alert("שעות הפעילות נשמרו בהצלחה!");
-          } catch (err) {
-            alert("שגיאה בשמירת שעות הפעילות");
-          }
-        }}
-        onCancel={() => setShowCalendarSetup(false)}
-      />
-    );
-  }
+  return (
+    <CalendarSetup
+      initialHours={workHours}
+      onSave={async (workHours) => {
+        // קונסול – תראה בדיוק מה אתה שולח
+        console.log("🚀 שולח ל-API workHours:", workHours);
+        try {
+          const res = await API.post('/business/update-work-hours', { workHours });
+          console.log("✅ תשובה מהשרת:", res.data);
+          if (setWorkHours) setWorkHours(workHours);
+          setShowCalendarSetup(false);
+          alert("שעות הפעילות נשמרו בהצלחה!");
+        } catch (err) {
+          // תדפיס גם את השגיאה
+          console.error("❌ שגיאה בשמירת שעות הפעילות:", err?.response?.data || err);
+          alert("שגיאה בשמירת שעות הפעילות");
+        }
+      }}
+      onCancel={() => setShowCalendarSetup(false)}
+    />
+  );
+}
+
 
   return (
     <div className="services-page-wrapper">
