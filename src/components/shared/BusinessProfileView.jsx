@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import ReviewForm from "./buildTabs/ReviewForm";
+import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../../../components/ServicesSelector";
 import ClientCalendar   from "./buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 
