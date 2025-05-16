@@ -5,7 +5,8 @@ import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login } = useAuth();               // ← קבלת הפונקציה מה־context
+  // now also get the user from context
+  const { login, user: authUser } = useAuth();
   const [email, setEmail]           = useState("");
   const [password, setPassword]     = useState("");
   const [loading, setLoading]       = useState(false);
@@ -25,13 +26,19 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      // ← קוראים ל־context.login, שמטפל ב־API, שמירת טוקן ו־fetch של user
-      const user = await login(cleanEmail, password);
+      // call login, which sets authUser in context
+      await login(cleanEmail, password);
+      console.log("Logged in user from context:", authUser);
 
-      const role = (user.role || "").toLowerCase();
+      if (!authUser) {
+        setLoginError("קרתה שגיאה בטעינת פרטי המשתמש");
+        return;
+      }
+
+      const role = (authUser.role || "").toLowerCase();
       switch (role) {
         case "business":
-          navigate(`/business/${user.businessId}/dashboard`, { replace: true });
+          navigate(`/business/${authUser.businessId}/dashboard`, { replace: true });
           break;
         case "customer":
           navigate("/client/dashboard", { replace: true });
