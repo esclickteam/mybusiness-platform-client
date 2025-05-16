@@ -452,6 +452,7 @@ html, body, #root {
 }
 
 /* Booking Tab Styles */
+/* === Booking Tab Styles (מעודכן) === */
 .booking-tab {
   display: flex;
   flex-direction: column;
@@ -461,10 +462,105 @@ html, body, #root {
   margin: 1rem auto;
 }
 
-.service-select {
+/* === ServicesSelector === */
+.services-selector {
   width: 100%;
-  padding: 8px;
+  margin: 0 auto;
+}
+
+/* קטגוריות */
+.cat-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+.cat-tabs button {
+  padding: 6px 12px;
+  border: none;
+  background: #f0eaff;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+.cat-tabs button:hover {
+  transform: translateY(-1px);
+}
+.cat-tabs button.active {
+  background: #b46af1;
+  color: #fff;
+}
+
+/* שדה חיפוש */
+.services-search {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
 }
+
+/* גריד של כרטיסי שירות */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
+  gap: 12px;
+}
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  margin: 16px 0;
+}
+
+/* === ServiceCard === */
+.service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background: #f5f2ff;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  text-align: center;
+}
+.service-card:hover {
+  transform: translateY(-2px);
+}
+.service-card.selected {
+  border-color: #b46af1;
+  box-shadow: 0 0 8px rgba(180,106,241,0.3);
+}
+.service-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 8px;
+}
+.service-card h5 {
+  margin: 4px 0;
+  font-size: 1rem;
+  color: #333;
+}
+.service-card__desc {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
+/* רספונסיביות לכרטיסים */
+@media (max-width: 600px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 400px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

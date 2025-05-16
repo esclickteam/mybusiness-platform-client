@@ -1,9 +1,12 @@
+// src/pages/business/dashboardPages/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import api from "../../api";
-import { useAuth } from "../../context/AuthContext";
-import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
-import AppointmentBooking from "../../pages/AppointmentBooking";
+import api from "../../../api";
+import { useAuth } from "../../../context/AuthContext";
+import ReviewForm from "./buildTabs/ReviewForm";
+
+import ServicesSelector from "../../../components/ServicesSelector";
+import ClientCalendar   from "./buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 
 import "./BusinessProfileView.css";
 
@@ -24,12 +27,17 @@ export default function BusinessProfileView() {
 
   const [data, setData] = useState(null);
   const [faqs, setFaqs] = useState([]);
+  const [services, setServices] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [schedule, setSchedule] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [serviceId, setServiceId] = useState("");
+
+  const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
     if (!bizId) {
@@ -38,15 +46,22 @@ export default function BusinessProfileView() {
       return;
     }
     (async () => {
-      setLoading(true);
       try {
-        const res = await api.get(`/business/${bizId}`);
-        const business = res.data.business || res.data;
+        setLoading(true);
+        const [{ data: bizData }, svcRes, catRes] = await Promise.all([
+          api.get(`/business/${bizId}`),
+          api.get(`/business/${bizId}/services`),
+          api.get(`/business/${bizId}/service-categories`),
+        ]);
+        const business = bizData.business || bizData;
         setData(business);
         setFaqs(business.faqs || []);
+        setSchedule(business.schedule || {});
+        setServices(svcRes.data);
+        setCategories(catRes.data);
       } catch (err) {
         console.error(err);
-        setError("שגיאה בטעינת העסק");
+        setError("שגיאה בטעינת הנתונים");
       } finally {
         setLoading(false);
       }
@@ -54,8 +69,8 @@ export default function BusinessProfileView() {
   }, [bizId]);
 
   if (loading) return <div className="loading">טוען…</div>;
-  if (error) return <div className="error">{error}</div>;
-  if (!data) return <div className="error">העסק לא נמצא</div>;
+  if (error)   return <div className="error">{error}</div>;
+  if (!data)  return <div className="error">העסק לא נמצא</div>;
 
   const {
     businessName,
@@ -67,19 +82,16 @@ export default function BusinessProfileView() {
     gallery = [],
     reviews = [],
     address: { city = "" } = {},
-    services = [],
-    schedule = {},
   } = data;
 
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
-  const avgRating = reviews.length ? totalRating / reviews.length : 0;
-  const roundedAvg = Math.round(avgRating * 10) / 10;
-  const fullAvgStars = Math.floor(roundedAvg);
-  const halfAvgStar = roundedAvg % 1 ? 1 : 0;
-  const emptyAvgStars = 5 - fullAvgStars - halfAvgStar;
+  const avgRating   = reviews.length ? totalRating / reviews.length : 0;
+  const roundedAvg  = Math.round(avgRating * 10) / 10;
+  const fullStars   = Math.floor(roundedAvg);
+  const halfStar    = roundedAvg % 1 ? 1 : 0;
+  const emptyStars  = 5 - fullStars - halfStar;
 
   const isOwner = user?.role === "business" && user.businessId === bizId;
-
   const handleChatClick = () => navigate(`/business/${bizId}/messages`);
 
   const handleReviewSubmit = async (formData) => {
@@ -111,27 +123,25 @@ export default function BusinessProfileView() {
 
           {logoUrl && (
             <div className="profile-logo-wrapper">
-              <img
-                className="profile-logo"
-                src={logoUrl}
-                alt="לוגו העסק"
-              />
+              <img className="profile-logo" src={logoUrl} alt="לוגו העסק" />
             </div>
           )}
 
           <h1 className="business-name">{businessName}</h1>
 
           <div className="about-phone">
-            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {category    && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {phone       && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city        && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
             <span className="stars-inline">
-              {'★'.repeat(fullAvgStars)}{halfAvgStar ? '⯨' : ''}{'☆'.repeat(emptyAvgStars)}
+              {"★".repeat(fullStars)}
+              {halfStar ? "⯨" : ""}
+              {"☆".repeat(emptyStars)}
             </span>
             <span className="count">({reviews.length} ביקורות)</span>
           </div>
@@ -145,7 +155,7 @@ export default function BusinessProfileView() {
                 className={`tab ${tab === currentTab ? "active" : ""}`}
                 onClick={() => {
                   setCurrentTab(tab);
-                  if (tab !== "יומן") setServiceId("");
+                  setSelectedService(null);
                 }}
               >
                 {tab}
@@ -193,15 +203,21 @@ export default function BusinessProfileView() {
                 {reviews.length ? (
                   reviews.map((r, i) => (
                     <div key={r._id || i} className="review-card improved">
-                      {/* review content */}
+                      {/* כאן את תוכן הביקורת */}
                     </div>
                   ))
                 ) : (
                   <p className="no-data">אין ביקורות</p>
                 )}
                 {showReviewModal && (
-                  <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
-                    <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className="modal-bg"
+                    onClick={() => setShowReviewModal(false)}
+                  >
+                    <div
+                      className="modal-inner"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <ReviewForm
                         businessId={bizId}
                         onSubmit={handleReviewSubmit}
@@ -248,22 +264,32 @@ export default function BusinessProfileView() {
 
             {currentTab === "יומן" && (
               <div className="booking-tab">
-                <select
-                  value={serviceId}
-                  onChange={(e) => setServiceId(e.target.value)}
-                  className="service-select"
-                >
-                  <option value="">– בחרי שירות –</option>
-                  {services.map((s) => (
-                    <option key={s._id} value={s._id}>{s.name}</option>
-                  ))}
-                </select>
+                <ServicesSelector
+                  services={services}
+                  categories={categories}
+                  onSelect={svc => setSelectedService(svc)}
+                />
 
-                {serviceId && (
-                  <AppointmentBooking
-                    businessId={bizId}
-                    serviceId={serviceId}
-                  />
+                {!selectedService && (
+                  <p className="choose-prompt">
+                    אנא בחרי שירות כדי להציג את היומן
+                  </p>
+                )}
+
+                {selectedService && (
+                  <>
+                    <button
+                      className="back-btn"
+                      onClick={() => setSelectedService(null)}
+                    >
+                      ← שנה שירות
+                    </button>
+                    <ClientCalendar
+                      workHours={schedule}
+                      selectedService={selectedService}
+                      onBackToList={() => setSelectedService(null)}
+                    />
+                  </>
                 )}
               </div>
             )}
