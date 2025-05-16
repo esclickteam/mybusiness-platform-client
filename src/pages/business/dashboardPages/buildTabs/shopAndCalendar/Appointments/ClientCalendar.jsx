@@ -34,15 +34,13 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
     const slikaCal = JSON.parse(localStorage.getItem("demoSlikaDetails_calendar") || "{}");
     const slikaShop = JSON.parse(localStorage.getItem("demoSlikaDetails_shop") || "{}");
 
-    const union = [...new Set([...allCalendar, ...allShop])];
-    setAvailablePayments(union);
+    setAvailablePayments([...new Set([...allCalendar, ...allShop])]);
     setSlikaDetails(slikaCal.link ? slikaCal : slikaShop);
   }, []);
 
   useEffect(() => {
     if (config?.start && config?.end) {
-      const slots = generateTimeSlots(config.start, config.end, config.breaks);
-      setAvailableSlots(slots);
+      setAvailableSlots(generateTimeSlots(config.start, config.end, config.breaks));
     } else {
       setAvailableSlots([]);
     }
@@ -51,44 +49,32 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
   }, [selectedDate, config]);
 
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
-    const parseTime = (timeStr) => {
-      const clean = timeStr.trim();
-      const [h, m = "00"] = clean.split(":");
-      return parseInt(h, 10) * 60 + parseInt(m, 10);
+    const toMin = t => {
+      const [h, m="00"] = t.trim().split(":");
+      return +h * 60 + +m;
     };
-    const formatTime = (minutes) => {
-      const h = Math.floor(minutes / 60);
-      const m = minutes % 60;
-      return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+    const fromMin = m => {
+      const h = Math.floor(m/60), mm = m%60;
+      return `${h.toString().padStart(2,"0")}:${mm.toString().padStart(2,"0")}`;
     };
 
-    const start = parseTime(startTime);
-    const end = parseTime(endTime);
+    const start = toMin(startTime), end = toMin(endTime);
+    const breaksArr = breaks
+      .split(/[\n,]/).map(s=>s.trim()).filter(Boolean)
+      .map(b=>{
+        const [f,t] = b.replace(/\s/g,"").split("-");
+        return f && t ? [toMin(f), toMin(t)] : null;
+      }).filter(Boolean);
+
     const slots = [];
-
-    const breaksArray = breaks
-      .split(/[\,\n]/)
-      .map((b) => b.trim())
-      .filter(Boolean)
-      .map((b) => {
-        const [from, to] = b.replace(/\s/g, "").split("-");
-        if (!from || !to) return null;
-        return [parseTime(from), parseTime(to)];
-      })
-      .filter(Boolean);
-
-    for (let time = start; time + serviceDuration <= end; time += serviceDuration) {
-      const isInBreak = breaksArray.some(
-        ([from, to]) => time < to && time + serviceDuration > from
-      );
-      if (!isInBreak) {
-        slots.push(formatTime(time));
-      }
+    for (let t = start; t + serviceDuration <= end; t += serviceDuration) {
+      const inBreak = breaksArr.some(([f,to]) => t < to && t + serviceDuration > f);
+      if (!inBreak) slots.push(fromMin(t));
     }
     return slots;
   };
 
-  const handleSelectSlot = (time) => {
+  const handleSelectSlot = time => {
     setSelectedSlot({
       time,
       date: selectedDate.toLocaleDateString("he-IL"),
@@ -115,14 +101,12 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
       ...selectedSlot,
     };
     const existing = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
-    const updated = [...existing, booking];
-    localStorage.setItem("demoAppointments", JSON.stringify(updated));
-    console.log("📩 תיאום נשמר:", booking);
+    localStorage.setItem("demoAppointments", JSON.stringify([...existing, booking]));
     setBookingSuccess(true);
   };
 
   return (
-    <div className="client-calendar-wrapper" dir="ltr">
+    <div className="client-calendar-wrapper">
       {mode === "slots" && (
         <>
           <h3>📅 בחר תאריך</h3>
@@ -131,9 +115,8 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
               locale="he-IL"
               value={selectedDate}
               onChange={setSelectedDate}
-              formatShortWeekday={(locale, date) =>
-                format(date, "EEEEE", { locale: he })
-              }
+              formatShortWeekday={(loc, d) => format(d, "EEEEE", { locale: he })}
+              showNeighboringMonth={true}
             />
           </div>
           <div className="selected-date-info">
@@ -143,11 +126,11 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
                 <p>🕓 שעות פעילות: {config.start} - {config.end}</p>
                 {config.breaks && <p>⏸️ הפסקות: {config.breaks}</p>}
                 <h5>🕒 שעות פנויות:</h5>
-                {availableSlots.length > 0 ? (
+                {availableSlots.length ? (
                   <div className="slot-list">
-                    {availableSlots.map((time, idx) => (
-                      <div key={idx} className="slot-item">
-                        <button onClick={() => handleSelectSlot(time)}>{time}</button>
+                    {availableSlots.map((t,i) => (
+                      <div key={i} className="slot-item">
+                        <button onClick={() => handleSelectSlot(t)}>{t}</button>
                       </div>
                     ))}
                   </div>
@@ -171,39 +154,23 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
               <p>📅 תאריך: {selectedSlot.date}</p>
               <p>🕓 שעה: {selectedSlot.time}</p>
               <p>
-                ⏱️ משך:{" "}
-                {Math.floor(selectedSlot.duration / 60)}:
-                {(selectedSlot.duration % 60).toString().padStart(2, "0")} שעות
+                ⏱️ משך: {Math.floor(selectedSlot.duration/60)}:
+                {(selectedSlot.duration%60).toString().padStart(2,"0")}
               </p>
               <p>💰 עלות: {selectedSlot.price} ₪</p>
 
               <div className="booking-form">
                 <label>שם מלא:</label>
-                <input
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                />
+                <input value={clientName} onChange={e => setClientName(e.target.value)} />
                 <label>טלפון:</label>
-                <input
-                  value={clientPhone}
-                  onChange={(e) => setClientPhone(e.target.value)}
-                />
+                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} />
                 <label>כתובת:</label>
-                <input
-                  value={clientAddress}
-                  onChange={(e) => setClientAddress(e.target.value)}
-                />
+                <input value={clientAddress} onChange={e => setClientAddress(e.target.value)} />
                 <label>הערה (לא חובה):</label>
-                <textarea
-                  value={clientNote}
-                  onChange={(e) => setClientNote(e.target.value)}
-                />
+                <textarea value={clientNote} onChange={e => setClientNote(e.target.value)} />
               </div>
 
-              <button
-                className="confirm-slot-btn"
-                onClick={() => setPaymentStep("payment")}
-              >
+              <button className="confirm-slot-btn" onClick={() => setPaymentStep("payment")}>
                 💳 המשך לתשלום
               </button>
               <button className="back-button" onClick={() => setMode("slots")}>
@@ -213,7 +180,7 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
           ) : paymentStep === "payment" && !bookingSuccess ? (
             <AppointmentPayment
               onBack={() => setPaymentStep("summary")}
-              onSubmit={(data) => {
+              onSubmit={data => {
                 setSelectedPayment(data.method);
                 handleSubmitBooking();
                 setPaymentStep("done");
