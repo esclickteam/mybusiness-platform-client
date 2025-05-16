@@ -26,7 +26,7 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      // קוראים ל-login עם skipRedirect כדי שהניווט ייעשה רק כאן
+      // מונעים רידיירקט אוטומטי מה־AuthContext
       const userData = await login(cleanEmail, password, { skipRedirect: true });
 
       console.log("🔥 login returned:", userData);
@@ -35,27 +35,34 @@ export default function Login() {
 
       switch (role) {
         case "business":
-          console.log("➡️ navigating to business dashboard");
-          navigate(`/business/${userData.businessId}/dashboard`, { replace: true });
+          // אם אין businessId, הצג שגיאה במקום לנסות לנווט ל-null
+          if (!userData.businessId) {
+            setLoginError("לא נמצא פרופיל עסקי. אנא פנה לתמיכה.");
+          } else {
+            navigate(
+              `/business/${userData.businessId}/dashboard`,
+              { replace: true }
+            );
+          }
           break;
+
         case "customer":
-          console.log("➡️ navigating to client dashboard");
           navigate("/client/dashboard", { replace: true });
           break;
+
         case "worker":
-          console.log("➡️ navigating to staff dashboard");
           navigate("/staff/dashboard", { replace: true });
           break;
+
         case "manager":
-          console.log("➡️ navigating to manager dashboard");
           navigate("/manager/dashboard", { replace: true });
           break;
+
         case "admin":
-          console.log("➡️ navigating to admin dashboard");
           navigate("/admin/dashboard", { replace: true });
           break;
+
         default:
-          console.warn("⚠️ unknown role, falling back to home");
           setLoginError("אין לך הרשאה להתחבר כאן");
       }
     } catch (err) {
@@ -91,12 +98,18 @@ export default function Login() {
             disabled={loading}
             required
           />
-          <button type="submit" className="login-button" disabled={loading}>
+          <button
+            type="submit"
+            className="login-button"
+            disabled={loading}
+          >
             {loading ? "🔄 מתחבר..." : "התחבר"}
           </button>
         </form>
 
-        {loginError && <p className="error-message">{loginError}</p>}
+        {loginError && (
+          <p className="error-message">{loginError}</p>
+        )}
 
         <div className="login-extra-options">
           <span
@@ -121,7 +134,9 @@ export default function Login() {
         </div>
       </div>
 
-      {showForgot && <ForgotPassword closePopup={() => setShowForgot(false)} />}
+      {showForgot && (
+        <ForgotPassword closePopup={() => setShowForgot(false)} />
+      )}
     </div>
   );
 }
