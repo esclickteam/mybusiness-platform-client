@@ -6,10 +6,10 @@ import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login } = useAuth();                // רק פונקציית ה־login, בלי לקרוא ל־authUser
-  const [email, setEmail]           = useState("");
-  const [password, setPassword]     = useState("");
-  const [loading, setLoading]       = useState(false);
+  const { login } = useAuth(); // רק פונקציית ה-login
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
@@ -26,28 +26,36 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      // קוראים ל־login ומונעים רידיירקט אוטומטי מתוך הקונטקסט
+      // קוראים ל-login עם skipRedirect כדי שהניווט ייעשה רק כאן
       const userData = await login(cleanEmail, password, { skipRedirect: true });
 
-      // מנווטים לפי תפקיד המשתמש שהתקבל מה־API
+      console.log("🔥 login returned:", userData);
       const role = (userData.role || "").toLowerCase();
+      console.log("🔥 role:", role, "businessId:", userData.businessId);
+
       switch (role) {
         case "business":
+          console.log("➡️ navigating to business dashboard");
           navigate(`/business/${userData.businessId}/dashboard`, { replace: true });
           break;
         case "customer":
+          console.log("➡️ navigating to client dashboard");
           navigate("/client/dashboard", { replace: true });
           break;
         case "worker":
+          console.log("➡️ navigating to staff dashboard");
           navigate("/staff/dashboard", { replace: true });
           break;
         case "manager":
+          console.log("➡️ navigating to manager dashboard");
           navigate("/manager/dashboard", { replace: true });
           break;
         case "admin":
+          console.log("➡️ navigating to admin dashboard");
           navigate("/admin/dashboard", { replace: true });
           break;
         default:
+          console.warn("⚠️ unknown role, falling back to home");
           setLoginError("אין לך הרשאה להתחבר כאן");
       }
     } catch (err) {
@@ -71,7 +79,7 @@ export default function Login() {
             type="email"
             placeholder="אימייל"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
             required
           />
@@ -79,7 +87,7 @@ export default function Login() {
             type="password"
             placeholder="סיסמה"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
             required
           />
