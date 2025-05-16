@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
+import { format } from "date-fns";
+import { he } from "date-fns/locale";
 import "react-calendar/dist/Calendar.css";
 import "./ClientCalendar.css";
-import AppointmentPayment from "./AppointmentPayment"; // ✅ ייבוא חדש
+import AppointmentPayment from "./AppointmentPayment";
 
 const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -51,7 +53,7 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
     const parseTime = (timeStr) => {
       const clean = timeStr.trim();
       const [h, m = "00"] = clean.split(":");
-      return parseInt(h) * 60 + parseInt(m);
+      return parseInt(h, 10) * 60 + parseInt(m, 10);
     };
 
     const formatTime = (minutes) => {
@@ -128,11 +130,16 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
       {mode === "slots" && (
         <>
           <h3>📅 בחר תאריך</h3>
-          <Calendar
-            locale="he-IL"
-            value={selectedDate}
-            onChange={setSelectedDate}
-          />
+          <div className="calendar-fullwidth">
+            <Calendar
+              locale="he-IL"
+              value={selectedDate}
+              onChange={setSelectedDate}
+              formatShortWeekday={(locale, date) =>
+                format(date, "EEEEE", { locale: he })
+              }
+            />
+          </div>
           <div className="selected-date-info">
             <h4>📆 {selectedDate.toLocaleDateString("he-IL")}</h4>
             {config ? (
@@ -167,22 +174,45 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
               <p>🧾 שירות: {selectedSlot.name}</p>
               <p>📅 תאריך: {selectedSlot.date}</p>
               <p>🕓 שעה: {selectedSlot.time}</p>
-              <p>⏱️ משך: {Math.floor(selectedSlot.duration / 60)}:{(selectedSlot.duration % 60).toString().padStart(2, "0")} שעות</p>
+              <p>
+                ⏱️ משך:{" "}
+                {Math.floor(selectedSlot.duration / 60)}:
+                {(selectedSlot.duration % 60).toString().padStart(2, "0")} שעות
+              </p>
               <p>💰 עלות: {selectedSlot.price} ₪</p>
 
               <div className="booking-form">
                 <label>שם מלא:</label>
-                <input value={clientName} onChange={(e) => setClientName(e.target.value)} />
+                <input
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                />
                 <label>טלפון:</label>
-                <input value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} />
+                <input
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                />
                 <label>כתובת:</label>
-                <input value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} />
+                <input
+                  value={clientAddress}
+                  onChange={(e) => setClientAddress(e.target.value)}
+                />
                 <label>הערה (לא חובה):</label>
-                <textarea value={clientNote} onChange={(e) => setClientNote(e.target.value)} />
+                <textarea
+                  value={clientNote}
+                  onChange={(e) => setClientNote(e.target.value)}
+                />
               </div>
 
-              <button className="confirm-slot-btn" onClick={() => setPaymentStep("payment")}>💳 המשך לתשלום</button>
-              <button className="back-button" onClick={() => setMode("slots")}>🔙 חזרה לשעות</button>
+              <button
+                className="confirm-slot-btn"
+                onClick={() => setPaymentStep("payment")}
+              >
+                💳 המשך לתשלום
+              </button>
+              <button className="back-button" onClick={() => setMode("slots")}>
+                🔙 חזרה לשעות
+              </button>
             </>
           ) : paymentStep === "payment" && !bookingSuccess ? (
             <AppointmentPayment
@@ -197,7 +227,9 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
             <div>
               <h4 className="success-message">🎉 התיאום נשלח בהצלחה!</h4>
               <p>נציג יחזור אליך לאישור</p>
-              <button className="back-button" onClick={onBackToList}>🔙 חזרה לרשימה</button>
+              <button className="back-button" onClick={onBackToList}>
+                🔙 חזרה לרשימה
+              </button>
             </div>
           )}
         </div>
