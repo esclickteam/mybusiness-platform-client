@@ -6,6 +6,7 @@ import { he } from "date-fns/locale";
 import "react-calendar/dist/Calendar.css";
 import "./ClientCalendar.css";
 import AppointmentPayment from "./AppointmentPayment";
+import MonthCalendar from "../../../../components/MonthCalendar";
 
 const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -42,17 +43,22 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
       return +h * 60 + +m;
     };
     const fromMin = m => {
-      const h = Math.floor(m / 60), mm = m % 60;
+      const h = Math.floor(m / 60),
+        mm = m % 60;
       return `${h.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}`;
     };
 
-    const start = toMin(startTime), end = toMin(endTime);
+    const start = toMin(startTime),
+      end = toMin(endTime);
     const breaksArr = breaks
-      .split(/[\n,]/).map(s => s.trim()).filter(Boolean)
+      .split(/[\n,]/)
+      .map(s => s.trim())
+      .filter(Boolean)
       .map(b => {
         const [f, t] = b.replace(/\s/g, "").split("-");
         return f && t ? [toMin(f), toMin(t)] : null;
-      }).filter(Boolean);
+      })
+      .filter(Boolean);
 
     const slots = [];
     for (let t = start; t + serviceDuration <= end; t += serviceDuration) {
@@ -101,21 +107,31 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
           <div className="calendar-fullwidth">
             <Calendar
               locale="he-IL"
-              
-              showNeighboringMonth={false}     
-              showFixedNumberOfWeeks={true}    
+              showNeighboringMonth={false}
+              showFixedNumberOfWeeks={true}
               value={selectedDate}
               onChange={setSelectedDate}
-              formatShortWeekday={(loc, d) =>
-                format(d, "EEEEE", { locale: he })
-              }
+              formatShortWeekday={(loc, d) => format(d, "EEEEE", { locale: he })}
             />
           </div>
+
+          {/* לוח שנה חודשי קבוע שמופיע רק אחרי שבחרנו שירות */}
+          {selectedService && (
+            <div className="month-overview">
+              <MonthCalendar
+                year={selectedDate.getFullYear()}
+                month={selectedDate.getMonth()}
+              />
+            </div>
+          )}
+
           <div className="selected-date-info">
             <h4>📆 {selectedDate.toLocaleDateString("he-IL")}</h4>
             {config ? (
               <>
-                <p>🕓 שעות פעילות: {config.start} - {config.end}</p>
+                <p>
+                  🕓 שעות פעילות: {config.start} - {config.end}
+                </p>
                 {config.breaks && <p>⏸️ הפסקות: {config.breaks}</p>}
                 <h5>🕒 שעות פנויות:</h5>
                 {availableSlots.length ? (
@@ -146,23 +162,39 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
               <p>📅 תאריך: {selectedSlot.date}</p>
               <p>🕓 שעה: {selectedSlot.time}</p>
               <p>
-                ⏱️ משך: {Math.floor(selectedSlot.duration / 60)}:
+                ⏱️ משך:{" "}
+                {Math.floor(selectedSlot.duration / 60)}:
                 {(selectedSlot.duration % 60).toString().padStart(2, "0")}
               </p>
               <p>💰 עלות: {selectedSlot.price} ₪</p>
 
               <div className="booking-form">
                 <label>שם מלא:</label>
-                <input value={clientName} onChange={e => setClientName(e.target.value)} />
+                <input
+                  value={clientName}
+                  onChange={e => setClientName(e.target.value)}
+                />
                 <label>טלפון:</label>
-                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} />
+                <input
+                  value={clientPhone}
+                  onChange={e => setClientPhone(e.target.value)}
+                />
                 <label>כתובת:</label>
-                <input value={clientAddress} onChange={e => setClientAddress(e.target.value)} />
+                <input
+                  value={clientAddress}
+                  onChange={e => setClientAddress(e.target.value)}
+                />
                 <label>הערה (לא חובה):</label>
-                <textarea value={clientNote} onChange={e => setClientNote(e.target.value)} />
+                <textarea
+                  value={clientNote}
+                  onChange={e => setClientNote(e.target.value)}
+                />
               </div>
 
-              <button className="confirm-slot-btn" onClick={() => setPaymentStep("payment")}>
+              <button
+                className="confirm-slot-btn"
+                onClick={() => setPaymentStep("payment")}
+              >
                 💳 המשך לתשלום
               </button>
               <button className="back-button" onClick={() => setMode("slots")}>
