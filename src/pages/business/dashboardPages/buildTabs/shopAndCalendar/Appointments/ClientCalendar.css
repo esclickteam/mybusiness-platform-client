@@ -46,7 +46,7 @@
 }
 
 /* =================================================================== */
-/* 3. אילוץ סדר עמודות ראשון-שבת בלי calendarType                         */
+/* 3. אילוץ סדר עמודות ראשון-שבת + הסתרת ימים של חודשים שכנים           */
 /* =================================================================== */
 .client-calendar-wrapper .react-calendar__month-view__weekdays,
 .client-calendar-wrapper .react-calendar__month-view__days {
@@ -56,12 +56,21 @@
   unicode-bidi: bidi-override !important;  /* הופך את סדר הילדים */
 }
 
+/* הסתרת תאריכים של החודש הקודם/הבא */
+.client-calendar-wrapper .react-calendar__month-view__days__day--neighboringMonth {
+  visibility: hidden;
+}
+
 /* =================================================================== */
 /* 4. סגנון תאי התאריכים                                                   */
 /* =================================================================== */
 .client-calendar-wrapper .react-calendar__tile {
   padding: 0.5em 0;
   line-height: 1.4;
+
+  /* חשוב! שמירת LTR בתוך התא כדי שהמספרים יופיעו 1,2,3… משם לשמאל */
+  direction: ltr !important;
+  text-align: center !important;
 }
 
 .client-calendar-wrapper .react-calendar__tile--now {
