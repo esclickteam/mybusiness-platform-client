@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
@@ -5,8 +6,7 @@ import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  // now also get the user from context
-  const { login, user: authUser } = useAuth();
+  const { login } = useAuth();                // רק פונקציית ה־login, בלי לקרוא ל־authUser
   const [email, setEmail]           = useState("");
   const [password, setPassword]     = useState("");
   const [loading, setLoading]       = useState(false);
@@ -26,38 +26,36 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      // call login, which sets authUser in context
-      await login(cleanEmail, password);
-      console.log("Logged in user from context:", authUser);
+      // קוראים ל־login ומונעים רידיירקט אוטומטי מתוך הקונטקסט
+      const userData = await login(cleanEmail, password, { skipRedirect: true });
 
-      if (!authUser) {
-        setLoginError("קרתה שגיאה בטעינת פרטי המשתמש");
-        return;
-      }
-
-      const role = (authUser.role || "").toLowerCase();
+      // מנווטים לפי תפקיד המשתמש שהתקבל מה־API
+      const role = (userData.role || "").toLowerCase();
       switch (role) {
         case "business":
-          navigate(`/business/${authUser.businessId}/dashboard`, { replace: true });
+          navigate(`/business/${userData.businessId}/dashboard`, { replace: true });
           break;
         case "customer":
           navigate("/client/dashboard", { replace: true });
           break;
-        case "admin":
         case "worker":
+          navigate("/staff/dashboard", { replace: true });
+          break;
         case "manager":
-        case "מנהל":
-          navigate("/dashboard", { replace: true });
+          navigate("/manager/dashboard", { replace: true });
+          break;
+        case "admin":
+          navigate("/admin/dashboard", { replace: true });
           break;
         default:
           setLoginError("אין לך הרשאה להתחבר כאן");
       }
     } catch (err) {
       console.error("Login failed:", err);
-      if (err.response?.status === 403) {
-        setLoginError("אין לך הרשאה להתחבר כאן");
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setLoginError("אימייל/שם משתמש או סיסמה שגויים");
       } else {
-        setLoginError(err.response?.data?.error || "אימייל או סיסמה שגויים");
+        setLoginError("שגיאה בשרת, נסה שוב מאוחר יותר");
       }
     } finally {
       setLoading(false);
@@ -100,7 +98,7 @@ export default function Login() {
             שכחת את הסיסמה?
           </span>
           <p className="signup-link">
-            לא רשום?{' '}
+            לא רשום?{" "}
             <Link to="/register" className="signup-link-text">
               הירשם עכשיו
             </Link>
