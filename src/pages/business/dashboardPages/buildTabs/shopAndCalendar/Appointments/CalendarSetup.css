@@ -258,3 +258,23 @@
   opacity: 1 !important;
   font-weight: 500;
 }
+
+.custom-time-picker,
+.custom-time-picker input {
+  font-size: 1.1em;
+  direction: ltr;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid #a36eff;
+  background: #f8f8ff;
+  width: 100%;
+  max-width: 160px;
+}
+.react-time-picker__wrapper {
+  border: none;
+  box-shadow: 0 2px 7px #a36eff14;
+  padding: 0 4px;
+}
+.react-time-picker__inputGroup {
+  direction: ltr;
+}
