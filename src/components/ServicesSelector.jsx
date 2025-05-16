@@ -1,6 +1,6 @@
 // src/components/ServicesSelector.jsx
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import ServiceCard from "../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientServiceCard"; 
+import React, { useState, useEffect, useMemo } from "react";
+import ClientServiceCard from "../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientServiceCard";
 import "./ServicesSelector.css";
 
 export default function ServicesSelector({ services, categories, onSelect }) {
@@ -9,55 +9,50 @@ export default function ServicesSelector({ services, categories, onSelect }) {
   const [selectedId, setSelectedId] = useState(
     localStorage.getItem("lastService") || null
   );
-  const containerRef = useRef(null);
 
   // שמירת הבחירה בלוקאל־סטורג'
   useEffect(() => {
-    if (selectedId) localStorage.setItem("lastService", selectedId);
+    if (selectedId) {
+      localStorage.setItem("lastService", selectedId);
+    }
   }, [selectedId]);
 
-  // סינון לפי חיפוש וקטגוריה
+  // פונקציה לעיצוב משך
+  const formatDuration = (minutes) => {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}:${m.toString().padStart(2, "0")}`;
+  };
+
+  // פילטר החיפוש והקטגוריה
   const filtered = useMemo(() => {
-    return services
-      .filter(s =>
-        (activeCategory === "all" || s.category === activeCategory) &&
-        s.name.toLowerCase().includes(search.trim().toLowerCase())
-      );
+    return services.filter((s) => {
+      const matchesCategory = activeCategory === "all" || s.category === activeCategory;
+      const matchesSearch = s.name.toLowerCase().includes(search.trim().toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
   }, [services, search, activeCategory]);
 
-  // ניהול ניווט מקלדת
-  const cards = useRef([]);
-  useEffect(() => {
-    cards.current = cards.current.slice(0, filtered.length);
-  }, [filtered]);
-
-  const handleKeyDown = e => {
-    const idx = cards.current.findIndex(c => c === document.activeElement);
-    if (e.key === "ArrowRight" && idx < cards.current.length - 1) {
-      cards.current[idx + 1].focus();
-    }
-    if (e.key === "ArrowLeft" && idx > 0) {
-      cards.current[idx - 1].focus();
-    }
-  };
+  // טאב "הכל" ועוד קטגוריות
+  const tabs = ["all", ...categories];
 
   return (
     <div className="services-selector">
-      {/* סינון לפי קטגוריות */}
+      {/* קטגוריות */}
       <div className="cat-tabs" role="tablist">
-        <button
-          role="tab"
-          className={activeCategory === "all" ? "active" : ""}
-          onClick={() => setActiveCategory("all")}
-        >הכל</button>
-        {categories.map(cat => (
-          <button
-            key={cat}
-            role="tab"
-            className={activeCategory === cat ? "active" : ""}
-            onClick={() => setActiveCategory(cat)}
-          >{cat}</button>
-        ))}
+        {tabs.map((catKey) => {
+          const label = catKey === "all" ? "הכל" : catKey;
+          return (
+            <button
+              key={catKey}
+              role="tab"
+              className={activeCategory === catKey ? "active" : ""}
+              onClick={() => setActiveCategory(catKey)}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
 
       {/* חיפוש typeahead */}
@@ -66,29 +61,33 @@ export default function ServicesSelector({ services, categories, onSelect }) {
         className="services-search"
         placeholder="חפש שירות..."
         value={search}
-        onChange={e => setSearch(e.target.value)}
+        onChange={(e) => setSearch(e.target.value)}
         aria-label="חיפוש שירות"
       />
 
-      {/* גריד כרטיסיות */}
-      <div
-        className="services-grid"
-        onKeyDown={handleKeyDown}
-        ref={containerRef}
-      >
-        {filtered.map((s, i) => (
-          <ServiceCard
-            key={s.id}
-            ref={el => (cards.current[i] = el)}
-            service={s}
-            isSelected={s.id === selectedId}
-            onClick={() => {
-              setSelectedId(s.id);
-              onSelect(s);
-            }}
-          />
-        ))}
-        {filtered.length === 0 && (
+      {/* רשת כרטיסיות */}
+      <div className="services-grid">
+        {filtered.length > 0 ? (
+          filtered.map((service) => {
+            const id = service._id || service.id;
+            return (
+              <div
+                key={id}
+                className="service-card-wrapper"
+                onClick={() => {
+                  setSelectedId(id);
+                  onSelect(service);
+                }}
+              >
+                <ClientServiceCard
+                  service={service}
+                  workHours={{}}
+                  formatDuration={formatDuration}
+                />
+              </div>
+            );
+          })
+        ) : (
           <p className="no-results">לא נמצאו שירותים</p>
         )}
       </div>
