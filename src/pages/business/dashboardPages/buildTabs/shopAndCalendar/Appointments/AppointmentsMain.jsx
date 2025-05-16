@@ -101,7 +101,7 @@ const AppointmentsMain = ({
 
           console.log('🚀 Sending workHours:', hoursArray);
           try {
-            const res = await API.post('/business/update-work-hours', { workHours: hoursArray });
+            const res = await API.post('/appointments/update-work-hours', { workHours: hoursArray });
             console.log('✅ Server response:', res.data);
 
             // Reflect back into state map
