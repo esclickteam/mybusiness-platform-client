@@ -43,34 +43,36 @@
 
 .go-to-calendar-btn {
   margin-top: 16px;
-  padding: 10px 0;
-  background: linear-gradient(90deg, #a259ff, #7a3df4);
-  color: white;
-  font-weight: bold;
+  margin-bottom: 0;
+  background: linear-gradient(90deg, #a259ff, #7a3df4 90%);
+  color: #fff;
   font-size: 16px;
+  font-weight: bold;
   border: none;
   border-radius: 18px;
-  width: 82%;
+  padding: 10px 0;
+  width: 85%;                 /* פחות מ-100%, כפתור צר יותר */
   max-width: 220px;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 2px 8px rgba(122,61,244,0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(122,61,244,0.13);
+  transition: background 0.18s, transform 0.11s;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.go-to-calendar-btn:hover,
-.back-button:hover {
-  background-color: #5e2fcf;
+.go-to-calendar-btn:hover {
+  background: linear-gradient(90deg, #7a3df4, #5e2fcf 90%);
   transform: scale(1.04);
 }
 
-.go-to-calendar-btn:active,
-.back-button:active {
-  transform: scale(0.98);
+.go-to-calendar-btn:active {
+  transform: scale(0.97);
 }
+
 
 /* מיישר כפתור לסוף, אם יש תוכן דינמי */
 .client-service-card {
