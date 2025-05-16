@@ -4,8 +4,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
-import ServicesSelector from "../../../components/ServicesSelector";
-import ClientCalendar   from "./buildTabs/shopAndCalendar/Appointments/ClientCalendar";
+import ServicesSelector from "../ServicesSelector";
+import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 
 import "./BusinessProfileView.css";
 
