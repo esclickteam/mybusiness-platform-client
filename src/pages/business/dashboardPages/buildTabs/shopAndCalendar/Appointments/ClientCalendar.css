@@ -277,3 +277,18 @@
     font-size: 0.9em;
   }
 }
+
+/* --------------------------------------------- */
+/* FORCE LTR על כל ה-wrapper כדי שהגריד לא יתהפך */
+/* --------------------------------------------- */
+.client-calendar-wrapper {
+  direction: ltr !important;
+}
+
+/* השארת RTL רק לטקסטים שבתוך ה-wrapper */
+.client-calendar-wrapper .selected-date-info,
+.client-calendar-wrapper .booking-form,
+.client-calendar-wrapper .slot-list,
+.client-calendar-wrapper .summary-box {
+  direction: rtl !important;
+}
