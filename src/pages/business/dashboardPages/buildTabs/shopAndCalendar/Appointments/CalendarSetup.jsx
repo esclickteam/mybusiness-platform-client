@@ -1,140 +1,141 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./CalendarSetup.css";
 
-const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [customHours, setCustomHours] = useState(initialHours || {});
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
-  const [breaks, setBreaks] = useState("");
-  const [savedFeedback, setSavedFeedback] = useState(false);
+// ימי השבוע בעברית
+const weekdays = [
+  "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"
+];
 
-  useEffect(() => {
-    const saved = customHours[selectedDate.toDateString()];
-    setStart(saved?.start || "");
-    setEnd(saved?.end || "");
-    setBreaks(saved?.breaks || "");
-    setSavedFeedback(false);
-  }, [selectedDate, customHours]);
+// ברירת מחדל: שעות לכל יום (סגור בשבת)
+const defaultWeeklyHours = {
+  0: { start: "09:00", end: "18:00" },
+  1: { start: "09:00", end: "18:00" },
+  2: { start: "09:00", end: "18:00" },
+  3: { start: "09:00", end: "18:00" },
+  4: { start: "09:00", end: "18:00" },
+  5: { start: "09:00", end: "14:00" },
+  6: null, // שבת: סגור
+};
 
-  const dateKey = selectedDate.toDateString();
+const CalendarSetup = ({
+  initialWeeklyHours = defaultWeeklyHours,
+  onSave,
+  onCancel
+}) => {
+  const [weeklyHours, setWeeklyHours] = useState(initialWeeklyHours);
 
-  const saveDateHours = () => {
-    if (!start || !end) return;
-    setCustomHours((prev) => ({
+  // שינוי שעות או "סגור" לכל יום
+  const handleChange = (dayIdx, field, value) => {
+    setWeeklyHours(prev => ({
       ...prev,
-      [dateKey]: { start, end, breaks },
+      [dayIdx]: prev[dayIdx]
+        ? { ...prev[dayIdx], [field]: value }
+        : { start: "", end: "" }
     }));
-    setSavedFeedback(true);
   };
 
-  const handleSaveAll = () => {
-    if (onSave) {
-      onSave({
-        workHours: customHours,
-      });
-    } else {
-      // fallback לדמו/לוקאלסטורג'
-      const userEmail = localStorage.getItem("userEmail");
-      if (userEmail === "newuser@example.com") {
-        localStorage.setItem("demoWorkHours", JSON.stringify(customHours));
-        alert("השעות נשמרו בדמו (localStorage)");
-      }
-    }
+  const handleToggleClosed = (dayIdx) => {
+    setWeeklyHours(prev => ({
+      ...prev,
+      [dayIdx]: prev[dayIdx] ? null : { start: "", end: "" }
+    }));
   };
 
-  // פורמט יפה לתצוגה
-  const formatHours = ({ start, end, breaks }) =>
-    `${start || "--:--"} – ${end || "--:--"}${breaks ? ` | הפסקה: ${breaks}` : ""}`;
-
-  // חיווי ויזואלי בקלנדר
-  const tileContent = ({ date }) =>
-    customHours[date.toDateString()] ? <span className="has-hours-dot"></span> : null;
+  const handleSave = () => {
+    if (onSave) onSave(weeklyHours);
+    else alert("השעות נשמרו");
+  };
 
   return (
     <div className="calendar-setup-container">
-      <h2>📅 הגדרת שעות פעילות לפי תאריך</h2>
-
-      <Calendar
-        locale="he-IL"
-        value={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        tileContent={tileContent}
-      />
-
-      <div className="inputs" style={{ marginTop: "20px" }}>
-        <h4>
-          ⏰ שעות פעילות ל־{selectedDate.toLocaleDateString("he-IL")}
-          {savedFeedback && (
-            <span style={{ color: "#2ecc40", fontSize: "1.1em", marginRight: 8 }}>✓ נשמר</span>
-          )}
-        </h4>
-
-        <label>
-          <span role="img" aria-label="start">🕗</span> שעת התחלה:
-        </label>
-        <input
-          type="time"
-          value={start}
-          onChange={(e) => setStart(e.target.value)}
-        />
-
-        <label>
-          <span role="img" aria-label="end">🕘</span> שעת סיום:
-        </label>
-        <input
-          type="time"
-          value={end}
-          onChange={(e) => setEnd(e.target.value)}
-        />
-
-        
-        <button
-          onClick={saveDateHours}
-          className="edit-date-btn"
-          disabled={!start || !end}
-          style={{
-            opacity: !start || !end ? 0.5 : 1,
-            cursor: !start || !end ? "not-allowed" : "pointer",
-          }}
-        >
-          ✏️ שמור שעות ל־{selectedDate.toLocaleDateString("he-IL")}
-        </button>
+      <h2 style={{ textAlign: "center" }}>🗓️ הגדרת שעות פעילות קבועות לשבוע</h2>
+      <div className="weekly-hours-table" style={{
+        background: "#fff", borderRadius: 12, boxShadow: "0 1px 6px #d3c1fa40",
+        maxWidth: 430, margin: "0 auto", padding: 16
+      }}>
+        <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 10px" }}>
+          <thead>
+            <tr>
+              <th>יום</th>
+              <th>התחלה</th>
+              <th>סיום</th>
+              <th>סגור</th>
+            </tr>
+          </thead>
+          <tbody>
+            {weekdays.map((name, i) => (
+              <tr key={i}>
+                <td style={{ fontWeight: 500 }}>{name}</td>
+                <td>
+                  <input
+                    type="time"
+                    value={weeklyHours[i]?.start || ""}
+                    onChange={e => handleChange(i, "start", e.target.value)}
+                    disabled={weeklyHours[i] === null}
+                    style={{ borderRadius: 8, padding: 4, border: "1px solid #ccc", minWidth: 70 }}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    value={weeklyHours[i]?.end || ""}
+                    onChange={e => handleChange(i, "end", e.target.value)}
+                    disabled={weeklyHours[i] === null}
+                    style={{ borderRadius: 8, padding: 4, border: "1px solid #ccc", minWidth: 70 }}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={weeklyHours[i] === null}
+                    onChange={() => handleToggleClosed(i)}
+                    aria-label={`סגור ביום ${name}`}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* הצג סיכום של כל התאריכים עם שעות שנשמרו */}
-      {Object.keys(customHours).length > 0 && (
-        <div className="summary">
-          <strong>🗓️ סיכום שעות פעילות שהוגדרו:</strong>
-          <ul style={{ paddingRight: 0, margin: "10px 0 0 0", listStyle: "none" }}>
-            {Object.entries(customHours).map(([date, hours]) => (
-              <li key={date} className="summary-item">
-                <b>{new Date(date).toLocaleDateString("he-IL")}</b>: {formatHours(hours)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
+      {/* כפתורי שמירה */}
       <div
         style={{
           marginTop: "2rem",
           textAlign: "center",
           display: "flex",
           gap: "1rem",
-          justifyContent: "center",
+          justifyContent: "center"
         }}
       >
-        <button className="save-all-btn styled" onClick={handleSaveAll}>
-          💾 שמור את כל הגדרות היומן
+        <button className="save-all-btn styled" onClick={handleSave}>
+          💾 שמור שעות שבועיות
         </button>
         {onCancel && (
           <button className="cancel-btn styled" onClick={onCancel}>
             חזור
           </button>
         )}
+      </div>
+      <div className="summary" style={{ marginTop: 30 }}>
+        <strong>🗓️ סיכום שעות פעילות:</strong>
+        <ul style={{ paddingRight: 0, margin: "10px 0 0 0", listStyle: "none" }}>
+          {weekdays.map((name, i) => (
+            <li key={i} className="summary-item">
+              <b>{name}:</b>{" "}
+              {weeklyHours[i] === null
+                ? <span style={{ color: "#e04040" }}>סגור</span>
+                : (
+                  weeklyHours[i]?.start && weeklyHours[i]?.end
+                    ? `${weeklyHours[i].start}–${weeklyHours[i].end}`
+                    : <span style={{ color: "#aaa" }}>לא הוגדר</span>
+                )
+              }
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
