@@ -1,6 +1,9 @@
 /* --------------------------------------------- */
 /* 1. Override ל־React-Calendar בתוך RTL wrapper */
 /* --------------------------------------------- */
+/* --------------------------------------------- */
+/* 1. Override ל־React-Calendar בתוך RTL wrapper */
+/* --------------------------------------------- */
 .client-calendar-wrapper .react-calendar {
   direction: ltr;               /* כדי לשמור על גריד של 7 עמודות */
   display: inline-block !important;
@@ -78,16 +81,25 @@
 
 
 /* --------------------------------------------- */
-/* 2. העיצוב הקיים שלך ל־ClientCalendar */
+/* 2. עדכונים ל־ClientCalendar */
 /* --------------------------------------------- */
 .client-calendar-wrapper {
-  direction: rtl;
+  /* הסרת direction: rtl כדי שהגריד לא יתהפך */
+  /* direction: rtl; */
   text-align: right;
   padding: 1rem;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   margin-top: 20px;
+}
+
+/* מחילים RTL רק על הטקסטים שבתוך ה-wrapper */
+.client-calendar-wrapper .selected-date-info,
+.client-calendar-wrapper .booking-form,
+.client-calendar-wrapper .slot-list,
+.client-calendar-wrapper .summary-box {
+  direction: rtl;
 }
 
 /* תצוגת תאריך נבחר */
@@ -98,6 +110,8 @@
   border-radius: 12px;
   border: 1px solid #dcd3ff;
 }
+/* … שאר כללי העיצוב שלך נשארים ללא שינוי … */
+
 .selected-date-info h4 {
   margin-bottom: 8px;
   font-size: 18px;
