@@ -1,10 +1,13 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/ShopSection.jsx
 import React from "react";
 import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar.jsx";
 
 export default function ShopSection({
   setBusinessDetails,
-  renderTopBar
+  renderTopBar,
+  shopMode,
+  setShopMode,
+  workHours,
+  setWorkHours
 }) {
   return (
     <>
@@ -12,9 +15,11 @@ export default function ShopSection({
         {/* רנדר קבוע של יומן (appointments) */}
         <ShopAndCalendar
           isPreview={false}
-          shopMode="appointments"
-          setShopMode={() => {}} // לא נדרש שינוי מצב
-          setBusinessDetails={setBusinessDetails || (() => {})}
+          shopMode={shopMode}
+          setShopMode={setShopMode}
+          workHours={workHours}
+          setWorkHours={setWorkHours}
+          setBusinessDetails={setBusinessDetails}
         />
       </div>
 
@@ -26,8 +31,10 @@ export default function ShopSection({
               {/* תצוגת Preview */}
               <ShopAndCalendar
                 isPreview={true}
-                shopMode="appointments"
-                setShopMode={() => {}}
+                shopMode={shopMode}
+                setShopMode={setShopMode}
+                workHours={workHours}
+                setWorkHours={setWorkHours}
                 setBusinessDetails={() => {}}
               />
             </div>

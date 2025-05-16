@@ -15,7 +15,9 @@ const ShopAndCalendar = ({
   isPreview = false,
   shopMode,
   setShopMode,
-  setBusinessDetails
+  setBusinessDetails,
+  workHours = {},
+  setWorkHours = () => {}
 }) => {
   const { services, setServices, products } = useBusinessServices();
 
@@ -47,12 +49,12 @@ const ShopAndCalendar = ({
   // טעינת שעות לדמו ב־preview
   useEffect(() => {
     if (isPreview) {
-      const saved = localStorage.getItem("demoWorkHours");
+      const saved = localStorage.getItem('demoWorkHours');
       if (saved) {
         try {
           setDemoHours(JSON.parse(saved));
         } catch {
-          console.error("⚠️ demoWorkHours is not valid JSON");
+          console.error('⚠️ demoWorkHours is not valid JSON');
         }
       }
     }
@@ -87,7 +89,7 @@ const ShopAndCalendar = ({
   const total       = (totalBefore - discount).toFixed(2);
 
   return (
-    <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
+    <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>     
       {/* 3) FORM – לא Preview */}
       {!isPreview && mode === 'appointments' && (
         <AppointmentsMain
@@ -95,6 +97,8 @@ const ShopAndCalendar = ({
           services={safeServices}
           setServices={setServices}
           onNext={() => setMode('calendar')}
+          workHours={workHours}
+          setWorkHours={setWorkHours}
         />
       )}
       {!isPreview && mode === 'calendar' && (
@@ -138,11 +142,9 @@ const ShopAndCalendar = ({
           isPreview={true}
           services={safeServices}
           workHours={demoHours}
-          setWorkHours={setDemoHours}  
+          setWorkHours={setDemoHours}
         />
       )}
     </div>
   );
-};
-
-export default ShopAndCalendar;
+}

@@ -63,6 +63,10 @@ const pendingUploadsRef  = useRef([]);
 // הוספת סטייט עבור shopMode
 const [shopMode, setShopMode] = useState(null);
 
+  // סטייט לשעות עבודה
+  const [workHours, setWorkHours] = useState({});
+
+
 
   function extractPublicIdFromUrl(url) {
     const filename = url.split("/").pop().split("?")[0];
@@ -639,9 +643,12 @@ const handleDeleteMainImage = async publicId => {
     setBusinessDetails={setBusinessDetails}
     handleSave={handleSave}
     renderTopBar={renderTopBar}
-    shopMode={shopMode} // אם יש משתנה shopMode - העבר אותו גם
+    shopMode={shopMode}
+    workHours={workHours}
+    setWorkHours={setWorkHours}
   />
 )}
+
 
 
       {currentTab === "צ'אט עם העסק" && (
