@@ -640,13 +640,12 @@ const handleDeleteMainImage = async publicId => {
 
       {currentTab === " יומן" && (
   <ShopSection
-    setBusinessDetails={setBusinessDetails}
-    handleSave={handleSave}
-    renderTopBar={renderTopBar}
-    shopMode={shopMode}
-    workHours={workHours}
-    setWorkHours={setWorkHours}
-  />
+  setBusinessDetails={setBusinessDetails}
+  renderTopBar={renderTopBar}
+  workHours={workHours}
+  setWorkHours={setWorkHours}
+/>
+
 )}
 
 

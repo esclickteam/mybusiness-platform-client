@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
-// סגנונות כלליים של עמוד הבניה
+import React, { useEffect } from 'react';
 import '../../build/Build.css';
-// סגנונות ספציפיים לטאב היומן
 import './ShopAndCalendar.css';
 
 import AppointmentsMain from './Appointments/AppointmentsMain';
@@ -26,7 +24,7 @@ export default function ShopAndCalendar({
     }
   }, [safeServices, isPreview, setBusinessDetails]);
 
-  // רינדור אך ורק של יומן (AppointmentsMain)
+  // תמיד רנדר יומן בלבד
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>     
       <AppointmentsMain
@@ -43,6 +41,7 @@ export default function ShopAndCalendar({
             ? hours => localStorage.setItem('demoWorkHours', JSON.stringify(hours))
             : setWorkHours
         }
+        setBusinessDetails={setBusinessDetails}
       />
     </div>
   );

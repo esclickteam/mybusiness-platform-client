@@ -1,5 +1,6 @@
 import React from "react";
-import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar.jsx";
+// ללא הסיומת .jsx לתיקון build
+import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar";
 
 export default function ShopSection({
   setBusinessDetails,
@@ -28,13 +29,11 @@ export default function ShopSection({
         <div className="phone-preview-wrapper">
           <div className="phone-frame">
             <div className="phone-body">
-              {/* תצוגת Preview */}
+              {/* תצוגת Preview יומן בלבד */}
               <ShopAndCalendar
                 isPreview={true}
                 shopMode={shopMode}
                 setShopMode={setShopMode}
-                workHours={workHours}
-                setWorkHours={setWorkHours}
                 setBusinessDetails={() => {}}
               />
             </div>

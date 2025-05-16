@@ -12,6 +12,7 @@ const AppointmentsMain = ({
   onNext,
   workHours = {},
   setWorkHours,
+  setBusinessDetails // נוספה prop חדשה
 }) => {
   const [showCalendarSetup, setShowCalendarSetup] = useState(false);
 
@@ -109,12 +110,20 @@ const AppointmentsMain = ({
               (acc, { day, start, end }) => ({ ...acc, [day]: { start, end } }),
               {}
             );
-            // בדיקה לפני קריאה ל-setWorkHours
+
+            // עדכון סטייט מקומי
             if (typeof setWorkHours === 'function') {
               setWorkHours(updatedMap);
-            } else {
-              console.warn('setWorkHours is not a function:', setWorkHours);
             }
+
+            // **עדכון ה-businessDetails**
+            if (typeof setBusinessDetails === 'function') {
+              setBusinessDetails(prev => ({
+                ...prev,
+                workHours: updatedMap
+              }));
+            }
+
             setShowCalendarSetup(false);
             alert('שעות הפעילות נשמרו בהצלחה!');
           } catch (error) {
