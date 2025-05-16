@@ -1,3 +1,4 @@
+// src/pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.jsx
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import { format } from "date-fns";
@@ -55,7 +56,6 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
       const [h, m = "00"] = clean.split(":");
       return parseInt(h, 10) * 60 + parseInt(m, 10);
     };
-
     const formatTime = (minutes) => {
       const h = Math.floor(minutes / 60);
       const m = minutes % 60;
@@ -85,7 +85,6 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
         slots.push(formatTime(time));
       }
     }
-
     return slots;
   };
 
@@ -105,7 +104,6 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
       alert("אנא מלא את כל הפרטים הנדרשים");
       return;
     }
-
     const booking = {
       id: Date.now(),
       name: clientName,
@@ -116,17 +114,15 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
       status: "חדש",
       ...selectedSlot,
     };
-
     const existing = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
     const updated = [...existing, booking];
-
     localStorage.setItem("demoAppointments", JSON.stringify(updated));
     console.log("📩 תיאום נשמר:", booking);
     setBookingSuccess(true);
   };
 
   return (
-    <div className="client-calendar-wrapper">
+    <div className="client-calendar-wrapper" dir="ltr">
       {mode === "slots" && (
         <>
           <h3>📅 בחר תאריך</h3>
