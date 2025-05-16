@@ -39,33 +39,39 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-    if (!bizId) {
-      setError("Invalid business ID");
+  if (!bizId) {
+    setError("Invalid business ID");
+    setLoading(false);
+    return;
+  }
+  (async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(`/business/${bizId}`);
+      const biz = res.data.business || res.data;
+
+      // העמסה ראשית
+      setData(biz);
+      setFaqs(biz.faqs || []);
+      setSchedule(biz.schedule || {});
+
+      // services מתוך המודל
+      const svcs = biz.services || [];
+      setServices(svcs);
+
+      // קטגוריות ייחודיות מתוך services
+      const uniqueCats = Array.from(
+        new Set(svcs.map((s) => s.category).filter(Boolean))
+      );
+      setCategories(uniqueCats);
+    } catch (err) {
+      console.error(err);
+      setError("שגיאה בטעינת הנתונים");
+    } finally {
       setLoading(false);
-      return;
     }
-    (async () => {
-      try {
-        setLoading(true);
-        const [{ data: bizData }, svcRes, catRes] = await Promise.all([
-          api.get(`/business/${bizId}`),
-          api.get(`/business/${bizId}/services`),
-          api.get(`/business/${bizId}/service-categories`),
-        ]);
-        const business = bizData.business || bizData;
-        setData(business);
-        setFaqs(business.faqs || []);
-        setSchedule(business.schedule || {});
-        setServices(svcRes.data);
-        setCategories(catRes.data);
-      } catch (err) {
-        console.error(err);
-        setError("שגיאה בטעינת הנתונים");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [bizId]);
+  })();
+}, [bizId]);
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error)   return <div className="error">{error}</div>;
