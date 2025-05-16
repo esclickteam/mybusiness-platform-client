@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import API from '@api'; // ודא ש־API.baseURL = '/api'
+import API from '@api';
 import ServiceList from './ServiceList';
 import ClientServiceCard from './ClientServiceCard';
+import CalendarSetup from './CalendarSetup'; // ייבוא קומפוננטת הגדרת שעות פעילות
 import './AppointmentsMain.css';
 
 const AppointmentsMain = ({
@@ -10,17 +11,19 @@ const AppointmentsMain = ({
   setServices,
   onNext,
   workHours = {},
+  setWorkHours,   // תוסיף prop אם אתה רוצה לשמור ברמת ההורה
 }) => {
+  // --- הוספת סטייט לתצוגת הגדרת יומן ---
+  const [showCalendarSetup, setShowCalendarSetup] = useState(false);
+
   // --- שליפה מהשרת ---
   useEffect(() => {
     if (!isPreview && setServices) {
       API.get('/business/my/services')
         .then(res => {
-          // השרת מחזיר { services: [...] }
           setServices(res.data.services || []);
         })
         .catch(() => {
-          // אם אין שירותים בשרת - נטען דמו מהמקומי
           const fromCalendar = JSON.parse(localStorage.getItem("demoServices_calendar") || "[]");
           setServices(fromCalendar);
         });
@@ -30,25 +33,20 @@ const AppointmentsMain = ({
 
   // --- מחיקה מהשרת ---
   const handleDelete = (serviceIndex) => {
-  const srv = services[serviceIndex];
-  if (srv && srv._id) {
-    // מחיקה לפי ID במקום אינדקס
-    API.delete(`/business/my/services/${srv._id}`)
-      .then(res => {
-        // השרת מחזיר { success: true, services: [...] }
-        setServices(res.data.services || []);
-      })
-      .catch(err => alert(err.message));
-  } else {
-    // לוקאלי (דמו)
-    const updated = services.filter((_, i) => i !== serviceIndex);
-    setServices(updated);
-    localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
-  }
-};
+    const srv = services[serviceIndex];
+    if (srv && srv._id) {
+      API.delete(`/business/my/services/${srv._id}`)
+        .then(res => {
+          setServices(res.data.services || []);
+        })
+        .catch(err => alert(err.message));
+    } else {
+      const updated = services.filter((_, i) => i !== serviceIndex);
+      setServices(updated);
+      localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
+    }
+  };
 
-
-  // עיצוב משך זמן
   const formatDuration = (minutes) => {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
@@ -94,7 +92,27 @@ const AppointmentsMain = ({
     );
   }
 
-  // --- מצב עריכה/הוספה ---
+  // --- מצב עריכה/הוספה + ניהול שעות פעילות ---
+  if (showCalendarSetup) {
+    return (
+      <CalendarSetup
+        initialHours={workHours}
+        onSave={async (newHours) => {
+          // שלח לשרת/שמור לסטייט
+          try {
+            await API.post('/business/update-work-hours', { workHours: newHours });
+            if (setWorkHours) setWorkHours(newHours);
+            setShowCalendarSetup(false);
+            alert("שעות הפעילות נשמרו בהצלחה!");
+          } catch (err) {
+            alert("שגיאה בשמירת שעות הפעילות");
+          }
+        }}
+        onCancel={() => setShowCalendarSetup(false)}
+      />
+    );
+  }
+
   return (
     <div className="services-page-wrapper">
       <div className="services-form-box">
@@ -106,7 +124,10 @@ const AppointmentsMain = ({
 
         {/* מעבר ליומן */}
         {services.length > 0 && (
-          <button className="go-to-calendar-btn" onClick={onNext}>
+          <button
+            className="go-to-calendar-btn"
+            onClick={() => setShowCalendarSetup(true)}
+          >
             <span role="img" aria-label="calendar">📅</span>
             מעבר להגדרת יומן
           </button>

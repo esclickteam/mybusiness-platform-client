@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./CalendarSetup.css";
 
-const CalendarSetup = () => {
+const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [customHours, setCustomHours] = useState({});
+  const [customHours, setCustomHours] = useState(initialHours || {});
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [breaks, setBreaks] = useState("");
@@ -17,6 +17,14 @@ const CalendarSetup = () => {
     link: ""
   });
 
+  // טען שעות פעילות לתאריך נבחר מה-סטייט (בהתחלה או כשמשנים תאריך)
+  useEffect(() => {
+    const saved = customHours[selectedDate.toDateString()];
+    setStart(saved?.start || "");
+    setEnd(saved?.end || "");
+    setBreaks(saved?.breaks || "");
+  }, [selectedDate, customHours]);
+
   const dateKey = selectedDate.toDateString();
 
   const saveDateHours = () => {
@@ -26,10 +34,7 @@ const CalendarSetup = () => {
       ...prev,
       [dateKey]: { start, end, breaks },
     }));
-
-    setStart("");
-    setEnd("");
-    setBreaks("");
+    // השאר את הזמן בתצוגה עד שהמשתמש מחליף יום
   };
 
   const handleTogglePayment = (method) => {
@@ -41,20 +46,23 @@ const CalendarSetup = () => {
   };
 
   const handleSaveAll = () => {
-    const userEmail = localStorage.getItem("userEmail");
-    if (userEmail === "newuser@example.com") {
-      localStorage.setItem("demoWorkHours", JSON.stringify(customHours));
-      localStorage.setItem("demoPaymentMethods", JSON.stringify(paymentMethods));
-
-      if (paymentMethods.includes("סליקה")) {
-        localStorage.setItem("demoSlikaDetails", JSON.stringify(slikaDetails));
-      }
-
-      console.log("📦 שמירה:", {
-        שעות: customHours,
-        תשלום: paymentMethods,
-        סליקה: slikaDetails,
+    if (onSave) {
+      onSave({
+        workHours: customHours,
+        paymentMethods,
+        slikaDetails: paymentMethods.includes("סליקה") ? slikaDetails : null,
       });
+    } else {
+      // fallback לדמו/לוקאלסטורג'
+      const userEmail = localStorage.getItem("userEmail");
+      if (userEmail === "newuser@example.com") {
+        localStorage.setItem("demoWorkHours", JSON.stringify(customHours));
+        localStorage.setItem("demoPaymentMethods", JSON.stringify(paymentMethods));
+        if (paymentMethods.includes("סליקה")) {
+          localStorage.setItem("demoSlikaDetails", JSON.stringify(slikaDetails));
+        }
+        alert("השעות נשמרו בדמו (localStorage)");
+      }
     }
   };
 
@@ -65,13 +73,7 @@ const CalendarSetup = () => {
       <Calendar
         locale="he-IL"
         value={selectedDate}
-        onChange={(date) => {
-          setSelectedDate(date);
-          const saved = customHours[date.toDateString()];
-          setStart(saved?.start || "");
-          setEnd(saved?.end || "");
-          setBreaks(saved?.breaks || "");
-        }}
+        onChange={(date) => setSelectedDate(date)}
       />
 
       <div className="inputs" style={{ marginTop: "20px" }}>
@@ -104,7 +106,6 @@ const CalendarSetup = () => {
         </button>
       </div>
 
-      {/* ✅ אפשרויות תשלום */}
       <div className="inputs" style={{ marginTop: "30px" }}>
         <h4>💳 אפשרויות תשלום:</h4>
         <div className="payment-options">
@@ -121,11 +122,9 @@ const CalendarSetup = () => {
         </div>
       </div>
 
-      {/* ✅ הגדרת פרטי סליקה */}
       {paymentMethods.includes("סליקה") && (
         <div className="inputs slika-details">
           <h4>🔐 הגדרות סליקה:</h4>
-
           <label>מזהה סוחר:</label>
           <input
             type="text"
@@ -155,10 +154,15 @@ const CalendarSetup = () => {
         </div>
       )}
 
-      <div style={{ marginTop: "2rem", textAlign: "center" }}>
+      <div style={{ marginTop: "2rem", textAlign: "center", display: "flex", gap: "1rem", justifyContent: "center" }}>
         <button className="save-all-btn styled" onClick={handleSaveAll}>
           💾 שמור את כל הגדרות היומן
         </button>
+        {onCancel && (
+          <button className="cancel-btn styled" onClick={onCancel}>
+            חזור
+          </button>
+        )}
       </div>
     </div>
   );
