@@ -1,4 +1,3 @@
-// src/components/ServicesSelector.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import ClientServiceCard from "../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientServiceCard";
 import "./ServicesSelector.css";
@@ -74,15 +73,14 @@ export default function ServicesSelector({ services, categories, onSelect }) {
               <div
                 key={id}
                 className="service-card-wrapper"
-                onClick={() => {
-                  setSelectedId(id);
-                  onSelect(service);
-                }}
               >
                 <ClientServiceCard
                   service={service}
-                  workHours={{}}
                   formatDuration={formatDuration}
+                  onSelect={(srv) => {
+                    setSelectedId(id);
+                    onSelect(srv);
+                  }}
                 />
               </div>
             );

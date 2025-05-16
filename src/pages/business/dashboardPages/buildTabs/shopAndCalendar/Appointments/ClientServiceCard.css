@@ -2,63 +2,74 @@
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 16px;
-  padding: 20px;
+  padding: 20px 18px 24px 18px;   /* יותר מרווח בתחתית לכפתור */
   margin-bottom: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .client-service-card img {
   display: block;
-  width: 70%;            /* תופס 70% מרוחב הכרטיס */
-  max-width: 120px;       /* אסור להתקרב יותר מ–120px */
-  aspect-ratio: 3/4;      /* שומר על יחס אנכי של 3:4 */
+  width: 70%;
+  max-width: 120px;
+  aspect-ratio: 3/4;
   object-fit: cover;
   border-radius: 12px;
-  margin: 0 auto 12px;
+  margin: 0 auto 14px;
+  box-shadow: 0 2px 6px rgba(122, 61, 244, 0.08);
 }
 
-
-
 .client-service-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09);
 }
 
 .client-service-card h4 {
   font-size: 20px;
   margin-bottom: 8px;
-  color: #333;
+  color: #232323;
+  font-weight: bold;
 }
 
 .client-service-card p {
   margin: 4px 0;
   color: #555;
   font-size: 15px;
+  line-height: 1.5;
 }
 
 .go-to-calendar-btn,
 .back-button {
-  margin-top: 16px;
-  padding: 10px 24px;
+  margin-top: 18px;
+  padding: 11px 0;
   background-color: #7a3df4;
   color: white;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 16px;
   border: none;
   border-radius: 30px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 2px 8px rgba(122, 61, 244, 0.25);
+  width: 100%;
+  transition: background-color 0.18s, transform 0.11s;
+  box-shadow: 0 2px 8px rgba(122, 61, 244, 0.18);
+  letter-spacing: 0.02em;
 }
 
 .go-to-calendar-btn:hover,
 .back-button:hover {
   background-color: #5e2fcf;
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
 .go-to-calendar-btn:active,
 .back-button:active {
-  transform: scale(0.96);
+  transform: scale(0.98);
+}
+
+/* מיישר כפתור לסוף, אם יש תוכן דינמי */
+.client-service-card {
+  min-height: 380px; /* מתאים לכרטיסים בגודל תמונה + תוכן + כפתור */
 }

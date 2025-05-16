@@ -3,7 +3,8 @@ import "./ClientServiceCard.css";
 
 const ClientServiceCard = ({
   service,
-  formatDuration
+  formatDuration,
+  onSelect // הוסף prop לפעולה בעת לחיצה
 }) => {
   return (
     <div className="client-service-card">
@@ -22,6 +23,14 @@ const ClientServiceCard = ({
       )}
       {service.price && <p className="price">{service.price} ₪</p>}
       <p>⏱️ {formatDuration(service.duration)}</p>
+
+      <button
+        className="go-to-calendar-btn"
+        style={{ marginTop: "1rem", width: "100%" }}
+        onClick={() => onSelect && onSelect(service)}
+      >
+        📅 קבע תור
+      </button>
     </div>
   );
 };
