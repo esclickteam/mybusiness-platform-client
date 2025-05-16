@@ -6,15 +6,29 @@
   border-radius: 16px;
   text-align: right;
   direction: rtl;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
-/* לוח שנה */
+/* עטיפה ללוח השנה */
+.calendar-container {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* לוח שנה עצמו */
+.calendar-container .react-calendar,
 .react-calendar {
   width: 100% !important;
   max-width: 100%;
-  background: white;
-  border-radius: 12px;
-  margin-top: 20px;
+  background: transparent;
+  border: none;
   direction: ltr;
 }
 
@@ -101,6 +115,8 @@
   margin-bottom: 12px;
   line-height: 1.6;
 }
+
+/* כפתור שמירה כללי */
 .save-all-btn.styled {
   background: linear-gradient(to right, #a36eff, #d8b4ff);
   color: white;
@@ -117,6 +133,8 @@
   background: linear-gradient(to right, #8b5dd8, #c08fff);
   transform: scale(1.03);
 }
+
+/* אפשרויות תשלום */
 .payment-options {
   margin-top: 1.5rem;
   display: flex;
@@ -149,4 +167,27 @@
 
 .payment-options button:hover {
   background-color: #ece2ff;
+}
+
+/* תצוגת התאריך הנבחר מתחת ללוח */
+.selected-date-box {
+  width: 100%;
+  background: #f0eaff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.selected-date-box .date {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.selected-date-box .warning {
+  margin-top: 8px;
+  display: block;
+  color: #e59600;
+  font-size: 0.9rem;
 }
