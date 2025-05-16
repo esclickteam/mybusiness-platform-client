@@ -4,7 +4,7 @@
 /* 1. RTL ל־wrapper + LTR ל־Calendar הפנימי                             */
 /* =================================================================== */
 .client-calendar-wrapper {
-  direction: rtl !important;   /* התוכן זורם מימין לשמאל */
+  direction: rtl !important;   /* מבנה התוכן (הגריד) זורם מימין לשמאל */
   text-align: right;
   padding: 1rem;
   background: #fff;
@@ -14,7 +14,7 @@
 }
 
 .client-calendar-wrapper .react-calendar {
-  direction: ltr !important;   /* grid פנימי ב-LTR */
+  direction: ltr !important;   /* התוכן בתוך הגריד (המספרים) יזרום משמאל לימין */
 }
 
 /* =================================================================== */
@@ -46,19 +46,13 @@
 }
 
 /* =================================================================== */
-/* 3. אילוץ סדר עמודות ראשון-שבת + הסתרת ימים של חודשים שכנים           */
+/* 3. סדר עמודות ראשון–שבת: יום א׳ בעמודה הימנית ביותר, ותצוגת תאריכים   */
 /* =================================================================== */
 .client-calendar-wrapper .react-calendar__month-view__weekdays,
 .client-calendar-wrapper .react-calendar__month-view__days {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
-  direction: rtl !important;              /* זורם מימין לשמאל */
-  unicode-bidi: bidi-override !important;  /* הופך את סדר הילדים */
-}
-
-/* הסתרת תאריכים של החודש הקודם/הבא */
-.client-calendar-wrapper .react-calendar__month-view__days__day--neighboringMonth {
-  visibility: hidden;
+  direction: rtl !important;  /* הופך את סדר העמודות – א׳ מימין, שבת משמאל */
 }
 
 /* =================================================================== */
@@ -68,7 +62,7 @@
   padding: 0.5em 0;
   line-height: 1.4;
 
-  /* חשוב! שמירת LTR בתוך התא כדי שהמספרים יופיעו 1,2,3… משם לשמאל */
+  /* LTR בתוך התא כדי שהמספרים ילכו 1,2,3… משמאל לימין בתוך התאים */
   direction: ltr !important;
   text-align: center !important;
 }
@@ -84,7 +78,7 @@
 }
 
 /* =================================================================== */
-/* 5. RTL רק לטקסטים הפנימיים (טופס, שעות, סיכום)                        */
+/* 5. RTL לטקסטים הפנימיים (טופס, שעות, סיכום)                          */
 /* =================================================================== */
 .client-calendar-wrapper .selected-date-info,
 .client-calendar-wrapper .booking-form,
