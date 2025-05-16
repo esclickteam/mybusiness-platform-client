@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
-import TimePicker from "react-time-picker";
 import "react-calendar/dist/Calendar.css";
-import "react-time-picker/dist/TimePicker.css";
-import "react-clock/dist/Clock.css";
 import "./CalendarSetup.css";
 
 const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
@@ -48,9 +45,11 @@ const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
     }
   };
 
+  // פורמט יפה לתצוגה
   const formatHours = ({ start, end, breaks }) =>
     `${start || "--:--"} – ${end || "--:--"}${breaks ? ` | הפסקה: ${breaks}` : ""}`;
 
+  // חיווי ויזואלי בקלנדר
   const tileContent = ({ date }) =>
     customHours[date.toDateString()] ? <span className="has-hours-dot"></span> : null;
 
@@ -76,31 +75,19 @@ const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
         <label>
           <span role="img" aria-label="start">🕗</span> שעת התחלה:
         </label>
-        <TimePicker
-          onChange={setStart}
+        <input
+          type="time"
           value={start}
-          disableClock={true}
-          format="HH:mm"
-          clearIcon={null}
-          amPmAriaLabel="AM/PM"
-          clockIcon={null}
-          locale="he-IL"
-          className="custom-time-picker"
+          onChange={(e) => setStart(e.target.value)}
         />
 
         <label>
           <span role="img" aria-label="end">🕘</span> שעת סיום:
         </label>
-        <TimePicker
-          onChange={setEnd}
+        <input
+          type="time"
           value={end}
-          disableClock={true}
-          format="HH:mm"
-          clearIcon={null}
-          amPmAriaLabel="AM/PM"
-          clockIcon={null}
-          locale="he-IL"
-          className="custom-time-picker"
+          onChange={(e) => setEnd(e.target.value)}
         />
 
         
@@ -117,6 +104,7 @@ const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
         </button>
       </div>
 
+      {/* הצג סיכום של כל התאריכים עם שעות שנשמרו */}
       {Object.keys(customHours).length > 0 && (
         <div className="summary">
           <strong>🗓️ סיכום שעות פעילות שהוגדרו:</strong>
