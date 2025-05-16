@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
@@ -94,7 +93,7 @@ export default function Login() {
             שכחת את הסיסמה?
           </span>
           <p className="signup-link">
-            לא רשום?{" "}
+            לא רשום?{' '}
             <Link to="/register" className="signup-link-text">
               הירשם עכשיו
             </Link>
