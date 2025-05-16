@@ -15,55 +15,50 @@ const AppointmentsMain = ({
 }) => {
   const [showCalendarSetup, setShowCalendarSetup] = useState(false);
 
-  // --- שליפה מהשרת ---
+  // --- Fetch services ---
   useEffect(() => {
     if (!isPreview && setServices) {
       API.get('/business/my/services')
-        .then(res => {
-          setServices(res.data.services || []);
-        })
+        .then(res => setServices(res.data.services || []))
         .catch(() => {
-          const fromCalendar = JSON.parse(localStorage.getItem("demoServices_calendar") || "[]");
-          setServices(fromCalendar);
+          const demo = JSON.parse(localStorage.getItem('demoServices_calendar') || '[]');
+          setServices(demo);
         });
     }
     // eslint-disable-next-line
   }, []);
 
-  // --- מחיקה מהשרת ---
-  const handleDelete = (serviceIndex) => {
-    const srv = services[serviceIndex];
+  // --- Delete service ---
+  const handleDelete = index => {
+    const srv = services[index];
     if (srv && srv._id) {
       API.delete(`/business/my/services/${srv._id}`)
-        .then(res => {
-          setServices(res.data.services || []);
-        })
+        .then(res => setServices(res.data.services || []))
         .catch(err => alert(err.message));
     } else {
-      const updated = services.filter((_, i) => i !== serviceIndex);
+      const updated = services.filter((_, i) => i !== index);
       setServices(updated);
-      localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
+      localStorage.setItem('demoServices_calendar', JSON.stringify(updated));
     }
   };
 
-  const formatDuration = (minutes) => {
+  // --- Format duration ---
+  const formatDuration = minutes => {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return h > 0 ? `${h}:${m.toString().padStart(2, '0')} שעות` : `${m} דקות`;
   };
 
-  // --- תצוגה ללקוח (preview) ---
+  // --- Preview mode ---
   if (isPreview) {
     return (
       <div className="services-page-wrapper">
         <div className="services-preview services-form-box">
           <h2 className="services-form-title">📋 רשימת השירותים</h2>
-          {(!services || services.length === 0) ? (
+          {!services.length ? (
             <div className="empty-preview">
               <div className="no-services-card">
-                <p style={{ textAlign: 'center', fontWeight: '500' }}>
-                  📝 לא הוגדרו שירותים עדיין.
-                </p>
+                <p style={{ textAlign: 'center', fontWeight: 500 }}>📝 לא הוגדרו שירותים עדיין.</p>
                 <p style={{ textAlign: 'center', fontSize: '0.95em', color: '#888' }}>
                   השירותים שתזין יופיעו כאן בתצוגה חיה
                 </p>
@@ -91,26 +86,32 @@ const AppointmentsMain = ({
     );
   }
 
-  // --- מצב עריכה/הוספה + ניהול שעות פעילות ---
+  // --- Calendar setup mode ---
   if (showCalendarSetup) {
     return (
       <CalendarSetup
         initialHours={workHours}
-        onSave={async (workHours) => {
-          // המרה למערך וסינון null
-          const hoursArray = Object.values(workHours)
-            .filter(item => item && item.start && item.end);
+        onSave={async newHours => {
+          // Build array of valid hours
+          const hoursArray = Object.entries(newHours)
+            .filter(([day, item]) => item?.start && item?.end)
+            .map(([day, item]) => ({ day, start: item.start, end: item.end }));
 
-          console.log("🚀 שולח ל-API workHours:", hoursArray);
+          console.log('🚀 Sending workHours:', hoursArray);
           try {
             const res = await API.post('/business/update-work-hours', { workHours: hoursArray });
-            console.log("✅ תשובה מהשרת:", res.data);
-            if (setWorkHours) setWorkHours(hoursArray);
+            console.log('✅ Server response:', res.data);
+            // Update local state back to object format
+            const updatedMap = hoursArray.reduce(
+              (acc, { day, start, end }) => ({ ...acc, [day]: { start, end } }),
+              {}
+            );
+            setWorkHours(updatedMap);
             setShowCalendarSetup(false);
-            alert("שעות הפעילות נשמרו בהצלחה!");
-          } catch (err) {
-            console.error("❌ שגיאה בשמירת שעות הפעילות:", err?.response?.data || err);
-            alert("שגיאה בשמירת שעות הפעילות");
+            alert('שעות הפעילות נשמרו בהצלחה!');
+          } catch (error) {
+            console.error('❌ Error saving hours:', error?.response?.data || error);
+            alert('שגיאה בשמירת שעות הפעילות');
           }
         }}
         onCancel={() => setShowCalendarSetup(false)}
@@ -118,6 +119,7 @@ const AppointmentsMain = ({
     );
   }
 
+  // --- Default: list + button ---
   return (
     <div className="services-page-wrapper">
       <div className="services-form-box">
@@ -126,15 +128,9 @@ const AppointmentsMain = ({
           setServices={setServices}
           handleDelete={handleDelete}
         />
-
-        {/* מעבר ליומן */}
         {services.length > 0 && (
-          <button
-            className="go-to-calendar-btn"
-            onClick={() => setShowCalendarSetup(true)}
-          >
-            <span role="img" aria-label="calendar">📅</span>
-            מעבר להגדרת יומן
+          <button className="go-to-calendar-btn" onClick={() => setShowCalendarSetup(true)}>
+            📅 מעבר להגדרת יומן
           </button>
         )}
       </div>
