@@ -4,6 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import AppointmentBooking from "../../pages/AppointmentBooking";
+
 import "./BusinessProfileView.css";
 
 const TABS = [
@@ -28,8 +29,6 @@ export default function BusinessProfileView() {
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // ** חידוש לממשק קביעת תור **
   const [serviceId, setServiceId] = useState("");
 
   useEffect(() => {
@@ -72,7 +71,6 @@ export default function BusinessProfileView() {
     schedule = {},
   } = data;
 
-  // חישובי דירוג
   const totalRating = reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg = Math.round(avgRating * 10) / 10;
@@ -82,9 +80,7 @@ export default function BusinessProfileView() {
 
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
-  const handleChatClick = () => {
-    navigate(`/business/${bizId}/messages`);
-  };
+  const handleChatClick = () => navigate(`/business/${bizId}/messages`);
 
   const handleReviewSubmit = async (formData) => {
     setIsSubmitting(true);
@@ -93,7 +89,7 @@ export default function BusinessProfileView() {
       setShowReviewModal(false);
       const res = await api.get(`/business/${bizId}`);
       setData(res.data.business || res.data);
-    } catch (err) {
+    } catch {
       alert("שגיאה בשליחת ביקורת");
     } finally {
       setIsSubmitting(false);
@@ -112,49 +108,30 @@ export default function BusinessProfileView() {
               ✏️ ערוך פרטי העסק
             </Link>
           )}
-          {!isOwner && (
-            <Link to={`/book/${bizId}`} className="go-to-calendar-btn">
-              קבע תור
-            </Link>
-          )}
 
           {logoUrl && (
             <div className="profile-logo-wrapper">
-              <img className="profile-logo" src={logoUrl} alt="לוגו העסק" />
+              <img
+                className="profile-logo"
+                src={logoUrl}
+                alt="לוגו העסק"
+              />
             </div>
           )}
 
           <h1 className="business-name">{businessName}</h1>
 
           <div className="about-phone">
-            {category && (
-              <p>
-                <strong>🏷️ קטגוריה:</strong> {category}
-              </p>
-            )}
-            {description && (
-              <p>
-                <strong>📝 תיאור:</strong> {description}
-              </p>
-            )}
-            {phone && (
-              <p>
-                <strong>📞 טלפון:</strong> {phone}
-              </p>
-            )}
-            {city && (
-              <p>
-                <strong>🏙️ עיר:</strong> {city}
-              </p>
-            )}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
             <span className="stars-inline">
-              {'★'.repeat(fullAvgStars)}
-              {halfAvgStar ? '⯨' : ''}
-              {'☆'.repeat(emptyAvgStars)}
+              {'★'.repeat(fullAvgStars)}{halfAvgStar ? '⯨' : ''}{'☆'.repeat(emptyAvgStars)}
             </span>
             <span className="count">({reviews.length} ביקורות)</span>
           </div>
@@ -168,9 +145,7 @@ export default function BusinessProfileView() {
                 className={`tab ${tab === currentTab ? "active" : ""}`}
                 onClick={() => {
                   setCurrentTab(tab);
-                  if (tab !== "יומן") {
-                    setServiceId("");
-                  }
+                  if (tab !== "יומן") setServiceId("");
                 }}
               >
                 {tab}
@@ -179,7 +154,6 @@ export default function BusinessProfileView() {
           </div>
 
           <div className="tab-content">
-            {/* ראשי, גלריה, ביקורות, Q&A, הודעות - ללא שינוי */}
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {mainImages.length ? (
@@ -191,6 +165,7 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
+
             {currentTab === "גלריה" && (
               <div className="public-main-images">
                 {gallery.length ? (
@@ -202,6 +177,7 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
+
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {!isOwner && user && (
@@ -215,28 +191,53 @@ export default function BusinessProfileView() {
                   </div>
                 )}
                 {reviews.length ? (
-                  reviews.map((r, i) => {
-                    /* ...render review... */
-                    return (
-                      <div key={r._id || i} className="review-card improved">
-                        {/* ... */}
-                      </div>
-                    );
-                  })
+                  reviews.map((r, i) => (
+                    <div key={r._id || i} className="review-card improved">
+                      {/* review content */}
+                    </div>
+                  ))
                 ) : (
                   <p className="no-data">אין ביקורות</p>
                 )}
                 {showReviewModal && (
-                  /* ...modal code... */
-                  <div />
+                  <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
+                    <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
+                      <ReviewForm
+                        businessId={bizId}
+                        onSubmit={handleReviewSubmit}
+                        isSubmitting={isSubmitting}
+                      />
+                      <button
+                        className="modal-close"
+                        onClick={() => setShowReviewModal(false)}
+                      >
+                        סגור
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
+
             {currentTab === "שאלות תשובות" && (
               <div className="faqs-public">
-                {/* ...FAQ render... */}
+                {faqs.length === 0 ? (
+                  <p className="no-data">אין עדיין שאלות ותשובות</p>
+                ) : (
+                  faqs.map((faq) => (
+                    <div key={faq.faqId || faq._id} className="faq-card">
+                      <div className="faq-q">
+                        <strong>שאלה:</strong> {faq.question}
+                      </div>
+                      <div className="faq-a">
+                        <strong>תשובה:</strong> {faq.answer}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
+
             {currentTab === "הודעות מלקוחות" && (
               <div className="chat-button-container">
                 <button className="chat-button" onClick={handleChatClick}>
@@ -247,7 +248,6 @@ export default function BusinessProfileView() {
 
             {currentTab === "יומן" && (
               <div className="booking-tab">
-                {/* 1. בחירת שירות */}
                 <select
                   value={serviceId}
                   onChange={(e) => setServiceId(e.target.value)}
@@ -255,13 +255,10 @@ export default function BusinessProfileView() {
                 >
                   <option value="">– בחרי שירות –</option>
                   {services.map((s) => (
-                    <option key={s._id} value={s._id}>
-                      {s.name}
-                    </option>
+                    <option key={s._id} value={s._id}>{s.name}</option>
                   ))}
                 </select>
 
-                {/* 2. טופס קביעת תור */}
                 {serviceId && (
                   <AppointmentBooking
                     businessId={bizId}
