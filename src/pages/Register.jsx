@@ -14,7 +14,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     userType: "customer",
-    businessName: "",        // ← חדש
+    businessName: "",
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -63,9 +63,8 @@ const Register = () => {
         email: email.trim().toLowerCase(),
         phone: userType === "business" ? phone.trim() : "",
         password,
-        userType,
-        role: userType === "business" ? "business" : "customer",
-        businessName: userType === "business" ? businessName.trim() : undefined, // ← הוסף כאן
+        userType, // ← שרת ישלוף role מתוך userType
+        businessName: userType === "business" ? businessName.trim() : undefined,
       });
 
       // אחרי הרשמה – מבצעים login דרך ה‐AuthContext
@@ -149,16 +148,6 @@ const Register = () => {
               required
             />
           </>
-        )}
-        {formData.userType !== "business" && (
-          <input
-            type="tel"
-            name="phone"
-            placeholder="טלפון (לא חובה)"
-            value={formData.phone}
-            onChange={handleChange}
-            style={{ display: "none" }} // מוסתר, או שתוריד לגמרי ללקוחות
-          />
         )}
         <input
           type="password"
