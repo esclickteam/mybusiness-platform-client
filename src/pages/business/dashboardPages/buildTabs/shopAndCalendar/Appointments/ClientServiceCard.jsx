@@ -4,7 +4,7 @@ import "./ClientServiceCard.css";
 const ClientServiceCard = ({
   service,
   formatDuration,
-  onSelect // הוסף prop לפעולה בעת לחיצה
+  onSelect // prop לפעולה בעת לחיצה
 }) => {
   return (
     <div className="client-service-card">
@@ -26,7 +26,6 @@ const ClientServiceCard = ({
 
       <button
         className="go-to-calendar-btn"
-        style={{ marginTop: "1rem", width: "100%" }}
         onClick={() => onSelect && onSelect(service)}
       >
         📅 קבע תור

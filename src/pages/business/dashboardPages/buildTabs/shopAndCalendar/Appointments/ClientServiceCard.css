@@ -43,22 +43,21 @@
 
 .go-to-calendar-btn {
   margin-top: 16px;
-  margin-bottom: 0;
   background: linear-gradient(90deg, #a259ff, #7a3df4 90%);
   color: #fff;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 700;
   border: none;
-  border-radius: 18px;
-  padding: 10px 0;
-  width: 85%;                 /* פחות מ-100%, כפתור צר יותר */
-  max-width: 220px;
+  border-radius: 12px;      /* פחות עגול */
+  padding: 9px 0;
+  width: 68%;               /* הרבה יותר קומפקטי */
+  max-width: 150px;         /* לא עובר את 150px */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(122,61,244,0.13);
+  box-shadow: 0 2px 8px rgba(122,61,244,0.10);
   transition: background 0.18s, transform 0.11s;
   margin-left: auto;
   margin-right: auto;
@@ -72,6 +71,7 @@
 .go-to-calendar-btn:active {
   transform: scale(0.97);
 }
+
 
 
 /* מיישר כפתור לסוף, אם יש תוכן דינמי */
