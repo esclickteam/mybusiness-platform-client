@@ -1,3 +1,62 @@
+/* --------------------------------------------- */
+/* 1. Override ל־React-Calendar בתוך RTL wrapper */
+/* --------------------------------------------- */
+.client-calendar-wrapper .react-calendar {
+  direction: ltr;               /* כדי לשמור על גריד של 7 עמודות */
+  display: inline-block !important;
+  text-align: center !important;
+  width: 100%;
+  max-width: 100%;
+  font-family: inherit;
+}
+
+/* כותרת שבועות (ראשון–שבת) */
+.client-calendar-wrapper .react-calendar__month-view__weekdays {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  margin-bottom: 8px;
+}
+
+/* תאריכים בגריד */
+.client-calendar-wrapper .react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  gap: 6px !important;
+}
+
+/* ניווט */
+.client-calendar-wrapper .react-calendar__navigation {
+  margin-bottom: 1em;
+}
+.client-calendar-wrapper .react-calendar__navigation button {
+  background: none;
+  border: none;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  cursor: pointer;
+}
+.client-calendar-wrapper .react-calendar__navigation button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* יום נוכחי ויום נבחר */
+.client-calendar-wrapper .react-calendar__tile--now {
+  background: rgba(0,110,220,0.1) !important;
+}
+.client-calendar-wrapper .react-calendar__tile--active {
+  background: #006edc !important;
+  color: #fff !important;
+  border-radius: 0.25em !important;
+}
+.client-calendar-wrapper .react-calendar__tile {
+  padding: 0.5em 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* --------------------------------------------- */
+/* 2. העיצוב הקיים שלך ל־ClientCalendar */
+/* --------------------------------------------- */
 .client-calendar-wrapper {
   direction: rtl;
   text-align: right;
@@ -16,13 +75,11 @@
   border-radius: 12px;
   border: 1px solid #dcd3ff;
 }
-
 .selected-date-info h4 {
   margin-bottom: 8px;
   font-size: 18px;
   color: #4a3aff;
 }
-
 .selected-date-info p {
   margin: 4px 0;
   font-size: 15px;
@@ -38,15 +95,8 @@
   flex-wrap: wrap;
   gap: 10px;
 }
-
-.slot-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .slot-item button {
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 30px;
   border: 1px solid #a07bff;
   background-color: #f0e8ff;
@@ -55,7 +105,6 @@
   cursor: pointer;
   transition: 0.2s ease;
 }
-
 .slot-item button:hover {
   background-color: #e0d4ff;
   border-color: #7b5df2;
@@ -69,150 +118,6 @@
   border-radius: 12px;
   padding: 1rem;
 }
-
-.summary-box h4 {
-  font-size: 18px;
-  margin-bottom: 12px;
-  color: #6336d3;
-}
-
-.summary-box p {
-  font-size: 15px;
-  margin: 6px 0;
-  color: #333;
-}
-
-.confirm-slot-btn {
-  margin-top: 12px;
-  padding: 10px 20px;
-  background-color: #7a3df4;
-  color: white;
-  border: none;
-  border-radius: 24px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.confirm-slot-btn:hover {
-  background-color: #5e2fcf;
-}
-
-.back-button {
-  margin-top: 8px;
-  padding: 8px 16px;
-  background-color: #eae6ff;
-  color: #4a3aff;
-  border: none;
-  border-radius: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.back-button:hover {
-  background-color: #d7cdff;
-}
-
-/* טופס פרטי לקוח בתוך הסיכום */
-.booking-form {
-  margin-top: 1.5rem;
-  background: #f8f5ff;
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid #d9ceff;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.booking-form label {
-  font-weight: bold;
-  font-size: 14px;
-  color: #555;
-}
-
-.booking-form input,
-.booking-form textarea {
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  background: #fff;
-  resize: none;
-  direction: rtl;
-}
-
-.booking-form input:focus,
-.booking-form textarea:focus {
-  border-color: #7a3df4;
-  outline: none;
-  box-shadow: 0 0 3px #d2baff;
-}
-/* ClientCalendar.css */
-
-.client-calendar-wrapper {
-  direction: rtl;
-  text-align: right;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  margin-top: 20px;
-}
-
-.selected-date-info {
-  margin-top: 20px;
-  background: #f9f5ff;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #dcd3ff;
-}
-
-.selected-date-info h4 {
-  margin-bottom: 8px;
-  font-size: 18px;
-  color: #4a3aff;
-}
-
-.selected-date-info p {
-  margin: 4px 0;
-  font-size: 15px;
-  color: #444;
-}
-
-.slot-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.slot-item button {
-  padding: 10px 18px;
-  border-radius: 30px;
-  border: 1px solid #a07bff;
-  background-color: #f0e8ff;
-  color: #4a3aff;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.slot-item button:hover {
-  background-color: #e0d4ff;
-  border-color: #7b5df2;
-}
-
-.summary-box {
-  margin-top: 1.5rem;
-  background: #fefcff;
-  border: 1px solid #e5dcff;
-  border-radius: 12px;
-  padding: 1rem;
-}
-
 .success-message {
   font-size: 18px;
   font-weight: bold;
@@ -220,6 +125,7 @@
   margin-bottom: 1rem;
 }
 
+/* טופס פרטי לקוח */
 .booking-form {
   margin-top: 1.5rem;
   background: #f8f5ff;
@@ -230,7 +136,11 @@
   flex-direction: column;
   gap: 12px;
 }
-
+.booking-form label {
+  font-weight: bold;
+  font-size: 14px;
+  color: #555;
+}
 .booking-form input,
 .booking-form textarea {
   padding: 10px 14px;
@@ -241,7 +151,6 @@
   resize: none;
   direction: rtl;
 }
-
 .booking-form input:focus,
 .booking-form textarea:focus {
   border-color: #7a3df4;
@@ -249,6 +158,7 @@
   box-shadow: 0 0 3px #d2baff;
 }
 
+/* כפתורי המשך/אישור/חזרה */
 .confirm-slot-btn {
   margin-top: 12px;
   padding: 10px 20px;
@@ -260,11 +170,9 @@
   cursor: pointer;
   transition: 0.2s ease;
 }
-
 .confirm-slot-btn:hover {
   background-color: #5e2fcf;
 }
-
 .back-button {
   margin-top: 10px;
   padding: 8px 16px;
@@ -276,18 +184,17 @@
   cursor: pointer;
   transition: 0.2s ease;
 }
-
 .back-button:hover {
   background-color: #d7cdff;
 }
 
+/* אפשרויות תשלום */
 .payment-options {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 1rem;
 }
-
 .payment-options button {
   padding: 10px 18px;
   border-radius: 30px;
@@ -301,14 +208,14 @@
   min-width: 100px;
   text-align: center;
 }
-
 .payment-options button.active {
   background-color: #7a3df4;
   color: white;
   border-color: #7a3df4;
-  box-shadow: 0 0 6px rgba(122, 61, 244, 0.25);
+  box-shadow: 0 0 6px rgba(122,61,244,0.25);
 }
 
+/* קישור לתשלום */
 .pay-link {
   display: inline-block;
   margin-top: 1rem;
@@ -320,7 +227,16 @@
   text-decoration: none;
   transition: 0.2s ease;
 }
-
 .pay-link:hover {
   background-color: #372ac2;
+}
+
+/* רספונסיביות למובייל */
+@media (max-width: 480px) {
+  .client-calendar-wrapper .react-calendar__month-view__weekdays {
+    font-size: 0.8em;
+  }
+  .client-calendar-wrapper .react-calendar__tile {
+    font-size: 0.9em;
+  }
 }
