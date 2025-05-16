@@ -14,7 +14,6 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  // 1. On mount: fetch current user if token exists
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -23,16 +22,11 @@ export function AuthProvider({ children }) {
       setLoading(true);
       try {
         const { data } = await API.get("/auth/me");
-        console.log("🔍 initialize /auth/me returned:", data);
 
         if (data.role === "business" && !data.businessId) {
-          try {
-            const { data: biz } = await API.get("/business/my");
-            data.businessId = biz._id || biz.businessId || null;
-            console.log("🔍 initialize fetched businessId:", data.businessId);
-          } catch {
-            console.warn("⚠️ Could not fetch business profile on init");
-          }
+          const resp = await API.get("/business/my");
+          const bizObj = resp.data.business || resp.data;
+          data.businessId = bizObj._id || bizObj.businessId || null;
         }
 
         setUser({
@@ -54,9 +48,6 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  /**
-   * generic login (handles both customer/business by email and staff by username)
-   */
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -72,16 +63,11 @@ export function AuthProvider({ children }) {
       }
 
       const { data } = await API.get("/auth/me");
-      console.log("🔍 login /auth/me returned:", data);
 
       if (data.role === "business" && !data.businessId) {
-        try {
-          const { data: biz } = await API.get("/business/my");
-          data.businessId = biz._id || biz.businessId || null;
-          console.log("🔍 login fetched businessId:", data.businessId);
-        } catch {
-          console.warn("⚠️ Could not fetch business profile on login");
-        }
+        const resp = await API.get("/business/my");
+        const bizObj = resp.data.business || resp.data;
+        data.businessId = bizObj._id || bizObj.businessId || null;
       }
 
       setUser({
@@ -112,7 +98,6 @@ export function AuthProvider({ children }) {
             path = "/admin/dashboard";
             break;
         }
-        console.log("🔀 AuthContext navigating to:", path);
         navigate(path, { replace: true });
       }
 
@@ -137,8 +122,8 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
-    } catch (e) {
-      console.warn("⚠️ Logout failed:", e);
+    } catch {
+      console.warn("⚠️ Logout failed");
     } finally {
       setUser(null);
       setLoading(false);
@@ -146,7 +131,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // clear success message after 4s
   useEffect(() => {
     if (successMessage) {
       const t = setTimeout(() => setSuccessMessage(null), 4000);
