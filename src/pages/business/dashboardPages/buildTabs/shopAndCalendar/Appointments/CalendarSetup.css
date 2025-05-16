@@ -191,3 +191,34 @@
   color: #e59600;
   font-size: 0.9rem;
 }
+
+/* ===== תיקון תצוגה לגריד 7 עמודות מלאות בלוח שנה ===== */
+
+/* שורת ימי השבוע */
+.react-calendar__month-view__weekdays {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  width: 100% !important;
+  text-align: center;
+}
+
+/* כל שורת ימים (כל שבוע) */
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* כל יום - תיקון min/max width */
+.react-calendar__tile {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+/* לפעמים flex נשאר מהברירת מחדל של react-calendar */
+.react-calendar__month-view__days__day {
+  flex: unset !important;
+}

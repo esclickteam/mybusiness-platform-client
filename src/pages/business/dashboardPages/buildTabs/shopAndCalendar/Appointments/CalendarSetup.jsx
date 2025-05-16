@@ -10,14 +10,6 @@ const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
   const [end, setEnd] = useState("");
   const [breaks, setBreaks] = useState("");
 
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [slikaDetails, setSlikaDetails] = useState({
-    merchantId: "",
-    apiKey: "",
-    link: ""
-  });
-
-  // טען שעות פעילות לתאריך נבחר מה-סטייט (בהתחלה או כשמשנים תאריך)
   useEffect(() => {
     const saved = customHours[selectedDate.toDateString()];
     setStart(saved?.start || "");
@@ -34,33 +26,19 @@ const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
       ...prev,
       [dateKey]: { start, end, breaks },
     }));
-    // השאר את הזמן בתצוגה עד שהמשתמש מחליף יום
-  };
-
-  const handleTogglePayment = (method) => {
-    setPaymentMethods((prev) =>
-      prev.includes(method)
-        ? prev.filter((m) => m !== method)
-        : [...prev, method]
-    );
+    // הערכים נשארים עד מעבר יום
   };
 
   const handleSaveAll = () => {
     if (onSave) {
       onSave({
-        workHours: customHours,
-        paymentMethods,
-        slikaDetails: paymentMethods.includes("סליקה") ? slikaDetails : null,
+        workHours: customHours
       });
     } else {
       // fallback לדמו/לוקאלסטורג'
       const userEmail = localStorage.getItem("userEmail");
       if (userEmail === "newuser@example.com") {
         localStorage.setItem("demoWorkHours", JSON.stringify(customHours));
-        localStorage.setItem("demoPaymentMethods", JSON.stringify(paymentMethods));
-        if (paymentMethods.includes("סליקה")) {
-          localStorage.setItem("demoSlikaDetails", JSON.stringify(slikaDetails));
-        }
         alert("השעות נשמרו בדמו (localStorage)");
       }
     }
@@ -106,55 +84,13 @@ const CalendarSetup = ({ initialHours = {}, onSave, onCancel }) => {
         </button>
       </div>
 
-      <div className="inputs" style={{ marginTop: "30px" }}>
-        <h4>💳 אפשרויות תשלום:</h4>
-        <div className="payment-options">
-          {["מזומן", "סליקה", "טלפוני", "Bit", "PayBox"].map((method) => (
-            <button
-              key={method}
-              type="button"
-              className={paymentMethods.includes(method) ? "active" : ""}
-              onClick={() => handleTogglePayment(method)}
-            >
-              {method}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {paymentMethods.includes("סליקה") && (
-        <div className="inputs slika-details">
-          <h4>🔐 הגדרות סליקה:</h4>
-          <label>מזהה סוחר:</label>
-          <input
-            type="text"
-            value={slikaDetails.merchantId}
-            onChange={(e) =>
-              setSlikaDetails({ ...slikaDetails, merchantId: e.target.value })
-            }
-          />
-
-          <label>API Key:</label>
-          <input
-            type="text"
-            value={slikaDetails.apiKey}
-            onChange={(e) =>
-              setSlikaDetails({ ...slikaDetails, apiKey: e.target.value })
-            }
-          />
-
-          <label>קישור לעמוד סליקה:</label>
-          <input
-            type="text"
-            value={slikaDetails.link}
-            onChange={(e) =>
-              setSlikaDetails({ ...slikaDetails, link: e.target.value })
-            }
-          />
-        </div>
-      )}
-
-      <div style={{ marginTop: "2rem", textAlign: "center", display: "flex", gap: "1rem", justifyContent: "center" }}>
+      <div style={{
+        marginTop: "2rem",
+        textAlign: "center",
+        display: "flex",
+        gap: "1rem",
+        justifyContent: "center"
+      }}>
         <button className="save-all-btn styled" onClick={handleSaveAll}>
           💾 שמור את כל הגדרות היומן
         </button>
