@@ -101,7 +101,7 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
           <div className="calendar-fullwidth">
             <Calendar
               locale="he-IL"
-              calendarType="Hebrew"            // מתחיל ביום א׳ (עמודה מימין)
+              calendarType="US"            // מתחיל ביום א׳ (עמודה מימין)
               showNeighboringMonth={false}     // מסתיר תאריכים של חודשים שכנים
               showFixedNumberOfWeeks={true}    // תמיד 6 שורות מלאות
               value={selectedDate}
