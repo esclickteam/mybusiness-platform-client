@@ -101,9 +101,8 @@ const ClientCalendar = ({ workHours = {}, selectedService, onBackToList }) => {
           <div className="calendar-fullwidth">
             <Calendar
               locale="he-IL"
-              calendarType="US"                  
-              showNeighboringMonth={true}        
-              showFixedNumberOfWeeks={true}      
+              showNeighboringMonth={true}
+              showFixedNumberOfWeeks={true}
               value={selectedDate}
               onChange={setSelectedDate}
               formatShortWeekday={(loc, d) =>

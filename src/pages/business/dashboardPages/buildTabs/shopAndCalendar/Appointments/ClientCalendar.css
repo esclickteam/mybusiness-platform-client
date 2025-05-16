@@ -1,7 +1,7 @@
 /* ClientCalendar.css */
 
 /* =================================================================== */
-/* 1. RTL ל־wrapper + LTR לכלי ה־Calendar הפנימי                          */
+/* 1. RTL ל־wrapper + LTR ל־Calendar הפנימי                             */
 /* =================================================================== */
 .client-calendar-wrapper {
   direction: rtl !important;   /* התוכן זורם מימין לשמאל */
@@ -14,7 +14,7 @@
 }
 
 .client-calendar-wrapper .react-calendar {
-  direction: ltr !important;   /* גריד התאריכים בפנים יפעל ב-LTR */
+  direction: ltr !important;   /* grid פנימי ב-LTR */
 }
 
 /* =================================================================== */
@@ -46,16 +46,14 @@
 }
 
 /* =================================================================== */
-/* 3. כותרת השבועות ותאריכים - מ-Sunday(א) עד Saturday(ש)                */
+/* 3. אילוץ סדר עמודות ראשון-שבת בלי calendarType                         */
 /* =================================================================== */
-/* אין צורך ב־grid-template-columns ידני — React-Calendar דואג לזה לפי calendarType="US" */
-/* רק נסנכרן את הסגנון */
-.client-calendar-wrapper .react-calendar__month-view__weekdays {
-  margin-bottom: 0.5em;
-}
-
-.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday {
-  font-weight: 500;
+.client-calendar-wrapper .react-calendar__month-view__weekdays,
+.client-calendar-wrapper .react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  direction: rtl !important;              /* זורם מימין לשמאל */
+  unicode-bidi: bidi-override !important;  /* הופך את סדר הילדים */
 }
 
 /* =================================================================== */
@@ -77,7 +75,7 @@
 }
 
 /* =================================================================== */
-/* 5. RTL רק לטקסטים הפנימיים (טופס, שעות, סיכום)                         */
+/* 5. RTL רק לטקסטים הפנימיים (טופס, שעות, סיכום)                        */
 /* =================================================================== */
 .client-calendar-wrapper .selected-date-info,
 .client-calendar-wrapper .booking-form,
