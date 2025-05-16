@@ -17,15 +17,26 @@
   margin-bottom: 8px;
 }
 
-/* override על ה-abbr שבתוך כל weekday */
+/* מסתירים את ה-abbr המקורי */
 .client-calendar-wrapper .react-calendar__month-view__weekdays__weekday abbr {
-  display: inline-block !important;   /* כדי שה־min-width יעבוד */
-  white-space: nowrap !important;     /* מונע שבירה */
-  min-width: 1.5rem !important;       /* מספיק עבור אות אחת */
-  text-overflow: clip !important;
-  overflow: visible !important;
-  padding: 0.25rem 0 !important;      /* ריווח אנכי קל */
-  font-size: inherit !important;      /* יורש גודל פונט תקין */
+  display: none !important;
+}
+
+/* ומזריקים את האות המתאימה בעזרת ::before */
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(1)::before { content: "א"; }
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(2)::before { content: "ב"; }
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(3)::before { content: "ג"; }
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(4)::before { content: "ד"; }
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(5)::before { content: "ה"; }
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(6)::before { content: "ו"; }
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday:nth-child(7)::before { content: "ש"; }
+
+/* עיצוב ה-::before */
+.client-calendar-wrapper .react-calendar__month-view__weekdays__weekday::before {
+  display: inline-block;    /* כדי שיהיה בגודל קבוע */
+  font-size: 0.9em;
+  font-weight: 500;
+  padding: 0.5rem 0;         /* ריווח אנכי */
 }
 
 /* תאריכים בגריד */
