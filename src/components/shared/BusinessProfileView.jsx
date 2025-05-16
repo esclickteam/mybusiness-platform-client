@@ -7,6 +7,11 @@ import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 
+// ** הייבוא הזה מוודא שהתצוגה הבסיסית של React-Calendar תעבוד **
+import "react-calendar/dist/Calendar.css";
+// ** אם Override שלך ב־ClientCalendar.css, תוודא שגם אותו אתה מייבא כאן **
+import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
+
 import "./BusinessProfileView.css";
 
 const TABS = [
