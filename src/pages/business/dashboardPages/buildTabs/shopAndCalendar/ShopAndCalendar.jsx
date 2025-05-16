@@ -138,6 +138,7 @@ const ShopAndCalendar = ({
           isPreview={true}
           services={safeServices}
           workHours={demoHours}
+          setWorkHours={setDemoHours}  
         />
       )}
     </div>
