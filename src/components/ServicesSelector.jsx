@@ -1,6 +1,6 @@
 // src/components/ServicesSelector.jsx
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import ServiceCard from "./ServiceCard"; // גרסה שלך של ClientServiceCard, מותאמת ל־card
+import ServiceCard from "../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientServiceCard"; 
 import "./ServicesSelector.css";
 
 export default function ServicesSelector({ services, categories, onSelect }) {
