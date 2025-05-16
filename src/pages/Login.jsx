@@ -1,15 +1,16 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import API from "../api";                  // כדי לשלוף פרופיל עסקי במידת הצורך
 import "../styles/Login.css";
 import ForgotPassword from "./ForgotPassword";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login } = useAuth(); // רק פונקציית ה-login
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const [email, setEmail]           = useState("");
+  const [password, setPassword]     = useState("");
+  const [loading, setLoading]       = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
@@ -26,42 +27,40 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      // מונעים רידיירקט אוטומטי מה־AuthContext
+      // קוראים ל-login בלי רידיירקט אוטומטי
       const userData = await login(cleanEmail, password, { skipRedirect: true });
 
-      console.log("🔥 login returned:", userData);
-      const role = (userData.role || "").toLowerCase();
-      console.log("🔥 role:", role, "businessId:", userData.businessId);
+      let bizId = userData.businessId;
+      // אם אין לנו businessId – מושכים אותו מ-/business/my
+      if (userData.role.toLowerCase() === "business" && !bizId) {
+        try {
+          const { data: biz } = await API.get("/business/my");
+          bizId = biz._id || biz.businessId || null;
+        } catch {
+          // כשלנו לשלוף פרופיל עסקי
+          setLoginError("לא נמצא פרופיל עסקי. אנא פנה לתמיכה.");
+          setLoading(false);
+          return;
+        }
+      }
 
+      const role = (userData.role || "").toLowerCase();
       switch (role) {
         case "business":
-          // אם אין businessId, הצג שגיאה במקום לנסות לנווט ל-null
-          if (!userData.businessId) {
-            setLoginError("לא נמצא פרופיל עסקי. אנא פנה לתמיכה.");
-          } else {
-            navigate(
-              `/business/${userData.businessId}/dashboard`,
-              { replace: true }
-            );
-          }
+          navigate(`/business/${bizId}/dashboard`, { replace: true });
           break;
-
         case "customer":
           navigate("/client/dashboard", { replace: true });
           break;
-
         case "worker":
-          navigate("/staff/dashboard", { replace: true });
+          navigate("/staff/dashboard",   { replace: true });
           break;
-
         case "manager":
           navigate("/manager/dashboard", { replace: true });
           break;
-
         case "admin":
-          navigate("/admin/dashboard", { replace: true });
+          navigate("/admin/dashboard",   { replace: true });
           break;
-
         default:
           setLoginError("אין לך הרשאה להתחבר כאן");
       }
@@ -86,7 +85,7 @@ export default function Login() {
             type="email"
             placeholder="אימייל"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             disabled={loading}
             required
           />
@@ -94,22 +93,16 @@ export default function Login() {
             type="password"
             placeholder="סיסמה"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             disabled={loading}
             required
           />
-          <button
-            type="submit"
-            className="login-button"
-            disabled={loading}
-          >
+          <button type="submit" className="login-button" disabled={loading}>
             {loading ? "🔄 מתחבר..." : "התחבר"}
           </button>
         </form>
 
-        {loginError && (
-          <p className="error-message">{loginError}</p>
-        )}
+        {loginError && <p className="error-message">{loginError}</p>}
 
         <div className="login-extra-options">
           <span
@@ -134,9 +127,7 @@ export default function Login() {
         </div>
       </div>
 
-      {showForgot && (
-        <ForgotPassword closePopup={() => setShowForgot(false)} />
-      )}
+      {showForgot && <ForgotPassword closePopup={() => setShowForgot(false)} />}
     </div>
   );
 }
