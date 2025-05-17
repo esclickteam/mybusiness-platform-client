@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "react-calendar/dist/Calendar.css";
 import "./CalendarSetup.css";
 
 // ימי השבוע בעברית
@@ -15,23 +14,16 @@ const defaultWeeklyHours = {
   3: { start: "09:00", end: "18:00" },
   4: { start: "09:00", end: "18:00" },
   5: { start: "09:00", end: "14:00" },
-  6: null, // שבת: סגור
+  6: null
 };
 
-export default function CalendarSetup({
-  initialHours = defaultWeeklyHours,
-  onSave,
-  onCancel
-}) {
+export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSave, onCancel }) {
   const [weeklyHours, setWeeklyHours] = useState(initialHours);
 
-  // שינוי שעות או "סגור" לכל יום
   const handleChange = (dayIdx, field, value) => {
     setWeeklyHours(prev => ({
       ...prev,
-      [dayIdx]: prev[dayIdx]
-        ? { ...prev[dayIdx], [field]: value }
-        : { start: "", end: "" }
+      [dayIdx]: prev[dayIdx] ? { ...prev[dayIdx], [field]: value } : { start: "", end: "" }
     }));
   };
 
@@ -49,16 +41,10 @@ export default function CalendarSetup({
 
   return (
     <div className="calendar-setup-container">
-      <h2 style={{ textAlign: "center" }}>🗓️ הגדרת שעות פעילות קבועות לשבוע</h2>
-      <div className="weekly-hours-table" style={{
-        background: "#fff",
-        borderRadius: 12,
-        boxShadow: "0 1px 6px #d3c1fa40",
-        maxWidth: 430,
-        margin: "0 auto",
-        padding: 16
-      }}>
-        <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 10px" }}>
+      <h2 className="calendar-title">🗓️ הגדרת שעות פעילות קבועות לשבוע</h2>
+
+      <div className="weekly-hours-table">
+        <table>
           <thead>
             <tr>
               <th>יום</th>
@@ -70,31 +56,31 @@ export default function CalendarSetup({
           <tbody>
             {weekdays.map((name, i) => (
               <tr key={i}>
-                <td style={{ fontWeight: 500 }}>{name}</td>
+                <td className="day-cell">{name}</td>
                 <td>
                   <input
                     type="time"
+                    className="time-input"
                     value={weeklyHours[i]?.start || ""}
                     onChange={e => handleChange(i, "start", e.target.value)}
                     disabled={weeklyHours[i] === null}
-                    style={{ borderRadius: 8, padding: 4, border: "1px solid #ccc", minWidth: 70 }}
                   />
                 </td>
                 <td>
                   <input
                     type="time"
+                    className="time-input"
                     value={weeklyHours[i]?.end || ""}
                     onChange={e => handleChange(i, "end", e.target.value)}
                     disabled={weeklyHours[i] === null}
-                    style={{ borderRadius: 8, padding: 4, border: "1px solid #ccc", minWidth: 70 }}
                   />
                 </td>
                 <td>
                   <input
                     type="checkbox"
+                    className="close-checkbox"
                     checked={weeklyHours[i] === null}
                     onChange={() => handleToggleClosed(i)}
-                    aria-label={`סגור ביום ${name}`}
                   />
                 </td>
               </tr>
@@ -103,14 +89,7 @@ export default function CalendarSetup({
         </table>
       </div>
 
-      {/* כפתורי שמירה */}
-      <div style={{
-        marginTop: "2rem",
-        textAlign: "center",
-        display: "flex",
-        gap: "1rem",
-        justifyContent: "center"
-      }}>
+      <div className="actions">
         <button className="save-all-btn styled" onClick={handleSave}>
           💾 שמור שעות שבועיות
         </button>
@@ -120,18 +99,18 @@ export default function CalendarSetup({
           </button>
         )}
       </div>
-      <div className="summary" style={{ marginTop: 30 }}>
+
+      <div className="summary">
         <strong>🗓️ סיכום שעות פעילות:</strong>
-        <ul style={{ paddingRight: 0, margin: "10px 0 0 0", listStyle: "none" }}>
+        <ul>
           {weekdays.map((name, i) => (
             <li key={i} className="summary-item">
-              <b>{name}:</b>{" "}
+              <span className="day-label">{name}:</span>
               {weeklyHours[i] === null
-                ? <span style={{ color: "#e04040" }}>סגור</span>
-                : (
-                  weeklyHours[i]?.start && weeklyHours[i]?.end
-                    ? `${weeklyHours[i].start}–${weeklyHours[i].end}`
-                    : <span style={{ color: "#aaa" }}>לא הוגדר</span>
+                ? <span className="closed-label">סגור</span>
+                : (weeklyHours[i]?.start && weeklyHours[i]?.end
+                  ? <span className="hours-label">{weeklyHours[i].start}–{weeklyHours[i].end}</span>
+                  : <span className="unset-label">לא הוגדר</span>
                 )
               }
             </li>
@@ -139,5 +118,5 @@ export default function CalendarSetup({
         </ul>
       </div>
     </div>
-  );
+);
 }
