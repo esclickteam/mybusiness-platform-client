@@ -23,7 +23,6 @@ const TABS = [
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user }               = useAuth();
-  const navigate               = useNavigate();
   const bizId = paramId || user?.businessId;
 
   const [data, setData]               = useState(null);
@@ -93,7 +92,7 @@ export default function BusinessProfileView() {
   const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0);
   const avgRating   = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg  = Math.round(avgRating * 10) / 10;
-  const isOwner = user?.role === "business" && user.businessId === bizId;
+  const isOwner     = user?.role === "business" && user.businessId === bizId;
 
   const handleReviewSubmit = async formData => {
     setIsSubmitting(true);
@@ -118,13 +117,11 @@ export default function BusinessProfileView() {
               ✏️ ערוך פרטי העסק
             </Link>
           )}
-
           {logoUrl && (
             <div className="profile-logo-wrapper">
               <img className="profile-logo" src={logoUrl} alt="לוגו העסק" />
             </div>
           )}
-
           <h1 className="business-name">{businessName}</h1>
           <div className="about-phone">
             {category    && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
@@ -132,14 +129,11 @@ export default function BusinessProfileView() {
             {phone       && <p><strong>📞 טלפון:</strong> {phone}</p>}
             {city        && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
-
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
             <span className="count">({reviews.length} ביקורות)</span>
           </div>
-
           <hr className="profile-divider" />
-
           <div className="profile-tabs">
             {TABS.map(tab => (
               <button
@@ -154,7 +148,6 @@ export default function BusinessProfileView() {
               </button>
             ))}
           </div>
-
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="public-main-images">
@@ -165,7 +158,6 @@ export default function BusinessProfileView() {
                   : <p className="no-data">אין תמונות להצגה</p>}
               </div>
             )}
-
             {currentTab === "גלריה" && (
               <div className="public-main-images">
                 {gallery.length
@@ -175,7 +167,6 @@ export default function BusinessProfileView() {
                   : <p className="no-data">אין תמונות בגלריה</p>}
               </div>
             )}
-
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {!isOwner && user && (
@@ -185,7 +176,7 @@ export default function BusinessProfileView() {
                 )}
                 {showReviewModal && (
                   <div className="modal-bg" onClick={()=>setShowReviewModal(false)}>
-                    <div className="modal-inner" onClick={e=>e.stopPropagation()}>
+                    <div className="#modal-inner" onClick={e=>e.stopPropagation()}>
                       <ReviewForm
                         businessId={bizId}
                         onSubmit={handleReviewSubmit}
@@ -206,7 +197,6 @@ export default function BusinessProfileView() {
                   : <p className="no-data">אין ביקורות</p>}
               </div>
             )}
-
             {currentTab === "שאלות תשובות" && (
               <div className="faqs-public">
                 {faqs.length === 0
@@ -219,20 +209,17 @@ export default function BusinessProfileView() {
                     ))}
               </div>
             )}
-
             {currentTab === "הודעות מלקוחות" && (
               <Link to={`/business/${bizId}/chat`} className="chat-link-btn">
                 ▶️ ניהול הודעות מלקוחות
               </Link>
             )}
-
             {currentTab === "יומן" && (
               <div className="booking-tab">
                 <ServicesSelector
                   services={services}
                   onSelect={svc => setSelectedService(svc)}
                 />
-
                 {!selectedService
                   ? <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
                   : (
