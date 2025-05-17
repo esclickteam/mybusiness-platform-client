@@ -292,16 +292,18 @@ function ClientChatWrapper() {
   const { businessId } = useParams();
   const { user, loading } = useAuth();
 
-  if (loading) return <div>🔄 טוען...</div>;
+  // טפל במצבים לא תקינים:
+  if (loading) return <div>טוען...</div>;
   if (!user) return <Navigate to="/login" replace />;
+  if (!businessId) return <div>שגיאה: חסר businessId ב-URL</div>;
   if (user.role !== "customer") return <Navigate to="/login" replace />;
 
   return (
     <ChatPage
       isBusiness={false}
-      userId={user.userId} 
+      userId={user.id}
       partnerId={businessId}
-      initialPartnerId={null}
+      initialPartnerId={businessId}
       businessProfilePic="/default-business.png"
       clientProfilePic={user.profilePic}
     />

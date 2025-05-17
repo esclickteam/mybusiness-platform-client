@@ -1,4 +1,3 @@
-// src/components/ChatPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ChatComponent from './ChatComponent';
@@ -22,20 +21,20 @@ export default function ChatPage({
     partnerId: initialPartnerId
   });
 
+  // הגנה: businessId לא ריק
+  const businessIdToUse = isBusiness ? userId : initialPartnerId;
+
   useEffect(() => {
-    // fetch all convs
+    if (!businessIdToUse) return; // אל תבצע קריאה אם אין businessId
+
     fetch(
-      `/api/chat/conversations?businessId=${
-        isBusiness ? userId : initialPartnerId
-      }`,
-      {
-        credentials: 'include'
-      }
+      `/api/chat/conversations?businessId=${businessIdToUse}`,
+      { credentials: 'include' }
     )
       .then(res => res.json())
       .then(data => setConversations(data))
       .catch(console.error);
-  }, [userId, initialPartnerId, isBusiness]);
+  }, [businessIdToUse]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
     setSelected({ conversationId, partnerId });
