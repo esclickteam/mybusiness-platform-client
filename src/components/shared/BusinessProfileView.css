@@ -574,9 +574,10 @@ html, body, #root {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.client-calendar-wrapper .react-calendar__navigation button {
-  /* ביטול כל תכונות flex כדי לבטל את flex-grow:1 */
+/* ביטול flex-grow ו-flex-basis על כפתורי הניווט */
+.calendar-fullwidth .react-calendar__navigation button {
+  /* ביטול כל תכונות flex כדי למנוע flex-grow ו-flex-basis */
   flex: 0 0 auto !important;
-  min-width: auto !important;
   width: auto !important;
+  min-width: auto !important;
 }
