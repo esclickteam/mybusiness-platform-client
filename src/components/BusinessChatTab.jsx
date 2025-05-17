@@ -1,67 +1,110 @@
-// src/components/BusinessChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../api"; 
+import API from "../api";
 import "./BusinessChatTab.css";
 
 export default function BusinessChatTab({ conversationId, businessId, customerId }) {
+  console.log("💥 [BusinessChatTab] props:", { conversationId, businessId, customerId });
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef();
 
   useEffect(() => {
-    if (!conversationId) return;
+    console.log("🔄 [useEffect] conversationId:", conversationId, "businessId:", businessId, "customerId:", customerId);
 
-    // 1. Load history for this conversation (תיקון: תמיכה בכל סוגי התשובות)
+    if (!conversationId) {
+      console.warn("⚠️ [useEffect] No conversationId, aborting useEffect");
+      return;
+    }
+
+    // 1. Load history for this conversation
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
     })
       .then(res => {
-        // תומך גם במערך וגם באובייקט עם messages
-        setMessages(Array.isArray(res.data) ? res.data : res.data.messages || []);
+        const loaded = Array.isArray(res.data) ? res.data : res.data.messages || [];
+        setMessages(loaded);
+        console.log("✅ [History] loaded:", loaded.length, "messages.");
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error("❌ [History] Error loading history:", err);
+      });
 
     // 2. Connect to socket room for this conversation
     socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
       query: { conversationId, businessId, userId: businessId, role: "business" }
     });
-    socketRef.current.emit("joinRoom", conversationId);
+    socketRef.current.on("connect", () => {
+      console.log("🔌 [Socket] connected:", socketRef.current.id);
+      socketRef.current.emit("joinRoom", conversationId);
+      console.log("➡️ [Socket] joinRoom emitted for", conversationId);
+    });
 
     socketRef.current.on("newMessage", msg => {
+      console.log("📨 [Socket] Received newMessage:", msg);
       setMessages(prev => [...prev, msg]);
     });
 
+    socketRef.current.on("disconnect", reason => {
+      console.log("🔌 [Socket] disconnected:", reason);
+    });
+
     return () => {
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
       setMessages([]);
     };
-  }, [conversationId, businessId]);
+  }, [conversationId, businessId, customerId]);
 
   const sendMessage = () => {
-    if (!input.trim() || !conversationId) return;
+    if (!input.trim()) {
+      console.warn("⚠️ [Send] Empty input, ignoring");
+      return;
+    }
+    if (!conversationId) {
+      console.error("❌ [Send] No conversationId, cannot send");
+      return;
+    }
+    if (!customerId) {
+      console.error("❌ [Send] No customerId, cannot send");
+      return;
+    }
 
     const msg = {
       conversationId,
       from: businessId,
-      to:   customerId,
+      to: customerId,
       text: input.trim(),
       timestamp: new Date().toISOString()
     };
+    console.log("🚀 [Socket] Emitting sendMessage:", msg);
 
     socketRef.current.emit("sendMessage", msg, ack => {
+      console.log("📣 [Socket] sendMessage ack:", ack);
       if (ack?.success) {
         setMessages(prev => [...prev, msg]);
         setInput("");
       } else {
-        console.error("Send failed", ack?.error);
+        alert("שגיאה בשליחת ההודעה. נסה שוב.");
       }
     });
   };
 
+  // Debug info bar
+  const debugBar = (
+    <div style={{ fontSize: "0.7em", background: "#eee", padding: 4, direction: "ltr" }}>
+      <b>conversationId:</b> {conversationId}<br />
+      <b>businessId:</b> {businessId} <b>customerId:</b> {customerId}
+    </div>
+  );
+
   return (
     <div className="chat-container business">
+      {debugBar}
       <div className="message-list">
         {messages.map((m, i) => (
           <div

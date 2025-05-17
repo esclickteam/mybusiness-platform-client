@@ -1,101 +1,110 @@
-// src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
 import "./ClientChatTab.css";
 
-export default function ClientChatTab({ conversationId, businessId, userId }) {
-  console.log("💥 props in ClientChatTab:", { conversationId, businessId, userId });
+export default function ClientChatTab({ conversationId, businessId, userId, partnerId }) {
+  // partnerId: זהות הצד השני (העסק), אופציונלי
+  console.log("💥 [ClientChatTab] props:", { conversationId, businessId, userId, partnerId });
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef();
 
   useEffect(() => {
-    console.log("🔄 ClientChatTab mounted", { conversationId, businessId, userId });
+    console.log("🔄 [useEffect] conversationId:", conversationId, "businessId:", businessId, "userId:", userId);
 
     if (!conversationId) {
-      console.warn("⚠️ No conversationId, aborting useEffect");
+      console.warn("⚠️ [useEffect] No conversationId, aborting useEffect");
       return;
     }
 
     // 1) טען היסטוריה
-    console.log("📥 Fetching history for", conversationId);
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
     })
       .then(res => {
-        console.log("✅ History loaded:", res.data);
-        // עדכון: תומך גם במבנה של { messages: [...] } וגם במערך ישיר
-        setMessages(Array.isArray(res.data) ? res.data : res.data.messages || []);
+        const loaded = Array.isArray(res.data) ? res.data : res.data.messages || [];
+        setMessages(loaded);
+        console.log("✅ [History] loaded:", loaded.length, "messages.");
       })
       .catch(err => {
-        console.error("❌ Error loading history:", err);
+        console.error("❌ [History] Error loading history:", err);
       });
 
     // 2) התחבר ל־Socket.IO
-    console.log("🌐 Connecting to socket with query", { conversationId, businessId, userId });
     socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
       query: { conversationId, businessId, userId, role: "client" }
     });
 
     socketRef.current.on("connect", () => {
-      console.log("🔌 Socket connected:", socketRef.current.id);
+      console.log("🔌 [Socket] connected:", socketRef.current.id);
       socketRef.current.emit("joinRoom", conversationId);
-      console.log("➡️ joinRoom emitted for", conversationId);
+      console.log("➡️ [Socket] joinRoom emitted for", conversationId);
     });
 
     socketRef.current.on("newMessage", msg => {
-      console.log("📨 Received newMessage:", msg);
+      console.log("📨 [Socket] Received newMessage:", msg);
       setMessages(prev => [...prev, msg]);
     });
 
     socketRef.current.on("disconnect", reason => {
-      console.log("🔌 Socket disconnected:", reason);
+      console.log("🔌 [Socket] disconnected:", reason);
     });
 
     return () => {
-      console.log("🧹 Cleaning up socket");
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
       setMessages([]);
     };
   }, [conversationId, businessId, userId]);
 
   const sendMessage = () => {
-    console.log("✉️ sendMessage called with input:", input);
     if (!input.trim()) {
-      console.warn("⚠️ Empty input, ignoring");
+      console.warn("⚠️ [Send] Empty input, ignoring");
       return;
     }
     if (!conversationId) {
-      console.error("❌ No conversationId, cannot send");
+      console.error("❌ [Send] No conversationId, cannot send");
       return;
     }
-
+    // partnerId זה בעצם העסק (למי שולחים)
+    const toId = businessId || partnerId;
     const msg = {
       conversationId,
       from: userId,
-      to: businessId,
+      to: toId,
       text: input.trim(),
       timestamp: new Date().toISOString()
     };
-    console.log("🚀 Emitting sendMessage:", msg);
+    console.log("🚀 [Socket] Emitting sendMessage:", msg);
 
     socketRef.current.emit("sendMessage", msg, ack => {
-      console.log("📣 sendMessage ack:", ack);
+      console.log("📣 [Socket] sendMessage ack:", ack);
       if (ack?.success) {
-        console.log("✅ Message acknowledged, updating local state");
         setMessages(prev => [...prev, msg]);
         setInput("");
       } else {
-        console.error("❌ Failed to send message:", ack?.error);
+        // הודעה לא נשלחה: אפשר לסמן אותה/להראות שגיאה
+        alert("שגיאה בשליחת ההודעה. נסה שוב.");
       }
     });
   };
 
+  // Debug info bar
+  const debugBar = (
+    <div style={{ fontSize: "0.7em", background: "#eee", padding: 4, direction: "ltr" }}>
+      <b>conversationId:</b> {conversationId}<br />
+      <b>businessId:</b> {businessId} <b>userId:</b> {userId} <b>partnerId:</b> {partnerId}
+    </div>
+  );
+
   return (
     <div className="chat-container client">
+      {debugBar}
       <div className="message-list">
         {messages.map((m, i) => (
           <div
