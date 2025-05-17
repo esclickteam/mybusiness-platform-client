@@ -2,7 +2,7 @@ import React from 'react';
 import './ConversationsList.css';
 
 export default function ConversationsList({
-  conversations,
+  conversations = [],        // ודא שהמערך אף פעם לא undefined
   isBusiness,
   onSelect,
   selectedConversationId
@@ -10,13 +10,17 @@ export default function ConversationsList({
   return (
     <div className="conversations-list">
       {conversations.map(conv => {
-        // מזהה השיחה והפרטנר המתאים
         const conversationId = conv.conversationId;
         const partner = isBusiness ? conv.customer : conv.business;
+
+        // אם אין פרטנר, מדלגים עליו
+        if (!partner) return null;
+
         const partnerId = partner._id;
-        const partnerName = isBusiness ? conv.customer.name : conv.business.businessName;
-        
-        // בדיקה האם השיחה נבחרה
+        const partnerName = isBusiness
+          ? partner.name
+          : partner.businessName || partner.name || '—';
+
         const isSelected = selectedConversationId === conversationId;
 
         return (
