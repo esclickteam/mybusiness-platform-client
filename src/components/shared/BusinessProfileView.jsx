@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
+import ChatPage from "../../../components/ChatPage";
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
@@ -23,6 +24,7 @@ const TABS = [
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user }               = useAuth();
+  const navigate               = useNavigate();
   const bizId = paramId || user?.businessId;
 
   const [data, setData]               = useState(null);
@@ -45,14 +47,11 @@ export default function BusinessProfileView() {
     (async () => {
       try {
         setLoading(true);
-        // שליפת פרטי העסק
         const resBiz = await api.get(`/business/${bizId}`);
         const biz    = resBiz.data.business || resBiz.data;
         setData(biz);
         setFaqs(biz.faqs || []);
         setServices(biz.services || []);
-
-        // שליפת שעות פעילות
         const resWH = await api.get(
           `/appointments/get-work-hours?businessId=${bizId}`
         );
@@ -62,13 +61,11 @@ export default function BusinessProfileView() {
             sched[Number(item.day)] = item;
           });
         } else if (
-          resWH.data.workHours &&
-          typeof resWH.data.workHours === "object"
+          resWH.data.workHours && typeof resWH.data.workHours === "object"
         ) {
           sched = resWH.data.workHours;
         }
         setSchedule(sched);
-
       } catch (err) {
         console.error(err);
         setError("שגיאה בטעינת הנתונים");
@@ -97,7 +94,6 @@ export default function BusinessProfileView() {
   const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0);
   const avgRating   = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg  = Math.round(avgRating * 10) / 10;
-
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
   const handleReviewSubmit = async formData => {
@@ -188,13 +184,6 @@ export default function BusinessProfileView() {
                     הוסף ביקורת
                   </button>
                 )}
-                {reviews.length
-                  ? reviews.map((r,i) => (
-                      <div key={r._id||i} className="review-card improved">
-                        {/* … תכני הביקורת … */}
-                      </div>
-                    ))
-                  : <p className="no-data">אין ביקורות</p>}
                 {showReviewModal && (
                   <div className="modal-bg" onClick={()=>setShowReviewModal(false)}>
                     <div className="modal-inner" onClick={e=>e.stopPropagation()}>
@@ -209,6 +198,13 @@ export default function BusinessProfileView() {
                     </div>
                   </div>
                 )}
+                {reviews.length
+                  ? reviews.map((r,i) => (
+                      <div key={r._id||i} className="review-card improved">
+                        {/* תוכן הביקורת */}
+                      </div>
+                    ))
+                  : <p className="no-data">אין ביקורות</p>}
               </div>
             )}
 
