@@ -1,6 +1,6 @@
-// src/components/ChatComponent.jsx
-import React from "react";
-import ClientChatTab   from "./ClientChatTab";
+import React, { useState, useEffect } from "react";
+import API from "../api";
+import ClientChatTab from "./ClientChatTab";
 import BusinessChatTab from "./BusinessChatTab";
 
 export default function ChatComponent({
@@ -9,20 +9,51 @@ export default function ChatComponent({
   initialConversationId,
   isBusiness
 }) {
-  // המשתמש מחובר כעסק
+  const [conversationId, setConversationId] = useState(initialConversationId);
+
+  // Initialize or fetch conversation if not provided
+  useEffect(() => {
+    if (!partnerId || conversationId) return;
+
+    const initConversation = async () => {
+      try {
+        const params = isBusiness
+          ? { businessId: userId, customerId: partnerId }
+          : { businessId: partnerId };
+
+        const { data } = await API.get("/conversations", {
+          params,
+          withCredentials: true
+        });
+
+        setConversationId(data.conversationId);
+      } catch (err) {
+        console.error("⚠️ failed to init conversation", err);
+      }
+    };
+
+    initConversation();
+  }, [partnerId, conversationId, isBusiness, userId]);
+
+  // Show loading state until conversationId is ready
+  if (!conversationId) {
+    return <p>⏳ טוען שיחה...</p>;
+  }
+
+  // Render appropriate chat tab
   if (isBusiness) {
     return (
       <BusinessChatTab
-        conversationId={initialConversationId}
+        conversationId={conversationId}
         businessId={userId}
         customerId={partnerId}
       />
     );
   }
-  // המשתמש מחובר כלקוח
+
   return (
     <ClientChatTab
-      conversationId={initialConversationId}
+      conversationId={conversationId}
       businessId={partnerId}
       user={{ id: userId }}
     />

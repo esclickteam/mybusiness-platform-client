@@ -1,4 +1,3 @@
-// src/components/ConversationsList.jsx
 import React from 'react';
 import './ConversationsList.css';
 
@@ -6,28 +5,26 @@ export default function ConversationsList({
   conversations,
   isBusiness,
   onSelect,
-  selectedConversationId,
-  userId,
-  clientProfilePic,
-  businessProfilePic
+  selectedConversationId
 }) {
   return (
     <div className="conversations-list">
       {conversations.map(conv => {
-        const partnerId = isBusiness ? conv.customer._id : conv.business._id;
+        // מזהה השיחה והפרטנר המתאים
+        const conversationId = conv.conversationId;
+        const partner = isBusiness ? conv.customer : conv.business;
+        const partnerId = partner._id;
         const partnerName = isBusiness ? conv.customer.name : conv.business.businessName;
-        const isSelected = selectedConversationId === partnerId;
+        
+        // בדיקה האם השיחה נבחרה
+        const isSelected = selectedConversationId === conversationId;
+
         return (
           <div
-            key={partnerId}
+            key={conversationId}
             className={`conv-item ${isSelected ? 'active' : ''}`}
-            onClick={() => onSelect({ conversationId: conv.conversationId, partnerId })}
+            onClick={() => onSelect({ conversationId, partnerId })}
           >
-            <img
-              className="conv-avatar"
-              src={isBusiness ? clientProfilePic : businessProfilePic}
-              alt="avatar"
-            />
             <span className="conv-name">{partnerName}</span>
           </div>
         );

@@ -17,13 +17,21 @@ export default function ChatPage({
   const { state } = useLocation();
   const initialConversationId = state?.conversationId || null;
   const [conversations, setConversations] = useState([]);
-  const [selected, setSelected] = useState({ conversationId: initialConversationId, partnerId: initialPartnerId });
+  const [selected, setSelected] = useState({
+    conversationId: initialConversationId,
+    partnerId: initialPartnerId
+  });
 
   useEffect(() => {
     // fetch all convs
-    fetch(`/api/chat/conversations?businessId=${isBusiness ? userId : initialPartnerId}`, {
-      credentials: 'include'
-    })
+    fetch(
+      `/api/chat/conversations?businessId=${
+        isBusiness ? userId : initialPartnerId
+      }`,
+      {
+        credentials: 'include'
+      }
+    )
       .then(res => res.json())
       .then(data => setConversations(data))
       .catch(console.error);
@@ -40,7 +48,7 @@ export default function ChatPage({
           conversations={conversations}
           isBusiness={isBusiness}
           onSelect={handleSelect}
-          selectedConversationId={selected.partnerId}
+          selectedConversationId={selected.conversationId}
           userId={userId}
           clientProfilePic={clientProfilePic}
           businessProfilePic={businessProfilePic}
