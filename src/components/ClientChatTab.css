@@ -1,0 +1,112 @@
+/* ClientChatTab.css */
+
+/* מכולת הצ'אט הראשית */
+.chat-container.client {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 600px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+/* רשימת ההודעות */
+.chat-container.client .message-list {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f9f9fb;
+}
+
+/* כל הודעה בודדת */
+.chat-container.client .message {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  position: relative;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+/* הודעות של הלקוח (יישור לימין, צבע שונה) */
+.chat-container.client .message.mine {
+  align-self: flex-end;
+  background: #e0dbff;
+  color: #2a0bb8;
+  border-bottom-right-radius: 4px;
+}
+
+/* הודעות של העסק (יישור לשמאל) */
+.chat-container.client .message.theirs {
+  align-self: flex-start;
+  background: #fff;
+  color: #333;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* תזמון ההודעה (מטקסט קטן בתחתית ההודעה) */
+.chat-container.client .message .time {
+  font-size: 11px;
+  color: #777;
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* שורת קלט ו-buttons בתחתית */
+.chat-container.client .input-bar {
+  display: flex;
+  padding: 12px;
+  border-top: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+/* שדה הטקסט */
+.chat-container.client .input-bar input {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chat-container.client .input-bar input:focus {
+  border-color: #4a3aff;
+}
+
+/* כפתור השליחה */
+.chat-container.client .input-bar button {
+  margin-left: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  background: #4a3aff;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.chat-container.client .input-bar button:hover {
+  opacity: 0.9;
+}
+
+.chat-container.client .input-bar button:active {
+  background: #3c2bcc;
+}
+
+/* גלגל טעינה קטנטן (אם תרצה להוסיף) */
+.chat-container.client .loading {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+  padding: 12px 0;
+}

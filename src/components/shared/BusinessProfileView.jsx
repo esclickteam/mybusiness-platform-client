@@ -6,12 +6,11 @@ import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
+import ClientChatTab from "../../pages/business/dashboardPages/buildTabs/ClientChatTab"; // הייבוא של צ'אט
 
-// ** הייבוא הזה מוודא שהתצוגה הבסיסית של React-Calendar תעבוד **
+// עיצובים
 import "react-calendar/dist/Calendar.css";
-// ** אם Override שלך ב־ClientCalendar.css, תוודא שגם אותו אתה מייבא כאן **
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
-
 import "./BusinessProfileView.css";
 
 const TABS = [
@@ -41,50 +40,46 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-  if (!bizId) {
-    setError("Invalid business ID");
-    setLoading(false);
-    return;
-  }
-  (async () => {
-    try {
-      setLoading(true);
-
-      // 1. פרטי העסק
-      const resBiz = await api.get(`/business/${bizId}`);
-      const biz    = resBiz.data.business || resBiz.data;
-      setData(biz);
-      setFaqs(biz.faqs || []);
-      setServices(biz.services || []);
-
-      // 2. שעות פעילות — טיפול במבנה נכון
-      const resWH = await api.get(
-        `/appointments/get-work-hours?businessId=${bizId}`
-      );
-      let sched = {};
-      if (Array.isArray(resWH.data.workHours)) {
-        resWH.data.workHours.forEach(item => {
-          sched[Number(item.day)] = item;
-        });
-      } else if (
-        resWH.data.workHours &&
-        typeof resWH.data.workHours === "object" &&
-        !Array.isArray(resWH.data.workHours)
-      ) {
-        sched = resWH.data.workHours;
-      }
-      setSchedule(sched);
-
-    } catch (err) {
-      console.error(err);
-      setError("שגיאה בטעינת הנתונים");
-    } finally {
+    if (!bizId) {
+      setError("Invalid business ID");
       setLoading(false);
+      return;
     }
-  })();
-}, [bizId]);
+    (async () => {
+      try {
+        setLoading(true);
+        // שליפת פרטי העסק
+        const resBiz = await api.get(`/business/${bizId}`);
+        const biz    = resBiz.data.business || resBiz.data;
+        setData(biz);
+        setFaqs(biz.faqs || []);
+        setServices(biz.services || []);
 
+        // שליפת שעות פעילות
+        const resWH = await api.get(
+          `/appointments/get-work-hours?businessId=${bizId}`
+        );
+        let sched = {};
+        if (Array.isArray(resWH.data.workHours)) {
+          resWH.data.workHours.forEach(item => {
+            sched[Number(item.day)] = item;
+          });
+        } else if (
+          resWH.data.workHours &&
+          typeof resWH.data.workHours === "object"
+        ) {
+          sched = resWH.data.workHours;
+        }
+        setSchedule(sched);
 
+      } catch (err) {
+        console.error(err);
+        setError("שגיאה בטעינת הנתונים");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [bizId]);
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error)   return <div className="error">{error}</div>;
@@ -128,10 +123,7 @@ export default function BusinessProfileView() {
       <div className="business-profile-view full-style">
         <div className="profile-inner">
           {isOwner && (
-            <Link
-              to={`/business/${bizId}/dashboard/edit`}
-              className="edit-profile-btn"
-            >
+            <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
@@ -175,35 +167,38 @@ export default function BusinessProfileView() {
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="public-main-images">
-                {mainImages.length ? mainImages.slice(0,5).map((url,i) => (
-                  <img key={i} src={url} alt={`תמונה ראשית ${i+1}`} />
-                )) : <p className="no-data">אין תמונות להצגה</p>}
+                {mainImages.length
+                  ? mainImages.slice(0,5).map((url,i) => (
+                      <img key={i} src={url} alt={`תמונה ראשית ${i+1}`} />
+                    ))
+                  : <p className="no-data">אין תמונות להצגה</p>}
               </div>
             )}
 
             {currentTab === "גלריה" && (
               <div className="public-main-images">
-                {gallery.length ? gallery.map((url,i) => (
-                  <img key={i} src={url} alt={`גלריה ${i+1}`} />
-                )) : <p className="no-data">אין תמונות בגלריה</p>}
+                {gallery.length
+                  ? gallery.map((url,i) => (
+                      <img key={i} src={url} alt={`גלריה ${i+1}`} />
+                    ))
+                  : <p className="no-data">אין תמונות בגלריה</p>}
               </div>
             )}
 
             {currentTab === "ביקורות" && (
               <div className="reviews">
                 {!isOwner && user && (
-                  <button
-                    className="add-review-btn"
-                    onClick={() => setShowReviewModal(true)}
-                  >
+                  <button className="add-review-btn" onClick={() => setShowReviewModal(true)}>
                     הוסף ביקורת
                   </button>
                 )}
-                {reviews.length ? reviews.map((r,i) => (
-                  <div key={r._id || i} className="review-card improved">
-                    {/* ... תכני הביקורת ... */}
-                  </div>
-                )) : <p className="no-data">אין ביקורות</p>}
+                {reviews.length
+                  ? reviews.map((r,i) => (
+                      <div key={r._id||i} className="review-card improved">
+                        {/* … תכני הביקורת … */}
+                      </div>
+                    ))
+                  : <p className="no-data">אין ביקורות</p>}
                 {showReviewModal && (
                   <div className="modal-bg" onClick={()=>setShowReviewModal(false)}>
                     <div className="modal-inner" onClick={e=>e.stopPropagation()}>
@@ -226,21 +221,17 @@ export default function BusinessProfileView() {
                 {faqs.length === 0
                   ? <p className="no-data">אין עדיין שאלות ותשובות</p>
                   : faqs.map((faq,i) => (
-                    <div key={faq._id||i} className="faq-card">
-                      <p><strong>שאלה:</strong> {faq.question}</p>
-                      <p><strong>תשובה:</strong> {faq.answer}</p>
-                    </div>
-                  ))
-                }
+                      <div key={faq._id||i} className="faq-card">
+                        <p><strong>שאלה:</strong> {faq.question}</p>
+                        <p><strong>תשובה:</strong> {faq.answer}</p>
+                      </div>
+                    ))}
               </div>
             )}
 
             {currentTab === "הודעות מלקוחות" && (
-              <div className="chat-button-container">
-                <button className="chat-button" onClick={handleChatClick}>
-                  הודעות מלקוחות
-                </button>
-              </div>
+              // במקום כפתור – מציגים את רכיב הצ'אט
+              <ClientChatTab businessId={bizId} user={user} />
             )}
 
             {currentTab === "יומן" && (
@@ -262,12 +253,11 @@ export default function BusinessProfileView() {
                           workHours={schedule}
                           selectedService={selectedService}
                           onBackToList={()=>setSelectedService(null)}
-                            businessId={bizId}
+                          businessId={bizId}
                         />
                       </div>
                     </>
-                  )
-                }
+                  )}
               </div>
             )}
           </div>
