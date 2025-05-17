@@ -32,6 +32,13 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
   const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
 
+  // הדפסות debug
+  useEffect(() => {
+    console.log("workHours:", workHours);
+    console.log("selectedDate:", selectedDate, "dayIdx:", dayIdx);
+    console.log("config:", config);
+  }, [workHours, selectedDate, config]);
+
   useEffect(() => {
     if (config?.start && config?.end) {
       setAvailableSlots(generateTimeSlots(config.start, config.end, config.breaks));
