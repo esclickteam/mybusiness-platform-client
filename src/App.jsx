@@ -70,7 +70,7 @@ function ScrollToTop() {
 export default function App() {
   const { user } = useAuth();
   return (
-    <BrowserRouter>
+    <>
       <Header />
       <ScrollToTop />
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
@@ -282,9 +282,10 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </>
   );
 }
+
 
 // Wrapper for client chatting with a business
 function ClientChatWrapper() {
