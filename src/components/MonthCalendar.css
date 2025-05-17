@@ -6,13 +6,19 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
+  background: #fff;
 }
 
 /* כותרת חודש ושנה */
 .calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   text-align: center;
   padding: 16px 0;
   background: #f5f5f5;
+  position: relative;
 }
 .calendar-header .month-hebrew {
   font-size: 1.8rem;
@@ -22,6 +28,20 @@
   font-size: 1rem;
   color: #666;
   margin-top: 4px;
+}
+.month-arrow {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: #7e5bef;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+.month-arrow:hover,
+.month-arrow:focus {
+  background: #e7e4fd;
 }
 
 /* שבועות */
@@ -48,12 +68,37 @@
   border-right: 1px solid #eee;
   min-height: 80px;
   position: relative;
+  background: #fffbe6;
+  transition: background 0.2s, box-shadow 0.2s;
+  cursor: default;
 }
 .date-cell:nth-child(7n) { /* ביטול גבול ימני לשבת */
   border-right: none;
 }
 .date-cell:nth-last-child(-n+7) { /* ביטול גבול תחתון בשורה האחרונה */
   border-bottom: none;
+}
+
+/* תא לחיץ */
+.date-cell.clickable {
+  cursor: pointer;
+  background: #fdf8ff;
+}
+.date-cell.clickable:hover,
+.date-cell.clickable:focus {
+  background: #f1e9ff;
+  box-shadow: 0 2px 10px 0 #e6dcff55;
+}
+
+/* תאריך נבחר */
+.date-cell.selected,
+.date-cell.selected.clickable {
+  background: linear-gradient(135deg, #7e5bef 70%, #c8b6ff 120%);
+  color: #fff;
+  box-shadow: 0 2px 12px 0 #7e5bef22;
+}
+.date-cell.selected .date-number {
+  color: #fff;
 }
 
 /* המספר עצמו */
@@ -64,6 +109,7 @@
   font-size: 1.2rem;
   font-weight: bold;
   color: #333;
+  z-index: 2;
 }
 
 /* רספונסיביות קלה */

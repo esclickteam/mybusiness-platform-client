@@ -6,6 +6,8 @@ import MonthCalendar from "../../../../../../components/MonthCalendar";
 
 export default function ClientCalendar({ workHours = {}, selectedService, onBackToList }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [month, setMonth] = useState(selectedDate.getMonth());
+  const [year, setYear] = useState(selectedDate.getFullYear());
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [mode, setMode] = useState("slots");
@@ -18,6 +20,11 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
 
   const [paymentStep, setPaymentStep] = useState("summary");
   const [selectedPayment, setSelectedPayment] = useState("");
+
+  // כשמשנים חודש/שנה – תעדכן את התאריך הנבחר ל-1 לחודש החדש
+  useEffect(() => {
+    setSelectedDate(new Date(year, month, 1));
+  }, [month, year]);
 
   // שעות לפי יום בשבוע
   const dayIdx = selectedDate.getDay(); // 0 (ראשון) עד 6 (שבת)
@@ -99,17 +106,45 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
     setBookingSuccess(true);
   };
 
+  // --- לוח שנה עם כפתורי חודשי ניווט ---
   return (
     <div className="client-calendar-wrapper">
       {mode === "slots" && (
         <>
           <h3>📅 בחר תאריך</h3>
-          {/* לוח שנה חודשי */}
           {selectedService && (
             <div className="month-overview">
+              <div className="calendar-nav">
+                <button
+                  onClick={() => {
+                    if (month === 0) {
+                      setMonth(11);
+                      setYear(y => y - 1);
+                    } else {
+                      setMonth(m => m - 1);
+                    }
+                  }}
+                  className="month-nav-btn"
+                >
+                  ← חודש קודם
+                </button>
+                <button
+                  onClick={() => {
+                    if (month === 11) {
+                      setMonth(0);
+                      setYear(y => y + 1);
+                    } else {
+                      setMonth(m => m + 1);
+                    }
+                  }}
+                  className="month-nav-btn"
+                >
+                  חודש הבא →
+                </button>
+              </div>
               <MonthCalendar
-                year={selectedDate.getFullYear()}
-                month={selectedDate.getMonth()}
+                year={year}
+                month={month}
                 selectedDate={selectedDate}
                 onDateClick={date => {
                   setSelectedDate(date);
