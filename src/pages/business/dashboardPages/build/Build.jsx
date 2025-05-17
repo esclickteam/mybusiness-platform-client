@@ -131,17 +131,27 @@ const [shopMode, setShopMode] = useState(null);
   API.get('/appointments/get-work-hours')
   .then(res => {
     let map = {};
-    // מחפש תמיד מערך workHours (או ריק)
-    const arr = Array.isArray(res.data.workHours)
-      ? res.data.workHours
-      : Array.isArray(res.data) 
-        ? res.data
-        : [];
-
-    // ממיר את המערך לאובייקט לפי מספר היום (כמספר!)
-    arr.forEach(item => {
-      map[+item.day] = item;
-    });
+    // אם המידע הגיע כמערך
+    if (Array.isArray(res.data.workHours)) {
+      res.data.workHours.forEach(item => {
+        map[Number(item.day)] = item;
+      });
+    }
+    // אם המידע הגיע כאובייקט (ולא מערך)
+    else if (
+      res.data.workHours &&
+      typeof res.data.workHours === "object" &&
+      !Array.isArray(res.data.workHours)
+    ) {
+      map = res.data.workHours;
+    }
+    // fallback: אולי כל התשובה היא מערך (נדיר אבל אפשרי)
+    else if (Array.isArray(res.data)) {
+      res.data.forEach(item => {
+        map[Number(item.day)] = item;
+      });
+    }
+    // אחרת (שום דבר תקין): משאירים map ריק
 
     setWorkHours(map);
     setBusinessDetails(prev => ({ ...prev, workHours: map }));

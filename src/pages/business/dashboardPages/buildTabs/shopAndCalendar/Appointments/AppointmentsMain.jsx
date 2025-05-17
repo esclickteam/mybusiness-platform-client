@@ -6,6 +6,25 @@ import CalendarSetup from './CalendarSetup';
 import './AppointmentsMain.css';
 import { format, parse, differenceInMinutes, addMinutes } from 'date-fns';
 
+// === Normalize work hours to {0: {...}, 1: {...}, ...} ===
+function normalizeWorkHours(data) {
+  let map = {};
+  if (Array.isArray(data?.workHours)) {
+    data.workHours.forEach(item => {
+      if (item?.day !== undefined) map[Number(item.day)] = item;
+    });
+  } else if (
+    data?.workHours && typeof data.workHours === "object" && !Array.isArray(data.workHours)
+  ) {
+    map = data.workHours;
+  } else if (Array.isArray(data)) {
+    data.forEach(item => {
+      if (item?.day !== undefined) map[Number(item.day)] = item;
+    });
+  }
+  return map;
+}
+
 const AppointmentsMain = ({
   isPreview = false,
   services = [],
@@ -31,6 +50,17 @@ const AppointmentsMain = ({
         });
     }
   }, [isPreview, setServices]);
+
+  // --- Fetch & normalize workHours (if you fetch here, or from parent do it there!) ---
+  useEffect(() => {
+    if (!isPreview && setWorkHours) {
+      API.get('/appointments/get-work-hours')
+        .then(res => {
+          setWorkHours(normalizeWorkHours(res.data));
+        })
+        .catch(() => setWorkHours({}));
+    }
+  }, [isPreview, setWorkHours]);
 
   // --- Compute slots when date or service changes ---
   useEffect(() => {
@@ -96,10 +126,11 @@ const AppointmentsMain = ({
           }));
           try {
             await API.post('/appointments/update-work-hours', { workHours: hoursArray });
-            const updatedMap = hoursArray.reduce(
-              (acc, { day, start, end }) => ({ ...acc, [day]: { start, end } }),
-              {}
-            );
+            // תמיד נרמל למבנה של map לפי יום
+            const updatedMap = {};
+            hoursArray.forEach(({ day, start, end }) => {
+              updatedMap[Number(day)] = { start, end };
+            });
             setWorkHours(updatedMap);
             setBusinessDetails(prev => ({ ...prev, workHours: updatedMap }));
             setShowCalendarSetup(false);

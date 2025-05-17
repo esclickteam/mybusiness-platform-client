@@ -57,15 +57,22 @@ export default function BusinessProfileView() {
       setFaqs(biz.faqs || []);
       setServices(biz.services || []);
 
-      // 2. שעות פעילות
+      // 2. שעות פעילות — טיפול במבנה נכון
       const resWH = await api.get(
         `/appointments/get-work-hours?businessId=${bizId}`
       );
-      const sched = (
+      let sched = {};
+      if (Array.isArray(resWH.data.workHours)) {
+        resWH.data.workHours.forEach(item => {
+          sched[Number(item.day)] = item;
+        });
+      } else if (
         resWH.data.workHours &&
         typeof resWH.data.workHours === "object" &&
         !Array.isArray(resWH.data.workHours)
-      ) ? resWH.data.workHours : {};
+      ) {
+        sched = resWH.data.workHours;
+      }
       setSchedule(sched);
 
     } catch (err) {
@@ -76,6 +83,7 @@ export default function BusinessProfileView() {
     }
   })();
 }, [bizId]);
+
 
 
   if (loading) return <div className="loading">טוען…</div>;

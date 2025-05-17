@@ -34,6 +34,8 @@ export default function ShopSection({
                 isPreview={true}
                 shopMode={shopMode}
                 setShopMode={setShopMode}
+                workHours={workHours}          // ← הוסף!
+                setWorkHours={setWorkHours}    // ← הוסף!
                 setBusinessDetails={() => {}}
               />
             </div>
