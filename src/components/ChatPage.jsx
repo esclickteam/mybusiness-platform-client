@@ -22,14 +22,18 @@ export default function ChatPage({
   });
 
   useEffect(() => {
+    if (!isBusiness || !userId) return; // רק לעסקים, ורק אם יש userId
     fetch(
-      `/api/messages/conversations`,
+      `/api/messages/conversations?businessId=${userId}`,
       { credentials: 'include' }
     )
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        return res.json();
+      })
       .then(data => setConversations(Array.isArray(data) ? data : []))
       .catch(console.error);
-  }, []);
+  }, [isBusiness, userId]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
     setSelected({ conversationId, partnerId });
