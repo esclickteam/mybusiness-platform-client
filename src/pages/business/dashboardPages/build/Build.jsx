@@ -34,8 +34,8 @@ export default function Build() {
     businessName:    "",
     description:     "",
     phone:           "",
+    email:           "",       
     category:        "",
-    email:           "",
     address:         { city: "" },
     logo:            null,
     gallery:         [],
@@ -489,58 +489,48 @@ const handleDeleteMainImage = async publicId => {
 
   // ===== SAVE =====
   const handleSave = async () => {
-  setIsSaving(true);
-  try {
-    const payload = {
-      businessName: businessDetails.businessName,
-      category:     businessDetails.category,
-      description:  businessDetails.description,
-      phone:        businessDetails.phone,
-      email:        businessDetails.email,
-      address: {
-        city: businessDetails.address.city
+    // שמירת כל השדות, כולל המייל
+    setIsSaving(true);
+    try {
+      const payload = {
+        businessName: businessDetails.businessName,
+        category:     businessDetails.category,
+        description:  businessDetails.description,
+        phone:        businessDetails.phone,
+        email:        businessDetails.email,
+        address:      { city: businessDetails.address.city }
+      };
+      const res = await API.patch("/business/my", payload);
+      if (res.status === 200) {
+        const updated = res.data;
+        setBusinessDetails(prev => ({
+          ...prev,
+          businessName: updated.businessName ?? prev.businessName,
+          category:     updated.category     ?? prev.category,
+          description:  updated.description  ?? prev.description,
+          phone:        updated.phone        ?? prev.phone,
+          email:        updated.email        ?? prev.email,
+          address: {
+            ...prev.address,
+            city: updated.address?.city ?? prev.address.city
+          },
+          logo: prev.logo,
+          logoId: prev.logoId
+        }));
+        setShowViewProfile(true);
+        alert("✅ נשמר בהצלחה!");
+      } else {
+        alert("❌ שמירה נכשלה: " + res.statusText);
       }
-    };
-
-    const res = await API.patch("/business/my", payload);
-
-    if (res.status === 200) {
-      const updated = res.data;
-
-      setBusinessDetails(prev => ({
-        ...prev,
-        businessName: updated.businessName ?? prev.businessName,
-        category:     updated.category     ?? prev.category,
-        description:  updated.description  ?? prev.description,
-        phone:        updated.phone        ?? prev.phone,
-        email:        updated.email        ?? prev.email,
-        address: {
-          ...prev.address,
-          city: updated.address?.city ?? prev.address.city
-        },
-        logo: prev.logo,
-        logoId: prev.logoId
-      }));
-
-      // הצג כפתור "צפה בפרופיל" לאחר שמירה מוצלחת
-      setShowViewProfile(true);
-
-      alert("✅ נשמר בהצלחה!");
-    } else {
-      alert("❌ שמירה נכשלה: " + res.statusText);
+    } catch (err) {
+      console.error("❌ שגיאה בשמירה:", err);
+      alert("❌ שמירה נכשלה");
+    } finally {
+      setIsSaving(false);
     }
-  } catch (err) {
-    console.error("❌ שגיאה בשמירה:", err);
-    alert("❌ שמירה נכשלה");
-  } finally {
-    setIsSaving(false);
-  }
-};
-
-
+  };
 
       
-
   // ===== TOP BAR =====
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length

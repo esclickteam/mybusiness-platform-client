@@ -60,6 +60,7 @@ export default function MainSection({
     businessName = "",
     description = "",
     phone = "",
+    email = "",       // <-- הוסף כאן את מייל
     category = "",
     address = {}
   } = businessDetails;
@@ -102,6 +103,17 @@ export default function MainSection({
           value={phone}
           onChange={handleInputChange}
           placeholder="הכנס טלפון"
+          disabled={isSaving}
+        />
+
+        {/* אימייל */}
+        <label>אימייל:</label>
+        <input
+          type="email"
+          name="email"
+          value={email}
+          onChange={handleInputChange}
+          placeholder="הכנס מייל"
           disabled={isSaving}
         />
 
