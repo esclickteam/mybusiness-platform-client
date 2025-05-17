@@ -1,12 +1,10 @@
-// src/pages/business/dashboardPages/BusinessProfileView.jsx
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
-import ClientChatTab from "../ClientChatTab";
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
@@ -25,7 +23,6 @@ const TABS = [
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user }               = useAuth();
-  const navigate               = useNavigate();
   const bizId = paramId || user?.businessId;
 
   const [data, setData]               = useState(null);
@@ -102,7 +99,6 @@ export default function BusinessProfileView() {
   const roundedAvg  = Math.round(avgRating * 10) / 10;
 
   const isOwner = user?.role === "business" && user.businessId === bizId;
-  const handleChatClick = () => navigate(`/business/${bizId}/messages`);
 
   const handleReviewSubmit = async formData => {
     setIsSubmitting(true);
@@ -230,8 +226,9 @@ export default function BusinessProfileView() {
             )}
 
             {currentTab === "הודעות מלקוחות" && (
-              // במקום כפתור – מציגים את רכיב הצ'אט
-              <ClientChatTab businessId={bizId} user={user} />
+              <Link to={`/business/${bizId}/chat`} className="chat-link-btn">
+                ▶️ ניהול הודעות מלקוחות
+              </Link>
             )}
 
             {currentTab === "יומן" && (

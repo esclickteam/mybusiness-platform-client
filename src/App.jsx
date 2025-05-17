@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import {
+  BrowserRouter,
   Routes,
   Route,
   Navigate,
@@ -11,57 +12,54 @@ import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatPage from "./components/ChatPage";
-
-
-import { useAuth }    from "./context/AuthContext";
-
+import ConversationsList from "./components/ConversationsList";
+import { useAuth } from "./context/AuthContext";
 import API from "./api";
 
 import "./styles/index.css";
 
 // Lazy-loaded public pages
-const HomePage            = lazy(() => import("./pages/Home"));
-const About               = lazy(() => import("./pages/About"));
-const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy       = lazy(() => import("./pages/PrivacyPolicy"));
-const HowItWorks          = lazy(() => import("./pages/HowItWorks"));
-const Plans               = lazy(() => import("./pages/business/Plans"));
-const Checkout            = lazy(() => import("./pages/Checkout"));
-const FAQ                 = lazy(() => import("./pages/FAQ"));
-const Accessibility       = lazy(() => import("./pages/Accessibility"));
-const Terms               = lazy(() => import("./pages/Terms"));
-const Contact             = lazy(() => import("./pages/Contact"));
-const BusinessSupport     = lazy(() => import("./pages/BusinessSupport"));
-const BusinessOverview    = lazy(() => import("./pages/business/Business"));
-const BusinessesList      = lazy(() => import("./pages/BusinessesList"));
-const QuickJobsBoard      = lazy(() => import("./pages/QuickJobsBoard"));
-const QuickJobForm        = lazy(() => import("./pages/QuickJobForm"));
-const Login               = lazy(() => import("./pages/Login"));
-const Register            = lazy(() => import("./pages/Register"));
-const ResetPassword       = lazy(() => import("./pages/ResetPassword"));
-const ChangePassword      = lazy(() => import("./pages/ChangePassword"));
-const StaffLogin          = lazy(() => import("./pages/StaffLogin"));
+const HomePage = lazy(() => import("./pages/Home"));
+const About = lazy(() => import("./pages/About"));
+const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
+const Plans = lazy(() => import("./pages/business/Plans"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const Accessibility = lazy(() => import("./pages/Accessibility"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Contact = lazy(() => import("./pages/Contact"));
+const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));
+const BusinessOverview = lazy(() => import("./pages/business/Business"));
+const BusinessesList = lazy(() => import("./pages/BusinessesList"));
+const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
+const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const ChangePassword = lazy(() => import("./pages/ChangePassword"));
+const StaffLogin = lazy(() => import("./pages/StaffLogin"));
 const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
-const BookingPage         = lazy(() => import("./pages/BookingPage"));
-const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
-const OrdersPage          = lazy(() => import("./pages/client/OrdersPage"));
-const FavoritesPage       = lazy(() => import("./pages/client/FavoritesPage"));
-const MessagesPage        = lazy(() => import("./pages/client/MessagesPage"));
-
-const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks             = lazy(() => import("./pages/staff/MyTasks"));
-const MySales             = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard    = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard      = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs           = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans          = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings       = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const BookingPage = lazy(() => import("./pages/BookingPage"));
+const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
+const OrdersPage = lazy(() => import("./pages/client/OrdersPage"));
+const FavoritesPage = lazy(() => import("./pages/client/FavoritesPage"));
+const MessagesPage = lazy(() => import("./pages/client/MessagesPage"));
+const StaffDashboard = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks = lazy(() => import("./pages/staff/MyTasks"));
+const MySales = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -70,81 +68,103 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const { user } = useAuth();
   return (
-    <>
+    <BrowserRouter>
       <Header />
       <ScrollToTop />
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
-    {/* Public pages */}
-    <Route path="/" element={<HomePage />} />
-    <Route path="/about" element={<About />} />
-    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-    <Route path="/search" element={<SearchBusinesses />} />
+          {/* Public pages */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/search" element={<SearchBusinesses />} />
 
-    {/* Booking Page */}
-    <Route path="/book/:businessId" element={<BookingPage />} />
+          {/* Booking Page */}
+          <Route path="/book/:businessId" element={<BookingPage />} />
 
-    {/* Business info */}
-    <Route path="/how-it-works" element={<HowItWorks />} />
-    <Route path="/plans" element={<Plans />} />
-    <Route path="/checkout" element={<Checkout />} />
+          {/* Business info */}
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/checkout" element={<Checkout />} />
 
-    {/* Support */}
-    <Route path="/faq" element={<FAQ />} />
-    <Route path="/accessibility" element={<Accessibility />} />
-    <Route path="/terms" element={<Terms />} />
-    <Route path="/contact" element={<Contact />} />
-    <Route path="/business-support" element={<BusinessSupport />} />
+          {/* Support */}
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/accessibility" element={<Accessibility />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/business-support" element={<BusinessSupport />} />
 
-    {/* Business & jobs */}
-    <Route path="/business" element={<BusinessOverview />} />
-    <Route path="/businesses" element={<BusinessesList />} />
-    <Route path="/quick-jobs" element={<QuickJobsBoard />} />
-    <Route path="/quick-jobs/new" element={<QuickJobForm />} />
+          {/* Business & jobs */}
+          <Route path="/business" element={<BusinessOverview />} />
+          <Route path="/businesses" element={<BusinessesList />} />
+          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
-    {/* Auth */}
-    <Route path="/login" element={<Login />} />
-    <Route path="/register" element={<Register />} />
-    <Route path="/reset-password" element={<ResetPassword />} />
-    <Route path="/change-password" element={<ChangePassword />} />
-    <Route path="/staff-login" element={<StaffLogin />} />
+          {/* Auth */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/staff-login" element={<StaffLogin />} />
 
-    {/* Public business profile */}
-    <Route path="/business/:businessId" element={<BusinessProfileView />} />
+          {/* Public business profile */}
+          <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-    {/* Client chat (outside dashboard) */}
-    <Route
-      path="/business/:businessId/messages"
-      element={<ClientChatWrapper />}
-    />
+          {/* Client chat (outside dashboard) */}
+          <Route
+            path="/business/:businessId/messages"
+            element={<ClientChatWrapper />}
+          />
 
-    {/* Business dashboard (includes its own /messages tab) */}
-    <Route
-      path="/business/:businessId/dashboard/*"
-      element={
-        <ProtectedRoute roles={["business"]}>
-          <BusinessDashboardRoutes />
-        </ProtectedRoute>
-      }
-    />
+          {/* Business dashboard (protected) */}
+          <Route
+            path="/business/:businessId/dashboard/*"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BusinessDashboardRoutes />
+              </ProtectedRoute>
+            }
+          />
 
-    {/* Client dashboard */}
-    <Route
-      path="/client/dashboard/*"
-      element={
-        <ProtectedRoute roles={["customer"]}>
-          <ClientDashboard />
-        </ProtectedRoute>
-      }
-    >
-      <Route index element={<Navigate to="search" replace />} />
-      <Route path="search" element={<SearchBusinesses />} />
-      <Route path="orders" element={<OrdersPage />} />
-      <Route path="messages" element={<MessagesPage />} />
-      <Route path="favorites" element={<FavoritesPage />} />
-    </Route>
+          {/* Business chat list (protected) */}
+          <Route
+            path="/business/:businessId/chat"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BusinessChatListWrapper />
+              </ProtectedRoute>
+            }
+          />
 
+          {/* Business chat specific (protected) */}
+          <Route
+            path="/business/:businessId/chat/:clientId"
+            element={
+              <ProtectedRoute roles={["business"]}>
+                <BusinessChatWrapper />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Client dashboard routes */}
+          <Route
+            path="/client/dashboard/*"
+            element={
+              <ProtectedRoute roles={["customer"]}>
+                <ClientDashboard />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="search" replace />} />
+            <Route path="search" element={<SearchBusinesses />} />
+            <Route path="orders" element={<OrdersPage />} />
+            <Route path="messages" element={<MessagesPage />} />
+            <Route path="favorites" element={<FavoritesPage />} />
+          </Route>
+
+          {/* Staff & Admin routes */}
           <Route
             path="/staff/dashboard"
             element={
@@ -258,13 +278,28 @@ export default function App() {
             }
           />
 
-                
-
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </>
+    </BrowserRouter>
+  );
+}
+
+// Wrapper for client chatting with a business
+function ClientChatWrapper() {
+  const { businessId } = useParams();
+  const { user }       = useAuth();
+
+  return (
+    <ChatPage
+      isBusiness={false}
+      userId={user.id}
+      partnerId={businessId}
+      initialPartnerId={null}
+      businessProfilePic="/default-business.png"
+      clientProfilePic={user.profilePic}
+    />
   );
 }
 
@@ -280,10 +315,13 @@ function BusinessChatListWrapper() {
     : null;
 
   useEffect(() => {
-    API.get("/chat/conversations", { withCredentials: true })
+    API.get("/messages/conversations", {
+      params: { businessId },
+      withCredentials: true
+    })
       .then(res => setConvos(res.data))
       .catch(console.error);
-  }, []);
+  }, [businessId]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
     navigate(`/business/${businessId}/chat/${partnerId}`, {
@@ -297,16 +335,13 @@ function BusinessChatListWrapper() {
       isBusiness={true}
       onSelect={handleSelect}
       selectedConversationId={selectedConversationId}
-      userId={businessId}
-      clientProfilePic="/default-client.png"
-      businessProfilePic="/default-business.png"
     />
   );
 }
 
 // Wrapper for a specific business-client chat
 function BusinessChatWrapper() {
-  const { businessId, clientId } = useParams();
+  const { businessId,	clientId } = useParams();
   const { user } = useAuth();
 
   return (
@@ -318,23 +353,6 @@ function BusinessChatWrapper() {
       businessProfilePic={user.profilePic || "/default-business.png"}
       clientProfilePic="/default-client.png"
       initialPartnerId={clientId}
-    />
-  );
-}
-
-// Wrapper for client chatting with a business
-function ClientChatWrapper() {
-  const { businessId } = useParams();
-  const { user }       = useAuth();
-
-  return (
-    <ChatPage
-      isBusiness={false}
-      userId={user.userId}
-      partnerId={businessId}
-      initialConversationId={null}
-      businessProfilePic="/default-business.png"
-      clientProfilePic={user.profilePic}
     />
   );
 }
