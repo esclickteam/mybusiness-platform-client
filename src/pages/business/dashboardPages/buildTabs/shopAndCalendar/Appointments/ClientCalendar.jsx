@@ -111,6 +111,8 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
         price: selectedSlot.price,
         duration: selectedSlot.duration,
       });
+      // הסר את השעה שהוזמנה מהרשימה
+      setAvailableSlots(prev => prev.filter(slot => slot !== selectedSlot.time));
       setBookingSuccess(true);
     } catch (err) {
       alert("שגיאה בשליחת תיאום: " + (err?.response?.data?.message || err.message));
