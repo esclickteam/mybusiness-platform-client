@@ -12,12 +12,15 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   useEffect(() => {
     if (!conversationId) return;
 
-    // 1. Load history for this conversation
+    // 1. Load history for this conversation (תיקון: תמיכה בכל סוגי התשובות)
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
     })
-      .then(res => setMessages(res.data))
+      .then(res => {
+        // תומך גם במערך וגם באובייקט עם messages
+        setMessages(Array.isArray(res.data) ? res.data : res.data.messages || []);
+      })
       .catch(console.error);
 
     // 2. Connect to socket room for this conversation

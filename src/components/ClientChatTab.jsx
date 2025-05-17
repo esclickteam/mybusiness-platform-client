@@ -5,11 +5,10 @@ import API from "../api";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({ conversationId, businessId, userId }) {
-  // בדיקה שהפרופס עוברים נכון
   console.log("💥 props in ClientChatTab:", { conversationId, businessId, userId });
 
   const [messages, setMessages] = useState([]);
-  const [input, setInput]       = useState("");
+  const [input, setInput] = useState("");
   const socketRef = useRef();
 
   useEffect(() => {
@@ -28,7 +27,8 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     })
       .then(res => {
         console.log("✅ History loaded:", res.data);
-        setMessages(res.data);
+        // עדכון: תומך גם במבנה של { messages: [...] } וגם במערך ישיר
+        setMessages(Array.isArray(res.data) ? res.data : res.data.messages || []);
       })
       .catch(err => {
         console.error("❌ Error loading history:", err);
@@ -76,7 +76,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     const msg = {
       conversationId,
       from: userId,
-      to:   businessId,
+      to: businessId,
       text: input.trim(),
       timestamp: new Date().toISOString()
     };
