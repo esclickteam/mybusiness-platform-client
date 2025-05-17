@@ -38,11 +38,8 @@ export default function BusinessProfileView() {
   const [currentTab, setCurrentTab]   = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting]       = useState(false);
-
-  // עבור בחירת שירות ביומן
   const [selectedService, setSelectedService] = useState(null);
 
-  // טען את כל הנתונים בפעם הראשונה
   useEffect(() => {
     if (!bizId) {
       setError("Invalid business ID");
@@ -52,20 +49,20 @@ export default function BusinessProfileView() {
     (async () => {
       try {
         setLoading(true);
+
         // 1. פרטי העסק
         const resBiz = await api.get(`/business/${bizId}`);
         const biz    = resBiz.data.business || resBiz.data;
         setData(biz);
         setFaqs(biz.faqs || []);
-        // 2. שירותים
         setServices(biz.services || []);
-        // 3. שעות פעילות
+
+        // 2. שעות פעילות
         const resWH = await api.get('/appointments/get-work-hours');
-        const map   = (resWH.data || []).reduce((acc, { day, start, end }) => {
-          acc[day] = { start, end };
-          return acc;
-        }, {});
-        setSchedule(map);
+        // server מחזיר: { workHours: { sunday: {start,end}, ... } }
+        const sched = resWH.data.workHours || {};
+        setSchedule(sched);
+
       } catch (err) {
         console.error(err);
         setError("שגיאה בטעינת הנתונים");
@@ -77,7 +74,7 @@ export default function BusinessProfileView() {
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error)   return <div className="error">{error}</div>;
-  if (!data)  return <div className="error">העסק לא נמצא</div>;
+  if (!data)   return <div className="error">העסק לא נמצא</div>;
 
   const {
     businessName,
@@ -132,7 +129,6 @@ export default function BusinessProfileView() {
           )}
 
           <h1 className="business-name">{businessName}</h1>
-
           <div className="about-phone">
             {category    && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
