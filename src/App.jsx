@@ -10,8 +10,12 @@ import {
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
+import ChatPage from "./components/ChatPage";
 
-import { useAuth } from "./context/AuthContext";
+
+import { useParams } from "react-router-dom";
+import { useAuth }    from "./context/AuthContext";
+
 import API from "./api";
 
 import "./styles/index.css";
@@ -73,82 +77,74 @@ export default function App() {
       <ScrollToTop />
       <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
         <Routes>
-          {/* Public pages */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/search" element={<SearchBusinesses />} />
+    {/* Public pages */}
+    <Route path="/" element={<HomePage />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+    <Route path="/search" element={<SearchBusinesses />} />
 
-          {/* Booking Page */}
-          <Route path="/book/:businessId" element={<BookingPage />} />
+    {/* Booking Page */}
+    <Route path="/book/:businessId" element={<BookingPage />} />
 
-          {/* Business info */}
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/plans" element={<Plans />} />
-          <Route path="/checkout" element={<Checkout />} />
+    {/* Business info */}
+    <Route path="/how-it-works" element={<HowItWorks />} />
+    <Route path="/plans" element={<Plans />} />
+    <Route path="/checkout" element={<Checkout />} />
 
-          {/* Support */}
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/accessibility" element={<Accessibility />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/business-support" element={<BusinessSupport />} />
+    {/* Support */}
+    <Route path="/faq" element={<FAQ />} />
+    <Route path="/accessibility" element={<Accessibility />} />
+    <Route path="/terms" element={<Terms />} />
+    <Route path="/contact" element={<Contact />} />
+    <Route path="/business-support" element={<BusinessSupport />} />
 
-          {/* Business & jobs */}
-          <Route path="/business" element={<BusinessOverview />} />
-          <Route path="/businesses" element={<BusinessesList />} />
-          <Route path="/quick-jobs" element={<QuickJobsBoard />} />
-          <Route path="/quick-jobs/new" element={<QuickJobForm />} />
+    {/* Business & jobs */}
+    <Route path="/business" element={<BusinessOverview />} />
+    <Route path="/businesses" element={<BusinessesList />} />
+    <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+    <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
-          {/* Auth */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/staff-login" element={<StaffLogin />} />
+    {/* Auth */}
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/change-password" element={<ChangePassword />} />
+    <Route path="/staff-login" element={<StaffLogin />} />
 
-          {/* Public business profile */}
-          <Route path="/business/:businessId" element={<BusinessProfileView />} />
+    {/* Public business profile */}
+    <Route path="/business/:businessId" element={<BusinessProfileView />} />
 
-          {/* Business Chat routes */}
-          <Route
-            path="/business/:businessId/chat"
-            element={<BusinessChatListWrapper />}
-          />
-          <Route
-            path="/business/:businessId/chat/:clientId"
-            element={<BusinessChatWrapper />}
-          />
+    {/* Client chat (outside dashboard) */}
+    <Route
+      path="/business/:businessId/messages"
+      element={<ClientChatWrapper />}
+    />
 
-          {/* Client Chat (outside dashboard) */}
-          <Route
-            path="/client/chat/:businessId"
-            element={<ClientChatWrapper />}
-          />
+    {/* Business dashboard (includes its own /messages tab) */}
+    <Route
+      path="/business/:businessId/dashboard/*"
+      element={
+        <ProtectedRoute roles={["business"]}>
+          <BusinessDashboardRoutes />
+        </ProtectedRoute>
+      }
+    />
 
-          {/* Protected dashboards */}
-          <Route
-            path="/business/:businessId/dashboard/*"
-            element={
-              <ProtectedRoute roles={["business"]}>
-                <BusinessDashboardRoutes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/client/dashboard/*"
-            element={
-              <ProtectedRoute roles={["customer"]}>
-                <ClientDashboard />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="search" replace />} />
-            <Route path="search" element={<SearchBusinesses />} />
-            <Route path="orders" element={<OrdersPage />} />
-            <Route path="messages" element={<MessagesPage />} />
-            <Route path="favorites" element={<FavoritesPage />} />
-          </Route>
+    {/* Client dashboard */}
+    <Route
+      path="/client/dashboard/*"
+      element={
+        <ProtectedRoute roles={["customer"]}>
+          <ClientDashboard />
+        </ProtectedRoute>
+      }
+    >
+      <Route index element={<Navigate to="search" replace />} />
+      <Route path="search" element={<SearchBusinesses />} />
+      <Route path="orders" element={<OrdersPage />} />
+      <Route path="messages" element={<MessagesPage />} />
+      <Route path="favorites" element={<FavoritesPage />} />
+    </Route>
 
           <Route
             path="/staff/dashboard"
@@ -330,17 +326,16 @@ function BusinessChatWrapper() {
 // Wrapper for client chatting with a business
 function ClientChatWrapper() {
   const { businessId } = useParams();
-  const { user } = useAuth();
+  const { user }       = useAuth();
 
   return (
     <ChatPage
       isBusiness={false}
       userId={user.userId}
-      businessName="העסק"
-      clientName={user.name}
+      partnerId={businessId}
+      initialConversationId={null}
       businessProfilePic="/default-business.png"
       clientProfilePic={user.profilePic}
-      initialPartnerId={businessId}
     />
   );
 }
