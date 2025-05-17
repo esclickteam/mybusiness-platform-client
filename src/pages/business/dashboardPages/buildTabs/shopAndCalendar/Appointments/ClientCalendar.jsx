@@ -249,7 +249,11 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
           ) : (
             <div>
               <h4 className="success-message">🎉 התיאום נשלח בהצלחה!</h4>
-              <p>נשלח אישור למייל (אם הוזן)</p>
+              <p>
+                {clientEmail
+                  ? "נשלח אישור למייל"
+                  : "לא נשלח אישור כי לא הוזן אימייל"}
+              </p>
               <button className="back-button" onClick={onBackToList}>
                 🔙 חזרה לרשימה
               </button>

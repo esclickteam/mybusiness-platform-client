@@ -11,6 +11,10 @@
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   margin-top: 20px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Alef', sans-serif;
 }
 
 /* =================================================================== */
@@ -35,6 +39,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.18s;
+  user-select: none;
 }
 .month-nav-btn:hover {
   background: #e1d4fd;
@@ -50,9 +55,6 @@
 
 .calendar-container {
   width: 100%;
-  max-width: 600px;
-  margin: auto;
-  font-family: 'Alef', sans-serif;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -84,6 +86,7 @@
   padding: 8px 0;
   font-weight: 600;
   color: #333;
+  user-select: none;
 }
 .calendar-dates {
   display: grid;
@@ -98,6 +101,7 @@
   cursor: pointer;
   transition: background 0.18s;
   background: #fff;
+  border-radius: 0;
 }
 .date-cell.clickable:hover {
   background: #f5f1ff;
@@ -106,6 +110,7 @@
   background: #7a3df4;
   color: #fff !important;
   border-radius: 8px;
+  font-weight: 700;
 }
 .date-cell:nth-child(7n) {
   border-right: none;
@@ -137,12 +142,15 @@
   margin-bottom: 8px;
   font-size: 18px;
   color: #4a3aff;
+  font-weight: 700;
 }
 .selected-date-info p {
   margin: 4px 0;
   font-size: 15px;
   color: #444;
 }
+
+/* רשימת זמני תורים */
 .slot-list {
   list-style: none;
   padding: 0;
@@ -159,7 +167,8 @@
   color: #4a3aff;
   font-weight: 500;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  user-select: none;
 }
 .slot-item button:hover {
   background-color: #e0d4ff;
@@ -174,13 +183,26 @@
   border-radius: 12px;
   padding: 1rem;
   direction: rtl !important;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.4;
+  box-shadow: 0 0 8px #d9ceff88;
 }
+.summary-box strong {
+  color: #5e2fcf;
+  margin-right: 4px;
+}
+
+/* הודעת הצלחה */
 .success-message {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   color: #5e2fcf;
   margin-bottom: 1rem;
+  text-align: center;
 }
+
+/* טופס הזמנה */
 .booking-form {
   margin-top: 1.5rem;
   background: #f8f5ff;
@@ -193,7 +215,7 @@
   direction: rtl !important;
 }
 .booking-form label {
-  font-weight: bold;
+  font-weight: 700;
   font-size: 14px;
   color: #555;
 }
@@ -205,14 +227,16 @@
   font-size: 14px;
   background: #fff;
   resize: none;
+  transition: border-color 0.25s ease;
 }
 .booking-form input:focus,
 .booking-form textarea:focus {
   border-color: #7a3df4;
   outline: none;
-  box-shadow: 0 0 3px #d2baff;
+  box-shadow: 0 0 6px #d2baff;
 }
 
+/* כפתור אישור תור */
 .confirm-slot-btn {
   margin-top: 12px;
   padding: 10px 20px;
@@ -220,13 +244,16 @@
   color: white;
   border: none;
   border-radius: 24px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: background-color 0.2s ease;
+  user-select: none;
 }
 .confirm-slot-btn:hover {
   background-color: #5e2fcf;
 }
+
+/* כפתור חזרה */
 .back-button {
   margin-top: 10px;
   padding: 8px 16px;
@@ -234,9 +261,10 @@
   color: #4a3aff;
   border: none;
   border-radius: 20px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: background-color 0.2s ease;
+  user-select: none;
 }
 .back-button:hover {
   background-color: #d7cdff;
