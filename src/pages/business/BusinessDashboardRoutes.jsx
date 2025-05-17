@@ -1,3 +1,4 @@
+// src/pages/business/BusinessDashboardRoutes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
@@ -7,8 +8,7 @@ import DashboardPage        from "./dashboardPages/DashboardPage";
 import Collab               from "./dashboardPages/Collab";
 import Upgrade              from "./dashboardPages/Upgrade";
 import CartPage             from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
-import ChatTab              from "../../components/ClientChatTab";
-import BusinessChat         from "../../components/BusinessChatTab";
+import ChatSection          from "../../components/ChatSection";
 import AffiliatePage        from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor       from "./dashboardPages/EsclickAdvisor";
 
@@ -24,7 +24,6 @@ const BusinessDashboardRoutes = () => (
   <Routes>
     {/* Layout משותף לכל דפי הדשבורד */}
     <Route path="" element={<BusinessDashboardLayout />}>
-
       {/* ברירת מחדל — נווט ל"תמצית" הדשבורד */}
       <Route index element={<Navigate to="dashboard" replace />} />
 
@@ -32,21 +31,20 @@ const BusinessDashboardRoutes = () => (
       <Route path="dashboard" element={<DashboardPage />} />
 
       {/* עריכת העסק */}
-      <Route path="edit" element={<BuildBusinessPage />} />
+      <Route path="edit"  element={<BuildBusinessPage />} />
       <Route path="build" element={<BuildBusinessPage />} />
 
       {/* סל הקניות */}
       <Route path="cart" element={<CartPage />} />
 
       {/* לשוניות נוספות */}
-      <Route path="collab"  element={<Collab />} />
+      <Route path="collab" element={<Collab />} />
       <Route path="upgrade" element={<Upgrade />} />
       <Route path="esclick" element={<EsclickAdvisor />} />
-      <Route path="goals"   element={<GoalsPage />} />
+      <Route path="goals" element={<GoalsPage />} />
 
-      {/* Preview לצ'אט */}
-      <Route path="chat-test" element={<ChatTab isPreview />} />
-      <Route path="chat/:partnerId" element={<BusinessChat />} />
+      {/* לשונית ההודעות */}
+      <Route path="messages/*" element={<ChatSection isBusiness />} />
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />

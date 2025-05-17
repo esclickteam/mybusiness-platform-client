@@ -1,3 +1,4 @@
+// src/components/ChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
@@ -6,22 +7,19 @@ import "./ChatSection.css";
 export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const { user, initialized } = useAuth();
 
-  const [clients, setClients]             = useState([]);
-  const [newPartnerId, setNewPartnerId]  = useState("");
-  const [selected, setSelected]          = useState({ conversationId: null, partnerId: null });
-  const [conversations, setConversations]= useState([]);
-  const [isLoading, setIsLoading]        = useState(false);
-  const [error, setError]                = useState("");
+  const [clients, setClients]               = useState([]);
+  const [newPartnerId, setNewPartnerId]    = useState("");
+  const [selected, setSelected]            = useState({ conversationId: null, partnerId: null });
+  const [conversations, setConversations]  = useState([]);
+  const [isLoading, setIsLoading]          = useState(false);
+  const [error, setError]                  = useState("");
 
-  // 1. טוען את כל הלקוחות (עסק חדש יראה את כל הלקוחות)
+  // 1. טוען את כל הלקוחות
   useEffect(() => {
     if (!initialized) return;
-
     setIsLoading(true);
     API.get("/business/clients", { withCredentials: true })
-      .then(res => {
-        setClients(res.data);
-      })
+      .then(res => setClients(res.data))
       .catch(err => {
         console.error("שגיאה בטעינת לקוחות", err);
         setError("לא ניתן לטעון לקוחות");
@@ -39,7 +37,8 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     setIsLoading(true);
     setError("");
     try {
-      const res = await API.get("/chat/conversations", { withCredentials: true });
+      // קריאה מתוקנת ל־REST
+      const res = await API.get("/messages/conversations", { withCredentials: true });
       setConversations(res.data);
     } catch (err) {
       console.error("שגיאה בטעינת שיחות", err);
@@ -49,14 +48,15 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     }
   };
 
-  // 3. פותח או מוצא שיחה עם הלקוח הנבחר
+  // 3. פותח או מוצא שיחה חדשה
   const startNewConversation = async () => {
     if (!newPartnerId) return;
     setIsLoading(true);
     setError("");
     try {
+      // קריאה מתוקנת לפתיחת/איתור שיחה
       const res = await API.post(
-        "/chat/conversations",
+        "/messages/conversations",
         { otherId: newPartnerId },
         { withCredentials: true }
       );
@@ -78,7 +78,6 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
       <aside className="chat-sidebar">
         <h3>שיחות</h3>
 
-        {/* dropdown של כל הלקוחות */}
         <div className="new-conversation">
           <select
             value={newPartnerId}
@@ -92,7 +91,10 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
               </option>
             ))}
           </select>
-          <button onClick={startNewConversation} disabled={!newPartnerId || isLoading}>
+          <button
+            onClick={startNewConversation}
+            disabled={!newPartnerId || isLoading}
+          >
             התחל שיחה
           </button>
         </div>
@@ -110,11 +112,11 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
             const partnerName = isUserBus ? conv.customer.name : conv.business.businessName;
             return (
               <li
-                key={conv._id}
+                key={conv.conversationId}
                 className={`convo-item ${
-                  selected.conversationId === conv._id ? "selected" : ""
+                  selected.conversationId === conv.conversationId ? "selected" : ""
                 }`}
-                onClick={() => setSelected({ conversationId: conv._id, partnerId })}
+                onClick={() => setSelected({ conversationId: conv.conversationId, partnerId })}
               >
                 {partnerName}
               </li>

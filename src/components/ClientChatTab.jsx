@@ -1,45 +1,56 @@
+// src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api"; 
 import "./ClientChatTab.css";
 
-export default function ClientChatTab({ businessId, user }) {
+export default function ClientChatTab({ conversationId, businessId, user }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef();
 
-  // התחברות ל-socket ולמשיכת ההיסטוריה
   useEffect(() => {
+    if (!conversationId) return;
+
     // 1. fetch history
-    API.get("/chat/history", { params: { businessId } })
+    API.get("/messages/history", {
+      params: { conversationId },
+      withCredentials: true
+    })
       .then(res => setMessages(res.data))
       .catch(console.error);
 
     // 2. התחברות ל-socket
     socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
-      query: { businessId, userId: user.id, role: "client" }
+      query: { conversationId, businessId, userId: user.id, role: "client" }
     });
-    socketRef.current.on("chat:newMessage", msg => {
+
+    socketRef.current.on("newMessage", msg => {
       setMessages(prev => [...prev, msg]);
     });
 
     return () => {
       socketRef.current.disconnect();
+      setMessages([]); // לאפס כשעוברים לשיחה אחרת
     };
-  }, [businessId, user.id]);
+  }, [conversationId, businessId, user.id]);
 
   const sendMessage = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !conversationId) return;
     const msg = {
-      businessId,
-      userId: user.id,
-      sender: "client",
+      conversationId,
+      from: user.id,
+      to:   businessId,
       text: input.trim(),
-      createdAt: new Date().toISOString()
+      timestamp: new Date().toISOString()
     };
-    socketRef.current.emit("chat:sendMessage", msg);
-    setMessages(prev => [...prev, msg]);
-    setInput("");
+    socketRef.current.emit("sendMessage", msg, ack => {
+      // אפשר לוודא ב־ack שהשרת קיבל
+      if (ack.success) {
+        setMessages(prev => [...prev, msg]);
+        setInput("");
+      }
+    });
   };
 
   return (
@@ -48,11 +59,11 @@ export default function ClientChatTab({ businessId, user }) {
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`message ${m.sender === "client" ? "mine" : "theirs"}`}
+            className={`message ${m.from === user.id ? "mine" : "theirs"}`}
           >
             <div className="text">{m.text}</div>
             <div className="time">
-              {new Date(m.createdAt).toLocaleTimeString("he-IL", {
+              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
                 hour: "2-digit",
                 minute: "2-digit"
               })}
