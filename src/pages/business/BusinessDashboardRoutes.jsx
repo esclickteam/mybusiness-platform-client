@@ -8,7 +8,10 @@ import DashboardPage        from "./dashboardPages/DashboardPage";
 import Collab               from "./dashboardPages/Collab";
 import Upgrade              from "./dashboardPages/Upgrade";
 import CartPage             from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
-import ChatSection          from "../../components/ChatSection";
+
+// ✅ ייבוא ChatSection שמשלבת Sidebar + ClientChatTab/BusinessChatTab
+import ChatSection from "./dashboardPages/buildTabs/buildSections/ChatSection";
+
 import AffiliatePage        from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor       from "./dashboardPages/EsclickAdvisor";
 
@@ -24,24 +27,24 @@ const BusinessDashboardRoutes = () => (
   <Routes>
     {/* Layout משותף לכל דפי הדשבורד */}
     <Route path="" element={<BusinessDashboardLayout />}>
-      {/* ברירת מחדל — נווט ל"תמצית" הדשבורד */}
+      {/* ברירת מחדל — נווט ל"תמצית" */}
       <Route index element={<Navigate to="dashboard" replace />} />
 
       {/* תמצית הדשבורד */}
       <Route path="dashboard" element={<DashboardPage />} />
 
       {/* עריכת העסק */}
-      <Route path="edit"  element={<BuildBusinessPage />} />
+      <Route path="edit" element={<BuildBusinessPage />} />
       <Route path="build" element={<BuildBusinessPage />} />
 
       {/* סל הקניות */}
       <Route path="cart" element={<CartPage />} />
 
       {/* לשוניות נוספות */}
-      <Route path="collab" element={<Collab />} />
+      <Route path="collab"  element={<Collab />} />
       <Route path="upgrade" element={<Upgrade />} />
       <Route path="esclick" element={<EsclickAdvisor />} />
-      <Route path="goals" element={<GoalsPage />} />
+      <Route path="goals"   element={<GoalsPage />} />
 
       {/* לשונית ההודעות */}
       <Route path="messages/*" element={<ChatSection isBusiness />} />
@@ -51,14 +54,14 @@ const BusinessDashboardRoutes = () => (
 
       {/* CRM */}
       <Route path="crm" element={<CRMMain />}>
-        <Route index element={<Navigate to="appointments" replace />} />
+        <Route index               element={<Navigate to="appointments" replace />} />
         <Route path="appointments" element={<CRMAppointmentsTab />} />
         <Route path="clients"      element={<CRMClientsTab />} />
         <Route path="services"     element={<CRMServicesTab />} />
         <Route path="settings"     element={<CRMSettingsTab />} />
       </Route>
 
-      {/* ברירת מחדל לתיקון נתיב */}
+      {/* כל נתיב אחר → חזרה לדשבורד */}
       <Route path="*" element={<Navigate to="dashboard" replace />} />
     </Route>
   </Routes>
