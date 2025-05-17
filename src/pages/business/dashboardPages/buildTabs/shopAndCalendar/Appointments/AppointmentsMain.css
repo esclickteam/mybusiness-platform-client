@@ -137,17 +137,18 @@
   margin: 36px auto 0;
   background: linear-gradient(90deg, #a259ff 0%, #7a3df4 90%);
   color: #fff;
-  font-size: 1em;           /* מעט קטן יותר */
+  font-size: 1em;
   font-weight: 700;
   border: none;
-  border-radius: 12px;      /* פחות עגול */
-  padding: 8px 0;           /* פחות גובה */
-  width: 140px;             /* רוחב קבוע */
-  max-width: 90%;           /* מוודא תגובה לרספונסיב */
-  display: inline-flex;     /* inline-flex לשמירה על גודל נכון */
+  border-radius: 12px;
+  padding: 8px 0;
+  width: 200px;
+  max-width: 90%;
+  display: block;          /* הופך לבלוק ומאפשר margin:auto לרכז */
+  text-align: center;
   align-items: center;
   justify-content: center;
-  gap: 0.5em;               /* מרווח קטן יותר בין האייקון לטקסט */
+  gap: 0.5em;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(122,61,244,0.10);
   transition: background .18s, transform .11s;
