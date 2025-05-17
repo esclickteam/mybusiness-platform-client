@@ -58,11 +58,12 @@ export default function BusinessProfileView() {
         setServices(biz.services || []);
 
         // 2. שעות פעילות
-        const resWH = await api.get('/appointments/get-work-hours');
-// resWH.data === { workHours: { sunday: {...}, monday: {...}, ... } }
-const sched = resWH.data.workHours || {};
-setSchedule(sched);
-
+        const resWH = await api.get(
+          `/appointments/get-work-hours?businessId=${bizId}`
+        );
+        // resWH.data === { workHours: { sunday: {...}, monday: {...}, ... } }
+        const sched = resWH.data.workHours || {};
+        setSchedule(sched);
 
       } catch (err) {
         console.error(err);
