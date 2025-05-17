@@ -21,20 +21,15 @@ export default function ChatPage({
     partnerId: initialPartnerId
   });
 
-  // ודא שמזהה העסק נכון בכל תצורה (לא ריק)
-  const businessIdToUse = isBusiness ? userId : initialPartnerId;
-
   useEffect(() => {
-    if (!businessIdToUse) return; // אל תבצע קריאה אם אין businessId
-
     fetch(
-      `/api/chat/conversations?businessId=${businessIdToUse}`,
+      `/api/messages/conversations`,
       { credentials: 'include' }
     )
       .then(res => res.json())
       .then(data => setConversations(Array.isArray(data) ? data : []))
       .catch(console.error);
-  }, [businessIdToUse]);
+  }, []);
 
   const handleSelect = ({ conversationId, partnerId }) => {
     setSelected({ conversationId, partnerId });
