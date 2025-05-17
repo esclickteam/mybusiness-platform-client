@@ -1,6 +1,5 @@
-// src/pages/business/BusinessDashboardRoutes.jsx
 import React from "react";
-import { Routes, Route, Navigate, useParams, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 
 import BuildBusinessPage  from "./dashboardPages/build/Build";
@@ -10,7 +9,7 @@ import Upgrade            from "./dashboardPages/Upgrade";
 import CartPage           from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
 
 // ✅ רכיב צ'אט הכולל sidebar ו-area
-import ChatSection from "./dashboardPages/buildTabs/buildSections/ChatSection";
+import ChatSection        from "./dashboardPages/buildTabs/buildSections/ChatSection";
 
 import AffiliatePage      from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor     from "./dashboardPages/EsclickAdvisor";
@@ -34,7 +33,7 @@ const BusinessDashboardRoutes = () => (
       <Route path="dashboard" element={<DashboardPage />} />
 
       {/* עריכת העסק */}
-      <Route path="edit" element={<BuildBusinessPage />} />
+      <Route path="edit"  element={<BuildBusinessPage />} />
       <Route path="build" element={<BuildBusinessPage />} />
 
       {/* סל הקניות */}
@@ -47,15 +46,14 @@ const BusinessDashboardRoutes = () => (
       <Route path="goals"   element={<GoalsPage />} />
 
       {/* לשונית ההודעות */}
-      {/* בלי wildcard - פשוט messages */}
-      <Route path="messages" element={<ChatSection isBusiness />} />
+      <Route path="messages" element={<ChatSection isBusiness={true} />} />
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />
 
       {/* CRM nested */}
       <Route path="crm" element={<CRMMain />}>
-        <Route index               element={<Navigate to="appointments" replace />} />
+        <Route index element={<Navigate to="appointments" replace />} />
         <Route path="appointments" element={<CRMAppointmentsTab />} />
         <Route path="clients"      element={<CRMClientsTab />} />
         <Route path="services"     element={<CRMServicesTab />} />
