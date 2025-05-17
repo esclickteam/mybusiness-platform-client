@@ -17,15 +17,12 @@ export default function ChatComponent({
 
     const initConversation = async () => {
       try {
-        const params = isBusiness
-          ? { businessId: userId, customerId: partnerId }
-          : { businessId: partnerId };
-
-        const { data } = await API.get("/conversations", {
-          params,
-          withCredentials: true
-        });
-
+        // Create or retrieve a conversation via POST
+        const { data } = await API.post(
+          "/messages/conversations",
+          { otherId: partnerId },
+          { withCredentials: true }
+        );
         setConversationId(data.conversationId);
       } catch (err) {
         console.error("⚠️ failed to init conversation", err);
@@ -33,7 +30,7 @@ export default function ChatComponent({
     };
 
     initConversation();
-  }, [partnerId, conversationId, isBusiness, userId]);
+  }, [partnerId, conversationId]);
 
   // Show loading state until conversationId is ready
   if (!conversationId) {
