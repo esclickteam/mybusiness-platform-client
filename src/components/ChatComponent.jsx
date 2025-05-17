@@ -10,7 +10,7 @@ export default function ChatComponent({
   initialConversationId,
   isBusiness
 }) {
-  // בדיקה שהפרופס עוברים נכון
+  // 1. בדיקת הפרופס
   console.log("⚙️ props in ChatComponent:", {
     userId,
     partnerId,
@@ -26,7 +26,6 @@ export default function ChatComponent({
 
     const initConversation = async () => {
       try {
-        // Create or retrieve a conversation via POST
         const { data } = await API.post(
           "/messages/conversations",
           { otherId: partnerId },
@@ -41,12 +40,11 @@ export default function ChatComponent({
     initConversation();
   }, [partnerId, conversationId]);
 
-  // Show loading state until conversationId is ready
   if (!conversationId) {
     return <p>⏳ טוען שיחה...</p>;
   }
 
-  // Render appropriate chat tab
+  // 2. מירוץ בין שני הטאבים
   if (isBusiness) {
     return (
       <BusinessChatTab
@@ -62,7 +60,7 @@ export default function ChatComponent({
     <ClientChatTab
       conversationId={conversationId}
       businessId={partnerId}
-      userId={userId}
+      userId={userId}      // <-- חובה!
     />
   );
 }
