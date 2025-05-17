@@ -3,11 +3,21 @@ import API from "../../../../../../api"; // תקן בהתאם לפרויקט ש�
 import "./ClientCalendar.css";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
 
-export default function ClientCalendar({ workHours = {}, selectedService, onBackToList, businessId }) {
+export default function ClientCalendar({
+  workHours = {},
+  selectedService,
+  onBackToList,
+  businessId,
+}) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
+
+  // כל הזמנים המקוריים
   const [availableSlots, setAvailableSlots] = useState([]);
+  // שעות שכבר הוזמנו בפנים (משרת ה-API)
+  const [bookedSlots, setBookedSlots] = useState([]);
+
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [mode, setMode] = useState("slots");
 
@@ -19,6 +29,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
 
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
+  // 1) עדכון חודש ושנה בהתייחס לתאריך נבחר
   useEffect(() => {
     setMonth(selectedDate.getMonth());
     setYear(selectedDate.getFullYear());
@@ -28,15 +39,35 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
   const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
 
+  // 2) שליפת bookedSlots מהשרת עבור התאריך הנבחר
+  useEffect(() => {
+    if (!businessId) return;
+    const dateStr = selectedDate.toISOString().slice(0, 10); // YYYY-MM-DD
+    setBookedSlots([]); // אישור רענון
+    API.get("/appointments/by-date", {
+      params: { businessId, date: dateStr }
+    })
+      .then(res => {
+        // מייחסים מערך מחרוזות זמנים
+        const times = res.data.map(a => a.time);
+        setBookedSlots(times);
+      })
+      .catch(err => {
+        console.error("Error fetching booked slots:", err);
+      });
+  }, [selectedDate, businessId]);
+
+  // 3) בונה את availableSlots מסוננים גם ע"פ bookedSlots
   useEffect(() => {
     if (config?.start && config?.end) {
-      setAvailableSlots(generateTimeSlots(config.start, config.end, config.breaks));
+      const all = generateTimeSlots(config.start, config.end, config.breaks);
+      setAvailableSlots(all.filter(s => !bookedSlots.includes(s)));
     } else {
       setAvailableSlots([]);
     }
     setSelectedSlot(null);
     setMode("slots");
-  }, [selectedDate, config]);
+  }, [selectedDate, config, bookedSlots]);
 
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
     const toMin = t => {
@@ -46,7 +77,9 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
     const fromMin = m => {
       const h = Math.floor(m / 60),
         mm = m % 60;
-      return `${h.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}`;
+      return `${h.toString().padStart(2, "0")}:${mm
+        .toString()
+        .padStart(2, "0")}`;
     };
 
     const start = toMin(startTime),
@@ -65,7 +98,9 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
 
     const slots = [];
     for (let t = start; t + serviceDuration <= end; t += serviceDuration) {
-      const inBreak = breaksArr.some(([f, to]) => t < to && t + serviceDuration > f);
+      const inBreak = breaksArr.some(
+        ([f, to]) => t < to && t + serviceDuration > f
+      );
       if (!inBreak) slots.push(fromMin(t));
     }
     return slots;
@@ -79,7 +114,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
       duration: selectedService.duration,
       price: selectedService.price,
       name: selectedService.name,
-      serviceId: selectedService._id
+      serviceId: selectedService._id,
     });
     setMode("summary");
   };
@@ -97,6 +132,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
       alert("אין מזהה עסק. נא לרענן את הדף ולנסות שוב.");
       return;
     }
+
     try {
       await API.post("/appointments", {
         businessId,
@@ -111,11 +147,15 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
         price: selectedSlot.price,
         duration: selectedSlot.duration,
       });
-      // הסר את השעה שהוזמנה מהרשימה
-      setAvailableSlots(prev => prev.filter(slot => slot !== selectedSlot.time));
+
+      // אחרי הצלחה: הוסף את השעה ל-bookedSlots כדי שתסונן מיד
+      setBookedSlots(prev => [...prev, selectedSlot.time]);
       setBookingSuccess(true);
     } catch (err) {
-      alert("שגיאה בשליחת תיאום: " + (err?.response?.data?.message || err.message));
+      alert(
+        "שגיאה בשליחת תיאום: " +
+          (err?.response?.data?.message || err.message)
+      );
     }
   };
 
@@ -131,9 +171,9 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
                   onClick={() => {
                     if (month === 0) {
                       setMonth(11);
-                      setYear(y => y - 1);
+                      setYear((y) => y - 1);
                     } else {
-                      setMonth(m => m - 1);
+                      setMonth((m) => m - 1);
                     }
                   }}
                   className="month-nav-btn"
@@ -145,9 +185,9 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
                   onClick={() => {
                     if (month === 11) {
                       setMonth(0);
-                      setYear(y => y + 1);
+                      setYear((y) => y + 1);
                     } else {
-                      setMonth(m => m + 1);
+                      setMonth((m) => m + 1);
                     }
                   }}
                   className="month-nav-btn"
@@ -160,7 +200,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
                 year={year}
                 month={month}
                 selectedDate={selectedDate}
-                onDateClick={date => {
+                onDateClick={(date) => {
                   setSelectedDate(date);
                   setMode("slots");
                 }}
@@ -172,7 +212,9 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
             <h4>📆 {selectedDate.toLocaleDateString("he-IL")}</h4>
             {config ? (
               <>
-                <p>🕓 שעות פעילות: {config.start} - {config.end}</p>
+                <p>
+                  🕓 שעות פעילות: {config.start} - {config.end}
+                </p>
                 {config.breaks && <p>⏸️ הפסקות: {config.breaks}</p>}
                 <h5>🕒 שעות פנויות:</h5>
                 {availableSlots.length ? (
@@ -205,7 +247,9 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
               <p>
                 ⏱️ משך:{" "}
                 {Math.floor(selectedSlot.duration / 60)}:
-                {(selectedSlot.duration % 60).toString().padStart(2, "0")}
+                {(selectedSlot.duration % 60)
+                  .toString()
+                  .padStart(2, "0")}
               </p>
               <p>💰 עלות: {selectedSlot.price} ₪</p>
 
@@ -213,28 +257,28 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
                 <label>שם מלא:</label>
                 <input
                   value={clientName}
-                  onChange={e => setClientName(e.target.value)}
+                  onChange={(e) => setClientName(e.target.value)}
                 />
                 <label>טלפון:</label>
                 <input
                   value={clientPhone}
-                  onChange={e => setClientPhone(e.target.value)}
+                  onChange={(e) => setClientPhone(e.target.value)}
                 />
                 <label>כתובת:</label>
                 <input
                   value={clientAddress}
-                  onChange={e => setClientAddress(e.target.value)}
+                  onChange={(e) => setClientAddress(e.target.value)}
                 />
                 <label>אימייל (לשליחת אישור):</label>
                 <input
                   value={clientEmail}
-                  onChange={e => setClientEmail(e.target.value)}
+                  onChange={(e) => setClientEmail(e.target.value)}
                   type="email"
                 />
                 <label>הערה (לא חובה):</label>
                 <textarea
                   value={clientNote}
-                  onChange={e => setClientNote(e.target.value)}
+                  onChange={(e) => setClientNote(e.target.value)}
                 />
               </div>
 
