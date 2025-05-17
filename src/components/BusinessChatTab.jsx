@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../../../api"; // תקן בהתאם
+import API from "../api"; 
 import "./BusinessChatTab.css";
 
 export default function BusinessChatTab({ businessId, user }) {

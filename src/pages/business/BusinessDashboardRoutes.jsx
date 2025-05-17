@@ -7,8 +7,8 @@ import DashboardPage        from "./dashboardPages/DashboardPage";
 import Collab               from "./dashboardPages/Collab";
 import Upgrade              from "./dashboardPages/Upgrade";
 import CartPage             from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
-import ChatTab              from "./dashboardPages/buildTabs/ChatTab";
-import BusinessChat         from "./dashboardPages/BusinessChatComponent";
+import ChatTab              from "../ChatTab";
+import BusinessChat         from "../BusinessChatTab";
 import AffiliatePage        from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor       from "./dashboardPages/EsclickAdvisor";
 
