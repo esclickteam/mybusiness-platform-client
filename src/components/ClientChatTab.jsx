@@ -5,6 +5,9 @@ import API from "../api";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({ conversationId, businessId, userId }) {
+  // בדיקה שהפרופס עוברים נכון
+  console.log("💥 props in ClientChatTab:", { conversationId, businessId, userId });
+
   const [messages, setMessages] = useState([]);
   const [input, setInput]       = useState("");
   const socketRef = useRef();
@@ -39,7 +42,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
     socketRef.current.on("connect", () => {
       console.log("🔌 Socket connected:", socketRef.current.id);
-      // הצטרף לחדר השיחה
       socketRef.current.emit("joinRoom", conversationId);
       console.log("➡️ joinRoom emitted for", conversationId);
     });
