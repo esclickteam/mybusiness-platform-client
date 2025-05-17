@@ -4,13 +4,13 @@ import io from "socket.io-client";
 import API from "../api";
 import "./ClientChatTab.css";
 
-export default function ClientChatTab({ conversationId, businessId, user }) {
+export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput]       = useState("");
   const socketRef = useRef();
 
   useEffect(() => {
-    console.log("🔄 ClientChatTab mounted", { conversationId, businessId, user });
+    console.log("🔄 ClientChatTab mounted", { conversationId, businessId, userId });
 
     if (!conversationId) {
       console.warn("⚠️ No conversationId, aborting useEffect");
@@ -32,9 +32,9 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
       });
 
     // 2) התחבר ל־Socket.IO
-    console.log("🌐 Connecting to socket with query", { conversationId, businessId, userId: user.id });
+    console.log("🌐 Connecting to socket with query", { conversationId, businessId, userId });
     socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
-      query: { conversationId, businessId, userId: user.id, role: "client" }
+      query: { conversationId, businessId, userId, role: "client" }
     });
 
     socketRef.current.on("connect", () => {
@@ -58,7 +58,7 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
       socketRef.current.disconnect();
       setMessages([]);
     };
-  }, [conversationId, businessId, user.id]);
+  }, [conversationId, businessId, userId]);
 
   const sendMessage = () => {
     console.log("✉️ sendMessage called with input:", input);
@@ -73,7 +73,7 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
 
     const msg = {
       conversationId,
-      from: user.id,
+      from: userId,
       to:   businessId,
       text: input.trim(),
       timestamp: new Date().toISOString()
@@ -98,7 +98,7 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`message ${m.from === user.id ? "mine" : "theirs"}`}
+            className={`message ${m.from === userId ? "mine" : "theirs"}`}
           >
             <div className="text">{m.text}</div>
             <div className="time">

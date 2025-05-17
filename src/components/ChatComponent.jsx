@@ -1,3 +1,4 @@
+// src/components/ChatComponent.jsx
 import React, { useState, useEffect } from "react";
 import API from "../api";
 import ClientChatTab from "./ClientChatTab";
@@ -44,6 +45,7 @@ export default function ChatComponent({
         conversationId={conversationId}
         businessId={userId}
         customerId={partnerId}
+        userId={userId}       
       />
     );
   }
@@ -52,7 +54,7 @@ export default function ChatComponent({
     <ClientChatTab
       conversationId={conversationId}
       businessId={partnerId}
-      user={{ id: userId }}
+      userId={userId}
     />
   );
 }
