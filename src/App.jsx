@@ -13,7 +13,6 @@ import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatPage from "./components/ChatPage";
 
 
-import { useParams } from "react-router-dom";
 import { useAuth }    from "./context/AuthContext";
 
 import API from "./api";
