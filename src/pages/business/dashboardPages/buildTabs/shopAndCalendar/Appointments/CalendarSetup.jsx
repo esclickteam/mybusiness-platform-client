@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./CalendarSetup.css";
 
@@ -19,12 +18,12 @@ const defaultWeeklyHours = {
   6: null, // שבת: סגור
 };
 
-const CalendarSetup = ({
-  initialWeeklyHours = defaultWeeklyHours,
+export default function CalendarSetup({
+  initialHours = defaultWeeklyHours,
   onSave,
   onCancel
-}) => {
-  const [weeklyHours, setWeeklyHours] = useState(initialWeeklyHours);
+}) {
+  const [weeklyHours, setWeeklyHours] = useState(initialHours);
 
   // שינוי שעות או "סגור" לכל יום
   const handleChange = (dayIdx, field, value) => {
@@ -36,7 +35,7 @@ const CalendarSetup = ({
     }));
   };
 
-  const handleToggleClosed = (dayIdx) => {
+  const handleToggleClosed = dayIdx => {
     setWeeklyHours(prev => ({
       ...prev,
       [dayIdx]: prev[dayIdx] ? null : { start: "", end: "" }
@@ -52,8 +51,12 @@ const CalendarSetup = ({
     <div className="calendar-setup-container">
       <h2 style={{ textAlign: "center" }}>🗓️ הגדרת שעות פעילות קבועות לשבוע</h2>
       <div className="weekly-hours-table" style={{
-        background: "#fff", borderRadius: 12, boxShadow: "0 1px 6px #d3c1fa40",
-        maxWidth: 430, margin: "0 auto", padding: 16
+        background: "#fff",
+        borderRadius: 12,
+        boxShadow: "0 1px 6px #d3c1fa40",
+        maxWidth: 430,
+        margin: "0 auto",
+        padding: 16
       }}>
         <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 10px" }}>
           <thead>
@@ -101,15 +104,13 @@ const CalendarSetup = ({
       </div>
 
       {/* כפתורי שמירה */}
-      <div
-        style={{
-          marginTop: "2rem",
-          textAlign: "center",
-          display: "flex",
-          gap: "1rem",
-          justifyContent: "center"
-        }}
-      >
+      <div style={{
+        marginTop: "2rem",
+        textAlign: "center",
+        display: "flex",
+        gap: "1rem",
+        justifyContent: "center"
+      }}>
         <button className="save-all-btn styled" onClick={handleSave}>
           💾 שמור שעות שבועיות
         </button>
@@ -139,6 +140,4 @@ const CalendarSetup = ({
       </div>
     </div>
   );
-};
-
-export default CalendarSetup;
+}
