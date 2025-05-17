@@ -21,7 +21,10 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
   useEffect(() => {
     if (!initialized || !businessId) return;
     setIsLoading(true);
-    API.get("/business/clients", { withCredentials: true })
+    API.get("/business/clients", {
+      params: { businessId },
+      withCredentials: true
+    })
       .then(res => setClients(res.data))
       .catch(err => {
         console.error("שגיאה בטעינת לקוחות", err);
@@ -32,27 +35,26 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
 
   // 2. טוען שיחות קיימות
   useEffect(() => {
-  if (!initialized || !businessId) return;
-  fetchConversations();
-}, [initialized, businessId]);
+    if (!initialized || !businessId) return;
+    fetchConversations();
+  }, [initialized, businessId]);
 
-const fetchConversations = async () => {
-  setIsLoading(true);
-  setError("");
-  try {
-    const res = await API.get("/messages/conversations", {
-      params: { businessId },       // הוספת businessId בפרמטרים
-      withCredentials: true
-    });
-    setConversations(res.data);
-  } catch (err) {
-    console.error("שגיאה בטעינת שיחות", err);
-    setError("שגיאה בטעינת שיחות");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  const fetchConversations = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const res = await API.get("/messages/conversations", {
+        params: { businessId },
+        withCredentials: true
+      });
+      setConversations(res.data);
+    } catch (err) {
+      console.error("שגיאה בטעינת שיחות", err);
+      setError("שגיאה בטעינת שיחות");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // 3. פותח או מוצא שיחה חדשה
   const startNewConversation = async () => {
@@ -113,7 +115,7 @@ const fetchConversations = async () => {
 
         <ul className="convo-list">
           {conversations.map(conv => {
-            const isUserBus = isBusiness || user.userId === conv.business._id;
+            const isUserBus = isBusiness || user.id === conv.business._id;
             const partnerId = isUserBus ? conv.customer._id : conv.business._id;
             const partnerName = isUserBus
               ? conv.customer.name
@@ -138,7 +140,7 @@ const fetchConversations = async () => {
       <main className="chat-main">
         {selected.conversationId ? (
           <ChatComponent
-            userId={user.userId}                    // <-- פה
+            userId={user.id}
             partnerId={selected.partnerId}
             initialConversationId={selected.conversationId}
             isBusiness={isBusiness}
