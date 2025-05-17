@@ -81,64 +81,70 @@ const [shopMode, setShopMode] = useState(null);
 
   // טעינת הנתונים הראשונית
   useEffect(() => {
-    // Load business details
-    API.get("/business/my")
-      .then(res => {
-        if (res.status === 200) {
-          const data = res.data.business || res.data;
-          const rawAddress = data.address;
-          const city = typeof rawAddress === "string"
-            ? rawAddress
-            : rawAddress?.city || "";
+  // Load business details
+  API.get("/business/my")
+    .then(res => {
+      if (res.status === 200) {
+        const data = res.data.business || res.data;
+        const rawAddress = data.address;
+        const city = typeof rawAddress === "string"
+          ? rawAddress
+          : rawAddress?.city || "";
 
-          const urls        = data.mainImages     || [];
-          const galleryUrls = data.gallery        || [];
-          const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-            ? data.mainImageIds
-            : urls.map(extractPublicIdFromUrl);
-          const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-            ? data.galleryImageIds
-            : galleryUrls.map(extractPublicIdFromUrl);
+        const urls        = data.mainImages     || [];
+        const galleryUrls = data.gallery        || [];
+        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+          ? data.mainImageIds
+          : urls.map(extractPublicIdFromUrl);
+        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+          ? data.galleryImageIds
+          : galleryUrls.map(extractPublicIdFromUrl);
 
-          const logoObj = data.logo
-            ? { preview: data.logo, publicId: data.logoId }
-            : null;
+        const logoObj = data.logo
+          ? { preview: data.logo, publicId: data.logoId }
+          : null;
 
-          setBusinessDetails(prev => ({
-            ...prev,
-            businessName:    data.businessName    || "",
-            description:     data.description     || "",
-            phone:           data.phone           || "",
-            email:           data.email           || "",
-            category:        data.category        || "",
-            address:         { city },
-            logo:            logoObj,
-            logoId:          data.logoId          || null,
-            gallery:         galleryUrls,
-            galleryImageIds: galleryIds,
-            mainImages:      urls,
-            mainImageIds:    mainIds,
-            faqs:            data.faqs            || [],
-            reviews:         data.reviews         || [],
-            workHours:       data.workHours       || {}
-          }));
+        setBusinessDetails(prev => ({
+          ...prev,
+          businessName:    data.businessName    || "",
+          description:     data.description     || "",
+          phone:           data.phone           || "",
+          email:           data.email           || "",
+          category:        data.category        || "",
+          address:         { city },
+          logo:            logoObj,
+          logoId:          data.logoId          || null,
+          gallery:         galleryUrls,
+          galleryImageIds: galleryIds,
+          mainImages:      urls,
+          mainImageIds:    mainIds,
+          faqs:            data.faqs            || [],
+          reviews:         data.reviews         || [],
+          workHours:       data.workHours       || {}
+        }));
+      }
+    })
+    .catch(console.error)
+    .finally(() => setFirstLoad(false));
+
+  // Load work hours correctly - לא לעשות reduce!
+  API.get('/appointments/get-work-hours')
+    .then(res => {
+      let map = {};
+      if (res.data) {
+        // הכי בטוח: אם קיבלת עטיפה בשם workHours
+        if (res.data.workHours && typeof res.data.workHours === "object") {
+          map = res.data.workHours;
+        } else if (typeof res.data === "object") {
+          map = res.data;
         }
-      })
-      .catch(console.error)
-      .finally(() => setFirstLoad(false));
+      }
+      setWorkHours(map);
+      setBusinessDetails(prev => ({ ...prev, workHours: map }));
+    })
+    .catch(err => console.warn('Error loading work-hours:', err));
+}, []);
 
-    // Load work hours separately if needed
-    API.get('/appointments/get-work-hours')
-      .then(res => {
-        const map = (res.data || []).reduce((acc, { day, start, end }) => {
-          acc[day] = { start, end };
-          return acc;
-        }, {});
-        setWorkHours(map);
-        setBusinessDetails(prev => ({ ...prev, workHours: map }));
-      })
-      .catch(err => console.warn('Error loading work-hours:', err));
-  }, []);
 
   // Autosave business details debounce
   useEffect(() => {
