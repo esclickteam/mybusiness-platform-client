@@ -41,38 +41,42 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-    if (!bizId) {
-      setError("Invalid business ID");
+  if (!bizId) {
+    setError("Invalid business ID");
+    setLoading(false);
+    return;
+  }
+  (async () => {
+    try {
+      setLoading(true);
+
+      // 1. פרטי העסק
+      const resBiz = await api.get(`/business/${bizId}`);
+      const biz    = resBiz.data.business || resBiz.data;
+      setData(biz);
+      setFaqs(biz.faqs || []);
+      setServices(biz.services || []);
+
+      // 2. שעות פעילות
+      const resWH = await api.get(
+        `/appointments/get-work-hours?businessId=${bizId}`
+      );
+      const sched = (
+        resWH.data.workHours &&
+        typeof resWH.data.workHours === "object" &&
+        !Array.isArray(resWH.data.workHours)
+      ) ? resWH.data.workHours : {};
+      setSchedule(sched);
+
+    } catch (err) {
+      console.error(err);
+      setError("שגיאה בטעינת הנתונים");
+    } finally {
       setLoading(false);
-      return;
     }
-    (async () => {
-      try {
-        setLoading(true);
+  })();
+}, [bizId]);
 
-        // 1. פרטי העסק
-        const resBiz = await api.get(`/business/${bizId}`);
-        const biz    = resBiz.data.business || resBiz.data;
-        setData(biz);
-        setFaqs(biz.faqs || []);
-        setServices(biz.services || []);
-
-        // 2. שעות פעילות
-        const resWH = await api.get(
-          `/appointments/get-work-hours?businessId=${bizId}`
-        );
-        // resWH.data === { workHours: { sunday: {...}, monday: {...}, ... } }
-        const sched = resWH.data.workHours || {};
-        setSchedule(sched);
-
-      } catch (err) {
-        console.error(err);
-        setError("שגיאה בטעינת הנתונים");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [bizId]);
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error)   return <div className="error">{error}</div>;
