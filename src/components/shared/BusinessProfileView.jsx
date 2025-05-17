@@ -218,7 +218,8 @@ export default function BusinessProfileView() {
                   </Link>
                 )}
                 {isOwner && (
-                  <Link to={`/business/${bizId}/chat`} className="chat-link-btn">
+                  <Link to="/dashboard?tab=messages" className="chat-link-btn">
+
                     ▶️ ניהול הודעות מלקוחות
                   </Link>
                 )}

@@ -1,6 +1,5 @@
-// src/pages/business/BusinessDashboardLayout.jsx
 import React, { useEffect } from "react";
-import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from '@context/BusinessServicesContext';
 import "../../styles/BusinessDashboardLayout.css";
@@ -21,12 +20,28 @@ export default function BusinessDashboardLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
+  const location = useLocation();
 
+  // זיהוי tab מה-query (או מה-state)
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
+      return;
     }
-  }, [user, loading, navigate]);
+
+    // זיהוי tab מה-query (url?tab=messages) או מה-state
+    const searchParams = new URLSearchParams(location.search);
+    const tabFromQuery = searchParams.get("tab");
+    const tabFromState = location.state?.activeTab;
+
+    if (tabFromQuery && tabs.some(t => t.path === tabFromQuery)) {
+      navigate(tabFromQuery, { replace: true });
+    } else if (tabFromState && tabs.some(t => t.path === tabFromState)) {
+      navigate(tabFromState, { replace: true });
+    }
+  // לא לרוץ אם כבר בתוך טאב תקין
+  // eslint-disable-next-line
+  }, [user, loading, location.search, location.state, navigate]);
 
   if (loading) {
     return <div className="loading-screen">🔄 טוען נתונים…</div>;
@@ -39,7 +54,6 @@ export default function BusinessDashboardLayout() {
           <aside className="sidebar">
             <h2>ניהול העסק</h2>
             <nav>
-              {/* קישור לפרופיל הציבורי */}
               {user?.role === "business" && (
                 <NavLink
                   to={`/business/${businessId}`}
@@ -49,8 +63,6 @@ export default function BusinessDashboardLayout() {
                   👀 צפייה בפרופיל
                 </NavLink>
               )}
-
-              {/* כפתורי הטאבים בדשבורד */}
               {tabs.map(({ path, label }) => (
                 <NavLink
                   key={path}
@@ -63,7 +75,6 @@ export default function BusinessDashboardLayout() {
               ))}
             </nav>
           </aside>
-
           <main className="dashboard-content">
             <Outlet />
           </main>
