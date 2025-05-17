@@ -118,7 +118,7 @@ export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSav
                 ? <span className="closed-label">סגור</span>
                 : (weeklyHours[i]?.start && weeklyHours[i]?.end
                   ? <span className="hours-label">{weeklyHours[i].start}–{weeklyHours[i].end}</span>
-                  : <span className="unset-label">לא הוגדר</span>
+                  : <span className="hours-label">לא הוגדר</span>
                 )
               }
             </li>
