@@ -6,8 +6,10 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: #f8f7ff;    /* <--- צבע רקע חדש, מאוד עדין */
+  /* אפשר גם: background: #fff; */
 }
+
 
 /* כותרת חודש ושנה */
 .calendar-header {
