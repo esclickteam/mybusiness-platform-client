@@ -290,7 +290,16 @@ export default function App() {
 // Wrapper for client chatting with a business
 function ClientChatWrapper() {
   const { businessId } = useParams();
-  const { user }       = useAuth();
+  const { user, loading } = useAuth();
+
+  // אם בטעינה – טוען
+  if (loading) return <div>🔄 טוען...</div>;
+
+  // אם אין user – הפנה לכניסה
+  if (!user) return <Navigate to="/login" replace />;
+
+  // אם המשתמש אינו לקוח – הפנה לכניסה (אפשר לשים Unauthorized אם תרצה)
+  if (user.role !== "customer") return <Navigate to="/login" replace />;
 
   return (
     <ChatPage
