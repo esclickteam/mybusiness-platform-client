@@ -21,8 +21,9 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
   const [paymentStep, setPaymentStep] = useState("summary");
   const [selectedPayment, setSelectedPayment] = useState("");
 
-  const dateKey = selectedDate.toDateString();
-  const config = workHours[dateKey];
+  // ** כאן התיקון — קבלת שעות לפי יום בשבוע **
+  const dayIdx = selectedDate.getDay(); // 0 (ראשון) עד 6 (שבת)
+  const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
     }
     setSelectedSlot(null);
     setMode("slots");
+    // eslint-disable-next-line
   }, [selectedDate, config]);
 
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
@@ -102,7 +104,6 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
       {mode === "slots" && (
         <>
           <h3>📅 בחר תאריך</h3>
-
           {/* לוח שנה חודשי נבחר */}
           {selectedService && (
             <div className="month-overview">
