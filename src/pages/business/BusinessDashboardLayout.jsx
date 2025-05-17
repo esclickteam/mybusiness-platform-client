@@ -22,7 +22,7 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  // זיהוי tab מה-query (או מה-state)
+  // מעבר אוטומטי לטאב לפי query או state (פתרון מלא)
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -35,12 +35,11 @@ export default function BusinessDashboardLayout() {
     const tabFromState = location.state?.activeTab;
 
     if (tabFromQuery && tabs.some(t => t.path === tabFromQuery)) {
-      navigate(tabFromQuery, { replace: true });
+      navigate(`./${tabFromQuery}`, { replace: true });
     } else if (tabFromState && tabs.some(t => t.path === tabFromState)) {
-      navigate(tabFromState, { replace: true });
+      navigate(`./${tabFromState}`, { replace: true });
     }
-  // לא לרוץ אם כבר בתוך טאב תקין
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [user, loading, location.search, location.state, navigate]);
 
   if (loading) {
