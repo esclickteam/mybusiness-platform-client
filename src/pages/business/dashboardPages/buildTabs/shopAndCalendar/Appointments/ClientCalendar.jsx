@@ -6,8 +6,8 @@ import MonthCalendar from "../../../../../../components/MonthCalendar";
 
 export default function ClientCalendar({ workHours = {}, selectedService, onBackToList }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [month, setMonth] = useState(selectedDate.getMonth());
-  const [year, setYear] = useState(selectedDate.getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth());
+  const [year, setYear] = useState(new Date().getFullYear());
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [mode, setMode] = useState("slots");
@@ -21,10 +21,11 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
   const [paymentStep, setPaymentStep] = useState("summary");
   const [selectedPayment, setSelectedPayment] = useState("");
 
-  // כשמשנים חודש/שנה – תעדכן את התאריך הנבחר ל-1 לחודש החדש
+  // מעדכן את חודש/שנה אם בוחרים תאריך בחודש/שנה אחרת
   useEffect(() => {
-    setSelectedDate(new Date(year, month, 1));
-  }, [month, year]);
+    setMonth(selectedDate.getMonth());
+    setYear(selectedDate.getFullYear());
+  }, [selectedDate]);
 
   // שעות לפי יום בשבוע
   const dayIdx = selectedDate.getDay(); // 0 (ראשון) עד 6 (שבת)
@@ -125,6 +126,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
                     }
                   }}
                   className="month-nav-btn"
+                  type="button"
                 >
                   ← חודש קודם
                 </button>
@@ -138,6 +140,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
                     }
                   }}
                   className="month-nav-btn"
+                  type="button"
                 >
                   חודש הבא →
                 </button>

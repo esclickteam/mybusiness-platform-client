@@ -129,20 +129,24 @@ const [shopMode, setShopMode] = useState(null);
 
   // Load work hours correctly - לא לעשות reduce!
   API.get('/appointments/get-work-hours')
-    .then(res => {
-      let map = {};
-      if (res.data) {
-        // הכי בטוח: אם קיבלת עטיפה בשם workHours
-        if (res.data.workHours && typeof res.data.workHours === "object") {
-          map = res.data.workHours;
-        } else if (typeof res.data === "object") {
-          map = res.data;
-        }
-      }
-      setWorkHours(map);
-      setBusinessDetails(prev => ({ ...prev, workHours: map }));
-    })
-    .catch(err => console.warn('Error loading work-hours:', err));
+  .then(res => {
+    let map = {};
+    // מחפש תמיד מערך workHours (או ריק)
+    const arr = Array.isArray(res.data.workHours)
+      ? res.data.workHours
+      : Array.isArray(res.data) 
+        ? res.data
+        : [];
+
+    // ממיר את המערך לאובייקט לפי מספר היום (כמספר!)
+    arr.forEach(item => {
+      map[+item.day] = item;
+    });
+
+    setWorkHours(map);
+    setBusinessDetails(prev => ({ ...prev, workHours: map }));
+  })
+  .catch(err => console.warn('Error loading work-hours:', err));
 }, []);
 
 

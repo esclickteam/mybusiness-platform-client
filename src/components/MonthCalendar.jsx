@@ -13,6 +13,7 @@ export default function MonthCalendar({
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startDay = new Date(year, month, 1).getDay();
 
+  // מבנה תאי התאריכים (ריקים + תאריכים)
   const cells = [];
   for (let i = 0; i < startDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
@@ -27,23 +28,27 @@ export default function MonthCalendar({
 
   return (
     <div className="calendar-container">
-      {/* כותרת חודש ושנה עם חצים */}
+      {/* כותרת חודש ושנה עם חצים (אם התקבלו פונקציות) */}
       <div className="calendar-header">
-        <button className="month-arrow" onClick={onPrevMonth} aria-label="חודש קודם">
-          ←
-        </button>
+        {onPrevMonth && (
+          <button className="month-arrow" onClick={onPrevMonth} aria-label="חודש קודם">
+            ←
+          </button>
+        )}
         <div>
           <div className="month-hebrew">
             {new Date(year, month).toLocaleString('he-IL', { month: 'long' })}
           </div>
           <div className="year">{year}</div>
         </div>
-        <button className="month-arrow" onClick={onNextMonth} aria-label="חודש הבא">
-          →
-        </button>
+        {onNextMonth && (
+          <button className="month-arrow" onClick={onNextMonth} aria-label="חודש הבא">
+            →
+          </button>
+        )}
       </div>
 
-      {/* ימי שבוע */}
+      {/* ימי השבוע */}
       <div className="calendar-weekdays">
         {weekdays.map(w => (
           <div key={w} className="weekday">{w}</div>
