@@ -44,9 +44,11 @@ export default function Build() {
     mainImageIds:    [],
     reviews:         [],
     faqs:            [],
+    workHours:       {},
   });
 
-  const [isSaving, setIsSaving] = useState(false);
+const [workHours, setWorkHours] = useState({});
+const [isSaving, setIsSaving] = useState(false);
 const [showViewProfile, setShowViewProfile] = useState(false);
 const [editIndex, setEditIndex] = useState(null);
 const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -62,10 +64,6 @@ const pendingUploadsRef  = useRef([]);
 
 // הוספת סטייט עבור shopMode
 const [shopMode, setShopMode] = useState(null);
-
-  // סטייט לשעות עבודה
-  const [workHours, setWorkHours] = useState({});
-
 
 
   function extractPublicIdFromUrl(url) {
@@ -83,100 +81,107 @@ const [shopMode, setShopMode] = useState(null);
 
   // טעינת הנתונים הראשונית
   useEffect(() => {
-  API.get("/business/my")
-    .then(res => {
-      if (res.status === 200) {
-        const data = res.data.business || res.data;
-        const rawAddress = data.address;
-        const city = typeof rawAddress === "string"
-          ? rawAddress
-          : rawAddress?.city || "";
+    // Load business details
+    API.get("/business/my")
+      .then(res => {
+        if (res.status === 200) {
+          const data = res.data.business || res.data;
+          const rawAddress = data.address;
+          const city = typeof rawAddress === "string"
+            ? rawAddress
+            : rawAddress?.city || "";
 
-        const urls        = data.mainImages     || [];
-        const galleryUrls = data.gallery        || [];
-        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-          ? data.mainImageIds
-          : urls.map(extractPublicIdFromUrl);
-        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-          ? data.galleryImageIds
-          : galleryUrls.map(extractPublicIdFromUrl);
+          const urls        = data.mainImages     || [];
+          const galleryUrls = data.gallery        || [];
+          const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+            ? data.mainImageIds
+            : urls.map(extractPublicIdFromUrl);
+          const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+            ? data.galleryImageIds
+            : galleryUrls.map(extractPublicIdFromUrl);
 
-        // הכנת אובייקט לוגו עם preview ו־publicId
-        const logoObj = data.logo
-          ? { preview: data.logo, publicId: data.logoId }
-          : null;
+          const logoObj = data.logo
+            ? { preview: data.logo, publicId: data.logoId }
+            : null;
 
-        setBusinessDetails(prev => ({
-          ...prev,
-          businessName:    data.businessName    || "",
-          description:     data.description     || "",
-          phone:           data.phone           || "",
-          email:           data.email           || "",
-          category:        data.category        || "",
-          address:         { city },
-          logo:            logoObj,
-          logoId:          data.logoId          || null,
-          gallery:         galleryUrls,
-          galleryImageIds: galleryIds,
-          mainImages:      urls,
-          mainImageIds:    mainIds,
-          faqs:            data.faqs            || [],
-          reviews:         data.reviews         || []
-        }));
+          setBusinessDetails(prev => ({
+            ...prev,
+            businessName:    data.businessName    || "",
+            description:     data.description     || "",
+            phone:           data.phone           || "",
+            email:           data.email           || "",
+            category:        data.category        || "",
+            address:         { city },
+            logo:            logoObj,
+            logoId:          data.logoId          || null,
+            gallery:         galleryUrls,
+            galleryImageIds: galleryIds,
+            mainImages:      urls,
+            mainImageIds:    mainIds,
+            faqs:            data.faqs            || [],
+            reviews:         data.reviews         || [],
+            workHours:       data.workHours       || {}
+          }));
+        }
+      })
+      .catch(console.error)
+      .finally(() => setFirstLoad(false));
+
+    // Load work hours separately if needed
+    API.get('/appointments/get-work-hours')
+      .then(res => {
+        const map = (res.data || []).reduce((acc, { day, start, end }) => {
+          acc[day] = { start, end };
+          return acc;
+        }, {});
+        setWorkHours(map);
+        setBusinessDetails(prev => ({ ...prev, workHours: map }));
+      })
+      .catch(err => console.warn('Error loading work-hours:', err));
+  }, []);
+
+  // Autosave business details debounce
+  useEffect(() => {
+    if (firstLoad) return;
+    clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(async () => {
+      setIsSaving(true);
+      try {
+        const payload = {
+          businessName: businessDetails.businessName,
+          category:     businessDetails.category,
+          description:  businessDetails.description,
+          phone:        businessDetails.phone,
+          email:        businessDetails.email,
+          address:      { city: businessDetails.address.city },
+        };
+        const res = await API.patch('/business/my', payload);
+        if (res.status === 200) {
+          setBusinessDetails(prev => ({
+            ...prev,
+            ...res.data,
+            logo: prev.logo,
+            logoId: prev.logoId
+          }));
+        }
+      } catch (err) {
+        console.error('Autosave failed:', err);
+      } finally {
+        setIsSaving(false);
       }
-    })
-    .catch(console.error)
-    .finally(() => setFirstLoad(false));
-}, []);
+    }, 1000);
 
+    return () => clearTimeout(saveTimeout.current);
+  }, [firstLoad,
+    businessDetails.businessName,
+    businessDetails.category,
+    businessDetails.description,
+    businessDetails.phone,
+    businessDetails.email,
+    businessDetails.address.city
+  ]);
 
-  // Autosave אחרי debounce
-  // Autosave אחרי debounce
-useEffect(() => {
-  if (firstLoad) return;
-
-  clearTimeout(saveTimeout.current);
-  saveTimeout.current = setTimeout(async () => {
-    setIsSaving(true);
-    try {
-      const payload = {
-        businessName: businessDetails.businessName,
-        category:     businessDetails.category,
-        description:  businessDetails.description,
-        phone:        businessDetails.phone,
-        email:        businessDetails.email,
-        address:      { city: businessDetails.address.city },
-      };
-      const res = await API.patch("/business/my", payload);
-      if (res.status === 200) {
-        setBusinessDetails(prev => ({
-          ...prev,
-          ...res.data,        // עדכונים מהשרת
-          logo:   prev.logo,  // שומרים לוגו קיים
-          logoId: prev.logoId
-        }));
-      }
-    } catch (err) {
-      console.error("Autosave failed:", err);
-    } finally {
-      setIsSaving(false);
-    }
-  }, 1000);
-
-  return () => clearTimeout(saveTimeout.current);
-}, [
-  businessDetails.businessName,
-  businessDetails.category,
-  businessDetails.description,
-  businessDetails.phone,
-  businessDetails.email,
-  businessDetails.address.city,
-  firstLoad
-]);
-
-
-  
-         
+          
 
   // ===== INPUT CHANGE (supports nested fields) =====
 const handleInputChange = ({ target: { name, value } }) => {
