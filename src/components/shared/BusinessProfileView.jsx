@@ -59,9 +59,10 @@ export default function BusinessProfileView() {
 
         // 2. שעות פעילות
         const resWH = await api.get('/appointments/get-work-hours');
-        // server מחזיר: { workHours: { sunday: {start,end}, ... } }
-        const sched = resWH.data.workHours || {};
-        setSchedule(sched);
+// resWH.data === { workHours: { sunday: {...}, monday: {...}, ... } }
+const sched = resWH.data.workHours || {};
+setSchedule(sched);
+
 
       } catch (err) {
         console.error(err);
