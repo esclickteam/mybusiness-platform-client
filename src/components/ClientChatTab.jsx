@@ -10,38 +10,66 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
   const socketRef = useRef();
 
   useEffect(() => {
-    if (!conversationId) return;
+    console.log("🔄 ClientChatTab mounted", { conversationId, businessId, user });
+
+    if (!conversationId) {
+      console.warn("⚠️ No conversationId, aborting useEffect");
+      return;
+    }
 
     // 1) טען היסטוריה
+    console.log("📥 Fetching history for", conversationId);
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
     })
-      .then(res => setMessages(res.data))
-      .catch(console.error);
+      .then(res => {
+        console.log("✅ History loaded:", res.data);
+        setMessages(res.data);
+      })
+      .catch(err => {
+        console.error("❌ Error loading history:", err);
+      });
 
     // 2) התחבר ל־Socket.IO
+    console.log("🌐 Connecting to socket with query", { conversationId, businessId, userId: user.id });
     socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
       query: { conversationId, businessId, userId: user.id, role: "client" }
     });
 
-    // הצטרף לחדר השיחה
-    socketRef.current.emit("joinRoom", conversationId);
+    socketRef.current.on("connect", () => {
+      console.log("🔌 Socket connected:", socketRef.current.id);
+      // הצטרף לחדר השיחה
+      socketRef.current.emit("joinRoom", conversationId);
+      console.log("➡️ joinRoom emitted for", conversationId);
+    });
 
-    // 3) מאזין להודעות חדשות
     socketRef.current.on("newMessage", msg => {
+      console.log("📨 Received newMessage:", msg);
       setMessages(prev => [...prev, msg]);
     });
 
-    // נקה ב־unmount
+    socketRef.current.on("disconnect", reason => {
+      console.log("🔌 Socket disconnected:", reason);
+    });
+
     return () => {
+      console.log("🧹 Cleaning up socket");
       socketRef.current.disconnect();
       setMessages([]);
     };
   }, [conversationId, businessId, user.id]);
 
   const sendMessage = () => {
-    if (!input.trim() || !conversationId) return;
+    console.log("✉️ sendMessage called with input:", input);
+    if (!input.trim()) {
+      console.warn("⚠️ Empty input, ignoring");
+      return;
+    }
+    if (!conversationId) {
+      console.error("❌ No conversationId, cannot send");
+      return;
+    }
 
     const msg = {
       conversationId,
@@ -50,15 +78,16 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
       text: input.trim(),
       timestamp: new Date().toISOString()
     };
+    console.log("🚀 Emitting sendMessage:", msg);
 
-    // שלח לשרת עם callback
     socketRef.current.emit("sendMessage", msg, ack => {
+      console.log("📣 sendMessage ack:", ack);
       if (ack?.success) {
-        // עדכן תצוגה מקומית
+        console.log("✅ Message acknowledged, updating local state");
         setMessages(prev => [...prev, msg]);
         setInput("");
       } else {
-        console.error("Failed to send:", ack?.error);
+        console.error("❌ Failed to send message:", ack?.error);
       }
     });
   };
