@@ -14,7 +14,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // עוצרים הכל אם אין יוזר או ביזנס איי.די
+  // מזהה העסק מתוך היוזר (לא שולחים אותו לשרת)
   const businessId = user?.businessId;
 
   // 1. טוען את כל הלקוחות
@@ -22,8 +22,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     if (!initialized || !businessId) return;
     setIsLoading(true);
     API.get("/business/clients", {
-      params: { businessId },
-      withCredentials: true,
+      withCredentials: true,   // *** אל תשלח params בכלל ***
     })
       .then(res => setClients(res.data))
       .catch(err => {
@@ -45,8 +44,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     setError("");
     try {
       const res = await API.get("/messages/conversations", {
-        params: { businessId },
-        withCredentials: true,
+        withCredentials: true,   // *** אל תשלח params בכלל ***
       });
       setConversations(res.data);
     } catch (err) {
@@ -65,7 +63,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     try {
       const res = await API.post(
         "/messages/conversations",
-        { otherId: newPartnerId, businessId }, // שים לב: גם כאן אפשר להוסיף businessId בבאדי אם צריך
+        { otherId: newPartnerId },    // *** לא צריך businessId בבאדי ***
         { withCredentials: true }
       );
       const convId = res.data.conversationId;
