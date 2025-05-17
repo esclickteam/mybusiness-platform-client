@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
-import ClientChatTab from "../../pages/business/dashboardPages/buildTabs/ClientChatTab"; // הייבוא של צ'אט
+import ClientChatTab from "../ClientChatTab";
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
