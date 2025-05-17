@@ -10,6 +10,14 @@ export default function ChatComponent({
   initialConversationId,
   isBusiness
 }) {
+  // בדיקה שהפרופס עוברים נכון
+  console.log("⚙️ props in ChatComponent:", {
+    userId,
+    partnerId,
+    initialConversationId,
+    isBusiness
+  });
+
   const [conversationId, setConversationId] = useState(initialConversationId);
 
   // Initialize or fetch conversation if not provided
@@ -45,7 +53,7 @@ export default function ChatComponent({
         conversationId={conversationId}
         businessId={userId}
         customerId={partnerId}
-        userId={userId}       
+        userId={userId}
       />
     );
   }
