@@ -43,21 +43,26 @@ export default function ClientCalendar({
   useEffect(() => {
     if (!businessId) return;
     const dateStr = selectedDate.toISOString().slice(0, 10); // YYYY-MM-DD
-    setBookedSlots([]); // אישור רענון
+    setBookedSlots([]); // איפוס לפני רענון
     API.get("/appointments/by-date", {
       params: { businessId, date: dateStr }
     })
       .then(res => {
-        // מייחסים מערך מחרוזות זמנים
-        const times = res.data.map(a => a.time);
-        setBookedSlots(times);
+        // אם השרת מחזיר array של מחרוזות זמנים
+        setBookedSlots(res.data);
       })
       .catch(err => {
         console.error("Error fetching booked slots:", err);
       });
   }, [selectedDate, businessId]);
 
-  // 3) בונה את availableSlots מסוננים גם ע"פ bookedSlots
+  // 3a) כל שינוי בתאריך/קונפיג מחזיר למסך slots (אך לא על bookedSlots)
+  useEffect(() => {
+    setSelectedSlot(null);
+    setMode("slots");
+  }, [selectedDate, config]);
+
+  // 3b) בניית availableSlots מסוננים ע"פ bookedSlots
   useEffect(() => {
     if (config?.start && config?.end) {
       const all = generateTimeSlots(config.start, config.end, config.breaks);
@@ -65,9 +70,7 @@ export default function ClientCalendar({
     } else {
       setAvailableSlots([]);
     }
-    setSelectedSlot(null);
-    setMode("slots");
-  }, [selectedDate, config, bookedSlots]);
+  }, [config, bookedSlots]);
 
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
     const toMin = t => {
@@ -85,16 +88,14 @@ export default function ClientCalendar({
     const start = toMin(startTime),
       end = toMin(endTime);
     const breaksArr = breaks
-      ? breaks
-          .split(/[\n,]/)
-          .map(s => s.trim())
-          .filter(Boolean)
-          .map(b => {
-            const [f, t] = b.replace(/\s/g, "").split("-");
-            return f && t ? [toMin(f), toMin(t)] : null;
-          })
-          .filter(Boolean)
-      : [];
+      .split(/[\n,]/)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(b => {
+        const [f, t] = b.replace(/\s/g, "").split("-");
+        return f && t ? [toMin(f), toMin(t)] : null;
+      })
+      .filter(Boolean);
 
     const slots = [];
     for (let t = start; t + serviceDuration <= end; t += serviceDuration) {
@@ -171,9 +172,9 @@ export default function ClientCalendar({
                   onClick={() => {
                     if (month === 0) {
                       setMonth(11);
-                      setYear((y) => y - 1);
+                      setYear(y => y - 1);
                     } else {
-                      setMonth((m) => m - 1);
+                      setMonth(m => m - 1);
                     }
                   }}
                   className="month-nav-btn"
@@ -185,9 +186,9 @@ export default function ClientCalendar({
                   onClick={() => {
                     if (month === 11) {
                       setMonth(0);
-                      setYear((y) => y + 1);
+                      setYear(y => y + 1);
                     } else {
-                      setMonth((m) => m + 1);
+                      setMonth(m => m + 1);
                     }
                   }}
                   className="month-nav-btn"
@@ -200,9 +201,8 @@ export default function ClientCalendar({
                 year={year}
                 month={month}
                 selectedDate={selectedDate}
-                onDateClick={(date) => {
+                onDateClick={date => {
                   setSelectedDate(date);
-                  setMode("slots");
                 }}
               />
             </div>
@@ -221,7 +221,9 @@ export default function ClientCalendar({
                   <div className="slot-list">
                     {availableSlots.map((t, i) => (
                       <div key={i} className="slot-item">
-                        <button onClick={() => handleSelectSlot(t)}>{t}</button>
+                        <button onClick={() => handleSelectSlot(t)}>
+                          {t}
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -245,11 +247,8 @@ export default function ClientCalendar({
               <p>📅 תאריך: {selectedSlot.date}</p>
               <p>🕓 שעה: {selectedSlot.time}</p>
               <p>
-                ⏱️ משך:{" "}
-                {Math.floor(selectedSlot.duration / 60)}:
-                {(selectedSlot.duration % 60)
-                  .toString()
-                  .padStart(2, "0")}
+                ⏱️ משך: {Math.floor(selectedSlot.duration / 60)}:
+                {(selectedSlot.duration % 60).toString().padStart(2, "0")}
               </p>
               <p>💰 עלות: {selectedSlot.price} ₪</p>
 
@@ -257,28 +256,28 @@ export default function ClientCalendar({
                 <label>שם מלא:</label>
                 <input
                   value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
+                  onChange={e => setClientName(e.target.value)}
                 />
                 <label>טלפון:</label>
                 <input
                   value={clientPhone}
-                  onChange={(e) => setClientPhone(e.target.value)}
+                  onChange={e => setClientPhone(e.target.value)}
                 />
                 <label>כתובת:</label>
                 <input
                   value={clientAddress}
-                  onChange={(e) => setClientAddress(e.target.value)}
+                  onChange={e => setClientAddress(e.target.value)}
                 />
                 <label>אימייל (לשליחת אישור):</label>
                 <input
                   value={clientEmail}
-                  onChange={(e) => setClientEmail(e.target.value)}
+                  onChange={e => setClientEmail(e.target.value)}
                   type="email"
                 />
                 <label>הערה (לא חובה):</label>
                 <textarea
                   value={clientNote}
-                  onChange={(e) => setClientNote(e.target.value)}
+                  onChange={e => setClientNote(e.target.value)}
                 />
               </div>
 
