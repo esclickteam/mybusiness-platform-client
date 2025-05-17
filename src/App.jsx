@@ -301,7 +301,7 @@ function ClientChatWrapper() {
   return (
     <ChatPage
       isBusiness={false}
-      userId={user.id}
+      userId={user.userId} 
       partnerId={businessId}
       initialPartnerId={businessId}
       businessProfilePic="/default-business.png"

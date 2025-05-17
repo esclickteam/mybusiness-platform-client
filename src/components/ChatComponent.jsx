@@ -10,7 +10,6 @@ export default function ChatComponent({
   initialConversationId,
   isBusiness
 }) {
-  // 1. בדיקת הפרופס
   console.log("⚙️ props in ChatComponent:", {
     userId,
     partnerId,
@@ -20,7 +19,6 @@ export default function ChatComponent({
 
   const [conversationId, setConversationId] = useState(initialConversationId);
 
-  // Initialize or fetch conversation if not provided
   useEffect(() => {
     if (!partnerId || conversationId) return;
 
@@ -44,7 +42,10 @@ export default function ChatComponent({
     return <p>⏳ טוען שיחה...</p>;
   }
 
-  // 2. מירוץ בין שני הטאבים
+  if (!userId) {
+    return <p>⏳ טוען משתמש...</p>;
+  }
+
   if (isBusiness) {
     return (
       <BusinessChatTab
@@ -60,7 +61,7 @@ export default function ChatComponent({
     <ClientChatTab
       conversationId={conversationId}
       businessId={partnerId}
-      userId={userId}      // <-- חובה!
+      userId={userId}
     />
   );
 }
