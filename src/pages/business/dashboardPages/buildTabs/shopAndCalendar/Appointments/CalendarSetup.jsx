@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CalendarSetup.css";
 
 // ימי השבוע בעברית
@@ -18,12 +18,20 @@ const defaultWeeklyHours = {
 };
 
 export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSave, onCancel }) {
+  // State פנימי לאחסון שעות השבוע
   const [weeklyHours, setWeeklyHours] = useState(initialHours);
+
+  // סנכרון פנימי: עדכון weeklyHours בכל שינוי של initialHours בפרופס
+  useEffect(() => {
+    setWeeklyHours(initialHours);
+  }, [initialHours]);
 
   const handleChange = (dayIdx, field, value) => {
     setWeeklyHours(prev => ({
       ...prev,
-      [dayIdx]: prev[dayIdx] ? { ...prev[dayIdx], [field]: value } : { start: "", end: "" }
+      [dayIdx]: prev[dayIdx]
+        ? { ...prev[dayIdx], [field]: value }
+        : { start: "", end: "" }
     }));
   };
 
@@ -118,5 +126,5 @@ export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSav
         </ul>
       </div>
     </div>
-);
+  );
 }
