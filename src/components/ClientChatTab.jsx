@@ -1,25 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({ conversationId, businessId, userId, partnerId }) {
-  // partnerId: זהות הצד השני (העסק), אופציונלי
-  console.log("💥 [ClientChatTab] props:", { conversationId, businessId, userId, partnerId });
-
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef();
 
   useEffect(() => {
-    console.log("🔄 [useEffect] conversationId:", conversationId, "businessId:", businessId, "userId:", userId);
+    if (!conversationId) return;
 
-    if (!conversationId) {
-      console.warn("⚠️ [useEffect] No conversationId, aborting useEffect");
-      return;
-    }
-
-    // 1) טען היסטוריה
+    // 1. טען היסטוריה
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
@@ -27,32 +19,21 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
       .then(res => {
         const loaded = Array.isArray(res.data) ? res.data : res.data.messages || [];
         setMessages(loaded);
-        console.log("✅ [History] loaded:", loaded.length, "messages.");
       })
-      .catch(err => {
-        console.error("❌ [History] Error loading history:", err);
-      });
+      .catch(() => {});
 
-    // 2) התחבר ל־Socket.IO בכתובת הנכונה (מתוך env)
+    // 2. התחבר ל־Socket.IO
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    console.log("🔗 Connecting to socket at:", socketUrl);
     socketRef.current = io(socketUrl, {
       query: { conversationId, businessId, userId, role: "client" }
     });
 
     socketRef.current.on("connect", () => {
-      console.log("🔌 [Socket] connected:", socketRef.current.id);
       socketRef.current.emit("joinRoom", conversationId);
-      console.log("➡️ [Socket] joinRoom emitted for", conversationId);
     });
 
     socketRef.current.on("newMessage", msg => {
-      console.log("📨 [Socket] Received newMessage:", msg);
       setMessages(prev => [...prev, msg]);
-    });
-
-    socketRef.current.on("disconnect", reason => {
-      console.log("🔌 [Socket] disconnected:", reason);
     });
 
     return () => {
@@ -65,15 +46,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   }, [conversationId, businessId, userId]);
 
   const sendMessage = () => {
-    if (!input.trim()) {
-      console.warn("⚠️ [Send] Empty input, ignoring");
-      return;
-    }
-    if (!conversationId) {
-      console.error("❌ [Send] No conversationId, cannot send");
-      return;
-    }
-    // partnerId זה בעצם העסק (למי שולחים)
+    if (!input.trim() || !conversationId) return;
     const toId = businessId || partnerId;
     const msg = {
       conversationId,
@@ -82,31 +55,18 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
       text: input.trim(),
       timestamp: new Date().toISOString()
     };
-    console.log("🚀 [Socket] Emitting sendMessage:", msg);
 
     socketRef.current.emit("sendMessage", msg, ack => {
-      console.log("📣 [Socket] sendMessage ack:", ack);
       if (ack?.success) {
-        setMessages(prev => [...prev, msg]);
-        setInput("");
+        setInput(""); // מנקה את השדה, לא מוסיף את ההודעה לליסט
       } else {
-        // הודעה לא נשלחה: אפשר לסמן אותה/להראות שגיאה
         alert("שגיאה בשליחת ההודעה. נסה שוב.");
       }
     });
   };
 
-  // Debug info bar
-  const debugBar = (
-    <div style={{ fontSize: "0.7em", background: "#eee", padding: 4, direction: "ltr" }}>
-      <b>conversationId:</b> {conversationId}<br />
-      <b>businessId:</b> {businessId} <b>userId:</b> {userId} <b>partnerId:</b> {partnerId}
-    </div>
-  );
-
   return (
     <div className="chat-container client">
-      {debugBar}
       <div className="message-list">
         {messages.map((m, i) => (
           <div
@@ -123,7 +83,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           </div>
         ))}
       </div>
-
       <div className="input-bar">
         <input
           type="text"

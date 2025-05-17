@@ -1,24 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
 import "./BusinessChatTab.css";
 
 export default function BusinessChatTab({ conversationId, businessId, customerId }) {
-  console.log("💥 [BusinessChatTab] props:", { conversationId, businessId, customerId });
-
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef();
 
   useEffect(() => {
-    console.log("🔄 [useEffect] conversationId:", conversationId, "businessId:", businessId, "customerId:", customerId);
+    if (!conversationId) return;
 
-    if (!conversationId) {
-      console.warn("⚠️ [useEffect] No conversationId, aborting useEffect");
-      return;
-    }
-
-    // 1. Load history for this conversation
+    // 1. Load history
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
@@ -26,31 +19,21 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       .then(res => {
         const loaded = Array.isArray(res.data) ? res.data : res.data.messages || [];
         setMessages(loaded);
-        console.log("✅ [History] loaded:", loaded.length, "messages.");
       })
-      .catch(err => {
-        console.error("❌ [History] Error loading history:", err);
-      });
+      .catch(() => {});
 
-    // 2. Connect to socket room for this conversation
+    // 2. Connect to socket
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    console.log("🔗 Connecting to socket at:", socketUrl);
     socketRef.current = io(socketUrl, {
       query: { conversationId, businessId, userId: businessId, role: "business" }
     });
+
     socketRef.current.on("connect", () => {
-      console.log("🔌 [Socket] connected:", socketRef.current.id);
       socketRef.current.emit("joinRoom", conversationId);
-      console.log("➡️ [Socket] joinRoom emitted for", conversationId);
     });
 
     socketRef.current.on("newMessage", msg => {
-      console.log("📨 [Socket] Received newMessage:", msg);
       setMessages(prev => [...prev, msg]);
-    });
-
-    socketRef.current.on("disconnect", reason => {
-      console.log("🔌 [Socket] disconnected:", reason);
     });
 
     return () => {
@@ -63,18 +46,7 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   }, [conversationId, businessId, customerId]);
 
   const sendMessage = () => {
-    if (!input.trim()) {
-      console.warn("⚠️ [Send] Empty input, ignoring");
-      return;
-    }
-    if (!conversationId) {
-      console.error("❌ [Send] No conversationId, cannot send");
-      return;
-    }
-    if (!customerId) {
-      console.error("❌ [Send] No customerId, cannot send");
-      return;
-    }
+    if (!input.trim() || !conversationId || !customerId) return;
 
     const msg = {
       conversationId,
@@ -83,30 +55,15 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       text: input.trim(),
       timestamp: new Date().toISOString()
     };
-    console.log("🚀 [Socket] Emitting sendMessage:", msg);
 
     socketRef.current.emit("sendMessage", msg, ack => {
-      console.log("📣 [Socket] sendMessage ack:", ack);
-      if (ack?.success) {
-        setMessages(prev => [...prev, msg]);
-        setInput("");
-      } else {
-        alert("שגיאה בשליחת ההודעה. נסה שוב.");
-      }
+      if (ack?.success) setInput(""); // מנקה את שדה הטקסט בלבד
+      else alert("שגיאה בשליחת ההודעה. נסה שוב.");
     });
   };
 
-  // Debug info bar
-  const debugBar = (
-    <div style={{ fontSize: "0.7em", background: "#eee", padding: 4, direction: "ltr" }}>
-      <b>conversationId:</b> {conversationId}<br />
-      <b>businessId:</b> {businessId} <b>customerId:</b> {customerId}
-    </div>
-  );
-
   return (
     <div className="chat-container business">
-      {debugBar}
       <div className="message-list">
         {messages.map((m, i) => (
           <div
@@ -123,7 +80,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           </div>
         ))}
       </div>
-
       <div className="input-bar">
         <input
           type="text"
