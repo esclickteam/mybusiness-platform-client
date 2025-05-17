@@ -1,3 +1,4 @@
+// src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
@@ -14,7 +15,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // מזהה העסק מתוך היוזר (לא שולחים אותו לשרת)
+  // מזהה העסק מתוך היוזר
   const businessId = user?.businessId;
 
   // 1. טוען את כל הלקוחות
@@ -22,7 +23,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     if (!initialized || !businessId) return;
     setIsLoading(true);
     API.get("/business/clients", {
-      withCredentials: true,   // *** אל תשלח params בכלל ***
+      withCredentials: true, // *** אל תשלח params בכלל ***
     })
       .then(res => setClients(res.data))
       .catch(err => {
@@ -44,7 +45,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     setError("");
     try {
       const res = await API.get("/messages/conversations", {
-        withCredentials: true,   // *** אל תשלח params בכלל ***
+        withCredentials: true, // *** אל תשלח params בכלל ***
       });
       setConversations(res.data);
     } catch (err) {
@@ -63,7 +64,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     try {
       const res = await API.post(
         "/messages/conversations",
-        { otherId: newPartnerId },    // *** לא צריך businessId בבאדי ***
+        { otherId: newPartnerId }, // *** לא צריך businessId בבאדי ***
         { withCredentials: true }
       );
       const convId = res.data.conversationId;
@@ -114,16 +115,20 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
 
         <ul className="convo-list">
           {conversations.map(conv => {
-            const isUserBus = isBusiness || user.userId === conv.business._id;
+            const isUserBus = isBusiness || user.id === conv.business._id;
             const partnerId = isUserBus ? conv.customer._id : conv.business._id;
-            const partnerName = isUserBus ? conv.customer.name : conv.business.businessName;
+            const partnerName = isUserBus
+              ? conv.customer.name
+              : conv.business.businessName;
             return (
               <li
                 key={conv.conversationId}
                 className={`convo-item ${
                   selected.conversationId === conv.conversationId ? "selected" : ""
                 }`}
-                onClick={() => setSelected({ conversationId: conv.conversationId, partnerId })}
+                onClick={() =>
+                  setSelected({ conversationId: conv.conversationId, partnerId })
+                }
               >
                 {partnerName}
               </li>
@@ -135,7 +140,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
       <main className="chat-main">
         {selected.conversationId ? (
           <ChatComponent
-            userId={user.userId}
+            userId={user.id}           // <-- כאן שינינו ל-user.id
             partnerId={selected.partnerId}
             initialConversationId={selected.conversationId}
             isBusiness={isBusiness}
