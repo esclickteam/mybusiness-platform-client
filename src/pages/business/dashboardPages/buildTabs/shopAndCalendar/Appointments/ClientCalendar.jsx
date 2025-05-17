@@ -1,7 +1,5 @@
 // src/pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.jsx
 import React, { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { he } from "date-fns/locale";
 import "./ClientCalendar.css";
 import AppointmentPayment from "./AppointmentPayment";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
@@ -21,7 +19,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
   const [paymentStep, setPaymentStep] = useState("summary");
   const [selectedPayment, setSelectedPayment] = useState("");
 
-  // ** כאן התיקון — קבלת שעות לפי יום בשבוע **
+  // שעות לפי יום בשבוע
   const dayIdx = selectedDate.getDay(); // 0 (ראשון) עד 6 (שבת)
   const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
@@ -51,14 +49,16 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
     const start = toMin(startTime),
       end = toMin(endTime);
     const breaksArr = breaks
-      .split(/[\n,]/)
-      .map(s => s.trim())
-      .filter(Boolean)
-      .map(b => {
-        const [f, t] = b.replace(/\s/g, "").split("-");
-        return f && t ? [toMin(f), toMin(t)] : null;
-      })
-      .filter(Boolean);
+      ? breaks
+          .split(/[\n,]/)
+          .map(s => s.trim())
+          .filter(Boolean)
+          .map(b => {
+            const [f, t] = b.replace(/\s/g, "").split("-");
+            return f && t ? [toMin(f), toMin(t)] : null;
+          })
+          .filter(Boolean)
+      : [];
 
     const slots = [];
     for (let t = start; t + serviceDuration <= end; t += serviceDuration) {
@@ -104,11 +104,13 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
       {mode === "slots" && (
         <>
           <h3>📅 בחר תאריך</h3>
-          {/* לוח שנה חודשי נבחר */}
+          {/* לוח שנה חודשי */}
           {selectedService && (
             <div className="month-overview">
               <MonthCalendar
                 year={selectedDate.getFullYear()}
+                month={selectedDate.getMonth()}
+                selectedDate={selectedDate}
                 onDateClick={date => {
                   setSelectedDate(date);
                   setMode("slots");
