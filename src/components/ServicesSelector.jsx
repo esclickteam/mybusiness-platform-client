@@ -33,7 +33,8 @@ export default function ServicesSelector({ services, categories, onSelect }) {
   }, [services, search, activeCategory]);
 
   // טאב "הכל" ועוד קטגוריות
-  const tabs = ["all", ...categories];
+  const tabs = ["all", ...(Array.isArray(categories) ? categories : Object.keys(categories || {}))];
+
 
   return (
     <div className="services-selector">
