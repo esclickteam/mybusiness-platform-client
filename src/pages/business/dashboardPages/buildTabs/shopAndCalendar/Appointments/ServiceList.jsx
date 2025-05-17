@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import API from '@api'; // ודא ש־API.baseURL = '/api'
 import './ServiceList.css';
 
 const ServiceList = ({
   services,
   setServices,
-  handleDelete = () => {},
   onNext = () => {}
 }) => {
   const [newService, setNewService] = useState({
@@ -19,6 +18,12 @@ const ServiceList = ({
     appointmentType: 'at_business'
   });
   const [loading, setLoading] = useState(false);
+
+  const formatDuration = minutes => {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}:${m.toString().padStart(2, '0')} שעות`;
+  };
 
   const handleAddService = async () => {
     const duration =
@@ -38,14 +43,12 @@ const ServiceList = ({
         formData.append('appointmentType', newService.appointmentType);
         formData.append('image', newService.image);
 
-        // עידכון הנתיב ל־/business/my/services
         res = await API.post(
           '/business/my/services',
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
       } else {
-        // JSON רגיל גם ל־/business/my/services
         res = await API.post('/business/my/services', {
           name: newService.name,
           duration,
@@ -74,6 +77,21 @@ const ServiceList = ({
     }
   };
 
+  // פונקציה למחיקת שירות לפי ID
+  const handleDelete = async (serviceId) => {
+    if (!window.confirm('למחוק את השירות?')) return;
+
+    try {
+      await API.delete(`/business/my/services/${serviceId}`);
+      // אחרי מחיקה, טען שוב את רשימת השירותים מהשרת
+      const res = await API.get('/business/my/services');
+      setServices(res.data.services || []);
+    } catch (err) {
+      console.error('Error deleting service:', err);
+      alert('שגיאה במחיקת שירות');
+    }
+  };
+
   const handleImageChange = e => {
     const file = e.target.files[0];
     if (file) {
@@ -83,12 +101,6 @@ const ServiceList = ({
         imagePreview: URL.createObjectURL(file)
       });
     }
-  };
-
-  const formatDuration = minutes => {
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return `${h}:${m.toString().padStart(2, '0')} שעות`;
   };
 
   return (
@@ -192,7 +204,7 @@ const ServiceList = ({
             <button
               type="button"
               className="delete-btn"
-              onClick={() => handleDelete(i)}
+              onClick={() => handleDelete(srv._id)} // <-- מחיקת שירות לפי ID
             >
               🗑️
             </button>

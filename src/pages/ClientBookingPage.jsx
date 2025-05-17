@@ -1,5 +1,6 @@
 // src/pages/ClientBookingPage.jsx
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import ServicesSelector from "../components/ServicesSelector";
 import ClientCalendar from "./business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 import API from "../api";
@@ -24,6 +25,7 @@ function normalizeWorkHours(data) {
 }
 
 export default function ClientBookingPage() {
+  const { businessId } = useParams(); // <-- קבלת ה-businessId מה-URL
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
@@ -31,17 +33,23 @@ export default function ClientBookingPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const [svcRes, catRes, hoursRes] = await Promise.all([
-        API.get("/services"),
-        API.get("/services/categories"),
-        API.get("/business/work-hours"),
-      ]);
-      setServices(svcRes.data);
-      setCategories(catRes.data);
-      setWorkHours(normalizeWorkHours(hoursRes.data)); // ← תמיד normalize!
+      try {
+        const [svcRes, catRes, hoursRes] = await Promise.all([
+          API.get(`/business/${businessId}/services`),
+          API.get("/services/categories"),
+          API.get(`/appointments/get-work-hours?businessId=${businessId}`),
+        ]);
+        setServices(svcRes.data.services || svcRes.data || []);
+        setCategories(catRes.data || []);
+        setWorkHours(normalizeWorkHours(hoursRes.data)); // ← תמיד normalize!
+      } catch (err) {
+        console.error("Error loading booking data:", err);
+      }
     }
-    fetchData();
-  }, []);
+    if (businessId) {
+      fetchData();
+    }
+  }, [businessId]);
 
   const handleServiceSelect = (service) => {
     setSelectedService(service);
@@ -72,6 +80,7 @@ export default function ClientBookingPage() {
             workHours={workHours}
             selectedService={selectedService}
             onBackToList={handleBackToList}
+            businessId={businessId}  // <-- כאן העברתי את businessId
           />
         </>
       )}

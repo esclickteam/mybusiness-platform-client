@@ -1,10 +1,9 @@
-// src/pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.jsx
 import React, { useState, useEffect } from "react";
+import API from "../../../../../../api"; // תקן בהתאם לפרויקט שלך
 import "./ClientCalendar.css";
-import AppointmentPayment from "./AppointmentPayment";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
 
-export default function ClientCalendar({ workHours = {}, selectedService, onBackToList }) {
+export default function ClientCalendar({ workHours = {}, selectedService, onBackToList, businessId }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
@@ -16,28 +15,18 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
   const [clientPhone, setClientPhone] = useState("");
   const [clientAddress, setClientAddress] = useState("");
   const [clientNote, setClientNote] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
-  const [paymentStep, setPaymentStep] = useState("summary");
-  const [selectedPayment, setSelectedPayment] = useState("");
-
-  // מעדכן את חודש/שנה אם בוחרים תאריך בחודש/שנה אחרת
   useEffect(() => {
     setMonth(selectedDate.getMonth());
     setYear(selectedDate.getFullYear());
   }, [selectedDate]);
 
-  // שעות לפי יום בשבוע
-  const dayIdx = selectedDate.getDay(); // 0 (ראשון) עד 6 (שבת)
+  const dayIdx = selectedDate.getDay();
   const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
-
-  // הדפסות debug
-  useEffect(() => {
-    console.log("workHours:", workHours);
-    console.log("selectedDate:", selectedDate, "dayIdx:", dayIdx);
-    console.log("config:", config);
-  }, [workHours, selectedDate, config]);
 
   useEffect(() => {
     if (config?.start && config?.end) {
@@ -47,7 +36,6 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
     }
     setSelectedSlot(null);
     setMode("slots");
-    // eslint-disable-next-line
   }, [selectedDate, config]);
 
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
@@ -87,34 +75,48 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
     setSelectedSlot({
       time,
       date: selectedDate.toLocaleDateString("he-IL"),
+      rawDate: selectedDate,
       duration: selectedService.duration,
       price: selectedService.price,
       name: selectedService.name,
+      serviceId: selectedService._id
     });
     setMode("summary");
   };
 
-  const handleSubmitBooking = () => {
+  const handleSubmitBooking = async () => {
     if (!clientName || !clientPhone || !clientAddress) {
       alert("אנא מלא את כל הפרטים הנדרשים");
       return;
     }
-    const booking = {
-      id: Date.now(),
-      name: clientName,
-      phone: clientPhone,
-      address: clientAddress,
-      note: clientNote,
-      paymentMethod: selectedPayment,
-      status: "חדש",
-      ...selectedSlot,
-    };
-    const existing = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
-    localStorage.setItem("demoAppointments", JSON.stringify([...existing, booking]));
-    setBookingSuccess(true);
+    if (!selectedSlot) {
+      alert("לא נבחרה שעה");
+      return;
+    }
+    if (!businessId) {
+      alert("אין מזהה עסק. נא לרענן את הדף ולנסות שוב.");
+      return;
+    }
+    try {
+      await API.post("/appointments", {
+        businessId,
+        serviceId: selectedSlot.serviceId,
+        date: selectedSlot.rawDate.toISOString().slice(0, 10), // YYYY-MM-DD
+        time: selectedSlot.time,
+        name: clientName,
+        phone: clientPhone,
+        address: clientAddress,
+        note: clientNote,
+        email: clientEmail,
+        price: selectedSlot.price,
+        duration: selectedSlot.duration,
+      });
+      setBookingSuccess(true);
+    } catch (err) {
+      alert("שגיאה בשליחת תיאום: " + (err?.response?.data?.message || err.message));
+    }
   };
 
-  // --- לוח שנה עם כפתורי חודשי ניווט ---
   return (
     <div className="client-calendar-wrapper">
       {mode === "slots" && (
@@ -168,9 +170,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
             <h4>📆 {selectedDate.toLocaleDateString("he-IL")}</h4>
             {config ? (
               <>
-                <p>
-                  🕓 שעות פעילות: {config.start} - {config.end}
-                </p>
+                <p>🕓 שעות פעילות: {config.start} - {config.end}</p>
                 {config.breaks && <p>⏸️ הפסקות: {config.breaks}</p>}
                 <h5>🕒 שעות פנויות:</h5>
                 {availableSlots.length ? (
@@ -194,7 +194,7 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
 
       {mode === "summary" && selectedSlot && (
         <div className="summary-box">
-          {paymentStep === "summary" && !bookingSuccess ? (
+          {!bookingSuccess ? (
             <>
               <h4 className="success-message">📋 סיכום תיאום</h4>
               <p>🧾 שירות: {selectedSlot.name}</p>
@@ -223,6 +223,12 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
                   value={clientAddress}
                   onChange={e => setClientAddress(e.target.value)}
                 />
+                <label>אימייל (לשליחת אישור):</label>
+                <input
+                  value={clientEmail}
+                  onChange={e => setClientEmail(e.target.value)}
+                  type="email"
+                />
                 <label>הערה (לא חובה):</label>
                 <textarea
                   value={clientNote}
@@ -232,27 +238,18 @@ export default function ClientCalendar({ workHours = {}, selectedService, onBack
 
               <button
                 className="confirm-slot-btn"
-                onClick={() => setPaymentStep("payment")}
+                onClick={handleSubmitBooking}
               >
-                💳 המשך לתשלום
+                📅 תיאום תור
               </button>
               <button className="back-button" onClick={() => setMode("slots")}>
                 🔙 חזרה לשעות
               </button>
             </>
-          ) : paymentStep === "payment" && !bookingSuccess ? (
-            <AppointmentPayment
-              onBack={() => setPaymentStep("summary")}
-              onSubmit={data => {
-                setSelectedPayment(data.method);
-                handleSubmitBooking();
-                setPaymentStep("done");
-              }}
-            />
           ) : (
             <div>
               <h4 className="success-message">🎉 התיאום נשלח בהצלחה!</h4>
-              <p>נציג יחזור אליך לאישור</p>
+              <p>נשלח אישור למייל (אם הוזן)</p>
               <button className="back-button" onClick={onBackToList}>
                 🔙 חזרה לרשימה
               </button>

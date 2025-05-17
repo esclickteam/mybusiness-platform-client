@@ -262,6 +262,7 @@ export default function BusinessProfileView() {
                           workHours={schedule}
                           selectedService={selectedService}
                           onBackToList={()=>setSelectedService(null)}
+                            businessId={bizId}
                         />
                       </div>
                     </>
