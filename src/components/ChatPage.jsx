@@ -1,5 +1,7 @@
+// src/components/ChatPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import API from '@api'; // או נתיב נכון ל־API שלך
 import ChatComponent from './ChatComponent';
 import ConversationsList from './ConversationsList';
 import './ChatPage.css';
@@ -20,19 +22,19 @@ export default function ChatPage({
     conversationId: initialConversationId,
     partnerId: initialPartnerId
   });
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!isBusiness || !userId) return; // רק לעסקים, ורק אם יש userId
-    fetch(
-      `/api/messages/conversations?businessId=${userId}`,
-      { credentials: 'include' }
-    )
+
+    API.get('/messages/conversations', { withCredentials: true })
       .then(res => {
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
-        return res.json();
+        setConversations(Array.isArray(res.data) ? res.data : []);
       })
-      .then(data => setConversations(Array.isArray(data) ? data : []))
-      .catch(console.error);
+      .catch(err => {
+        console.error('שגיאה בטעינת שיחות:', err);
+        setError('לא ניתן לטעון שיחות');
+      });
   }, [isBusiness, userId]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
@@ -42,8 +44,9 @@ export default function ChatPage({
   return (
     <div className="chat-page">
       <aside className="chat-sidebar">
+        {error && <div className="error-banner">{error}</div>}
         <ConversationsList
-          conversations={Array.isArray(conversations) ? conversations : []}
+          conversations={conversations}
           isBusiness={isBusiness}
           onSelect={handleSelect}
           selectedConversationId={selected.conversationId}

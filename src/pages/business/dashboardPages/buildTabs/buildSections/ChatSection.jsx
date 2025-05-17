@@ -44,7 +44,6 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     setError("");
     try {
       const res = await API.get("/messages/conversations", {
-        params: { businessId },
         withCredentials: true
       });
       setConversations(res.data);

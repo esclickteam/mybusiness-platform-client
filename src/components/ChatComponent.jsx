@@ -42,7 +42,6 @@ export default function ChatComponent({
       setLoading(true);
       try {
         const res = await API.get("/messages/conversations", {
-          params: { businessId: userId },
           withCredentials: true,
         });
         setConversations(res.data);

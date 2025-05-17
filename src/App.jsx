@@ -324,7 +324,6 @@ function BusinessChatListWrapper() {
 
   useEffect(() => {
     API.get("/messages/conversations", {
-      params: { businessId },
       withCredentials: true
     })
       .then(res => setConvos(res.data))
