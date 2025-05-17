@@ -33,8 +33,10 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
         console.error("❌ [History] Error loading history:", err);
       });
 
-    // 2) התחבר ל־Socket.IO
-    socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
+    // 2) התחבר ל־Socket.IO בכתובת הנכונה (מתוך env)
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    console.log("🔗 Connecting to socket at:", socketUrl);
+    socketRef.current = io(socketUrl, {
       query: { conversationId, businessId, userId, role: "client" }
     });
 

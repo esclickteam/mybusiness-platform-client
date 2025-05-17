@@ -33,7 +33,9 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       });
 
     // 2. Connect to socket room for this conversation
-    socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    console.log("🔗 Connecting to socket at:", socketUrl);
+    socketRef.current = io(socketUrl, {
       query: { conversationId, businessId, userId: businessId, role: "business" }
     });
     socketRef.current.on("connect", () => {
