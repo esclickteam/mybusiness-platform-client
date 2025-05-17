@@ -21,7 +21,7 @@ export default function ChatPage({
     partnerId: initialPartnerId
   });
 
-  // הגנה: businessId לא ריק
+  // ודא שמזהה העסק נכון בכל תצורה (לא ריק)
   const businessIdToUse = isBusiness ? userId : initialPartnerId;
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function ChatPage({
       { credentials: 'include' }
     )
       .then(res => res.json())
-      .then(data => setConversations(data))
+      .then(data => setConversations(Array.isArray(data) ? data : []))
       .catch(console.error);
   }, [businessIdToUse]);
 
@@ -44,7 +44,7 @@ export default function ChatPage({
     <div className="chat-page">
       <aside className="chat-sidebar">
         <ConversationsList
-          conversations={conversations}
+          conversations={Array.isArray(conversations) ? conversations : []}
           isBusiness={isBusiness}
           onSelect={handleSelect}
           selectedConversationId={selected.conversationId}
