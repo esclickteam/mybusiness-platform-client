@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import API from '@api';
 import '../../build/Build.css';
 import './ShopAndCalendar.css';
 
@@ -23,6 +24,28 @@ export default function ShopAndCalendar({
       }));
     }
   }, [safeServices, isPreview, setBusinessDetails]);
+
+  // טעינת שעות היומן מה־API בזמן mount (לא בפריוויו)
+  useEffect(() => {
+    if (!isPreview) {
+      API.get('/appointments/get-work-hours')
+        .then(res => {
+          // מניח שהתשובה היא מערך של אובייקטים { day, start, end }
+          const map = (res.data || []).reduce((acc, { day, start, end }) => {
+            acc[day] = { start, end };
+            return acc;
+          }, {});
+          setWorkHours(map);
+          setBusinessDetails(prev => ({
+            ...prev,
+            workHours: map
+          }));
+        })
+        .catch(err => {
+          console.warn('לא הצלחנו לטעון שעות יומן:', err);
+        });
+    }
+  }, [isPreview, setWorkHours, setBusinessDetails]);
 
   // תמיד רנדר יומן בלבד
   return (
