@@ -1,44 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
-import ChatComponent from "../../../../../components/ChatComponent"; 
+import ChatComponent from "../../../../../components/ChatComponent";
 import "./ChatSection.css";
 
 export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const { user, initialized } = useAuth();
 
-  const [clients, setClients]               = useState([]);
-  const [newPartnerId, setNewPartnerId]    = useState("");
-  const [selected, setSelected]            = useState({ conversationId: null, partnerId: null });
-  const [conversations, setConversations]  = useState([]);
-  const [isLoading, setIsLoading]          = useState(false);
-  const [error, setError]                  = useState("");
+  const [clients, setClients] = useState([]);
+  const [newPartnerId, setNewPartnerId] = useState("");
+  const [selected, setSelected] = useState({ conversationId: null, partnerId: null });
+  const [conversations, setConversations] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // עוצרים הכל אם אין יוזר או ביזנס איי.די
+  const businessId = user?.businessId;
 
   // 1. טוען את כל הלקוחות
   useEffect(() => {
-    if (!initialized) return;
+    if (!initialized || !businessId) return;
     setIsLoading(true);
-    API.get("/business/clients", { withCredentials: true })
+    API.get("/business/clients", {
+      params: { businessId },
+      withCredentials: true,
+    })
       .then(res => setClients(res.data))
       .catch(err => {
         console.error("שגיאה בטעינת לקוחות", err);
         setError("לא ניתן לטעון לקוחות");
       })
       .finally(() => setIsLoading(false));
-  }, [initialized]);
+  }, [initialized, businessId]);
 
   // 2. טוען שיחות קיימות
   useEffect(() => {
-    if (!initialized) return;
+    if (!initialized || !businessId) return;
     fetchConversations();
-  }, [initialized]);
+    // eslint-disable-next-line
+  }, [initialized, businessId]);
 
   const fetchConversations = async () => {
     setIsLoading(true);
     setError("");
     try {
-      // קריאה מתוקנת ל־REST
-      const res = await API.get("/messages/conversations", { withCredentials: true });
+      const res = await API.get("/messages/conversations", {
+        params: { businessId },
+        withCredentials: true,
+      });
       setConversations(res.data);
     } catch (err) {
       console.error("שגיאה בטעינת שיחות", err);
@@ -54,10 +63,9 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     setIsLoading(true);
     setError("");
     try {
-      // קריאה מתוקנת לפתיחת/איתור שיחה
       const res = await API.post(
         "/messages/conversations",
-        { otherId: newPartnerId },
+        { otherId: newPartnerId, businessId }, // שים לב: גם כאן אפשר להוסיף businessId בבאדי אם צריך
         { withCredentials: true }
       );
       const convId = res.data.conversationId;
@@ -72,6 +80,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
   };
 
   if (!initialized) return <div className="loading-screen">🔄 טוען…</div>;
+  if (!businessId) return <div className="error-banner">לא נמצא מזהה עסק</div>;
 
   return (
     <div className="chat-section">
@@ -108,7 +117,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
         <ul className="convo-list">
           {conversations.map(conv => {
             const isUserBus = isBusiness || user.userId === conv.business._id;
-            const partnerId   = isUserBus ? conv.customer._id : conv.business._id;
+            const partnerId = isUserBus ? conv.customer._id : conv.business._id;
             const partnerName = isUserBus ? conv.customer.name : conv.business.businessName;
             return (
               <li
