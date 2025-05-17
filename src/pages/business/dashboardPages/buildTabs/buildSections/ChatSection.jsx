@@ -32,23 +32,27 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
 
   // 2. טוען שיחות קיימות
   useEffect(() => {
-    if (!initialized || !businessId) return;
-    fetchConversations();
-  }, [initialized, businessId]);
+  if (!initialized || !businessId) return;
+  fetchConversations();
+}, [initialized, businessId]);
 
-  const fetchConversations = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      const res = await API.get("/messages/conversations", { withCredentials: true });
-      setConversations(res.data);
-    } catch (err) {
-      console.error("שגיאה בטעינת שיחות", err);
-      setError("שגיאה בטעינת שיחות");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const fetchConversations = async () => {
+  setIsLoading(true);
+  setError("");
+  try {
+    const res = await API.get("/messages/conversations", {
+      params: { businessId },       // הוספת businessId בפרמטרים
+      withCredentials: true
+    });
+    setConversations(res.data);
+  } catch (err) {
+    console.error("שגיאה בטעינת שיחות", err);
+    setError("שגיאה בטעינת שיחות");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   // 3. פותח או מוצא שיחה חדשה
   const startNewConversation = async () => {
