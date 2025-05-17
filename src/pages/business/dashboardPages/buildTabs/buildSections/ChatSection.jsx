@@ -15,16 +15,14 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // מזהה העסק מגיע תמיד מתוך ה-JWT
   const businessId = user?.businessId;
 
-  // 1. טוען את כל הלקוחות
+  // 1. טוען את כל הלקוחות (ללא params)
   useEffect(() => {
     if (!initialized || !businessId) return;
     setIsLoading(true);
-    API.get("/business/clients", {
-      params: { businessId },
-      withCredentials: true
-    })
+    API.get("/business/clients", { withCredentials: true })
       .then(res => setClients(res.data))
       .catch(err => {
         console.error("שגיאה בטעינת לקוחות", err);
@@ -33,7 +31,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
       .finally(() => setIsLoading(false));
   }, [initialized, businessId]);
 
-  // 2. טוען שיחות קיימות
+  // 2. טוען שיחות קיימות (גם כאן ללא params)
   useEffect(() => {
     if (!initialized || !businessId) return;
     fetchConversations();
@@ -43,9 +41,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     setIsLoading(true);
     setError("");
     try {
-      const res = await API.get("/messages/conversations", {
-        withCredentials: true
-      });
+      const res = await API.get("/messages/conversations", { withCredentials: true });
       setConversations(res.data);
     } catch (err) {
       console.error("שגיאה בטעינת שיחות", err);
