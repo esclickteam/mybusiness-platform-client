@@ -12,7 +12,7 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
   useEffect(() => {
     if (!conversationId) return;
 
-    // 1. fetch history
+    // 1. Load history
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
@@ -20,23 +20,25 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
       .then(res => setMessages(res.data))
       .catch(console.error);
 
-    // 2. התחברות ל-socket
+    // 2. Connect to socket
     socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
       query: { conversationId, businessId, userId: user.id, role: "client" }
     });
 
+    // Listen for new messages
     socketRef.current.on("newMessage", msg => {
       setMessages(prev => [...prev, msg]);
     });
 
     return () => {
       socketRef.current.disconnect();
-      setMessages([]); // לאפס כשעוברים לשיחה אחרת
+      setMessages([]);
     };
   }, [conversationId, businessId, user.id]);
 
   const sendMessage = () => {
     if (!input.trim() || !conversationId) return;
+
     const msg = {
       conversationId,
       from: user.id,
@@ -44,11 +46,13 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
       text: input.trim(),
       timestamp: new Date().toISOString()
     };
+
     socketRef.current.emit("sendMessage", msg, ack => {
-      // אפשר לוודא ב־ack שהשרת קיבל
-      if (ack.success) {
+      if (ack?.success) {
         setMessages(prev => [...prev, msg]);
         setInput("");
+      } else {
+        console.error("Send failed", ack?.error);
       }
     });
   };

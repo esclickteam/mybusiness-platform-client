@@ -1,7 +1,7 @@
-// src/components/ChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
+import ChatComponent from "../../../../../../../components/ChatComponent"; 
 import "./ChatSection.css";
 
 export default function ChatSection({ renderTopBar, isBusiness = false }) {

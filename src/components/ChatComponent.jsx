@@ -9,6 +9,7 @@ export default function ChatComponent({
   initialConversationId,
   isBusiness
 }) {
+  // המשתמש מחובר כעסק
   if (isBusiness) {
     return (
       <BusinessChatTab
@@ -17,13 +18,13 @@ export default function ChatComponent({
         customerId={partnerId}
       />
     );
-  } else {
-    return (
-      <ClientChatTab
-        conversationId={initialConversationId}
-        businessId={partnerId}
-        user={{ id: userId }}
-      />
-    );
   }
+  // המשתמש מחובר כלקוח
+  return (
+    <ClientChatTab
+      conversationId={initialConversationId}
+      businessId={partnerId}
+      user={{ id: userId }}
+    />
+  );
 }
