@@ -144,7 +144,7 @@
   padding: 8px 0;           /* פחות גובה */
   width: 140px;             /* רוחב קבוע */
   max-width: 90%;           /* מוודא תגובה לרספונסיב */
-  display: flex;
+  display: inline-flex;     /* inline-flex לשמירה על גודל נכון */
   align-items: center;
   justify-content: center;
   gap: 0.5em;               /* מרווח קטן יותר בין האייקון לטקסט */
@@ -152,6 +152,7 @@
   box-shadow: 0 2px 8px rgba(122,61,244,0.10);
   transition: background .18s, transform .11s;
 }
+
 .go-to-calendar-btn:hover {
   background: linear-gradient(90deg, #7a3df4 0%, #5e2fcf 90%);
   transform: scale(1.04);
