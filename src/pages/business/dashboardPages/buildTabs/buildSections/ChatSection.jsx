@@ -15,16 +15,13 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // מזהה העסק מתוך היוזר
   const businessId = user?.businessId;
 
   // 1. טוען את כל הלקוחות
   useEffect(() => {
     if (!initialized || !businessId) return;
     setIsLoading(true);
-    API.get("/business/clients", {
-      withCredentials: true, // *** אל תשלח params בכלל ***
-    })
+    API.get("/business/clients", { withCredentials: true })
       .then(res => setClients(res.data))
       .catch(err => {
         console.error("שגיאה בטעינת לקוחות", err);
@@ -37,16 +34,13 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
   useEffect(() => {
     if (!initialized || !businessId) return;
     fetchConversations();
-    // eslint-disable-next-line
   }, [initialized, businessId]);
 
   const fetchConversations = async () => {
     setIsLoading(true);
     setError("");
     try {
-      const res = await API.get("/messages/conversations", {
-        withCredentials: true, // *** אל תשלח params בכלל ***
-      });
+      const res = await API.get("/messages/conversations", { withCredentials: true });
       setConversations(res.data);
     } catch (err) {
       console.error("שגיאה בטעינת שיחות", err);
@@ -64,7 +58,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     try {
       const res = await API.post(
         "/messages/conversations",
-        { otherId: newPartnerId }, // *** לא צריך businessId בבאדי ***
+        { otherId: newPartnerId },
         { withCredentials: true }
       );
       const convId = res.data.conversationId;
@@ -115,7 +109,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
 
         <ul className="convo-list">
           {conversations.map(conv => {
-            const isUserBus = isBusiness || user.id === conv.business._id;
+            const isUserBus = isBusiness || user.userId === conv.business._id;
             const partnerId = isUserBus ? conv.customer._id : conv.business._id;
             const partnerName = isUserBus
               ? conv.customer.name
@@ -140,7 +134,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
       <main className="chat-main">
         {selected.conversationId ? (
           <ChatComponent
-            userId={user.id}           // <-- כאן שינינו ל-user.id
+            userId={user.userId}                    // <-- פה
             partnerId={selected.partnerId}
             initialConversationId={selected.conversationId}
             isBusiness={isBusiness}
