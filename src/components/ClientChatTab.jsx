@@ -1,18 +1,18 @@
 // src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../api"; 
+import API from "../api";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({ conversationId, businessId, user }) {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+  const [input, setInput]       = useState("");
   const socketRef = useRef();
 
   useEffect(() => {
     if (!conversationId) return;
 
-    // 1. Load history
+    // 1) טען היסטוריה
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
@@ -20,16 +20,20 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
       .then(res => setMessages(res.data))
       .catch(console.error);
 
-    // 2. Connect to socket
+    // 2) התחבר ל־Socket.IO
     socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
       query: { conversationId, businessId, userId: user.id, role: "client" }
     });
 
-    // Listen for new messages
+    // הצטרף לחדר השיחה
+    socketRef.current.emit("joinRoom", conversationId);
+
+    // 3) מאזין להודעות חדשות
     socketRef.current.on("newMessage", msg => {
       setMessages(prev => [...prev, msg]);
     });
 
+    // נקה ב־unmount
     return () => {
       socketRef.current.disconnect();
       setMessages([]);
@@ -47,12 +51,14 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
       timestamp: new Date().toISOString()
     };
 
+    // שלח לשרת עם callback
     socketRef.current.emit("sendMessage", msg, ack => {
       if (ack?.success) {
+        // עדכן תצוגה מקומית
         setMessages(prev => [...prev, msg]);
         setInput("");
       } else {
-        console.error("Send failed", ack?.error);
+        console.error("Failed to send:", ack?.error);
       }
     });
   };
@@ -75,6 +81,7 @@ export default function ClientChatTab({ conversationId, businessId, user }) {
           </div>
         ))}
       </div>
+
       <div className="input-bar">
         <input
           type="text"
