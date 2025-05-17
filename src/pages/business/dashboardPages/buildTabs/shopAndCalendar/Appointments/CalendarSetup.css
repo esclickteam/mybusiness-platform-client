@@ -159,3 +159,8 @@
     width: 60px;
   }
 }
+
+div.calendar-setup-container > .summary {
+  background: #fff;
+  box-shadow: none;
+}
