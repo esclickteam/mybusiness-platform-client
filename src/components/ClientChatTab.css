@@ -91,6 +91,7 @@
 /* קלט */
 .chat-container.client .input-bar input {
   flex: 1;
+  min-width: 0;                 /* ← תוספת: מאפשר לכפתור להיות קליקבילי */
   padding: 12px 14px;
   font-size: 15px;
   border: 1.5px solid #e0e0e0;
