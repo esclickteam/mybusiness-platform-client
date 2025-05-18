@@ -1,3 +1,4 @@
+// src/components/ClientChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import API from "../api";
@@ -11,14 +12,17 @@ export default function ClientChatSection() {
   const userId = user?.id || null;
 
   const [conversationId, setConversationId] = useState(null);
-  const [isCreating, setIsCreating] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // כשיש businessId ו־userId, יוצרים או מקבלים שיחה
+  // ברגע שיש userId ו־businessId, פותחים/יוצרים שיחה
   useEffect(() => {
-    if (!userId || !businessId) return;
+    if (!initialized) return;
+    if (!userId || !businessId) {
+      setLoading(false);
+      return;
+    }
 
-    setIsCreating(true);
     API.post(
       "/api/messages/conversations",
       { otherId: businessId },
@@ -28,38 +32,34 @@ export default function ClientChatSection() {
         setConversationId(res.data.conversationId);
       })
       .catch((err) => {
-        console.warn("❌ [CREATE] Error creating conversation:", err);
-        setError("שגיאה ביצירת שיחה");
+        console.warn("❌ Error creating conversation:", err);
+        setError("ניהול שיחה נכשל, נסה שוב");
       })
       .finally(() => {
-        setIsCreating(false);
+        setLoading(false);
       });
-  }, [businessId, userId]);
+  }, [initialized, userId, businessId]);
 
   if (!initialized) {
     return <div>טוען משתמש...</div>;
+  }
+
+  if (loading) {
+    return <div className={styles.spinner}>טוען שיחה…</div>;
+  }
+
+  if (error) {
+    return <div className={styles.error}>{error}</div>;
   }
 
   return (
     <div className={styles.chatSection}>
       <aside className={styles.chatSidebar}>
         <h3>שיחה עם העסק</h3>
-        {!businessId && (
-          <div className={styles.noConversations}>לא נבחר עסק</div>
-        )}
-        {businessId && isCreating && (
-          <div className={styles.spinner}>יוצר שיחה…</div>
-        )}
-        {businessId && error && (
-          <div className={styles.error}>{error}</div>
-        )}
-        {businessId && !isCreating && !error && (
-          <ul className={styles.convoList}>
-            <li className={styles.selected}>
-              {businessId}
-            </li>
-          </ul>
-        )}
+        <div className={styles.partnerName}>
+          {/* אפשר לשאול את API להוציא את שם העסק */}
+          {businessId}
+        </div>
       </aside>
 
       <main className={styles.chatMain}>
@@ -70,10 +70,10 @@ export default function ClientChatSection() {
             userId={userId}
             partnerId={businessId}
           />
-        ) : businessId ? (
-          <div className={styles.chatPlaceholder}>טוען שיחה…</div>
         ) : (
-          <div className={styles.chatPlaceholder}>בחר עסק לצ'אט</div>
+          <div className={styles.chatPlaceholder}>
+            לא הצלחנו לפתוח שיחה…
+          </div>
         )}
       </main>
     </div>
