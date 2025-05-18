@@ -14,9 +14,43 @@ export default function BusinessChatWrapper() {
   // טען שיחות לעסק
   useEffect(() => {
     API.get('/messages/conversations', { withCredentials: true })
-      .then(res => setConvos(res.data))
+      .then(res => {
+        // תמיכה גם במבנה עם conversations
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data.conversations || [];
+        setConvos(data);
+
+        // ברירת מחדל – בחירת שיחה ראשונה אם יש
+        if (data.length > 0 && !selected) {
+          const first = data[0];
+          const convoId =
+            first._id || first.conversationId || first.id;
+          // חפש את ה-partnerId שהוא לא businessId
+          const partnerId =
+            (first.participants || []).find(pid => pid !== businessId) ||
+            first.customer?._id || null;
+          setSelected({ conversationId: convoId, partnerId });
+        }
+      })
       .catch(console.error);
+  // לא נכניס selected לתלויות כדי לא לגרום לולאת רינדור
   }, [businessId]);
+
+  // בחירת שיחה מהסיידבר
+  const handleSelect = (conversationId) => {
+    const convo = convos.find(
+      c =>
+        c._id === conversationId ||
+        c.conversationId === conversationId ||
+        c.id === conversationId
+    );
+    if (!convo) return setSelected(null);
+    const partnerId =
+      (convo.participants || []).find(pid => pid !== businessId) ||
+      convo.customer?._id || null;
+    setSelected({ conversationId, partnerId });
+  };
 
   return (
     <div className="business-chat-wrapper" style={{ display: 'flex', height: '100%' }}>
@@ -25,15 +59,19 @@ export default function BusinessChatWrapper() {
         businessId={businessId}
         isBusiness={true}
         selectedConversationId={selected?.conversationId}
-        onSelect={setSelected}
+        onSelect={handleSelect}
       />
-      {selected && (
+      {selected && selected.partnerId ? (
         <ChatPage
           isBusiness={true}
           userId={businessId}
           partnerId={selected.partnerId}
           conversationId={selected.conversationId}
         />
+      ) : (
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#b5b5b5" }}>
+          בחר שיחה כדי לראות הודעות
+        </div>
       )}
     </div>
   );

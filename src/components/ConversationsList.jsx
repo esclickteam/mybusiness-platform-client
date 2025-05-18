@@ -18,7 +18,6 @@ export default function ConversationsList({
     const partnerId = Array.isArray(conv.participants)
       ? conv.participants.find(p => p !== businessId)
       : "";
-    // מוצאים את המקרה הראשון במערך עם אותו partnerId
     return (
       arr.findIndex(c => {
         const pid = Array.isArray(c.participants)
@@ -40,7 +39,7 @@ export default function ConversationsList({
             ? conv.participants
             : [];
           const partnerId = participants.find(p => p !== businessId) || "";
-          const convoId = conv._id || conv.id || `conv-${idx}`;
+          const convoId = conv._id || conv.conversationId || conv.id || `conv-${idx}`;
           const displayName = isBusiness
             ? conv.customerName || partnerId
             : conv.businessName || partnerId;
@@ -49,9 +48,7 @@ export default function ConversationsList({
           return (
             <div
               key={convoId}
-              className={`${styles.conversationItem} ${
-                isActive ? styles.active : ""
-              }`}
+              className={`${styles.conversationItem} ${isActive ? styles.active : ""}`}
               onClick={() => onSelect(convoId, partnerId)}
             >
               {displayName}
