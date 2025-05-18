@@ -38,11 +38,13 @@ export default function ClientChatSection() {
 
   // 2) ברגע שיש conversationId – שליפה של כל השיחות ואז מציאת השיחה שלנו
   useEffect(() => {
-    if (!conversationId) return;
+    if (!conversationId || !businessId) return;
 
-    API.get("/messages/conversations", { withCredentials: true })
+    API.get("/messages/conversations", {
+      params: { businessId },
+      withCredentials: true
+    })
       .then(res => {
-        // תמיכה בתרחישים שונים: אולי res.data הוא מערך, או שיש משם שדה res.data.conversations
         const conversations = Array.isArray(res.data)
           ? res.data
           : Array.isArray(res.data.conversations)
@@ -69,7 +71,7 @@ export default function ClientChatSection() {
       .finally(() => {
         setBusy(false);
       });
-  }, [conversationId]);
+  }, [conversationId, businessId]);
 
   if (!initialized || busy) {
     return <div className={styles.spinner}>טוען…</div>;
