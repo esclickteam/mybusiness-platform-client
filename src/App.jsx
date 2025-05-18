@@ -1,7 +1,7 @@
 // src/App.jsx
+// src/App.jsx
 import React, { Suspense, lazy } from "react";
 import {
-  BrowserRouter,
   Routes,
   Route,
   Navigate,
@@ -69,7 +69,7 @@ export default function App() {
   const { user } = useAuth();
 
   return (
-    <BrowserRouter>
+    <>
       <Header />
       <ScrollToTop />
       <Suspense fallback={<div>🔄 טוען…</div>}>
@@ -262,9 +262,10 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </>
   );
 }
+
 
 // Wrapper for business showing list of conversations
 function BusinessChatListWrapper() {
