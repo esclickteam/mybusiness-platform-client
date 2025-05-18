@@ -20,17 +20,21 @@
 /* Sidebar */
 .chatSidebar {
   width: 250px;
-  background: #f7f7fa;
-  border-left: 1.5px solid #e0e0e0;
+  min-width: 180px;
+  max-width: 320px;
+  background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
+  border-left: 2px solid #c3a6fa;     /* סגול לייט, לא אפור */
+  border-radius: 18px 0 0 18px;        /* פינה עגולה מימין כמו כרטיס */
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  box-shadow: 1px 0 6px #0001;
+  box-shadow: 2px 0 14px #c3a6fa24, 0 1.5px 8px #7c43bd11;
   z-index: 2;
-  padding-bottom: 8px;
-  min-width: 200px;
-  max-width: 320px;
+  padding-bottom: 12px;
+  padding-top: 8px;
+  /* אפשר להוסיף מרווח מהצדדים (margin-right/left) אם צריך */
 }
+
 
 .chatSidebar h3 {
   padding: 22px 20px 8px 16px;
