@@ -3,7 +3,6 @@
 /* WhatsApp background wrapper */
 .whatsappBg {
   min-height: 100vh;
-  /* תוקן ל־lavender במקום #ece5dd */
   background: #f3edff;
   display: flex;
   align-items: center;
@@ -18,27 +17,24 @@
   min-height: 380px;
   max-height: 700px;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row; /* סידור רגיל */
   border-radius: 16px;
-  /* box-shadow violet */
   box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
   overflow: hidden;
-  background: #faf7ff;      /* כמו ב־Client: כמעט לבן עם נגיעת סגול */
-  border: 1px solid #c3a6fa;/* סגול בהיר במקום #e0e0e0 */
+  background: #faf7ff;
+  border: 1px solid #c3a6fa;
   position: relative;
 }
 
 /* Sidebar inside WhatsApp container */
 .sidebarInner {
   width: 246px;
-  /* רקע סגול עדין */
   background: #f3edff;
   border-left: 1.5px solid #c3a6fa;
   border-right: 1.5px solid #c3a6fa;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  /* צל סגול קל */
   box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
   z-index: 2;
 }
@@ -65,16 +61,16 @@
 /* Chat area inside WhatsApp container */
 .chatArea {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  /* רקע בהיר מאוד, כמעט לבן */
+  display: flex;             /* מאפשר למקם את ה־messageList וה־inputBar */
+  flex-direction: column;    /* גלילה כלפי מעלה, ו־inputBar בתחתית */
+  height: 100%;              /* שולט על הגובה הפנימי */
   background: #faf7ff;
   min-width: 0;
 }
 
 /* Message list */
 .messageList {
-  flex: 1;
+  flex: 1;                   /* יתפוס את כל השטח שנותר מעל ל־inputBar */
   padding: 20px 18px 10px 18px;
   overflow-y: auto;
   display: flex;
@@ -99,7 +95,7 @@
 /* Business (mine) message bubble */
 .mine {
   align-self: flex-end;
-  background: #dcf8c6; /* ירוק בהיר */
+  background: #dcf8c6;
   color: #2e2d2c;
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 18px;
@@ -118,15 +114,27 @@
   border: 1px solid #eee;
 }
 
+/* Timestamp under messages */
+.time {
+  font-size: 11px;
+  color: #878787;
+  margin-top: 4px;
+  text-align: left;
+  direction: ltr;
+  opacity: 0.7;
+  padding-left: 4px;
+}
+
 /* Input bar at bottom */
 .inputBar {
   display: flex;
   padding: 13px 15px 13px 12px;
-  border-top: 1.5px solid #e9e6ff; /* סגול עדין */
+  border-top: 1.5px solid #e9e2ff;
   background: #f3edff;
   align-items: center;
   min-height: 66px;
   z-index: 1;
+  flex-shrink: 0;            /* תישאר תמיד בתחתית */
 }
 
 /* Text input field */

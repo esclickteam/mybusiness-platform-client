@@ -1,43 +1,39 @@
-/* ClientChatSection.module.css */
+/* src/components/ClientChatSection.module.css */
 
 /* מבנה ראשי */
 .chatSection {
   display: flex;
-  flex-direction: row-reverse; /* sidebar בימין */
-  direction: ltr !important;   /* חובה לעקוף RTL גלובלי */
+  flex-direction: row-reverse;     /* sidebar בימין */
+  direction: ltr !important;       /* חובה לעקוף RTL גלובלי */
   height: 80vh;
   max-height: 700px;
   min-height: 400px;
-  background: #ece5dd;
+  background: #f3edff;             /* כמו בצד העסק */
   border-radius: 16px;
-  box-shadow: 0 4px 32px #0002;
-  overflow: visible;           /* ← שונה מ־hidden ל־visible */
-  border: none;
+  box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
+  overflow: visible;           
+  border: 1px solid #c3a6fa;      /* סגול בהיר במקום ללא גבול */
   margin: 0 auto;
 }
-
 
 /* Sidebar */
 .chatSidebar {
   width: 250px;
   min-width: 180px;
   max-width: 320px;
-  background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
-  border-left: 2px solid #c3a6fa;     /* סגול לייט, לא אפור */
-  border-radius: 18px 0 0 18px;        /* פינה עגולה מימין כמו כרטיס */
+  background: #f3edff;              
+  border-left: 2px solid #c3a6fa;   
+  border-radius: 0 18px 18px 0;      /* פינה עגולה מימין */
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  box-shadow: 2px 0 14px #c3a6fa24, 0 1.5px 8px #7c43bd11;
+  box-shadow: 2px 0 14px rgba(163,137,235,0.15), 0 1.5px 8px rgba(124,67,189,0.07);
   z-index: 2;
-  padding-bottom: 12px;
-  padding-top: 8px;
-  /* אפשר להוסיף מרווח מהצדדים (margin-right/left) אם צריך */
+  padding: 8px 0 12px;
 }
 
-
 .chatSidebar h3 {
-  padding: 22px 20px 8px 16px;
+  padding: 22px 16px 8px 20px;
   font-weight: bold;
   color: #4a3aff;
   font-size: 1.18rem;
@@ -59,7 +55,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #222;
+  color: #252525;
   border-bottom: 1px solid #f3f3f3;
   font-size: 15px;
   background: none;
@@ -80,8 +76,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #efeae2;
+  background: #faf7ff;
   min-width: 0;
+  position: relative;
 }
 
 /* Placeholder */
@@ -97,14 +94,9 @@
 }
 
 /* טעינה / שגיאות */
-.spinner {
-  color: #999;
-  font-size: 15px;
-  text-align: center;
-  margin: 18px 0;
-}
+.spinner,
 .noConversations {
-  color: #bbb;
+  color: #777;
   font-size: 15px;
   text-align: center;
   margin: 18px 0;

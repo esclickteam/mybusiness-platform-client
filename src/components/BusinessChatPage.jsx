@@ -44,20 +44,7 @@ export default function BusinessChatPage() {
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
-        <section className={styles.sidebarInner}>
-          {loading ? (
-            <p className={styles.loading}>טוען שיחות…</p>
-          ) : (
-            <ConversationsList
-              conversations={convos}
-              businessId={businessId}
-              selectedConversationId={selected?.conversationId}
-              onSelect={handleSelect}
-              isBusiness={true}
-            />
-          )}
-        </section>
-
+        {/* קודם תיבת השיחה */}
         <section className={styles.chatArea}>
           {selected ? (
             <BusinessChatTab
@@ -69,6 +56,21 @@ export default function BusinessChatPage() {
             <div className={styles.emptyMessage}>
               בחר שיחה כדי לראות הודעות
             </div>
+          )}
+        </section>
+
+        {/* אחר כך הסיידבר מימין */}
+        <section className={styles.sidebarInner}>
+          {loading ? (
+            <p className={styles.loading}>טוען שיחות…</p>
+          ) : (
+            <ConversationsList
+              conversations={convos}
+              businessId={businessId}
+              selectedConversationId={selected?.conversationId}
+              onSelect={handleSelect}
+              isBusiness={true}
+            />
           )}
         </section>
       </div>

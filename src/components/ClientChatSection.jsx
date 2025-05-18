@@ -13,96 +13,87 @@ export default function ClientChatSection() {
 
   const [conversationId, setConversationId] = useState(null);
   const [businessName, setBusinessName]   = useState("");
-  const [busy, setBusy]                   = useState(true);
+  const [loading, setLoading]             = useState(true);
   const [error, setError]                 = useState("");
 
   // 1) יצירת (או מציאת) השיחה
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
-
     API.post(
       "/messages/conversations",
       { otherId: businessId },
       { withCredentials: true }
     )
       .then(res => {
-        console.log("POST /messages/conversations →", res.data);
         setConversationId(res.data.conversationId);
       })
       .catch(err => {
         console.warn("❌ Error creating conversation:", err);
         setError("שגיאה ביצירת שיחה");
-        setBusy(false);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [initialized, userId, businessId]);
 
-  // 2) ברגע שיש conversationId – שליפה של כל השיחות ואז מציאת השיחה שלנו
+  // 2) שליפת שם העסק
   useEffect(() => {
     if (!conversationId || !businessId) return;
-
+    setLoading(true);
     API.get("/messages/conversations", {
       params: { businessId },
       withCredentials: true
     })
       .then(res => {
-        const conversations = Array.isArray(res.data)
+        const arr = Array.isArray(res.data)
           ? res.data
-          : Array.isArray(res.data.conversations)
-            ? res.data.conversations
-            : [];
-
-        console.log("GET /messages/conversations →", conversations);
-        const conv = conversations.find(c =>
+          : res.data.conversations || [];
+        const conv = arr.find(c =>
           [c.conversationId, c._id, c.id]
             .map(String)
             .includes(String(conversationId))
         );
-        console.log("Selected conv:", conv);
-
-        if (conv && conv.businessName) {
-          setBusinessName(conv.businessName);
-        } else {
-          console.warn("businessName לא נמצא ב־conv, השדות הזמינים:", conv);
-        }
+        setBusinessName(conv?.businessName || "");
       })
       .catch(err => {
         console.warn("❌ Error fetching conversations:", err);
+        setError("שגיאה בטעינת שם העסק");
       })
       .finally(() => {
-        setBusy(false);
+        setLoading(false);
       });
   }, [conversationId, businessId]);
 
-  if (!initialized || busy) {
-    return <div className={styles.spinner}>טוען…</div>;
-  }
-  if (error) {
-    return <div className={styles.error}>{error}</div>;
-  }
+  if (loading) return <div className={styles.loading}>טוען…</div>;
+  if (error)   return <div className={styles.error}>{error}</div>;
 
   return (
-    <div className={styles.chatSection}>
-      <aside className={styles.chatSidebar}>
-        <h3>שיחה עם העסק</h3>
-        <div className={styles.partnerName}>
-          {businessName || businessId}
-        </div>
-      </aside>
-
-      <main className={styles.chatMain}>
-        {conversationId ? (
-          <ClientChatTab
-            conversationId={conversationId}
-            businessId={businessId}
-            userId={userId}
-            partnerId={businessId}
-          />
-        ) : (
-          <div className={styles.chatPlaceholder}>
-            לא הצלחנו לפתוח שיחה…
+    <div className={styles.whatsappBg}>
+      <div className={styles.chatContainer}>
+        {/* Sidebar */}
+        <section className={styles.sidebarInner}>
+          <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
+          <div className={styles.convItemActive}>
+            {businessName || businessId}
           </div>
-        )}
-      </main>
+        </section>
+
+        {/* Chat area */}
+        <section className={styles.chatArea}>
+          {conversationId ? (
+            <ClientChatTab
+              conversationId={conversationId}
+              businessId={businessId}
+              userId={userId}
+              partnerId={businessId}
+            />
+          ) : (
+            <div className={styles.emptyMessage}>
+              לא הצלחנו לפתוח שיחה…
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
