@@ -1,9 +1,8 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
 import ChatComponent from "../../../../../components/ChatComponent";
-import "./ChatSection.css";
+import styles from "./ChatSection.module.css";
 
 export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const { user, initialized } = useAuth();
@@ -15,10 +14,9 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // מזהה העסק מגיע תמיד מתוך ה-JWT
   const businessId = user?.businessId;
 
-  // 1. טוען את כל הלקוחות (ללא params)
+  // טען את כל הלקוחות
   useEffect(() => {
     if (!initialized || !businessId) return;
     setIsLoading(true);
@@ -31,7 +29,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
       .finally(() => setIsLoading(false));
   }, [initialized, businessId]);
 
-  // 2. טוען שיחות קיימות (גם כאן ללא params)
+  // טען שיחות קיימות
   useEffect(() => {
     if (!initialized || !businessId) return;
     fetchConversations();
@@ -51,7 +49,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     }
   };
 
-  // 3. פותח או מוצא שיחה חדשה
+  // פתח שיחה חדשה
   const startNewConversation = async () => {
     if (!newPartnerId) return;
     setIsLoading(true);
@@ -73,15 +71,19 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
     }
   };
 
-  if (!initialized) return <div className="loading-screen">🔄 טוען…</div>;
-  if (!businessId) return <div className="error-banner">לא נמצא מזהה עסק</div>;
+  if (!initialized) {
+    return <div className={styles.loadingScreen}>🔄 טוען…</div>;
+  }
+  if (!businessId) {
+    return <div className={styles.errorBanner}>לא נמצא מזהה עסק</div>;
+  }
 
   return (
-    <div className="chat-section">
-      <aside className="chat-sidebar">
+    <div className={styles.chatSection}>
+      <aside className={styles.chatSidebar}>
         <h3>שיחות</h3>
 
-        <div className="new-conversation">
+        <div className={styles.newConversation}>
           <select
             value={newPartnerId}
             onChange={e => setNewPartnerId(e.target.value)}
@@ -102,13 +104,13 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
           </button>
         </div>
 
-        {isLoading && <div className="spinner">טעינה…</div>}
-        {error && <div className="error-banner">{error}</div>}
+        {isLoading && <div className={styles.spinner}>טעינה…</div>}
+        {error && <div className={styles.errorBanner}>{error}</div>}
         {!isLoading && conversations.length === 0 && (
-          <div className="no-conversations">אין שיחות קיימות</div>
+          <div className={styles.noConversations}>אין שיחות קיימות</div>
         )}
 
-        <ul className="convo-list">
+        <ul className={styles.convoList}>
           {conversations.map(conv => {
             const isUserBus = isBusiness || user.id === conv.business._id;
             const partnerId = isUserBus ? conv.customer._id : conv.business._id;
@@ -118,9 +120,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
             return (
               <li
                 key={conv.conversationId}
-                className={`convo-item ${
-                  selected.conversationId === conv.conversationId ? "selected" : ""
-                }`}
+                className={`${styles.convoItem} ${selected.conversationId === conv.conversationId ? styles.selected : ""}`}
                 onClick={() =>
                   setSelected({ conversationId: conv.conversationId, partnerId })
                 }
@@ -132,7 +132,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
         </ul>
       </aside>
 
-      <main className="chat-main">
+      <main className={styles.chatMain}>
         {selected.conversationId ? (
           <ChatComponent
             userId={user.id}
@@ -141,13 +141,11 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
             isBusiness={isBusiness}
           />
         ) : (
-          <div className="chat-placeholder">
+          <div className={styles.chatPlaceholder}>
             בחרי שיחה מרשימה או התחל חדשה
           </div>
         )}
       </main>
-
-      
     </div>
   );
 }
