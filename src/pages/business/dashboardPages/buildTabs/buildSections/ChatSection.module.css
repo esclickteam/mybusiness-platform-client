@@ -1,17 +1,18 @@
 /* 📁 src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.module.css */
 .chatSection {
   display: flex;
-  flex-direction: row-reverse;    /* הפוך סדר כדי לסדר sidebar מימין ושדה שיחה משמאל */
-  height: 100vh;                  /* תופס את כל גובה המסך */
-  overflow: hidden;               /* מונע גלילה חיצונית */
+  /* ברירת מחדל: sidebar מימין */
+  flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .chatSidebar {
   width: 280px;
   background: #f3edff;
   padding: 1rem;
-  border-left: 1px solid #ddd;    /* הגבול עבר שמאלה */
-  overflow-y: auto;               /* גלילה פנימית לרשימת שיחות */
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
 }
 
 .chatSidebar h3 {
@@ -78,7 +79,7 @@
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;               /* גלילה פנימית לתוכן הצ'אט */
+  overflow-y: auto;
 }
 
 .chatPlaceholder {

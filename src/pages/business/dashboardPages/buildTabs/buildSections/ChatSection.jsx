@@ -81,6 +81,23 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
 
   return (
     <div className={styles.chatSection}>
+      {/* שדה השיחה משמאל */}
+      <main className={styles.chatMain}>
+        {selected.conversationId ? (
+          <ChatComponent
+            userId={user.id}
+            partnerId={selected.partnerId}
+            initialConversationId={selected.conversationId}
+            isBusiness={isBusiness}
+          />
+        ) : (
+          <div className={styles.chatPlaceholder}>
+            בחרי שיחה מרשימה או התחל חדשה
+          </div>
+        )}
+      </main>
+
+      {/* רשימת הצ'אטים מצד ימין */}
       <aside className={styles.chatSidebar}>
         <h3>שיחות</h3>
 
@@ -134,21 +151,6 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
           })}
         </ul>
       </aside>
-
-      <main className={styles.chatMain}>
-        {selected.conversationId ? (
-          <ChatComponent
-            userId={user.id}
-            partnerId={selected.partnerId}
-            initialConversationId={selected.conversationId}
-            isBusiness={isBusiness}
-          />
-        ) : (
-          <div className={styles.chatPlaceholder}>
-            בחר שיחה מרשימה או התחל חדשה
-          </div>
-        )}
-      </main>
     </div>
   );
 }
