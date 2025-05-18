@@ -1,4 +1,3 @@
-// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import API from "../api";
@@ -28,38 +27,46 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  const handleSelect = conv => {
-    const customerId = conv.participants.find(p => p !== businessId);
-    setSelected({
-      conversationId: conv._id,
-      partnerId:      customerId,
-    });
+  const handleSelect = ({ conversationId, partnerId }) => {
+    setSelected({ conversationId, partnerId });
   };
 
   if (!initialized) return <p>טוען מידע...</p>;
 
   return (
-    <div className="whatsapp-bg" style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ display: "flex", gap: "32px", width: "100%", maxWidth: "900px", alignItems: "flex-start" }}>
-        <aside style={{
-          width: "160px",
-          minWidth: "110px",
-          background: "#efeae2",
-          borderLeft: "1px solid #eee",
-          borderRadius: "16px",
-          height: "650px",
-          overflowY: "auto",
-          boxShadow: "0 6px 32px #0001",
-        }}>
+    <div className="whatsapp-bg" style={{
+      minHeight: "80vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }}>
+      <div style={{
+        display: "flex",
+        gap: "32px",
+        width: "100%",
+        maxWidth: "900px",
+        alignItems: "flex-start"
+      }}>
+        <aside className="sidebar-business"
+          style={{
+            width: "200px",
+            minWidth: "110px",
+            background: "#ede7f6",
+            borderLeft: "2px solid #c3a6fa",
+            borderRadius: "16px",
+            height: "650px",
+            overflowY: "auto",
+            boxShadow: "0 6px 32px #c3a6fa18"
+          }}>
           {loading
             ? <p style={{ textAlign: "center", marginTop: 40 }}>טוען שיחות…</p>
             : <ConversationsList
-  conversations={convos}
-  businessId={businessId}
-  selectedConversationId={selected?.conversationId}
-  onSelect={handleSelect}
-  isBusiness={true}
-/>
+                conversations={convos}
+                businessId={businessId}
+                selectedConversationId={selected?.conversationId}
+                onSelect={handleSelect}
+                isBusiness={true}
+              />
           }
         </aside>
         <div className="chat-container client">
