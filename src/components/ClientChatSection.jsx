@@ -16,25 +16,38 @@ export default function ClientChatSection({ userId: userIdProp }) {
 
   const userId = userIdProp || JSON.parse(localStorage.getItem("user"))?.userId;
 
-  // טען את כל השיחות
+  // שלב 1: טען את כל השיחות
   useEffect(() => {
     if (!userId) return;
     setIsLoading(true);
     API.get("/messages/conversations", { withCredentials: true })
-      .then(res => setConversations(res.data || []))
-      .catch(() => {})
+      .then(res => {
+        setConversations(res.data || []);
+        // דיבאג טעינה
+        console.log("🎯 [LOAD] conversations loaded:", res.data);
+      })
+      .catch(err => {
+        console.warn("❌ [LOAD] Error loading conversations:", err);
+      })
       .finally(() => setIsLoading(false));
   }, [userId]);
 
-  // אם businessId קיים ב-URL ואין שיחה – צור חדשה
+  // שלב 2: אם businessId מה-URL ואין שיחה – צור חדשה
   useEffect(() => {
-    if (!userId || !businessId) return;
+    console.log("🚩 [CREATE] useEffect: userId:", userId, "businessId:", businessId, "conversations:", conversations, "selected:", selected);
+
+    if (!userId || !businessId) {
+      console.log("⛔ [CREATE] Missing userId or businessId");
+      return;
+    }
+
     // בדוק אם כבר יש שיחה
     const existingConv = conversations.find(
       c => c.business?._id === businessId
     );
     if (existingConv) {
       if (selected.conversationId !== existingConv.conversationId) {
+        console.log("✅ [CREATE] Selecting existing conversation:", existingConv.conversationId);
         setSelected({
           conversationId: existingConv.conversationId,
           businessId,
@@ -43,7 +56,9 @@ export default function ClientChatSection({ userId: userIdProp }) {
       }
       return;
     }
+
     // אין — צור חדשה
+    console.log("🟢 [CREATE] Creating new conversation...");
     API.post(
       "/messages/conversations",
       { otherId: businessId },
@@ -57,19 +72,19 @@ export default function ClientChatSection({ userId: userIdProp }) {
           businessId,
           partnerId: businessId
         });
-        console.log("✨ שיחה חדשה נוצרה", conv);
+        console.log("✨ [CREATE] New conversation created:", conv);
       })
       .catch((err) => {
-        console.warn("שגיאה ביצירת שיחה:", err);
+        console.warn("❌ [CREATE] Error creating conversation:", err);
       });
     // eslint-disable-next-line
-  }, [businessId, userId, conversations]); // בלי isLoading, תלוי רק ב-conversations
+  }, [businessId, userId, conversations]);
 
-  // דיבאג
+  // דיבאג כללי
   useEffect(() => {
-    console.log("conversations:", conversations);
-    console.log("selected:", selected);
-    console.log("businessId from URL:", businessId);
+    console.log("🟡 [DEBUG] conversations:", conversations);
+    console.log("🟡 [DEBUG] selected:", selected);
+    console.log("🟡 [DEBUG] businessId from URL:", businessId);
   }, [conversations, selected, businessId]);
 
   return (
