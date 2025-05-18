@@ -1,4 +1,4 @@
-.conversations-list {
+.conversationsList {
   display: flex;
   height: 100%;
   background: #fff;
@@ -7,14 +7,14 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.conversations-list .sidebar {
+.sidebar {
   width: 250px;
   border-right: 1px solid #eee;
   overflow-y: auto;
   background: #fafafa;
 }
 
-.conversations-list .conv-item {
+.convItem {
   padding: 12px 16px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
@@ -22,22 +22,22 @@
   text-align: right;
 }
 
-.conversations-list .conv-item:hover {
+.convItem:hover {
   background: #f0f0f0;
 }
 
-.conversations-list .conv-item.active {
+.active {
   background: #e6f7ff;
   font-weight: bold;
 }
 
-.conversations-list .chat-area {
+.chatArea {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.conversations-list .no-selection {
+.noSelection {
   flex: 1;
   display: flex;
   align-items: center;

@@ -9,35 +9,37 @@ export default function ConversationsList({
   selectedConversationId,
   onSelect
 }) {
-  return (
-    <div className={styles.listContainer}>
-      {conversations.map(conv => {
-        // וודא שיש מערך משתתפים
-        const participants = Array.isArray(conv.participants) ? conv.participants : [];
-        const partnerId = participants.find(p => p !== businessId) || "";
-        const isActive = conv._id === selectedConversationId;
+  if (!conversations || conversations.length === 0) {
+    return <div className={styles.noSelection}>עדיין אין שיחות</div>;
+  }
 
-        return (
-          <div
-            key={conv._id || conv.id}
-            className={`${styles.convoItem} ${isActive ? styles.active : ""}`}
-            onClick={() => onSelect({ conversationId: conv._id || conv.id, partnerId })}
-          >
-            <div className={styles.convoInfo}>
-              <p className={styles.partnerName}>{conv.businessName || partnerId}</p>
-              {conv.lastMessage && <p className={styles.lastMsg}>{conv.lastMessage.text}</p>}
-            </div>
-            {conv.updatedAt && (
-              <div className={styles.timeStamp}>
-                {new Date(conv.updatedAt).toLocaleDateString("he-IL", {
-                  hour: "2-digit",
-                  minute: "2-digit"
-                })}
+  return (
+    <div className={styles.conversationsList}>
+      <div className={styles.sidebar}>
+        {conversations.map(conv => {
+          const participants = Array.isArray(conv.participants) ? conv.participants : [];
+          const partnerId = participants.find(p => p !== businessId) || "";
+          const isActive = (conv._id || conv.id) === selectedConversationId;
+
+          return (
+            <div
+              key={conv._id || conv.id}
+              className={`${styles.convItem} ${isActive ? styles.active : ""}`}
+              onClick={() =>
+                onSelect({
+                  conversationId: conv._id || conv.id,
+                  partnerId
+                })
+              }
+            >
+              <div>
+                <p>{conv.businessName || partnerId}</p>
+                {conv.lastMessage && <p>{conv.lastMessage.text}</p>}
               </div>
-            )}
-          </div>
-        );
-      })}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
