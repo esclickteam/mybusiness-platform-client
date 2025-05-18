@@ -31,11 +31,9 @@ export default function ClientChatSection({ userId: userIdProp }) {
   // אם נכנסנו עם businessId — בחרי אוטומטית את השיחה מול העסק הזה (או צרי חדשה)
   useEffect(() => {
     if (!userId || !businessId) return;
-
     const existingConv = conversations.find(
       c => c.business?._id === businessId
     );
-
     if (existingConv) {
       setSelected({
         conversationId: existingConv.conversationId,
@@ -44,7 +42,6 @@ export default function ClientChatSection({ userId: userIdProp }) {
       });
       return;
     }
-
     // אין שיחה — ניצור חדשה
     API.post(
       "/messages/conversations",
@@ -61,11 +58,12 @@ export default function ClientChatSection({ userId: userIdProp }) {
         });
       })
       .catch(() => {});
+  // חשוב להוסיף conversations בתלות — כך ברגע שנוצרת חדשה, ה־useEffect יתעדכן
   }, [businessId, userId, conversations]);
 
   return (
     <div className={styles.chatSection}>
-      {/* Sidebar — כל השיחות */}
+      {/* Sidebar — כל השיחות (ימין!) */}
       <aside className={styles.chatSidebar}>
         <h3>העסקים שלי</h3>
         {isLoading && <div className={styles.spinner}>טעינה…</div>}
