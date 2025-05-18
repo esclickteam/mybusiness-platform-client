@@ -9,7 +9,8 @@ import Upgrade            from "./dashboardPages/Upgrade";
 import CartPage           from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
 
 // 🟢 זה הרכיב הנכון לדשבורד של העסק!
-import BusinessChatSection from "./dashboardPages/buildTabs/buildSections/BusinessChatSection";
+import BusinessChatTab from "../../components/BusinessChatTab";
+
 
 import AffiliatePage      from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor     from "./dashboardPages/EsclickAdvisor";
@@ -46,7 +47,7 @@ const BusinessDashboardRoutes = () => (
       <Route path="goals"   element={<GoalsPage />} />
 
       {/* לשונית ההודעות בדשבורד העסק */}
-      <Route path="messages" element={<BusinessChatSection />} />
+      <Route path="messages" element={<BusinessChatTab />} />
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />
