@@ -1,3 +1,4 @@
+// src/pages/business/BusinessDashboardRoutes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
@@ -8,9 +9,8 @@ import Collab             from "./dashboardPages/Collab";
 import Upgrade            from "./dashboardPages/Upgrade";
 import CartPage           from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
 
-// 🟢 זה הרכיב הנכון לדשבורד של העסק!
-import BusinessChatTab from "../../components/BusinessChatTab";
-
+// 🟢 עכשיו משתמשים ברכיב העמוד המלא של הצ'אט
+import BusinessChatPage   from "../../components/BusinessChatPage";
 
 import AffiliatePage      from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor     from "./dashboardPages/EsclickAdvisor";
@@ -47,7 +47,7 @@ const BusinessDashboardRoutes = () => (
       <Route path="goals"   element={<GoalsPage />} />
 
       {/* לשונית ההודעות בדשבורד העסק */}
-      <Route path="messages" element={<BusinessChatTab />} />
+      <Route path="messages" element={<BusinessChatPage />} />
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />

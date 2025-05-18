@@ -1,52 +1,35 @@
 // src/components/ConversationsList.jsx
-import React from 'react';
-import './ConversationsList.css';
-
 export default function ConversationsList({
-  conversations = [],
-  isBusiness,
+  conversations,
+  businessId,
   selectedConversationId,
   onSelect,
   children
 }) {
   return (
-    <div className="conversations-list">
-      {/* Sidebar */}
-      <div className="sidebar">
+    <div className="convo-wrapper">
+      <aside className="convo-list">
         {conversations.map(conv => {
-          const { conversationId } = conv;
-          const partner = isBusiness ? conv.customer : conv.business;
-          if (!partner) return null;
-
-          const partnerId = partner._id;
-          const name = isBusiness
-            ? partner.name
-            : partner.businessName || partner.name || '—';
-
-          const isActive = selectedConversationId === conversationId;
-
+          const partnerId = conv.participants.find(p => p !== businessId);
+          const isActive = conv._id === selectedConversationId;
           return (
             <div
-              key={conversationId}
-              className={`conv-item ${isActive ? 'active' : ''}`}
-              onClick={() =>
-                onSelect({ conversationId, partnerId })
-              }
+              key={conv._id}
+              className={`convo-item ${isActive ? 'active' : ''}`}
+              onClick={() => onSelect({
+                conversationId: conv._id,
+                partnerId
+              })}
             >
-              {name}
+              {/* תצוגת שם הלקוח, תאריך אחרון וכו' */}
+              <p>{conv.businessName || partnerId}</p>
             </div>
           );
         })}
-      </div>
-
-      {/* Chat area */}
-      <div className="chat-area">
-        {children || (
-          <div className="no-selection">
-            בחר שיחה מהרשימה כדי להתחיל
-          </div>
-        )}
-      </div>
+      </aside>
+      <section className="chat-view">
+        {children || <p>בחר שיחה כדי להתחיל צפייה בהודעות.</p>}
+      </section>
     </div>
   );
 }
