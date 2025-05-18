@@ -13,67 +13,49 @@ export default function ConversationsList({
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
   }
 
-  // מוצא את השיחה הנבחרת
-  const selectedConversation = conversations.find(
-    (c) => c.conversationId === selectedConversationId
+  // טען את השיחה שנבחרה (לשם הכותרת)
+  const selected = conversations.find(
+    c => c.conversationId === selectedConversationId
   );
 
-  // קובע מה להציג בכותרת
-  let sidebarTitle;
-  if (selectedConversation) {
-    if (isBusiness) {
-      sidebarTitle = `שיחה עם ${selectedConversation.customer.name}`;
-    } else {
-      sidebarTitle = `שיחה עם ${selectedConversation.business.businessName}`;
-    }
-  } else {
-    sidebarTitle = isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק";
-  }
+  // קבע כותרת סיידבר
+  const sidebarTitle = selected
+    ? `שיחה עם ${isBusiness ? selected.customerName : selected.businessName}`
+    : isBusiness
+      ? "שיחות עם לקוחות"
+      : "שיחה עם עסק";
 
   return (
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
         <div className={styles.sidebarTitle}>{sidebarTitle}</div>
 
-        {conversations.map((conv) => {
-          const convoId = conv.conversationId;
-          const isActive = convoId === selectedConversationId;
-
-          // מזהה הצד השני
-          const partner = isBusiness
-            ? conv.customer
-            : conv.business;
-          const partnerId = partner._id;
+        {conversations.map(conv => {
+          const isActive = conv.conversationId === selectedConversationId;
           const displayName = isBusiness
-            ? conv.customer.name
-            : conv.business.businessName;
+            ? conv.customerName
+            : conv.businessName;
 
-          // מוצא את ההודעה האחרונה
-          const lastMsgObj =
-            Array.isArray(conv.messages) && conv.messages.length > 0
-              ? conv.messages[conv.messages.length - 1]
-              : null;
-          const lastText = lastMsgObj ? lastMsgObj.text : "";
+          // לצורך onSelect, אם אתה צריך גם partnerId, 
+          // בצד לקוח זה פשוט businessId מה props, 
+          // ובצד העסק היית מוסיף customerId בשדה conv (ב־backend).
+          const partnerId = isBusiness
+            ? conv.customerId   // <-- ודא שה־backend מחזיר גם customerId
+            : businessId;
 
           return (
             <div
-              key={convoId}
-              className={`${styles.convItem} ${
-                isActive ? styles.active : ""
-              }`}
+              key={conv.conversationId}
+              className={`${styles.convItem} ${isActive ? styles.active : ""}`}
               onClick={() =>
                 onSelect({
-                  conversationId: convoId,
+                  conversationId: conv.conversationId,
                   partnerId
                 })
               }
             >
-              <div>
-                <p className={styles.partnerName}>{displayName}</p>
-                {lastText && (
-                  <p className={styles.lastMessage}>{lastText}</p>
-                )}
-              </div>
+              <p className={styles.partnerName}>{displayName}</p>
+              {/* אם יש הודעה אחרונה אתה יכול להציג אותה כאן */}
             </div>
           );
         })}

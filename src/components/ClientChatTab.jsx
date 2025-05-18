@@ -1,3 +1,4 @@
+// src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
@@ -24,20 +25,22 @@ export default function ClientChatTab({
       .then((res) => setMessages(res.data))
       .catch((e) => console.error("Error loading history:", e));
 
-    // 2. התחבר ל־Socket.IO
+    // 2. התחבר ל־Socket.IO והצטרף אוטומטית לחדר
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      query: { conversationId, businessId, userId, role: "client" },
+      query: { conversationId, userId, role: "client" },
     });
 
     socketRef.current.on("connect", () => {
       console.log("✅ Socket connected, id =", socketRef.current.id);
-      socketRef.current.emit("joinRoom", { conversationId });
+      // אין צורך ב-joinRoom: ההצטרפות מתבצעת בשרת כבר ב-handshake
     });
+
     socketRef.current.on("disconnect", (reason) => {
       console.log("🔴 Socket disconnected:", reason);
     });
+
     socketRef.current.on("newMessage", (msg) => {
       console.log("🆕 Received via socket:", msg);
       setMessages((prev) => [...prev, msg]);
@@ -49,7 +52,7 @@ export default function ClientChatTab({
       socketRef.current = null;
       setMessages([]);
     };
-  }, [conversationId]);
+  }, [conversationId, userId]);
 
   // גלילה אוטומטית
   useEffect(() => {
@@ -61,8 +64,6 @@ export default function ClientChatTab({
 
   const sendMessage = () => {
     const text = input.trim();
-    console.log("🚀 sendMessage called with:", { text, conversationId });
-
     if (!text || !conversationId) return;
 
     const toId = businessId || partnerId;
@@ -74,41 +75,42 @@ export default function ClientChatTab({
       timestamp: new Date().toISOString(),
     };
 
-    // אם אין סוקט או לא מחובר – נשלח דרך HTTP
-    if (!socketRef.current || !socketRef.current.connected) {
-      console.warn("⚠️ socket not connected, using REST fallback");
-      return API.post("/messages/history", msgPayload)
-        .then((res) => {
-          console.log("⮕ REST fallback success:", res.data);
-          setMessages((prev) => [...prev, res.data.message]);
+    // אם הסוקט מחובר – שלח דרך socket
+    if (socketRef.current && socketRef.current.connected) {
+      socketRef.current.emit("sendMessage", msgPayload, (ack) => {
+        console.log("📝 sendMessage ACK:", ack);
+        if (ack?.success) {
           setInput("");
-        })
-        .catch((err) => console.error("⮕ REST fallback error:", err));
+        } else {
+          console.warn("⚠️ socket ack failed, falling back to REST");
+          API.post("/messages/history", msgPayload)
+            .then((res) => {
+              setMessages((prev) => [...prev, res.data.message]);
+              setInput("");
+            })
+            .catch((err) => console.error("⮕ fallback error:", err));
+        }
+      });
+      return;
     }
 
-    // אחרת – נסה לשלוח דרך socket
-    socketRef.current.emit("sendMessage", msgPayload, (ack) => {
-      console.log("📝 sendMessage ACK:", ack);
-      if (ack?.success) {
+    // אחרת – REST fallback
+    console.warn("⚠️ socket not connected, using REST fallback");
+    API.post("/messages/history", msgPayload)
+      .then((res) => {
+        setMessages((prev) => [...prev, res.data.message]);
         setInput("");
-      } else {
-        console.warn("⚠️ socket ack failed, falling back to REST");
-        API.post("/messages/history", msgPayload)
-          .then((res) => {
-            console.log("⮕ REST after socket-fail:", res.data);
-            setMessages((prev) => [...prev, res.data.message]);
-            setInput("");
-          })
-          .catch((err) => console.error("⮕ fallback error:", err));
-      }
-    });
+      })
+      .catch((err) => console.error("⮕ REST fallback error:", err));
   };
 
   return (
     <div className="whatsapp-bg">
       <div className="chat-container client">
         <div className="message-list" ref={messageListRef}>
-          {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+          {messages.length === 0 && (
+            <div className="empty">עדיין אין הודעות</div>
+          )}
           {messages.map((m, i) => (
             <div
               key={i}
