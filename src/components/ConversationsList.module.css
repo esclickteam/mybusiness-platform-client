@@ -9,10 +9,17 @@
 
 .sidebar {
   width: 250px;
-  border-right: 1px solid #eee;
+  min-width: 170px;
+  max-width: 320px;
+  background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
+  border-right: 2px solid #c3a6fa;   /* סגול בהיר ומותגי */
   overflow-y: auto;
-  background: #fafafa;
+  box-shadow: 2px 0 14px #c3a6fa24, 0 1.5px 8px #7c43bd11;
+  border-radius: 0 18px 18px 0;       /* פינה עגולה לשילוב עם כרטיס הצ'אט */
+  padding-bottom: 10px;
+  padding-top: 10px;
 }
+
 
 .convItem {
   padding: 12px 16px;
