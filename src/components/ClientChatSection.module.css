@@ -1,16 +1,16 @@
 /* src/components/ClientChatSection.module.css */
 
-/* רקע כללי סביב ווינדו */
+/* רקע עמוד כללי */
 .whatsappBg {
   min-height: 100vh;
   background: #f3edff;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 0;
 }
 
-/* המכולה האחידה: sidebar + chat ביחד */
+/* קונטיינר אחיד: כולל גם סיידבר וגם chat, עם צל מקצועי */
 .chatContainer {
   display: flex;
   flex-direction: row;
@@ -18,54 +18,57 @@
   max-width: 950px;
   height: 80vh;
   min-height: 380px;
-  border-radius: 16px;
+  border-radius: 20px;
   background: #faf7ff;
-  border: 1px solid #c3a6fa;
-  box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
-  overflow: visible; /* לא חותך את ה-input */
+  border: 1.5px solid #c3a6fa;
+  box-shadow: 0 4px 32px rgba(163,137,235,0.17);
+  overflow: hidden;
 }
 
-/* הסיידבר מימין */
+/* סיידבר ימני - חלק מהקונטיינר, לא box נפרד! */
 .sidebarInner {
-  width: 250px;
-  background: #f3edff;
-  border-left: 2px solid #c3a6fa;
+  width: 240px;
+  background: #f7f3ff; /* צבע עדין ושקט */
+  border-left: 2px solid #e5dbff;
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
+  padding: 22px 16px;
+  /* אין box-shadow! */
 }
 
 /* כותרת הסיידבר */
 .sidebarTitle {
-  margin: 0 0 8px 0;
-  color: #4a3aff;
+  margin: 0 0 10px 0;
+  color: #6447c2;
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.12rem;
   text-align: right;
 }
 
-/* פריט פעיל (זהו השם של העסק) */
+/* פריט פעיל (שם העסק/לקוח) */
 .convItemActive {
-  padding: 12px;
-  background: #e9e6ff;
+  padding: 13px 10px;
+  background: #ece6ff;
   border-radius: 8px;
   font-size: 15px;
   color: #4a3aff;
   text-align: right;
+  font-weight: 500;
+  margin-top: 8px;
 }
 
-/* אזור הצ'אט הראשי */
+/* אזור ההודעות */
 .chatArea {
   flex: 1;
   display: flex;
   flex-direction: column;
   background: #faf7ff;
   position: relative;
-  overflow: visible;  /* מאפשר ל־input ולכפתור לצאת מתחת */
+  overflow: hidden;
+  padding: 0 0 0 0;
 }
 
-/* Placeholder */
+/* הודעה ריקה */
 .emptyMessage {
   flex: 1;
   display: flex;
@@ -75,7 +78,7 @@
   font-size: 1.2rem;
 }
 
-/* Loading / Error */
+/* Loading/Error */
 .loading,
 .error {
   color: #777;
@@ -84,24 +87,37 @@
   padding: 20px;
 }
 
-/* --- התאמות פנימיות ל-ClientChatTab כדי שמבנה ה-input יתאים ויהיה גלוי --- */
-
-/* גורם ל-whatsapp-bg הפנימי שבתוך chatArea להתמתח לגובה מלא */
-.chatArea > .whatsapp-bg {
-  display: flex !important;
-  flex-direction: column !important;
-  height: 100% !important;
-  overflow: visible !important;
-}
-
-
-
-/* מקבע את inputBar בתחתית ומונע ממנו להתכווץ */
-.chatArea
-  > .whatsapp-bg
-  > .chat-container.client
-  .inputBar {
+/* הכנסת ה-inputBar לתחתית (בהנחה ש-clientChatTab משתמש ב-inputBar דומה) */
+.inputBar {
   flex-shrink: 0;
   position: relative;
   z-index: 2;
+}
+
+/* אופציונלי – למי שרוצה שב־mobile הכל ירד לטור אחד */
+@media (max-width: 700px) {
+  .chatContainer {
+    flex-direction: column-reverse;
+    height: 98vh;
+    min-width: 0;
+    max-width: 98vw;
+  }
+  .sidebarInner {
+    width: 100%;
+    border-left: none;
+    border-top: 2px solid #e5dbff;
+    padding: 14px 8px;
+    min-height: 70px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .chatArea {
+    min-height: 240px;
+  }
+}
+
+/* הסרת צל כפול */
+.sidebarInner {
+  box-shadow: none !important;
 }
