@@ -1,3 +1,4 @@
+// src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import API from "@api";
@@ -120,7 +121,9 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
             return (
               <li
                 key={conv.conversationId}
-                className={`${styles.convoItem} ${selected.conversationId === conv.conversationId ? styles.selected : ""}`}
+                className={`${styles.convoItem} ${
+                  selected.conversationId === conv.conversationId ? styles.selected : ""
+                }`}
                 onClick={() =>
                   setSelected({ conversationId: conv.conversationId, partnerId })
                 }
@@ -142,7 +145,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
           />
         ) : (
           <div className={styles.chatPlaceholder}>
-            בחרי שיחה מרשימה או התחל חדשה
+            בחר שיחה מרשימה או התחל חדשה
           </div>
         )}
       </main>
