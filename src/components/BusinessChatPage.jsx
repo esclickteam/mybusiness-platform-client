@@ -1,4 +1,3 @@
-// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import API from "../api";
@@ -27,7 +26,7 @@ export default function BusinessChatPage() {
         setConvos(data);
         if (data.length && !selected) {
           const first = data[0];
-          const convoId = first._id || first.conversationId || first.id;
+          const convoId  = first._id || first.conversationId || first.id;
           const partnerId = first.participants?.find(p => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
@@ -44,8 +43,8 @@ export default function BusinessChatPage() {
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
-        {/* ---- קודם הסיידבר (בימין!) ---- */}
-        <section className={styles.sidebarInner}>
+        {/* סיידבר */}
+        <aside className={styles.sidebarInner}>
           {loading ? (
             <p className={styles.loading}>טוען שיחות…</p>
           ) : (
@@ -57,9 +56,9 @@ export default function BusinessChatPage() {
               isBusiness={true}
             />
           )}
-        </section>
-        
-        {/* ---- אחר כך הצ'אט ---- */}
+        </aside>
+
+        {/* אזור הצ'אט */}
         <section className={styles.chatArea}>
           {selected ? (
             <BusinessChatTab
