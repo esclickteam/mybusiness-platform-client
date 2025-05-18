@@ -12,9 +12,8 @@ export default function ConversationsList({
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
   }
 
-  // מסננים כפילויות לפי ה-partnerId
+  // מסננים כפילויות לפי partnerId (מכל מבנה אפשרי)
   const uniqueConvs = conversations.filter((conv, idx, arr) => {
-    // עדיפות למזהה מתוך participants, ואם לא – מ-customer?._id
     const partnerId =
       (Array.isArray(conv.participants)
         ? conv.participants.find(p => p !== businessId)
@@ -44,7 +43,7 @@ export default function ConversationsList({
           const participants = Array.isArray(conv.participants)
             ? conv.participants
             : [];
-          // חפש תמיד קודם ב-participants ואם לא – מ-customer._id
+          // שליפת partnerId: קודם מ־participants, ואם לא – מ־customer._id
           const partnerId =
             participants.find(p => p !== businessId) ||
             (conv.customer ? conv.customer._id : "") ||
@@ -56,11 +55,24 @@ export default function ConversationsList({
             : conv.businessName || partnerId;
           const isActive = convoId === selectedConversationId;
 
+          // DEBUG - לראות בדיוק מה אתה מציג ומה עובר בלחיצה
+          console.log("Sidebar Conversation:", {
+            convoId,
+            partnerId,
+            displayName,
+            participants,
+            businessId,
+            conv,
+          });
+
           return (
             <div
               key={convoId}
               className={`${styles.conversationItem} ${isActive ? styles.active : ""}`}
-              onClick={() => onSelect(convoId, partnerId)}
+              onClick={() => {
+                console.log("CLICK SIDEBAR:", { convoId, partnerId, displayName });
+                onSelect(convoId, partnerId);
+              }}
             >
               {displayName}
             </div>
