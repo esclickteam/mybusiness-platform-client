@@ -8,23 +8,25 @@ import { useAuth } from "../context/AuthContext";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
-  const { user, initialized } = useAuth();
-  const userId = user?.id || null;
+  const { user, loading, initialized } = useAuth();
+
+  // כאן אנחנו באמת קוראים user.userId, כפי שהגדרתם ב־AuthContext
+  const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
 
-  // ברגע שיש userId ו־businessId, פותחים/יוצרים שיחה
   useEffect(() => {
+    // ממתינים גם לטעינה הראשונית (initialized) וגם שהכתובת params בואו:
     if (!initialized) return;
     if (!userId || !businessId) {
-      setLoading(false);
+      setBusy(false);
       return;
     }
 
     API.post(
-      "/api/messages/conversations",
+      "/messages/conversations",
       { otherId: businessId },
       { withCredentials: true }
     )
@@ -33,18 +35,19 @@ export default function ClientChatSection() {
       })
       .catch((err) => {
         console.warn("❌ Error creating conversation:", err);
-        setError("ניהול שיחה נכשל, נסה שוב");
+        setError("שגיאה ביצירת שיחה");
       })
       .finally(() => {
-        setLoading(false);
+        setBusy(false);
       });
   }, [initialized, userId, businessId]);
 
+  // עד שהאתחול של ה־AuthContext לא הסתיים, לא מציגים כלום
   if (!initialized) {
-    return <div>טוען משתמש...</div>;
+    return <div className={styles.spinner}>טוען משתמש…</div>;
   }
 
-  if (loading) {
+  if (busy) {
     return <div className={styles.spinner}>טוען שיחה…</div>;
   }
 
@@ -56,10 +59,7 @@ export default function ClientChatSection() {
     <div className={styles.chatSection}>
       <aside className={styles.chatSidebar}>
         <h3>שיחה עם העסק</h3>
-        <div className={styles.partnerName}>
-          {/* אפשר לשאול את API להוציא את שם העסק */}
-          {businessId}
-        </div>
+        <div className={styles.partnerName}>{businessId}</div>
       </aside>
 
       <main className={styles.chatMain}>
