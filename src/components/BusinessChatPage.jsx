@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import API from "../api";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
-import "./BusinessChatPage.css";
+import styles from "./BusinessChatPage.module.css";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
@@ -14,7 +14,6 @@ export default function BusinessChatPage() {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading]   = useState(false);
 
-  // 1) טוען את כל השיחות של העסק
   useEffect(() => {
     if (!initialized || !businessId) return;
     setLoading(true);
@@ -29,7 +28,6 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // 2) כשבוחרים שיחה — מוצאים מי הלקוח, ושולחים ל־BusinessChatTab
   const handleSelect = conv => {
     const customerId = conv.participants.find(p => p !== businessId);
     setSelected({
@@ -41,8 +39,8 @@ export default function BusinessChatPage() {
   if (!initialized) return <p>טוען מידע...</p>;
 
   return (
-    <div className="chat-page">
-      <aside className="chat-sidebar">
+    <div className={styles.chatPage}>
+      <aside className={styles.chatSidebar}>
         {loading
           ? <p>טוען שיחות…</p>
           : <ConversationsList
@@ -54,7 +52,7 @@ export default function BusinessChatPage() {
         }
       </aside>
 
-      <section className="chat-main">
+      <section className={styles.chatMain}>
         {selected
           ? <BusinessChatTab
               conversationId={selected.conversationId}
