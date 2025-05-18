@@ -16,18 +16,19 @@ export default function ConversationsList({
   return (
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
-        {conversations.map(conv => {
+        {conversations.map((conv, idx) => {
           const participants = Array.isArray(conv.participants) ? conv.participants : [];
           const partnerId = participants.find(p => p !== businessId) || "";
-          const isActive = (conv._id || conv.id) === selectedConversationId;
+          const convoId = conv._id || conv.id || `conv-${idx}`;
+          const isActive = convoId === selectedConversationId;
 
           return (
             <div
-              key={conv._id || conv.id}
+              key={convoId}
               className={`${styles.convItem} ${isActive ? styles.active : ""}`}
               onClick={() =>
                 onSelect({
-                  conversationId: conv._id || conv.id,
+                  conversationId: convoId,
                   partnerId
                 })
               }
