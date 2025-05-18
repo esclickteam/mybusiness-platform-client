@@ -1,7 +1,9 @@
+/* 📁 src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.css */
+
 /* עיצוב לתיבת הצ'אט */
 .business-chat-wrapper {
   display: flex;
-  flex-direction: row;
+  flex-direction: row;      /* sidebar משמאל, שיחה מימין */
   height: 80vh;
   max-width: 1000px;
   margin: 2rem auto;
@@ -14,19 +16,19 @@
 /* עיצוב תפריט השיחות */
 .chat-sidebar {
   width: 30%;
-  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;  /* שינינו ל־right */
   padding: 1rem;
   background-color: #faf9ff;
   overflow-y: auto;
 }
 
+/* שאר הסלקטורים לא משתנים */
 .chat-sidebar h3 {
   color: #8e44ad;
   margin-bottom: 1rem;
   font-size: 1.2rem;
 }
 
-/* עיצוב השיחה הנבחרת */
 .chat-list-item {
   padding: 0.8rem;
   border-radius: 10px;
@@ -35,15 +37,8 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-
-.chat-list-item:hover {
-  background: #e6dcfb;
-}
-
-.chat-list-item.active {
-  background: #dcd1f9;
-  font-weight: bold;
-}
+.chat-list-item:hover { background: #e6dcfb; }
+.chat-list-item.active { background: #dcd1f9; font-weight: bold; }
 
 /* עיצוב אזור השיחה הראשי */
 .chat-main {
@@ -51,6 +46,7 @@
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .chat-header {
@@ -65,10 +61,9 @@
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding-right: 8px;
+  padding: 1rem;
   background: #fdfdff;
   border-radius: 8px;
-  padding: 1rem;
   margin-bottom: 1rem;
 }
 
@@ -92,10 +87,10 @@
   background: #f0f0f0;
   align-self: flex-start;
   margin-right: auto;
-  text-align: right;
+  text-align: left;  /* הודעות מהלקוח מצופות משמאל */
 }
 
-/* עיצוב כפתור שליחה */
+/* כפתור ושליחת הודעה */
 .chat-input-bar {
   display: flex;
   align-items: center;
@@ -103,7 +98,6 @@
   border-top: 1px solid #eee;
   padding-top: 0.5rem;
 }
-
 .chat-input-bar input {
   flex: 1;
   border: 1px solid #ccc;
@@ -112,7 +106,6 @@
   font-size: 0.95rem;
   background: #fff;
 }
-
 .chat-input-bar button {
   background: none;
   border: none;
@@ -121,10 +114,7 @@
   font-weight: bold;
   transition: color 0.2s ease-in-out;
 }
-
-.chat-input-bar button:hover {
-  color: #8e44ad;
-}
+.chat-input-bar button:hover { color: #8e44ad; }
 
 .no-chat-selected {
   text-align: center;
@@ -134,7 +124,7 @@
   font-style: italic;
 }
 
-/* עיצוב של החוזה או תוכן נוסף */
+/* תוכן חוזה / פרטים נוספים */
 .chat-contract-area {
   margin-bottom: 1rem;
   overflow-y: auto;
@@ -149,7 +139,7 @@
 
   .chat-sidebar {
     width: 100%;
-    border-left: none;
+    border-right: none;
     border-bottom: 1px solid #eee;
   }
 

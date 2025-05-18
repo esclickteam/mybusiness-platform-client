@@ -147,7 +147,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
         )}
       </main>
 
-      <div className="preview-column">{renderTopBar?.()}</div>
+      
     </div>
   );
 }
