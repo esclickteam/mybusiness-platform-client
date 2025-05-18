@@ -1,3 +1,7 @@
+// src/components/ConversationsList.jsx
+import React from "react";
+import styles from "./ConversationsList.module.css";
+
 export default function ConversationsList({
   conversations,
   businessId,
@@ -59,7 +63,11 @@ export default function ConversationsList({
             >
               <div>
                 <p className={styles.partnerName}>{displayName}</p>
-                {conv.lastMessage && <p className={styles.lastMessage}>{conv.lastMessage.text}</p>}
+                {conv.lastMessage && (
+                  <p className={styles.lastMessage}>
+                    {conv.lastMessage.text}
+                  </p>
+                )}
               </div>
             </div>
           );
