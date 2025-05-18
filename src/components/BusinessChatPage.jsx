@@ -12,12 +12,6 @@ export default function BusinessChatPage() {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // דיבאג: תראה מה businessId שלך באמת!
-  useEffect(() => {
-    console.log("🔍 businessId from useAuth:", businessId);
-    console.log("🔍 user object:", user);
-  }, [businessId, user]);
-
   // שליפת שיחות מהשרת
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -32,23 +26,15 @@ export default function BusinessChatPage() {
           : res.data.conversations || [];
         setConvos(data);
 
-        // דיבאג: תראה בדיוק איך נראות השיחות ומה ה-participants
-        console.log("📦 Conversations from API:", data);
-
-        // אם אין selected - בחירת השיחה הראשונה כברירת מחדל
         if (data.length && !selected) {
           const first = data[0];
           const convoId = first._id || first.conversationId || first.id;
-          // דיבאג: תראה מי ה-businessId ומה יש ב-participants
-          console.log("🟠 first.convo:", first);
-          // תמיד חפש את ה-partner שהוא לא בעל העסק, ואם אין - חפש customer._id
           const partnerId =
             (Array.isArray(first.participants)
               ? first.participants.find(p => p !== businessId)
               : null) ||
             first.customer?._id ||
             "";
-          console.log("🟣 Auto-select partnerId:", partnerId, "for convoId:", convoId);
           setSelected({ conversationId: convoId, partnerId });
         }
       })
@@ -57,12 +43,8 @@ export default function BusinessChatPage() {
 
   // טיפול בבחירת שיחה מהסיידבר
   const handleSelect = (conversationId, partnerIdFromSidebar) => {
-    // תמיד לוג - תדע בדיוק מה קורה!
-    console.log("🟢 handleSelect", { conversationId, partnerIdFromSidebar });
-
     let partnerId = partnerIdFromSidebar;
     if (!partnerId) {
-      // גיבוי: נסה לחלץ את partnerId מהשיחה עצמה
       const convo = convos.find(
         c =>
           c._id === conversationId ||
@@ -70,7 +52,6 @@ export default function BusinessChatPage() {
           c.id === conversationId
       );
       if (convo) {
-        console.log("🟠 fallback convo for selection:", convo);
         partnerId =
           (Array.isArray(convo.participants)
             ? convo.participants.find(p => p !== businessId)
@@ -79,7 +60,6 @@ export default function BusinessChatPage() {
           "";
       }
     }
-    console.log("🔵 Selecting convo", conversationId, "with partnerId:", partnerId);
     setSelected({ conversationId, partnerId });
   };
 
@@ -97,7 +77,6 @@ export default function BusinessChatPage() {
               conversations={convos}
               businessId={businessId}
               selectedConversationId={selected?.conversationId}
-              // שים לב - פה מעבירים גם conversationId וגם partnerId
               onSelect={handleSelect}
               isBusiness={true}
             />
@@ -107,16 +86,11 @@ export default function BusinessChatPage() {
         {/* אזור הצ'אט */}
         <section className={styles.chatArea}>
           {selected && selected.partnerId ? (
-            <>
-              <div style={{ color: "#a9a", fontSize: "13px", marginBottom: 4 }}>
-                🔵 <b>businessId:</b> {businessId} <b>partnerId:</b> {selected.partnerId}
-              </div>
-              <BusinessChatTab
-                conversationId={selected.conversationId}
-                businessId={businessId}
-                customerId={selected.partnerId}
-              />
-            </>
+            <BusinessChatTab
+              conversationId={selected.conversationId}
+              businessId={businessId}
+              customerId={selected.partnerId}
+            />
           ) : (
             <div className={styles.emptyMessage}>
               בחר שיחה כדי לראות הודעות
