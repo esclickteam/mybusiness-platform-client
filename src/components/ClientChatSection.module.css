@@ -11,7 +11,7 @@
   background: #ece5dd;
   border-radius: 16px;
   box-shadow: 0 4px 32px #0002;
-  overflow: hidden;
+  overflow: visible;           /* ← שונה מ־hidden ל־visible */
   border: none;
   margin: 0 auto;
 }
