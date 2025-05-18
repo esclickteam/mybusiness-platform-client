@@ -165,7 +165,6 @@
   transition: border-color 0.2s;
   background: #fff;
 }
-/* Focus state on input */
 .inputField:focus {
   border-color: #4a3aff;
 }
