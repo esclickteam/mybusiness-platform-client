@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
-import styles from "./BusinessChatTab.module.css";
+import "./ClientChatTab.css"; // <<< ייבוא CSS של הלקוח!
 
 export default function BusinessChatTab({ conversationId, businessId, customerId }) {
   const [messages, setMessages] = useState([]);
@@ -71,21 +71,19 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   };
 
   return (
-    <div className={styles.whatsappBg}>
-      <div className={styles.chatContainer}>
-        <div className={styles.messageList} ref={messageListRef}>
+    <div className="whatsapp-bg">
+      <div className="chat-container client">
+        <div className="message-list" ref={messageListRef}>
           {messages.length === 0 && (
-            <div className={styles.empty}>עדיין אין הודעות</div>
+            <div className="empty">עדיין אין הודעות</div>
           )}
           {messages.map((m, i) => (
             <div
               key={i}
-              className={`${styles.message} ${
-                m.from === businessId ? styles.mine : styles.theirs
-              }`}
+              className={`message ${m.from === businessId ? "mine" : "theirs"}`}
             >
               <div>{m.text}</div>
-              <div className={styles.time}>
+              <div className="time">
                 {new Date(m.timestamp).toLocaleTimeString("he-IL", {
                   hour: "2-digit",
                   minute: "2-digit"
@@ -95,16 +93,15 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           ))}
         </div>
 
-        <div className={styles.inputBar}>
+        <div className="input-bar">
           <input
-            className={styles.inputField}
             type="text"
             placeholder="הקלד הודעה..."
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && sendMessage()}
           />
-          <button className={styles.sendButton} onClick={sendMessage} title="שלח">
+          <button onClick={sendMessage} title="שלח">
             <span role="img" aria-label="send">✈️</span>
           </button>
         </div>
