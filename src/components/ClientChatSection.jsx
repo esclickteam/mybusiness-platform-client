@@ -57,7 +57,13 @@ export default function ClientChatSection() {
     )
       .then((res) => {
         const conv = res.data;
-        setConversations((prev) => [...prev, conv]);
+        setConversations((prev) => {
+          // אם כבר קיימת שיחה עם אותו conversationId, לא מוסיפים שוב
+          if (prev.some((c) => c.conversationId === conv.conversationId)) {
+            return prev;
+          }
+          return [...prev, conv];
+        });
         setSelected({
           conversationId: conv.conversationId,
           businessId,
