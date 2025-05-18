@@ -5,7 +5,7 @@ import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 
 export default function ClientChatSection({ userId: userIdProp }) {
-  const { businessId } = useParams();
+  const { businessId } = useParams(); // לוקח מה־URL
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState({
     conversationId: null,
@@ -17,7 +17,7 @@ export default function ClientChatSection({ userId: userIdProp }) {
   // userId מתוך פרופס או מה-storage
   const userId = userIdProp || JSON.parse(localStorage.getItem("user"))?.userId;
 
-  // טען את כל השיחות
+  // שלב 1: טען את כל השיחות
   useEffect(() => {
     if (!userId) return;
     setIsLoading(true);
@@ -27,20 +27,24 @@ export default function ClientChatSection({ userId: userIdProp }) {
       .finally(() => setIsLoading(false));
   }, [userId]);
 
-  // אם נכנסו עם businessId מה-URL – אתחל שיחה מיידית
+  // שלב 2: אם businessId מה-URL — אתחל או צור שיחה מתאימה
   useEffect(() => {
     if (!userId || !businessId) return;
+    if (isLoading) return; // נחכה לטעינה
 
-    // בדוק אם יש כבר שיחה
+    // בדוק אם יש כבר שיחה כזו
     const existingConv = conversations.find(
       c => c.business?._id === businessId
     );
     if (existingConv) {
-      setSelected({
-        conversationId: existingConv.conversationId,
-        businessId,
-        partnerId: businessId
-      });
+      // בחר אותה
+      if (selected.conversationId !== existingConv.conversationId) {
+        setSelected({
+          conversationId: existingConv.conversationId,
+          businessId,
+          partnerId: businessId
+        });
+      }
       return;
     }
 
@@ -60,7 +64,8 @@ export default function ClientChatSection({ userId: userIdProp }) {
         });
       })
       .catch(() => {});
-  }, [businessId, userId, conversations]);
+    // eslint-disable-next-line
+  }, [businessId, userId, isLoading]); // חשוב! בלי conversations בתלות, אחרת לולאה
 
   return (
     <div className={styles.chatSection}>
