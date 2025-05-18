@@ -3,29 +3,28 @@ import React from "react";
 import styles from "./ConversationsList.module.css";
 
 export default function ConversationsList({
-  conversations,
+  conversations = [],
   businessId,
   selectedConversationId,
   onSelect,
   isBusiness
 }) {
-  if (!conversations || conversations.length === 0) {
+  if (conversations.length === 0) {
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
   }
 
   // מוצא את השיחה הנבחרת
   const selectedConversation = conversations.find(
-    (c) =>
-      (c._id || c.id || c.conversationId) === selectedConversationId
+    (c) => c.conversationId === selectedConversationId
   );
 
   // קובע מה להציג בכותרת
-  let sidebarTitle = "שיחה";
+  let sidebarTitle;
   if (selectedConversation) {
     if (isBusiness) {
-      sidebarTitle = `שיחה עם ${selectedConversation.customerName || "לקוח"}`;
+      sidebarTitle = `שיחה עם ${selectedConversation.customer.name}`;
     } else {
-      sidebarTitle = `שיחה עם ${selectedConversation.businessName || "עסק"}`;
+      sidebarTitle = `שיחה עם ${selectedConversation.business.businessName}`;
     }
   } else {
     sidebarTitle = isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק";
@@ -34,26 +33,34 @@ export default function ConversationsList({
   return (
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
-        <div className={styles.sidebarTitle}>
-          {sidebarTitle}
-        </div>
-        {conversations.map((conv, idx) => {
-          const participants = Array.isArray(conv.participants) ? conv.participants : [];
-          const partnerId = participants.find(p => p !== businessId) || "";
-          const convoId = conv._id || conv.id || conv.conversationId || `conv-${idx}`;
+        <div className={styles.sidebarTitle}>{sidebarTitle}</div>
+
+        {conversations.map((conv) => {
+          const convoId = conv.conversationId;
           const isActive = convoId === selectedConversationId;
 
-          let displayName;
-          if (isBusiness) {
-            displayName = conv.customerName || partnerId;
-          } else {
-            displayName = conv.businessName || partnerId;
-          }
+          // מזהה הצד השני
+          const partner = isBusiness
+            ? conv.customer
+            : conv.business;
+          const partnerId = partner._id;
+          const displayName = isBusiness
+            ? conv.customer.name
+            : conv.business.businessName;
+
+          // מוצא את ההודעה האחרונה
+          const lastMsgObj =
+            Array.isArray(conv.messages) && conv.messages.length > 0
+              ? conv.messages[conv.messages.length - 1]
+              : null;
+          const lastText = lastMsgObj ? lastMsgObj.text : "";
 
           return (
             <div
               key={convoId}
-              className={`${styles.convItem} ${isActive ? styles.active : ""}`}
+              className={`${styles.convItem} ${
+                isActive ? styles.active : ""
+              }`}
               onClick={() =>
                 onSelect({
                   conversationId: convoId,
@@ -63,10 +70,8 @@ export default function ConversationsList({
             >
               <div>
                 <p className={styles.partnerName}>{displayName}</p>
-                {conv.lastMessage && (
-                  <p className={styles.lastMessage}>
-                    {conv.lastMessage.text}
-                  </p>
+                {lastText && (
+                  <p className={styles.lastMessage}>{lastText}</p>
                 )}
               </div>
             </div>
