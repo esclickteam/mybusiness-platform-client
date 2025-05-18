@@ -8,8 +8,8 @@ import Collab             from "./dashboardPages/Collab";
 import Upgrade            from "./dashboardPages/Upgrade";
 import CartPage           from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
 
-// ✅ רכיב צ'אט הכולל sidebar ו-area
-import ChatSection        from "./dashboardPages/buildTabs/buildSections/ChatSection";
+// 🟢 זה הרכיב הנכון לדשבורד של העסק!
+import BusinessChatSection from "./dashboardPages/buildTabs/buildSections/BusinessChatSection";
 
 import AffiliatePage      from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor     from "./dashboardPages/EsclickAdvisor";
@@ -45,8 +45,8 @@ const BusinessDashboardRoutes = () => (
       <Route path="esclick" element={<EsclickAdvisor />} />
       <Route path="goals"   element={<GoalsPage />} />
 
-      {/* לשונית ההודעות */}
-      <Route path="messages" element={<ChatSection isBusiness={true} />} />
+      {/* לשונית ההודעות בדשבורד העסק */}
+      <Route path="messages" element={<BusinessChatSection />} />
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />

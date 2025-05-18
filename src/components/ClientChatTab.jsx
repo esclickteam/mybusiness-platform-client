@@ -7,6 +7,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef();
+  const messageListRef = useRef(); // לגלילה אוטומטית
 
   useEffect(() => {
     if (!conversationId) return;
@@ -45,6 +46,13 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     };
   }, [conversationId, businessId, userId]);
 
+  // גלילה אוטומטית לסוף הצ'אט בכל עדכון
+  useEffect(() => {
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const sendMessage = () => {
     if (!input.trim() || !conversationId) return;
     const toId = businessId || partnerId;
@@ -58,7 +66,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
 
     socketRef.current.emit("sendMessage", msg, ack => {
       if (ack?.success) {
-        setInput(""); // מנקה את השדה, לא מוסיף את ההודעה לליסט
+        setInput(""); // מנקה את השדה
       } else {
         alert("שגיאה בשליחת ההודעה. נסה שוב.");
       }
@@ -66,32 +74,39 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   };
 
   return (
-    <div className="chat-container client">
-      <div className="message-list">
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`message ${m.from === userId ? "mine" : "theirs"}`}
-          >
-            <div className="text">{m.text}</div>
-            <div className="time">
-              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                hour: "2-digit",
-                minute: "2-digit"
-              })}
+    <div className="whatsapp-bg">
+      <div className="chat-container client">
+        <div className="message-list" ref={messageListRef}>
+          {messages.length === 0 && (
+            <div className="empty">עדיין אין הודעות</div>
+          )}
+          {messages.map((m, i) => (
+            <div
+              key={i}
+              className={`message ${m.from === userId ? "mine" : "theirs"}`}
+            >
+              <div className="text">{m.text}</div>
+              <div className="time">
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-      <div className="input-bar">
-        <input
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && sendMessage()}
-        />
-        <button onClick={sendMessage}>שלח</button>
+          ))}
+        </div>
+        <div className="input-bar">
+          <input
+            type="text"
+            placeholder="הקלד הודעה..."
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && sendMessage()}
+          />
+          <button onClick={sendMessage} title="שלח">
+            <span role="img" aria-label="send">✈️</span>
+          </button>
+        </div>
       </div>
     </div>
   );

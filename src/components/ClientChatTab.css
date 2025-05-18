@@ -1,109 +1,152 @@
-/* ClientChatTab.css */
+/* רקע וואטסאפ כללי (עטוף את כל הצ'אט) */
+.whatsapp-bg {
+  min-height: 100vh;
+  background: #ece5dd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* מכולת הצ'אט הראשית */
 .chat-container.client {
+  max-width: 430px;
+  width: 100%;
+  height: 78vh;
+  max-height: 650px;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  max-height: 600px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  border-radius: 18px;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 40px #0002;
   overflow: hidden;
+  border: none;
+  border: 1px solid #e0e0e0;
+  position: relative;
 }
 
 /* רשימת ההודעות */
 .chat-container.client .message-list {
   flex: 1;
-  padding: 16px;
+  padding: 22px 16px 10px 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: #f9f9fb;
+  gap: 10px;
+  background: #efeae2;
 }
 
-/* כל הודעה בודדת */
+/* הודעה בודדת */
 .chat-container.client .message {
-  max-width: 70%;
-  padding: 10px 14px;
-  border-radius: 16px;
+  max-width: 72%;
+  padding: 11px 16px 8px 12px;
+  border-radius: 18px;
   position: relative;
   word-wrap: break-word;
-  line-height: 1.4;
+  line-height: 1.44;
+  font-size: 15px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  min-width: 45px;
 }
 
-/* הודעות של הלקוח (יישור לימין, צבע שונה) */
+/* הודעה של הלקוח (ימין) */
 .chat-container.client .message.mine {
   align-self: flex-end;
-  background: #e0dbff;
-  color: #2a0bb8;
-  border-bottom-right-radius: 4px;
+  background: #dcf8c6;
+  color: #222;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 18px;
 }
 
-/* הודעות של העסק (יישור לשמאל) */
+/* הודעה של העסק (שמאל) */
 .chat-container.client .message.theirs {
   align-self: flex-start;
   background: #fff;
   color: #333;
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  border: 1px solid #eee;
 }
 
-/* תזמון ההודעה (מטקסט קטן בתחתית ההודעה) */
+/* זמן הודעה */
 .chat-container.client .message .time {
   font-size: 11px;
-  color: #777;
-  margin-top: 6px;
-  text-align: right;
+  color: #878787;
+  margin-top: 4px;
+  text-align: left;
+  direction: ltr;
+  opacity: 0.75;
+  padding-left: 4px;
 }
 
-/* שורת קלט ו-buttons בתחתית */
+/* שורת קלט */
 .chat-container.client .input-bar {
   display: flex;
-  padding: 12px;
-  border-top: 1px solid #e0e0e0;
-  background: #fff;
+  padding: 12px 12px 12px 10px;
+  border-top: 1.5px solid #eee;
+  background: #f7f7fa;
+  align-items: center;
+  min-height: 62px;
 }
 
-/* שדה הטקסט */
+/* קלט */
 .chat-container.client .input-bar input {
   flex: 1;
-  padding: 10px 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 26px;
   outline: none;
   transition: border-color 0.2s;
+  background: #fff;
 }
 
 .chat-container.client .input-bar input:focus {
   border-color: #4a3aff;
 }
 
-/* כפתור השליחה */
+/* כפתור שליחה עגול עם אייקון */
 .chat-container.client .input-bar button {
   margin-left: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
   background: #4a3aff;
   color: #fff;
   border: none;
-  border-radius: 20px;
+  border-radius: 50%;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: opacity 0.2s, background 0.2s;
+  transition: background 0.18s;
 }
 
 .chat-container.client .input-bar button:hover {
-  opacity: 0.9;
+  background: #6a5aff;
+  opacity: 0.97;
 }
 
 .chat-container.client .input-bar button:active {
   background: #3c2bcc;
 }
 
-/* גלגל טעינה קטנטן (אם תרצה להוסיף) */
+/* placeholder */
+.chat-container.client .input-bar input::placeholder {
+  color: #b7b7b7;
+}
+
+/* הודעה ריקה */
+.chat-container.client .message-list .empty {
+  color: #aaa;
+  text-align: center;
+  padding: 22px 0 0;
+}
+
+/* גלגל טעינה */
 .chat-container.client .loading {
   text-align: center;
   color: #777;
