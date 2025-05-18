@@ -1,35 +1,50 @@
 // src/components/ConversationsList.jsx
+import React from "react";
+import PropTypes from "prop-types";
+import styles from "./ConversationsList.module.css";
+
 export default function ConversationsList({
   conversations,
   businessId,
   selectedConversationId,
-  onSelect,
-  children
+  onSelect
 }) {
   return (
-    <div className="convo-wrapper">
-      <aside className="convo-list">
-        {conversations.map(conv => {
-          const partnerId = conv.participants.find(p => p !== businessId);
-          const isActive = conv._id === selectedConversationId;
-          return (
-            <div
-              key={conv._id}
-              className={`convo-item ${isActive ? 'active' : ''}`}
-              onClick={() => onSelect({
-                conversationId: conv._id,
-                partnerId
-              })}
-            >
-              {/* תצוגת שם הלקוח, תאריך אחרון וכו' */}
-              <p>{conv.businessName || partnerId}</p>
+    <div className={styles.listContainer}>
+      {conversations.map(conv => {
+        // וודא שיש מערך משתתפים
+        const participants = Array.isArray(conv.participants) ? conv.participants : [];
+        const partnerId = participants.find(p => p !== businessId) || "";
+        const isActive = conv._id === selectedConversationId;
+
+        return (
+          <div
+            key={conv._id || conv.id}
+            className={`${styles.convoItem} ${isActive ? styles.active : ""}`}
+            onClick={() => onSelect({ conversationId: conv._id || conv.id, partnerId })}
+          >
+            <div className={styles.convoInfo}>
+              <p className={styles.partnerName}>{conv.businessName || partnerId}</p>
+              {conv.lastMessage && <p className={styles.lastMsg}>{conv.lastMessage.text}</p>}
             </div>
-          );
-        })}
-      </aside>
-      <section className="chat-view">
-        {children || <p>בחר שיחה כדי להתחיל צפייה בהודעות.</p>}
-      </section>
+            {conv.updatedAt && (
+              <div className={styles.timeStamp}>
+                {new Date(conv.updatedAt).toLocaleDateString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
+
+ConversationsList.propTypes = {
+  conversations: PropTypes.array.isRequired,
+  businessId: PropTypes.string.isRequired,
+  selectedConversationId: PropTypes.string,
+  onSelect: PropTypes.func.isRequired
+};
