@@ -22,7 +22,7 @@
   background: #faf7ff;
   border: 1px solid #c3a6fa;
   box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
-  overflow: hidden;
+  overflow: visible; /* לא חותך את ה-input */
 }
 
 /* הסיידבר מימין */
@@ -65,7 +65,7 @@
   overflow: visible;  /* מאפשר ל־input ולכפתור לצאת מתחת */
 }
 
-/* הודעת Placeholder */
+/* Placeholder */
 .emptyMessage {
   flex: 1;
   display: flex;
@@ -82,4 +82,33 @@
   font-size: 15px;
   text-align: center;
   padding: 20px;
+}
+
+/* --- התאמות פנימיות ל-ClientChatTab כדי שמבנה ה-input יתאים ויהיה גלוי --- */
+
+/* גורם ל-whatsapp-bg הפנימי שבתוך chatArea להתמתח לגובה מלא */
+.chatArea > .whatsapp-bg {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  overflow: visible !important;
+}
+
+/* גורם ל-chat-container.client שבתוך אותו whatsapp-bg להתמקם כ-column בגובה מלא */
+.chatArea > .whatsapp-bg > .chat-container.client {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  overflow: visible !important;
+}
+
+/* מקבע את inputBar בתחתית ומונע ממנו להתכווץ */
+.chatArea
+  > .whatsapp-bg
+  > .chat-container.client
+  .inputBar {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 }
