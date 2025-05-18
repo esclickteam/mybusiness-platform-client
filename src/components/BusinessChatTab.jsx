@@ -1,3 +1,4 @@
+// src/components/BusinessChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
@@ -73,6 +74,8 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
 
     socketRef.current.emit("sendMessage", msg, ack => {
       if (ack?.success) {
+        // הוסף את ההודעה באופן מיידי ל-UI
+        setMessages(prev => [...prev, msg]);
         setInput("");
       } else {
         alert("שגיאה בשליחת ההודעה. נסה שוב.");
