@@ -1,4 +1,3 @@
-// src/components/ConversationsList.jsx
 import React from "react";
 import styles from "./ConversationsList.module.css";
 
@@ -15,14 +14,21 @@ export default function ConversationsList({
 
   // מסננים כפילויות לפי ה-partnerId
   const uniqueConvs = conversations.filter((conv, idx, arr) => {
-    const partnerId = Array.isArray(conv.participants)
-      ? conv.participants.find(p => p !== businessId)
-      : "";
+    // עדיפות למזהה מתוך participants, ואם לא – מ-customer?._id
+    const partnerId =
+      (Array.isArray(conv.participants)
+        ? conv.participants.find(p => p !== businessId)
+        : null) ||
+      (conv.customer ? conv.customer._id : "") ||
+      "";
     return (
       arr.findIndex(c => {
-        const pid = Array.isArray(c.participants)
-          ? c.participants.find(p => p !== businessId)
-          : "";
+        const pid =
+          (Array.isArray(c.participants)
+            ? c.participants.find(p => p !== businessId)
+            : null) ||
+          (c.customer ? c.customer._id : "") ||
+          "";
         return pid === partnerId;
       }) === idx
     );
@@ -38,8 +44,13 @@ export default function ConversationsList({
           const participants = Array.isArray(conv.participants)
             ? conv.participants
             : [];
-          const partnerId = participants.find(p => p !== businessId) || "";
-          const convoId = conv._id || conv.conversationId || conv.id || `conv-${idx}`;
+          // חפש תמיד קודם ב-participants ואם לא – מ-customer._id
+          const partnerId =
+            participants.find(p => p !== businessId) ||
+            (conv.customer ? conv.customer._id : "") ||
+            "";
+          const convoId =
+            conv._id || conv.conversationId || conv.id || `conv-${idx}`;
           const displayName = isBusiness
             ? conv.customerName || partnerId
             : conv.businessName || partnerId;

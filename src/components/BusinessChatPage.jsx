@@ -8,9 +8,9 @@ import styles from "./BusinessChatPage.module.css";
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const businessId = user?.businessId;
-  const [convos, setConvos]     = useState([]);
+  const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // שליפת שיחות מהשרת
   useEffect(() => {
@@ -25,15 +25,18 @@ export default function BusinessChatPage() {
           ? res.data
           : res.data.conversations || [];
         setConvos(data);
+
         // אם אין selected - בחירת השיחה הראשונה כברירת מחדל
         if (data.length && !selected) {
           const first = data[0];
-          const convoId =
-            first._id || first.conversationId || first.id;
-          // תמיד חפש את ה-partner שהוא לא בעל העסק
+          const convoId = first._id || first.conversationId || first.id;
+          // תמיד חפש את ה-partner שהוא לא בעל העסק, ואם אין - חפש customer._id
           const partnerId =
-            (first.participants || []).find(p => p !== businessId) ||
-            first.customer?._id || null;
+            (Array.isArray(first.participants)
+              ? first.participants.find(p => p !== businessId)
+              : null) ||
+            first.customer?._id ||
+            "";
           setSelected({ conversationId: convoId, partnerId });
         }
       })
@@ -41,18 +44,28 @@ export default function BusinessChatPage() {
   }, [initialized, businessId]);
 
   // טיפול בבחירת שיחה מהסיידבר
-  const handleSelect = (conversationId) => {
-    const convo = convos.find(
-      c =>
-        c._id === conversationId ||
-        c.conversationId === conversationId ||
-        c.id === conversationId
-    );
-    if (!convo) return;
-    // שלוף תמיד את ה-partner הנכון
-    const partnerId =
-      (convo.participants || []).find(p => p !== businessId) ||
-      convo.customer?._id || null;
+  const handleSelect = (conversationId, partnerIdFromSidebar) => {
+    // תמיד לוג - תדע בדיוק מה קורה!
+    console.log("handleSelect", { conversationId, partnerIdFromSidebar });
+
+    let partnerId = partnerIdFromSidebar;
+    if (!partnerId) {
+      // גיבוי: נסה לחלץ את partnerId מהשיחה עצמה
+      const convo = convos.find(
+        c =>
+          c._id === conversationId ||
+          c.conversationId === conversationId ||
+          c.id === conversationId
+      );
+      if (convo) {
+        partnerId =
+          (Array.isArray(convo.participants)
+            ? convo.participants.find(p => p !== businessId)
+            : null) ||
+          convo.customer?._id ||
+          "";
+      }
+    }
     setSelected({ conversationId, partnerId });
   };
 
@@ -70,6 +83,7 @@ export default function BusinessChatPage() {
               conversations={convos}
               businessId={businessId}
               selectedConversationId={selected?.conversationId}
+              // שים לב - פה מעבירים גם conversationId וגם partnerId
               onSelect={handleSelect}
               isBusiness={true}
             />
