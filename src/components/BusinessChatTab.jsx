@@ -34,12 +34,17 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     });
 
     socketRef.current.on("connect", () => {
+      console.log("🟢 SOCKET CONNECTED", socketRef.current.id);
       socketRef.current.emit("joinRoom", conversationId);
     });
 
+    socketRef.current.on("connect_error", (err) => {
+      console.error("🔴 SOCKET CONNECT ERROR:", err);
+    });
+
     socketRef.current.on("newMessage", msg => {
+      console.log("🔔 [SOCKET] newMessage arrived:", msg);
       setMessages(prev => {
-        // מניעת כפילויות גם אם ה־timestamp זהה
         const exists = prev.some(
           m =>
             (m._id && msg._id && m._id === msg._id) ||
@@ -66,17 +71,25 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   const sendMessage = () => {
     if (!input.trim() || !conversationId || !customerId || sending) return;
 
+    if (!socketRef.current || socketRef.current.disconnected) {
+      alert("❌ אין חיבור לשרת הצ'אט. נסה לרענן.");
+      console.error("❌ socketRef.current לא מאותחל או מנותק!");
+      return;
+    }
+
     setSending(true);
     const msg = {
       conversationId,
       from: businessId,
       to: customerId,
       text: input.trim(),
-      // לא צריך timestamp - השרת מוסיף
     };
+
+    console.log("🔵 מנסה לשלוח:", msg);
 
     socketRef.current.emit("sendMessage", msg, ack => {
       setSending(false);
+      console.log("🟠 ack מהשרת:", ack);
       if (!ack?.success) {
         alert("שגיאה בשליחת ההודעה. נסה שוב.");
       } else {
