@@ -4,6 +4,7 @@
 .chatSection {
   display: flex;
   flex-direction: row-reverse; /* sidebar בימין */
+  direction: ltr !important;   /* חובה לעקוף RTL גלובלי */
   height: 80vh;
   max-height: 700px;
   min-height: 400px;
@@ -14,6 +15,7 @@
   border: none;
   margin: 0 auto;
 }
+
 
 /* Sidebar */
 .chatSidebar {
