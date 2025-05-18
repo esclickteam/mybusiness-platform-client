@@ -2,27 +2,29 @@
 
 /* רקע כללי סביב ווינדו */
 .whatsappBg {
+  /* אפשר להצמיד את הכרטיס למרכז או להסיר לגמרי */
+  /* כשיש צורך במרכז, שמרו על הגדרות אלו, אחרת מחקו את הכללים */
   min-height: 100vh;
-  background: #f3edff;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 0;
+  margin: 0;
 }
 
 /* המכולה האחידה: sidebar + chat ביחד */
 .chatContainer {
   display: flex;
   flex-direction: row;
-  width: 100%;
-  max-width: 950px;
-  height: 80vh;
+  width: 950px;        /* רוחב קבוע של הכרטיס */
+  height: 80vh;        /* גובה קבוע כמעט מלא */
   min-height: 380px;
   border-radius: 16px;
   background: #faf7ff;
   border: 1px solid #c3a6fa;
   box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
-  overflow: visible; /* לא חותך את ה-input */
+  overflow: hidden;    /* שומר על פינות מעוגלות */
 }
 
 /* הסיידבר מימין */
@@ -84,9 +86,9 @@
   padding: 20px;
 }
 
-/* --- התאמות פנימיות ל-ClientChatTab כדי שמבנה ה-input יתאים ויהיה גלוי --- */
+/* — התאמות פנימיות ל־ClientChatTab כדי שה-inputBar יישאר גלוי בתחתית — */
 
-/* גורם ל-whatsapp-bg הפנימי שבתוך chatArea להתמתח לגובה מלא */
+/* 1) force internal whatsapp-bg to stretch to full height */
 .chatArea > .whatsapp-bg {
   display: flex !important;
   flex-direction: column !important;
@@ -94,8 +96,10 @@
   overflow: visible !important;
 }
 
-/* גורם ל-chat-container.client שבתוך אותו whatsapp-bg להתמקם כ-column בגובה מלא */
-.chatArea > .whatsapp-bg > .chat-container.client {
+/* 2) force .chat-container.client inside it to fill available height */
+.chatArea
+  > .whatsapp-bg
+  > .chat-container.client {
   display: flex !important;
   flex-direction: column !important;
   flex: 1 1 auto !important;
@@ -103,7 +107,7 @@
   overflow: visible !important;
 }
 
-/* מקבע את inputBar בתחתית ומונע ממנו להתכווץ */
+/* 3) keep the inputBar pinned to the bottom */
 .chatArea
   > .whatsapp-bg
   > .chat-container.client
