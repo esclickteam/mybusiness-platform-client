@@ -1,0 +1,99 @@
+/* ClientChatSection.module.css */
+
+/* מבנה ראשי */
+.chatSection {
+  display: flex;
+  flex-direction: row-reverse; /* sidebar בימין */
+  height: 80vh;
+  max-height: 700px;
+  min-height: 400px;
+  background: #ece5dd;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px #0002;
+  overflow: hidden;
+  border: none;
+  margin: 0 auto;
+}
+
+/* Sidebar */
+.chatSidebar {
+  width: 250px;
+  background: #f7f7fa;
+  border-left: 1.5px solid #e0e0e0;
+  border-right: 1.5px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-shadow: 1px 0 6px #0001;
+  z-index: 2;
+  padding-bottom: 8px;
+}
+
+.chatSidebar h3 {
+  padding: 22px 20px 8px 16px;
+  font-weight: bold;
+  color: #4a3aff;
+  font-size: 1.18rem;
+}
+
+/* רשימת שיחות */
+.convoList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.convoItem {
+  padding: 13px 22px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #222;
+  border-bottom: 1px solid #f3f3f3;
+  font-size: 15px;
+  background: none;
+}
+.convoItem:last-child {
+  border-bottom: none;
+}
+.convoItem:hover, .selected {
+  background: #e9e6ff;
+  color: #4a3aff;
+  font-weight: bold;
+}
+
+/* אזור הצ'אט */
+.chatMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #efeae2;
+  min-width: 0;
+}
+
+/* Placeholder */
+.chatPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #8e8e8e;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+/* טעינה / שגיאות */
+.spinner {
+  color: #999;
+  font-size: 15px;
+  text-align: center;
+  margin: 18px 0;
+}
+.noConversations {
+  color: #bbb;
+  font-size: 15px;
+  text-align: center;
+  margin: 18px 0;
+}

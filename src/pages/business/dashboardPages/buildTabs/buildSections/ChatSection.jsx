@@ -5,12 +5,16 @@ import API from "@api";
 import ChatComponent from "../../../../../components/ChatComponent";
 import styles from "./ChatSection.module.css";
 
-export default function ChatSection({ renderTopBar, isBusiness = false }) {
+export default function ChatSection({ isBusiness = false }) {
   const { user, initialized } = useAuth();
 
   const [clients, setClients] = useState([]);
   const [newPartnerId, setNewPartnerId] = useState("");
-  const [selected, setSelected] = useState({ conversationId: null, partnerId: null });
+  const [selected, setSelected] = useState({
+    conversationId: null,
+    partnerId: null,
+    customerId: null
+  });
   const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -63,7 +67,11 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
       );
       const convId = res.data.conversationId;
       await fetchConversations();
-      setSelected({ conversationId: convId, partnerId: newPartnerId });
+      setSelected({
+        conversationId: convId,
+        partnerId: newPartnerId,
+        customerId: newPartnerId // כי פותחים שיחה מול לקוח חדש
+      });
     } catch (err) {
       console.error("שגיאה ביצירת שיחה", err);
       setError("לא ניתן לפתוח שיחה");
@@ -81,26 +89,26 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
 
   return (
     <div className={styles.chatSection}>
-      {/* שדה השיחה משמאל */}
+      {/* --- אזור הצ'אט (שיחה שנבחרה) --- */}
       <main className={styles.chatMain}>
         {selected.conversationId ? (
           <ChatComponent
             userId={user.id}
             partnerId={selected.partnerId}
+            customerId={selected.customerId}
             initialConversationId={selected.conversationId}
             isBusiness={isBusiness}
           />
         ) : (
           <div className={styles.chatPlaceholder}>
-            בחרי שיחה מרשימה או התחל חדשה
+            בחר שיחה מהרשימה או התחל חדשה
           </div>
         )}
       </main>
 
-      {/* רשימת הצ'אטים מצד ימין */}
+      {/* --- Sidebar --- */}
       <aside className={styles.chatSidebar}>
         <h3>שיחות</h3>
-
         <div className={styles.newConversation}>
           <select
             value={newPartnerId}
@@ -121,13 +129,11 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
             התחל שיחה
           </button>
         </div>
-
         {isLoading && <div className={styles.spinner}>טעינה…</div>}
         {error && <div className={styles.errorBanner}>{error}</div>}
         {!isLoading && conversations.length === 0 && (
           <div className={styles.noConversations}>אין שיחות קיימות</div>
         )}
-
         <ul className={styles.convoList}>
           {conversations.map(conv => {
             const isUserBus = isBusiness || user.id === conv.business._id;
@@ -135,6 +141,7 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
             const partnerName = isUserBus
               ? conv.customer.name
               : conv.business.businessName;
+            const customerId = conv.customer?._id;
             return (
               <li
                 key={conv.conversationId}
@@ -142,7 +149,11 @@ export default function ChatSection({ renderTopBar, isBusiness = false }) {
                   selected.conversationId === conv.conversationId ? styles.selected : ""
                 }`}
                 onClick={() =>
-                  setSelected({ conversationId: conv.conversationId, partnerId })
+                  setSelected({
+                    conversationId: conv.conversationId,
+                    partnerId,
+                    customerId
+                  })
                 }
               >
                 {partnerName}

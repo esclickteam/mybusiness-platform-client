@@ -12,6 +12,7 @@ import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ChatPage from "./components/ChatPage";
+import ClientChatSection from "./components/ClientChatSection";
 import ConversationsList from "./components/ConversationsList";
 import { useAuth } from "./context/AuthContext";
 import API from "./api";
@@ -114,9 +115,13 @@ export default function App() {
 
           {/* Client chat (outside dashboard) */}
           <Route
-            path="/business/:businessId/messages"
-            element={<ClientChatWrapper />}
-          />
+  path="/business/:businessId/messages"
+  element={
+    <ProtectedRoute roles={["customer"]}>
+      <ClientChatSection />
+    </ProtectedRoute>
+  }
+/>
 
           {/* Business dashboard (protected) */}
           <Route
