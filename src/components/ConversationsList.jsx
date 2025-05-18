@@ -3,26 +3,42 @@ export default function ConversationsList({
   businessId,
   selectedConversationId,
   onSelect,
-  isBusiness // ← חדש!
+  isBusiness
 }) {
   if (!conversations || conversations.length === 0) {
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
+  }
+
+  // מוצא את השיחה הנבחרת
+  const selectedConversation = conversations.find(
+    (c) =>
+      (c._id || c.id || c.conversationId) === selectedConversationId
+  );
+
+  // קובע מה להציג בכותרת
+  let sidebarTitle = "שיחה";
+  if (selectedConversation) {
+    if (isBusiness) {
+      sidebarTitle = `שיחה עם ${selectedConversation.customerName || "לקוח"}`;
+    } else {
+      sidebarTitle = `שיחה עם ${selectedConversation.businessName || "עסק"}`;
+    }
+  } else {
+    sidebarTitle = isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק";
   }
 
   return (
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
         <div className={styles.sidebarTitle}>
-          {isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק"}
+          {sidebarTitle}
         </div>
         {conversations.map((conv, idx) => {
           const participants = Array.isArray(conv.participants) ? conv.participants : [];
           const partnerId = participants.find(p => p !== businessId) || "";
-          const convoId = conv._id || conv.id || `conv-${idx}`;
+          const convoId = conv._id || conv.id || conv.conversationId || `conv-${idx}`;
           const isActive = convoId === selectedConversationId;
 
-          // אם בצד עסק – מציגים שם לקוח
-          // אם בצד לקוח – מציגים שם עסק
           let displayName;
           if (isBusiness) {
             displayName = conv.customerName || partnerId;
