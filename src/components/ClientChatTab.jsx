@@ -18,7 +18,7 @@ export default function ClientChatTab({
     if (!conversationId) return;
 
     // 1. טען היסטוריה מה־REST
-    API.get("/api/messages/history", {
+    API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true,
     })
@@ -82,7 +82,7 @@ export default function ClientChatTab({
         console.warn("Socket send failed, falling back to REST");
         // 2) במקרה של כישלון ב־socket, נFallback ל־HTTP POST
         API.post(
-          "/api/messages/history",
+          "/messages/history",
           { ...msgPayload },
           { withCredentials: true }
         )

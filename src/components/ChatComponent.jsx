@@ -1,8 +1,3 @@
-import React, { useState, useEffect } from "react";
-import API from "../api";
-import ClientChatTab from "./ClientChatTab";
-import BusinessChatTab from "./BusinessChatTab";
-
 export default function ChatComponent({
   userId,
   partnerId,
@@ -12,85 +7,67 @@ export default function ChatComponent({
 }) {
   const [conversationId, setConversationId] = useState(initialConversationId);
   const [conversations, setConversations] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingConvs, setLoadingConvs] = useState(false);
+  const [loadingInit, setLoadingInit] = useState(false);
   const [currentCustomerId, setCurrentCustomerId] = useState(customerIdProp || null);
 
-  // לאתחל שיחה (ללקוח)
+  // אתחול שיחה ללקוח
   useEffect(() => {
-    if (isBusiness) return;
-    if (!partnerId || conversationId) return;
+    if (isBusiness || !partnerId || conversationId) return;
+    setLoadingInit(true);
 
-    const initConversation = async () => {
-      try {
-        const { data } = await API.post(
-          "/messages/conversations",
-          { otherId: partnerId },
-          { withCredentials: true }
-        );
-        setConversationId(data.conversationId);
-      } catch (err) {
-        console.error("⚠️ failed to init conversation", err);
-      }
-    };
-    initConversation();
+    API.post("/messages/conversations", { otherId: partnerId }, { withCredentials: true })
+      .then(res => setConversationId(res.data.conversationId))
+      .catch(err => console.error("⚠️ failed to init conversation", err))
+      .finally(() => setLoadingInit(false));
   }, [partnerId, conversationId, isBusiness]);
 
-  // בצד העסק – טען את רשימת השיחות ובחר אוטומטית שיחה ראשונה
+  // טעינת שיחות לעסק
   useEffect(() => {
-    if (!isBusiness) return;
-    if (!userId) return;
+    if (!isBusiness || !userId) return;
+    setLoadingConvs(true);
 
-    const fetchConversations = async () => {
-      setLoading(true);
-      try {
-        const res = await API.get("/messages/conversations", {
-          withCredentials: true,
-        });
+    API.get("/messages/conversations", { withCredentials: true })
+      .then(res => {
         setConversations(res.data);
-        // בחר שיחה ראשונה אם אין conversationId
-        if (res.data.length > 0 && !conversationId) {
+        if (!conversationId && res.data.length > 0) {
           setConversationId(res.data[0].conversationId);
-          setCurrentCustomerId(res.data[0].customer?._id);
+          setCurrentCustomerId(res.data[0].customer?._id || null);
         }
-      } catch (err) {
-        console.error("שגיאה בטעינת שיחות", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      })
+      .catch(err => console.error("שגיאה בטעינת שיחות", err))
+      .finally(() => setLoadingConvs(false));
+  }, [isBusiness, userId]);
 
-    fetchConversations();
-    // אם conversationId משתנה — נעדכן את customerId הרלוונטי
-  }, [isBusiness, userId, conversationId]);
-
-  // כשמשתנה ה־conversationId בצד העסק – עדכן customerId אוטומטית
+  // סנכרון customerId עם conversationId
   useEffect(() => {
-    if (!isBusiness) return;
-    if (!conversationId) return;
+    if (!isBusiness || !conversationId) return;
     const conv = conversations.find(c => c.conversationId === conversationId);
-    if (conv) setCurrentCustomerId(conv.customer?._id);
+    if (conv) {
+      setCurrentCustomerId(conv.customer?._id || null);
+    }
   }, [conversationId, isBusiness, conversations]);
 
-  if (loading) return <p>⏳ טוען שיחות...</p>;
-  if (!conversationId) return <p>⏳ טוען שיחה...</p>;
-  if (!userId) return <p>⏳ טוען משתמש...</p>;
+  // מצבי טעינה
+  if (loadingInit) return <p>⏳ פותח שיחה…</p>;
+  if (loadingConvs) return <p>⏳ טוען שיחות…</p>;
+  if (!conversationId) return <p>⏳ אין שיחה זמינה</p>;
+  if (!userId) return <p>⏳ טוען משתמש…</p>;
 
-  if (isBusiness) {
-    return (
-      <BusinessChatTab
-        conversationId={conversationId}
-        businessId={userId}
-        customerId={currentCustomerId}
-        userId={userId}
-      />
-    );
-  }
-
-  return (
+  // רינדור
+  return isBusiness ? (
+    <BusinessChatTab
+      conversationId={conversationId}
+      businessId={userId}
+      customerId={currentCustomerId}
+      userId={userId}
+    />
+  ) : (
     <ClientChatTab
       conversationId={conversationId}
       businessId={partnerId}
       userId={userId}
+      partnerId={partnerId}
     />
   );
 }
