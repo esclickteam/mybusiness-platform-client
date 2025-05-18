@@ -5,7 +5,7 @@ import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 
 export default function ClientChatSection({ userId: userIdProp }) {
-  const { businessId } = useParams(); // לוקח מה־URL
+  const { businessId } = useParams();
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState({
     conversationId: null,
@@ -17,38 +17,52 @@ export default function ClientChatSection({ userId: userIdProp }) {
   // userId מתוך פרופס או מה-storage
   const userId = userIdProp || JSON.parse(localStorage.getItem("user"))?.userId;
 
-  // שלב 1: טען את כל השיחות
+  // טען את כל השיחות כשמשתנה userId
   useEffect(() => {
     if (!userId) return;
     setIsLoading(true);
     API.get("/messages/conversations", { withCredentials: true })
-      .then(res => setConversations(res.data || []))
-      .catch(() => {})
+      .then(res => {
+        setConversations(res.data || []);
+        // ניקוי בחירת שיחה במעבר בין עסקים שונים
+        setSelected({
+          conversationId: null,
+          businessId: null,
+          partnerId: null
+        });
+      })
+      .catch(err => {
+        console.warn("שגיאה בטעינת שיחות:", err);
+      })
       .finally(() => setIsLoading(false));
   }, [userId]);
 
-  // שלב 2: אם businessId מה-URL — אתחל או צור שיחה מתאימה
+  // דיבאג
   useEffect(() => {
-    if (!userId || !businessId) return;
-    if (isLoading) return; // נחכה לטעינה
+    console.log("conversations:", conversations);
+    console.log("selected:", selected);
+    console.log("businessId from URL:", businessId);
+  }, [conversations, selected, businessId]);
 
-    // בדוק אם יש כבר שיחה כזו
+  // יצירת שיחה חדשה אם נכנסנו לעסק שאין לו שיחה
+  useEffect(() => {
+    if (!userId || !businessId || isLoading) return;
+    if (selected.businessId === businessId && selected.conversationId) return;
+
+    // בדוק אם יש כבר שיחה עם העסק הזה
     const existingConv = conversations.find(
       c => c.business?._id === businessId
     );
     if (existingConv) {
-      // בחר אותה
-      if (selected.conversationId !== existingConv.conversationId) {
-        setSelected({
-          conversationId: existingConv.conversationId,
-          businessId,
-          partnerId: businessId
-        });
-      }
+      setSelected({
+        conversationId: existingConv.conversationId,
+        businessId,
+        partnerId: businessId
+      });
       return;
     }
 
-    // אם אין — צור חדשה
+    // אין שיחה — צור חדשה
     API.post(
       "/messages/conversations",
       { otherId: businessId },
@@ -62,10 +76,13 @@ export default function ClientChatSection({ userId: userIdProp }) {
           businessId,
           partnerId: businessId
         });
+        console.log("✨ שיחה חדשה נוצרה", conv);
       })
-      .catch(() => {});
+      .catch(err => {
+        console.warn("שגיאה ביצירת שיחה:", err);
+      });
     // eslint-disable-next-line
-  }, [businessId, userId, isLoading]); // חשוב! בלי conversations בתלות, אחרת לולאה
+  }, [businessId, userId, isLoading, conversations]); // conversations dependency - לא תיצור לולאה כי מוסיפים פעם אחת
 
   return (
     <div className={styles.chatSection}>
