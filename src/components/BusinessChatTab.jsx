@@ -1,4 +1,4 @@
-// BusinessChatTab.jsx
+// src/components/BusinessChatTab.jsx
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
@@ -71,42 +71,43 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   };
 
   return (
-    <div className={styles.chatContainer}>
-      {/* -- אפשר להוסיף כאן סיידבר של שיחות אם תרצה -- */}
-      <div className={styles.messageList} ref={messageListRef}>
-        {messages.length === 0 && (
-          <div className={styles.empty}>עדיין אין הודעות</div>
-        )}
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`${styles.message} ${
-              m.from === businessId ? styles.mine : styles.theirs
-            }`}
-          >
-            <div>{m.text}</div>
-            <div className={styles.time}>
-              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                hour: "2-digit",
-                minute: "2-digit"
-              })}
+    <div className={styles.whatsappBg}>
+      <div className={styles.chatContainer}>
+        <div className={styles.messageList} ref={messageListRef}>
+          {messages.length === 0 && (
+            <div className={styles.empty}>עדיין אין הודעות</div>
+          )}
+          {messages.map((m, i) => (
+            <div
+              key={i}
+              className={`${styles.message} ${
+                m.from === businessId ? styles.mine : styles.theirs
+              }`}
+            >
+              <div>{m.text}</div>
+              <div className={styles.time}>
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className={styles.inputBar}>
-        <input
-          className={styles.inputField}
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && sendMessage()}
-        />
-        <button className={styles.sendButton} onClick={sendMessage} title="שלח">
-          <span role="img" aria-label="send">✈️</span>
-        </button>
+        <div className={styles.inputBar}>
+          <input
+            className={styles.inputField}
+            type="text"
+            placeholder="הקלד הודעה..."
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && sendMessage()}
+          />
+          <button className={styles.sendButton} onClick={sendMessage} title="שלח">
+            <span role="img" aria-label="send">✈️</span>
+          </button>
+        </div>
       </div>
     </div>
   );
