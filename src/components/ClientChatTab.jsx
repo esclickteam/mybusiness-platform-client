@@ -17,17 +17,11 @@ export default function ClientChatTab({
   useEffect(() => {
     if (!conversationId) return;
 
-    // 1. טען היסטוריה מה־REST
+    // 1. טען היסטוריה
     API.get("/messages/history", {
       params: { conversationId },
-      withCredentials: true,
     })
-      .then((res) => {
-        const loaded = Array.isArray(res.data)
-          ? res.data
-          : res.data.messages || [];
-        setMessages(loaded);
-      })
+      .then((res) => setMessages(res.data))
       .catch((e) => console.error("Error loading history:", e));
 
     // 2. התחבר ל־Socket.IO
@@ -38,10 +32,14 @@ export default function ClientChatTab({
     });
 
     socketRef.current.on("connect", () => {
+      console.log("✅ Socket connected, id =", socketRef.current.id);
       socketRef.current.emit("joinRoom", { conversationId });
     });
-
+    socketRef.current.on("disconnect", (reason) => {
+      console.log("🔴 Socket disconnected:", reason);
+    });
     socketRef.current.on("newMessage", (msg) => {
+      console.log("🆕 Received via socket:", msg);
       setMessages((prev) => [...prev, msg]);
     });
 
@@ -51,9 +49,9 @@ export default function ClientChatTab({
       socketRef.current = null;
       setMessages([]);
     };
-  }, [conversationId, businessId, userId]);
+  }, [conversationId]);
 
-  // גלילה אוטומטית לתחתית בכל עדכון
+  // גלילה אוטומטית
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop =
@@ -63,6 +61,8 @@ export default function ClientChatTab({
 
   const sendMessage = () => {
     const text = input.trim();
+    console.log("🚀 sendMessage called with:", { text, conversationId });
+
     if (!text || !conversationId) return;
 
     const toId = businessId || partnerId;
@@ -74,25 +74,32 @@ export default function ClientChatTab({
       timestamp: new Date().toISOString(),
     };
 
-    // 1) שליחה דרך Socket.IO
+    // אם אין סוקט או לא מחובר – נשלח דרך HTTP
+    if (!socketRef.current || !socketRef.current.connected) {
+      console.warn("⚠️ socket not connected, using REST fallback");
+      return API.post("/messages/history", msgPayload)
+        .then((res) => {
+          console.log("⮕ REST fallback success:", res.data);
+          setMessages((prev) => [...prev, res.data.message]);
+          setInput("");
+        })
+        .catch((err) => console.error("⮕ REST fallback error:", err));
+    }
+
+    // אחרת – נסה לשלוח דרך socket
     socketRef.current.emit("sendMessage", msgPayload, (ack) => {
+      console.log("📝 sendMessage ACK:", ack);
       if (ack?.success) {
         setInput("");
       } else {
-        console.warn("Socket send failed, falling back to REST");
-        // 2) במקרה של כישלון ב־socket, נFallback ל־HTTP POST
-        API.post(
-          "/messages/history",
-          { ...msgPayload },
-          { withCredentials: true }
-        )
+        console.warn("⚠️ socket ack failed, falling back to REST");
+        API.post("/messages/history", msgPayload)
           .then((res) => {
+            console.log("⮕ REST after socket-fail:", res.data);
             setMessages((prev) => [...prev, res.data.message]);
             setInput("");
           })
-          .catch((err) =>
-            console.error("Error sending via REST:", err)
-          );
+          .catch((err) => console.error("⮕ fallback error:", err));
       }
     });
   };
@@ -100,19 +107,12 @@ export default function ClientChatTab({
   return (
     <div className="whatsapp-bg">
       <div className="chat-container client">
-        <div
-          className="message-list"
-          ref={messageListRef}
-        >
-          {messages.length === 0 && (
-            <div className="empty">עדיין אין הודעות</div>
-          )}
+        <div className="message-list" ref={messageListRef}>
+          {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
           {messages.map((m, i) => (
             <div
               key={i}
-              className={`message ${
-                m.from === userId ? "mine" : "theirs"
-              }`}
+              className={`message ${m.from === userId ? "mine" : "theirs"}`}
             >
               <div className="text">{m.text}</div>
               <div className="time">
@@ -136,9 +136,7 @@ export default function ClientChatTab({
             }
           />
           <button onClick={sendMessage} title="שלח">
-            <span role="img" aria-label="send">
-              ✈️
-            </span>
+            ✈️
           </button>
         </div>
       </div>
