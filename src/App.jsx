@@ -1,129 +1,115 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
+// src/App.jsx
+import React, { Suspense, lazy } from "react";
 import {
   BrowserRouter,
   Routes,
   Route,
   Navigate,
   useLocation,
-  useParams,
-  useNavigate,
 } from "react-router-dom";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
-import ChatPage from "./components/ChatPage";
 import ClientChatSection from "./components/ClientChatSection";
-import ConversationsList from "./components/ConversationsList";
+import BusinessChatPage from "./components/BusinessChatPage";
 import { useAuth } from "./context/AuthContext";
-import API from "./api";
 
 import "./styles/index.css";
 
 // Lazy-loaded public pages
-const HomePage = lazy(() => import("./pages/Home"));
-const About = lazy(() => import("./pages/About"));
-const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const HowItWorks = lazy(() => import("./pages/HowItWorks"));
-const Plans = lazy(() => import("./pages/business/Plans"));
-const Checkout = lazy(() => import("./pages/Checkout"));
-const FAQ = lazy(() => import("./pages/FAQ"));
-const Accessibility = lazy(() => import("./pages/Accessibility"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Contact = lazy(() => import("./pages/Contact"));
-const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));
-const BusinessOverview = lazy(() => import("./pages/business/Business"));
-const BusinessesList = lazy(() => import("./pages/BusinessesList"));
-const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
-const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const ChangePassword = lazy(() => import("./pages/ChangePassword"));
-const StaffLogin = lazy(() => import("./pages/StaffLogin"));
+const HomePage            = lazy(() => import("./pages/Home"));
+const About               = lazy(() => import("./pages/About"));
+const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
+const PrivacyPolicy       = lazy(() => import("./pages/PrivacyPolicy"));
+const HowItWorks          = lazy(() => import("./pages/HowItWorks"));
+const Plans               = lazy(() => import("./pages/business/Plans"));
+const Checkout            = lazy(() => import("./pages/Checkout"));
+const FAQ                 = lazy(() => import("./pages/FAQ"));
+const Accessibility       = lazy(() => import("./pages/Accessibility"));
+const Terms               = lazy(() => import("./pages/Terms"));
+const Contact             = lazy(() => import("./pages/Contact"));
+const BusinessSupport     = lazy(() => import("./pages/BusinessSupport"));
+const BusinessOverview    = lazy(() => import("./pages/business/Business"));
+const BusinessesList      = lazy(() => import("./pages/BusinessesList"));
+const QuickJobsBoard      = lazy(() => import("./pages/QuickJobsBoard"));
+const QuickJobForm        = lazy(() => import("./pages/QuickJobForm"));
+const Login               = lazy(() => import("./pages/Login"));
+const Register            = lazy(() => import("./pages/Register"));
+const ResetPassword       = lazy(() => import("./pages/ResetPassword"));
+const ChangePassword      = lazy(() => import("./pages/ChangePassword"));
+const StaffLogin          = lazy(() => import("./pages/StaffLogin"));
 const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
-const BookingPage = lazy(() => import("./pages/BookingPage"));
-const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
-const OrdersPage = lazy(() => import("./pages/client/OrdersPage"));
-const FavoritesPage = lazy(() => import("./pages/client/FavoritesPage"));
-const MessagesPage = lazy(() => import("./pages/client/MessagesPage"));
-const StaffDashboard = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks = lazy(() => import("./pages/staff/MyTasks"));
-const MySales = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const BookingPage         = lazy(() => import("./pages/BookingPage"));
+const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
+const MessagesPage        = lazy(() => import("./pages/client/MessagesPage"));
+const OrdersPage          = lazy(() => import("./pages/client/OrdersPage"));
+const FavoritesPage       = lazy(() => import("./pages/client/FavoritesPage"));
+const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks             = lazy(() => import("./pages/staff/MyTasks"));
+const MySales             = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard    = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard      = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs           = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans          = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings       = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  React.useEffect(() => window.scrollTo(0, 0), [pathname]);
   return null;
 }
 
 export default function App() {
   const { user } = useAuth();
+
   return (
-    <>
+    <BrowserRouter>
       <Header />
       <ScrollToTop />
-      <Suspense fallback={<div>🔄 טוען את הדף…</div>}>
+      <Suspense fallback={<div>🔄 טוען…</div>}>
         <Routes>
           {/* Public pages */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/search" element={<SearchBusinesses />} />
-
-          {/* Booking Page */}
-          <Route path="/book/:businessId" element={<BookingPage />} />
-
-          {/* Business info */}
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/plans" element={<Plans />} />
           <Route path="/checkout" element={<Checkout />} />
-
-          {/* Support */}
           <Route path="/faq" element={<FAQ />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/business-support" element={<BusinessSupport />} />
-
-          {/* Business & jobs */}
           <Route path="/business" element={<BusinessOverview />} />
           <Route path="/businesses" element={<BusinessesList />} />
           <Route path="/quick-jobs" element={<QuickJobsBoard />} />
           <Route path="/quick-jobs/new" element={<QuickJobForm />} />
-
-          {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/staff-login" element={<StaffLogin />} />
-
-          {/* Public business profile */}
           <Route path="/business/:businessId" element={<BusinessProfileView />} />
+          <Route path="/book/:businessId" element={<BookingPage />} />
 
-          {/* Client chat (outside dashboard) */}
+          {/* Client chat outside dashboard */}
           <Route
-  path="/business/:businessId/messages"
-  element={
-    <ProtectedRoute roles={["customer"]}>
-      <ClientChatSection />
-    </ProtectedRoute>
-  }
-/>
+            path="/business/:businessId/messages"
+            element={
+              <ProtectedRoute roles={["customer"]}>
+                <ClientChatSection />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Business dashboard (protected) */}
+          {/* Business dashboard */}
           <Route
             path="/business/:businessId/dashboard/*"
             element={
@@ -133,27 +119,17 @@ export default function App() {
             }
           />
 
-          {/* Business chat list (protected) */}
+          {/* Business chat (list + detail) */}
           <Route
-            path="/business/:businessId/chat"
+            path="/business/:businessId/chat/*"
             element={
               <ProtectedRoute roles={["business"]}>
-                <BusinessChatListWrapper />
+                <BusinessChatPage />
               </ProtectedRoute>
             }
           />
 
-          {/* Business chat specific (protected) */}
-          <Route
-            path="/business/:businessId/chat/:clientId"
-            element={
-              <ProtectedRoute roles={["business"]}>
-                <BusinessChatWrapper />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Client dashboard routes */}
+          {/* Client dashboard */}
           <Route
             path="/client/dashboard/*"
             element={
@@ -163,13 +139,12 @@ export default function App() {
             }
           >
             <Route index element={<Navigate to="search" replace />} />
-            <Route path="search" element={<SearchBusinesses />} />
-            <Route path="orders" element={<OrdersPage />} />
             <Route path="messages" element={<MessagesPage />} />
+            <Route path="orders" element={<OrdersPage />} />
             <Route path="favorites" element={<FavoritesPage />} />
           </Route>
 
-          {/* Staff & Admin routes */}
+          {/* Staff & Admin */}
           <Route
             path="/staff/dashboard"
             element={
@@ -287,34 +262,9 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </>
+    </BrowserRouter>
   );
 }
-
-
-// Wrapper for client chatting with a business
-function ClientChatWrapper() {
-  const { businessId } = useParams();
-  const { user, loading } = useAuth();
-
-  // טפל במצבים לא תקינים:
-  if (loading) return <div>טוען...</div>;
-  if (!user) return <Navigate to="/login" replace />;
-  if (!businessId) return <div>שגיאה: חסר businessId ב-URL</div>;
-  if (user.role !== "customer") return <Navigate to="/login" replace />;
-
-  return (
-    <ChatPage
-      isBusiness={false}
-      userId={user.userId} 
-      partnerId={businessId}
-      initialPartnerId={businessId}
-      businessProfilePic="/default-business.png"
-      clientProfilePic={user.profilePic}
-    />
-  );
-}
-
 
 // Wrapper for business showing list of conversations
 function BusinessChatListWrapper() {
@@ -322,49 +272,57 @@ function BusinessChatListWrapper() {
   const [convos, setConvos] = useState([]);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
-  const selectedConversationId = pathname.includes("/chat/")
+  const selectedClientId = pathname.includes("/chat/")
     ? pathname.split("/").pop()
     : null;
 
   useEffect(() => {
-    API.get("/messages/conversations", {
-      withCredentials: true
-    })
+    API.get("/messages/conversations", { withCredentials: true })
       .then(res => setConvos(res.data))
       .catch(console.error);
   }, [businessId]);
 
-  const handleSelect = ({ conversationId, partnerId }) => {
-    navigate(`/business/${businessId}/chat/${partnerId}`, {
-      state: { conversationId },
-    });
+  const handleSelect = conv => {
+    navigate(
+      `/business/${businessId}/chat/${conv.customer._id}`,
+      { state: { conversationId: conv.conversationId } }
+    );
   };
 
   return (
     <ConversationsList
       conversations={convos}
-      isBusiness={true}
+      selectedId={selectedClientId}
       onSelect={handleSelect}
-      selectedConversationId={selectedConversationId}
+      isBusiness={true}
     />
   );
 }
 
 // Wrapper for a specific business-client chat
 function BusinessChatWrapper() {
-  const { businessId,	clientId } = useParams();
-  const { user } = useAuth();
+  const { businessId, clientId } = useParams();
+  const { state } = useLocation();
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>טוען...</div>;
+  if (!user || user.role !== "business") {
+    return <Navigate to="/login" replace />;
+  }
+  if (!state?.conversationId) {
+    return <div>שגיאה: חסר conversationId</div>;
+  }
 
   return (
     <ChatPage
       isBusiness={true}
       userId={businessId}
+      partnerId={clientId}
+      conversationId={state.conversationId}
       businessName={user.businessName}
-      clientName="לקוח"
       businessProfilePic={user.profilePic || "/default-business.png"}
+      clientName="לקוח"
       clientProfilePic="/default-client.png"
-      initialPartnerId={clientId}
     />
   );
 }

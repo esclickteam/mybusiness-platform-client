@@ -1,38 +1,52 @@
+// src/components/ConversationsList.jsx
 import React from 'react';
 import './ConversationsList.css';
 
 export default function ConversationsList({
-  conversations = [],        // ודא שהמערך אף פעם לא undefined
+  conversations = [],
   isBusiness,
+  selectedConversationId,
   onSelect,
-  selectedConversationId
+  children
 }) {
   return (
     <div className="conversations-list">
-      {conversations.map(conv => {
-        const conversationId = conv.conversationId;
-        const partner = isBusiness ? conv.customer : conv.business;
+      {/* Sidebar */}
+      <div className="sidebar">
+        {conversations.map(conv => {
+          const { conversationId } = conv;
+          const partner = isBusiness ? conv.customer : conv.business;
+          if (!partner) return null;
 
-        // אם אין פרטנר, מדלגים עליו
-        if (!partner) return null;
+          const partnerId = partner._id;
+          const name = isBusiness
+            ? partner.name
+            : partner.businessName || partner.name || '—';
 
-        const partnerId = partner._id;
-        const partnerName = isBusiness
-          ? partner.name
-          : partner.businessName || partner.name || '—';
+          const isActive = selectedConversationId === conversationId;
 
-        const isSelected = selectedConversationId === conversationId;
+          return (
+            <div
+              key={conversationId}
+              className={`conv-item ${isActive ? 'active' : ''}`}
+              onClick={() =>
+                onSelect({ conversationId, partnerId })
+              }
+            >
+              {name}
+            </div>
+          );
+        })}
+      </div>
 
-        return (
-          <div
-            key={conversationId}
-            className={`conv-item ${isSelected ? 'active' : ''}`}
-            onClick={() => onSelect({ conversationId, partnerId })}
-          >
-            <span className="conv-name">{partnerName}</span>
+      {/* Chat area */}
+      <div className="chat-area">
+        {children || (
+          <div className="no-selection">
+            בחר שיחה מהרשימה כדי להתחיל
           </div>
-        );
-      })}
+        )}
+      </div>
     </div>
   );
 }

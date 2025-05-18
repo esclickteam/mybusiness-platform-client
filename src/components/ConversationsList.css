@@ -1,5 +1,3 @@
-/* src/components/ConversationsList.css */
-
 .conversations-list {
   display: flex;
   height: 100%;
@@ -21,6 +19,7 @@
   cursor: pointer;
   border-bottom: 1px solid #eee;
   transition: background 0.2s;
+  text-align: right;
 }
 
 .conversations-list .conv-item:hover {
