@@ -26,6 +26,7 @@ export default function ClientChatSection() {
       { withCredentials: true }
     )
       .then(res => {
+        console.log("POST /messages/conversations →", res.data);
         setConversationId(res.data.conversationId);
       })
       .catch(err => {
@@ -41,13 +42,25 @@ export default function ClientChatSection() {
 
     API.get("/messages/conversations", { withCredentials: true })
       .then(res => {
-        const conv = res.data.find(c =>
-          c.conversationId === conversationId ||
-          c._id            === conversationId ||
-          c.id             === conversationId
+        // תמיכה בתרחישים שונים: אולי res.data הוא מערך, או שיש משם שדה res.data.conversations
+        const conversations = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data.conversations)
+            ? res.data.conversations
+            : [];
+
+        console.log("GET /messages/conversations →", conversations);
+        const conv = conversations.find(c =>
+          [c.conversationId, c._id, c.id]
+            .map(String)
+            .includes(String(conversationId))
         );
-        if (conv) {
-          setBusinessName(conv.businessName || "");
+        console.log("Selected conv:", conv);
+
+        if (conv && conv.businessName) {
+          setBusinessName(conv.businessName);
+        } else {
+          console.warn("businessName לא נמצא ב־conv, השדות הזמינים:", conv);
         }
       })
       .catch(err => {
