@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import API from "../api";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
-import "./ClientChatTab.css"; // תשתמש באותו CSS של הלקוח
+import "./ClientChatTab.css"; // אותו CSS של הלקוח
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
@@ -39,37 +39,39 @@ export default function BusinessChatPage() {
   if (!initialized) return <p>טוען מידע...</p>;
 
   return (
-    <div className="whatsapp-bg">
-      <div className="chat-container client">
-        <div style={{ display: "flex", height: "100%" }}>
-          <aside style={{
-            width: "110px",
-            background: "#efeae2",
-            borderLeft: "1px solid #eee",
-            overflowY: "auto"
-          }}>
-            {loading
-              ? <p style={{ textAlign: "center", marginTop: 40 }}>טוען שיחות…</p>
-              : <ConversationsList
-                  conversations={convos}
-                  businessId={businessId}
-                  selectedConversationId={selected?.conversationId}
-                  onSelect={handleSelect}
-                />
-            }
-          </aside>
-          <section style={{ flex: 1, background: "#fff", display: "flex", flexDirection: "column" }}>
-            {selected
-              ? <BusinessChatTab
-                  conversationId={selected.conversationId}
-                  businessId={businessId}
-                  customerId={selected.partnerId}
-                />
-              : <p style={{ margin: 40, textAlign: "center", color: "#aaa" }}>
-                  בחר שיחה כדי לראות הודעות
-                </p>
-            }
-          </section>
+    <div className="whatsapp-bg" style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ display: "flex", gap: "32px", width: "100%", maxWidth: "900px", alignItems: "flex-start" }}>
+        <aside style={{
+          width: "160px",
+          minWidth: "110px",
+          background: "#efeae2",
+          borderLeft: "1px solid #eee",
+          borderRadius: "16px",
+          height: "650px",
+          overflowY: "auto",
+          boxShadow: "0 6px 32px #0001",
+        }}>
+          {loading
+            ? <p style={{ textAlign: "center", marginTop: 40 }}>טוען שיחות…</p>
+            : <ConversationsList
+                conversations={convos}
+                businessId={businessId}
+                selectedConversationId={selected?.conversationId}
+                onSelect={handleSelect}
+              />
+          }
+        </aside>
+        <div className="chat-container client">
+          {selected
+            ? <BusinessChatTab
+                conversationId={selected.conversationId}
+                businessId={businessId}
+                customerId={selected.partnerId}
+              />
+            : <p style={{ margin: 40, textAlign: "center", color: "#aaa" }}>
+                בחר שיחה כדי לראות הודעות
+              </p>
+          }
         </div>
       </div>
     </div>
