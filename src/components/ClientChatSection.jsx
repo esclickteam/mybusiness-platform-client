@@ -1,4 +1,3 @@
-// src/components/ClientChatSection.jsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import API from "../api";
@@ -6,7 +5,7 @@ import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 
 export default function ClientChatSection({ userId: userIdProp }) {
-  const { businessId } = useParams(); // לוקח מה־URL
+  const { businessId } = useParams();
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState({
     conversationId: null,
@@ -15,10 +14,10 @@ export default function ClientChatSection({ userId: userIdProp }) {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // חפש userId מהפרופס (אם יש) או מהסטייט הגלובלי
+  // userId מתוך פרופס או מה-storage
   const userId = userIdProp || JSON.parse(localStorage.getItem("user"))?.userId;
 
-  // טען את כל השיחות של הלקוח
+  // טען את כל השיחות
   useEffect(() => {
     if (!userId) return;
     setIsLoading(true);
@@ -28,9 +27,11 @@ export default function ClientChatSection({ userId: userIdProp }) {
       .finally(() => setIsLoading(false));
   }, [userId]);
 
-  // אם נכנסנו עם businessId — בחרי אוטומטית את השיחה מול העסק הזה (או צרי חדשה)
+  // אם נכנסו עם businessId מה-URL – אתחל שיחה מיידית
   useEffect(() => {
     if (!userId || !businessId) return;
+
+    // בדוק אם יש כבר שיחה
     const existingConv = conversations.find(
       c => c.business?._id === businessId
     );
@@ -42,7 +43,8 @@ export default function ClientChatSection({ userId: userIdProp }) {
       });
       return;
     }
-    // אין שיחה — ניצור חדשה
+
+    // אם אין — צור חדשה
     API.post(
       "/messages/conversations",
       { otherId: businessId },
@@ -58,12 +60,10 @@ export default function ClientChatSection({ userId: userIdProp }) {
         });
       })
       .catch(() => {});
-  // חשוב להוסיף conversations בתלות — כך ברגע שנוצרת חדשה, ה־useEffect יתעדכן
   }, [businessId, userId, conversations]);
 
   return (
     <div className={styles.chatSection}>
-      {/* Sidebar — כל השיחות (ימין!) */}
       <aside className={styles.chatSidebar}>
         <h3>העסקים שלי</h3>
         {isLoading && <div className={styles.spinner}>טעינה…</div>}
@@ -97,7 +97,6 @@ export default function ClientChatSection({ userId: userIdProp }) {
         </ul>
       </aside>
 
-      {/* Main Chat Area */}
       <main className={styles.chatMain}>
         {selected.conversationId ? (
           <ClientChatTab
