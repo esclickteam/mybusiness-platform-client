@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import API from "../api";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
-import styles from "./BusinessChatPage.module.css";
+import "./ClientChatTab.css"; // תשתמש באותו CSS של הלקוח
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
@@ -39,15 +39,17 @@ export default function BusinessChatPage() {
   if (!initialized) return <p>טוען מידע...</p>;
 
   return (
-    // תוספת רקע של וואטסאפ
-    <div className={styles.whatsappBg}>
-      {/* קונטיינר מסביב לחלק הצ'אט */}
-      <div className={styles.chatContainer}>
-        {/* מבנה עמוד: sidebar + main */}
-        <div className={styles.chatPage}>
-          <aside className={styles.chatSidebar}>
+    <div className="whatsapp-bg">
+      <div className="chat-container client">
+        <div style={{ display: "flex", height: "100%" }}>
+          <aside style={{
+            width: "110px",
+            background: "#efeae2",
+            borderLeft: "1px solid #eee",
+            overflowY: "auto"
+          }}>
             {loading
-              ? <p>טוען שיחות…</p>
+              ? <p style={{ textAlign: "center", marginTop: 40 }}>טוען שיחות…</p>
               : <ConversationsList
                   conversations={convos}
                   businessId={businessId}
@@ -56,15 +58,16 @@ export default function BusinessChatPage() {
                 />
             }
           </aside>
-
-          <section className={styles.chatMain}>
+          <section style={{ flex: 1, background: "#fff", display: "flex", flexDirection: "column" }}>
             {selected
               ? <BusinessChatTab
                   conversationId={selected.conversationId}
                   businessId={businessId}
                   customerId={selected.partnerId}
                 />
-              : <p>בחר שיחה כדי לראות הודעות</p>
+              : <p style={{ margin: 40, textAlign: "center", color: "#aaa" }}>
+                  בחר שיחה כדי לראות הודעות
+                </p>
             }
           </section>
         </div>
