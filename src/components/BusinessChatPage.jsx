@@ -32,36 +32,43 @@ export default function BusinessChatPage() {
     const customerId = conv.participants.find(p => p !== businessId);
     setSelected({
       conversationId: conv._id,
-      partnerId:     customerId,
+      partnerId:      customerId,
     });
   };
 
   if (!initialized) return <p>טוען מידע...</p>;
 
   return (
-    <div className={styles.chatPage}>
-      <aside className={styles.chatSidebar}>
-        {loading
-          ? <p>טוען שיחות…</p>
-          : <ConversationsList
-              conversations={convos}
-              businessId={businessId}
-              selectedConversationId={selected?.conversationId}
-              onSelect={handleSelect}
-            />
-        }
-      </aside>
+    // תוספת רקע של וואטסאפ
+    <div className={styles.whatsappBg}>
+      {/* קונטיינר מסביב לחלק הצ'אט */}
+      <div className={styles.chatContainer}>
+        {/* מבנה עמוד: sidebar + main */}
+        <div className={styles.chatPage}>
+          <aside className={styles.chatSidebar}>
+            {loading
+              ? <p>טוען שיחות…</p>
+              : <ConversationsList
+                  conversations={convos}
+                  businessId={businessId}
+                  selectedConversationId={selected?.conversationId}
+                  onSelect={handleSelect}
+                />
+            }
+          </aside>
 
-      <section className={styles.chatMain}>
-        {selected
-          ? <BusinessChatTab
-              conversationId={selected.conversationId}
-              businessId={businessId}
-              customerId={selected.partnerId}
-            />
-          : <p>בחר שיחה כדי לראות הודעות</p>
-        }
-      </section>
+          <section className={styles.chatMain}>
+            {selected
+              ? <BusinessChatTab
+                  conversationId={selected.conversationId}
+                  businessId={businessId}
+                  customerId={selected.partnerId}
+                />
+              : <p>בחר שיחה כדי לראות הודעות</p>
+            }
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

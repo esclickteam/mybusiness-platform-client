@@ -1,3 +1,5 @@
+/* src/components/BusinessChatPage.module.css */
+
 /* WhatsApp background wrapper */
 .whatsappBg {
   min-height: 100vh;
@@ -8,27 +10,27 @@
 }
 
 /* Main chat page layout */
-.chat-page {
+.chatPage {
   display: flex;
   height: 100%;
 }
 
 /* Sidebar (conversation list) */
-.chat-sidebar {
+.chatSidebar {
   width: 280px;
   border-left: 1px solid #ddd;
   overflow-y: auto;
 }
 
 /* Main chat area */
-.chat-main {
+.chatMain {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 /* Chat container (WhatsApp style) */
-.chatContainer, .chat-container {
+.chatContainer {
   max-width: 950px;
   width: 100%;
   height: 82vh;
@@ -44,7 +46,7 @@
 }
 
 /* Sidebar inside WhatsApp container */
-.sidebar {
+.sidebarInner {
   width: 246px;
   background: #f7f7fa;
   border-left: 1.5px solid #e0e0e0;
@@ -57,7 +59,7 @@
 }
 
 /* Conversation item */
-.convItem, .conv-item {
+.convItem {
   padding: 14px 22px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
@@ -69,17 +71,14 @@
   font-size: 15px;
   background: none;
 }
-.convItem:last-child, .conv-item:last-child {
-  border-bottom: none;
-}
-.convItem:hover, .convItemActive, .conv-item:hover, .conv-item.active {
+.convItemActive {
   background: #e9e6ff;
   color: #4a3aff;
   font-weight: bold;
 }
 
 /* Chat area inside WhatsApp container */
-.chatArea, .chat-area {
+.chatArea {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -88,7 +87,7 @@
 }
 
 /* Message list */
-.messageList, .message-list {
+.messageList {
   flex: 1;
   padding: 20px 18px 10px 18px;
   overflow-y: auto;
@@ -145,7 +144,7 @@
 }
 
 /* Input bar at bottom */
-.inputBar, .input-bar {
+.inputBar {
   display: flex;
   padding: 13px 15px 13px 12px;
   border-top: 1.5px solid #eee;
@@ -156,7 +155,7 @@
 }
 
 /* Text input field */
-.inputField, .input-field {
+.inputField {
   flex: 1;
   padding: 13px 14px;
   font-size: 15px;
@@ -166,12 +165,13 @@
   transition: border-color 0.2s;
   background: #fff;
 }
-.inputField:focus, .input-field:focus {
+/* Focus state on input */
+.inputField:focus {
   border-color: #4a3aff;
 }
 
 /* Send button circular */
-.sendButton, .send-button {
+.sendButton {
   margin-left: 8px;
   width: 44px;
   height: 44px;
@@ -187,21 +187,21 @@
   cursor: pointer;
   transition: background 0.18s;
 }
-.sendButton:hover, .send-button:hover {
+.sendButton:hover {
   background: #6a5aff;
   opacity: 0.97;
 }
-.sendButton:active, .send-button:active {
+.sendButton:active {
   background: #3c2bcc;
 }
 
 /* Placeholder styling */
-.inputField::placeholder, .input-field::placeholder {
+.inputField::placeholder {
   color: #b7b7b7;
 }
 
 /* Empty message indicator */
-.messageList .empty, .message-list .empty {
+.emptyMessage {
   color: #aaa;
   text-align: center;
   padding: 22px 0 0;
