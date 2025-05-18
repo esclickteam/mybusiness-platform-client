@@ -2,13 +2,13 @@
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
-// כאן אנחנו מייבאים את כל המחלקות כ־styles
 import styles from "./BusinessChatTab.module.css";
 
 export default function BusinessChatTab({ conversationId, businessId, customerId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef();
+  const messageListRef = useRef();
 
   useEffect(() => {
     if (!conversationId) return;
@@ -46,6 +46,13 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     };
   }, [conversationId, businessId]);
 
+  // גלילה אוטומטית לסוף
+  useEffect(() => {
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const sendMessage = () => {
     if (!input.trim() || !conversationId || !customerId) return;
 
@@ -65,8 +72,11 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
 
   return (
     <div className={styles.chatContainer}>
-      {/* צד שיחות אפשר להוסיף כאן עם styles.sidebar */}
-      <div className={styles.messageList}>
+      {/* -- אפשר להוסיף כאן סיידבר של שיחות אם תרצה -- */}
+      <div className={styles.messageList} ref={messageListRef}>
+        {messages.length === 0 && (
+          <div className={styles.empty}>עדיין אין הודעות</div>
+        )}
         {messages.map((m, i) => (
           <div
             key={i}
@@ -94,8 +104,8 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === "Enter" && sendMessage()}
         />
-        <button className={styles.sendButton} onClick={sendMessage}>
-          שלח
+        <button className={styles.sendButton} onClick={sendMessage} title="שלח">
+          <span role="img" aria-label="send">✈️</span>
         </button>
       </div>
     </div>

@@ -1,119 +1,207 @@
-/* BusinessChatTab.module.css */
-
-/* מבנה ראשי */
-.chatContainer {
+/* רקע של וואטסאפ (עטוף ב-whatsappBg מסביב לכל הצ'אט) */
+.whatsappBg {
+  min-height: 100vh;
+  background: #ece5dd;
   display: flex;
-  height: 100%;
-  max-height: 600px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
 }
 
-/* סיידבר של השיחות */
+/* קונטיינר ראשי */
+.chatContainer {
+  max-width: 950px;
+  width: 100%;
+  height: 82vh;
+  min-height: 380px;
+  max-height: 700px;
+  display: flex;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px #0002;
+  overflow: hidden;
+  border: none;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  position: relative;
+}
+
+/* Sidebar */
 .sidebar {
-  width: 200px;
-  border-right: 1px solid #e0e0e0;
-  background: #fafafa;
+  width: 246px;
+  background: #f7f7fa;
+  border-left: 1.5px solid #e0e0e0;
+  border-right: 1.5px solid #e0e0e0;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  box-shadow: 1px 0 6px #0001;
+  z-index: 2;
+}
+
+/* כותרת סיידבר */
+.sidebarTitle {
+  padding: 22px 20px 8px 16px;
+  font-weight: bold;
+  color: #4a3aff;
+  font-size: 1.18rem;
 }
 
 /* פריט שיחה בסיידבר */
 .convItem {
-  padding: 12px 16px;
+  padding: 14px 22px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #252525;
+  border-bottom: 1px solid #f3f3f3;
+  font-size: 15px;
+  background: none;
 }
-.convItem:hover {
-  background: #f0f0f5;
+.convItem:last-child {
+  border-bottom: none;
 }
-.convItemActive {
-  background: #e0dbff;
-  color: #2a0bb8;
+.convItem:hover, .convItemActive {
+  background: #e9e6ff;
+  color: #4a3aff;
   font-weight: bold;
 }
 
-/* אזור הצ'אט עצמו */
+/* אזור הצ'אט */
 .chatArea {
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: #efeae2;
+  min-width: 0;
 }
 
-/* רשימת ההודעות */
+/* רשימת הודעות */
 .messageList {
   flex: 1;
-  padding: 16px;
+  padding: 20px 18px 10px 18px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: #f9f9fb;
+  gap: 10px;
+  background: #efeae2;
 }
 
-/* הודעה בודדת */
+/* הודעה */
 .message {
-  max-width: 70%;
-  padding: 10px 14px;
-  border-radius: 16px;
-  word-wrap: break-word;
-  line-height: 1.4;
+  max-width: 72%;
+  min-width: 44px;
+  padding: 10px 15px 8px 13px;
+  border-radius: 18px;
+  word-break: break-word;
+  line-height: 1.48;
+  font-size: 15px;
+  box-shadow: 0 1px 2px #0001;
   position: relative;
 }
+
+/* הודעה שנשלחה מהעסק (בשמאל, תכלת וואטסאפ) */
 .mine {
-  align-self: flex-start;
-  background: #e0dbff;
-  color: #2a0bb8;
-  border-bottom-left-radius: 4px;
-}
-.theirs {
   align-self: flex-end;
-  background: #fff;
-  color: #333;
-  border-bottom-right-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background: #dcf8c6;
+  color: #2e2d2c;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 18px;
+  margin-right: 12px;
 }
 
-/* שורת הקלט */
+/* הודעה שנשלחה מהלקוח (בימין, לבן) */
+.theirs {
+  align-self: flex-start;
+  background: #fff;
+  color: #222;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 18px;
+  box-shadow: 0 2px 8px #0001;
+  margin-left: 12px;
+  border: 1px solid #eee;
+}
+
+/* טיימסטמפ */
+.time {
+  font-size: 11px;
+  color: #878787;
+  margin-top: 4px;
+  text-align: left;
+  direction: ltr;
+  opacity: 0.7;
+  padding-left: 4px;
+}
+
+/* אזור הקלט */
 .inputBar {
   display: flex;
-  padding: 12px;
-  border-top: 1px solid #e0e0e0;
-  background: #fff;
+  padding: 13px 15px 13px 12px;
+  border-top: 1.5px solid #eee;
+  background: #f7f7fa;
+  align-items: center;
+  min-height: 66px;
+  z-index: 1;
 }
+
+/* קלט */
 .inputField {
   flex: 1;
-  padding: 10px 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
+  padding: 13px 14px;
+  font-size: 15px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 26px;
   outline: none;
   transition: border-color 0.2s;
+  background: #fff;
 }
 .inputField:focus {
   border-color: #4a3aff;
 }
+
+/* כפתור שליחה עגול עם אייקון */
 .sendButton {
   margin-left: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
   background: #4a3aff;
   color: #fff;
   border: none;
-  border-radius: 20px;
+  border-radius: 50%;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: opacity 0.2s, background 0.2s;
+  transition: background 0.18s;
 }
 .sendButton:hover {
-  opacity: 0.9;
+  background: #6a5aff;
+  opacity: 0.97;
 }
 .sendButton:active {
   background: #3c2bcc;
+}
+
+/* Placeholder */
+.inputField::placeholder {
+  color: #b7b7b7;
+}
+
+/* הודעה ריקה */
+.messageList .empty {
+  color: #aaa;
+  text-align: center;
+  padding: 22px 0 0;
+}
+
+/* גלגל טעינה */
+.loading {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+  padding: 12px 0;
 }
