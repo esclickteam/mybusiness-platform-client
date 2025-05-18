@@ -1,7 +1,7 @@
-/* BusinessChatTab.css */
+/* BusinessChatTab.module.css */
 
 /* מבנה ראשי */
-.chat-container.business {
+.chatContainer {
   display: flex;
   height: 100%;
   max-height: 600px;
@@ -13,7 +13,7 @@
 }
 
 /* סיידבר של השיחות */
-.chat-container.business .sidebar {
+.sidebar {
   width: 200px;
   border-right: 1px solid #e0e0e0;
   background: #fafafa;
@@ -23,7 +23,7 @@
 }
 
 /* פריט שיחה בסיידבר */
-.chat-container.business .sidebar .conv-item {
+.convItem {
   padding: 12px 16px;
   cursor: pointer;
   transition: background 0.2s;
@@ -31,33 +31,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.chat-container.business .sidebar .conv-item:hover {
+.convItem:hover {
   background: #f0f0f5;
 }
-.chat-container.business .sidebar .conv-item.active {
+.convItemActive {
   background: #e0dbff;
   color: #2a0bb8;
   font-weight: bold;
 }
 
 /* אזור הצ'אט עצמו */
-.chat-container.business .chat-area {
+.chatArea {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* כשאין שיחה נבחרת */
-.chat-container.business .chat-area .no-selection {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #777;
-}
-
 /* רשימת ההודעות */
-.chat-container.business .chat-area .message-list {
+.messageList {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
@@ -68,7 +59,7 @@
 }
 
 /* הודעה בודדת */
-.chat-container.business .chat-area .message {
+.message {
   max-width: 70%;
   padding: 10px 14px;
   border-radius: 16px;
@@ -76,17 +67,13 @@
   line-height: 1.4;
   position: relative;
 }
-
-/* הודעות של העסק (יישור לימין) */
-.chat-container.business .chat-area .message.mine {
+.mine {
   align-self: flex-start;
   background: #e0dbff;
   color: #2a0bb8;
   border-bottom-left-radius: 4px;
 }
-
-/* הודעות של הלקוח (יישור לשמאל) */
-.chat-container.business .chat-area .message.theirs {
+.theirs {
   align-self: flex-end;
   background: #fff;
   color: #333;
@@ -94,24 +81,14 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* תזמון ההודעה */
-.chat-container.business .chat-area .message .time {
-  font-size: 11px;
-  color: #777;
-  margin-top: 6px;
-  text-align: right;
-}
-
-/* שורת הקלט בתחתית */
-.chat-container.business .chat-area .input-bar {
+/* שורת הקלט */
+.inputBar {
   display: flex;
   padding: 12px;
   border-top: 1px solid #e0e0e0;
   background: #fff;
 }
-
-/* שדה הטקסט */
-.chat-container.business .chat-area .input-bar input {
+.inputField {
   flex: 1;
   padding: 10px 12px;
   font-size: 14px;
@@ -120,12 +97,10 @@
   outline: none;
   transition: border-color 0.2s;
 }
-.chat-container.business .chat-area .input-bar input:focus {
+.inputField:focus {
   border-color: #4a3aff;
 }
-
-/* כפתור השליחה */
-.chat-container.business .chat-area .input-bar button {
+.sendButton {
   margin-left: 8px;
   padding: 10px 16px;
   font-size: 14px;
@@ -136,9 +111,9 @@
   cursor: pointer;
   transition: opacity 0.2s, background 0.2s;
 }
-.chat-container.business .chat-area .input-bar button:hover {
+.sendButton:hover {
   opacity: 0.9;
 }
-.chat-container.business .chat-area .input-bar button:active {
+.sendButton:active {
   background: #3c2bcc;
 }

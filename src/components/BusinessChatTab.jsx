@@ -1,7 +1,9 @@
+// BusinessChatTab.jsx
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
-import "./BusinessChatTab.css";
+// כאן אנחנו מייבאים את כל המחלקות כ־styles
+import styles from "./BusinessChatTab.module.css";
 
 export default function BusinessChatTab({ conversationId, businessId, customerId }) {
   const [messages, setMessages] = useState([]);
@@ -11,18 +13,20 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   useEffect(() => {
     if (!conversationId) return;
 
-    // 1. Load history
+    // טוען היסטוריית הודעות
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true
     })
       .then(res => {
-        const loaded = Array.isArray(res.data) ? res.data : res.data.messages || [];
+        const loaded = Array.isArray(res.data)
+          ? res.data
+          : res.data.messages || [];
         setMessages(loaded);
       })
       .catch(() => {});
 
-    // 2. Connect to socket
+    // התחברות לסוקט
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       query: { conversationId, businessId, userId: businessId, role: "business" }
@@ -37,13 +41,10 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     });
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      socketRef.current?.disconnect();
       setMessages([]);
     };
-  }, [conversationId, businessId, customerId]);
+  }, [conversationId, businessId]);
 
   const sendMessage = () => {
     if (!input.trim() || !conversationId || !customerId) return;
@@ -57,21 +58,24 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     };
 
     socketRef.current.emit("sendMessage", msg, ack => {
-      if (ack?.success) setInput(""); // מנקה את שדה הטקסט בלבד
+      if (ack?.success) setInput("");
       else alert("שגיאה בשליחת ההודעה. נסה שוב.");
     });
   };
 
   return (
-    <div className="chat-container business">
-      <div className="message-list">
+    <div className={styles.chatContainer}>
+      {/* צד שיחות אפשר להוסיף כאן עם styles.sidebar */}
+      <div className={styles.messageList}>
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`message ${m.from === businessId ? "mine" : "theirs"}`}
+            className={`${styles.message} ${
+              m.from === businessId ? styles.mine : styles.theirs
+            }`}
           >
-            <div className="text">{m.text}</div>
-            <div className="time">
+            <div>{m.text}</div>
+            <div className={styles.time}>
               {new Date(m.timestamp).toLocaleTimeString("he-IL", {
                 hour: "2-digit",
                 minute: "2-digit"
@@ -80,15 +84,19 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           </div>
         ))}
       </div>
-      <div className="input-bar">
+
+      <div className={styles.inputBar}>
         <input
+          className={styles.inputField}
           type="text"
           placeholder="הקלד הודעה..."
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === "Enter" && sendMessage()}
         />
-        <button onClick={sendMessage}>שלח</button>
+        <button className={styles.sendButton} onClick={sendMessage}>
+          שלח
+        </button>
       </div>
     </div>
   );
