@@ -72,13 +72,15 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       timestamp: new Date().toISOString(),
     };
 
+    // הוסף את ההודעה באופן מיידי ל-UI לפני השליחה
+    setMessages(prev => [...prev, msg]);
+    setInput("");
+
     socketRef.current.emit("sendMessage", msg, ack => {
-      if (ack?.success) {
-        // הוסף את ההודעה באופן מיידי ל-UI
-        setMessages(prev => [...prev, msg]);
-        setInput("");
-      } else {
+      if (!ack?.success) {
         alert("שגיאה בשליחת ההודעה. נסה שוב.");
+        // במידה והשליחה נכשלה, הסר את ההודעה שהוספת
+        setMessages(prev => prev.filter(m => m.timestamp !== msg.timestamp));
       }
     });
   };
