@@ -9,23 +9,20 @@ import './ChatPage.css';
 export default function ChatPage({
   isBusiness,
   userId,
-  businessName,
-  clientName,
-  businessProfilePic,
-  clientProfilePic,
   initialPartnerId
 }) {
   const { state } = useLocation();
   const initialConversationId = state?.conversationId || null;
   const [conversations, setConversations] = useState([]);
-  const [selected, setSelected] = useState({
-    conversationId: initialConversationId,
-    partnerId: initialPartnerId
-  });
+  const [selected, setSelected] = useState(
+    initialConversationId && initialPartnerId
+      ? { conversationId: initialConversationId, partnerId: initialPartnerId }
+      : null
+  );
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!isBusiness || !userId) return; // רק לעסקים, ורק אם יש userId
+    if (!userId) return;
 
     API.get('/messages/conversations', { withCredentials: true })
       .then(res => {
@@ -35,7 +32,7 @@ export default function ChatPage({
         console.error('שגיאה בטעינת שיחות:', err);
         setError('לא ניתן לטעון שיחות');
       });
-  }, [isBusiness, userId]);
+  }, [userId]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
     setSelected({ conversationId, partnerId });
@@ -47,21 +44,23 @@ export default function ChatPage({
         {error && <div className="error-banner">{error}</div>}
         <ConversationsList
           conversations={conversations}
+          businessId={userId} //← גם בצד לקוח זה userId!
           isBusiness={isBusiness}
           onSelect={handleSelect}
-          selectedConversationId={selected.conversationId}
-          userId={userId}
-          clientProfilePic={clientProfilePic}
-          businessProfilePic={businessProfilePic}
+          selectedConversationId={selected?.conversationId}
         />
       </aside>
       <main className="chat-main">
-        <ChatComponent
-          isBusiness={isBusiness}
-          userId={userId}
-          partnerId={selected.partnerId}
-          initialConversationId={selected.conversationId}
-        />
+        {selected ? (
+          <ChatComponent
+            isBusiness={isBusiness}
+            userId={userId}
+            partnerId={selected.partnerId}
+            initialConversationId={selected.conversationId}
+          />
+        ) : (
+          <div className="empty-chat">בחר שיחה כדי להתחיל</div>
+        )}
       </main>
     </div>
   );

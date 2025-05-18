@@ -1,13 +1,9 @@
-// src/components/ConversationsList.jsx
-import React from "react";
-import PropTypes from "prop-types";
-import styles from "./ConversationsList.module.css";
-
 export default function ConversationsList({
   conversations,
   businessId,
   selectedConversationId,
-  onSelect
+  onSelect,
+  isBusiness // ← חדש!
 }) {
   if (!conversations || conversations.length === 0) {
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
@@ -16,11 +12,23 @@ export default function ConversationsList({
   return (
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
+        <div className={styles.sidebarTitle}>
+          {isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק"}
+        </div>
         {conversations.map((conv, idx) => {
           const participants = Array.isArray(conv.participants) ? conv.participants : [];
           const partnerId = participants.find(p => p !== businessId) || "";
           const convoId = conv._id || conv.id || `conv-${idx}`;
           const isActive = convoId === selectedConversationId;
+
+          // אם בצד עסק – מציגים שם לקוח
+          // אם בצד לקוח – מציגים שם עסק
+          let displayName;
+          if (isBusiness) {
+            displayName = conv.customerName || partnerId;
+          } else {
+            displayName = conv.businessName || partnerId;
+          }
 
           return (
             <div
@@ -34,8 +42,8 @@ export default function ConversationsList({
               }
             >
               <div>
-                <p>{conv.businessName || partnerId}</p>
-                {conv.lastMessage && <p>{conv.lastMessage.text}</p>}
+                <p className={styles.partnerName}>{displayName}</p>
+                {conv.lastMessage && <p className={styles.lastMessage}>{conv.lastMessage.text}</p>}
               </div>
             </div>
           );
@@ -44,10 +52,3 @@ export default function ConversationsList({
     </div>
   );
 }
-
-ConversationsList.propTypes = {
-  conversations: PropTypes.array.isRequired,
-  businessId: PropTypes.string.isRequired,
-  selectedConversationId: PropTypes.string,
-  onSelect: PropTypes.func.isRequired
-};

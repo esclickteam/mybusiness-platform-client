@@ -292,11 +292,12 @@ function BusinessChatListWrapper() {
 
   return (
     <ConversationsList
-      conversations={convos}
-      selectedId={selectedClientId}
-      onSelect={handleSelect}
-      isBusiness={true}
-    />
+  conversations={convos}
+  businessId={userId}
+  selectedConversationId={selected?.conversationId}
+  onSelect={handleSelect}
+  isBusiness={false}
+/>
   );
 }
 

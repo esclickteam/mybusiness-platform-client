@@ -54,11 +54,12 @@ export default function BusinessChatPage() {
           {loading
             ? <p style={{ textAlign: "center", marginTop: 40 }}>טוען שיחות…</p>
             : <ConversationsList
-                conversations={convos}
-                businessId={businessId}
-                selectedConversationId={selected?.conversationId}
-                onSelect={handleSelect}
-              />
+  conversations={convos}
+  businessId={businessId}
+  selectedConversationId={selected?.conversationId}
+  onSelect={handleSelect}
+  isBusiness={true}
+/>
           }
         </aside>
         <div className="chat-container client">
