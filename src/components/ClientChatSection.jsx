@@ -8,121 +8,72 @@ import { useAuth } from "../context/AuthContext";
 export default function ClientChatSection() {
   const { businessId } = useParams();
   const { user, initialized } = useAuth();
+  const userId = user?.id || null;
 
-  const userId = user?.userId || null;
+  const [conversationId, setConversationId] = useState(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState("");
 
-  const [conversations, setConversations] = useState([]);
-  const [selected, setSelected] = useState({
-    conversationId: null,
-    businessId: null,
-    partnerId: null,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (!userId) return;
-    setIsLoading(true);
-    API.get("/messages/conversations", { withCredentials: true })
-      .then((res) => {
-        setConversations(res.data || []);
-        console.log("🎯 [LOAD] conversations loaded:", res.data);
-      })
-      .catch((err) => {
-        console.warn("❌ [LOAD] Error loading conversations:", err);
-      })
-      .finally(() => setIsLoading(false));
-  }, [userId]);
-
+  // כשיש businessId ו־userId, יוצרים או מקבלים שיחה
   useEffect(() => {
     if (!userId || !businessId) return;
 
-    const existingConv = conversations.find(
-      (c) => c.business?._id === businessId
-    );
-    if (existingConv) {
-      if (selected.conversationId !== existingConv.conversationId) {
-        setSelected({
-          conversationId: existingConv.conversationId,
-          businessId,
-          partnerId: businessId,
-        });
-      }
-      return;
-    }
-
+    setIsCreating(true);
     API.post(
-      "/messages/conversations",
+      "/api/messages/conversations",
       { otherId: businessId },
       { withCredentials: true }
     )
       .then((res) => {
-        const conv = res.data;
-        setConversations((prev) => {
-          // אם כבר קיימת שיחה עם אותו conversationId, לא מוסיפים שוב
-          if (prev.some((c) => c.conversationId === conv.conversationId)) {
-            return prev;
-          }
-          return [...prev, conv];
-        });
-        setSelected({
-          conversationId: conv.conversationId,
-          businessId,
-          partnerId: businessId,
-        });
-        console.log("✨ [CREATE] New conversation created:", conv);
+        setConversationId(res.data.conversationId);
       })
       .catch((err) => {
         console.warn("❌ [CREATE] Error creating conversation:", err);
+        setError("שגיאה ביצירת שיחה");
+      })
+      .finally(() => {
+        setIsCreating(false);
       });
-  }, [businessId, userId, conversations]);
+  }, [businessId, userId]);
 
-  if (!initialized) return <div>טוען משתמש...</div>;
+  if (!initialized) {
+    return <div>טוען משתמש...</div>;
+  }
 
   return (
     <div className={styles.chatSection}>
       <aside className={styles.chatSidebar}>
-        <h3>העסקים שלי</h3>
-        {isLoading && <div className={styles.spinner}>טעינה…</div>}
-        {!isLoading && conversations.length === 0 && (
-          <div className={styles.noConversations}>אין שיחות קיימות</div>
+        <h3>שיחה עם העסק</h3>
+        {!businessId && (
+          <div className={styles.noConversations}>לא נבחר עסק</div>
         )}
-        <ul className={styles.convoList}>
-          {conversations.map((conv) => {
-            const partnerId = conv.business?._id;
-            const partnerName = conv.business?.businessName || partnerId;
-            return (
-              <li
-                key={conv.conversationId}
-                className={`${styles.convoItem} ${
-                  selected.conversationId === conv.conversationId
-                    ? styles.selected
-                    : ""
-                }`}
-                onClick={() =>
-                  setSelected({
-                    conversationId: conv.conversationId,
-                    businessId: partnerId,
-                    partnerId: partnerId,
-                  })
-                }
-              >
-                {partnerName}
-              </li>
-            );
-          })}
-        </ul>
+        {businessId && isCreating && (
+          <div className={styles.spinner}>יוצר שיחה…</div>
+        )}
+        {businessId && error && (
+          <div className={styles.error}>{error}</div>
+        )}
+        {businessId && !isCreating && !error && (
+          <ul className={styles.convoList}>
+            <li className={styles.selected}>
+              {businessId}
+            </li>
+          </ul>
+        )}
       </aside>
 
       <main className={styles.chatMain}>
-        {selected.conversationId ? (
+        {conversationId ? (
           <ClientChatTab
-            conversationId={selected.conversationId}
-            businessId={selected.businessId}
+            conversationId={conversationId}
+            businessId={businessId}
             userId={userId}
-            partnerId={selected.partnerId}
+            partnerId={businessId}
           />
+        ) : businessId ? (
+          <div className={styles.chatPlaceholder}>טוען שיחה…</div>
         ) : (
-          <div className={styles.chatPlaceholder}>בחר שיחה מרשימה</div>
+          <div className={styles.chatPlaceholder}>בחר עסק לצ'אט</div>
         )}
       </main>
     </div>
