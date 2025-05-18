@@ -8,17 +8,16 @@ import { useAuth } from "../context/AuthContext";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
-  const { user, loading, initialized } = useAuth();
-
-  // כאן אנחנו באמת קוראים user.userId, כפי שהגדרתם ב־AuthContext
+  const { user, initialized } = useAuth();
   const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
-  const [busy, setBusy] = useState(true);
-  const [error, setError] = useState("");
+  const [businessName, setBusinessName]   = useState("");
+  const [busy, setBusy]                   = useState(true);
+  const [error, setError]                 = useState("");
 
+  // 1) פותחים או מוצאים שיחה
   useEffect(() => {
-    // ממתינים גם לטעינה הראשונית (initialized) וגם שהכתובת params בואו:
     if (!initialized) return;
     if (!userId || !businessId) {
       setBusy(false);
@@ -42,7 +41,19 @@ export default function ClientChatSection() {
       });
   }, [initialized, userId, businessId]);
 
-  // עד שהאתחול של ה־AuthContext לא הסתיים, לא מציגים כלום
+  // 2) מושכים את הנתונים של העסק כדי לקבל את השם
+  useEffect(() => {
+    if (!businessId) return;
+    API.get(`/api/business/${businessId}`, { withCredentials: true })
+      .then(res => {
+        // מניחים שה־API מחזיר את ה־business תחת res.data.business
+        setBusinessName(res.data.business.businessName || res.data.business.name);
+      })
+      .catch(err => {
+        console.warn("❌ Error loading business info:", err);
+      });
+  }, [businessId]);
+
   if (!initialized) {
     return <div className={styles.spinner}>טוען משתמש…</div>;
   }
@@ -59,7 +70,9 @@ export default function ClientChatSection() {
     <div className={styles.chatSection}>
       <aside className={styles.chatSidebar}>
         <h3>שיחה עם העסק</h3>
-        <div className={styles.partnerName}>{businessId}</div>
+        <div className={styles.partnerName}>
+          {businessName || businessId}
+        </div>
       </aside>
 
       <main className={styles.chatMain}>
