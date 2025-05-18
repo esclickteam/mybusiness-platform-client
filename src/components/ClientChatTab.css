@@ -18,8 +18,7 @@
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 6px 40px #0002;
-  overflow: hidden;
-  border: none;
+  /* overflow: hidden; */        /* הוסר כדי שה-input-bar לא ייחתך */
   border: 1px solid #e0e0e0;
   position: relative;
 }
@@ -28,7 +27,7 @@
 .chat-container.client .message-list {
   flex: 1;
   padding: 22px 16px 10px 16px;
-  overflow-y: auto;
+  overflow-y: auto;             /* גלילה אנכית רק כאן */
   display: flex;
   flex-direction: column;
   gap: 10px;
