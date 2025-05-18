@@ -1,9 +1,10 @@
+// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import API from "../api";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
-import "./ClientChatTab.css"; // אותו CSS של הלקוח
+import styles from "./BusinessChatPage.module.css"; // <-- CSS Module
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
@@ -21,45 +22,34 @@ export default function BusinessChatPage() {
       withCredentials: true,
     })
       .then(res => {
-        const data = res.data.conversations || res.data;
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data.conversations || [];
         setConvos(data);
+        if (data.length > 0 && !selected) {
+          const first = data[0];
+          const convoId = first._id || first.conversationId || first.id;
+          const partnerId = Array.isArray(first.participants)
+            ? first.participants.find(p => p !== businessId)
+            : null;
+          setSelected({ conversationId: convoId, partnerId });
+        }
       })
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  const handleSelect = ({ conversationId, partnerId }) => {
+  const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
   };
 
   if (!initialized) return <p>טוען מידע...</p>;
 
   return (
-    <div className="whatsapp-bg" style={{
-      minHeight: "80vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }}>
-      <div style={{
-        display: "flex",
-        gap: "32px",
-        width: "100%",
-        maxWidth: "900px",
-        alignItems: "flex-start"
-      }}>
-        <aside className="sidebar-business"
-          style={{
-            width: "200px",
-            minWidth: "110px",
-            background: "#ede7f6",
-            borderLeft: "2px solid #c3a6fa",
-            borderRadius: "16px",
-            height: "650px",
-            overflowY: "auto",
-            boxShadow: "0 6px 32px #c3a6fa18"
-          }}>
+    <div className={styles.whatsappBg}>
+      <div className={styles.chatPage}>
+        <aside className={styles.chatSidebar}>
           {loading
-            ? <p style={{ textAlign: "center", marginTop: 40 }}>טוען שיחות…</p>
+            ? <p className={styles.loading}>טוען שיחות…</p>
             : <ConversationsList
                 conversations={convos}
                 businessId={businessId}
@@ -69,18 +59,26 @@ export default function BusinessChatPage() {
               />
           }
         </aside>
-        <div className="chat-container client">
-          {selected
-            ? <BusinessChatTab
-                conversationId={selected.conversationId}
-                businessId={businessId}
-                customerId={selected.partnerId}
-              />
-            : <p style={{ margin: 40, textAlign: "center", color: "#aaa" }}>
-                בחר שיחה כדי לראות הודעות
-              </p>
-          }
-        </div>
+
+        <main className={styles.chatMain}>
+          <div className={styles.chatContainer}>
+            <section className={styles.sidebarInner}>
+              {/* ConversationsList במקום פנימי אם רוצים */}
+            </section>
+            <section className={styles.chatArea}>
+              {selected
+                ? <BusinessChatTab
+                    conversationId={selected.conversationId}
+                    businessId={businessId}
+                    customerId={selected.partnerId}
+                  />
+                : <div className={styles.emptyMessage}>
+                    בחר שיחה כדי לראות הודעות
+                  </div>
+              }
+            </section>
+          </div>
+        </main>
       </div>
     </div>
   );
