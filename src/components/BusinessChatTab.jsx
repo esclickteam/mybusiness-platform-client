@@ -1,4 +1,3 @@
-// src/components/BusinessChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
@@ -10,6 +9,9 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   const [sending, setSending] = useState(false);
   const socketRef = useRef();
   const messageListRef = useRef();
+
+  // debug קריטי: תדפיס תמיד את הפרופס!
+  console.log("BusinessChatTab props:", { conversationId, businessId, customerId });
 
   useEffect(() => {
     if (!conversationId) return;
@@ -69,7 +71,12 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   }, [messages]);
 
   const sendMessage = () => {
-    if (!input.trim() || !conversationId || !customerId || sending) return;
+    console.log("Trying to send", { input, conversationId, customerId, sending });
+
+    if (!input.trim() || !conversationId || !customerId || sending) {
+      console.warn("NOT SENDING! Missing field:", { input, conversationId, customerId, sending });
+      return;
+    }
 
     if (!socketRef.current || socketRef.current.disconnected) {
       alert("❌ אין חיבור לשרת הצ'אט. נסה לרענן.");
