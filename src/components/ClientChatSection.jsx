@@ -56,7 +56,7 @@ export default function ClientChatSection() {
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
-        {/* sidebarInner */}
+        {/* Sidebar */}
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
           <div className={styles.convItemActive}>
@@ -64,7 +64,7 @@ export default function ClientChatSection() {
           </div>
         </aside>
 
-        {/* chatArea */}
+        {/* Chat area */}
         <section className={styles.chatArea}>
           {conversationId ? (
             <ClientChatTab

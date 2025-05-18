@@ -1,43 +1,42 @@
 /* src/components/ClientChatSection.module.css */
 
-/* WhatsApp background wrapper */
+/* רקע כללי סביב ווינדו */
 .whatsappBg {
   min-height: 100vh;
   background: #f3edff;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 
-/* Chat container (WhatsApp style) */
+/* המכולה האחידה: sidebar + chat ביחד */
 .chatContainer {
-  max-width: 950px;
-  width: 100%;
-  height: 80vh;
-  min-height: 380px;
   display: flex;
   flex-direction: row;
+  width: 100%;
+  max-width: 950px;
+  height: 80vh;
+  min-height: 380px;
   border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
-  overflow: visible;           /* מאפשר לראות גם את ה-input בתחתית */
   background: #faf7ff;
   border: 1px solid #c3a6fa;
+  box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
+  overflow: hidden;
 }
 
-/* Sidebar inside Chat container */
+/* הסיידבר מימין */
 .sidebarInner {
   width: 250px;
   background: #f3edff;
   border-left: 2px solid #c3a6fa;
-  border-right: 2px solid transparent;
-  border-radius: 0 16px 16px 0;
   display: flex;
   flex-direction: column;
   padding: 16px;
   box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
 }
 
-/* Sidebar title */
+/* כותרת הסיידבר */
 .sidebarTitle {
   margin: 0 0 8px 0;
   color: #4a3aff;
@@ -46,7 +45,7 @@
   text-align: right;
 }
 
-/* Active conversation item */
+/* פריט פעיל (זהו השם של העסק) */
 .convItemActive {
   padding: 12px;
   background: #e9e6ff;
@@ -56,17 +55,17 @@
   text-align: right;
 }
 
-/* Chat area inside Chat container */
+/* אזור הצ'אט הראשי */
 .chatArea {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: visible;           /* מוודא שה-inputBar לא ייחתך */
   background: #faf7ff;
   position: relative;
+  overflow: visible;  /* מאפשר ל־input ולכפתור לצאת מתחת */
 }
 
-/* Placeholder when no chat is open */
+/* הודעת Placeholder */
 .emptyMessage {
   flex: 1;
   display: flex;
@@ -76,7 +75,7 @@
   font-size: 1.2rem;
 }
 
-/* Loading and error states */
+/* Loading / Error */
 .loading,
 .error {
   color: #777;
