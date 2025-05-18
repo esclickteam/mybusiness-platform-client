@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
-import styles from "./BusinessChatTab.css";
+import "./BusinessChatTab.css";
 
 export default function BusinessChatTab({ conversationId, businessId, customerId }) {
   const [messages, setMessages] = useState([]);
