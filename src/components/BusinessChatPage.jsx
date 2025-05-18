@@ -12,6 +12,7 @@ export default function BusinessChatPage() {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading]   = useState(false);
 
+  // שליפת שיחות מהשרת
   useEffect(() => {
     if (!initialized || !businessId) return;
     setLoading(true);
@@ -24,17 +25,34 @@ export default function BusinessChatPage() {
           ? res.data
           : res.data.conversations || [];
         setConvos(data);
+        // אם אין selected - בחירת השיחה הראשונה כברירת מחדל
         if (data.length && !selected) {
           const first = data[0];
-          const convoId  = first._id || first.conversationId || first.id;
-          const partnerId = first.participants?.find(p => p !== businessId);
+          const convoId =
+            first._id || first.conversationId || first.id;
+          // תמיד חפש את ה-partner שהוא לא בעל העסק
+          const partnerId =
+            (first.participants || []).find(p => p !== businessId) ||
+            first.customer?._id || null;
           setSelected({ conversationId: convoId, partnerId });
         }
       })
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  const handleSelect = (conversationId, partnerId) => {
+  // טיפול בבחירת שיחה מהסיידבר
+  const handleSelect = (conversationId) => {
+    const convo = convos.find(
+      c =>
+        c._id === conversationId ||
+        c.conversationId === conversationId ||
+        c.id === conversationId
+    );
+    if (!convo) return;
+    // שלוף תמיד את ה-partner הנכון
+    const partnerId =
+      (convo.participants || []).find(p => p !== businessId) ||
+      convo.customer?._id || null;
     setSelected({ conversationId, partnerId });
   };
 
@@ -60,7 +78,7 @@ export default function BusinessChatPage() {
 
         {/* אזור הצ'אט */}
         <section className={styles.chatArea}>
-          {selected ? (
+          {selected && selected.partnerId ? (
             <BusinessChatTab
               conversationId={selected.conversationId}
               businessId={businessId}

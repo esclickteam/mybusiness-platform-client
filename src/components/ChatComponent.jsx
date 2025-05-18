@@ -1,3 +1,5 @@
+// src/components/ChatComponent.jsx
+
 export default function ChatComponent({
   userId,
   partnerId,
@@ -32,7 +34,14 @@ export default function ChatComponent({
         setConversations(res.data);
         if (!conversationId && res.data.length > 0) {
           setConversationId(res.data[0].conversationId);
-          setCurrentCustomerId(res.data[0].customer?._id || null);
+          // --- עדכון שליפת לקוח גם לפי מבנה participants ---
+          const c = res.data[0];
+          let custId = null;
+          if (c.customer?._id) custId = c.customer._id;
+          else if (c.participants && Array.isArray(c.participants)) {
+            custId = c.participants.find(pid => pid !== userId);
+          }
+          setCurrentCustomerId(custId);
         }
       })
       .catch(err => console.error("שגיאה בטעינת שיחות", err))
@@ -44,9 +53,14 @@ export default function ChatComponent({
     if (!isBusiness || !conversationId) return;
     const conv = conversations.find(c => c.conversationId === conversationId);
     if (conv) {
-      setCurrentCustomerId(conv.customer?._id || null);
+      let custId = null;
+      if (conv.customer?._id) custId = conv.customer._id;
+      else if (conv.participants && Array.isArray(conv.participants)) {
+        custId = conv.participants.find(pid => pid !== userId);
+      }
+      setCurrentCustomerId(custId);
     }
-  }, [conversationId, isBusiness, conversations]);
+  }, [conversationId, isBusiness, conversations, userId]);
 
   // מצבי טעינה
   if (loadingInit) return <p>⏳ פותח שיחה…</p>;
