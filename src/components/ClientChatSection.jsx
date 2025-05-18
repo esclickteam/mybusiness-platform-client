@@ -31,20 +31,23 @@ export default function ClientChatSection() {
       .catch(err => {
         console.warn("❌ Error creating conversation:", err);
         setError("שגיאה ביצירת שיחה");
+        setBusy(false);
       });
   }, [initialized, userId, businessId]);
 
-  // 2) ברגע שיש conversationId – שליפה של כל השיחות ואז מיון לפי זה
+  // 2) ברגע שיש conversationId – שליפה של כל השיחות ואז מציאת השיחה שלנו
   useEffect(() => {
     if (!conversationId) return;
 
     API.get("/messages/conversations", { withCredentials: true })
       .then(res => {
-        // מבני ה־backend שעידכנו:
-        // [{ conversationId, businessName, customerName, messages }, …]
-        const conv = res.data.find(c => c.conversationId === conversationId);
+        const conv = res.data.find(c =>
+          c.conversationId === conversationId ||
+          c._id            === conversationId ||
+          c.id             === conversationId
+        );
         if (conv) {
-          setBusinessName(conv.businessName);
+          setBusinessName(conv.businessName || "");
         }
       })
       .catch(err => {
