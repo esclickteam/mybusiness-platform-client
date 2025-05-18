@@ -1,33 +1,29 @@
-/* רקע ראשי - עסקליק סגול מודרני */
-
-
 /* כרטיס צ'אט */
 .chat-container.client {
-  max-width: 430px;
+  /* אין max-width! */
   width: 100%;
-  height: 78vh;
-  max-height: 650px;
+  height: 100%; /* מלא גובה של הקונטיינר ההורה (כל ה-chatArea) */
   display: flex;
   flex-direction: column;
-  border-radius: 18px;
-  background: #f6f1fb; /* רקע לילך בהיר */
-  box-shadow: 0 8px 40px #7c43bd25, 0 1.5px 8px #4a148c22;
-  border: 1.5px solid #c3a6fa;
+  border-radius: 0;           /* ביטול עיגול פינות – אם אתה רוצה שהקונטיינר הראשי יעגל */
+  background: #f6f1fb;
+  box-shadow: none;           /* אין צל פנימי, רק בקונטיינר הראשי */
+  border: none;               /* אין מסגרת פנימית, רק קונטיינר ראשי */
   position: relative;
-  /* אופציונלי – ריווח פנימי קל */
-  /* padding: 2px; */
+  flex: 1;
 }
-
 
 /* רשימת ההודעות */
 .chat-container.client .message-list {
   flex: 1;
-  padding: 22px 16px 10px 16px;
+  width: 100%;
+  min-width: 0;
+  padding: 22px 16px 10px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #f6f1fb; /* סגול-בהיר מאוד */
+  background: #f6f1fb;
 }
 
 /* הודעה בודדת */
@@ -47,7 +43,7 @@
 /* הודעה של הלקוח (ימין) */
 .chat-container.client .message.mine {
   align-self: flex-end;
-  background: #e3ffe5; /* ירוק בהיר – שמח, קליל */
+  background: #e3ffe5;
   color: #222;
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 18px;
@@ -57,7 +53,7 @@
 /* הודעה של העסק (שמאל) */
 .chat-container.client .message.theirs {
   align-self: flex-start;
-  background: #f2e7fe; /* סגול לילך בהיר */
+  background: #f2e7fe;
   color: #311b92;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 18px;
@@ -103,7 +99,7 @@
   border-color: #7c43bd;
 }
 
-/* כפתור שליחה עגול עם אייקון */
+/* כפתור שליחה */
 .chat-container.client .input-bar button {
   margin-left: 8px;
   width: 44px;

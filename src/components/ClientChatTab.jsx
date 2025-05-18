@@ -34,7 +34,6 @@ export default function ClientChatTab({
 
     socketRef.current.on("connect", () => {
       console.log("✅ Socket connected, id =", socketRef.current.id);
-      // אין צורך ב-joinRoom: ההצטרפות מתבצעת בשרת כבר ב-handshake
     });
 
     socketRef.current.on("disconnect", (reason) => {
@@ -42,7 +41,6 @@ export default function ClientChatTab({
     });
 
     socketRef.current.on("newMessage", (msg) => {
-      console.log("🆕 Received via socket:", msg);
       setMessages((prev) => [...prev, msg]);
     });
 
@@ -78,11 +76,9 @@ export default function ClientChatTab({
     // אם הסוקט מחובר – שלח דרך socket
     if (socketRef.current && socketRef.current.connected) {
       socketRef.current.emit("sendMessage", msgPayload, (ack) => {
-        console.log("📝 sendMessage ACK:", ack);
         if (ack?.success) {
           setInput("");
         } else {
-          console.warn("⚠️ socket ack failed, falling back to REST");
           API.post("/messages/history", msgPayload)
             .then((res) => {
               setMessages((prev) => [...prev, res.data.message]);
@@ -95,7 +91,6 @@ export default function ClientChatTab({
     }
 
     // אחרת – REST fallback
-    console.warn("⚠️ socket not connected, using REST fallback");
     API.post("/messages/history", msgPayload)
       .then((res) => {
         setMessages((prev) => [...prev, res.data.message]);
@@ -105,42 +100,39 @@ export default function ClientChatTab({
   };
 
   return (
-    <div className="whatsapp-bg">
-      <div className="chat-container client">
-        <div className="message-list" ref={messageListRef}>
-          {messages.length === 0 && (
-            <div className="empty">עדיין אין הודעות</div>
-          )}
-          {messages.map((m, i) => (
-            <div
-              key={i}
-              className={`message ${m.from === userId ? "mine" : "theirs"}`}
-            >
-              <div className="text">{m.text}</div>
-              <div className="time">
-                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
+    <div className="chat-container client">
+      <div className="message-list" ref={messageListRef}>
+        {messages.length === 0 && (
+          <div className="empty">עדיין אין הודעות</div>
+        )}
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={`message ${m.from === userId ? "mine" : "theirs"}`}
+          >
+            <div className="text">{m.text}</div>
+            <div className="time">
+              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </div>
-          ))}
-        </div>
-
-        <div className="input-bar">
-          <input
-            type="text"
-            placeholder="הקלד הודעה..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter" && !e.shiftKey && sendMessage()
-            }
-          />
-          <button onClick={sendMessage} title="שלח">
-            ✈️
-          </button>
-        </div>
+          </div>
+        ))}
+      </div>
+      <div className="input-bar">
+        <input
+          type="text"
+          placeholder="הקלד הודעה..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) =>
+            e.key === "Enter" && !e.shiftKey && sendMessage()
+          }
+        />
+        <button onClick={sendMessage} title="שלח">
+          ✈️
+        </button>
       </div>
     </div>
   );
