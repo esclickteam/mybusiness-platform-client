@@ -136,7 +136,7 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* סגירת סיידבר בצד התוכן למובייל */}
+          {/* כפתור סגירת סיידבר במובייל בצד התוכן */}
           {isMobile && showSidebar && (
             <button
               onClick={() => setShowSidebar(false)}
@@ -158,6 +158,31 @@ export default function BusinessDashboardLayout() {
               }}
             >
               ×
+            </button>
+          )}
+
+          {/* כפתור פתיחת סיידבר במובייל בצד התוכן */}
+          {isMobile && !showSidebar && (
+            <button
+              onClick={() => setShowSidebar(true)}
+              aria-label="פתח תפריט"
+              style={{
+                position: "fixed",
+                top: 16,
+                left: 16,
+                zIndex: 9999,
+                backgroundColor: "#7c4dff",
+                border: "none",
+                borderRadius: "50%",
+                width: 40,
+                height: 40,
+                color: "#fff",
+                fontSize: "24px",
+                cursor: "pointer",
+                boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)"
+              }}
+            >
+              ☰
             </button>
           )}
 
