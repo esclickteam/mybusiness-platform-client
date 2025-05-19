@@ -1,3 +1,4 @@
+// src/components/BusinessChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
@@ -9,6 +10,7 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const socketRef = useRef();
   const messageListRef = useRef();
   const typingTimeout = useRef();
@@ -26,14 +28,14 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           ? res.data
           : res.data.messages || [];
         setMessages(loaded);
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {})
+      .finally(() => setLoading(false));
 
-    // התחבר לסוקט
+    // התחבר לסוקט רק לקבלת הודעות חדשות וסיגנל הקלדה
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
-      query: { conversationId, businessId, userId: businessId, role: "business" },
+      query: { conversationId },
     });
 
     socketRef.current.on("connect", () => {
@@ -41,18 +43,13 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     });
 
     socketRef.current.on("newMessage", msg => {
-      setMessages(prev => {
-        const exists = prev.some(
-          m =>
-            (m._id && msg._id && m._id === msg._id) ||
-            (m.timestamp === msg.timestamp && m.from === msg.from && m.text === msg.text)
-        );
-        if (exists) return prev;
-        return [...prev, msg];
-      });
+      setMessages(prev =>
+        prev.some(m => (m._id && msg._id && m._id === msg._id))
+          ? prev
+          : [...prev, msg]
+      );
     });
 
-    // "הלקוח מקליד..."
     socketRef.current.on("typing", ({ from }) => {
       if (from === customerId) {
         setIsTyping(true);
@@ -62,49 +59,52 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     });
 
     return () => {
-      socketRef.current?.disconnect();
-      setMessages([]);
+      socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
+      setMessages([]);
     };
-  }, [conversationId, businessId, customerId]);
+  }, [conversationId, customerId]);
 
-  // גלילה אוטומטית
+  // גלילה אוטומטית לתחתית
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!input.trim() || !conversationId || !customerId || sending) return;
-
-    if (!socketRef.current || socketRef.current.disconnected) {
-      alert("❌ אין חיבור לשרת הצ'אט. נסה לרענן.");
-      return;
-    }
-
     setSending(true);
-    const msg = {
-      conversationId,
-      from: businessId,
-      to: customerId,
-      text: input.trim(),
-      timestamp: new Date().toISOString(),
-      status: "sending",
-    };
 
-    socketRef.current.emit("sendMessage", msg, ack => {
-      setSending(false);
+    try {
+      const form = new FormData();
+      form.append("conversationId", conversationId);
+      form.append("to", customerId);
+      form.append("text", input.trim());
+      // אם תרצה לצרף קובץ: form.append("fileData", fileObj);
+
+      await API.post("/messages/send", form, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       setInput("");
-      if (!ack?.success) alert("שגיאה בשליחת ההודעה. נסה שוב.");
-    });
+    } catch (err) {
+      console.error("Error sending message:", err);
+      alert("שגיאה בשליחת ההודעה. נסה שוב.");
+    } finally {
+      setSending(false);
+    }
   };
 
-  // שליחת "מקליד..." כל עוד מקלידים
-  const handleInput = (e) => {
+  const handleInput = e => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
-      socketRef.current.emit("typing", { conversationId, from: businessId, to: customerId });
+      socketRef.current.emit("typing", {
+        conversationId,
+        from: businessId,
+        to: customerId,
+      });
     }
   };
 
@@ -121,8 +121,7 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
               key={m._id || i}
               className={
                 "message" +
-                (m.from === businessId ? " mine" : " theirs") +
-                (m.status === "sending" ? " sending" : "")
+                (m.from === businessId ? " mine" : " theirs")
               }
             >
               <div className="text">{m.text}</div>
@@ -140,9 +139,7 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
             </div>
           )
         )}
-        {isTyping && (
-          <div className="typing-indicator">הלקוח מקליד...</div>
-        )}
+        {isTyping && <div className="typing-indicator">הלקוח מקליד...</div>}
       </div>
       <div className="inputBar">
         <button
