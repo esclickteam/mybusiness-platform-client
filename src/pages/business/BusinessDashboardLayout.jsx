@@ -146,7 +146,7 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* Toggle Sidebar Button (mobile) */}
+          {/* Toggle Sidebar Button (mobile) עם טקסט ברור ומיקום ימני לפי CSS */}
           {isMobile && (
             <button
               onClick={() => setShowSidebar((prev) => !prev)}
@@ -154,24 +154,27 @@ export default function BusinessDashboardLayout() {
               style={{
                 position: "fixed",
                 top: 16,
-                left: 16,
+                right: 12, // לפי CSS שהעברת
                 zIndex: 9999,
                 backgroundColor: "#7c4dff",
                 border: "none",
-                borderRadius: "50%",
-                width: 40,
+                borderRadius: 40,
+                width: 120,
                 height: 40,
                 color: "#fff",
-                fontSize: "24px",
+                fontSize: 16,
                 cursor: "pointer",
                 boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                gap: 8,
                 userSelect: "none",
+                fontWeight: "600",
               }}
             >
-              {showSidebar ? "×" : "☰"}
+              <span style={{ fontSize: 24 }}>{showSidebar ? "×" : "☰"}</span>
+              <span>{showSidebar ? "סגור תפריט" : "פתח תפריט"}</span>
             </button>
           )}
 
