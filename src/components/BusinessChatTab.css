@@ -134,25 +134,10 @@
   opacity: 0.7;
   padding-left: 4px;
 }
-.status.sent::after {
-  content: "✓";
-  color: #6c48b0;
-  font-size: 13px;
-}
-.status.delivered::after {
-  content: "✓✓";
-  color: #6c48b0;
-  font-size: 13px;
-}
-.status.read::after {
-  content: "✓✓";
-  color: #18b66d;
-  font-size: 13px;
-}
-.message.sending {
-  opacity: 0.7;
-  font-style: italic;
-}
+.status.sent::after { content: "✓"; color: #6c48b0; font-size: 13px; }
+.status.delivered::after { content: "✓✓"; color: #6c48b0; font-size: 13px; }
+.status.read::after { content: "✓✓"; color: #18b66d; font-size: 13px; }
+.message.sending { opacity: 0.7; font-style: italic; }
 
 /* הודעת מערכת */
 .system-message {
@@ -195,11 +180,10 @@
   to   { transform: none; }
 }
 
-/* --- שורת הקלט חדשה: כפתורי קלטה וקובץ בצד ימין, שלח בצד שמאל --- */
+/* --- שורת הקלט --- */
 .inputBar {
   display: flex;
   align-items: center;
-  flex-direction: row;
   padding: 13px 15px 13px 12px;
   border-top: 1.5px solid #eee;
   background: #f7f7fa;
@@ -208,37 +192,34 @@
   gap: 10px;
 }
 
-/* עוטף לכפתורי ימין */
-.inputBar-right {
+/* כפתור שליחה משמאל */
+.sendButtonFlat {
+  width: 40px;
+  height: 40px;
+  background: #f6f1fb;
+  color: #7c43bd;
+  border: none;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-left: 10px;
-  margin-right: 0;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 28px;
+  transition: background 0.18s;
+  margin: 0;
+}
+.sendButtonFlat:disabled {
+  background: #ede7f6;
+  color: #b8a2e3;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+.sendButtonFlat:hover:enabled,
+.sendButtonFlat:focus:enabled {
+  background: #7f6fff;
 }
 
-.inputBar {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  gap: 10px;
-  padding: 13px 15px 13px 12px;
-  border-top: 1.5px solid #eee;
-  background: #f7f7fa;
-  min-height: 66px;
-  z-index: 1;
-}
-
-/* עטיפת כפתורי ימין */
-.inputBar-right {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: 10px;  /* מרחיק מהשדה */
-  margin-right: 0;
-}
-
-/* שדה הקלט – באמצע */
+/* שדה קלט באמצע */
 .inputField {
   flex: 1;
   padding: 13px 14px;
@@ -248,47 +229,21 @@
   outline: none;
   transition: border-color 0.2s;
   background: #fff;
-  margin: 0 8px;
 }
 .inputField:focus {
   border-color: #4a3aff;
   background: #fcf7ff;
 }
 
-/* כפתור שליחה – שמאל */
-.sendButtonFlat {
-  width: 40px;
-  height: 40px;
-  background: #f6f1fb;     /* רקע לבן/בהיר */
-  color: #7c43bd;          /* סגול חץ */
-  border: none;
-  outline: none;
+/* עטיפת כפתורי ימין (attach, record) */
+.inputBar-right {
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  border-radius: 50%;
-  transition: background 0.18s;
-  margin: 0;
-  font-size: 28px;         /* החץ גדול */
-}
-.sendButtonFlat:disabled {
-  background: #ede7f6;     /* רקע בהיר יותר כשהכפתור כבוי */
-  color: #b8a2e3;          /* חץ סגול בהיר */
-  cursor: not-allowed;
-  opacity: 0.8;
-}
-.sendButtonFlat:hover:enabled,
-.sendButtonFlat:focus:enabled {
-  background: #7f6fff;
-}
-.arrowFlat {
-  font-size: 24px;
-  margin-left: 0;
+  gap: 6px;
+  margin-left: auto;
 }
 
-/* כפתור הקלטה – ימין */
+/* כפתור הקלטה */
 .recordBtn {
   width: 40px;
   height: 40px;
@@ -302,7 +257,7 @@
   align-items: center;
   justify-content: center;
   transition: background 0.18s;
-  margin-right: 6px;
+  margin: 0;
 }
 .recordBtn:hover {
   background: #f5c6cb;
@@ -312,7 +267,7 @@
   color: #fff;
 }
 
-/* כפתור קובץ – ימין */
+/* כפתור קובץ */
 .attachBtn {
   width: 40px;
   height: 40px;
@@ -322,15 +277,17 @@
   font-size: 18px;
   color: #7757ca;
   cursor: pointer;
-  transition: background 0.18s;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.18s;
   margin: 0;
 }
 .attachBtn:hover {
   background: #ded3f3;
 }
+
+/* קלט קובץ מוסתר */
 .fileInput {
   display: none;
 }
