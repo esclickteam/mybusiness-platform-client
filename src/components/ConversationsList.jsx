@@ -18,7 +18,7 @@ export default function ConversationsList({
       (Array.isArray(conv.participants)
         ? conv.participants.find(p => p !== businessId)
         : null) ||
-      (conv.customer ? conv.customer._id : "") ||
+      conv.partnerId ||
       "";
     return (
       arr.findIndex(c => {
@@ -26,7 +26,7 @@ export default function ConversationsList({
           (Array.isArray(c.participants)
             ? c.participants.find(p => p !== businessId)
             : null) ||
-          (c.customer ? c.customer._id : "") ||
+          c.partnerId ||
           "";
         return pid === partnerId;
       }) === idx
@@ -43,25 +43,18 @@ export default function ConversationsList({
           const participants = Array.isArray(conv.participants)
             ? conv.participants
             : [];
-          // partnerId: קודם מ־participants, ואם לא – מ־customer._id
+          // partnerId: קודם מ־participants, ואם לא – מ־partnerId
           const partnerId =
             participants.find(p => p !== businessId) ||
-            (conv.customer ? conv.customer._id : "") ||
+            conv.partnerId ||
             "";
           const convoId =
-            conv._id || conv.conversationId || conv.id || `conv-${idx}`;
+            conv.conversationId || conv._id || conv.id || `conv-${idx}`;
 
-          // מציגים את שם הלקוח או שם העסק לפי הצד
-          const displayName = isBusiness
-            ? (conv.customer?.name || conv.customerName || partnerId)
-            : (conv.businessName || partnerId);
+          // מציגים את שם הלקוח (partnerName) תמיד אם קיים, אחרת partnerId
+          const displayName = conv.partnerName || partnerId;
 
           const isActive = convoId === selectedConversationId;
-
-          // DEBUG
-          // console.log("Sidebar Conversation:", {
-          //   convoId, partnerId, displayName, participants, businessId, conv,
-          // });
 
           return (
             <div
