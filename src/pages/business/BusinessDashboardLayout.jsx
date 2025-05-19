@@ -54,10 +54,14 @@ export default function BusinessDashboardLayout() {
   const isDashboardTab = /\/dashboard(\/|$)/.test(location.pathname);
 
   useEffect(() => {
-    if (isMobile && isMessagesTab) {
-      setShowSidebar(false);
-    } else if (isDashboardTab) {
-      setShowSidebar(true);
+    if (isMobile) {
+      if (isMessagesTab) {
+        setShowSidebar(false);
+      } else if (isDashboardTab) {
+        setShowSidebar(true);
+      } else {
+        setShowSidebar(true);
+      }
     } else {
       setShowSidebar(true);
     }
@@ -66,7 +70,10 @@ export default function BusinessDashboardLayout() {
   return (
     <BusinessServicesProvider>
       <div className="rtl-wrapper">
-        <div className={`business-dashboard-layout${isMobile && isMessagesTab ? " mobile-messages" : ""}`}>
+        <div
+          key={location.pathname}  // FORCE re-render on path change
+          className={`business-dashboard-layout${isMobile && isMessagesTab ? " mobile-messages" : ""}`}
+        >
           {( (!isMobile || showSidebar) && (
             <aside className="sidebar">
               {isMobile && isMessagesTab && (
