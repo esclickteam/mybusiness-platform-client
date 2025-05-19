@@ -112,18 +112,41 @@
 /* במובייל בלבד – מציגים את הכפתור ומסדרים פריסה */
 @media (max-width: 768px) {
   .business-dashboard-layout {
-    flex-direction: column !important;
+    flex-direction: row !important; /* לשמור על פריסה אופקית */
     height: 100vh;
   }
   .dashboard-content {
-    width: 100vw !important;
-    height: calc(100vh - 60px) !important; /* מפחיתים גובה כפתור ההמבורגר */
+    flex: 1;
+    margin-right: 0; /* יתעדכן דינמית לפי מצב הסיידבר */
     padding: 1rem !important;
-    padding-top: 0 !important;
+    padding-top: 60px !important; /* למקם מתחת לכפתור */
     box-sizing: border-box;
+    height: 100vh !important;
+    overflow-y: auto;
   }
   .sidebar-toggle-button {
     display: flex !important;
+  }
+  /* סיידבר fixed וגלוי כשהוא פתוח */
+  .sidebar.mobile {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    width: 83vw !important;
+    max-width: 350px !important;
+    height: 100vh !important;
+    background: #f9edff !important;
+    box-shadow: -8px 0 36px #0001 !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.35s ease !important;
+    z-index: 9002 !important;
+  }
+  .sidebar.mobile.open {
+    transform: translateX(0) !important;
+  }
+  /* כשהסיידבר פתוח, תן מרווח לתוכן */
+  .sidebar.mobile.open ~ .dashboard-content {
+    margin-right: 83vw !important;
   }
 }
 
