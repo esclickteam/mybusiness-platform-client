@@ -37,9 +37,8 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       socketRef.current.emit("joinRoom", conversationId);
     });
 
-    // Always append new messages immediately
     socketRef.current.on("newMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages(prev => [...prev, msg]);
     });
 
     socketRef.current.on("typing", ({ from }) => {
@@ -64,7 +63,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     }
   }, [messages, isTyping]);
 
-  // Start/stop recording
   const handleRecordToggle = async () => {
     if (recording) {
       mediaRecorder.current.stop();
@@ -82,7 +80,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     }
   };
 
-  // Send recorded audio
   const sendRecording = () => {
     const blob = new Blob(recordedChunks.current, { type: "audio/webm" });
     const reader = new FileReader();
@@ -92,7 +89,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     reader.readAsDataURL(blob);
   };
 
-  // Generic file send
   const sendFile = (file) => {
     if (!conversationId || !customerId) return;
     setSending(true);
@@ -113,7 +109,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     );
   };
 
-  // File picker
   const handleAttach = () => fileInputRef.current.click();
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -125,7 +120,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     e.target.value = "";
   };
 
-  // Send text message
   const sendMessage = () => {
     if (!input.trim() || sending) return;
     setSending(true);
@@ -146,7 +140,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     );
   };
 
-  // Typing indicator
   const handleInput = (e) => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
@@ -185,7 +178,10 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
               </div>
               <div className="meta">
                 <span className="time">
-                  {new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
+                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </span>
                 {m.from === businessId && <span className={`status ${m.status || "sent"}`} />}
               </div>
@@ -196,14 +192,29 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       </div>
 
       <div className="inputBar">
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-          title="שלח"
-        >
-          ◀
-        </button>
+        {/* כפתורים משמאל */}
+        <div className="inputBar-left">
+          <button
+            type="button"
+            className="attachBtn"
+            onClick={handleAttach}
+            disabled={sending}
+            title="צרף קובץ"
+          >
+            📎
+          </button>
+          <button
+            type="button"
+            className={`recordBtn${recording ? " recording" : ""}`}
+            onClick={handleRecordToggle}
+            disabled={sending}
+            title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+          >
+            🎤
+          </button>
+        </div>
+
+        {/* השדה באמצע */}
         <input
           className="inputField"
           type="text"
@@ -213,21 +224,16 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           onChange={handleInput}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
-        <div className="inputBar-right">
-          <button type="button" className="attachBtn" title="צרף קובץ" onClick={handleAttach} disabled={sending}>
-            📎
-          </button>
-          <button
-            type="button"
-            className={`recordBtn${recording ? " recording" : ""}`}
-            title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-            onClick={handleRecordToggle}
-            disabled={sending}
-          >
-            🎤
-          </button>
-          <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleFileChange} disabled={sending} />
-        </div>
+
+        {/* כפתור שליחה מימין */}
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          disabled={sending || !input.trim()}
+          title="שלח"
+        >
+          ◀
+        </button>
       </div>
     </>
   );
