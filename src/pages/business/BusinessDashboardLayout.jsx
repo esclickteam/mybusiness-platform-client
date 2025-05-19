@@ -22,8 +22,9 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const [isMobile, setIsMobile]     = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
+  const [collapsed, setCollapsed] = useState(false); // collapsed in desktop
 
   // שינוי מצב מובייל/דסקטופ על resize
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function BusinessDashboardLayout() {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       setShowSidebar(!mobile);
+      if (mobile) setCollapsed(false);
     };
     window.addEventListener("resize", onResize);
     onResize();
@@ -79,7 +81,17 @@ export default function BusinessDashboardLayout() {
 
           {/* הסיידבר */}
           {showSidebar && (
-            <aside className={`sidebar mobile`}>
+            <aside className={`sidebar ${isMobile ? 'mobile' : collapsed ? 'collapsed' : ''}`}>
+              {/* collapse button for desktop */}
+              {!isMobile && (
+                <button
+                  className="sidebar-collapse-btn"
+                  onClick={() => setCollapsed(prev => !prev)}
+                  aria-label={collapsed ? 'הצג סיידבר' : 'הסתר סיידבר'}
+                >
+                  {collapsed ? '⯈' : '⯇'}
+                </button>
+              )}
               <nav>
                 {user?.role === "business" && (
                   <NavLink to={`/business/${businessId}`} end className={({ isActive }) => isActive ? "active" : undefined}>
@@ -95,14 +107,16 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
-          {/* הכפתור היחיד שמשנה אייקון */}
-          <button
-            className="sidebar-toggle-button"
-            onClick={() => setShowSidebar(prev => !prev)}
-            aria-label={showSidebar ? "סגור תפריט" : "פתח תפריט"}
-          >
-            {showSidebar ? "✕" : "☰"}
-          </button>
+          {/* כפתור יחיד למובייל ☰/✕ */}
+          {isMobile && (
+            <button
+              className="sidebar-toggle-button"
+              onClick={() => setShowSidebar(prev => !prev)}
+              aria-label={showSidebar ? "סגור תפריט" : "פתח תפריט"}
+            >
+              {showSidebar ? "✕" : "☰"}
+            </button>
+          )}
 
           {/* התוכן הראשי */}
           <main className="dashboard-content">
