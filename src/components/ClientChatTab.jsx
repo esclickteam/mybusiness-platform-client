@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../api"; // baseURL = /api/messages
+import API from "../api"; // baseURL = /api
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({
@@ -18,22 +18,17 @@ export default function ClientChatTab({
   const socketRef = useRef();
   const messageListRef = useRef();
   const typingTimeout = useRef();
-
-  // לצירוף קבצים
   const fileInputRef = useRef();
-
-  // להקלטה קולית
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef();
   const recordedChunksRef = useRef([]);
 
-  // ─── טעינת היסטוריה ו־Socket.IO ───
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
 
-    // קריאה ל־GET /api/messages/conversations/:id
-    API.get(`/conversations/${conversationId}`)
+    // עכשיו נכון: GET /api/messages/conversations/:id
+    API.get(`/messages/conversations/${conversationId}`)
       .then(res => setMessages(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -62,25 +57,21 @@ export default function ClientChatTab({
     };
   }, [conversationId]);
 
-  // גלילה אוטומטית
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  // ─── שליחת טקסט ───
   const sendMessage = async () => {
     const text = input.trim();
     if (!text || sending) return;
     await doSend({ text });
   };
 
-  // ─── מרכז השליחה ───
   const doSend = async ({ text = "", file, audioBlob }) => {
     if (!conversationId) return;
     const to = businessId || partnerId;
-
     const form = new FormData();
     form.append("to", to);
     form.append("conversationId", conversationId);
@@ -90,8 +81,8 @@ export default function ClientChatTab({
 
     setSending(true);
     try {
-      // POST /api/messages/send
-      const { data } = await API.post("/send", form, {
+      // עכשיו נכון: POST /api/messages/send
+      const { data } = await API.post("/messages/send", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setMessages(prev => [...prev, data.message]);
@@ -103,7 +94,6 @@ export default function ClientChatTab({
     }
   };
 
-  // ─── הקלדת 'מקליד...' ───
   const handleInput = e => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
@@ -115,7 +105,6 @@ export default function ClientChatTab({
     }
   };
 
-  // ─── קישור כפתור קובץ ───
   const handleAttach = () => fileInputRef.current.click();
   const handleFileChange = e => {
     const file = e.target.files?.[0];
@@ -123,7 +112,6 @@ export default function ClientChatTab({
     e.target.value = null;
   };
 
-  // ─── Toggle הקלטה קולית ───
   const handleRecordToggle = async () => {
     if (recording) {
       mediaRecorderRef.current.stop();
@@ -151,15 +139,20 @@ export default function ClientChatTab({
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {!loading && messages.length === 0 && (
+          <div className="empty">עדיין אין הודעות</div>
+        )}
         {messages.map((m, i) => (
-          <div key={m._id || i} className={`message${m.from===userId?' mine':' theirs'}`}>
+          <div
+            key={m._id || i}
+            className={`message${m.from === userId ? " mine" : " theirs"}`}
+          >
             {m.fileUrl ? (
               m.fileUrl.match(/\.(mp3|webm|wav)$/) ? (
                 <audio controls src={m.fileUrl} />
               ) : (
                 <a href={m.fileUrl} target="_blank" rel="noopener">
-                  {m.fileName||"קובץ להורדה"}
+                  {m.fileName || "קובץ להורדה"}
                 </a>
               )
             ) : (
@@ -185,22 +178,39 @@ export default function ClientChatTab({
           value={input}
           disabled={sending}
           onChange={handleInput}
-          onKeyDown={e => e.key==="Enter"&&!e.shiftKey&&sendMessage()}
+          onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
           className="inputField"
         />
 
-        <button className="sendButtonFlat" onClick={sendMessage} disabled={sending||!input.trim()}>
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          disabled={sending || !input.trim()}
+        >
           <span className="arrowFlat">◀</span>
         </button>
 
-        <button className="attachBtn" onClick={handleAttach} title="צרף קובץ">📎</button>
-        <input ref={fileInputRef} type="file" style={{display:'none'}} onChange={handleFileChange} />
+        <button
+          className="attachBtn"
+          onClick={handleAttach}
+          title="צרף קובץ"
+        >
+          📎
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
 
         <button
-          className={`recordBtn ${recording?'active':''}`}
+          className={`recordBtn ${recording ? "active" : ""}`}
           onClick={handleRecordToggle}
-          title={recording?'עצור הקלטה':'התחל הקלטה'}
-        >🎤</button>
+          title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+        >
+          🎤
+        </button>
       </div>
     </div>
   );
