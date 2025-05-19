@@ -146,15 +146,15 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* Toggle Sidebar Button (mobile) עם הזזה למטה */}
+          {/* Toggle Sidebar Button (mobile) עם הזזה למטה מצד שמאל */}
           {isMobile && (
             <button
               onClick={() => setShowSidebar((prev) => !prev)}
-              aria-label={showSidebar ? "הסתר תפריט / חזור לדשבורד" : "פתח תפריט"}
+              aria-label={showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"}
               style={{
                 position: "fixed",
                 top: 60, // הזזה למטה
-                right: 12,
+                left: 12, // מימין לשמאל
                 zIndex: 9999,
                 backgroundColor: "#7c4dff",
                 border: "none",
@@ -174,7 +174,7 @@ export default function BusinessDashboardLayout() {
               }}
             >
               <span style={{ fontSize: 24 }}>{showSidebar ? "×" : "☰"}</span>
-              <span>{showSidebar ? "סגור תפריט" : "פתח תפריט"}</span>
+              <span>{showSidebar ? "סגור ניווט" : "פתח ניווט"}</span>
             </button>
           )}
 
