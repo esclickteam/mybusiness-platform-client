@@ -23,8 +23,9 @@ export default function BusinessDashboardLayout() {
   const location = useLocation();
 
   const [isMobile, setIsMobile] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
 
+  // קביעת מצב מובייל
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -32,6 +33,7 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // הגנת גישה וניווט ראשוני לפי פרמטרים
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -53,41 +55,28 @@ export default function BusinessDashboardLayout() {
   const isMessagesTab = /\/messages(\/|$)/.test(location.pathname);
   const isDashboardTab = /\/dashboard(\/|$)/.test(location.pathname);
 
+  // הצגת/הסתרת סיידבר בהתאם לטאב במובייל
   useEffect(() => {
     if (isMobile) {
-      if (isMessagesTab) {
-        setShowSidebar(false);
-      } else if (isDashboardTab) {
-        setShowSidebar(true);
-      } else {
-        setShowSidebar(true);
-      }
+      setShowSidebar(!isMessagesTab);
     } else {
       setShowSidebar(true);
     }
-  }, [isMobile, isMessagesTab, isDashboardTab]);
+  }, [isMobile, isMessagesTab]);
 
   return (
     <BusinessServicesProvider>
       <div className="rtl-wrapper">
         <div
-          key={location.pathname}  // FORCE re-render on path change
+          key={location.pathname}
           className={`business-dashboard-layout${isMobile && isMessagesTab ? " mobile-messages" : ""}`}
         >
-          {( (!isMobile || showSidebar) && (
+          {( !isMobile || showSidebar ) && (
             <aside className="sidebar">
               {isMobile && isMessagesTab && (
                 <button
                   onClick={() => setShowSidebar(false)}
-                  style={{
-                    marginBottom: "1rem",
-                    padding: "8px 16px",
-                    fontSize: "1rem",
-                    borderRadius: "6px",
-                    border: "none",
-                    backgroundColor: "#ccc",
-                    cursor: "pointer",
-                  }}
+                  style={{ marginBottom: "1rem", padding: "8px 16px", fontSize: "1rem", borderRadius: "6px", border: "none", backgroundColor: "#ccc", cursor: "pointer" }}
                   aria-label="הסתר סיידבר"
                 >
                   ✕ סגור
@@ -116,25 +105,13 @@ export default function BusinessDashboardLayout() {
                 ))}
               </nav>
             </aside>
-          ))}
+          )}
 
           <main className="dashboard-content">
             {isMessagesTab && (
               <button
-                onClick={() => {
-                  setShowSidebar(true);
-                  navigate(`/business/${businessId}/dashboard`);
-                }}
-                style={{
-                  marginBottom: "1rem",
-                  padding: "8px 16px",
-                  fontSize: "1rem",
-                  borderRadius: "6px",
-                  border: "none",
-                  backgroundColor: "#4a3aff",
-                  color: "#fff",
-                  cursor: "pointer",
-                }}
+                onClick={() => navigate("dashboard")}
+                style={{ marginBottom: "1rem", padding: "8px 16px", fontSize: "1rem", borderRadius: "6px", border: "none", backgroundColor: "#4a3aff", color: "#fff", cursor: "pointer" }}
                 aria-label="חזרה לדשבורד"
               >
                 ← חזרה לדשבורד
