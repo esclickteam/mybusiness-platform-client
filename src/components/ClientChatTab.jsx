@@ -31,14 +31,18 @@ export default function ClientChatTab({
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      query: { conversationId, userId, role: "client" },
+      query: { conversationId, userId, role: "client", businessName: "" },
     });
 
     // בקש היסטוריה
-    socketRef.current.emit("getHistory", { conversationId }, (history) => {
-      setMessages(Array.isArray(history) ? history : []);
-      setLoading(false);
-    });
+    socketRef.current.emit(
+      "getHistory",
+      { conversationId },
+      (history) => {
+        setMessages(Array.isArray(history) ? history : []);
+        setLoading(false);
+      }
+    );
 
     // מאזין להודעות חדשות
     socketRef.current.on("newMessage", (msg) => {
@@ -78,6 +82,7 @@ export default function ClientChatTab({
         conversationId,
         from: userId,
         to: businessId,
+        role: "client",
         text,
       },
       (ack) => {
@@ -100,6 +105,7 @@ export default function ClientChatTab({
           conversationId,
           from: userId,
           to: businessId,
+          role: "client",
           file: {
             name: file.name,
             type: file.type,
@@ -112,7 +118,7 @@ export default function ClientChatTab({
         }
       );
     };
-    reader.readAsDataURL(file); // הופך לבייס64
+    reader.readAsDataURL(file);
   };
 
   // שליחת הקלטת קול
@@ -127,6 +133,7 @@ export default function ClientChatTab({
           conversationId,
           from: userId,
           to: businessId,
+          role: "client",
           file: {
             name: "voice.webm",
             type: "audio/webm",
@@ -193,12 +200,19 @@ export default function ClientChatTab({
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
-          <div key={m._id || i} className={`message${m.from === userId ? " mine" : " theirs"}`}>
+          <div
+            key={m._id || i}
+            className={`message${m.from === userId ? " mine" : " theirs"}`}
+          >
             {m.fileUrl ? (
               m.fileUrl.match(/\.(mp3|webm|wav)$/i) ? (
                 <audio controls src={m.fileUrl} />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
-                <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: '200px', borderRadius: '8px' }} />
+                <img
+                  src={m.fileUrl}
+                  alt={m.fileName || "image"}
+                  style={{ maxWidth: "200px", borderRadius: "8px" }}
+                />
               ) : (
                 <a href={m.fileUrl} target="_blank" rel="noopener">
                   {m.fileName || "קובץ להורדה"}
@@ -238,7 +252,7 @@ export default function ClientChatTab({
           value={input}
           disabled={sending}
           onChange={handleInput}
-          onKeyDown={e => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
         {/* כפתורי ימין */}
         <div className="inputBar-right">
@@ -248,23 +262,27 @@ export default function ClientChatTab({
             title="צרף קובץ"
             onClick={handleAttach}
             disabled={sending}
-          >📎</button>
+          >
+            📎
+          </button>
           <button
             type="button"
             className={`recordBtn${recording ? " recording" : ""}`}
             title={recording ? "עצור הקלטה" : "התחל הקלטה"}
             onClick={handleRecordToggle}
             disabled={sending}
-          >🎤</button>
+          >
+            🎤
+          </button>
           <input
             type="file"
             ref={fileInputRef}
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
             onChange={handleFileChange}
             disabled={sending}
           />
         </div>
       </div>
     </div>
-  );
+);
 }
