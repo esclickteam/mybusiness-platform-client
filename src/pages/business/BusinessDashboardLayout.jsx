@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from '@context/BusinessServicesContext';
@@ -22,40 +22,33 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile]     = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
 
-  const closeBtnRef = useRef(null);
-
-  // התמודדות עם שינוי רזולוציה
+  // שינוי מצב מובייל/דסקטופ על resize
   useEffect(() => {
-    const handleResize = () => {
+    const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       setShowSidebar(!mobile);
     };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", onResize);
+    onResize();
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ניגוד גלילה כשהסיידבר פתוח במובייל
+  // נעילת גלילה ברקע במובייל
   useEffect(() => {
     document.body.style.overflow = isMobile && showSidebar ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isMobile, showSidebar]);
 
-  // לחיצה על ESC תסגור במובייל
+  // ESC סוגר במובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
-    const handleEsc = e => e.key === "Escape" && setShowSidebar(false);
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [isMobile, showSidebar]);
-
-  // פוקוס אוטומטי לכפתור הסגירה במעבר
-  useEffect(() => {
-    if (isMobile && showSidebar) closeBtnRef.current?.focus();
+    const onKey = e => e.key === "Escape" && setShowSidebar(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
   // הגנת גישה וניווט ברירת מחדל
@@ -74,79 +67,45 @@ export default function BusinessDashboardLayout() {
     <BusinessServicesProvider>
       <div className="rtl-wrapper">
         <div className="business-dashboard-layout">
-          {/* רק במובייל: רקע חצי־שקוף בהקלקה על האוברליי */}
+          {/* אוברליי במובייל */}
           {isMobile && showSidebar && (
             <div
               className="sidebar-overlay"
               onClick={() => setShowSidebar(false)}
-              aria-label="סגור תפריט צד"
-              tabIndex={-1}
+              aria-label="סגור תפריט"
               role="button"
             />
           )}
 
-          {/* סיידבר */}
+          {/* הסיידבר */}
           {showSidebar && (
-            <aside
-              className={`sidebar${isMobile ? " mobile" : ""}`}
-              aria-label="ניווט ראשי"
-            >
-              <nav className="sidebar-menu">
+            <aside className={`sidebar mobile`}>
+              <nav>
                 {user?.role === "business" && (
-                  <NavLink
-                    to={`/business/${businessId}`}
-                    end
-                    className={({ isActive }) => isActive ? "active" : undefined}
-                  >
+                  <NavLink to={`/business/${businessId}`} end className={({ isActive }) => isActive ? "active" : undefined}>
                     👀 צפייה בפרופיל
                   </NavLink>
                 )}
                 {tabs.map(({ path, label }) => (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    end
-                    className={({ isActive }) => isActive ? "active" : undefined}
-                  >
+                  <NavLink key={path} to={path} end className={({ isActive }) => isActive ? "active" : undefined}>
                     {label}
                   </NavLink>
                 ))}
               </nav>
-              {/* כפתור X לסגירה במובייל */}
-              {isMobile && (
-                <button
-                  className="close-sidebar-btn"
-                  onClick={() => setShowSidebar(false)}
-                  aria-label="סגור תפריט צד"
-                  ref={closeBtnRef}
-                >
-                  ✕
-                </button>
-              )}
             </aside>
           )}
 
+          {/* הכפתור היחיד שמשנה אייקון */}
+          <button
+            className="sidebar-toggle-button"
+            onClick={() => setShowSidebar(prev => !prev)}
+            aria-label={showSidebar ? "סגור תפריט" : "פתח תפריט"}
+          >
+            {showSidebar ? "✕" : "☰"}
+          </button>
+
+          {/* התוכן הראשי */}
           <main className="dashboard-content">
-            {/* כפתור ☰ במובייל כשהסיידבר סגור */}
-            {isMobile && !showSidebar && (
-              <button
-                className="sidebar-toggle-button"
-                onClick={() => setShowSidebar(true)}
-                aria-label="פתח תפריט צד"
-              >
-                ☰
-              </button>
-            )}
-            {/* בכפתור אחד לדסקטופ */}
-            {!isMobile && (
-              <button
-                className="sidebar-toggle-button"
-                onClick={() => setShowSidebar(prev => !prev)}
-                aria-label={showSidebar ? "הסתר סיידבר" : "הצג סיידבר"}
-              >
-                {showSidebar ? "✕" : "☰"}
-              </button>
-            )}
             <Outlet />
           </main>
         </div>
