@@ -225,16 +225,3 @@
   display: none;
 }
 
-/* מוודא שהכפתור הוא flex row */
-.chat-container.client .input-bar .sendButtonFlat {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: flex-start !important; /* יזיז את התוכן לשמאל */
-  padding-left: 8px !important;
-}
-
-/* מוודא שה-arrowFlat תקבל margin אוטומטי ימינה (תניח אותה בצד שמאל) */
-.chat-container.client .input-bar .sendButtonFlat .arrowFlat {
-  margin-right: auto !important;
-  margin-left: 0 !important;
-}
