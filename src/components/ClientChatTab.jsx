@@ -174,21 +174,21 @@ export default function ClientChatTab({
       type="button"
       className="attachBtn"
       title="צרף קובץ"
-      onClick={handleAttach}
+      onClick={onAttachClick}
       disabled={sending}
     >📎</button>
     <button
       type="button"
       className={`recordBtn${recording ? " recording" : ""}`}
       title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-      onClick={handleRecordToggle}
+      onClick={toggleRecording}
       disabled={sending}
     >🎤</button>
     <input
       type="file"
       ref={fileInputRef}
       style={{ display: 'none' }}
-      onChange={handleFileChange}
+      onChange={onFileChange}
       disabled={sending}
     />
   </div>
