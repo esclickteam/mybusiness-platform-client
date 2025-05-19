@@ -51,14 +51,17 @@ export default function BusinessDashboardLayout() {
   }, [user, loading, location.search, location.state, navigate]);
 
   const isMessagesTab = /\/messages(\/|$)/.test(location.pathname);
+  const isDashboardTab = /\/dashboard(\/|$)/.test(location.pathname);
 
   useEffect(() => {
     if (isMobile && isMessagesTab) {
       setShowSidebar(false);
+    } else if (isDashboardTab) {
+      setShowSidebar(true);
     } else {
       setShowSidebar(true);
     }
-  }, [isMobile, isMessagesTab]);
+  }, [isMobile, isMessagesTab, isDashboardTab]);
 
   return (
     <BusinessServicesProvider>
