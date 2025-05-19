@@ -37,10 +37,9 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       socketRef.current.emit("joinRoom", conversationId);
     });
 
+    // Always append new messages immediately
     socketRef.current.on("newMessage", (msg) => {
-      setMessages((prev) =>
-        prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
-      );
+      setMessages((prev) => [...prev, msg]);
     });
 
     socketRef.current.on("typing", ({ from }) => {
@@ -197,7 +196,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       </div>
 
       <div className="inputBar">
-        {/* כפתור שלח - שמאל */}
         <button
           className="sendButtonFlat"
           onClick={sendMessage}
@@ -206,7 +204,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
         >
           ◀
         </button>
-        {/* שדה הקלט */}
         <input
           className="inputField"
           type="text"
@@ -216,14 +213,13 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           onChange={handleInput}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
-        {/* כפתורי ימין */}
         <div className="inputBar-right">
           <button type="button" className="attachBtn" title="צרף קובץ" onClick={handleAttach} disabled={sending}>
             📎
           </button>
           <button
             type="button"
-            className={`recordBtn${recording ? " recording" : ""}`} 
+            className={`recordBtn${recording ? " recording" : ""}`}
             title={recording ? "עצור הקלטה" : "התחל הקלטה"}
             onClick={handleRecordToggle}
             disabled={sending}
