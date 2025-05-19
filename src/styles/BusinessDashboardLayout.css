@@ -26,9 +26,10 @@
   height: 100vh !important;
   overflow-y: auto !important;
   transition: transform 0.35s ease !important;
+  will-change: transform;
 }
 
-/* במובייל – slide-in/out */
+/* במובייל – Slide-in/out לפי class */
 .sidebar.mobile {
   position: fixed !important;
   top: 0; right: 0;
@@ -37,11 +38,11 @@
   height: 100vh !important;
   background: #f9edff !important;
   box-shadow: -8px 0 36px #0001 !important;
-  transform: translateX(0) !important;
+  transform: translateX(100%) !important;  /* ברירת מחדל: סגור */
   z-index: 9001 !important;
 }
-.sidebar.mobile.closed {
-  transform: translateX(100%) !important;
+.sidebar.mobile.open {
+  transform: translateX(0) !important;    /* כשלוחצים: פותח */
 }
 
 /* אופרליי של רקע כשהסיידבר פתוח במובייל */
@@ -114,7 +115,15 @@
 
 /* בדסקטופ – הכפתור מוסתר, הסיידבר קבוע */
 @media (min-width: 769px) {
+  .sidebar {
+    transform: none !important; /* סיידבר תמיד גלוי */
+    position: relative !important;
+    box-shadow: none !important;
+  }
   .sidebar-toggle-button {
+    display: none !important;
+  }
+  .sidebar-overlay {
     display: none !important;
   }
 }
