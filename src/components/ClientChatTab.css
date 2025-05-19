@@ -44,20 +44,20 @@
 
 /* הודעות של הלקוח — צד ימין */
 .message.mine {
-  align-self: flex-end;      /* מוצמד לימין */
+  align-self: flex-end;
   background: #e3ffe5;
   text-align: right;
   margin-right: 0;
-  margin-left: 32px;         /* ריווח מצד שמאל */
+  margin-left: 32px;
 }
 
 /* הודעות של העסק — צד שמאל */
 .message.theirs {
-  align-self: flex-start;    /* מוצמד לשמאל */
+  align-self: flex-start;
   background: #fff;
   text-align: left;
   margin-left: 0;
-  margin-right: 32px;        /* ריווח מצד ימין */
+  margin-right: 32px;
 }
 
 /* טיימסטמפ */
@@ -139,12 +139,11 @@
 }
 
 /* שורת קלט בצ'אט */
-/* === עיצוב שורת קלט בצ'אט === */
 .input-bar {
   display: flex;
   flex-direction: row;      /* input בימין, כפתורים בשמאל */
   align-items: center;
-  gap: 8px;                 /* רווח אחיד בין כולם */
+  gap: 8px;
   padding: 12px 12px 12px 10px;
   border-top: 1.5px solid #e1bee7;
   background: #faf7fd;
@@ -162,7 +161,7 @@
   background: #fff;
   outline: none;
   transition: border-color 0.2s;
-  direction: rtl;      /* מיישר לימין גם טקסט וגם סמן */
+  direction: rtl;
   text-align: right;
 }
 .input-bar input:focus,
@@ -173,7 +172,7 @@
 
 /* כפתור שליחה */
 .sendButtonFlat {
-  order: -1;               /* מעביר את הכפתור למיקום הראשון בשורה */
+  order: -1;
   width: 40px;
   height: 40px;
   background: none;
@@ -184,7 +183,7 @@
   justify-content: center;
   cursor: pointer;
   padding: 0;
-  margin: 0 8px 0 0;       /* רווח של 8px למימין, בין הכפתור לשדה הקלט */
+  margin: 0 8px 0 0;
   border-radius: 50%;
   transition: background 0.14s;
 }
@@ -203,7 +202,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0; /* שים לב - אין מרג'ין מיותר */
+  margin: 0;
 }
 
 /* כפתור קובץ */
@@ -230,3 +229,59 @@
   display: none;
 }
 
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .message {
+    max-width: 90%;
+    padding: 8px 12px 6px 10px;
+    font-size: 14px;
+  }
+  .message.mine {
+    margin-left: 16px;
+  }
+  .message.theirs {
+    margin-right: 16px;
+  }
+  .input-bar {
+    padding: 8px 10px 8px 8px;
+    min-height: 56px;
+    gap: 6px;
+  }
+  .input-bar input,
+  .inputField {
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 22px;
+  }
+  .sendButtonFlat,
+  .attachBtn {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 400px) {
+  .message {
+    max-width: 100%;
+    padding: 6px 10px 5px 8px;
+    font-size: 13px;
+  }
+  .message.mine {
+    margin-left: 8px;
+  }
+  .message.theirs {
+    margin-right: 8px;
+  }
+  .input-bar input,
+  .inputField {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  .sendButtonFlat,
+  .attachBtn {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+  }
+}

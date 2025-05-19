@@ -282,3 +282,60 @@
   font-size: 14px;
   padding: 12px 0;
 }
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .message {
+    max-width: 90%;
+    padding: 8px 12px 6px 10px;
+    font-size: 14px;
+  }
+  .message.mine {
+    margin-left: 16px;
+  }
+  .message.theirs {
+    margin-right: 16px;
+  }
+  .inputBar {
+    padding: 8px 10px 8px 8px;
+    min-height: 56px;
+    gap: 6px;
+  }
+  .inputField {
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 22px;
+  }
+  .sendButtonFlat,
+  .attachBtn,
+  .recordBtn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 24px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .message {
+    max-width: 100%;
+    padding: 6px 10px 5px 8px;
+    font-size: 13px;
+  }
+  .message.mine {
+    margin-left: 8px;
+  }
+  .message.theirs {
+    margin-right: 8px;
+  }
+  .inputField {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  .sendButtonFlat,
+  .attachBtn,
+  .recordBtn {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 20px !important;
+  }
+}
