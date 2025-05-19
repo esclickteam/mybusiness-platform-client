@@ -72,12 +72,11 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   }, [messages, isTyping]);
 
   // Start/stop recording
-  const toggleRecording = async () => {
+  const handleRecordToggle = async () => {
     if (recording) {
       mediaRecorder.current.stop();
       setRecording(false);
     } else {
-      // request mic
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       recordedChunks.current = [];
       mediaRecorder.current = new MediaRecorder(stream);
@@ -119,13 +118,13 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     }
   };
 
-  // Click 📎 to open file picker
-  const onAttachClick = () => {
+  // הפונקציה שחסרה לך - פותחת את חלון בחירת קובץ
+  const handleAttach = () => {
     fileInputRef.current.click();
   };
 
   // Handle file selection
-  const onFileChange = e => {
+  const handleFileChange = e => {
     const file = e.target.files[0];
     if (file) sendFile(file, file.name);
     e.target.value = "";
@@ -239,8 +238,8 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
             onChange={handleFileChange}
             disabled={sending}
           />
-  </div>
-</div>
+        </div>
+      </div>
     </>
   );
 }
