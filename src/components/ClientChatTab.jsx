@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../api";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({
@@ -23,25 +22,30 @@ export default function ClientChatTab({
   const mediaRecorderRef = useRef();
   const recordedChunksRef = useRef([]);
 
+  // 1. התחברות והיסטוריה
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
 
-    API.get(`/messages/conversations/${conversationId}`)
-      .then(res => setMessages(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-
+    // התחבר לסוקט
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       query: { conversationId, userId, role: "client" },
     });
 
-    socketRef.current.on("newMessage", msg => {
-      setMessages(prev => [...prev, msg]);
+    // בקש היסטוריה
+    socketRef.current.emit("getHistory", { conversationId }, (history) => {
+      setMessages(Array.isArray(history) ? history : []);
+      setLoading(false);
     });
 
+    // מאזין להודעות חדשות
+    socketRef.current.on("newMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    // מקבל "מקליד"
     socketRef.current.on("typing", ({ from }) => {
       if (from === businessId) {
         setIsTyping(true);
@@ -54,44 +58,92 @@ export default function ClientChatTab({
       socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
     };
-  }, [conversationId]);
+  }, [conversationId, businessId, userId]);
 
+  // גלילה אוטומטית
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  const sendMessage = async () => {
+  // שליחת טקסט
+  const sendMessage = () => {
     const text = input.trim();
     if (!text || sending) return;
-    await doSend({ text });
-  };
-
-  const doSend = async ({ text = "", file, audioBlob }) => {
-    if (!conversationId) return;
-    const to = businessId || partnerId;
-    const form = new FormData();
-    form.append("to", to);
-    form.append("conversationId", conversationId);
-    if (text) form.append("text", text);
-    if (file) form.append("fileData", file);
-    if (audioBlob) form.append("fileData", new File([audioBlob], "voice.webm"));
-
     setSending(true);
-    try {
-      await API.post("/messages/send", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setInput("");
-    } catch (err) {
-      console.error("Send error:", err);
-    } finally {
-      setSending(false);
-    }
+    socketRef.current.emit(
+      "sendMessage",
+      {
+        conversationId,
+        from: userId,
+        to: businessId,
+        text,
+      },
+      (ack) => {
+        setSending(false);
+        if (ack?.ok) setInput("");
+        else alert("שגיאה בשליחת ההודעה");
+      }
+    );
   };
 
-  const handleInput = e => {
+  // שליחת קובץ
+  const sendFile = (file) => {
+    if (!file || !conversationId) return;
+    setSending(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      socketRef.current.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          file: {
+            name: file.name,
+            type: file.type,
+            data: reader.result,
+          },
+        },
+        (ack) => {
+          setSending(false);
+          if (!ack?.ok) alert("שגיאה בשליחת קובץ");
+        }
+      );
+    };
+    reader.readAsDataURL(file); // הופך לבייס64
+  };
+
+  // שליחת הקלטת קול
+  const sendAudio = (blob) => {
+    if (!conversationId) return;
+    setSending(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      socketRef.current.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          file: {
+            name: "voice.webm",
+            type: "audio/webm",
+            data: reader.result,
+          },
+        },
+        (ack) => {
+          setSending(false);
+          if (!ack?.ok) alert("שגיאה בשליחת קול");
+        }
+      );
+    };
+    reader.readAsDataURL(blob);
+  };
+
+  // קלט הודעה
+  const handleInput = (e) => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
       socketRef.current.emit("typing", {
@@ -102,34 +154,37 @@ export default function ClientChatTab({
     }
   };
 
+  // קבצים
   const handleAttach = () => fileInputRef.current.click();
-  const handleFileChange = e => {
+  const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) doSend({ file });
+    if (file) sendFile(file);
     e.target.value = null;
   };
 
+  // הקלטה קולית
   const handleRecordToggle = async () => {
     if (recording) {
       mediaRecorderRef.current.stop();
+      setRecording(false);
     } else {
       recordedChunksRef.current = [];
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorderRef.current = new MediaRecorder(stream);
-        mediaRecorderRef.current.ondataavailable = ev => {
+        mediaRecorderRef.current.ondataavailable = (ev) => {
           if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
         };
         mediaRecorderRef.current.onstop = () => {
           const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
-          doSend({ audioBlob: blob });
+          sendAudio(blob);
         };
         mediaRecorderRef.current.start();
+        setRecording(true);
       } catch (err) {
-        console.error("Recording error:", err);
+        alert("לא הצלחנו להתחיל הקלטה");
       }
     }
-    setRecording(r => !r);
   };
 
   return (
