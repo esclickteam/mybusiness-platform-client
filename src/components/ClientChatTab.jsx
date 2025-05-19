@@ -1,4 +1,3 @@
-// src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
@@ -25,19 +24,11 @@ export default function ClientChatTab({
       .then((res) => setMessages(res.data))
       .catch((e) => console.error("Error loading history:", e));
 
-    // 2. התחבר ל־Socket.IO והצטרף אוטומטית לחדר
+    // 2. התחבר ל־Socket.IO
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       query: { conversationId, userId, role: "client" },
-    });
-
-    socketRef.current.on("connect", () => {
-      console.log("✅ Socket connected, id =", socketRef.current.id);
-    });
-
-    socketRef.current.on("disconnect", (reason) => {
-      console.log("🔴 Socket disconnected:", reason);
     });
 
     socketRef.current.on("newMessage", (msg) => {
@@ -47,7 +38,6 @@ export default function ClientChatTab({
     return () => {
       socketRef.current.off("newMessage");
       socketRef.current.disconnect();
-      socketRef.current = null;
       setMessages([]);
     };
   }, [conversationId, userId]);
@@ -73,24 +63,17 @@ export default function ClientChatTab({
       timestamp: new Date().toISOString(),
     };
 
-    // אם הסוקט מחובר – שלח דרך socket
-    if (socketRef.current && socketRef.current.connected) {
+    if (socketRef.current?.connected) {
       socketRef.current.emit("sendMessage", msgPayload, (ack) => {
-        if (ack?.success) {
-          setInput("");
-        } else {
-          API.post("/messages/history", msgPayload)
-            .then((res) => {
-              setMessages((prev) => [...prev, res.data.message]);
-              setInput("");
-            })
-            .catch((err) => console.error("⮕ fallback error:", err));
-        }
+        if (ack?.success) setInput("");
+        else fallbackPost(msgPayload);
       });
-      return;
+    } else {
+      fallbackPost(msgPayload);
     }
+  };
 
-    // אחרת – REST fallback
+  const fallbackPost = (msgPayload) => {
     API.post("/messages/history", msgPayload)
       .then((res) => {
         setMessages((prev) => [...prev, res.data.message]);
@@ -106,12 +89,11 @@ export default function ClientChatTab({
           <div className="empty">עדיין אין הודעות</div>
         )}
         {messages.map((m, i) => {
-          // עוזר לדבג – תוכל למחוק אחרי שזה עובד
-          console.log("🔵 FROM:", m.from, "| userId:", userId, "| mine:", m.from?.toString() === userId?.toString());
+          const mine = m.from?.toString() === userId?.toString();
           return (
             <div
               key={i}
-              className={`message ${m.from?.toString() === userId?.toString() ? "mine" : "theirs"}`}
+              className={`message ${mine ? "mine" : "theirs"}`}
             >
               <div className="text">{m.text}</div>
               <div className="time">
@@ -139,5 +121,5 @@ export default function ClientChatTab({
         </button>
       </div>
     </div>
-  );
+);
 }
