@@ -176,7 +176,6 @@
 /* שורת הקלט */
 .inputBar {
   display: flex;
-  flex-direction: row-reverse; /* כפתור בצד שמאל */
   padding: 13px 15px 13px 12px;
   border-top: 1.5px solid #eee;
   background: #f7f7fa;
