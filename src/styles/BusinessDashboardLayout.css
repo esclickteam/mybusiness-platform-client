@@ -89,11 +89,18 @@
   background: none;
 }
 
-/* ======= הסתרת הסיידבר במובייל ======= */
+/* ======= הסתרת הסיידבר רק בטאב הודעות במובייל ======= */
 @media (max-width: 768px) {
+  /* ברירת מחדל: תציג את הסיידבר */
   .sidebar {
+    display: block !important;
+  }
+  /* כשה־layout מקבל class של mobile-messages (בטאב הודעות) – תסתיר */
+  .business-dashboard-layout.mobile-messages .sidebar {
     display: none !important;
   }
+
+  /* התאמות לתוכן */
   .dashboard-content {
     width: 100% !important;
     height: 100vh !important;
