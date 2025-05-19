@@ -7,7 +7,7 @@
   direction: rtl;
 }
 
-/* צד שמאל - הגדרות */
+/* צד שמאל – settings */
 .chat-settings {
   width: 40%;
   background: rgba(255, 255, 255, 0.25);
@@ -17,31 +17,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.chat-settings h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #4b3b88;
-}
-
-.chat-settings label {
-  display: block;
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 16px;
-}
-
-.chat-settings textarea {
-  width: 100%;
-  height: 60px;
-  padding: 10px;
-  border-radius: 12px;
-  border: none;
-  resize: none;
-  background: #f3f3f3;
-  margin-top: 6px;
-}
-
-/* צד ימין - תצוגה */
+/* צד ימין – תצוגת הצ'אט */
 .chat-preview {
   flex: 1;
   background: #ffffffaa;
@@ -59,23 +35,26 @@
   margin-bottom: 20px;
 }
 
-/* תיבת הודעות */
+/* תיבת ההודעות */
 .chat-box {
   flex: 1;
   overflow-y: auto;
   margin-bottom: 20px;
-  padding-right: 5px;
   background: rgba(255, 255, 255, 0.3);
   padding: 20px;
   border-radius: 16px;
   min-height: 150px;
+
+  /* **התיקון החשוב**: כדי ש־align-self יעבוד */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* הודעה כללית */
 .chat-message {
   max-width: 70%;
   padding: 12px 16px;
-  margin-bottom: 15px;
   border-radius: 20px;
   font-size: 15px;
   line-height: 1.4;
@@ -84,13 +63,14 @@
   position: relative;
 }
 
-/* יישור והבדלי צבעים */
+/* הודעות שלי — ימינה */
 .chat-message.sent {
   align-self: flex-end;
   background: linear-gradient(145deg, #d7bbf5, #f5d0ff);
   color: #3b0066;
 }
 
+/* הודעות שהתקבלו — שמאלה */
 .chat-message.received {
   align-self: flex-start;
   background: linear-gradient(145deg, #e0f7fa, #e7eaff);
@@ -108,18 +88,7 @@
   opacity: 0.6;
 }
 
-/* מדיה בתוך הודעות */
-.chat-message img,
-.chat-message video {
-  width: 100%;
-  max-width: 250px;
-  max-height: 220px;
-  border-radius: 12px;
-  object-fit: cover;
-  margin-top: 6px;
-}
-
-/* שורת קלט */
+/* שורת הקלט */
 .chat-input-row {
   display: flex;
   gap: 10px;
@@ -132,7 +101,6 @@
   border: none;
   background: #f0f0f0;
   font-size: 14px;
-  transition: box-shadow 0.3s ease-in-out;
 }
 
 .chat-input-row input:focus {
@@ -148,7 +116,6 @@
   font-weight: bold;
   border-radius: 15px;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
 .chat-input-row button:hover {
@@ -161,28 +128,7 @@
   font-style: italic;
   opacity: 0.6;
   padding: 20px;
-}
-
-/* כותרות משנה */
-.chat-settings h3,
-.chat-preview h3 {
-  font-size: 18px;
-  margin-top: 30px;
-  margin-bottom: 10px;
-  color: #4b3b88;
-}
-
-/* שדות מנוטרלים */
-.chat-preview .chat-input-row input:disabled {
-  background: #eee;
-  color: #999;
-  font-style: italic;
-  cursor: not-allowed;
-}
-
-.chat-preview .chat-input-row button:disabled {
-  background: #d8b4fe;
-  cursor: not-allowed;
+  text-align: center;
 }
 
 /* אנימציה */

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
-import "./ClientChatTab.css";
+import "./ChatTab.css";
 
 export default function ClientChatTab({
   conversationId,
@@ -12,41 +12,33 @@ export default function ClientChatTab({
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef();
-  const messageListRef = useRef();
+  const boxRef = useRef();
 
   useEffect(() => {
     if (!conversationId) return;
 
-    // 1. טען היסטוריה
-    API.get("/messages/history", {
-      params: { conversationId },
-    })
+    API.get("/messages/history", { params: { conversationId } })
       .then((res) => setMessages(res.data))
-      .catch((e) => console.error("Error loading history:", e));
+      .catch(console.error);
 
-    // 2. התחבר ל־Socket.IO
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       query: { conversationId, userId, role: "client" },
     });
-
-    socketRef.current.on("newMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+    socketRef.current.on("newMessage", (msg) =>
+      setMessages((prev) => [...prev, msg])
+    );
 
     return () => {
-      socketRef.current.off("newMessage");
       socketRef.current.disconnect();
       setMessages([]);
     };
   }, [conversationId, userId]);
 
-  // גלילה אוטומטית
   useEffect(() => {
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop =
-        messageListRef.current.scrollHeight;
+    if (boxRef.current) {
+      boxRef.current.scrollTop = boxRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -54,72 +46,77 @@ export default function ClientChatTab({
     const text = input.trim();
     if (!text || !conversationId) return;
 
-    const toId = businessId || partnerId;
-    const msgPayload = {
+    const payload = {
       conversationId,
       from: userId,
-      to: toId,
+      to: businessId || partnerId,
       text,
       timestamp: new Date().toISOString(),
     };
 
     if (socketRef.current?.connected) {
-      socketRef.current.emit("sendMessage", msgPayload, (ack) => {
-        if (ack?.success) setInput("");
-        else fallbackPost(msgPayload);
-      });
+      socketRef.current.emit("sendMessage", payload, (ack) =>
+        ack?.success ? setInput("") : postFallback(payload)
+      );
     } else {
-      fallbackPost(msgPayload);
+      postFallback(payload);
     }
   };
 
-  const fallbackPost = (msgPayload) => {
-    API.post("/messages/history", msgPayload)
+  const postFallback = (payload) => {
+    API.post("/messages/history", payload)
       .then((res) => {
         setMessages((prev) => [...prev, res.data.message]);
         setInput("");
       })
-      .catch((err) => console.error("⮕ REST fallback error:", err));
+      .catch(console.error);
   };
 
   return (
-    <div className="chat-container client">
-      <div className="message-list" ref={messageListRef}>
-        {messages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
-        {messages.map((m, i) => {
-          const mine = m.from?.toString() === userId?.toString();
-          return (
-            <div
-              key={i}
-              className={`message ${mine ? "mine" : "theirs"}`}
-            >
-              <div className="text">{m.text}</div>
-              <div className="time">
-                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+    <div className="chat-tab-container">
+      <div className="chat-preview">
+        <h2>שיחה עם העסק</h2>
+        <div className="chat-box" ref={boxRef}>
+          {messages.length === 0 && (
+            <div className="greeting-msg">עדיין אין הודעות</div>
+          )}
+          {messages.map((m, i) => {
+            const mine = m.from?.toString() === userId?.toString();
+            return (
+              <div
+                key={i}
+                className={`chat-message ${
+                  mine ? "sent chat-message-animate" : "received"
+                }`}
+              >
+                {m.text}
+                <div className="message-time">
+                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+        <div className="chat-input-row">
+          <input
+            type="text"
+            placeholder="הקלד הודעה..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          />
+          <button onClick={sendMessage}>שלח</button>
+        </div>
       </div>
-      <div className="input-bar">
-        <input
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) =>
-            e.key === "Enter" && !e.shiftKey && sendMessage()
-          }
-        />
-        <button onClick={sendMessage} title="שלח">
-          ✈️
-        </button>
+
+      {/* כאן תוכל להשאיר את ה־settings בצד השמאלי אם צריך */}
+      <div className="chat-settings">
+        <h2>הגדרות צ'אט</h2>
+        {/* … */}
       </div>
     </div>
-);
+  );
 }
