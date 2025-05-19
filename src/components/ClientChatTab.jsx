@@ -167,32 +167,53 @@ export default function ClientChatTab({
         {isTyping && <div className="typing-indicator">העסק מקליד...</div>}
       </div>
 
-      <div className="input-bar client">
-        <input
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          disabled={sending}
-          onChange={handleInput}
-          onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
-          className="inputField"
-        />
+      <div className="inputBar">
+  {/* כפתורי ימין: קובץ והקלטה */}
+  <div className="inputBar-right">
+    <button
+      type="button"
+      className="attachBtn"
+      title="צרף קובץ"
+      onClick={handleAttach}
+      disabled={sending}
+    >📎</button>
+    <button
+      type="button"
+      className={`recordBtn${recording ? " recording" : ""}`}
+      title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+      onClick={handleRecordToggle}
+      disabled={sending}
+    >🎤</button>
+    <input
+      type="file"
+      ref={fileInputRef}
+      style={{ display: 'none' }}
+      onChange={handleFileChange}
+      disabled={sending}
+    />
+  </div>
 
-        <button className="sendButtonFlat" onClick={sendMessage} disabled={sending || !input.trim()}>
-          <span className="arrowFlat">◀</span>
-        </button>
+  {/* שדה הקלט */}
+  <input
+    className="inputField"
+    type="text"
+    placeholder="הקלד הודעה..."
+    value={input}
+    disabled={sending}
+    onChange={handleInput}
+    onKeyDown={e => e.key === "Enter" && sendMessage()}
+  />
 
-        <button className="attachBtn" onClick={handleAttach} title="צרף קובץ">📎</button>
-        <input ref={fileInputRef} type="file" style={{ display: "none" }} onChange={handleFileChange} />
-
-        <button
-          className={`recordBtn ${recording ? "active" : ""}`}
-          onClick={handleRecordToggle}
-          title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-        >
-          🎤
-        </button>
-      </div>
+  {/* כפתור שליחה – שמאל */}
+  <button
+    className="sendButtonFlat"
+    onClick={sendMessage}
+    disabled={sending || !input.trim()}
+    title="שלח"
+  >
+    ◀
+  </button>
+</div>
     </div>
   );
 }
