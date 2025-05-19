@@ -24,7 +24,6 @@ export default function BusinessChatPage() {
       query: { userId: businessId, role: "business" },
     });
 
-    // בקש את רשימת השיחות דרך socket (אפשר להוסיף אירוע כזה בשרת)
     socketRef.current.emit("getConversations", {}, (res) => {
       if (res.ok) {
         const data = Array.isArray(res.conversations) ? res.conversations : [];
@@ -57,33 +56,38 @@ export default function BusinessChatPage() {
     return <p className={styles.loading}>טוען מידע…</p>;
   }
 
+  // כאן אנחנו בודקים האם יש שיחה נבחרת.
+  // אם כן, לא מציגים את הסיידבר, רק את הצ'אט.
+  // אם לא, מציגים רק את הסיידבר עם רשימת השיחות (או טקסט טעינה).
   return (
     <div className={styles.whatsappBg}>
-      <div className={styles.chatContainer}>
-        <aside className={styles.sidebarInner}>
-          {loading ? (
-            <p className={styles.loading}>טוען שיחות…</p>
-          ) : (
-            <ConversationsList
-              conversations={convos}
-              businessId={businessId}
-              selectedConversationId={selected?.conversationId}
-              onSelect={handleSelect}
-              isBusiness={true}
-            />
-          )}
-        </aside>
+      <div className={styles.chatContainer} style={{ flexDirection: selected ? "column" : "row" }}>
+        {!selected && (
+          <aside className={styles.sidebarInner}>
+            {loading ? (
+              <p className={styles.loading}>טוען שיחות…</p>
+            ) : (
+              <ConversationsList
+                conversations={convos}
+                businessId={businessId}
+                selectedConversationId={selected?.conversationId}
+                onSelect={handleSelect}
+                isBusiness={true}
+              />
+            )}
+          </aside>
+        )}
 
-        <section className={styles.chatArea}>
+        <section className={styles.chatArea} style={{ flex: 1 }}>
           {selected?.conversationId && selected.partnerId ? (
             <BusinessChatTab
               conversationId={selected.conversationId}
               businessId={businessId}
               customerId={selected.partnerId}
-              socket={socketRef.current} // אפשר להעביר את הסוקט כפרופ אם תרצה
+              socket={socketRef.current}
             />
           ) : (
-            <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+            !loading && <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
           )}
         </section>
       </div>
