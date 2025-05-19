@@ -283,7 +283,9 @@
   justify-content: center;
   cursor: pointer;
   padding: 0;
-  margin-left: 8px;
+  /* היפוך השוליים: נניח שוליים ימניים במקום שמאליים */
+  margin-right: 8px;
+  margin-left: 0;
   border-radius: 50%;
   transition: background 0.14s;
 }
