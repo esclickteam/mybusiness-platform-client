@@ -22,13 +22,22 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const [isMobile, setIsMobile] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
+  // אתחול לפי רוחב המסך: מובייל -> סגור, דסקטופ -> פתוח
+  const isMobileInit = window.innerWidth <= 768;
+  const [isMobile, setIsMobile] = useState(isMobileInit);
+  const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setShowSidebar(false);
+      } else {
+        setShowSidebar(true);
+      }
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -136,7 +145,7 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* כפתור סגירת סיידבר במובייל בצד התוכן */}
+          {/* Close Sidebar Button (mobile) on content side */}
           {isMobile && showSidebar && (
             <button
               onClick={() => setShowSidebar(false)}
@@ -161,7 +170,7 @@ export default function BusinessDashboardLayout() {
             </button>
           )}
 
-          {/* כפתור פתיחת סיידבר במובייל בצד התוכן */}
+          {/* Open Sidebar Button (mobile) on content side */}
           {isMobile && !showSidebar && (
             <button
               onClick={() => setShowSidebar(true)}
