@@ -272,3 +272,18 @@
     margin-left: 5px;
   }
 }
+
+/* סיידבר מוסתר במובייל - רק הצ'אט יופיע */
+@media (max-width: 768px) {
+  .sidebarInner {
+    display: none !important;
+  }
+  .chatArea {
+    height: 100% !important;
+  }
+  .chatContainer {
+    max-width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+}
