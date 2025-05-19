@@ -41,24 +41,28 @@
 }
 
 /* הודעה של הלקוח (ימין) */
-.chat-container.client .message.mine {
+.message.mine {
   align-self: flex-end;
   background: #e3ffe5;
   color: #222;
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 18px;
   border: 1.2px solid #b2dfdb;
+  text-align: right;
+  margin-left: 32px;
+  margin-right: 0;
 }
 
-/* הודעה של העסק (שמאל) */
-.chat-container.client .message.theirs {
+.message.theirs {
   align-self: flex-start;
-  background: #f2e7fe;
-  color: #311b92;
+  background: #fff;
+  color: #333;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 18px;
-  box-shadow: 0 2px 8px rgba(123,67,189,0.07);
-  border: 1.2px solid #ce93d8;
+  border: 1.2px solid #e0e0e0;
+  text-align: left;
+  margin-right: 32px;
+  margin-left: 0;
 }
 
 /* זמן הודעה */

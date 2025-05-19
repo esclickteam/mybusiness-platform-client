@@ -66,9 +66,12 @@
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 18px;
   margin-right: 12px;
+  margin-left: 0;
+  text-align: right;
+  box-shadow: 0 2px 8px #b8e1b1;
+  border: 1px solid #cde7be;
 }
 
-/* הודעה מהלקוח */
 .theirs {
   align-self: flex-start;
   background: #fff;
@@ -77,8 +80,11 @@
   border-bottom-right-radius: 18px;
   box-shadow: 0 2px 8px #0001;
   margin-left: 12px;
+  margin-right: 0;
+  text-align: left;
   border: 1px solid #eee;
 }
+
 
 /* טיימסטמפ */
 .time {
