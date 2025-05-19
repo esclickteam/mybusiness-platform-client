@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../api"; // baseURL = /api
+import API from "../api";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({
@@ -27,7 +27,6 @@ export default function ClientChatTab({
     if (!conversationId) return;
     setLoading(true);
 
-    // טען היסטוריה דרך REST, ואז נדחוף הודעות חדשות רק דרך Socket
     API.get(`/messages/conversations/${conversationId}`)
       .then(res => setMessages(res.data))
       .catch(console.error)
@@ -39,7 +38,6 @@ export default function ClientChatTab({
       query: { conversationId, userId, role: "client" },
     });
 
-    // הוספת הודעות רק דרך Socket
     socketRef.current.on("newMessage", msg => {
       setMessages(prev => [...prev, msg]);
     });
@@ -85,7 +83,7 @@ export default function ClientChatTab({
       await API.post("/messages/send", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setInput(""); // הודעה תתווסף דרך Socket בלבד
+      setInput("");
     } catch (err) {
       console.error("Send error:", err);
     } finally {
@@ -168,52 +166,50 @@ export default function ClientChatTab({
       </div>
 
       <div className="inputBar">
-  {/* כפתורי ימין: קובץ והקלטה */}
-  <div className="inputBar-right">
-    <button
-      type="button"
-      className="attachBtn"
-      title="צרף קובץ"
-      onClick={onAttachClick}
-      disabled={sending}
-    >📎</button>
-    <button
-      type="button"
-      className={`recordBtn${recording ? " recording" : ""}`}
-      title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-      onClick={toggleRecording}
-      disabled={sending}
-    >🎤</button>
-    <input
-      type="file"
-      ref={fileInputRef}
-      style={{ display: 'none' }}
-      onChange={onFileChange}
-      disabled={sending}
-    />
-  </div>
-
-  {/* שדה הקלט */}
-  <input
-    className="inputField"
-    type="text"
-    placeholder="הקלד הודעה..."
-    value={input}
-    disabled={sending}
-    onChange={handleInput}
-    onKeyDown={e => e.key === "Enter" && sendMessage()}
-  />
-
-  {/* כפתור שליחה – שמאל */}
-  <button
-    className="sendButtonFlat"
-    onClick={sendMessage}
-    disabled={sending || !input.trim()}
-    title="שלח"
-  >
-    ◀
-  </button>
-</div>
+        {/* כפתור שלח - שמאל */}
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          disabled={sending || !input.trim()}
+          title="שלח"
+        >
+          ◀
+        </button>
+        {/* שדה הקלט */}
+        <input
+          className="inputField"
+          type="text"
+          placeholder="הקלד הודעה..."
+          value={input}
+          disabled={sending}
+          onChange={handleInput}
+          onKeyDown={e => e.key === "Enter" && sendMessage()}
+        />
+        {/* כפתורי ימין */}
+        <div className="inputBar-right">
+          <button
+            type="button"
+            className="attachBtn"
+            title="צרף קובץ"
+            onClick={handleAttach}
+            disabled={sending}
+          >📎</button>
+          <button
+            type="button"
+            className={`recordBtn${recording ? " recording" : ""}`}
+            title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+            onClick={handleRecordToggle}
+            disabled={sending}
+          >🎤</button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+            disabled={sending}
+          />
+        </div>
+      </div>
     </div>
   );
 }
