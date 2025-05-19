@@ -175,7 +175,7 @@ export default function BusinessChatTab({
         {isTyping && <div className="typing-indicator">הלקוח מקליד...</div>}
       </div>
 
-      <div className="input-bar business">
+      <div className="inputBar">
         <input
           type="text"
           placeholder="הקלד הודעה..."
