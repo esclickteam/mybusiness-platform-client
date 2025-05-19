@@ -27,7 +27,7 @@ export default function ClientChatTab({
     if (!conversationId) return;
     setLoading(true);
 
-    // עכשיו נכון: GET /api/messages/conversations/:id
+    // טען היסטוריה דרך REST, ואז נדחוף הודעות חדשות רק דרך Socket
     API.get(`/messages/conversations/${conversationId}`)
       .then(res => setMessages(res.data))
       .catch(console.error)
@@ -39,6 +39,7 @@ export default function ClientChatTab({
       query: { conversationId, userId, role: "client" },
     });
 
+    // הוספת הודעות רק דרך Socket
     socketRef.current.on("newMessage", msg => {
       setMessages(prev => [...prev, msg]);
     });
@@ -81,12 +82,10 @@ export default function ClientChatTab({
 
     setSending(true);
     try {
-      // עכשיו נכון: POST /api/messages/send
-      const { data } = await API.post("/messages/send", form, {
+      await API.post("/messages/send", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setMessages(prev => [...prev, data.message]);
-      setInput("");
+      setInput(""); // הודעה תתווסף דרך Socket בלבד
     } catch (err) {
       console.error("Send error:", err);
     } finally {
@@ -139,17 +138,14 @@ export default function ClientChatTab({
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
-          <div
-            key={m._id || i}
-            className={`message${m.from === userId ? " mine" : " theirs"}`}
-          >
+          <div key={m._id || i} className={`message${m.from === userId ? " mine" : " theirs"}`}>
             {m.fileUrl ? (
-              m.fileUrl.match(/\.(mp3|webm|wav)$/) ? (
+              m.fileUrl.match(/\.(mp3|webm|wav)$/i) ? (
                 <audio controls src={m.fileUrl} />
+              ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
+                <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: '200px', borderRadius: '8px' }} />
               ) : (
                 <a href={m.fileUrl} target="_blank" rel="noopener">
                   {m.fileName || "קובץ להורדה"}
@@ -182,27 +178,12 @@ export default function ClientChatTab({
           className="inputField"
         />
 
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-        >
+        <button className="sendButtonFlat" onClick={sendMessage} disabled={sending || !input.trim()}>
           <span className="arrowFlat">◀</span>
         </button>
 
-        <button
-          className="attachBtn"
-          onClick={handleAttach}
-          title="צרף קובץ"
-        >
-          📎
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          style={{ display: "none" }}
-          onChange={handleFileChange}
-        />
+        <button className="attachBtn" onClick={handleAttach} title="צרף קובץ">📎</button>
+        <input ref={fileInputRef} type="file" style={{ display: "none" }} onChange={handleFileChange} />
 
         <button
           className={`recordBtn ${recording ? "active" : ""}`}
