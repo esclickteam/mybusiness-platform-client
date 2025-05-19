@@ -6,7 +6,7 @@ export default function ConversationsList({
   businessId,
   selectedConversationId,
   onSelect,
-  isBusiness
+  isBusiness,
 }) {
   if (!conversations || conversations.length === 0) {
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
@@ -16,15 +16,15 @@ export default function ConversationsList({
   const uniqueConvs = conversations.filter((conv, idx, arr) => {
     const partnerId =
       (Array.isArray(conv.participants)
-        ? conv.participants.find(p => p !== businessId)
+        ? conv.participants.find((p) => p !== businessId)
         : null) ||
       conv.partnerId ||
       "";
     return (
-      arr.findIndex(c => {
+      arr.findIndex((c) => {
         const pid =
           (Array.isArray(c.participants)
-            ? c.participants.find(p => p !== businessId)
+            ? c.participants.find((p) => p !== businessId)
             : null) ||
           c.partnerId ||
           "";
@@ -40,27 +40,22 @@ export default function ConversationsList({
           {isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק"}
         </div>
         {uniqueConvs.map((conv, idx) => {
-          const participants = Array.isArray(conv.participants)
-            ? conv.participants
-            : [];
+          const participants = Array.isArray(conv.participants) ? conv.participants : [];
           const partnerId =
-            participants.find(p => p !== businessId) ||
-            conv.partnerId ||
-            "";
-          const convoId =
-            conv.conversationId || conv._id || conv.id || `conv-${idx}`;
+            participants.find((p) => p !== businessId) || conv.partnerId || "";
+          const convoId = conv.conversationId || conv._id || conv.id || `conv-${idx}`;
 
-          // שים לב: סדר הצגה ברור
+          // סדר הצגה ברור לפי סוג משתמש
           const displayName = isBusiness
-            ? (conv.customerName || conv.partnerName || partnerId)
-            : (conv.businessName || conv.partnerName || partnerId);
+            ? conv.customerName || conv.partnerName || partnerId
+            : conv.businessName || conv.partnerName || partnerId;
 
           const isActive = convoId === selectedConversationId;
 
           return (
             <div
               key={convoId}
-              className={`${styles.conversationItem} ${isActive ? styles.active : ""}`}
+              className={`${styles.convItem} ${isActive ? styles.active : ""}`}
               onClick={() => onSelect(convoId, partnerId)}
             >
               {displayName}
