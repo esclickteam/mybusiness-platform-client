@@ -139,13 +139,15 @@
 }
 
 /* שורת קלט בצ'אט */
+/* === עיצוב שורת קלט בצ'אט === */
 .input-bar {
   display: flex;
-  flex-direction: row;       /* input מימין → send → attach */
+  flex-direction: row;      /* input בימין, כפתורים בשמאל */
+  align-items: center;
+  gap: 8px;                 /* רווח אחיד בין כולם */
   padding: 12px 12px 12px 10px;
   border-top: 1.5px solid #e1bee7;
   background: #faf7fd;
-  align-items: center;
   min-height: 62px;
 }
 
@@ -160,6 +162,8 @@
   background: #fff;
   outline: none;
   transition: border-color 0.2s;
+  direction: rtl;      /* מיישר לימין גם טקסט וגם סמן */
+  text-align: right;
 }
 .input-bar input:focus,
 .inputField:focus {
@@ -180,11 +184,10 @@
   justify-content: center;
   cursor: pointer;
   padding: 0;
-  margin: 0 0 0 8px; /* עדכון: רווח משמאל, לא מימין */
+  margin: 0 0 0 8px;   /* רווח משמאל - אם אין gap, אפשר להוריד */
   border-radius: 50%;
   transition: background 0.14s;
 }
-
 .sendButtonFlat:disabled {
   opacity: 0.33;
   cursor: not-allowed;
@@ -199,11 +202,13 @@
   font-weight: bold;
   display: flex;
   align-items: center;
+  justify-content: center;
+  margin: 0; /* שים לב - אין מרג'ין מיותר */
 }
 
 /* כפתור קובץ */
 .attachBtn {
-  order: 3;                  /* תמיד אחרון, ימני */
+  order: 3;
   width: 38px;
   height: 38px;
   background: #f6f1fb;
