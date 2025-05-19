@@ -223,3 +223,9 @@
 .fileInput {
   display: none;
 }
+
+/* מעמיד את החץ בצד שמאל */
+.chat-container.client .input-bar .sendButtonFlat .arrowFlat {
+  margin-right: auto;
+  margin-left: 0;
+}
