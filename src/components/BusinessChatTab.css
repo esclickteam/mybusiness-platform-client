@@ -217,6 +217,27 @@
   margin-right: 0;
 }
 
+.inputBar {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 10px;
+  padding: 13px 15px 13px 12px;
+  border-top: 1.5px solid #eee;
+  background: #f7f7fa;
+  min-height: 66px;
+  z-index: 1;
+}
+
+/* עטיפת כפתורי ימין */
+.inputBar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;  /* מרחיק מהשדה */
+  margin-right: 0;
+}
+
 /* שדה הקלט – באמצע */
 .inputField {
   flex: 1;
