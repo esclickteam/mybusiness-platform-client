@@ -38,24 +38,26 @@
   animation: fadeIn 0.42s cubic-bezier(.77,0,.18,1) both;
 }
 @keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(30%);}
-  100% { opacity: 1; transform: none;}
+  0% { opacity: 0; transform: translateY(30%); }
+  100% { opacity: 1; transform: none; }
 }
 
-/* הודעות שלי — ימין */
+/* הודעות של הלקוח — צד ימין */
 .message.mine {
-  align-self: flex-end;
+  align-self: flex-end;      /* מוצמד לימין */
   background: #e3ffe5;
   text-align: right;
-  margin-left: 32px;
+  margin-right: 0;
+  margin-left: 32px;         /* ריווח מצד שמאל */
 }
 
-/* הודעות של הצד השני — שמאל */
+/* הודעות של העסק — צד שמאל */
 .message.theirs {
-  align-self: flex-start;
+  align-self: flex-start;    /* מוצמד לשמאל */
   background: #fff;
   text-align: left;
-  margin-right: 32px;
+  margin-left: 0;
+  margin-right: 32px;        /* ריווח מצד ימין */
 }
 
 /* טיימסטמפ */
@@ -136,10 +138,10 @@
   padding: 12px 0;
 }
 
-/* שורת קלט בצ'אט — שליחה בצד שמאל! */
+/* שורת קלט בצ'אט */
 .input-bar {
   display: flex;
-  flex-direction: row-reverse; /* כפתור שליחה — שמאל */
+  flex-direction: row;       /* input מימין → send → attach */
   padding: 12px 12px 12px 10px;
   border-top: 1.5px solid #e1bee7;
   background: #faf7fd;
@@ -159,15 +161,15 @@
   outline: none;
   transition: border-color 0.2s;
 }
-
 .input-bar input:focus,
 .inputField:focus {
   border-color: #7c43bd;
   background: #f6edff;
 }
 
-/* כפתור שליחה שטוח (צד שמאל) */
+/* כפתור שליחה */
 .sendButtonFlat {
+  order: 2;
   width: 40px;
   height: 40px;
   background: none;
@@ -178,34 +180,29 @@
   justify-content: center;
   cursor: pointer;
   padding: 0;
-  margin-left: 8px;
+  margin: 0 8px 0 0;
   border-radius: 50%;
   transition: background 0.14s;
 }
-
 .sendButtonFlat:disabled {
   opacity: 0.33;
   cursor: not-allowed;
 }
-
 .sendButtonFlat:hover:enabled,
 .sendButtonFlat:focus:enabled {
   background: #f4f7fa;
 }
-
 .arrowFlat {
   color: #7c43bd;
   font-size: 22px;
   font-weight: bold;
-  margin-left: 0px;
-  margin-top: 1px;
   display: flex;
   align-items: center;
 }
 
 /* כפתור קובץ */
 .attachBtn {
-  margin-right: 8px;
+  order: 3;                  /* תמיד אחרון, ימני */
   width: 38px;
   height: 38px;
   background: #f6f1fb;
@@ -218,6 +215,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
 }
 .attachBtn:hover {
   background: #ede7f6;
