@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from '@context/BusinessServicesContext';
@@ -22,81 +22,77 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
-  const closeBtnRef = useRef(null);
-
-  // התמודדות עם שינוי רזולוציה
   useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth <= 768;
-      setIsMobile(mobile);
-      setShowSidebar(!mobile);
-    };
-    window.addEventListener("resize", handleResize);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
+    window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ניגוד גלילה כשהסיידבר פתוח במובייל
-  useEffect(() => {
-    document.body.style.overflow = isMobile && showSidebar ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [isMobile, showSidebar]);
-
-  // לחיצה על ESC תסגור במובייל
-  useEffect(() => {
-    if (!isMobile || !showSidebar) return;
-    const handleEsc = e => e.key === "Escape" && setShowSidebar(false);
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [isMobile, showSidebar]);
-
-  // פוקוס אוטומטי לכפתור הסגירה במעבר
-  useEffect(() => {
-    if (isMobile && showSidebar) closeBtnRef.current?.focus();
-  }, [isMobile, showSidebar]);
-
-  // הגנת גישה וניווט ברירת מחדל
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
       return;
     }
-    const base = `/business/${businessId}`;
-    if (location.pathname === base || location.pathname === `${base}/`) {
-      navigate("dashboard", { replace: true });
+
+    const searchParams = new URLSearchParams(location.search);
+    const tabFromQuery = searchParams.get("tab");
+    const tabFromState = location.state?.activeTab;
+
+    if (tabFromQuery && tabs.some(t => t.path === tabFromQuery)) {
+      navigate(`./${tabFromQuery}`, { replace: true });
+    } else if (tabFromState && tabs.some(t => t.path === tabFromState)) {
+      navigate(`./${tabFromState}`, { replace: true });
     }
-  }, [user, loading, location.pathname, navigate, businessId]);
+    // eslint-disable-next-line
+  }, [user, loading, location.search, location.state, navigate]);
+
+  const isMessagesTab = /\/messages(\/|$)/.test(location.pathname);
+  const isDashboardTab = /\/dashboard(\/|$)/.test(location.pathname);
+
+  useEffect(() => {
+    if (isMobile && isMessagesTab) {
+      setShowSidebar(false);
+    } else if (isDashboardTab) {
+      setShowSidebar(true);
+    } else {
+      setShowSidebar(true);
+    }
+  }, [isMobile, isMessagesTab, isDashboardTab]);
 
   return (
     <BusinessServicesProvider>
       <div className="rtl-wrapper">
-        <div className="business-dashboard-layout">
-          {/* רק במובייל: רקע חצי־שקוף בהקלקה על האוברליי */}
-          {isMobile && showSidebar && (
-            <div
-              className="sidebar-overlay"
-              onClick={() => setShowSidebar(false)}
-              aria-label="סגור תפריט צד"
-              tabIndex={-1}
-              role="button"
-            />
-          )}
-
-          {/* סיידבר */}
-          {showSidebar && (
-            <aside
-              className={`sidebar${isMobile ? " mobile" : ""}`}
-              aria-label="ניווט ראשי"
-            >
-              <nav className="sidebar-menu">
+        <div className={`business-dashboard-layout${isMobile && isMessagesTab ? " mobile-messages" : ""}`}>
+          {( (!isMobile || showSidebar) && (
+            <aside className="sidebar">
+              {isMobile && isMessagesTab && (
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  style={{
+                    marginBottom: "1rem",
+                    padding: "8px 16px",
+                    fontSize: "1rem",
+                    borderRadius: "6px",
+                    border: "none",
+                    backgroundColor: "#ccc",
+                    cursor: "pointer",
+                  }}
+                  aria-label="הסתר סיידבר"
+                >
+                  ✕ סגור
+                </button>
+              )}
+              <h2>ניהול העסק</h2>
+              <nav>
                 {user?.role === "business" && (
                   <NavLink
                     to={`/business/${businessId}`}
                     end
-                    className={({ isActive }) => isActive ? "active" : undefined}
+                    className={({ isActive }) => (isActive ? "active" : undefined)}
                   >
                     👀 צפייה בפרופיל
                   </NavLink>
@@ -106,47 +102,38 @@ export default function BusinessDashboardLayout() {
                     key={path}
                     to={path}
                     end
-                    className={({ isActive }) => isActive ? "active" : undefined}
+                    className={({ isActive }) => (isActive ? "active" : undefined)}
                   >
                     {label}
                   </NavLink>
                 ))}
               </nav>
-              {/* כפתור X לסגירה במובייל */}
-              {isMobile && (
-                <button
-                  className="close-sidebar-btn"
-                  onClick={() => setShowSidebar(false)}
-                  aria-label="סגור תפריט צד"
-                  ref={closeBtnRef}
-                >
-                  ✕
-                </button>
-              )}
             </aside>
-          )}
+          ))}
 
           <main className="dashboard-content">
-            {/* כפתור ☰ במובייל כשהסיידבר סגור */}
-            {isMobile && !showSidebar && (
+            {isMessagesTab && (
               <button
-                className="sidebar-toggle-button"
-                onClick={() => setShowSidebar(true)}
-                aria-label="פתח תפריט צד"
+                onClick={() => {
+                  setShowSidebar(true);
+                  navigate(`/business/${businessId}/dashboard`);
+                }}
+                style={{
+                  marginBottom: "1rem",
+                  padding: "8px 16px",
+                  fontSize: "1rem",
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: "#4a3aff",
+                  color: "#fff",
+                  cursor: "pointer",
+                }}
+                aria-label="חזרה לדשבורד"
               >
-                ☰
+                ← חזרה לדשבורד
               </button>
             )}
-            {/* בכפתור אחד לדסקטופ */}
-            {!isMobile && (
-              <button
-                className="sidebar-toggle-button"
-                onClick={() => setShowSidebar(prev => !prev)}
-                aria-label={showSidebar ? "הסתר סיידבר" : "הצג סיידבר"}
-              >
-                {showSidebar ? "✕" : "☰"}
-              </button>
-            )}
+
             <Outlet />
           </main>
         </div>
