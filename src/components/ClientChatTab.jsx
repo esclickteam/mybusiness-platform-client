@@ -164,32 +164,32 @@ export default function ClientChatTab({
         )}
       </div>
       <div className="input-bar client">
-        <input
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          disabled={sending}
-          onChange={handleInput}
-          onKeyDown={(e) =>
-            e.key === "Enter" && !e.shiftKey && sendMessage()
-          }
-          className="inputField"
-        />
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          title="שלח"
-          disabled={sending || !input.trim()}
-        >
-          <span className="arrowFlat">◀</span>
-        </button>
-        <button
-          type="button"
-          className="attachBtn"
-          title="צרף קובץ"
-          onClick={handleAttach}
-        >
-          📎
+  <input
+    type="text"
+    placeholder="הקלד הודעה..."
+    value={input}
+    disabled={sending}
+    onChange={handleInput}
+    onKeyDown={(e) =>
+      e.key === "Enter" && !e.shiftKey && sendMessage()
+    }
+    className="inputField"
+  />
+  <button
+    className="sendButtonFlat"
+    onClick={sendMessage}
+    title="שלח"
+    disabled={sending || !input.trim()}
+  >
+    <span className="arrowFlat">◀</span>
+  </button>
+  <button
+    type="button"
+    className="attachBtn"
+    title="צרף קובץ"
+    onClick={handleAttach}
+  >
+    📎
         </button>
       </div>
     </div>
