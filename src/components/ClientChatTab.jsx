@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../api";
+import API from "../api"; // מניח שה־baseURL מכוון אל /api/messages
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({
@@ -14,28 +14,33 @@ export default function ClientChatTab({
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const socketRef = useRef();
   const messageListRef = useRef();
   const typingTimeout = useRef();
 
+  // לצריף קבצים
+  const fileInputRef = useRef();
+
+  // להקלטה קולית
+  const [recording, setRecording] = useState(false);
+  const mediaRecorderRef = useRef();
+  const recordedChunksRef = useRef([]);
+
+  // ─── טעינת היסטוריה ו-Socket.IO ───
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
 
-    // 1. טען היסטוריה
-    API.get("/messages/history", {
-      params: { conversationId },
-    })
+    // טען היסטוריה
+    API.get(`/messages/conversations/${conversationId}`, { withCredentials: true })
       .then((res) => {
-        setMessages(Array.isArray(res.data) ? res.data : res.data.messages || []);
-        setLoading(false);
+        setMessages(res.data);
       })
-      .catch((e) => {
-        console.error("Error loading history:", e);
-        setLoading(false);
-      });
+      .catch(console.error)
+      .finally(() => setLoading(false));
 
-    // 2. התחבר ל־Socket.IO
+    // התחבר לסוקט
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
@@ -43,32 +48,22 @@ export default function ClientChatTab({
     });
 
     socketRef.current.on("newMessage", (msg) => {
-      setMessages((prev) => {
-        const exists = prev.some(
-          m =>
-            (m._id && msg._id && m._id === msg._id) ||
-            (m.timestamp === msg.timestamp && m.from === msg.from && m.text === msg.text)
-        );
-        if (exists) return prev;
-        return [...prev, msg];
-      });
+      setMessages((prev) => [...prev, msg]);
     });
 
-    // "העסק מקליד..."
     socketRef.current.on("typing", ({ from }) => {
       if (from === businessId) {
         setIsTyping(true);
         clearTimeout(typingTimeout.current);
-        typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
+        typingTimeout.current = setTimeout(() => setIsTyping(false), 1500);
       }
     });
 
     return () => {
-      socketRef.current?.disconnect();
-      setMessages([]);
+      socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
     };
-  }, [conversationId, userId, businessId]);
+  }, [conversationId]);
 
   // גלילה אוטומטית
   useEffect(() => {
@@ -77,52 +72,82 @@ export default function ClientChatTab({
     }
   }, [messages, isTyping]);
 
-  const sendMessage = () => {
+  // ─── שליחת טקסט ───
+  const sendMessage = async () => {
     const text = input.trim();
-    if (!text || !conversationId || sending) return;
-    const toId = businessId || partnerId;
-    const msgPayload = {
-      conversationId,
-      from: userId,
-      to: toId,
-      text,
-      timestamp: new Date().toISOString(),
-      status: "sending",
-    };
+    if (!text || sending) return;
+    await doSend({ text });
+  };
+
+  // ─── אריזה ושליחה מקור מרכזי ───
+  const doSend = async ({ text = "", file, audioBlob }) => {
+    if (!conversationId) return;
+    const to = businessId || partnerId;
+
+    const form = new FormData();
+    form.append("to", to);
+    form.append("conversationId", conversationId);
+    if (text) form.append("text", text);
+    if (file) form.append("fileData", file);
+    if (audioBlob) form.append("fileData", new File([audioBlob], "voice.webm"));
 
     setSending(true);
-
-    if (socketRef.current?.connected) {
-      socketRef.current.emit("sendMessage", msgPayload, (ack) => {
-        setSending(false);
-        if (ack?.success) setInput("");
-        else fallbackPost(msgPayload);
+    try {
+      const { data } = await API.post("/messages/send", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
       });
-    } else {
-      fallbackPost(msgPayload);
+      setMessages((prev) => [...prev, data.message]);
+      setInput("");
+    } catch (err) {
+      console.error("Send error:", err);
+    } finally {
+      setSending(false);
     }
   };
 
-  // שליחת "מקליד..." כל עוד מקלידים
+  // ─── הקלדת "מקליד" ───
   const handleInput = (e) => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
-      socketRef.current.emit("typing", { conversationId, from: userId, to: businessId });
+      socketRef.current.emit("typing", {
+        conversationId,
+        from: userId,
+        to: businessId,
+      });
     }
   };
 
-  const fallbackPost = (msgPayload) => {
-    API.post("/messages/history", msgPayload)
-      .then((res) => {
-        setMessages((prev) => [...prev, res.data.message]);
-        setInput("");
-      })
-      .catch((err) => console.error("⮕ REST fallback error:", err));
+  // ─── קישור כפתור קובץ ───
+  const handleAttach = () => fileInputRef.current.click();
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) doSend({ file });
+    e.target.value = null;
   };
 
-  // צרף קובץ - UX בלבד (טריגר לא קשור)
-  const handleAttach = () => {
-    alert("תמיכה בקבצים תתווסף בקרוב :)");
+  // ─── Toggle הקלטה קולית ───
+  const handleRecordToggle = async () => {
+    if (recording) {
+      mediaRecorderRef.current.stop();
+    } else {
+      recordedChunksRef.current = [];
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorderRef.current = new MediaRecorder(stream);
+        mediaRecorderRef.current.ondataavailable = (ev) => {
+          if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
+        };
+        mediaRecorderRef.current.onstop = () => {
+          const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+          doSend({ audioBlob: blob });
+        };
+        mediaRecorderRef.current.start();
+      } catch (err) {
+        console.error("Recording error:", err);
+      }
+    }
+    setRecording((r) => !r);
   };
 
   return (
@@ -132,64 +157,76 @@ export default function ClientChatTab({
         {!loading && messages.length === 0 && (
           <div className="empty">עדיין אין הודעות</div>
         )}
-        {messages.map((m, i) =>
-          m.system ? (
-            <div key={i} className="system-message">{m.text}</div>
-          ) : (
-            <div
-              key={m._id || i}
-              className={
-                "message" +
-                (m.from?.toString() === userId?.toString() ? " mine" : " theirs") +
-                (m.status === "sending" ? " sending" : "")
-              }
-            >
-              <div className="text">{m.text}</div>
-              <div className="meta">
-                <span className="time">
-                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                {m.from?.toString() === userId?.toString() && (
-                  <span className={`status ${m.status || "sent"}`} />
-                )}
-              </div>
+        {messages.map((m, i) => (
+          <div
+            key={m._id || i}
+            className={
+              "message" +
+              (m.from === userId ? " mine" : " theirs")
+            }
+          >
+            {m.fileUrl && (
+              m.fileUrl.match(/\.(mp3|webm|wav)$/) ? (
+                <audio controls src={m.fileUrl} />
+              ) : (
+                <a href={m.fileUrl} target="_blank" rel="noopener">
+                  {m.fileName || "קובץ להורדה"}
+                </a>
+              )
+            )}
+            {!m.fileUrl && <div className="text">{m.text}</div>}
+            <div className="meta">
+              <span className="time">
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
             </div>
-          )
-        )}
-        {isTyping && (
-          <div className="typing-indicator">העסק מקליד...</div>
-        )}
+          </div>
+        ))}
+        {isTyping && <div className="typing-indicator">העסק מקליד...</div>}
       </div>
+
       <div className="input-bar client">
-  <input
-    type="text"
-    placeholder="הקלד הודעה..."
-    value={input}
-    disabled={sending}
-    onChange={handleInput}
-    onKeyDown={(e) =>
-      e.key === "Enter" && !e.shiftKey && sendMessage()
-    }
-    className="inputField"
-  />
-  <button
-    className="sendButtonFlat"
-    onClick={sendMessage}
-    title="שלח"
-    disabled={sending || !input.trim()}
-  >
-    <span className="arrowFlat">◀</span>
-  </button>
-  <button
-    type="button"
-    className="attachBtn"
-    title="צרף קובץ"
-    onClick={handleAttach}
-  >
-    📎
+        <input
+          type="text"
+          placeholder="הקלד הודעה..."
+          value={input}
+          disabled={sending}
+          onChange={handleInput}
+          onKeyDown={(e) =>
+            e.key === "Enter" && !e.shiftKey && sendMessage()
+          }
+          className="inputField"
+        />
+
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          disabled={sending || !input.trim()}
+        >
+          <span className="arrowFlat">◀</span>
+        </button>
+
+        <button
+          className="attachBtn"
+          onClick={handleAttach}
+          title="צרף קובץ"
+        >📎</button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+
+        <button
+          className={`recordBtn ${recording ? "active" : ""}`}
+          onClick={handleRecordToggle}
+          title={recording ? "עצור הקלטה" : "הקשק הקלטה"}
+        >
+          🎤
         </button>
       </div>
     </div>
