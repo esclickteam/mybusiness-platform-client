@@ -33,7 +33,7 @@ export default function BusinessDashboardLayout() {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       if (mobile) {
-        setShowSidebar(false);
+        setShowSidebar(false);  // סגור תמיד במובייל
       } else {
         setShowSidebar(true);
       }
@@ -58,21 +58,14 @@ export default function BusinessDashboardLayout() {
     // eslint-disable-next-line
   }, [user, loading, location.search, location.state, navigate]);
 
-  const isMessagesTab = /\/messages(\/|$)/.test(location.pathname);
-
-  useEffect(() => {
-    if (isMobile && isMessagesTab) {
-      setShowSidebar(false);
-    } else {
-      setShowSidebar(true);
-    }
-  }, [isMobile, isMessagesTab]);
+  // הסרת הלוגיקה שקבעה פתיחה אוטומטית של הסיידבר בטאב הודעות במובייל
 
   // Trap focus for accessibility
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
 
-    const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusableSelectors =
+      'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const focusableEls = sidebarRef.current.querySelectorAll(focusableSelectors);
     if (focusableEls.length === 0) return;
 
@@ -107,7 +100,7 @@ export default function BusinessDashboardLayout() {
   return (
     <BusinessServicesProvider>
       <div className={`rtl-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
-        <div className={`business-dashboard-layout${isMobile && isMessagesTab ? " mobile-messages" : ""}`}>
+        <div className={`business-dashboard-layout`}>
           {/* Sidebar */}
           {(!isMobile || showSidebar) && (
             <aside
@@ -120,12 +113,21 @@ export default function BusinessDashboardLayout() {
               <h2>ניהול העסק</h2>
               <nav>
                 {user?.role === "business" && (
-                  <NavLink to={`/business/${businessId}`} end className={({ isActive }) => (isActive ? "active" : undefined)}>
+                  <NavLink
+                    to={`/business/${businessId}`}
+                    end
+                    className={({ isActive }) => (isActive ? "active" : undefined)}
+                  >
                     👀 צפייה בפרופיל
                   </NavLink>
                 )}
                 {tabs.map(({ path, label }) => (
-                  <NavLink key={path} to={path} end className={({ isActive }) => (isActive ? "active" : undefined)}>
+                  <NavLink
+                    key={path}
+                    to={path}
+                    end
+                    className={({ isActive }) => (isActive ? "active" : undefined)}
+                  >
                     {label}
                   </NavLink>
                 ))}
@@ -141,11 +143,13 @@ export default function BusinessDashboardLayout() {
               aria-label="סגור תפריט"
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setShowSidebar(false); }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") setShowSidebar(false);
+              }}
             />
           )}
 
-          {/* Close Sidebar Button (mobile) on content side */}
+          {/* Close Sidebar Button (mobile) */}
           {isMobile && showSidebar && (
             <button
               onClick={() => setShowSidebar(false)}
@@ -163,14 +167,14 @@ export default function BusinessDashboardLayout() {
                 color: "#fff",
                 fontSize: "24px",
                 cursor: "pointer",
-                boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)"
+                boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)",
               }}
             >
               ×
             </button>
           )}
 
-          {/* Open Sidebar Button (mobile) on content side */}
+          {/* Open Sidebar Button (mobile) */}
           {isMobile && !showSidebar && (
             <button
               onClick={() => setShowSidebar(true)}
@@ -188,7 +192,7 @@ export default function BusinessDashboardLayout() {
                 color: "#fff",
                 fontSize: "24px",
                 cursor: "pointer",
-                boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)"
+                boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)",
               }}
             >
               ☰
@@ -196,7 +200,12 @@ export default function BusinessDashboardLayout() {
           )}
 
           {/* Main content */}
-          <main className="dashboard-content" tabIndex={-1} aria-live="polite" aria-atomic="true">
+          <main
+            className="dashboard-content"
+            tabIndex={-1}
+            aria-live="polite"
+            aria-atomic="true"
+          >
             <Outlet />
           </main>
         </div>
