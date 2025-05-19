@@ -1,99 +1,128 @@
-import React, { useEffect, useState } from "react";
-import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { BusinessServicesProvider } from '@context/BusinessServicesContext';
-import "../../styles/BusinessDashboardLayout.css";
+import React, { useState, useEffect, useRef } from "react";
+import { useAuth } from "../context/AuthContext";
+import ConversationsList from "./ConversationsList";
+import BusinessChatTab from "./BusinessChatTab";
+import styles from "./BusinessChatPage.module.css";
+import io from "socket.io-client";
 
-const tabs = [
-  { path: "dashboard", label: "📊 דשבורד" },
-  { path: "build",     label: "🧱 עריכת עמוד עסקי" },
-  { path: "messages",  label: "💬 הודעות מלקוחות" },
-  { path: "collab",    label: "🤝 שיתופי פעולה" },
-  { path: "crm",       label: "📇 מערכת CRM" },
-  { path: "esclick",   label: "🧠 יועץ עסקליק" },
-  { path: "goals",     label: "🎯 היעדים שלי" },
-  { path: "affiliate", label: "👥 תכנית שותפים" },
-  { path: "upgrade",   label: "🚀 שדרוג חבילה" },
-];
-
-export default function BusinessDashboardLayout() {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
-  const { businessId } = useParams();
-  const location = useLocation();
+export default function BusinessChatPage() {
+  const { user, initialized } = useAuth();
+  const businessId = user?.businessId;
+  const [convos, setConvos] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const socketRef = useRef();
 
   const [isMobile, setIsMobile] = useState(false);
-
-  // זיהוי מובייל לפי רוחב חלון
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
   useEffect(() => {
-    if (!loading && user?.role !== "business") {
-      navigate("/", { replace: true });
-      return;
-    }
+    if (!initialized || !businessId) return;
 
-    // זיהוי tab מה-query או state
-    const searchParams = new URLSearchParams(location.search);
-    const tabFromQuery = searchParams.get("tab");
-    const tabFromState = location.state?.activeTab;
+    setLoading(true);
 
-    if (tabFromQuery && tabs.some(t => t.path === tabFromQuery)) {
-      navigate(`./${tabFromQuery}`, { replace: true });
-    } else if (tabFromState && tabs.some(t => t.path === tabFromState)) {
-      navigate(`./${tabFromState}`, { replace: true });
-    }
-    // eslint-disable-next-line
-  }, [user, loading, location.search, location.state, navigate]);
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    socketRef.current = io(socketUrl, {
+      query: { userId: businessId, role: "business" },
+    });
 
-  if (loading) {
-    return <div className="loading-screen">🔄 טוען נתונים…</div>;
+    socketRef.current.emit("getConversations", {}, (res) => {
+      if (res.ok) {
+        const data = Array.isArray(res.conversations) ? res.conversations : [];
+        setConvos(data);
+
+        if (data.length && !selected) {
+          const first = data[0];
+          const convoId = first._id || first.conversationId;
+          const partnerId = first.participants.find((p) => p !== businessId) || "";
+          if (isMobile) {
+            setSelected({ conversationId: convoId, partnerId });
+          }
+        }
+      } else {
+        console.error("Error loading conversations:", res.error);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [initialized, businessId, isMobile, selected]);
+
+  const handleSelect = (conversationId, partnerId) => {
+    setSelected({ conversationId, partnerId });
+  };
+
+  if (!initialized) {
+    return <p className={styles.loading}>טוען מידע…</p>;
   }
 
-  // בדיקה אם אנחנו בנתיב messages
-  const isMessagesTab = location.pathname.includes("/messages");
-
   return (
-    <BusinessServicesProvider>
-      <div className="rtl-wrapper">
-        <div className="business-dashboard-layout">
-          {/* במובייל ב- messages: לא להציג סיידבר */}
-          {!(isMobile && isMessagesTab) && (
-            <aside className="sidebar">
-              <h2>ניהול העסק</h2>
-              <nav>
-                {user?.role === "business" && (
-                  <NavLink
-                    to={`/business/${businessId}`}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
-                    👀 צפייה בפרופיל
-                  </NavLink>
-                )}
-                {tabs.map(({ path, label }) => (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
-                    {label}
-                  </NavLink>
-                ))}
-              </nav>
-            </aside>
+    <div className={styles.whatsappBg}>
+      <div
+        className={styles.chatContainer}
+        style={{ flexDirection: isMobile ? "column" : selected ? "column" : "row" }}
+      >
+        {!isMobile && !selected && (
+          <aside className={styles.sidebarInner}>
+            {loading ? (
+              <p className={styles.loading}>טוען שיחות…</p>
+            ) : (
+              <ConversationsList
+                conversations={convos}
+                businessId={businessId}
+                selectedConversationId={selected?.conversationId}
+                onSelect={handleSelect}
+                isBusiness={true}
+              />
+            )}
+          </aside>
+        )}
+
+        <section className={styles.chatArea} style={{ flex: 1, position: "relative" }}>
+          {/* כפתור חזרה במובייל כשהצ'אט פתוח */}
+          {isMobile && selected && (
+            <button
+              style={{
+                position: "absolute",
+                top: 10,
+                left: 10,
+                zIndex: 10,
+                padding: "8px 14px",
+                fontSize: "14px",
+                borderRadius: "6px",
+                border: "none",
+                backgroundColor: "#4a3aff",
+                color: "#fff",
+                cursor: "pointer",
+              }}
+              onClick={() => setSelected(null)}
+              aria-label="חזרה לרשימת השיחות"
+            >
+              ← חזרה
+            </button>
           )}
-          <main className="dashboard-content">
-            <Outlet />
-          </main>
-        </div>
+
+          {selected?.conversationId && selected.partnerId ? (
+            <BusinessChatTab
+              conversationId={selected.conversationId}
+              businessId={businessId}
+              customerId={selected.partnerId}
+              socket={socketRef.current}
+            />
+          ) : (
+            !loading && !isMobile && (
+              <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+            )
+          )}
+        </section>
       </div>
-    </BusinessServicesProvider>
+    </div>
   );
 }
