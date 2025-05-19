@@ -32,10 +32,14 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       .catch(() => {})
       .finally(() => setLoading(false));
 
-    // התחבר לסוקט רק לקבלת הודעות חדשות וסיגנל הקלדה
+    // התחבר לסוקט עם conversationId, userId ו-role
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
-      query: { conversationId },
+      query: {
+        conversationId,
+        userId: businessId,
+        role: "business",
+      },
     });
 
     socketRef.current.on("connect", () => {
@@ -63,7 +67,7 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       clearTimeout(typingTimeout.current);
       setMessages([]);
     };
-  }, [conversationId, customerId]);
+  }, [conversationId, businessId, customerId]);
 
   // גלילה אוטומטית לתחתית
   useEffect(() => {
