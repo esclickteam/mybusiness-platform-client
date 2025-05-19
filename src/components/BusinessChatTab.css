@@ -195,18 +195,46 @@
   to   { transform: none; }
 }
 
-/* שורת הקלט */
+/* --- שורת הקלט חדשה: כפתורי קלטה וקובץ בצד ימין, שלח בצד שמאל --- */
 .inputBar {
   display: flex;
   align-items: center;
+  flex-direction: row;
   padding: 13px 15px 13px 12px;
   border-top: 1.5px solid #eee;
   background: #f7f7fa;
   min-height: 66px;
   z-index: 1;
+  gap: 10px;
 }
 
-/* כפתור השליחה הראשי בצבע סגול */
+/* עוטף לכפתורי ימין */
+.inputBar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+/* שדה הקלט – באמצע */
+.inputField {
+  flex: 1;
+  padding: 13px 14px;
+  font-size: 15px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 26px;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #fff;
+  margin: 0 8px;
+}
+.inputField:focus {
+  border-color: #4a3aff;
+  background: #fcf7ff;
+}
+
+/* כפתור שליחה – שמאל */
 .sendButtonFlat {
   width: 40px;
   height: 40px;
@@ -237,24 +265,7 @@
   margin-left: 0;
 }
 
-/* שדה הקלט – באמצע */
-.inputField {
-  flex: 1;
-  padding: 13px 14px;
-  font-size: 15px;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 26px;
-  outline: none;
-  transition: border-color 0.2s;
-  background: #fff;
-  margin: 0 8px;
-}
-.inputField:focus {
-  border-color: #4a3aff;
-  background: #fcf7ff;
-}
-
-/* כפתורי הקלטה וקובץ – בצד ימין */
+/* כפתור הקלטה – ימין */
 .recordBtn {
   width: 40px;
   height: 40px;
@@ -268,8 +279,7 @@
   align-items: center;
   justify-content: center;
   transition: background 0.18s;
-  margin-left: auto;
-  margin-right: 8px;
+  margin-right: 6px;
 }
 .recordBtn:hover {
   background: #f5c6cb;
@@ -279,6 +289,7 @@
   color: #fff;
 }
 
+/* כפתור קובץ – ימין */
 .attachBtn {
   width: 40px;
   height: 40px;

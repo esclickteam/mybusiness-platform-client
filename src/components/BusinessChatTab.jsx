@@ -197,47 +197,47 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       </div>
 
       <div className="inputBar">
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={onFileChange}
-          disabled={sending}
-        />
-        <button
-          type="button"
-          className="attachBtn"
-          title="צרף קובץ"
-          onClick={onAttachClick}
-          disabled={sending}
-        >📎</button>
-
-        <button
-          type="button"
-          className={`recordBtn${recording ? " recording" : ""}`}
-          title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-          onClick={toggleRecording}
-          disabled={sending}
-        >🎤</button>
-
-        <input
-          className="inputField"
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          disabled={sending}
-          onChange={handleInput}
-          onKeyDown={e => e.key === "Enter" && sendMessage()}
-        />
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-          title="שלח"
-        >
-          ◀
-        </button>
-      </div>
+  <div className="inputBar-right">
+    <button
+      type="button"
+      className="attachBtn"
+      title="צרף קובץ"
+      onClick={onAttachClick}
+      disabled={sending}
+    >📎</button>
+    <button
+      type="button"
+      className={`recordBtn${recording ? " recording" : ""}`}
+      title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+      onClick={toggleRecording}
+      disabled={sending}
+    >🎤</button>
+    <input
+      type="file"
+      ref={fileInputRef}
+      style={{ display: 'none' }}
+      onChange={onFileChange}
+      disabled={sending}
+    />
+  </div>
+  <input
+    className="inputField"
+    type="text"
+    placeholder="הקלד הודעה..."
+    value={input}
+    disabled={sending}
+    onChange={handleInput}
+    onKeyDown={e => e.key === "Enter" && sendMessage()}
+  />
+  <button
+    className="sendButtonFlat"
+    onClick={sendMessage}
+    disabled={sending || !input.trim()}
+    title="שלח"
+  >
+    ◀
+  </button>
+</div>
     </>
   );
 }
