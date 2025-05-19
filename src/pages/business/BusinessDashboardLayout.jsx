@@ -47,7 +47,7 @@ export default function BusinessDashboardLayout() {
     }
   }, [user, loading, location.pathname, navigate, businessId]);
 
-  const isMessagesTab = /\/messages(\/|$)/.test(location.pathname);
+  // const isMessagesTab = /\/messages(\/|$)/.test(location.pathname); // לא צריך יותר
 
   return (
     <BusinessServicesProvider>
@@ -71,7 +71,7 @@ export default function BusinessDashboardLayout() {
           )}
 
           <main className="dashboard-content">
-            {/* כפתור מאז ומעולם לסגירה/פתיחה של הסיידבר */}
+            {/* כפתור סגירה/פתיחה לסיידבר */}
             <button
               className="sidebar-toggle-button"
               onClick={() => setShowSidebar(prev => !prev)}
@@ -80,17 +80,7 @@ export default function BusinessDashboardLayout() {
               {showSidebar ? '✕' : '☰'}
             </button>
 
-            {/* כפתור חזרה בדף הודעות */}
-            {isMessagesTab && (
-              <button
-                className="back-button"
-                onClick={() => navigate("dashboard")}
-                aria-label="חזרה לדשבורד"
-              >
-                ← חזרה לדשבורד
-              </button>
-            )}
-
+            {/* Outlet לכל תוכן הפנימי */}
             <Outlet />
           </main>
         </div>
