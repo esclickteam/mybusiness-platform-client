@@ -39,22 +39,22 @@
   display: flex !important;
   flex-direction: column !important;
   gap: 0.5rem !important;
-  height: 100% !important;       /* כדי שאפשר יהיה למתוח את CRM */
+  height: 100% !important; /* כדי שאפשר יהיה למתוח את CRM */
 }
 
 /* קישורים: שבירת טקסט במקום חיתוך */
 .sidebar a {
   display: inline-flex !important;
-  align-items: center !important;   /* מרכז אנכי גם לאימוג'י */
+  align-items: center !important; /* מרכז אנכי גם לאימוג'י */
   justify-content: flex-start !important;
-  min-height: 60px !important;      /* גובה מינימלי גבוה יותר */
-  padding: 0.75rem 1rem !important; /* עוד padding אנכי כדי למנוע חיתוך */
+  min-height: 60px !important; /* גובה מינימלי גבוה יותר */
+  padding: 0.75rem 1rem !important; /* padding אנכי למניעת חיתוך */
   border-radius: 6px !important;
   color: var(--text-secondary) !important;
   text-decoration: none !important;
   transition: background 0.2s !important;
   box-sizing: border-box !important;
-  line-height: 1.4 !important;      /* גובה שורה מוגדל */
+  line-height: 1.4 !important; /* גובה שורה מוגדל */
   overflow-wrap: break-word !important;
   white-space: normal !important;
 }
@@ -74,7 +74,7 @@
 .crm-submenu {
   display: flex !important;
   flex-direction: column !important;
-  flex: 1 1 auto !important;         /* יתפוס את השטח הנותר */
+  flex: 1 1 auto !important; /* יתפוס את השטח הנותר */
   background: rgba(138, 43, 226, 0.15) !important;
   padding: 0.75rem 1rem !important;
   border-radius: 0.5rem !important;
