@@ -7,6 +7,13 @@
   justify-content: center;
 }
 
+/* מבטיח כיוון LTR בצ'אט בלבד */
+.chatContainer,
+.chatArea,
+.messageList {
+  direction: ltr !important;
+}
+
 /* קונטיינר ראשי */
 .chatContainer {
   max-width: 950px;
@@ -41,8 +48,6 @@
   flex-direction: column;
   gap: 10px;
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
-
-
 }
 
 /* הודעה */
@@ -58,7 +63,7 @@
   position: relative;
 }
 
-/* הודעה מהעסק */
+/* הודעה שלך */
 .mine {
   align-self: flex-end;
   background: #dcf8c6;
@@ -72,6 +77,7 @@
   border: 1px solid #cde7be;
 }
 
+/* הודעה של הצד השני */
 .theirs {
   align-self: flex-start;
   background: #fff;
@@ -84,7 +90,6 @@
   text-align: left;
   border: 1px solid #eee;
 }
-
 
 /* טיימסטמפ */
 .time {
