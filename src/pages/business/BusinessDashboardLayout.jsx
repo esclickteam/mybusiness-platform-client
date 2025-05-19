@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { BusinessServicesProvider } from "@context/BusinessServicesContext";
+import { BusinessServicesProvider } from '@context/BusinessServicesContext';
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [
@@ -25,33 +25,40 @@ export default function BusinessDashboardLayout() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
 
-  // Responsive check
+  const closeBtnRef = useRef(null);
+
+  // התמודדות עם שינוי רזולוציה
   useEffect(() => {
-    const onResize = () => {
+    const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      setShowSidebar(!mobile); // דסקטופ: פתוח, מובייל: סגור
+      setShowSidebar(!mobile);
     };
-    window.addEventListener("resize", onResize);
-    onResize();
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Lock scroll on sidebar open (mobile only)
+  // ניגוד גלילה כשהסיידבר פתוח במובייל
   useEffect(() => {
     document.body.style.overflow = isMobile && showSidebar ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isMobile, showSidebar]);
 
-  // ESC key closes sidebar on mobile
+  // לחיצה על ESC תסגור במובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
-    const onKey = e => e.key === "Escape" && setShowSidebar(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const handleEsc = e => e.key === "Escape" && setShowSidebar(false);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, [isMobile, showSidebar]);
 
-  // Auth & default tab redirect
+  // פוקוס אוטומטי לכפתור הסגירה במעבר
+  useEffect(() => {
+    if (isMobile && showSidebar) closeBtnRef.current?.focus();
+  }, [isMobile, showSidebar]);
+
+  // הגנת גישה וניווט ברירת מחדל
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -67,65 +74,79 @@ export default function BusinessDashboardLayout() {
     <BusinessServicesProvider>
       <div className="rtl-wrapper">
         <div className="business-dashboard-layout">
-
-          {/* Header */}
-          <header className="dashboard-header">
-            <div className="logo">עסקליק</div>
-            {/* כפתור המבורגר במובייל בלבד */}
-            {isMobile && (
-              <button
-                className="sidebar-toggle-button"
-                onClick={() => setShowSidebar(v => !v)}
-                aria-label={showSidebar ? "סגור תפריט" : "פתח תפריט"}
-              >
-                {showSidebar ? "✕" : "☰"}
-              </button>
-            )}
-          </header>
-
-          {/* Overlay במובייל (סוגר תפריט בלחיצה מחוץ לסיידבר) */}
+          {/* רק במובייל: רקע חצי־שקוף בהקלקה על האוברליי */}
           {isMobile && showSidebar && (
             <div
               className="sidebar-overlay"
               onClick={() => setShowSidebar(false)}
-              aria-label="סגור תפריט"
+              aria-label="סגור תפריט צד"
+              tabIndex={-1}
               role="button"
             />
           )}
 
-          {/* Sidebar - מוצג תמיד, במובייל/דסקטופ נפתח/נסגר ע"י קלאס */}
-          <aside
-            className={[
-              "sidebar",
-              isMobile ? "mobile" : "",
-              isMobile && showSidebar ? "open" : ""
-            ].filter(Boolean).join(" ")}
-          >
-            <nav>
-              {user?.role === "business" && (
-                <NavLink
-                  to={`/business/${businessId}`}
-                  end
-                  className={({ isActive }) => isActive ? "active" : undefined}
+          {/* סיידבר */}
+          {showSidebar && (
+            <aside
+              className={`sidebar${isMobile ? " mobile" : ""}`}
+              aria-label="ניווט ראשי"
+            >
+              <nav className="sidebar-menu">
+                {user?.role === "business" && (
+                  <NavLink
+                    to={`/business/${businessId}`}
+                    end
+                    className={({ isActive }) => isActive ? "active" : undefined}
+                  >
+                    👀 צפייה בפרופיל
+                  </NavLink>
+                )}
+                {tabs.map(({ path, label }) => (
+                  <NavLink
+                    key={path}
+                    to={path}
+                    end
+                    className={({ isActive }) => isActive ? "active" : undefined}
+                  >
+                    {label}
+                  </NavLink>
+                ))}
+              </nav>
+              {/* כפתור X לסגירה במובייל */}
+              {isMobile && (
+                <button
+                  className="close-sidebar-btn"
+                  onClick={() => setShowSidebar(false)}
+                  aria-label="סגור תפריט צד"
+                  ref={closeBtnRef}
                 >
-                  👀 צפייה בפרופיל
-                </NavLink>
+                  ✕
+                </button>
               )}
-              {tabs.map(({ path, label }) => (
-                <NavLink
-                  key={path}
-                  to={path}
-                  end
-                  className={({ isActive }) => isActive ? "active" : undefined}
-                >
-                  {label}
-                </NavLink>
-              ))}
-            </nav>
-          </aside>
+            </aside>
+          )}
 
-          {/* Main Content */}
           <main className="dashboard-content">
+            {/* כפתור ☰ במובייל כשהסיידבר סגור */}
+            {isMobile && !showSidebar && (
+              <button
+                className="sidebar-toggle-button"
+                onClick={() => setShowSidebar(true)}
+                aria-label="פתח תפריט צד"
+              >
+                ☰
+              </button>
+            )}
+            {/* בכפתור אחד לדסקטופ */}
+            {!isMobile && (
+              <button
+                className="sidebar-toggle-button"
+                onClick={() => setShowSidebar(prev => !prev)}
+                aria-label={showSidebar ? "הסתר סיידבר" : "הצג סיידבר"}
+              >
+                {showSidebar ? "✕" : "☰"}
+              </button>
+            )}
             <Outlet />
           </main>
         </div>
