@@ -172,7 +172,7 @@
   /* כשהסיידבר פתוח, תן מרווח לתוכן ולטשטש מעט */
   .sidebar.mobile.open ~ .dashboard-content {
     margin-right: 83vw !important;
-    filter: brightness(0.85);
+    filter: none
   }
 }
 
