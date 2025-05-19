@@ -68,7 +68,7 @@
   100% { opacity: 1; transform: none; }
 }
 
-/* תוכן ההודעה (טקסט, תמונה או אודיו) */
+/* תוכן ההודעה */
 .message .content {
   display: flex;
   flex-direction: column;
@@ -118,7 +118,7 @@
   border: 1px solid #eee;
 }
 
-/* טיימסטמפ וסטטוס */
+/* מטה של ההודעה (זמן וסטטוס) */
 .message .meta {
   display: flex;
   align-items: center;
@@ -198,28 +198,47 @@
 /* שורת הקלט */
 .inputBar {
   display: flex;
+  align-items: center;
   padding: 13px 15px 13px 12px;
   border-top: 1.5px solid #eee;
   background: #f7f7fa;
-  align-items: center;
   min-height: 66px;
   z-index: 1;
 }
 
-/* סדר בתוך שורת הקלט */
-.inputBar > * {
-  order: 0;
-}
-
-/* כפתור שליחה - ראשון */
+/* כפתור השליחה הראשי בצבע סגול */
 .sendButtonFlat {
-  order: 0;
-  margin: 0 8px 0 0;
+  width: 40px;
+  height: 40px;
+  background: #6a5aff;
+  color: #fff;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  transition: background 0.18s;
+  margin: 0;
+}
+.sendButtonFlat:disabled {
+  background: #d1c4e9;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.sendButtonFlat:hover:enabled,
+.sendButtonFlat:focus:enabled {
+  background: #7f6fff;
+}
+.arrowFlat {
+  font-size: 24px;
+  margin-left: 0;
 }
 
-/* שדה הקלט באמצע */
+/* שדה הקלט – באמצע */
 .inputField {
-  order: 1;
   flex: 1;
   padding: 13px 14px;
   font-size: 15px;
@@ -228,20 +247,14 @@
   outline: none;
   transition: border-color 0.2s;
   background: #fff;
+  margin: 0 8px;
 }
 .inputField:focus {
   border-color: #4a3aff;
   background: #fcf7ff;
 }
 
-/* כפתור קובץ והקלטה אחר כך */
-.attachBtn,
-.recordBtn {
-  order: 2;
-  margin: 0 8px 0 0;
-}
-
-/* כפתור הקלטת קול */
+/* כפתורי הקלטה וקובץ – בצד ימין */
 .recordBtn {
   width: 40px;
   height: 40px;
@@ -255,6 +268,8 @@
   align-items: center;
   justify-content: center;
   transition: background 0.18s;
+  margin-left: auto;
+  margin-right: 8px;
 }
 .recordBtn:hover {
   background: #f5c6cb;
@@ -264,7 +279,6 @@
   color: #fff;
 }
 
-/* כפתור קובץ */
 .attachBtn {
   width: 40px;
   height: 40px;
@@ -278,30 +292,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
 }
 .attachBtn:hover {
   background: #ded3f3;
 }
 .fileInput {
   display: none;
-}
-
-/* כפתור שליחה שטוח */
-.sendButtonFlat:disabled {
-  opacity: 0.33;
-  cursor: not-allowed;
-}
-.sendButtonFlat:hover:enabled,
-.sendButtonFlat:focus:enabled {
-  background: #f4f7fa;
-}
-.arrowFlat {
-  color: #607080;
-  font-size: 24px;
-  font-weight: bold;
-  margin-left: 1px;
-  display: flex;
-  align-items: center;
 }
 
 /* הודעה ריקה */
