@@ -136,23 +136,28 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* Toggle button */}
-          {isMobile && (
+          {/* סגירת סיידבר בצד התוכן למובייל */}
+          {isMobile && showSidebar && (
             <button
-              className="sidebar-toggle-button"
-              onClick={() => {
-                if (showSidebar && isMessagesTab) {
-                  setShowSidebar(false);
-                  navigate(`/business/${businessId}/dashboard`);
-                } else {
-                  setShowSidebar((v) => !v);
-                }
+              onClick={() => setShowSidebar(false)}
+              aria-label="סגור תפריט"
+              style={{
+                position: "fixed",
+                top: 16,
+                left: 16,
+                zIndex: 9999,
+                backgroundColor: "#7c4dff",
+                border: "none",
+                borderRadius: "50%",
+                width: 40,
+                height: 40,
+                color: "#fff",
+                fontSize: "24px",
+                cursor: "pointer",
+                boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)"
               }}
-              aria-label={showSidebar ? (isMessagesTab ? "חזור לדשבורד וסגור תפריט" : "סגור תפריט") : "פתח תפריט"}
-              aria-expanded={showSidebar}
-              aria-controls="sidebar"
             >
-              {showSidebar && isMessagesTab ? "←" : "☰"}
+              ×
             </button>
           )}
 
