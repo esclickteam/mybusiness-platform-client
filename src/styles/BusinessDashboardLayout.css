@@ -173,13 +173,53 @@
     padding: 1rem !important;
     padding-top: 60px !important;
   }
-  /* הכפתור ☰ תמיד קבוע בראש המסך */
+
+  /* כפתור ☰ תמיד בימין עליון, רק כשהסיידבר סגור */
   .sidebar-toggle-button {
     position: fixed !important;
     top: 12px !important;
     right: 12px !important;
+    left: auto !important;
     z-index: 9999 !important;
     background: var(--primary);
     box-shadow: 0 2px 12px #b39ddb55;
+    display: flex !important;
+    align-items: center; justify-content: center;
   }
+
+  /* כפתור ✕ לסגירה – שמאל עליון, רק כשהסיידבר פתוח */
+  .close-sidebar-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: auto;
+    background: none;
+    border: none;
+    color: #6a1b9a;
+    font-size: 2rem;
+    font-weight: bold;
+    z-index: 10000;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center; justify-content: center;
+  }
+}
+
+/* בדסקטופ, הכפתור נשאר בימין עליון */
+@media (min-width: 769px) {
+  .sidebar-toggle-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    left: auto;
+    z-index: 9999;
+  }
+  .close-sidebar-btn {
+    display: none !important;
+  }
+}
+
+/* ברירת מחדל: לא להציג את כפתור ✕ (סגירה) אלא אם פתוח במובייל */
+.close-sidebar-btn {
+  display: none;
 }
