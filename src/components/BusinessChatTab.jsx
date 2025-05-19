@@ -197,6 +197,28 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       </div>
 
       <div className="inputBar">
+  {/* כפתור שלח - שמאל */}
+  <button
+    className="sendButtonFlat"
+    onClick={sendMessage}
+    disabled={sending || !input.trim()}
+    title="שלח"
+  >
+    ◀
+  </button>
+
+  {/* שדה הקלט */}
+  <input
+    className="inputField"
+    type="text"
+    placeholder="הקלד הודעה..."
+    value={input}
+    disabled={sending}
+    onChange={handleInput}
+    onKeyDown={e => e.key === "Enter" && sendMessage()}
+  />
+
+  {/* כפתורי ימין */}
   <div className="inputBar-right">
     <button
       type="button"
@@ -220,23 +242,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       disabled={sending}
     />
   </div>
-  <input
-    className="inputField"
-    type="text"
-    placeholder="הקלד הודעה..."
-    value={input}
-    disabled={sending}
-    onChange={handleInput}
-    onKeyDown={e => e.key === "Enter" && sendMessage()}
-  />
-  <button
-    className="sendButtonFlat"
-    onClick={sendMessage}
-    disabled={sending || !input.trim()}
-    title="שלח"
-  >
-    ◀
-  </button>
 </div>
     </>
   );
