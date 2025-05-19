@@ -136,10 +136,10 @@
   padding: 12px 0;
 }
 
-/* שורת קלט בצ'אט (צד לקוח – שליחה ימין) */
+/* שורת קלט בצ'אט — שליחה בצד שמאל! */
 .input-bar {
   display: flex;
-  flex-direction: row; /* כפתור שליחה – ימין */
+  flex-direction: row-reverse; /* כפתור שליחה — שמאל */
   padding: 12px 12px 12px 10px;
   border-top: 1.5px solid #e1bee7;
   background: #faf7fd;
@@ -166,7 +166,7 @@
   background: #f6edff;
 }
 
-/* כפתור שליחה שטוח */
+/* כפתור שליחה שטוח (צד שמאל) */
 .sendButtonFlat {
   width: 40px;
   height: 40px;
