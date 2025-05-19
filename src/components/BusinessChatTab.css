@@ -64,8 +64,30 @@
   animation: fadeIn 0.42s cubic-bezier(.77,0,.18,1) both;
 }
 @keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(30%);}
-  100% { opacity: 1; transform: none;}
+  0% { opacity: 0; transform: translateY(30%); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* תוכן ההודעה (טקסט, תמונה או אודיו) */
+.message .content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* תמונות בהודעות */
+.message .content img.message-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* אודיו בהודעות */
+.message .content audio {
+  width: 180px;
+  outline: none;
+  margin-bottom: 6px;
 }
 
 /* הודעה שלך */
@@ -197,7 +219,8 @@
   border-color: #4a3aff;
   background: #fcf7ff;
 }
-/* כפתור שליחה */
+
+/* כפתור שליחה עגול */
 .sendButton {
   margin-left: 8px;
   width: 44px;
@@ -217,7 +240,6 @@
 }
 .sendButton:disabled {
   background: #d1c4e9;
-  color: #fff;
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -249,21 +271,6 @@
   display: none;
 }
 
-/* הודעה ריקה */
-.messageList .empty {
-  color: #aaa;
-  text-align: center;
-  padding: 22px 0 0;
-}
-
-/* טעינה */
-.loading {
-  text-align: center;
-  color: #777;
-  font-size: 14px;
-  padding: 12px 0;
-}
-
 /* כפתור שליחה שטוח */
 .sendButtonFlat {
   width: 40px;
@@ -280,23 +287,58 @@
   border-radius: 50%;
   transition: background 0.14s;
 }
-
 .sendButtonFlat:disabled {
   opacity: 0.33;
   cursor: not-allowed;
 }
-
 .sendButtonFlat:hover:enabled,
 .sendButtonFlat:focus:enabled {
   background: #f4f7fa;
 }
-
 .arrowFlat {
   color: #607080;
   font-size: 24px;
   font-weight: bold;
   margin-left: 1px;
-  margin-top: 0px;
   display: flex;
   align-items: center;
+}
+
+/* כפתור הקלטת קול */
+.recordBtn {
+  margin-right: 8px;
+  width: 40px;
+  height: 40px;
+  background: #eee;
+  border-radius: 50%;
+  border: none;
+  font-size: 18px;
+  color: #d32f2f;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s;
+}
+.recordBtn:hover {
+  background: #f5c6cb;
+}
+.recordBtn.recording {
+  background: #d32f2f;
+  color: #fff;
+}
+
+/* הודעה ריקה */
+.messageList .empty {
+  color: #aaa;
+  text-align: center;
+  padding: 22px 0 0;
+}
+
+/* טעינה */
+.loading {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+  padding: 12px 0;
 }
