@@ -105,20 +105,24 @@ export default function ClientChatTab({
         {messages.length === 0 && (
           <div className="empty">עדיין אין הודעות</div>
         )}
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`message ${m.from === userId ? "mine" : "theirs"}`}
-          >
-            <div className="text">{m.text}</div>
-            <div className="time">
-              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+        {messages.map((m, i) => {
+          // עוזר לדבג – תוכל למחוק אחרי שזה עובד
+          console.log("🔵 FROM:", m.from, "| userId:", userId, "| mine:", m.from?.toString() === userId?.toString());
+          return (
+            <div
+              key={i}
+              className={`message ${m.from?.toString() === userId?.toString() ? "mine" : "theirs"}`}
+            >
+              <div className="text">{m.text}</div>
+              <div className="time">
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="input-bar">
         <input
