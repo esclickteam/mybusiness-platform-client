@@ -180,10 +180,11 @@
   justify-content: center;
   cursor: pointer;
   padding: 0;
-  margin: 0 8px 0 0;
+  margin: 0 0 0 8px; /* עדכון: רווח משמאל, לא מימין */
   border-radius: 50%;
   transition: background 0.14s;
 }
+
 .sendButtonFlat:disabled {
   opacity: 0.33;
   cursor: not-allowed;
