@@ -22,23 +22,33 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  // עדכון: מאותחל אוטומטית לפי מצב חלון (מובייל - מוסתר, דסקטופ - מוצג)
+  // מאותחל לפי מצב חלון
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
 
-  // קביעת מצב מובייל וסיידבר
+  // מצב מובייל ודסקטופ
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      setShowSidebar(!mobile); // במובייל מוסתר, בדסקטופ גלוי
+      setShowSidebar(!mobile);
     };
     window.addEventListener("resize", handleResize);
-    handleResize(); // הפעלה ראשונית
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // הגנת גישה וניווט ראשוני
+  // UX: הסתרת גלילה כשהסיידבר פתוח במובייל
+  useEffect(() => {
+    if (isMobile && showSidebar) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isMobile, showSidebar]);
+
+  // הגנת גישה
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -55,8 +65,17 @@ export default function BusinessDashboardLayout() {
     <BusinessServicesProvider>
       <div className="rtl-wrapper">
         <div className="business-dashboard-layout">
+          {/* Overlay במובייל */}
+          {isMobile && showSidebar && (
+            <div
+              className="sidebar-overlay"
+              onClick={() => setShowSidebar(false)}
+            />
+          )}
+
+          {/* Sidebar */}
           {showSidebar && (
-            <aside className="sidebar">
+            <aside className={`sidebar${isMobile ? " mobile" : ""}`}>
               <nav className="sidebar-menu">
                 {user?.role === "business" && (
                   <NavLink to={`/business/${businessId}`} end className={({ isActive }) => (isActive ? "active" : undefined)}>
@@ -69,18 +88,40 @@ export default function BusinessDashboardLayout() {
                   </NavLink>
                 ))}
               </nav>
+              {/* כפתור ✕ לסגירה מהירה - במובייל בלבד */}
+              {isMobile && (
+                <button
+                  className="close-sidebar-btn"
+                  onClick={() => setShowSidebar(false)}
+                  aria-label="סגור תפריט"
+                >
+                  ✕
+                </button>
+              )}
             </aside>
           )}
 
           <main className="dashboard-content">
-            {/* כפתור סגירה/פתיחה לסיידבר */}
-            <button
-              className="sidebar-toggle-button"
-              onClick={() => setShowSidebar(prev => !prev)}
-              aria-label={showSidebar ? "הסתר סיידבר" : "הצג סיידבר"}
-            >
-              {showSidebar ? '✕' : '☰'}
-            </button>
+            {/* כפתור ☰ תמיד מוצג במובייל (גם כשהסיידבר סגור) */}
+            {(isMobile && !showSidebar) && (
+              <button
+                className="sidebar-toggle-button"
+                onClick={() => setShowSidebar(true)}
+                aria-label="פתח תפריט"
+              >
+                ☰
+              </button>
+            )}
+            {/* בדסקטופ - כפתור סגירה/פתיחה רגיל */}
+            {!isMobile && (
+              <button
+                className="sidebar-toggle-button"
+                onClick={() => setShowSidebar(prev => !prev)}
+                aria-label={showSidebar ? "הסתר סיידבר" : "הצג סיידבר"}
+              >
+                {showSidebar ? '✕' : '☰'}
+              </button>
+            )}
             <Outlet />
           </main>
         </div>
