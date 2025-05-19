@@ -1,4 +1,4 @@
-/* רקע של וואטסאפ (עטוף ב-whatsappBg מסביב לכל הצ'אט) */
+/* רקע של וואטסאפ */
 .whatsappBg {
   min-height: 100vh;
   background: #ece5dd;
@@ -7,7 +7,7 @@
   justify-content: center;
 }
 
-/* מבטיח כיוון LTR בצ'אט בלבד */
+/* מבטיח LTR לצ'אט בלבד */
 .chatContainer,
 .chatArea,
 .messageList {
@@ -30,7 +30,7 @@
   position: relative;
 }
 
-/* אזור הצ'אט (מסודר כעמוד) */
+/* אזור הצ'אט */
 .chatArea {
   flex: 1;
   display: flex;
@@ -61,6 +61,11 @@
   font-size: 15px;
   box-shadow: 0 1px 2px #0001;
   position: relative;
+  animation: fadeIn 0.42s cubic-bezier(.77,0,.18,1) both;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(30%);}
+  100% { opacity: 1; transform: none;}
 }
 
 /* הודעה שלך */
@@ -91,20 +96,87 @@
   border: 1px solid #eee;
 }
 
-/* טיימסטמפ */
+/* טיימסטמפ וסטטוס */
+.message .meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
 .time {
   font-size: 11px;
   color: #878787;
-  margin-top: 4px;
   text-align: left;
   direction: ltr;
   opacity: 0.7;
   padding-left: 4px;
 }
+.status.sent::after {
+  content: "✓";
+  color: #6c48b0;
+  font-size: 13px;
+}
+.status.delivered::after {
+  content: "✓✓";
+  color: #6c48b0;
+  font-size: 13px;
+}
+.status.read::after {
+  content: "✓✓";
+  color: #18b66d;
+  font-size: 13px;
+}
+.message.sending {
+  opacity: 0.7;
+  font-style: italic;
+}
 
-/* אזור הקלט מיד מתחת לרשימת ההודעות */
+/* הודעת מערכת */
+.system-message {
+  background: #f1f1f6;
+  color: #8b8b99;
+  border-radius: 14px;
+  font-size: 13px;
+  padding: 7px 14px;
+  align-self: center;
+  margin: 10px 0;
+}
+
+/* "הלקוח מקליד..." */
+.typing-indicator {
+  padding: 0 20px 10px;
+  color: #a089d2;
+  font-size: 14px;
+  font-style: italic;
+  animation: typing-blink 1.3s infinite;
+}
+@keyframes typing-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* אין חיבור */
+.connection-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  background: #e57373;
+  color: #fff;
+  text-align: center;
+  padding: 4px 0;
+  font-size: 14px;
+  z-index: 10;
+  animation: slideDown 0.3s;
+}
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to   { transform: none; }
+}
+
+/* שורת הקלט */
 .inputBar {
   display: flex;
+  flex-direction: row-reverse; /* כפתור בצד שמאל */
   padding: 13px 15px 13px 12px;
   border-top: 1.5px solid #eee;
   background: #f7f7fa;
@@ -112,8 +184,6 @@
   min-height: 66px;
   z-index: 1;
 }
-
-/* שדה הקלט */
 .inputField {
   flex: 1;
   padding: 13px 14px;
@@ -126,9 +196,9 @@
 }
 .inputField:focus {
   border-color: #4a3aff;
+  background: #fcf7ff;
 }
-
-/* כפתור שליחה עגול עם אייקון */
+/* כפתור שליחה */
 .sendButton {
   margin-left: 8px;
   width: 44px;
@@ -144,18 +214,40 @@
   justify-content: center;
   cursor: pointer;
   transition: background 0.18s;
+  opacity: 1;
 }
-.sendButton:hover {
+.sendButton:disabled {
+  background: #d1c4e9;
+  color: #fff;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.sendButton:hover:enabled {
   background: #6a5aff;
   opacity: 0.97;
 }
-.sendButton:active {
-  background: #3c2bcc;
-}
 
-/* Placeholder */
-.inputField::placeholder {
-  color: #b7b7b7;
+/* כפתור קובץ */
+.attachBtn {
+  margin-right: 8px;
+  width: 40px;
+  height: 40px;
+  background: #eee;
+  border-radius: 50%;
+  border: none;
+  font-size: 18px;
+  color: #7757ca;
+  cursor: pointer;
+  transition: background 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.attachBtn:hover {
+  background: #ded3f3;
+}
+.fileInput {
+  display: none;
 }
 
 /* הודעה ריקה */
@@ -165,10 +257,47 @@
   padding: 22px 0 0;
 }
 
-/* גלגל טעינה */
+/* טעינה */
 .loading {
   text-align: center;
   color: #777;
   font-size: 14px;
   padding: 12px 0;
+}
+
+/* כפתור שליחה שטוח */
+.sendButtonFlat {
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+  border-radius: 50%;
+  transition: background 0.14s;
+}
+
+.sendButtonFlat:disabled {
+  opacity: 0.33;
+  cursor: not-allowed;
+}
+
+.sendButtonFlat:hover:enabled,
+.sendButtonFlat:focus:enabled {
+  background: #f4f7fa;
+}
+
+.arrowFlat {
+  color: #607080;
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 1px;
+  margin-top: 0px;
+  display: flex;
+  align-items: center;
 }

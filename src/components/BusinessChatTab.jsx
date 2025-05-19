@@ -7,16 +7,16 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [loading, setLoading] = useState(true);
   const socketRef = useRef();
   const messageListRef = useRef();
-
-  // debug קריטי: תדפיס תמיד את הפרופס!
-  console.log("BusinessChatTab props:", { conversationId, businessId, customerId });
+  const typingTimeout = useRef();
 
   useEffect(() => {
     if (!conversationId) return;
 
-    // טען היסטוריית הודעות
+    setLoading(true);
     API.get("/messages/history", {
       params: { conversationId },
       withCredentials: true,
@@ -26,8 +26,9 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           ? res.data
           : res.data.messages || [];
         setMessages(loaded);
+        setLoading(false);
       })
-      .catch(() => {});
+      .catch(() => setLoading(false));
 
     // התחבר לסוקט
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
@@ -36,16 +37,10 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     });
 
     socketRef.current.on("connect", () => {
-      console.log("🟢 SOCKET CONNECTED", socketRef.current.id);
       socketRef.current.emit("joinRoom", conversationId);
     });
 
-    socketRef.current.on("connect_error", (err) => {
-      console.error("🔴 SOCKET CONNECT ERROR:", err);
-    });
-
     socketRef.current.on("newMessage", msg => {
-      console.log("🔔 [SOCKET] newMessage arrived:", msg);
       setMessages(prev => {
         const exists = prev.some(
           m =>
@@ -57,30 +52,34 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       });
     });
 
+    // "הלקוח מקליד..."
+    socketRef.current.on("typing", ({ from }) => {
+      if (from === customerId) {
+        setIsTyping(true);
+        clearTimeout(typingTimeout.current);
+        typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
+      }
+    });
+
     return () => {
       socketRef.current?.disconnect();
       setMessages([]);
+      clearTimeout(typingTimeout.current);
     };
-  }, [conversationId, businessId]);
+  }, [conversationId, businessId, customerId]);
 
   // גלילה אוטומטית
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const sendMessage = () => {
-    console.log("Trying to send", { input, conversationId, customerId, sending });
-
-    if (!input.trim() || !conversationId || !customerId || sending) {
-      console.warn("NOT SENDING! Missing field:", { input, conversationId, customerId, sending });
-      return;
-    }
+    if (!input.trim() || !conversationId || !customerId || sending) return;
 
     if (!socketRef.current || socketRef.current.disconnected) {
       alert("❌ אין חיבור לשרת הצ'אט. נסה לרענן.");
-      console.error("❌ socketRef.current לא מאותחל או מנותק!");
       return;
     }
 
@@ -90,56 +89,86 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       from: businessId,
       to: customerId,
       text: input.trim(),
+      timestamp: new Date().toISOString(),
+      status: "sending",
     };
-
-    console.log("🔵 מנסה לשלוח:", msg);
 
     socketRef.current.emit("sendMessage", msg, ack => {
       setSending(false);
-      console.log("🟠 ack מהשרת:", ack);
-      if (!ack?.success) {
-        alert("שגיאה בשליחת ההודעה. נסה שוב.");
-      } else {
-        setInput("");
-        // ההודעה תגיע אוטומטית מ־newMessage!
-      }
+      setInput("");
+      if (!ack?.success) alert("שגיאה בשליחת ההודעה. נסה שוב.");
     });
+  };
+
+  // שליחת "מקליד..." כל עוד מקלידים
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    if (socketRef.current && !sending) {
+      socketRef.current.emit("typing", { conversationId, from: businessId, to: customerId });
+    }
   };
 
   return (
     <>
-      {/* רשימת ההודעות */}
       <div className="messageList" ref={messageListRef}>
-        {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m, i) => (
-          <div
-            key={m._id || i}
-            className={`message ${m.from === businessId ? "mine" : "theirs"}`}
-          >
-            <div className="text">{m.text}</div>
-            <div className="time">
-              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+        {loading && <div className="loading">טוען...</div>}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {messages.map((m, i) =>
+          m.system ? (
+            <div key={i} className="system-message">{m.text}</div>
+          ) : (
+            <div
+              key={m._id || i}
+              className={
+                "message" +
+                (m.from === businessId ? " mine" : " theirs") +
+                (m.status === "sending" ? " sending" : "")
+              }
+            >
+              <div className="text">{m.text}</div>
+              <div className="meta">
+                <span className="time">
+                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                {m.from === businessId && (
+                  <span className={`status ${m.status || "sent"}`} />
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
+        {isTyping && (
+          <div className="typing-indicator">הלקוח מקליד...</div>
+        )}
       </div>
-
-      {/* שורת הקלט */}
       <div className="inputBar">
+        <button
+          type="button"
+          className="attachBtn"
+          title="צרף קובץ"
+          onClick={() => alert("להוסיף לוגיקת קובץ כאן!")}
+        >
+          📎
+        </button>
         <input
           className="inputField"
           type="text"
           placeholder="הקלד הודעה..."
           value={input}
           disabled={sending}
-          onChange={e => setInput(e.target.value)}
+          onChange={handleInput}
           onKeyDown={e => e.key === "Enter" && sendMessage()}
         />
-        <button className="sendButton" onClick={sendMessage} title="שלח" disabled={sending || !input.trim()}>
-          <span role="img" aria-label="send">✈️</span>
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          title="שלח"
+          disabled={sending || !input.trim()}
+        >
+          <span className="arrowFlat">◀</span>
         </button>
       </div>
     </>
