@@ -25,25 +25,25 @@ export default function BusinessDashboardLayout() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
 
-  // handle resize
+  // Responsive check
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      setShowSidebar(!mobile);
+      setShowSidebar(!mobile); // דסקטופ: פתוח, מובייל: סגור
     };
     window.addEventListener("resize", onResize);
     onResize();
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // prevent background scroll when sidebar open on mobile
+  // Lock scroll on sidebar open (mobile only)
   useEffect(() => {
     document.body.style.overflow = isMobile && showSidebar ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isMobile, showSidebar]);
 
-  // close on Escape
+  // ESC key closes sidebar on mobile
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const onKey = e => e.key === "Escape" && setShowSidebar(false);
@@ -51,7 +51,7 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
-  // auth & default route
+  // Auth & default tab redirect
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -68,9 +68,10 @@ export default function BusinessDashboardLayout() {
       <div className="rtl-wrapper">
         <div className="business-dashboard-layout">
 
-          {/* header */}
+          {/* Header */}
           <header className="dashboard-header">
             <div className="logo">עסקליק</div>
+            {/* כפתור המבורגר במובייל בלבד */}
             {isMobile && (
               <button
                 className="sidebar-toggle-button"
@@ -82,7 +83,7 @@ export default function BusinessDashboardLayout() {
             )}
           </header>
 
-          {/* overlay for mobile */}
+          {/* Overlay במובייל (סוגר תפריט בלחיצה מחוץ לסיידבר) */}
           {isMobile && showSidebar && (
             <div
               className="sidebar-overlay"
@@ -92,34 +93,38 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* sidebar */}
-          {showSidebar && (
-            <aside className={`sidebar ${isMobile ? "mobile" : ""}`}>
-              <nav>
-                {user?.role === "business" && (
-                  <NavLink
-                    to={`/business/${businessId}`}
-                    end
-                    className={({ isActive }) => isActive ? "active" : undefined}
-                  >
-                    👀 צפייה בפרופיל
-                  </NavLink>
-                )}
-                {tabs.map(({ path, label }) => (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    end
-                    className={({ isActive }) => isActive ? "active" : undefined}
-                  >
-                    {label}
-                  </NavLink>
-                ))}
-              </nav>
-            </aside>
-          )}
+          {/* Sidebar - מוצג תמיד, במובייל/דסקטופ נפתח/נסגר ע"י קלאס */}
+          <aside
+            className={[
+              "sidebar",
+              isMobile ? "mobile" : "",
+              isMobile && showSidebar ? "open" : ""
+            ].filter(Boolean).join(" ")}
+          >
+            <nav>
+              {user?.role === "business" && (
+                <NavLink
+                  to={`/business/${businessId}`}
+                  end
+                  className={({ isActive }) => isActive ? "active" : undefined}
+                >
+                  👀 צפייה בפרופיל
+                </NavLink>
+              )}
+              {tabs.map(({ path, label }) => (
+                <NavLink
+                  key={path}
+                  to={path}
+                  end
+                  className={({ isActive }) => isActive ? "active" : undefined}
+                >
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+          </aside>
 
-          {/* main content */}
+          {/* Main Content */}
           <main className="dashboard-content">
             <Outlet />
           </main>

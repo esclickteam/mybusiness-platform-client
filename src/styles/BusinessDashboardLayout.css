@@ -27,45 +27,50 @@
   overflow-y: auto !important;
   transition: transform 0.35s ease !important;
   will-change: transform;
+  z-index: 9002 !important; /* מעל האופרליי */
 }
 
 /* במובייל – Slide-in/out לפי class */
 .sidebar.mobile {
   position: fixed !important;
-  top: 0; right: 0;
+  top: 0;
+  right: 0;
   width: 83vw !important;
   max-width: 350px !important;
   height: 100vh !important;
   background: #f9edff !important;
   box-shadow: -8px 0 36px #0001 !important;
-  transform: translateX(100%) !important;  /* ברירת מחדל: סגור */
-  z-index: 9001 !important;
+  transform: translateX(100%) !important; /* ברירת מחדל: סגור */
+  z-index: 9002 !important; /* מעל האופרליי */
 }
 .sidebar.mobile.open {
-  transform: translateX(0) !important;    /* כשלוחצים: פותח */
+  transform: translateX(0) !important; /* כשלוחצים: פותח */
 }
 
 /* אופרליי של רקע כשהסיידבר פתוח במובייל */
 .sidebar-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(44,18,85,0.13) !important;
-  z-index: 9000 !important;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(44, 18, 85, 0.13) !important;
+  z-index: 9000 !important; /* מתחת לסיידבר */
+  cursor: pointer;
 }
 
 /* קישורים פנימיים */
 .sidebar nav {
   display: flex !important;
   flex-direction: column !important;
-  gap: .5rem !important;
+  gap: 0.5rem !important;
 }
 .sidebar a {
-  padding: .75rem 1rem !important;
+  padding: 0.75rem 1rem !important;
   border-radius: 6px !important;
   color: var(--text-secondary) !important;
   text-decoration: none !important;
-  transition: background .2s !important;
+  transition: background 0.2s !important;
 }
 .sidebar a.active {
   background: var(--primary) !important;
@@ -81,20 +86,22 @@
 /* כפתור יחיד ☰/✕ לסיידבר */
 .sidebar-toggle-button {
   position: fixed;
-  top: 12px; right: 12px;
+  top: 12px;
+  right: 12px;
   z-index: 9999;
-  width: 44px; height: 44px;
+  width: 44px;
+  height: 44px;
   background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 4px;
   font-size: 1.7rem;
-  display: none;             /* נסתר כברירת מחדל */
+  display: none; /* נסתר כברירת מחדל */
   align-items: center;
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 12px #b39ddb55;
-  transition: background .2s;
+  transition: background 0.2s;
 }
 
 /* במובייל בלבד – מציגים את הכפתור */
@@ -106,7 +113,7 @@
     width: 100vw !important;
     height: 100vh !important;
     padding: 1rem !important;
-    padding-top: 60px !important;
+    padding-top: 60px !important; /* למקם מתחת לכפתור */
   }
   .sidebar-toggle-button {
     display: flex !important;
@@ -119,6 +126,7 @@
     transform: none !important; /* סיידבר תמיד גלוי */
     position: relative !important;
     box-shadow: none !important;
+    z-index: auto !important;
   }
   .sidebar-toggle-button {
     display: none !important;
