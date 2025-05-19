@@ -164,16 +164,16 @@
 }
 
 /* שורת הקלט */
-.inputBar {
+.inputBar { /* או .input-bar אם שמות מחלקות אחרים */
   display: flex;
+  justify-content: flex-start;
   align-items: center;
+  gap: 10px;
   padding: 13px 15px 13px 12px;
   border-top: 1.5px solid #eee;
   background: #f7f7fa;
   min-height: 66px;
   z-index: 1;
-  gap: 10px;
-  justify-content: flex-start; /* מיישר משמאל */
 }
 
 /* כפתור שליחה משמאל */
