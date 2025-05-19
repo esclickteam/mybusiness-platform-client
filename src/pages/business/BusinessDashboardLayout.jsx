@@ -52,7 +52,6 @@ export default function BusinessDashboardLayout() {
 
   const isMessagesTab = /\/messages(\/|$)/.test(location.pathname);
 
-  // כאשר עוברים לנתיב messages במובייל, נסתיר את הסיידבר כברירת מחדל
   useEffect(() => {
     if (isMobile && isMessagesTab) {
       setShowSidebar(false);
@@ -128,6 +127,26 @@ export default function BusinessDashboardLayout() {
                 ☰ תפריט
               </button>
             )}
+
+            {isMessagesTab && (
+              <button
+                onClick={() => navigate(`/business/${businessId}/dashboard`)}
+                style={{
+                  marginBottom: "1rem",
+                  padding: "8px 16px",
+                  fontSize: "1rem",
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: "#4a3aff",
+                  color: "#fff",
+                  cursor: "pointer",
+                }}
+                aria-label="חזרה לדשבורד"
+              >
+                ← חזרה לדשבורד
+              </button>
+            )}
+
             <Outlet />
           </main>
         </div>
