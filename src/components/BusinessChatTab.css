@@ -205,7 +205,21 @@
   min-height: 66px;
   z-index: 1;
 }
+
+/* סדר בתוך שורת הקלט */
+.inputBar > * {
+  order: 0;
+}
+
+/* כפתור שליחה - ראשון */
+.sendButtonFlat {
+  order: 0;
+  margin: 0 8px 0 0;
+}
+
+/* שדה הקלט באמצע */
 .inputField {
+  order: 1;
   flex: 1;
   padding: 13px 14px;
   font-size: 15px;
@@ -220,37 +234,38 @@
   background: #fcf7ff;
 }
 
-/* כפתור שליחה עגול */
-.sendButton {
-  margin-left: 8px;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  background: #4a3aff;
-  color: #fff;
-  border: none;
+/* כפתור קובץ והקלטה אחר כך */
+.attachBtn,
+.recordBtn {
+  order: 2;
+  margin: 0 8px 0 0;
+}
+
+/* כפתור הקלטת קול */
+.recordBtn {
+  width: 40px;
+  height: 40px;
+  background: #eee;
   border-radius: 50%;
-  font-size: 19px;
+  border: none;
+  font-size: 18px;
+  color: #d32f2f;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   transition: background 0.18s;
-  opacity: 1;
 }
-.sendButton:disabled {
-  background: #d1c4e9;
-  opacity: 0.6;
-  cursor: not-allowed;
+.recordBtn:hover {
+  background: #f5c6cb;
 }
-.sendButton:hover:enabled {
-  background: #6a5aff;
-  opacity: 0.97;
+.recordBtn.recording {
+  background: #d32f2f;
+  color: #fff;
 }
 
 /* כפתור קובץ */
 .attachBtn {
-  margin-right: 8px;
   width: 40px;
   height: 40px;
   background: #eee;
@@ -272,23 +287,6 @@
 }
 
 /* כפתור שליחה שטוח */
-.sendButtonFlat {
-  width: 40px;
-  height: 40px;
-  background: none;
-  border: none;
-  outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  /* היפוך השוליים: נניח שוליים ימניים במקום שמאליים */
-  margin-right: 8px;
-  margin-left: 0;
-  border-radius: 50%;
-  transition: background 0.14s;
-}
 .sendButtonFlat:disabled {
   opacity: 0.33;
   cursor: not-allowed;
@@ -304,30 +302,6 @@
   margin-left: 1px;
   display: flex;
   align-items: center;
-}
-
-/* כפתור הקלטת קול */
-.recordBtn {
-  margin-right: 8px;
-  width: 40px;
-  height: 40px;
-  background: #eee;
-  border-radius: 50%;
-  border: none;
-  font-size: 18px;
-  color: #d32f2f;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.18s;
-}
-.recordBtn:hover {
-  background: #f5c6cb;
-}
-.recordBtn.recording {
-  background: #d32f2f;
-  color: #fff;
 }
 
 /* הודעה ריקה */
