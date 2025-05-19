@@ -91,31 +91,21 @@
 }
 
 /* הודעה שלך */
-.mine {
-  align-self: flex-end;
-  background: #dcf8c6;
-  color: #2e2d2c;
-  border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 18px;
-  margin-right: 12px;
-  margin-left: 0;
+.message.mine {
+  align-self: flex-end;      /* מוצמד לימין */
+  background: #e3ffe5;
   text-align: right;
-  box-shadow: 0 2px 8px #b8e1b1;
-  border: 1px solid #cde7be;
+  margin-right: 0;
+  margin-left: 32px;         /* ריווח מצד שמאל */
 }
 
-/* הודעה של הצד השני */
-.theirs {
-  align-self: flex-start;
+/* הודעות של העסק — צד שמאל */
+.message.theirs {
+  align-self: flex-start;    /* מוצמד לשמאל */
   background: #fff;
-  color: #222;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 18px;
-  box-shadow: 0 2px 8px #0001;
-  margin-left: 12px;
-  margin-right: 0;
   text-align: left;
-  border: 1px solid #eee;
+  margin-left: 0;
+  margin-right: 32px;        /* ריווח מצד ימין */
 }
 
 /* מטה של ההודעה (זמן וסטטוס) */
