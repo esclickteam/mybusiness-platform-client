@@ -109,28 +109,12 @@ export default function BusinessDashboardLayout() {
           ))}
 
           <main className="dashboard-content">
-            {isMobile && isMessagesTab && !showSidebar && (
-              <button
-                onClick={() => setShowSidebar(true)}
-                style={{
-                  marginBottom: "1rem",
-                  padding: "8px 16px",
-                  fontSize: "1rem",
-                  borderRadius: "6px",
-                  border: "none",
-                  backgroundColor: "#4a3aff",
-                  color: "#fff",
-                  cursor: "pointer",
-                }}
-                aria-label="הצג סיידבר"
-              >
-                ☰ תפריט
-              </button>
-            )}
-
             {isMessagesTab && (
               <button
-                onClick={() => navigate(`/business/${businessId}/dashboard`)}
+                onClick={() => {
+                  setShowSidebar(true);
+                  navigate(`/business/${businessId}/dashboard`);
+                }}
                 style={{
                   marginBottom: "1rem",
                   padding: "8px 16px",
