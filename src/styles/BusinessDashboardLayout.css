@@ -1,7 +1,6 @@
-/* גרדיאנט גלובלי כבר ב־index.css, אין צורך ברקעים מקומיים */
+/* גרדיאנט גלובלי כבר ב־index.css */
 .rtl-wrapper {
   direction: rtl;
-  background: none;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -11,37 +10,30 @@
   display: flex;
   width: 100%;
   margin: 0;
-  background: none;
   position: relative;
 }
 
-/* סיידבר (בכל המידות לצד ימין דרך rtl) */
+/* סיידבר (בכל הגדלים בצד ימין) */
 .sidebar {
   min-width: 240px !important;
-  max-width: 100% !important;
   padding: 1rem !important;
   background-color: #d1b3ff9a !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  box-sizing: border-box !important;
   height: 100vh !important;
   overflow-y: auto !important;
-  transition: transform 0.35s cubic-bezier(.47,1.64,.41,.8);
+  transition: transform 0.35s ease;
 }
 
-/* סיידבר במובייל עם slide (עובד עם class 'mobile') */
+/* סיידבר במובייל */
 .sidebar.mobile {
   position: fixed !important;
-  top: 0;
-  right: 0;
+  top: 0; right: 0;
   width: 83vw !important;
   max-width: 350px !important;
   height: 100vh !important;
-  z-index: 9001;
   background: #f9edff !important;
-  transform: translateX(0);
   box-shadow: -8px 0 36px #0001;
-  transition: transform 0.33s cubic-bezier(.55,.04,.44,1.67);
+  transform: translateX(0);
+  z-index: 9001;
 }
 
 /* סיידבר מוסתר במובייל */
@@ -49,99 +41,58 @@
   transform: translateX(100%);
 }
 
-/* Overlay במובייל */
+/* אוברליי ברקע */
 .sidebar-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
   background: rgba(44,18,85,0.13);
   z-index: 9000;
-  transition: opacity 0.25s;
 }
 
-/* כותרת הסיידבר */
-.sidebar h2 {
-  margin: 0 0 1rem 0;
-  font-size: 1.2rem;
-  color: var(--text-main);
-}
-
-/* רשימת הקישורים */
+/* קישורים */
 .sidebar nav {
   display: flex !important;
   flex-direction: column !important;
-  gap: 0.5rem !important;
-  height: 100% !important;
+  gap: .5rem !important;
 }
-
 .sidebar a {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  min-height: 60px !important;
-  padding: 0.75rem 1rem !important;
+  padding: .75rem 1rem !important;
   border-radius: 6px !important;
   color: var(--text-secondary) !important;
   text-decoration: none !important;
-  transition: background 0.2s !important;
-  box-sizing: border-box !important;
-  line-height: 1.4 !important;
-  overflow-wrap: break-word !important;
-  white-space: normal !important;
-  font-size: 1rem;
 }
-
-.sidebar a:hover {
-  background: rgba(138, 43, 226, 0.1) !important;
-}
-
 .sidebar a.active {
   background: var(--primary) !important;
   color: #fff !important;
 }
 
-/* קונטיינר תפריט CRM */
-.crm-submenu {
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 1 1 auto !important;
-  background: rgba(138, 43, 226, 0.15) !important;
-  padding: 0.75rem 1rem !important;
-  border-radius: 0.5rem !important;
-  gap: 0.5rem !important;
-  margin-top: 0.5rem !important;
-}
-
-/* תוכן הדשבורד */
+/* תוכן */
 .dashboard-content {
-  position: relative;
   flex: 1;
   padding: 1rem;
-  background: none;
 }
 
-/* כפתור toggle אחד לסיידבר (☰ או ✕) */
+/* כפתור toggle יחיד ☰ / ✕ */
 .sidebar-toggle-button {
   position: fixed;
-  top: 12px;
-  right: 12px;
+  top: 12px; right: 12px;
   z-index: 9999;
+  width: 44px; height: 44px;
   background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 4px;
-  width: 44px;
-  height: 44px;
-  display: none; /* יופיע רק במובייל */
+  font-size: 1.7rem;
+  display: none;      /* רואים רק במובייל */
   align-items: center;
   justify-content: center;
-  font-size: 1.7rem;
   cursor: pointer;
   box-shadow: 0 2px 12px #b39ddb55;
-  transition: background 0.2s;
+  transition: background .2s;
 }
 
-/* במובייל בלבד: להציג את כפתור ה-toggle */
+/* במובייל בלבד – מציגים את כפתור ה-toggle */
 @media (max-width: 768px) {
   .business-dashboard-layout {
     flex-direction: column !important;
@@ -157,7 +108,7 @@
   }
 }
 
-/* בדסקטופ: הכפתור מוסתר, הסיידבר קבוע */
+/* בדסקטופ – הכפתור מוסתר, הסיידבר נשאר קבוע */
 @media (min-width: 769px) {
   .sidebar-toggle-button {
     display: none;
