@@ -15,11 +15,11 @@
   transition: filter 0.3s ease;
 }
 
-/* טשטוש התוכן כשהסיידבר פתוח במובייל */
+/* הסרה של טשטוש התוכן כשסיידבר פתוח במובייל */
 .sidebar-open .business-dashboard-layout {
-  filter: blur(3px);
-  pointer-events: none;
-  user-select: none;
+  filter: none; /* אין טשטוש */
+  pointer-events: auto;
+  user-select: auto;
 }
 
 /* הסתרה גורפת של כפתור סגירה ישן */
@@ -67,10 +67,10 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(44, 18, 85, 0.28) !important;
+  background: rgba(44, 18, 85, 0.13) !important; /* שקיפות קלה */
   z-index: 9000 !important; /* מתחת לסיידבר */
   cursor: pointer;
-  backdrop-filter: blur(2px);
+  backdrop-filter: none; /* אין טשטוש */
   transition: opacity 0.3s ease;
   opacity: 1;
 }
@@ -169,8 +169,6 @@
   .sidebar.mobile.open {
     transform: translateX(0) !important;
   }
-  
-  
 }
 
 /* בדסקטופ – הסיידבר תמיד גלוי, הכפתור מוסתר */
