@@ -22,7 +22,6 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  // אתחול לפי רוחב המסך: מובייל -> סגור, דסקטופ -> פתוח
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
@@ -33,7 +32,7 @@ export default function BusinessDashboardLayout() {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       if (mobile) {
-        setShowSidebar(false);  // סגור תמיד במובייל
+        setShowSidebar(false); // סגור תמיד במובייל
       } else {
         setShowSidebar(true);
       }
@@ -57,8 +56,6 @@ export default function BusinessDashboardLayout() {
     }
     // eslint-disable-next-line
   }, [user, loading, location.search, location.state, navigate]);
-
-  // הסרת הלוגיקה שקבעה פתיחה אוטומטית של הסיידבר בטאב הודעות במובייל
 
   // Trap focus for accessibility
   useEffect(() => {
@@ -149,11 +146,11 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* Close Sidebar Button (mobile) */}
-          {isMobile && showSidebar && (
+          {/* Toggle Sidebar Button (mobile) */}
+          {isMobile && (
             <button
-              onClick={() => setShowSidebar(false)}
-              aria-label="סגור תפריט"
+              onClick={() => setShowSidebar((prev) => !prev)}
+              aria-label={showSidebar ? "הסתר תפריט / חזור לדשבורד" : "פתח תפריט"}
               style={{
                 position: "fixed",
                 top: 16,
@@ -168,34 +165,13 @@ export default function BusinessDashboardLayout() {
                 fontSize: "24px",
                 cursor: "pointer",
                 boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                userSelect: "none",
               }}
             >
-              ×
-            </button>
-          )}
-
-          {/* Open Sidebar Button (mobile) */}
-          {isMobile && !showSidebar && (
-            <button
-              onClick={() => setShowSidebar(true)}
-              aria-label="פתח תפריט"
-              style={{
-                position: "fixed",
-                top: 16,
-                left: 16,
-                zIndex: 9999,
-                backgroundColor: "#7c4dff",
-                border: "none",
-                borderRadius: "50%",
-                width: 40,
-                height: 40,
-                color: "#fff",
-                fontSize: "24px",
-                cursor: "pointer",
-                boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)",
-              }}
-            >
-              ☰
+              {showSidebar ? "×" : "☰"}
             </button>
           )}
 
