@@ -38,7 +38,7 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     });
 
     socketRef.current.on("newMessage", (msg) => {
-      setMessages(prev => [...prev, msg]);
+      setMessages((prev) => [...prev, msg]);
     });
 
     socketRef.current.on("typing", ({ from }) => {
@@ -157,7 +157,8 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           ) : (
             <div
               key={m._id || i}
-              className={`message${m.from === businessId ? " mine" : " theirs"}`}>
+              className={`message${m.from === businessId ? " mine" : " theirs"}`}
+            >
               <div className="content">
                 {m.fileUrl ? (
                   m.fileUrl.endsWith(".webm") ? (

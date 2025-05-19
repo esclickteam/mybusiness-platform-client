@@ -178,30 +178,30 @@
 
 /* כפתור שליחה משמאל */
 .sendButtonFlat {
-  order: -1; /* מציב ראשון */
-  width: 40px;
-  height: 40px;
-  background: #f6f1fb;
-  color: #7c43bd;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 28px;
-  transition: background 0.18s;
-  margin: 0;
+  order: -1 !important;
+  width: 40px !important;
+  height: 40px !important;
+  background: #f6f1fb !important;
+  color: #7c43bd !important;
+  border: none !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 28px !important;
+  transition: background 0.18s !important;
+  margin: 0 !important;
 }
 .sendButtonFlat:disabled {
-  background: #ede7f6;
-  color: #b8a2e3;
-  cursor: not-allowed;
-  opacity: 0.8;
+  background: #ede7f6 !important;
+  color: #b8a2e3 !important;
+  cursor: not-allowed !important;
+  opacity: 0.8 !important;
 }
 .sendButtonFlat:hover:enabled,
 .sendButtonFlat:focus:enabled {
-  background: #7f6fff;
+  background: #7f6fff !important;
 }
 
 /* שדה קלט באמצע */
@@ -290,21 +290,4 @@
   color: #777;
   font-size: 14px;
   padding: 12px 0;
-}
-
-.sendButtonFlat {
-  order: -1 !important;
-  width: 40px !important;
-  height: 40px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  background: #f6f1fb !important;
-  color: #7c43bd !important;
-  border: none !important;
-  border-radius: 50% !important;
-  font-size: 28px !important;
-  transition: background 0.18s !important;
-  margin: 0 !important;
 }
