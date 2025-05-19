@@ -70,8 +70,6 @@
   color: #fff !important;
 }
 
-
-
 /* קונטיינר תפריט CRM */
 .crm-submenu {
   display: flex !important;
@@ -89,4 +87,19 @@
   flex: 1;
   padding: 1rem;
   background: none;
+}
+
+/* ======= הסתרת הסיידבר במובייל ======= */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none !important;
+  }
+  .dashboard-content {
+    width: 100% !important;
+    height: 100vh !important;
+    padding: 1rem !important;
+  }
+  .business-dashboard-layout {
+    flex-direction: column !important;
+  }
 }

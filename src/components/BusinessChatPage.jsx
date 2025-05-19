@@ -1,4 +1,3 @@
-// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
@@ -14,6 +13,15 @@ export default function BusinessChatPage() {
   const [loading, setLoading] = useState(false);
   const socketRef = useRef();
 
+  // מזהים מובייל לפי רוחב חלון
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -28,11 +36,15 @@ export default function BusinessChatPage() {
       if (res.ok) {
         const data = Array.isArray(res.conversations) ? res.conversations : [];
         setConvos(data);
+
+        // במובייל - בוחרים אוטומטית את השיחה הראשונה אם קיימת
         if (data.length && !selected) {
           const first = data[0];
           const convoId = first._id || first.conversationId;
           const partnerId = first.participants.find((p) => p !== businessId) || "";
-          setSelected({ conversationId: convoId, partnerId });
+          if (isMobile) {
+            setSelected({ conversationId: convoId, partnerId });
+          }
         }
       } else {
         console.error("Error loading conversations:", res.error);
@@ -43,12 +55,9 @@ export default function BusinessChatPage() {
     return () => {
       socketRef.current.disconnect();
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, isMobile, selected]);
 
-  const handleSelect = (conversationId) => {
-    const convo = convos.find((c) => (c._id || c.conversationId) === conversationId);
-    if (!convo) return;
-    const partnerId = convo.participants.find((p) => p !== businessId) || "";
+  const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
   };
 
@@ -56,13 +65,14 @@ export default function BusinessChatPage() {
     return <p className={styles.loading}>טוען מידע…</p>;
   }
 
-  // כאן אנחנו בודקים האם יש שיחה נבחרת.
-  // אם כן, לא מציגים את הסיידבר, רק את הצ'אט.
-  // אם לא, מציגים רק את הסיידבר עם רשימת השיחות (או טקסט טעינה).
   return (
     <div className={styles.whatsappBg}>
-      <div className={styles.chatContainer} style={{ flexDirection: selected ? "column" : "row" }}>
-        {!selected && (
+      <div
+        className={styles.chatContainer}
+        style={{ flexDirection: isMobile ? "column" : selected ? "column" : "row" }}
+      >
+        {/* בדסקטופ בלבד, ואם לא נבחרה שיחה, מציגים סיידבר */}
+        {!isMobile && !selected && (
           <aside className={styles.sidebarInner}>
             {loading ? (
               <p className={styles.loading}>טוען שיחות…</p>
@@ -87,7 +97,10 @@ export default function BusinessChatPage() {
               socket={socketRef.current}
             />
           ) : (
-            !loading && <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+            !loading &&
+            !isMobile && (
+              <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+            )
           )}
         </section>
       </div>
