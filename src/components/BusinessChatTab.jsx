@@ -1,3 +1,4 @@
+// src/components/BusinessChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./BusinessChatTab.css";
@@ -17,7 +18,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   const mediaRecorder = useRef(null);
   const recordedChunks = useRef([]);
 
-  // Load history + open socket
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
@@ -56,7 +56,6 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     };
   }, [conversationId, businessId, customerId, businessName]);
 
-  // Auto-scroll
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
@@ -192,8 +191,29 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       </div>
 
       <div className="inputBar">
-        {/* כפתורים משמאל */}
-        <div className="inputBar-left">
+        {/* כפתור שליחה משמאל */}
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          disabled={sending || !input.trim()}
+          title="שלח"
+        >
+          ◀
+        </button>
+
+        {/* שדה הקלט באמצע */}
+        <input
+          className="inputField"
+          type="text"
+          placeholder="הקלד הודעה..."
+          value={input}
+          disabled={sending}
+          onChange={handleInput}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+        />
+
+        {/* כפתורי צרף והקלטה מימין */}
+        <div className="inputBar-right">
           <button
             type="button"
             className="attachBtn"
@@ -212,28 +232,14 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           >
             🎤
           </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="fileInput"
+            onChange={handleFileChange}
+            accept="image/*,audio/*,video/*"
+          />
         </div>
-
-        {/* השדה באמצע */}
-        <input
-          className="inputField"
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          disabled={sending}
-          onChange={handleInput}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        />
-
-        {/* כפתור שליחה מימין */}
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-          title="שלח"
-        >
-          ◀
-        </button>
       </div>
     </>
   );

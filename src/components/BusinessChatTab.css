@@ -163,24 +163,7 @@
   50% { opacity: 0.5; }
 }
 
-/* אין חיבור */
-.connection-bar {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  background: #e57373;
-  color: #fff;
-  text-align: center;
-  padding: 4px 0;
-  font-size: 14px;
-  z-index: 10;
-  animation: slideDown 0.3s;
-}
-@keyframes slideDown {
-  from { transform: translateY(-100%); }
-  to   { transform: none; }
-}
-
-/* --- שורת הקלט --- */
+/* שורת הקלט */
 .inputBar {
   display: flex;
   align-items: center;
@@ -190,10 +173,12 @@
   min-height: 66px;
   z-index: 1;
   gap: 10px;
+  justify-content: flex-start; /* מיישר משמאל */
 }
 
 /* כפתור שליחה משמאל */
 .sendButtonFlat {
+  order: -1; /* מציב ראשון */
   width: 40px;
   height: 40px;
   background: #f6f1fb;
@@ -240,7 +225,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
+  margin-left: auto; /* מזיז לצד ימין */
 }
 
 /* כפתור הקלטה */
