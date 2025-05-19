@@ -146,15 +146,15 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* Toggle Sidebar Button (mobile) עם טקסט ברור ומיקום ימני לפי CSS */}
+          {/* Toggle Sidebar Button (mobile) עם הזזה למטה */}
           {isMobile && (
             <button
               onClick={() => setShowSidebar((prev) => !prev)}
               aria-label={showSidebar ? "הסתר תפריט / חזור לדשבורד" : "פתח תפריט"}
               style={{
                 position: "fixed",
-                top: 16,
-                right: 12, // לפי CSS שהעברת
+                top: 60, // הזזה למטה
+                right: 12,
                 zIndex: 9999,
                 backgroundColor: "#7c4dff",
                 border: "none",
