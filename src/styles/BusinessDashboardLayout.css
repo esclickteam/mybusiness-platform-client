@@ -169,11 +169,8 @@
   .sidebar.mobile.open {
     transform: translateX(0) !important;
   }
-  /* כשהסיידבר פתוח, תן מרווח לתוכן ולטשטש מעט */
-  .sidebar.mobile.open ~ .dashboard-content {
-    margin-right: 83vw !important;
-    filter: none
-  }
+  
+  
 }
 
 /* בדסקטופ – הסיידבר תמיד גלוי, הכפתור מוסתר */
