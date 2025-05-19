@@ -197,50 +197,48 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       </div>
 
       <div className="inputBar">
-  {/* כפתור שלח - שמאל */}
-  <button
-    className="sendButtonFlat"
-    onClick={sendMessage}
-    disabled={sending || !input.trim()}
-    title="שלח"
-  >
-    ◀
-  </button>
-
-  {/* שדה הקלט */}
-  <input
-    className="inputField"
-    type="text"
-    placeholder="הקלד הודעה..."
-    value={input}
-    disabled={sending}
-    onChange={handleInput}
-    onKeyDown={e => e.key === "Enter" && sendMessage()}
-  />
-
-  {/* כפתורי ימין */}
-  <div className="inputBar-right">
-    <button
-      type="button"
-      className="attachBtn"
-      title="צרף קובץ"
-      onClick={onAttachClick}
-      disabled={sending}
-    >📎</button>
-    <button
-      type="button"
-      className={`recordBtn${recording ? " recording" : ""}`}
-      title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-      onClick={toggleRecording}
-      disabled={sending}
-    >🎤</button>
-    <input
-      type="file"
-      ref={fileInputRef}
-      style={{ display: 'none' }}
-      onChange={onFileChange}
-      disabled={sending}
-    />
+        {/* כפתור שלח - שמאל */}
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          disabled={sending || !input.trim()}
+          title="שלח"
+        >
+          ◀
+        </button>
+        {/* שדה הקלט */}
+        <input
+          className="inputField"
+          type="text"
+          placeholder="הקלד הודעה..."
+          value={input}
+          disabled={sending}
+          onChange={handleInput}
+          onKeyDown={e => e.key === "Enter" && sendMessage()}
+        />
+        {/* כפתורי ימין */}
+        <div className="inputBar-right">
+          <button
+            type="button"
+            className="attachBtn"
+            title="צרף קובץ"
+            onClick={handleAttach}
+            disabled={sending}
+          >📎</button>
+          <button
+            type="button"
+            className={`recordBtn${recording ? " recording" : ""}`}
+            title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+            onClick={handleRecordToggle}
+            disabled={sending}
+          >🎤</button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+            disabled={sending}
+          />
   </div>
 </div>
     </>
