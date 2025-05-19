@@ -59,7 +59,7 @@ export default function BusinessDashboardLayout() {
     }
   }, [isMobile, isMessagesTab]);
 
-  // Trap focus inside sidebar when open (accessibility)
+  // Trap focus for accessibility
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
 
