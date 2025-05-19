@@ -12,7 +12,7 @@ export default function ConversationsList({
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
   }
 
-  // מסננים כפילויות לפי partnerId (מכל מבנה אפשרי)
+  // מסננים כפילויות לפי partnerId
   const uniqueConvs = conversations.filter((conv, idx, arr) => {
     const partnerId =
       (Array.isArray(conv.participants)
@@ -43,7 +43,6 @@ export default function ConversationsList({
           const participants = Array.isArray(conv.participants)
             ? conv.participants
             : [];
-          // partnerId: קודם מ־participants, ואם לא – מ־partnerId
           const partnerId =
             participants.find(p => p !== businessId) ||
             conv.partnerId ||
@@ -51,8 +50,10 @@ export default function ConversationsList({
           const convoId =
             conv.conversationId || conv._id || conv.id || `conv-${idx}`;
 
-          // מציגים את שם הלקוח (partnerName) תמיד אם קיים, אחרת partnerId
-          const displayName = conv.partnerName || partnerId;
+          // שים לב: סדר הצגה ברור
+          const displayName = isBusiness
+            ? (conv.customerName || conv.partnerName || partnerId)
+            : (conv.businessName || conv.partnerName || partnerId);
 
           const isActive = convoId === selectedConversationId;
 
