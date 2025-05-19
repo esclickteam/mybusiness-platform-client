@@ -1,10 +1,10 @@
 // src/components/ClientChatSection.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import API from "../api";
 import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
+import io from "socket.io-client";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
@@ -12,46 +12,56 @@ export default function ClientChatSection() {
   const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
-  const [businessName, setBusinessName]     = useState("");
-  const [loading, setLoading]               = useState(true);
-  const [error, setError]                   = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const socketRef = useRef();
 
-  // 1) יצירת או איתור השיחה
+  // התחבר ל-socket ופתח או איתר שיחה
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
-    API.post("/messages/conversations",
-      { otherId: businessId },
-      { withCredentials: true }
-    )
-      .then(res => setConversationId(res.data.conversationId))
-      .catch(() => setError("שגיאה ביצירת השיחה"))
-      .finally(() => setLoading(false));
+
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    socketRef.current = io(socketUrl, {
+      query: { userId, role: "client" },
+    });
+
+    // יצירת או איתור שיחה עם העסק דרך socket
+    socketRef.current.emit("startConversation", { otherUserId: businessId }, (res) => {
+      if (res.ok) {
+        setConversationId(res.conversationId);
+      } else {
+        setError("שגיאה ביצירת השיחה: " + (res.error || "שגיאה לא ידועה"));
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
   }, [initialized, userId, businessId]);
 
-  // 2) שליפת שם העסק
+  // שליפת שם העסק מהשיחות
   useEffect(() => {
-    if (!conversationId) return;
-    setLoading(true);
-    API.get("/messages/conversations",
-      { params: { businessId }, withCredentials: true }
-    )
-      .then(res => {
-        const arr = Array.isArray(res.data)
-          ? res.data
-          : res.data.conversations || [];
-        const conv = arr.find(c =>
+    if (!conversationId || !socketRef.current) return;
+
+    socketRef.current.emit("getConversations", {}, (res) => {
+      if (res.ok) {
+        const convos = Array.isArray(res.conversations) ? res.conversations : [];
+        const conv = convos.find(c =>
           [c.conversationId, c._id, c.id]
             .map(String)
             .includes(String(conversationId))
         );
         setBusinessName(conv?.businessName || "");
-      })
-      .catch(() => setError("שגיאה בטעינת שם העסק"))
-      .finally(() => setLoading(false));
-  }, [conversationId, businessId]);
+      } else {
+        setError("שגיאה בטעינת שם העסק");
+      }
+    });
+  }, [conversationId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
-  if (error)   return <div className={styles.error}>{error}</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
@@ -72,6 +82,7 @@ export default function ClientChatSection() {
               businessId={businessId}
               userId={userId}
               partnerId={businessId}
+              socket={socketRef.current} // אם תרצה להעביר את הסוקט
             />
           ) : (
             <div className={styles.emptyMessage}>

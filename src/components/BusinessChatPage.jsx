@@ -1,49 +1,55 @@
 // src/components/BusinessChatPage.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import API from "../api";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
+import io from "socket.io-client";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
-  const businessId = user?.businessId;  // וידאו שזה השדה הנכון
-  const [convos, setConvos]     = useState([]);
+  const businessId = user?.businessId;
+  const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
+  const socketRef = useRef();
 
-  // טען שיחות מהשרת
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    console.log("BusinessChatPage, businessId =", businessId);
     setLoading(true);
 
-    API.get("/messages/conversations", {
-      params: { businessId },
-      withCredentials: true,
-    })
-      .then(res => {
-        const data = Array.isArray(res.data) ? res.data : [];
-        setConvos(data);
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    socketRef.current = io(socketUrl, {
+      query: { userId: businessId, role: "business" },
+    });
 
+    // בקש את רשימת השיחות דרך socket (אפשר להוסיף אירוע כזה בשרת)
+    socketRef.current.emit("getConversations", {}, (res) => {
+      if (res.ok) {
+        const data = Array.isArray(res.conversations) ? res.conversations : [];
+        setConvos(data);
         if (data.length && !selected) {
           const first = data[0];
-          const convoId   = first.conversationId;
-          const partnerId = first.participants.find(p => p !== businessId) || "";
+          const convoId = first._id || first.conversationId;
+          const partnerId = first.participants.find((p) => p !== businessId) || "";
           setSelected({ conversationId: convoId, partnerId });
         }
-      })
-      .catch(err => console.error("Error loading convos:", err))
-      .finally(() => setLoading(false));
+      } else {
+        console.error("Error loading conversations:", res.error);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
   }, [initialized, businessId]);
 
-  // בחר שיחה בסיידבר
   const handleSelect = (conversationId) => {
-    const convo = convos.find(c => c.conversationId === conversationId);
+    const convo = convos.find((c) => (c._id || c.conversationId) === conversationId);
     if (!convo) return;
-    const partnerId = convo.participants.find(p => p !== businessId) || "";
+    const partnerId = convo.participants.find((p) => p !== businessId) || "";
     setSelected({ conversationId, partnerId });
   };
 
@@ -54,7 +60,6 @@ export default function BusinessChatPage() {
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
-        {/* Sidebar */}
         <aside className={styles.sidebarInner}>
           {loading ? (
             <p className={styles.loading}>טוען שיחות…</p>
@@ -69,18 +74,16 @@ export default function BusinessChatPage() {
           )}
         </aside>
 
-        {/* Chat area */}
         <section className={styles.chatArea}>
           {selected?.conversationId && selected.partnerId ? (
             <BusinessChatTab
               conversationId={selected.conversationId}
               businessId={businessId}
               customerId={selected.partnerId}
+              socket={socketRef.current} // אפשר להעביר את הסוקט כפרופ אם תרצה
             />
           ) : (
-            <div className={styles.emptyMessage}>
-              בחר שיחה כדי לראות הודעות
-            </div>
+            <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
           )}
         </section>
       </div>

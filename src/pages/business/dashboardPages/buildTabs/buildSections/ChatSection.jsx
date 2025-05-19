@@ -1,9 +1,9 @@
 // src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
-import API from "@api";
 import ChatComponent from "../../../../../components/ChatComponent";
 import styles from "./ChatSection.module.css";
+import io from "socket.io-client";
 
 export default function ChatSection({ isBusiness = false }) {
   const { user, initialized } = useAuth();
@@ -20,64 +20,83 @@ export default function ChatSection({ isBusiness = false }) {
   const [error, setError] = useState("");
 
   const businessId = user?.businessId;
+  const socketRef = useRef();
 
-  // טען את כל הלקוחות
+  // טען לקוחות
   useEffect(() => {
     if (!initialized || !businessId) return;
     setIsLoading(true);
-    API.get("/business/clients", { withCredentials: true })
-      .then(res => setClients(res.data))
-      .catch(err => {
-        console.error("שגיאה בטעינת לקוחות", err);
-        setError("לא ניתן לטעון לקוחות");
-      })
-      .finally(() => setIsLoading(false));
+    fetchClients();
   }, [initialized, businessId]);
 
-  // טען שיחות קיימות
-  useEffect(() => {
-    if (!initialized || !businessId) return;
-    fetchConversations();
-  }, [initialized, businessId]);
-
-  const fetchConversations = async () => {
-    setIsLoading(true);
-    setError("");
+  const fetchClients = async () => {
     try {
-      const res = await API.get("/messages/conversations", { withCredentials: true });
-      setConversations(res.data);
+      // כאן תוכל להשאיר API רגיל כי זה לא צ׳אט
+      const res = await fetch("/business/clients", {
+        credentials: "include"
+      });
+      const data = await res.json();
+      setClients(data);
     } catch (err) {
-      console.error("שגיאה בטעינת שיחות", err);
-      setError("שגיאה בטעינת שיחות");
-    } finally {
-      setIsLoading(false);
+      console.error("שגיאה בטעינת לקוחות", err);
+      setError("לא ניתן לטעון לקוחות");
     }
+    setIsLoading(false);
   };
 
-  // פתח שיחה חדשה
-  const startNewConversation = async () => {
-    if (!newPartnerId) return;
+  // התחבר ל-socket וטעינת שיחות
+  useEffect(() => {
+    if (!initialized || !businessId) return;
+
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    socketRef.current = io(socketUrl, {
+      query: { userId: businessId, role: "business" },
+    });
+
+    fetchConversations();
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [initialized, businessId]);
+
+  const fetchConversations = () => {
+    if (!socketRef.current) return;
     setIsLoading(true);
     setError("");
-    try {
-      const res = await API.post(
-        "/messages/conversations",
-        { otherId: newPartnerId },
-        { withCredentials: true }
-      );
-      const convId = res.data.conversationId;
-      await fetchConversations();
-      setSelected({
-        conversationId: convId,
-        partnerId: newPartnerId,
-        customerId: newPartnerId // כי פותחים שיחה מול לקוח חדש
-      });
-    } catch (err) {
-      console.error("שגיאה ביצירת שיחה", err);
-      setError("לא ניתן לפתוח שיחה");
-    } finally {
+    socketRef.current.emit("getConversations", {}, (res) => {
+      if (res.ok) {
+        const convs = Array.isArray(res.conversations) ? res.conversations : [];
+        setConversations(convs);
+      } else {
+        setError("שגיאה בטעינת שיחות");
+      }
       setIsLoading(false);
-    }
+    });
+  };
+
+  // התחלת שיחה חדשה דרך socket
+  const startNewConversation = () => {
+    if (!newPartnerId || !socketRef.current) return;
+    setIsLoading(true);
+    setError("");
+    socketRef.current.emit("startConversation", { otherUserId: newPartnerId }, (res) => {
+      if (res.ok) {
+        fetchConversations();
+        setSelected({
+          conversationId: res.conversationId,
+          partnerId: newPartnerId,
+          customerId: newPartnerId
+        });
+      } else {
+        setError("לא ניתן לפתוח שיחה");
+      }
+      setIsLoading(false);
+    });
+  };
+
+  const handleSelect = ({ conversationId, partnerId, customerId }) => {
+    setSelected({ conversationId, partnerId, customerId });
   };
 
   if (!initialized) {
@@ -89,7 +108,6 @@ export default function ChatSection({ isBusiness = false }) {
 
   return (
     <div className={styles.chatSection}>
-      {/* --- אזור הצ'אט (שיחה שנבחרה) --- */}
       <main className={styles.chatMain}>
         {selected.conversationId ? (
           <ChatComponent
@@ -98,6 +116,7 @@ export default function ChatSection({ isBusiness = false }) {
             customerId={selected.customerId}
             initialConversationId={selected.conversationId}
             isBusiness={isBusiness}
+            socket={socketRef.current} // במידת הצורך
           />
         ) : (
           <div className={styles.chatPlaceholder}>
@@ -106,7 +125,6 @@ export default function ChatSection({ isBusiness = false }) {
         )}
       </main>
 
-      {/* --- Sidebar --- */}
       <aside className={styles.chatSidebar}>
         <h3>שיחות</h3>
         <div className={styles.newConversation}>
@@ -149,7 +167,7 @@ export default function ChatSection({ isBusiness = false }) {
                   selected.conversationId === conv.conversationId ? styles.selected : ""
                 }`}
                 onClick={() =>
-                  setSelected({
+                  handleSelect({
                     conversationId: conv.conversationId,
                     partnerId,
                     customerId
