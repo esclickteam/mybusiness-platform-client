@@ -8,7 +8,7 @@ import styles from "./BusinessChatPage.module.css";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
-  const businessId = user?.businessId;
+  const businessId = user?.businessId;  // וידאו שזה השדה הנכון
   const [convos, setConvos]     = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading]   = useState(false);
@@ -16,15 +16,18 @@ export default function BusinessChatPage() {
   // טען שיחות מהשרת
   useEffect(() => {
     if (!initialized || !businessId) return;
+
+    console.log("BusinessChatPage, businessId =", businessId);
     setLoading(true);
 
-    API.get("/messages/conversations", { withCredentials: true })
+    API.get("/messages/conversations", {
+      params: { businessId },
+      withCredentials: true,
+    })
       .then(res => {
-        // השרת מחזיר מערך של { conversationId, participants, ... }
         const data = Array.isArray(res.data) ? res.data : [];
         setConvos(data);
 
-        // אם זו הפעם הראשונה, בחר אוטומטית את השיחה הראשונה
         if (data.length && !selected) {
           const first = data[0];
           const convoId   = first.conversationId;
@@ -32,7 +35,7 @@ export default function BusinessChatPage() {
           setSelected({ conversationId: convoId, partnerId });
         }
       })
-      .catch(err => console.error(err))
+      .catch(err => console.error("Error loading convos:", err))
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
