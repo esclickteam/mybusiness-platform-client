@@ -90,11 +90,10 @@ export default function BusinessChatTab({
 
   const sendMessage = () => {
     const text = input.trim();
-    if (!text) return;
-    doSend({ text });
+    if (text) doSend({ text });
   };
 
-  // טיפוס "מקליד"
+  // "מקליד..."
   const handleInput = e => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
@@ -139,9 +138,9 @@ export default function BusinessChatTab({
     setRecording(r => !r);
   };
 
-  // תצוגת הודעה לפי סוג
+  // רינדור הודעה לפי סוג
   const renderMessage = (m, idx) => (
-    <div key={m._id || idx} className={`message${m.from === businessId ? " mine" : " theirs"}`}>
+    <div key={m._id || idx} className={`message ${m.from === businessId ? "mine" : "theirs"}`}>
       {m.fileUrl ? (
         /\.(mp3|webm|wav)$/i.test(m.fileUrl) ? (
           <audio controls src={m.fileUrl} />
@@ -167,49 +166,47 @@ export default function BusinessChatTab({
   );
 
   return (
-    <div className="chat-container business">
-      <div className="message-list" ref={messageListRef}>
-        {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map(renderMessage)}
-        {isTyping && <div className="typing-indicator">הלקוח מקליד...</div>}
-      </div>
+    <div className="chatContainer">
+      <div className="chatArea">
+        <div className="messageList" ref={messageListRef}>
+          {loading && <div className="loading">טוען...</div>}
+          {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+          {messages.map(renderMessage)}
+          {isTyping && <div className="typing-indicator">הלקוח מקליד...</div>}
+        </div>
 
-      <div className="inputBar">
-        <input
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          disabled={sending}
-          onChange={handleInput}
-          onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
-          className="inputField"
-        />
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-        >
-          <span className="arrowFlat">◀</span>
-        </button>
+        <div className="inputBar">
+          <input
+            type="text"
+            placeholder="הקלד הודעה..."
+            value={input}
+            disabled={sending}
+            onChange={handleInput}
+            onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
+            className="inputField"
+          />
+          <button
+            className="sendButton"
+            onClick={sendMessage}
+            disabled={sending || !input.trim()}
+          >
+            ◀
+          </button>
 
-        <button className="attachBtn" onClick={handleAttach} title="צרף קובץ">
-          📎
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          style={{ display: "none" }}
-          onChange={handleFileChange}
-        />
+          <button className="attachBtn" onClick={handleAttach} title="צרף קובץ">
+            📎
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="fileInput"
+            onChange={handleFileChange}
+          />
 
-        <button
-          className={`recordBtn ${recording ? "active" : ""}`}
-          onClick={handleRecordToggle}
-          title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-        >
-          🎤
-        </button>
+          <button className="attachBtn" onClick={handleRecordToggle} title={recording ? "עצור הקלטה" : "התחל הקלטה"}>
+            🎤
+          </button>
+        </div>
       </div>
     </div>
   );
