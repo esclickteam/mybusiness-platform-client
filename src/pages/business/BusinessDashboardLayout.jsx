@@ -24,28 +24,23 @@ export default function BusinessDashboardLayout() {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
-  const [collapsed, setCollapsed] = useState(false); // collapsed in desktop
 
-  // שינוי מצב מובייל/דסקטופ על resize
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       setShowSidebar(!mobile);
-      if (mobile) setCollapsed(false);
     };
     window.addEventListener("resize", onResize);
     onResize();
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // נעילת גלילה ברקע במובייל
   useEffect(() => {
     document.body.style.overflow = isMobile && showSidebar ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isMobile, showSidebar]);
 
-  // ESC סוגר במובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const onKey = e => e.key === "Escape" && setShowSidebar(false);
@@ -53,7 +48,6 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
-  // הגנת גישה וניווט ברירת מחדל
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -74,32 +68,31 @@ export default function BusinessDashboardLayout() {
             <div
               className="sidebar-overlay"
               onClick={() => setShowSidebar(false)}
-              aria-label="סגור תפריט"
+              aria-label={"סגור תפריט צדדי"}
               role="button"
             />
           )}
 
           {/* הסיידבר */}
           {showSidebar && (
-            <aside className={`sidebar ${isMobile ? 'mobile' : collapsed ? 'collapsed' : ''}`}>
-              {/* collapse button for desktop */}
-              {!isMobile && (
-                <button
-                  className="sidebar-collapse-btn"
-                  onClick={() => setCollapsed(prev => !prev)}
-                  aria-label={collapsed ? 'הצג סיידבר' : 'הסתר סיידבר'}
-                >
-                  {collapsed ? '⯈' : '⯇'}
-                </button>
-              )}
+            <aside className={`sidebar ${isMobile ? 'mobile' : ''}`}>
               <nav>
                 {user?.role === "business" && (
-                  <NavLink to={`/business/${businessId}`} end className={({ isActive }) => isActive ? "active" : undefined}>
+                  <NavLink
+                    to={`/business/${businessId}`}
+                    end
+                    className={({ isActive }) => isActive ? "active" : undefined}
+                  >
                     👀 צפייה בפרופיל
                   </NavLink>
                 )}
                 {tabs.map(({ path, label }) => (
-                  <NavLink key={path} to={path} end className={({ isActive }) => isActive ? "active" : undefined}>
+                  <NavLink
+                    key={path}
+                    to={path}
+                    end
+                    className={({ isActive }) => isActive ? "active" : undefined}
+                  >
                     {label}
                   </NavLink>
                 ))}
@@ -107,12 +100,12 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
-          {/* כפתור יחיד למובייל ☰/✕ */}
+          {/* Toggle רק במובייל */}
           {isMobile && (
             <button
               className="sidebar-toggle-button"
               onClick={() => setShowSidebar(prev => !prev)}
-              aria-label={showSidebar ? "סגור תפריט" : "פתח תפריט"}
+              aria-label={showSidebar ? 'סגור תפריט צדדי' : 'פתח תפריט צדדי'}
             >
               {showSidebar ? "✕" : "☰"}
             </button>
