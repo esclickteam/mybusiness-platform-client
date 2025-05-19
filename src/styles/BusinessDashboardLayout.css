@@ -14,7 +14,7 @@
   background: none;
 }
 
-/* סיידבר (עכשיו בצד ימין דרך rtl) */
+/* סיידבר (בכל המידות לצד ימין דרך rtl) */
 .sidebar {
   min-width: 240px !important;
   max-width: 100% !important;
@@ -26,7 +26,6 @@
   height: 100vh !important;
   overflow-y: auto !important;
   transition: transform 0.35s cubic-bezier(.47,1.64,.41,.8);
-  /* default no slide in desktop */
 }
 
 /* סיידבר במובייל עם slide (עובד עם class 'mobile') */
@@ -34,11 +33,9 @@
   position: fixed !important;
   top: 0;
   right: 0;
-  min-width: 83vw !important;
   width: 83vw !important;
   max-width: 350px !important;
   height: 100vh !important;
-  border-radius: 0 !important;
   z-index: 9001;
   background: #f9edff !important;
   transform: translateX(0);
@@ -46,7 +43,7 @@
   transition: transform 0.33s cubic-bezier(.55,.04,.44,1.67);
 }
 
-/* סיידבר מוסתר (כשלא showSidebar) */
+/* סיידבר מוסתר במובייל */
 .sidebar.mobile.closed {
   transform: translateX(100%);
 }
@@ -63,16 +60,17 @@
 
 /* כפתור ✕ לסגירה מהירה במובייל */
 .close-sidebar-btn {
-  position: absolute;
-  top: 14px;
-  left: 16px;
+  position: fixed;
+  top: 12px;
+  left: 12px;
   background: none;
   border: none;
   color: #6a1b9a;
   font-size: 2rem;
   font-weight: bold;
-  z-index: 9999;
+  z-index: 10000;
   cursor: pointer;
+  display: none; /* מוצג בדינמיות דרך JS */
 }
 
 /* כותרת הסיידבר */
@@ -136,33 +134,36 @@
   background: none;
 }
 
-/* כפתור toggle לסיידבר */
+/* כפתור toggle לסיידבר (☰ או ✕) */
 .sidebar-toggle-button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+  position: fixed;
+  top: 12px;
+  right: 12px;
   z-index: 9999;
   background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 4px;
-  padding: 0.5rem;
-  font-size: 1.7rem;
-  cursor: pointer;
-  transition: background 0.2s;
   width: 44px; height: 44px;
   display: flex;
-  align-items: center; justify-content: center;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  cursor: pointer;
   box-shadow: 0 2px 12px #b39ddb55;
+  transition: background 0.2s;
 }
 
-/* ======= הסתרת הסיידבר רק כאשר המשתמש סוגר אותו ======= */
-.sidebar[style*="display: none"],
-.sidebar.hidden {
-  display: none !important;
+/* בדסקטופ הכפתור נשאר קבוע */
+@media (min-width: 769px) {
+  .sidebar-toggle-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
 }
 
-/* --- התאמות מובייל (נוסף לדברים למעלה) --- */
+/* במובייל: */
 @media (max-width: 768px) {
   .business-dashboard-layout {
     flex-direction: column !important;
@@ -170,56 +171,15 @@
   .dashboard-content {
     width: 100vw !important;
     height: 100vh !important;
-    padding: 1rem !important;
+    padding: 1rem 1rem 1rem 1rem !important;
     padding-top: 60px !important;
   }
-
-  /* כפתור ☰ תמיד בימין עליון, רק כשהסיידבר סגור */
+  /* כפתור ☰ מוצג רק כשסגור */
   .sidebar-toggle-button {
-    position: fixed !important;
-    top: 12px !important;
-    right: 12px !important;
-    left: auto !important;
-    z-index: 9999 !important;
-    background: var(--primary);
-    box-shadow: 0 2px 12px #b39ddb55;
-    display: flex !important;
-    align-items: center; justify-content: center;
+    display: flex;
   }
-
-  /* כפתור ✕ לסגירה – שמאל עליון, רק כשהסיידבר פתוח */
-  .close-sidebar-btn {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    right: auto;
-    background: none;
-    border: none;
-    color: #6a1b9a;
-    font-size: 2rem;
-    font-weight: bold;
-    z-index: 10000;
-    cursor: pointer;
-    display: flex !important;
-    align-items: center; justify-content: center;
+  /* כפתור ✕ מוצג רק כשפתוח */
+  .sidebar.mobile + .dashboard-content .close-sidebar-btn {
+    display: flex;
   }
-}
-
-/* בדסקטופ, הכפתור נשאר בימין עליון */
-@media (min-width: 769px) {
-  .sidebar-toggle-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    left: auto;
-    z-index: 9999;
-  }
-  .close-sidebar-btn {
-    display: none !important;
-  }
-}
-
-/* ברירת מחדל: לא להציג את כפתור ✕ (סגירה) אלא אם פתוח במובייל */
-.close-sidebar-btn {
-  display: none;
 }

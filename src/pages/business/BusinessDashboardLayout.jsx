@@ -22,14 +22,12 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  // מאותחל לפי מצב חלון
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
 
-  // לשיפור נגישות: רפרנס לכפתור סגירה
   const closeBtnRef = useRef(null);
 
-  // התאמת מובייל/דסקטופ
+  // התמודדות עם שינוי רזולוציה
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -41,43 +39,34 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // UX: הסתרת גלילה כשהסיידבר פתוח במובייל
+  // ניגוד גלילה כשהסיידבר פתוח במובייל
   useEffect(() => {
-    if (isMobile && showSidebar) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = isMobile && showSidebar ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isMobile, showSidebar]);
 
-  // UX: ESC סוגר סיידבר
+  // לחיצה על ESC תסגור במובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
-    const handleEsc = (e) => {
-      if (e.key === "Escape") setShowSidebar(false);
-    };
+    const handleEsc = e => e.key === "Escape" && setShowSidebar(false);
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isMobile, showSidebar]);
 
-  // UX: פוקוס אוטומטי על כפתור סגירה במובייל
+  // פוקוס אוטומטי לכפתור הסגירה במעבר
   useEffect(() => {
-    if (isMobile && showSidebar) {
-      closeBtnRef.current?.focus();
-    }
+    if (isMobile && showSidebar) closeBtnRef.current?.focus();
   }, [isMobile, showSidebar]);
 
-  // הגנת גישה
+  // הגנת גישה וניווט ברירת מחדל
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
       return;
     }
-    const basePath = `/business/${businessId}`;
-    if (location.pathname === basePath || location.pathname === `${basePath}/`) {
+    const base = `/business/${businessId}`;
+    if (location.pathname === base || location.pathname === `${base}/`) {
       navigate("dashboard", { replace: true });
-      return;
     }
   }, [user, loading, location.pathname, navigate, businessId]);
 
@@ -85,7 +74,7 @@ export default function BusinessDashboardLayout() {
     <BusinessServicesProvider>
       <div className="rtl-wrapper">
         <div className="business-dashboard-layout">
-          {/* Overlay במובייל */}
+          {/* רק במובייל: רקע חצי־שקוף בהקלקה על האוברליי */}
           {isMobile && showSidebar && (
             <div
               className="sidebar-overlay"
@@ -96,33 +85,40 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* Sidebar */}
+          {/* סיידבר */}
           {showSidebar && (
             <aside
               className={`sidebar${isMobile ? " mobile" : ""}`}
               aria-label="ניווט ראשי"
-              tabIndex={-1}
             >
               <nav className="sidebar-menu">
                 {user?.role === "business" && (
-                  <NavLink to={`/business/${businessId}`} end className={({ isActive }) => (isActive ? "active" : undefined)}>
+                  <NavLink
+                    to={`/business/${businessId}`}
+                    end
+                    className={({ isActive }) => isActive ? "active" : undefined}
+                  >
                     👀 צפייה בפרופיל
                   </NavLink>
                 )}
                 {tabs.map(({ path, label }) => (
-                  <NavLink key={path} to={path} end className={({ isActive }) => (isActive ? "active" : undefined)}>
+                  <NavLink
+                    key={path}
+                    to={path}
+                    end
+                    className={({ isActive }) => isActive ? "active" : undefined}
+                  >
                     {label}
                   </NavLink>
                 ))}
               </nav>
-              {/* כפתור ✕ לסגירה מהירה - במובייל בלבד */}
+              {/* כפתור X לסגירה במובייל */}
               {isMobile && (
                 <button
                   className="close-sidebar-btn"
                   onClick={() => setShowSidebar(false)}
                   aria-label="סגור תפריט צד"
                   ref={closeBtnRef}
-                  tabIndex={0}
                 >
                   ✕
                 </button>
@@ -131,26 +127,24 @@ export default function BusinessDashboardLayout() {
           )}
 
           <main className="dashboard-content">
-            {/* כפתור ☰ במובייל (רק כשהסיידבר סגור) */}
-            {(isMobile && !showSidebar) && (
+            {/* כפתור ☰ במובייל כשהסיידבר סגור */}
+            {isMobile && !showSidebar && (
               <button
                 className="sidebar-toggle-button"
                 onClick={() => setShowSidebar(true)}
                 aria-label="פתח תפריט צד"
-                tabIndex={0}
               >
                 ☰
               </button>
             )}
-            {/* בדסקטופ - כפתור סגירה/פתיחה רגיל */}
+            {/* בכפתור אחד לדסקטופ */}
             {!isMobile && (
               <button
                 className="sidebar-toggle-button"
                 onClick={() => setShowSidebar(prev => !prev)}
                 aria-label={showSidebar ? "הסתר סיידבר" : "הצג סיידבר"}
-                tabIndex={0}
               >
-                {showSidebar ? '✕' : '☰'}
+                {showSidebar ? "✕" : "☰"}
               </button>
             )}
             <Outlet />
