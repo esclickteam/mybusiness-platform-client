@@ -13,17 +13,22 @@
   position: relative;
 }
 
-/* סיידבר (בכל הגדלים בצד ימין) */
+/* הסתרה גורפת של כפתור סגירה ישן */
+.close-sidebar-btn {
+  display: none !important;
+}
+
+/* סיידבר (בכל הגדלים – מיקום צד ימין דרך rtl) */
 .sidebar {
   min-width: 240px !important;
   padding: 1rem !important;
   background-color: #d1b3ff9a !important;
   height: 100vh !important;
   overflow-y: auto !important;
-  transition: transform 0.35s ease;
+  transition: transform 0.35s ease !important;
 }
 
-/* סיידבר במובייל */
+/* במובייל – slide-in/out */
 .sidebar.mobile {
   position: fixed !important;
   top: 0; right: 0;
@@ -31,26 +36,24 @@
   max-width: 350px !important;
   height: 100vh !important;
   background: #f9edff !important;
-  box-shadow: -8px 0 36px #0001;
-  transform: translateX(0);
-  z-index: 9001;
+  box-shadow: -8px 0 36px #0001 !important;
+  transform: translateX(0) !important;
+  z-index: 9001 !important;
 }
-
-/* סיידבר מוסתר במובייל */
 .sidebar.mobile.closed {
-  transform: translateX(100%);
+  transform: translateX(100%) !important;
 }
 
-/* אוברליי ברקע */
+/* אופרליי של רקע כשהסיידבר פתוח במובייל */
 .sidebar-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
-  background: rgba(44,18,85,0.13);
-  z-index: 9000;
+  background: rgba(44,18,85,0.13) !important;
+  z-index: 9000 !important;
 }
 
-/* קישורים */
+/* קישורים פנימיים */
 .sidebar nav {
   display: flex !important;
   flex-direction: column !important;
@@ -61,19 +64,20 @@
   border-radius: 6px !important;
   color: var(--text-secondary) !important;
   text-decoration: none !important;
+  transition: background .2s !important;
 }
 .sidebar a.active {
   background: var(--primary) !important;
   color: #fff !important;
 }
 
-/* תוכן */
+/* תוכן הדשבורד */
 .dashboard-content {
   flex: 1;
   padding: 1rem;
 }
 
-/* כפתור toggle יחיד ☰ / ✕ */
+/* כפתור יחיד ☰/✕ לסיידבר */
 .sidebar-toggle-button {
   position: fixed;
   top: 12px; right: 12px;
@@ -84,7 +88,7 @@
   border: none;
   border-radius: 4px;
   font-size: 1.7rem;
-  display: none;      /* רואים רק במובייל */
+  display: none;             /* נסתר כברירת מחדל */
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -92,7 +96,7 @@
   transition: background .2s;
 }
 
-/* במובייל בלבד – מציגים את כפתור ה-toggle */
+/* במובייל בלבד – מציגים את הכפתור */
 @media (max-width: 768px) {
   .business-dashboard-layout {
     flex-direction: column !important;
@@ -104,13 +108,13 @@
     padding-top: 60px !important;
   }
   .sidebar-toggle-button {
-    display: flex;
+    display: flex !important;
   }
 }
 
-/* בדסקטופ – הכפתור מוסתר, הסיידבר נשאר קבוע */
+/* בדסקטופ – הכפתור מוסתר, הסיידבר קבוע */
 @media (min-width: 769px) {
   .sidebar-toggle-button {
-    display: none;
+    display: none !important;
   }
 }
