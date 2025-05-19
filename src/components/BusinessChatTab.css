@@ -291,3 +291,20 @@
   font-size: 14px;
   padding: 12px 0;
 }
+
+.sendButtonFlat {
+  order: -1 !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  background: #f6f1fb !important;
+  color: #7c43bd !important;
+  border: none !important;
+  border-radius: 50% !important;
+  font-size: 28px !important;
+  transition: background 0.18s !important;
+  margin: 0 !important;
+}
