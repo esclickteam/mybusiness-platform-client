@@ -1,43 +1,52 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../api";
+import API from "../api"; // baseURL = /api
 import "./BusinessChatTab.css";
 
-export default function BusinessChatTab({ conversationId, businessId, customerId }) {
+export default function BusinessChatTab({
+  conversationId,
+  businessId,
+  customerId,
+}) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const socketRef = useRef();
   const messageListRef = useRef();
   const typingTimeout = useRef();
+  const fileInputRef = useRef();
 
+  // הקלטה קולית
+  const [recording, setRecording] = useState(false);
+  const mediaRecorderRef = useRef();
+  const recordedChunksRef = useRef([]);
+
+  // טעינת היסטוריה + Socket.IO
   useEffect(() => {
     if (!conversationId) return;
-
     setLoading(true);
+
+    // טעינת היסטוריה דרך REST
     API.get("/messages/history", {
       params: { conversationId },
-      withCredentials: true,
     })
-      .then(res => {
-        const loaded = Array.isArray(res.data)
-          ? res.data
-          : res.data.messages || [];
-        setMessages(loaded);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      .then(res => setMessages(res.data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
 
-    // התחבר לסוקט
+    // התחברות לסוקט
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
-      query: { conversationId, businessId, userId: businessId, role: "business" },
-    });
-
-    socketRef.current.on("connect", () => {
-      socketRef.current.emit("joinRoom", conversationId);
+      path: "/socket.io",
+      query: {
+        conversationId,
+        businessId,
+        userId: businessId,
+        role: "business",
+      },
     });
 
     socketRef.current.on("newMessage", msg => {
@@ -45,14 +54,15 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
         const exists = prev.some(
           m =>
             (m._id && msg._id && m._id === msg._id) ||
-            (m.timestamp === msg.timestamp && m.from === msg.from && m.text === msg.text)
+            (m.timestamp === msg.timestamp &&
+              m.from === msg.from &&
+              m.text === msg.text)
         );
         if (exists) return prev;
         return [...prev, msg];
       });
     });
 
-    // "הלקוח מקליד..."
     socketRef.current.on("typing", ({ from }) => {
       if (from === customerId) {
         setIsTyping(true);
@@ -62,11 +72,10 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     });
 
     return () => {
-      socketRef.current?.disconnect();
-      setMessages([]);
+      socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
     };
-  }, [conversationId, businessId, customerId]);
+  }, [conversationId]);
 
   // גלילה אוטומטית
   useEffect(() => {
@@ -75,36 +84,84 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     }
   }, [messages, isTyping]);
 
-  const sendMessage = () => {
-    if (!input.trim() || !conversationId || !customerId || sending) return;
-
-    if (!socketRef.current || socketRef.current.disconnected) {
-      alert("❌ אין חיבור לשרת הצ'אט. נסה לרענן.");
-      return;
-    }
+  // מרכז השליחה (טקסט / קובץ / קול)
+  const doSend = async ({ text = "", file, audioBlob }) => {
+    if (!conversationId) return;
+    const to = customerId;
+    const form = new FormData();
+    form.append("to", to);
+    form.append("conversationId", conversationId);
+    if (text) form.append("text", text);
+    if (file) form.append("fileData", file);
+    if (audioBlob)
+      form.append("fileData", new File([audioBlob], "voice.webm"));
 
     setSending(true);
-    const msg = {
-      conversationId,
-      from: businessId,
-      to: customerId,
-      text: input.trim(),
-      timestamp: new Date().toISOString(),
-      status: "sending",
-    };
-
-    socketRef.current.emit("sendMessage", msg, ack => {
-      setSending(false);
+    try {
+      await API.post("/messages/send", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       setInput("");
-      if (!ack?.success) alert("שגיאה בשליחת ההודעה. נסה שוב.");
-    });
+      // ההודעה תתווסף דרך הסוקט
+    } catch (err) {
+      console.error("Send error:", err);
+      alert("שגיאה בשליחת ההודעה");
+    } finally {
+      setSending(false);
+    }
   };
 
-  // שליחת "מקליד..." כל עוד מקלידים
-  const handleInput = (e) => {
+  // שליחת טקסט
+  const sendText = () => {
+    const txt = input.trim();
+    if (!txt || sending) return;
+    doSend({ text: txt });
+  };
+
+  // טיפול קובץ
+  const handleAttach = () => fileInputRef.current.click();
+  const handleFileChange = e => {
+    const file = e.target.files?.[0];
+    if (file) doSend({ file });
+    e.target.value = null;
+  };
+
+  // טיפול הקלטה קולית
+  const handleRecordToggle = async () => {
+    if (recording) {
+      mediaRecorderRef.current.stop();
+    } else {
+      recordedChunksRef.current = [];
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorderRef.current = new MediaRecorder(stream);
+        mediaRecorderRef.current.ondataavailable = ev => {
+          if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
+        };
+        mediaRecorderRef.current.onstop = () => {
+          const blob = new Blob(recordedChunksRef.current, {
+            type: "audio/webm",
+          });
+          doSend({ audioBlob: blob });
+        };
+        mediaRecorderRef.current.start();
+      } catch (err) {
+        console.error("Recording error:", err);
+        alert("לא הצלחנו להתחיל הקלטה");
+      }
+    }
+    setRecording(r => !r);
+  };
+
+  // שליחת 'מקליד...'
+  const handleInput = e => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
-      socketRef.current.emit("typing", { conversationId, from: businessId, to: customerId });
+      socketRef.current.emit("typing", {
+        conversationId,
+        from: businessId,
+        to: customerId,
+      });
     }
   };
 
@@ -112,10 +169,14 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     <>
       <div className="messageList" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {!loading && messages.length === 0 && (
+          <div className="empty">עדיין אין הודעות</div>
+        )}
         {messages.map((m, i) =>
           m.system ? (
-            <div key={i} className="system-message">{m.text}</div>
+            <div key={i} className="system-message">
+              {m.text}
+            </div>
           ) : (
             <div
               key={m._id || i}
@@ -125,7 +186,24 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
                 (m.status === "sending" ? " sending" : "")
               }
             >
-              <div className="text">{m.text}</div>
+              {/* תצוגת קובץ/אודיו/טקסט */}
+              {m.fileUrl ? (
+                m.fileUrl.match(/\.(mp3|webm|wav)$/i) ? (
+                  <audio controls src={m.fileUrl} />
+                ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
+                  <img
+                    src={m.fileUrl}
+                    alt={m.fileName || "image"}
+                    className="attachedImage"
+                  />
+                ) : (
+                  <a href={m.fileUrl} target="_blank" rel="noopener">
+                    {m.fileName || "קובץ להורדה"}
+                  </a>
+                )
+              ) : (
+                <div className="text">{m.text}</div>
+              )}
               <div className="meta">
                 <span className="time">
                   {new Date(m.timestamp).toLocaleTimeString("he-IL", {
@@ -140,19 +218,25 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
             </div>
           )
         )}
-        {isTyping && (
-          <div className="typing-indicator">הלקוח מקליד...</div>
-        )}
+        {isTyping && <div className="typing-indicator">הלקוח מקליד...</div>}
       </div>
+
       <div className="inputBar">
         <button
           type="button"
           className="attachBtn"
+          onClick={handleAttach}
           title="צרף קובץ"
-          onClick={() => alert("להוסיף לוגיקת קובץ כאן!")}
         >
           📎
         </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+
         <input
           className="inputField"
           type="text"
@@ -160,15 +244,23 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
           value={input}
           disabled={sending}
           onChange={handleInput}
-          onKeyDown={e => e.key === "Enter" && sendMessage()}
+          onKeyDown={e => e.key === "Enter" && sendText()}
         />
+
         <button
           className="sendButtonFlat"
-          onClick={sendMessage}
-          title="שלח"
+          onClick={sendText}
           disabled={sending || !input.trim()}
         >
           <span className="arrowFlat">◀</span>
+        </button>
+
+        <button
+          className={`recordBtn ${recording ? "active" : ""}`}
+          onClick={handleRecordToggle}
+          title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+        >
+          🎤
         </button>
       </div>
     </>
