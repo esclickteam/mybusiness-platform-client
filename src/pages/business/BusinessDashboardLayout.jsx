@@ -33,10 +33,17 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // הגנת גישה וניווט ראשוני לפי פרמטרים
+  // הגנת גישה וניווט ראשוני לפי נתיב
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
+      return;
+    }
+
+    // אם הגענו לבסיס ללא טאב, ניגש לדשבורד
+    const basePath = `/business/${businessId}`;
+    if (location.pathname === basePath) {
+      navigate("dashboard", { replace: true });
       return;
     }
 
@@ -50,7 +57,7 @@ export default function BusinessDashboardLayout() {
       navigate(`./${tabFromState}`, { replace: true });
     }
     // eslint-disable-next-line
-  }, [user, loading, location.search, location.state, navigate]);
+  }, [user, loading, location.pathname, location.search, location.state, navigate]);
 
   const isMessagesTab = /\/messages(\/|$)/.test(location.pathname);
   const isDashboardTab = /\/dashboard(\/|$)/.test(location.pathname);
