@@ -38,11 +38,9 @@ export default function BusinessDashboardLayout() {
       navigate("/", { replace: true });
       return;
     }
-
     const searchParams = new URLSearchParams(location.search);
     const tabFromQuery = searchParams.get("tab");
     const tabFromState = location.state?.activeTab;
-
     if (tabFromQuery && tabs.some((t) => t.path === tabFromQuery)) {
       navigate(`./${tabFromQuery}`, { replace: true });
     } else if (tabFromState && tabs.some((t) => t.path === tabFromState)) {
@@ -65,37 +63,36 @@ export default function BusinessDashboardLayout() {
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
 
-    const focusableElementsString = 'a[href], area[href], input:not([disabled]), select:not([disabled]), \
-      textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex="0"], \
-      [contenteditable]';
+    const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusableEls = sidebarRef.current.querySelectorAll(focusableSelectors);
+    if (focusableEls.length === 0) return;
 
-    const firstFocusableElement = sidebarRef.current.querySelectorAll(focusableElementsString)[0];
-    const focusableContent = sidebarRef.current.querySelectorAll(focusableElementsString);
-    const lastFocusableElement = focusableContent[focusableContent.length - 1];
+    const firstEl = focusableEls[0];
+    const lastEl = focusableEls[focusableEls.length - 1];
 
     const handleKeyDown = (e) => {
-      if (e.key === 'Tab') {
-        if (e.shiftKey) { // shift + tab
-          if (document.activeElement === firstFocusableElement) {
+      if (e.key === "Tab") {
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl) {
             e.preventDefault();
-            lastFocusableElement.focus();
+            lastEl.focus();
           }
-        } else { // tab
-          if (document.activeElement === lastFocusableElement) {
+        } else {
+          if (document.activeElement === lastEl) {
             e.preventDefault();
-            firstFocusableElement.focus();
+            firstEl.focus();
           }
         }
       }
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setShowSidebar(false);
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    firstFocusableElement?.focus();
+    document.addEventListener("keydown", handleKeyDown);
+    firstEl.focus();
 
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isMobile, showSidebar]);
 
   return (
@@ -109,25 +106,17 @@ export default function BusinessDashboardLayout() {
               ref={sidebarRef}
               aria-modal={isMobile && showSidebar ? "true" : undefined}
               role={isMobile && showSidebar ? "dialog" : undefined}
+              id="sidebar"
             >
               <h2>ניהול העסק</h2>
               <nav>
                 {user?.role === "business" && (
-                  <NavLink
-                    to={`/business/${businessId}`}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
+                  <NavLink to={`/business/${businessId}`} end className={({ isActive }) => (isActive ? "active" : undefined)}>
                     👀 צפייה בפרופיל
                   </NavLink>
                 )}
                 {tabs.map(({ path, label }) => (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
+                  <NavLink key={path} to={path} end className={({ isActive }) => (isActive ? "active" : undefined)}>
                     {label}
                   </NavLink>
                 ))}
@@ -135,7 +124,7 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
-          {/* Overlay for mobile when sidebar is open */}
+          {/* Overlay */}
           {isMobile && showSidebar && (
             <div
               className="sidebar-overlay"
@@ -143,48 +132,32 @@ export default function BusinessDashboardLayout() {
               aria-label="סגור תפריט"
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowSidebar(false); }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setShowSidebar(false); }}
             />
           )}
 
-          {/* Toggle button for mobile */}
+          {/* Toggle button */}
           {isMobile && (
             <button
               className="sidebar-toggle-button"
-              onClick={() => setShowSidebar((v) => !v)}
-              aria-label={showSidebar ? "סגור תפריט" : "פתח תפריט"}
+              onClick={() => {
+                if (showSidebar && isMessagesTab) {
+                  setShowSidebar(false);
+                  navigate(`/business/${businessId}/dashboard`);
+                } else {
+                  setShowSidebar((v) => !v);
+                }
+              }}
+              aria-label={showSidebar ? (isMessagesTab ? "חזור לדשבורד וסגור תפריט" : "סגור תפריט") : "פתח תפריט"}
               aria-expanded={showSidebar}
               aria-controls="sidebar"
             >
-              {showSidebar ? "✕" : "☰"}
+              {showSidebar && isMessagesTab ? "←" : "☰"}
             </button>
           )}
 
           {/* Main content */}
           <main className="dashboard-content" tabIndex={-1} aria-live="polite" aria-atomic="true">
-            {/* Back to dashboard button in messages tab (mobile) */}
-            {isMobile && isMessagesTab && (
-              <button
-                onClick={() => {
-                  setShowSidebar(false);
-                  navigate(`/business/${businessId}/dashboard`);
-                }}
-                style={{
-                  marginBottom: "1rem",
-                  padding: "8px 16px",
-                  fontSize: "1rem",
-                  borderRadius: "6px",
-                  border: "none",
-                  backgroundColor: "#4a3aff",
-                  color: "#fff",
-                  cursor: "pointer",
-                }}
-                aria-label="חזרה לדשבורד וסגירת תפריט"
-              >
-                ← חזרה לדשבורד
-              </button>
-            )}
-
             <Outlet />
           </main>
         </div>
