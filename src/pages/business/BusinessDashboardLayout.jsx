@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
@@ -24,6 +24,7 @@ export default function BusinessDashboardLayout() {
 
   const [isMobile, setIsMobile] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const sidebarRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -60,16 +61,55 @@ export default function BusinessDashboardLayout() {
     }
   }, [isMobile, isMessagesTab]);
 
+  // Trap focus inside sidebar when open (accessibility)
+  useEffect(() => {
+    if (!isMobile || !showSidebar) return;
+
+    const focusableElementsString = 'a[href], area[href], input:not([disabled]), select:not([disabled]), \
+      textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex="0"], \
+      [contenteditable]';
+
+    const firstFocusableElement = sidebarRef.current.querySelectorAll(focusableElementsString)[0];
+    const focusableContent = sidebarRef.current.querySelectorAll(focusableElementsString);
+    const lastFocusableElement = focusableContent[focusableContent.length - 1];
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Tab') {
+        if (e.shiftKey) { // shift + tab
+          if (document.activeElement === firstFocusableElement) {
+            e.preventDefault();
+            lastFocusableElement.focus();
+          }
+        } else { // tab
+          if (document.activeElement === lastFocusableElement) {
+            e.preventDefault();
+            firstFocusableElement.focus();
+          }
+        }
+      }
+      if (e.key === 'Escape') {
+        setShowSidebar(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    firstFocusableElement?.focus();
+
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMobile, showSidebar]);
+
   return (
     <BusinessServicesProvider>
-      <div className="rtl-wrapper">
-        <div
-          className={`business-dashboard-layout${isMobile && isMessagesTab ? " mobile-messages" : ""}`}
-        >
+      <div className={`rtl-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
+        <div className={`business-dashboard-layout${isMobile && isMessagesTab ? " mobile-messages" : ""}`}>
           {/* Sidebar */}
           {(!isMobile || showSidebar) && (
-            <aside className="sidebar">
-              {/* לא מציגים כפתור סגירה בתוך הסיידבר */}
+            <aside
+              className={`sidebar ${isMobile ? "mobile open" : ""}`}
+              ref={sidebarRef}
+              aria-modal={isMobile && showSidebar ? "true" : undefined}
+              role={isMobile && showSidebar ? "dialog" : undefined}
+            >
               <h2>ניהול העסק</h2>
               <nav>
                 {user?.role === "business" && (
@@ -95,9 +135,34 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
+          {/* Overlay for mobile when sidebar is open */}
+          {isMobile && showSidebar && (
+            <div
+              className="sidebar-overlay"
+              onClick={() => setShowSidebar(false)}
+              aria-label="סגור תפריט"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowSidebar(false); }}
+            />
+          )}
+
+          {/* Toggle button for mobile */}
+          {isMobile && (
+            <button
+              className="sidebar-toggle-button"
+              onClick={() => setShowSidebar((v) => !v)}
+              aria-label={showSidebar ? "סגור תפריט" : "פתח תפריט"}
+              aria-expanded={showSidebar}
+              aria-controls="sidebar"
+            >
+              {showSidebar ? "✕" : "☰"}
+            </button>
+          )}
+
           {/* Main content */}
-          <main className="dashboard-content">
-            {/* כפתור חזרה לדשבורד במובייל בתוך תצוגת הודעות */}
+          <main className="dashboard-content" tabIndex={-1} aria-live="polite" aria-atomic="true">
+            {/* Back to dashboard button in messages tab (mobile) */}
             {isMobile && isMessagesTab && (
               <button
                 onClick={() => {
