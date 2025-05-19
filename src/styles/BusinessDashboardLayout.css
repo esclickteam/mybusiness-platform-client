@@ -84,29 +84,56 @@
 
 /* תוכן הדשבורד */
 .dashboard-content {
+  position: relative;
   flex: 1;
   padding: 1rem;
   background: none;
 }
 
-/* ======= הסתרת הסיידבר רק בטאב הודעות במובייל ======= */
-@media (max-width: 768px) {
-  /* ברירת מחדל: תציג את הסיידבר */
-  .sidebar {
-    display: block !important;
-  }
-  /* כשה־layout מקבל class של mobile-messages (בטאב הודעות) – תסתיר */
-  .business-dashboard-layout.mobile-messages .sidebar {
-    display: none !important;
-  }
+/* כפתור toggle לסיידבר */
+.sidebar-toggle-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
 
-  /* התאמות לתוכן */
-  .dashboard-content {
-    width: 100% !important;
-    height: 100vh !important;
-    padding: 1rem !important;
-  }
+/* כפתור חזרה בדף הודעות */
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  background: #4a3aff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* ======= הסתרת הסיידבר רק כאשר המשתמש סוגר אותו ======= */
+.sidebar[style*="display: none"],
+.sidebar.hidden {
+  display: none !important;
+}
+
+/* התאמות למובייל */
+@media (max-width: 768px) {
   .business-dashboard-layout {
     flex-direction: column !important;
+  }
+  .dashboard-content {
+    width: 100% !important;
+    height: calc(100vh - 3rem) !important; /* מתחשב בגובה כפתורי הניווט */
+    padding: 1rem !important;
   }
 }

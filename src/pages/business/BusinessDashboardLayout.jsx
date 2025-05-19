@@ -33,80 +33,36 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // הגנת גישה וניווט ראשוני לפי נתיב
+  // הגנת גישה וניווט ראשוני
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
       return;
     }
 
-    // אם הגענו לבסיס ללא טאב, ניגש לדשבורד
     const basePath = `/business/${businessId}`;
-    if (location.pathname === basePath) {
+    if (location.pathname === basePath || location.pathname === `${basePath}/`) {
       navigate("dashboard", { replace: true });
       return;
     }
-
-    const searchParams = new URLSearchParams(location.search);
-    const tabFromQuery = searchParams.get("tab");
-    const tabFromState = location.state?.activeTab;
-
-    if (tabFromQuery && tabs.some(t => t.path === tabFromQuery)) {
-      navigate(`./${tabFromQuery}`, { replace: true });
-    } else if (tabFromState && tabs.some(t => t.path === tabFromState)) {
-      navigate(`./${tabFromState}`, { replace: true });
-    }
-    // eslint-disable-next-line
-  }, [user, loading, location.pathname, location.search, location.state, navigate]);
+  }, [user, loading, location.pathname, navigate, businessId]);
 
   const isMessagesTab = /\/messages(\/|$)/.test(location.pathname);
-  const isDashboardTab = /\/dashboard(\/|$)/.test(location.pathname);
-
-  // הצגת/הסתרת סיידבר בהתאם לטאב במובייל
-  useEffect(() => {
-    if (isMobile) {
-      setShowSidebar(!isMessagesTab);
-    } else {
-      setShowSidebar(true);
-    }
-  }, [isMobile, isMessagesTab]);
 
   return (
     <BusinessServicesProvider>
       <div className="rtl-wrapper">
-        <div
-          key={location.pathname}
-          className={`business-dashboard-layout${isMobile && isMessagesTab ? " mobile-messages" : ""}`}
-        >
-          {( !isMobile || showSidebar ) && (
+        <div className="business-dashboard-layout">
+          {showSidebar && (
             <aside className="sidebar">
-              {isMobile && isMessagesTab && (
-                <button
-                  onClick={() => setShowSidebar(false)}
-                  style={{ marginBottom: "1rem", padding: "8px 16px", fontSize: "1rem", borderRadius: "6px", border: "none", backgroundColor: "#ccc", cursor: "pointer" }}
-                  aria-label="הסתר סיידבר"
-                >
-                  ✕ סגור
-                </button>
-              )}
-              <h2>ניהול העסק</h2>
-              <nav>
+              <nav className="sidebar-menu">
                 {user?.role === "business" && (
-                  <NavLink
-                    to={`/business/${businessId}`}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
+                  <NavLink to={`/business/${businessId}`} end className={({ isActive }) => (isActive ? "active" : undefined)}>
                     👀 צפייה בפרופיל
                   </NavLink>
                 )}
                 {tabs.map(({ path, label }) => (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
+                  <NavLink key={path} to={path} end className={({ isActive }) => (isActive ? "active" : undefined)}>
                     {label}
                   </NavLink>
                 ))}
@@ -115,10 +71,20 @@ export default function BusinessDashboardLayout() {
           )}
 
           <main className="dashboard-content">
+            {/* כפתור מאז ומעולם לסגירה/פתיחה של הסיידבר */}
+            <button
+              className="sidebar-toggle-button"
+              onClick={() => setShowSidebar(prev => !prev)}
+              aria-label={showSidebar ? "הסתר סיידבר" : "הצג סיידבר"}
+            >
+              {showSidebar ? '✕' : '☰'}
+            </button>
+
+            {/* כפתור חזרה בדף הודעות */}
             {isMessagesTab && (
               <button
+                className="back-button"
                 onClick={() => navigate("dashboard")}
-                style={{ marginBottom: "1rem", padding: "8px 16px", fontSize: "1rem", borderRadius: "6px", border: "none", backgroundColor: "#4a3aff", color: "#fff", cursor: "pointer" }}
                 aria-label="חזרה לדשבורד"
               >
                 ← חזרה לדשבורד
