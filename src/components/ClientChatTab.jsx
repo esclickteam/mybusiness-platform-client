@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import API from "../api"; // מניח שה־baseURL מכוון אל /api/messages
+import API from "../api"; // baseURL = /api/messages
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({
@@ -19,7 +19,7 @@ export default function ClientChatTab({
   const messageListRef = useRef();
   const typingTimeout = useRef();
 
-  // לצריף קבצים
+  // לצירוף קבצים
   const fileInputRef = useRef();
 
   // להקלטה קולית
@@ -27,28 +27,25 @@ export default function ClientChatTab({
   const mediaRecorderRef = useRef();
   const recordedChunksRef = useRef([]);
 
-  // ─── טעינת היסטוריה ו-Socket.IO ───
+  // ─── טעינת היסטוריה ו־Socket.IO ───
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
 
-    // טען היסטוריה
-    API.get(`/messages/conversations/${conversationId}`, { withCredentials: true })
-      .then((res) => {
-        setMessages(res.data);
-      })
+    // קריאה ל־GET /api/messages/conversations/:id
+    API.get(`/conversations/${conversationId}`)
+      .then(res => setMessages(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
 
-    // התחבר לסוקט
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       query: { conversationId, userId, role: "client" },
     });
 
-    socketRef.current.on("newMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
+    socketRef.current.on("newMessage", msg => {
+      setMessages(prev => [...prev, msg]);
     });
 
     socketRef.current.on("typing", ({ from }) => {
@@ -79,7 +76,7 @@ export default function ClientChatTab({
     await doSend({ text });
   };
 
-  // ─── אריזה ושליחה מקור מרכזי ───
+  // ─── מרכז השליחה ───
   const doSend = async ({ text = "", file, audioBlob }) => {
     if (!conversationId) return;
     const to = businessId || partnerId;
@@ -93,11 +90,11 @@ export default function ClientChatTab({
 
     setSending(true);
     try {
-      const { data } = await API.post("/messages/send", form, {
+      // POST /api/messages/send
+      const { data } = await API.post("/send", form, {
         headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
       });
-      setMessages((prev) => [...prev, data.message]);
+      setMessages(prev => [...prev, data.message]);
       setInput("");
     } catch (err) {
       console.error("Send error:", err);
@@ -106,8 +103,8 @@ export default function ClientChatTab({
     }
   };
 
-  // ─── הקלדת "מקליד" ───
-  const handleInput = (e) => {
+  // ─── הקלדת 'מקליד...' ───
+  const handleInput = e => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
       socketRef.current.emit("typing", {
@@ -120,7 +117,7 @@ export default function ClientChatTab({
 
   // ─── קישור כפתור קובץ ───
   const handleAttach = () => fileInputRef.current.click();
-  const handleFileChange = (e) => {
+  const handleFileChange = e => {
     const file = e.target.files?.[0];
     if (file) doSend({ file });
     e.target.value = null;
@@ -135,7 +132,7 @@ export default function ClientChatTab({
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorderRef.current = new MediaRecorder(stream);
-        mediaRecorderRef.current.ondataavailable = (ev) => {
+        mediaRecorderRef.current.ondataavailable = ev => {
           if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
         };
         mediaRecorderRef.current.onstop = () => {
@@ -147,34 +144,27 @@ export default function ClientChatTab({
         console.error("Recording error:", err);
       }
     }
-    setRecording((r) => !r);
+    setRecording(r => !r);
   };
 
   return (
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
-          <div
-            key={m._id || i}
-            className={
-              "message" +
-              (m.from === userId ? " mine" : " theirs")
-            }
-          >
-            {m.fileUrl && (
+          <div key={m._id || i} className={`message${m.from===userId?' mine':' theirs'}`}>
+            {m.fileUrl ? (
               m.fileUrl.match(/\.(mp3|webm|wav)$/) ? (
                 <audio controls src={m.fileUrl} />
               ) : (
                 <a href={m.fileUrl} target="_blank" rel="noopener">
-                  {m.fileName || "קובץ להורדה"}
+                  {m.fileName||"קובץ להורדה"}
                 </a>
               )
+            ) : (
+              <div className="text">{m.text}</div>
             )}
-            {!m.fileUrl && <div className="text">{m.text}</div>}
             <div className="meta">
               <span className="time">
                 {new Date(m.timestamp).toLocaleTimeString("he-IL", {
@@ -195,39 +185,22 @@ export default function ClientChatTab({
           value={input}
           disabled={sending}
           onChange={handleInput}
-          onKeyDown={(e) =>
-            e.key === "Enter" && !e.shiftKey && sendMessage()
-          }
+          onKeyDown={e => e.key==="Enter"&&!e.shiftKey&&sendMessage()}
           className="inputField"
         />
 
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-        >
+        <button className="sendButtonFlat" onClick={sendMessage} disabled={sending||!input.trim()}>
           <span className="arrowFlat">◀</span>
         </button>
 
-        <button
-          className="attachBtn"
-          onClick={handleAttach}
-          title="צרף קובץ"
-        >📎</button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          style={{ display: "none" }}
-          onChange={handleFileChange}
-        />
+        <button className="attachBtn" onClick={handleAttach} title="צרף קובץ">📎</button>
+        <input ref={fileInputRef} type="file" style={{display:'none'}} onChange={handleFileChange} />
 
         <button
-          className={`recordBtn ${recording ? "active" : ""}`}
+          className={`recordBtn ${recording?'active':''}`}
           onClick={handleRecordToggle}
-          title={recording ? "עצור הקלטה" : "הקשק הקלטה"}
-        >
-          🎤
-        </button>
+          title={recording?'עצור הקלטה':'התחל הקלטה'}
+        >🎤</button>
       </div>
     </div>
   );
