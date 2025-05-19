@@ -43,36 +43,31 @@ export default function ConversationsList({
           const participants = Array.isArray(conv.participants)
             ? conv.participants
             : [];
-          // שליפת partnerId: קודם מ־participants, ואם לא – מ־customer._id
+          // partnerId: קודם מ־participants, ואם לא – מ־customer._id
           const partnerId =
             participants.find(p => p !== businessId) ||
             (conv.customer ? conv.customer._id : "") ||
             "";
           const convoId =
             conv._id || conv.conversationId || conv.id || `conv-${idx}`;
+
+          // מציגים את שם הלקוח או שם העסק לפי הצד
           const displayName = isBusiness
-            ? conv.customerName || partnerId
-            : conv.businessName || partnerId;
+            ? (conv.customer?.name || conv.customerName || partnerId)
+            : (conv.businessName || partnerId);
+
           const isActive = convoId === selectedConversationId;
 
-          // DEBUG - לראות בדיוק מה אתה מציג ומה עובר בלחיצה
-          console.log("Sidebar Conversation:", {
-            convoId,
-            partnerId,
-            displayName,
-            participants,
-            businessId,
-            conv,
-          });
+          // DEBUG
+          // console.log("Sidebar Conversation:", {
+          //   convoId, partnerId, displayName, participants, businessId, conv,
+          // });
 
           return (
             <div
               key={convoId}
               className={`${styles.conversationItem} ${isActive ? styles.active : ""}`}
-              onClick={() => {
-                console.log("CLICK SIDEBAR:", { convoId, partnerId, displayName });
-                onSelect(convoId, partnerId);
-              }}
+              onClick={() => onSelect(convoId, partnerId)}
             >
               {displayName}
             </div>
