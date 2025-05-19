@@ -22,14 +22,19 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const [isMobile, setIsMobile] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
+  // עדכון: מאותחל אוטומטית לפי מצב חלון (מובייל - מוסתר, דסקטופ - מוצג)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showSidebar, setShowSidebar] = useState(window.innerWidth > 768);
 
-  // קביעת מצב מובייל
+  // קביעת מצב מובייל וסיידבר
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      setShowSidebar(!mobile); // במובייל מוסתר, בדסקטופ גלוי
+    };
     window.addEventListener("resize", handleResize);
+    handleResize(); // הפעלה ראשונית
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -39,15 +44,12 @@ export default function BusinessDashboardLayout() {
       navigate("/", { replace: true });
       return;
     }
-
     const basePath = `/business/${businessId}`;
     if (location.pathname === basePath || location.pathname === `${basePath}/`) {
       navigate("dashboard", { replace: true });
       return;
     }
   }, [user, loading, location.pathname, navigate, businessId]);
-
-  // const isMessagesTab = /\/messages(\/|$)/.test(location.pathname); // לא צריך יותר
 
   return (
     <BusinessServicesProvider>
@@ -79,8 +81,6 @@ export default function BusinessDashboardLayout() {
             >
               {showSidebar ? '✕' : '☰'}
             </button>
-
-            {/* Outlet לכל תוכן הפנימי */}
             <Outlet />
           </main>
         </div>
