@@ -1,116 +1,147 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
- import "../pages/business/dashboardPages/buildTabs/ChatTab.css";
+import "./BusinessChatTab.css";
 
-export default function BusinessChatTab({ conversationId, businessId, userId }) {
+export default function BusinessChatTab({ conversationId, businessId, customerId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
   const socketRef = useRef();
-  const boxRef = useRef();
+  const messageListRef = useRef();
+
+  // debug קריטי: תדפיס תמיד את הפרופס!
+  console.log("BusinessChatTab props:", { conversationId, businessId, customerId });
 
   useEffect(() => {
     if (!conversationId) return;
 
-    API.get("/messages/history", { params: { conversationId } })
-      .then((res) => setMessages(res.data))
-      .catch(console.error);
+    // טען היסטוריית הודעות
+    API.get("/messages/history", {
+      params: { conversationId },
+      withCredentials: true,
+    })
+      .then(res => {
+        const loaded = Array.isArray(res.data)
+          ? res.data
+          : res.data.messages || [];
+        setMessages(loaded);
+      })
+      .catch(() => {});
 
+    // התחבר לסוקט
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
-      path: "/socket.io",
-      query: { conversationId, userId: businessId, role: "business" },
+      query: { conversationId, businessId, userId: businessId, role: "business" },
     });
-    socketRef.current.on("newMessage", (msg) =>
-      setMessages((prev) => [...prev, msg])
-    );
+
+    socketRef.current.on("connect", () => {
+      console.log("🟢 SOCKET CONNECTED", socketRef.current.id);
+      socketRef.current.emit("joinRoom", conversationId);
+    });
+
+    socketRef.current.on("connect_error", (err) => {
+      console.error("🔴 SOCKET CONNECT ERROR:", err);
+    });
+
+    socketRef.current.on("newMessage", msg => {
+      console.log("🔔 [SOCKET] newMessage arrived:", msg);
+      setMessages(prev => {
+        const exists = prev.some(
+          m =>
+            (m._id && msg._id && m._id === msg._id) ||
+            (m.timestamp === msg.timestamp && m.from === msg.from && m.text === msg.text)
+        );
+        if (exists) return prev;
+        return [...prev, msg];
+      });
+    });
 
     return () => {
-      socketRef.current.disconnect();
+      socketRef.current?.disconnect();
       setMessages([]);
     };
   }, [conversationId, businessId]);
 
+  // גלילה אוטומטית
   useEffect(() => {
-    if (boxRef.current) {
-      boxRef.current.scrollTop = boxRef.current.scrollHeight;
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages]);
 
   const sendMessage = () => {
-    const text = input.trim();
-    if (!text || !conversationId) return;
+    console.log("Trying to send", { input, conversationId, customerId, sending });
 
-    const payload = {
+    if (!input.trim() || !conversationId || !customerId || sending) {
+      console.warn("NOT SENDING! Missing field:", { input, conversationId, customerId, sending });
+      return;
+    }
+
+    if (!socketRef.current || socketRef.current.disconnected) {
+      alert("❌ אין חיבור לשרת הצ'אט. נסה לרענן.");
+      console.error("❌ socketRef.current לא מאותחל או מנותק!");
+      return;
+    }
+
+    setSending(true);
+    const msg = {
       conversationId,
       from: businessId,
-      to: userId,
-      text,
-      timestamp: new Date().toISOString(),
+      to: customerId,
+      text: input.trim(),
     };
 
-    if (socketRef.current?.connected) {
-      socketRef.current.emit("sendMessage", payload, (ack) =>
-        ack?.success ? setInput("") : postFallback(payload)
-      );
-    } else {
-      postFallback(payload);
-    }
-  };
+    console.log("🔵 מנסה לשלוח:", msg);
 
-  const postFallback = (payload) => {
-    API.post("/messages/history", payload)
-      .then((res) => {
-        setMessages((prev) => [...prev, res.data.message]);
+    socketRef.current.emit("sendMessage", msg, ack => {
+      setSending(false);
+      console.log("🟠 ack מהשרת:", ack);
+      if (!ack?.success) {
+        alert("שגיאה בשליחת ההודעה. נסה שוב.");
+      } else {
         setInput("");
-      })
-      .catch(console.error);
+        // ההודעה תגיע אוטומטית מ־newMessage!
+      }
+    });
   };
 
   return (
-    <div className="chat-tab-container">
-      <div className="chat-preview">
-        <h2>שיחות מלקוחות</h2>
-        <div className="chat-box" ref={boxRef}>
-          {messages.length === 0 && (
-            <div className="offline-msg">אין הודעות חדשות</div>
-          )}
-          {messages.map((m, i) => {
-            const mine = m.from?.toString() === businessId?.toString();
-            return (
-              <div
-                key={i}
-                className={`chat-message ${
-                  mine ? "sent chat-message-animate" : "received"
-                }`}
-              >
-                {m.text}
-                <div className="message-time">
-                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="chat-input-row">
-          <input
-            type="text"
-            placeholder="הקלד הודעה..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
-          <button onClick={sendMessage}>שלח</button>
-        </div>
+    <>
+      {/* רשימת ההודעות */}
+      <div className="messageList" ref={messageListRef}>
+        {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {messages.map((m, i) => (
+          <div
+            key={m._id || i}
+            className={`message ${m.from === businessId ? "mine" : "theirs"}`}
+          >
+            <div className="text">{m.text}</div>
+            <div className="time">
+              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div className="chat-settings">
-        <h2>הגדרות צ'אט</h2>
-        {/* … */}
+      {/* שורת הקלט */}
+      <div className="inputBar">
+        <input
+          className="inputField"
+          type="text"
+          placeholder="הקלד הודעה..."
+          value={input}
+          disabled={sending}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && sendMessage()}
+        />
+        <button className="sendButton" onClick={sendMessage} title="שלח" disabled={sending || !input.trim()}>
+          <span role="img" aria-label="send">✈️</span>
+        </button>
       </div>
-    </div>
+    </>
   );
 }
