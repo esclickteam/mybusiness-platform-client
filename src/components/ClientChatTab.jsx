@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import API from "../api";
-import "./ChatTab.css";
+ import "../pages/business/dashboardPages/buildTabs/ChatTab.css";
 
 export default function ClientChatTab({
   conversationId,
