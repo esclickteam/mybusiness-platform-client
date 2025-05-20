@@ -107,14 +107,12 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const mediaStreamRef = useRef(null);
 
   const getSupportedMimeType = () => {
-    const preferred = "audio/webm;codecs=opus";
+    const preferred = "audio/webm";
     if (MediaRecorder.isTypeSupported(preferred)) {
-      console.log("Using preferred mimeType:", preferred);
+      console.log("Using mimeType:", preferred);
       return preferred;
     }
-    const fallback = "audio/webm";
-    console.log("Preferred not supported, using fallback:", fallback);
-    return fallback;
+    return "audio/webm";
   };
 
   useEffect(() => {
@@ -228,6 +226,8 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   const handleRecordStop = () => {
     if (!recording || !mediaRecorderRef.current) return;
+    // אם רוצים למנוע הקלטה קצרה מדי, אפשר להוסיף בדיקה כאן:
+    // if (timer < 1) { setError("הקלטה קצרה מדי"); return; }
     mediaRecorderRef.current.stop();
     setRecording(false);
     if (timerRef.current) clearInterval(timerRef.current);
