@@ -107,14 +107,14 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const mediaStreamRef = useRef(null);
 
   const getSupportedMimeType = () => {
-    const types = [
-      "audio/webm;codecs=opus",
-      "audio/webm",
-      "audio/mp4",
-      "audio/mpeg",
-      "audio/wav",
-    ];
-    return types.find((t) => MediaRecorder.isTypeSupported(t)) || "audio/webm";
+    const preferred = "audio/webm;codecs=opus";
+    if (MediaRecorder.isTypeSupported(preferred)) {
+      console.log("Using preferred mimeType:", preferred);
+      return preferred;
+    }
+    const fallback = "audio/webm";
+    console.log("Preferred not supported, using fallback:", fallback);
+    return fallback;
   };
 
   useEffect(() => {
@@ -195,14 +195,18 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
       const mimeType = getSupportedMimeType();
+      console.log("Starting recording with mimeType:", mimeType);
       const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
+        console.log("Data available, size:", e.data.size);
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
+
       recorder.onstop = () => {
         const blob = new Blob(recordedChunksRef.current, { type: mimeType });
+        console.log("Recording stopped, blob size:", blob.size);
         setRecordedBlob(blob);
         setRecording(false);
         setTimer(0);
@@ -215,7 +219,8 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       recorder.start();
       setRecording(true);
       timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-    } catch {
+    } catch (err) {
+      console.error("Error during recording start:", err);
       setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
       setIsBlocked(true);
     }
