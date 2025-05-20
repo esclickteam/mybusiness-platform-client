@@ -1,3 +1,4 @@
+// src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./ClientChatTab.css";
@@ -27,6 +28,46 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const recordedChunksRef = useRef([]);
   const recordStopPromise = useRef(null);
 
+  // התחלת הקלטה
+  const handleRecordStart = async () => {
+    if (recording || isBlocked) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new window.MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      recordedChunksRef.current = [];
+
+      recordStopPromise.current = new Promise((resolve) => {
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+        };
+        recorder.onstop = () => {
+          const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+          setRecordedBlob(blob);
+          resolve(blob);
+        };
+      });
+
+      recorder.start();
+      setRecording(true);
+      setTimer(0);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } catch {
+      setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
+      setIsBlocked(true);
+    }
+  };
+
+  // עצירת הקלטה
+  const handleRecordStop = async () => {
+    if (!recording || !mediaRecorderRef.current) return;
+    mediaRecorderRef.current.stop();
+    clearInterval(timerRef.current);
+    setRecording(false);
+    if (recordStopPromise.current) await recordStopPromise.current;
+    setTimer(0);
+  };
+
   // בקשת הרשאת מיקרופון ותחילת הקלטה אוטומטית
   useEffect(() => {
     (async () => {
@@ -34,41 +75,12 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
         await navigator.mediaDevices.getUserMedia({ audio: true });
         setIsBlocked(false);
         setError("");
-        startRecording();
+        handleRecordStart();
       } catch {
         setIsBlocked(true);
         setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
       }
     })();
-
-    async function startRecording() {
-      if (recording || isBlocked) return;
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const recorder = new window.MediaRecorder(stream);
-        mediaRecorderRef.current = recorder;
-        recordedChunksRef.current = [];
-
-        recordStopPromise.current = new Promise((resolve) => {
-          recorder.ondataavailable = (e) => {
-            if (e.data.size > 0) recordedChunksRef.current.push(e.data);
-          };
-          recorder.onstop = () => {
-            const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
-            setRecordedBlob(blob);
-            resolve(blob);
-          };
-        });
-
-        recorder.start();
-        setRecording(true);
-        setTimer(0);
-        timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-      } catch {
-        setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
-        setIsBlocked(true);
-      }
-    }
   }, []);
 
   // חיבור סוקט וטעינת היסטוריה
@@ -155,6 +167,31 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     );
   };
 
+  // שליחת קובץ
+  const sendFile = (file) => {
+    if (!file) return;
+    setSending(true);
+    setError("");
+    const reader = new FileReader();
+    reader.onload = () => {
+      socketRef.current.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          file: { name: file.name, type: file.type, data: reader.result },
+        },
+        (ack) => {
+          setSending(false);
+          if (!ack?.ok) setError("שגיאה בשליחת קובץ");
+        }
+      );
+    };
+    reader.readAsDataURL(file);
+  };
+
   // שליחת הקלטה קולית
   const sendAudio = (blob) => {
     if (!blob) return;
@@ -178,16 +215,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       );
     };
     reader.readAsDataURL(blob);
-  };
-
-  // עצירת הקלטה (מחכה שה-blob ייווצר)
-  const handleRecordStop = async () => {
-    if (!recording || !mediaRecorderRef.current) return;
-    mediaRecorderRef.current.stop();
-    clearInterval(timerRef.current);
-    setRecording(false);
-    if (recordStopPromise.current) await recordStopPromise.current;
-    setTimer(0);
   };
 
   // שליחת הקלטה לאחר עצירה
@@ -290,7 +317,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
               ⏸️
             </button>
             <Waveform />
-            <span className="preview-timer" aria-live="polite" aria-atomic="true">
+            <span className="preview-timer" aria-live="polite"  aria-atomic="true">
               {String(Math.floor(timer / 60)).padStart(2, "0")}:
               {String(timer % 60).padStart(2, "0")}
             </span>
