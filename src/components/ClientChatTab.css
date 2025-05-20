@@ -148,12 +148,14 @@
   border-top: 1.5px solid #e1bee7;
   background: #faf7fd;
   min-height: 62px;
+  flex-wrap: nowrap; /* למנוע גלישה לשורה שנייה */
 }
 
 /* שדה הקלט */
 .input-bar textarea,
 .inputField {
-  flex: 1;
+  flex: 1 1 auto;          /* לקחת את כל הרוחב שנותר */
+  min-width: 0;            /* למנוע ברירת מחדל של מינימום רוחב */
   padding: 10px 16px;
   font-size: 15px;
   border: 1.5px solid #c3a6fa;
@@ -177,8 +179,8 @@
 /* כפתור שליחה */
 .sendButtonFlat {
   order: -1;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   background: none;
   border: none;
   outline: none;
@@ -193,6 +195,7 @@
   color: #7c43bd;
   font-size: 22px;
   font-weight: bold;
+  flex-shrink: 0;
 }
 .sendButtonFlat:disabled {
   opacity: 0.33;
@@ -206,8 +209,8 @@
 /* כפתור קובץ */
 .attachBtn {
   order: 3;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   background: #f6f1fb;
   border-radius: 50%;
   border: none;
@@ -219,10 +222,39 @@
   align-items: center;
   justify-content: center;
   margin: 0;
+  flex-shrink: 0;
 }
 .attachBtn:hover {
   background: #ede7f6;
 }
+
+/* כפתור הקלטה קולית */
+.recordBtn {
+  order: 4;
+  width: 36px;
+  height: 36px;
+  background: #f6f1fb;
+  border-radius: 50%;
+  border: none;
+  font-size: 18px;
+  color: #7c43bd;
+  cursor: pointer;
+  transition: background 0.17s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  flex-shrink: 0;
+}
+.recordBtn.recording {
+  background: #7c43bd;
+  color: white;
+}
+.recordBtn:hover {
+  background: #ede7f6;
+}
+
+/* קלט קבצים מוסתר */
 .fileInput {
   display: none;
 }
@@ -252,10 +284,11 @@
     border-radius: 22px;
   }
   .sendButtonFlat,
-  .attachBtn {
-    width: 36px;
-    height: 36px;
-    font-size: 24px;
+  .attachBtn,
+  .recordBtn {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
   }
 }
 
@@ -277,9 +310,10 @@
     padding: 8px 10px;
   }
   .sendButtonFlat,
-  .attachBtn {
-    width: 32px;
-    height: 32px;
-    font-size: 20px;
+  .attachBtn,
+  .recordBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
   }
 }

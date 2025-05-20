@@ -9,13 +9,15 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userScrolledUp, setUserScrolledUp] = useState(false);
+  const [error, setError] = useState("");          // הודעות שגיאה UI
+  const [recording, setRecording] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false); // מצב חסימה/אי הרשאה להקלטה
 
   const socketRef = useRef();
   const messageListRef = useRef();
   const typingTimeout = useRef();
   const fileInputRef = useRef();
   const textareaRef = useRef();
-  const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef();
   const recordedChunksRef = useRef([]);
 
@@ -23,6 +25,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
+    setError("");
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
@@ -54,7 +57,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     return () => {
       socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
-      // שחרור URL-ים זמניים של הודעות מקומיות
+      // שחרור URL-ים זמניים
       messages.forEach(m => {
         if (m.isLocal && m.fileUrl) {
           URL.revokeObjectURL(m.fileUrl);
@@ -87,11 +90,12 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // שליחת הודעה
+  // שליחת הודעה עם טיפול בשגיאות UI
   const sendMessage = () => {
     const text = input.trim();
     if (!text || sending) return;
     setSending(true);
+    setError("");
     socketRef.current.emit(
       "sendMessage",
       {
@@ -104,15 +108,16 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
       (ack) => {
         setSending(false);
         if (ack?.ok) setInput("");
-        else alert("שגיאה בשליחת ההודעה");
+        else setError("שגיאה בשליחת ההודעה, נסה שוב");
       }
     );
   };
 
-  // שליחת קובץ
+  // שליחת קובץ עם טיפול בשגיאות UI
   const sendFile = (file) => {
     if (!file || !conversationId) return;
     setSending(true);
+    setError("");
     const reader = new FileReader();
     reader.onload = () => {
       socketRef.current.emit(
@@ -130,25 +135,21 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
         },
         (ack) => {
           setSending(false);
-          if (!ack?.ok) alert("שגיאה בשליחת קובץ");
+          if (!ack?.ok) setError("שגיאה בשליחת קובץ");
         }
       );
     };
     reader.readAsDataURL(file);
   };
 
-  // שליחת קול עם יצירת URL זמני להצגה מידית
+  // שליחת קול עם הצגת הודעה מקומית וטעינת מצב הקלטה
   const sendAudio = (blob) => {
     if (!conversationId) return;
-
-    // יצירת URL זמני להצגה מיידית
     const audioUrl = URL.createObjectURL(blob);
-
-    // הוספת הודעה מקומית עם URL זמני
     setMessages(prev => [
       ...prev,
       {
-        _id: Date.now(), // id זמני
+        _id: Date.now(),
         from: userId,
         to: businessId,
         role: "client",
@@ -158,8 +159,8 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
         isLocal: true,
       }
     ]);
-
     setSending(true);
+    setError("");
     const reader = new FileReader();
     reader.onload = () => {
       socketRef.current.emit(
@@ -177,14 +178,14 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
         },
         (ack) => {
           setSending(false);
-          if (!ack?.ok) alert("שגיאה בשליחת קול");
+          if (!ack?.ok) setError("שגיאה בשליחת הקלטה");
         }
       );
     };
     reader.readAsDataURL(blob);
   };
 
-  // שינוי שדה הקלט עם שליחה של אירוע "מקליד"
+  // שינוי שדה הקלט עם שליחת "מקליד"
   const handleInput = (e) => {
     setInput(e.target.value);
     resizeTextarea();
@@ -205,7 +206,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     e.target.value = null;
   };
 
-  // הקלטה קולית (כמו בקוד שלך)
+  // הקלטה קולית עם טיפול בבעיות הרשאה ומצב חסימה
   const handleRecordToggle = async () => {
     if (recording) {
       mediaRecorderRef.current.stop();
@@ -224,8 +225,11 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
         };
         mediaRecorderRef.current.start();
         setRecording(true);
-      } catch {
-        alert("לא הצלחנו להתחיל הקלטה");
+        setError("");
+        setIsBlocked(false);
+      } catch (err) {
+        setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
+        setIsBlocked(true);
       }
     }
   };
@@ -270,7 +274,13 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
         {isTyping && <div className="typing-indicator">העסק מקליד...</div>}
       </div>
 
-      <div className="inputBar">
+      <div className="inputBar" role="form" aria-label="שורת הקלטה וצ'אט">
+        {error && (
+          <div role="alert" style={{ color: 'red', padding: '0 8px', fontSize: '14px' }}>
+            ⚠ {error}
+          </div>
+        )}
+
         {/* כפתור שלח - שמאל */}
         <button
           className="sendButtonFlat"
@@ -281,6 +291,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
         >
           ◀
         </button>
+
         {/* שדה הקלט (textarea) */}
         <textarea
           className="inputField"
@@ -293,6 +304,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           rows={1}
           aria-label="כתיבת הודעה"
         />
+
         {/* כפתורי ימין */}
         <div className="inputBar-right">
           <button
