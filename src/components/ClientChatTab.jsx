@@ -1,3 +1,4 @@
+// src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./ClientChatTab.css";
@@ -53,9 +54,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
       messages.forEach((m) => {
-        if (m.isLocal && m.fileUrl) {
-          URL.revokeObjectURL(m.fileUrl);
-        }
+        if (m.isLocal && m.fileUrl) URL.revokeObjectURL(m.fileUrl);
       });
     };
   }, [conversationId, businessId, userId]);
@@ -121,7 +120,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     reader.readAsDataURL(file);
   };
 
-  // הקלטת שמע בלחיצה ארוכה ושחרור
+  // התחלת הקלטה
   const handleRecordStart = async () => {
     if (recording) return;
     try {
@@ -129,15 +128,13 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       mediaRecorderRef.current = new MediaRecorder(stream);
       recordedChunksRef.current = [];
 
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) recordedChunksRef.current.push(event.data);
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
-
       mediaRecorderRef.current.onstop = () => {
         const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
         sendAudio(blob);
       };
-
       mediaRecorderRef.current.start();
       setRecording(true);
       setError("");
@@ -148,6 +145,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
+  // סיום הקלטה ושיגור
   const handleRecordStop = () => {
     if (!recording) return;
     mediaRecorderRef.current.stop();
@@ -187,7 +185,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   };
 
   const handleAttach = () => fileInputRef.current.click();
-
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) sendFile(file);
@@ -196,29 +193,19 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   return (
     <div className="chat-container client">
-      <div
-        className="message-list"
-        ref={messageListRef}
-        onScroll={onScroll}
-        aria-live="polite"
-      >
+      <div className="message-list" ref={messageListRef} onScroll={onScroll}>
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
           <div
             key={m._id || i}
-            className={`message${m.from === userId ? " mine" : " theirs"} fade-in`}
+            className={`message${m.from === userId ? " mine" : " theirs"}`}
           >
             {m.fileUrl ? (
-              (m.fileType && m.fileType.startsWith("audio")) ||
-              m.fileUrl.match(/\.(mp3|webm|wav)/i) ? (
+              (m.fileType?.startsWith("audio") || m.fileUrl.match(/\.(mp3|webm|wav)/i)) ? (
                 <audio controls src={m.fileUrl} />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
-                <img
-                  src={m.fileUrl}
-                  alt={m.fileName || "image"}
-                  style={{ maxWidth: "200px", borderRadius: "8px" }}
-                />
+                <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
                 <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
                   {m.fileName || "קובץ להורדה"}
@@ -228,9 +215,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
               <div className="text">{m.text}</div>
             )}
             <div className="meta">
-              <span
-                className="time"
-              >
+              <span className="time">
                 {new Date(m.timestamp).toLocaleTimeString("he-IL", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -242,62 +227,45 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
         {isTyping && <div className="typing-indicator">העסק מקליד...</div>}
       </div>
 
-      <div className="inputBar" role="form" aria-label="שורת הקלטה וצ'אט">
-        {error && (
-          <div
-            role="alert"
-            style={{ color: "red", padding: "0 8px", fontSize: "14px" }}
-          >
-            ⚠ {error}
-          </div>
-        )}
+      <div className="inputBar">
+        {error && <div className="error-alert">⚠ {error}</div>}
 
         <button
           className="sendButtonFlat"
           onClick={sendMessage}
           disabled={sending || !input.trim()}
           title="שלח"
-          aria-label="שלח הודעה"
         >
           ◀
         </button>
 
         <textarea
+          ref={textareaRef}
           className="inputField"
           placeholder="הקלד הודעה..."
           value={input}
-          disabled={sending}
           onChange={handleInput}
           onKeyDown={(e) =>
             e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
           }
-          ref={textareaRef}
+          disabled={sending}
           rows={1}
-          aria-label="כתיבת הודעה"
         />
 
         <div className="inputBar-right">
-          <button
-            type="button"
-            className="attachBtn"
-            title="צרף קובץ"
-            onClick={handleAttach}
-            disabled={sending}
-            aria-label="צרף קובץ"
-          >
+          <button className="attachBtn" onClick={handleAttach} disabled={sending} title="צרף קובץ">
             📎
           </button>
 
           <button
-            type="button"
             className={`recordBtn${recording ? " recording" : ""}`}
-            title={recording ? "מקליט..." : "החזק להקלטה"}
             onMouseDown={handleRecordStart}
             onMouseUp={handleRecordStop}
+            onMouseLeave={handleRecordStop}
             onTouchStart={handleRecordStart}
             onTouchEnd={handleRecordStop}
             disabled={sending}
-            aria-label={recording ? "מקליט" : "החזק להקלטה"}
+            title={recording ? "מקליט..." : "החזק להקלטה"}
           >
             🎤
           </button>
@@ -308,7 +276,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
             style={{ display: "none" }}
             onChange={handleFileChange}
             disabled={sending}
-            aria-hidden="true"
           />
         </div>
       </div>
