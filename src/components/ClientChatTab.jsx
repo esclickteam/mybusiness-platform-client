@@ -245,8 +245,11 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
             className={`message${m.from === userId ? " mine" : " theirs"} fade-in`}
           >
             {m.fileUrl ? (
-              m.fileUrl.match(/\.(mp3|webm|wav)$/i) ? (
-                <audio controls src={m.fileUrl} />
+              (m.fileType && m.fileType.startsWith('audio')) || m.fileUrl.match(/\.(mp3|webm|wav)/i) ? (
+                <>
+                  <div style={{ fontSize: '10px', color: '#666' }}>audio fileUrl: {m.fileUrl}</div>
+                  <audio controls src={m.fileUrl} />
+                </>
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img
                   src={m.fileUrl}
