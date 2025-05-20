@@ -13,6 +13,8 @@ function WhatsAppAudioPlayer({ src, userAvatar }) {
     const audio = audioRef.current;
     if (!audio) return;
 
+    audio.load();
+
     const onTimeUpdate = () => setProgress(audio.currentTime);
     const onLoadedMetadata = () => setDuration(audio.duration);
     const onEnded = () => {
@@ -40,6 +42,7 @@ function WhatsAppAudioPlayer({ src, userAvatar }) {
   };
 
   const formatTime = (time) => {
+    if (!time || isNaN(time) || !isFinite(time)) return "0:00";
     const m = Math.floor(time / 60);
     const s = Math.floor(time % 60);
     return `${m}:${s.toString().padStart(2, "0")}`;
@@ -251,11 +254,9 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   // שולח את ה-blob עצמו (binary) דרך socket.io
   const sendAudio = (blob) => {
     if (!blob) return;
-    console.log("Sending audio blob size:", blob.size);
     setSending(true);
     setError("");
 
-    // meta + binary payload
     socketRef.current.emit(
       "sendMessage",
       {
@@ -270,14 +271,12 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       },
       blob,
       (ack) => {
-        console.log("ACK from server:", ack);
         setSending(false);
         if (!ack?.ok) setError("שגיאה בשליחת הקלטה");
       }
     );
   };
 
-  // טיפול בטקסט
   const handleInputChange = (e) => {
     setInput(e.target.value);
     resizeTextarea();
@@ -290,7 +289,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
-  // שליחת טקסט
   const sendMessage = () => {
     const text = input.trim();
     if (!text || sending) return;
@@ -307,7 +305,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     );
   };
 
-  // קבצים מצורפים (לא חלק מה-K fix)
   const handleAttach = () => fileInputRef.current.click();
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -382,9 +379,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
             </div>
           </div>
         ))}
-        {isTyping && (
-          <div className="typing-indicator">העסק מקליד...</div>
-        )}
+        {isTyping && <div className="typing-indicator">העסק מקליד...</div>}
       </div>
 
       <div className="inputBar">
