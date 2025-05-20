@@ -341,7 +341,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                 <WhatsAppAudioPlayer
                   src={m.fileUrl}
                   userAvatar={m.userAvatar}
-                  duration={m.file?.duration}
+                  duration={m.fileDuration}
                 />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img
@@ -364,10 +364,10 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                   minute: "2-digit",
                 })}
               </span>
-              {m.file?.duration && (
+              {m.fileDuration && (
                 <span className="audio-length">
-                  {Math.floor(m.file.duration / 60)}:
-                  {Math.floor(m.file.duration % 60)
+                  {Math.floor(m.fileDuration / 60)}:
+                  {Math.floor(m.fileDuration % 60)
                     .toString()
                     .padStart(2, "0")}
                 </span>
