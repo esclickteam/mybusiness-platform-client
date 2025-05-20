@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./ClientChatTab.css";
 
-export default function ClientChatTab({ conversationId, businessId, userId, partnerId }) {
+export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -14,19 +14,19 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   const [isBlocked, setIsBlocked] = useState(false);
 
   const socketRef = useRef();
+  const mediaRecorderRef = useRef();
+  const recordedChunksRef = useRef([]);
   const messageListRef = useRef();
   const typingTimeout = useRef();
   const fileInputRef = useRef();
   const textareaRef = useRef();
-  const mediaRecorderRef = useRef();
-  const recordedChunksRef = useRef([]);
 
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
     setError("");
-
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
+
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       query: { conversationId, userId, role: "client", businessName: "" },
@@ -52,7 +52,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     return () => {
       socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
-      messages.forEach(m => {
+      messages.forEach((m) => {
         if (m.isLocal && m.fileUrl) {
           URL.revokeObjectURL(m.fileUrl);
         }
@@ -121,9 +121,41 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     reader.readAsDataURL(file);
   };
 
+  // הקלטת שמע בלחיצה ארוכה ושחרור
+  const handleRecordStart = async () => {
+    if (recording) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      recordedChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) recordedChunksRef.current.push(event.data);
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+        sendAudio(blob);
+      };
+
+      mediaRecorderRef.current.start();
+      setRecording(true);
+      setError("");
+      setIsBlocked(false);
+    } catch {
+      setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
+      setIsBlocked(true);
+    }
+  };
+
+  const handleRecordStop = () => {
+    if (!recording) return;
+    mediaRecorderRef.current.stop();
+    setRecording(false);
+  };
+
   const sendAudio = (blob) => {
     if (!conversationId) return;
-
     setSending(true);
     setError("");
     const reader = new FileReader();
@@ -155,45 +187,21 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   };
 
   const handleAttach = () => fileInputRef.current.click();
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) sendFile(file);
     e.target.value = null;
   };
 
-  // פונקציות להקלטה בשיטת לחיצה ארוכה
-  const handleRecordStart = async () => {
-    if (recording) return;
-    recordedChunksRef.current = [];
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      mediaRecorderRef.current.ondataavailable = (ev) => {
-        if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
-      };
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
-        sendAudio(blob);
-      };
-      mediaRecorderRef.current.start();
-      setRecording(true);
-      setError("");
-      setIsBlocked(false);
-    } catch {
-      setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
-      setIsBlocked(true);
-    }
-  };
-
-  const handleRecordStop = () => {
-    if (!recording) return;
-    mediaRecorderRef.current.stop();
-    setRecording(false);
-  };
-
   return (
     <div className="chat-container client">
-      <div className="message-list" ref={messageListRef} onScroll={onScroll} aria-live="polite">
+      <div
+        className="message-list"
+        ref={messageListRef}
+        onScroll={onScroll}
+        aria-live="polite"
+      >
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
@@ -202,7 +210,8 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
             className={`message${m.from === userId ? " mine" : " theirs"} fade-in`}
           >
             {m.fileUrl ? (
-              (m.fileType && m.fileType.startsWith('audio')) || m.fileUrl.match(/\.(mp3|webm|wav)/i) ? (
+              (m.fileType && m.fileType.startsWith("audio")) ||
+              m.fileUrl.match(/\.(mp3|webm|wav)/i) ? (
                 <audio controls src={m.fileUrl} />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img
@@ -219,7 +228,9 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
               <div className="text">{m.text}</div>
             )}
             <div className="meta">
-              <span className="time">
+              <span
+                className="time"
+              >
                 {new Date(m.timestamp).toLocaleTimeString("he-IL", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -233,7 +244,10 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
 
       <div className="inputBar" role="form" aria-label="שורת הקלטה וצ'אט">
         {error && (
-          <div role="alert" style={{ color: 'red', padding: '0 8px', fontSize: '14px' }}>
+          <div
+            role="alert"
+            style={{ color: "red", padding: "0 8px", fontSize: "14px" }}
+          >
             ⚠ {error}
           </div>
         )}
@@ -254,7 +268,9 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           value={input}
           disabled={sending}
           onChange={handleInput}
-          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
+          onKeyDown={(e) =>
+            e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
+          }
           ref={textareaRef}
           rows={1}
           aria-label="כתיבת הודעה"
@@ -271,6 +287,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           >
             📎
           </button>
+
           <button
             type="button"
             className={`recordBtn${recording ? " recording" : ""}`}
@@ -284,6 +301,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           >
             🎤
           </button>
+
           <input
             type="file"
             ref={fileInputRef}
