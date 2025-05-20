@@ -18,21 +18,20 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [isPaused, setIsPaused] = useState(false);
   const [timer, setTimer] = useState(0);
 
-  const socketRef = useRef();
-  const mediaRecorderRef = useRef();
+  const socketRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
-  const messageListRef = useRef();
-  const typingTimeout = useRef();
-  const fileInputRef = useRef();
-  const textareaRef = useRef();
-  const timerRef = useRef();
+  const messageListRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
     setError("");
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       query: { conversationId, userId, role: "client", businessName: "" },
@@ -50,17 +49,14 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     socketRef.current.on("typing", ({ from }) => {
       if (from === businessId) {
         setIsTyping(true);
-        clearTimeout(typingTimeout.current);
-        typingTimeout.current = setTimeout(() => setIsTyping(false), 1500);
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
       }
     });
 
     return () => {
       socketRef.current.disconnect();
-      clearTimeout(typingTimeout.current);
-      messages.forEach((m) => {
-        if (m.isLocal && m.fileUrl) URL.revokeObjectURL(m.fileUrl);
-      });
+      clearTimeout(typingTimeoutRef.current);
     };
   }, [conversationId, businessId, userId]);
 
@@ -102,7 +98,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   };
 
   const sendFile = (file) => {
-    if (!file || !conversationId) return;
+    if (!file) return;
     setSending(true);
     setError("");
     const reader = new FileReader();
@@ -125,32 +121,27 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     reader.readAsDataURL(file);
   };
 
-  // recording handlers
   const handleRecordStart = async () => {
     if (recording) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
       recordedChunksRef.current = [];
-
-      mediaRecorderRef.current.ondataavailable = (e) => {
+      recorder.ondataavailable = (e) => {
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
-
-      mediaRecorderRef.current.onstop = () => {
+      recorder.onstop = () => {
         const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
         setRecordedBlob(blob);
       };
-
-      mediaRecorderRef.current.start();
+      recorder.start();
       setRecording(true);
-      setError("");
-      setIsBlocked(false);
+      setIsPaused(false);
       setTimer(0);
       timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-    } catch {
+    } catch (err) {
       setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
-      setIsBlocked(true);
     }
   };
 
@@ -163,7 +154,8 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   const handleSendRecording = () => {
     if (!recordedBlob) return;
-    sendAudio(recordedBlob);
+    const file = recordedBlob;
+    sendFile(file);
     setRecordedBlob(null);
     setTimer(0);
   };
@@ -173,31 +165,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setTimer(0);
   };
 
-  const sendAudio = (blob) => {
-    if (!conversationId) return;
-    setSending(true);
-    setError("");
-    const reader = new FileReader();
-    reader.onload = () => {
-      socketRef.current.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          to: businessId,
-          role: "client",
-          file: { name: "voice.webm", type: "audio/webm", data: reader.result },
-        },
-        (ack) => {
-          setSending(false);
-          if (!ack?.ok) setError("שגיאה בשליחת הקלטה");
-        }
-      );
-    };
-    reader.readAsDataURL(blob);
-  };
-
-  const handleInput = (e) => {
+  const handleInputChange = (e) => {
     setInput(e.target.value);
     resizeTextarea();
     if (socketRef.current && !sending) {
@@ -212,11 +180,10 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     e.target.value = null;
   };
 
-  // Waveform component
   const Waveform = () => (
     <div className="waveform">
       {[...Array(5)].map((_, i) => (
-        <span key={i} className="wave-dot"></span>
+        <span key={i} className="wave-dot" />
       ))}
     </div>
   );
@@ -227,50 +194,62 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
-          <div key={m._id || i} className={`message${m.from===userId?" mine":" theirs"}`}>
-            {/* ... rendering messages ... */}
+          <div key={m._id || i} className={`message${m.from === userId ? " mine" : " theirs"}`}>
+            {m.fileUrl ? (
+              m.fileType?.startsWith("audio") ? (
+                <audio controls src={m.fileUrl} />
+              ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
+                <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
+              ) : (
+                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
+              )
+            ) : (
+              <div className="text">{m.text ?? m.message}</div>
+            )}
+            <div className="meta">
+              <span className="time">
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
+              </span>
+            </div>
           </div>
         ))}
         {isTyping && <div className="typing-indicator">העסק מקליד...</div>}
       </div>
 
       <div className="inputBar">
-        {error && <div className="error-alert">⚠ {error}</div>}
+        {!recordedBlob && error && <div className="error-alert">⚠ {error}</div>}
 
         {recordedBlob ? (
           <div className="recording-preview">
             <button className="preview-btn send" onClick={handleSendRecording}>◀</button>
-            <button
-              className={`preview-btn pause${isPaused?" paused":""}`}
-              onClick={() => {
+            <button className={`preview-btn pause${isPaused ? " paused" : ""}`} onClick={() => {
                 mediaRecorderRef.current[isPaused?"resume":"pause"]();
-                setIsPaused(p=>!p);
-              }}
-            >{isPaused?"▶":"❚❚"}</button>
+                setIsPaused((p) => !p);
+              }}>
+              {isPaused ? "▶" : "❚❚"}
+            </button>
             <Waveform />
-            <span className="preview-timer">
-              {String(Math.floor(timer/60)).padStart(2,'0')}:
-              {String(timer%60).padStart(2,'0')}
-            </span>
+            <span className="preview-timer">{`${String(Math.floor(timer/60)).padStart(2,'0')}:${String(timer%60).padStart(2,'0')}`}</span>
             <button className="preview-btn trash" onClick={handleDiscard}>🗑</button>
           </div>
         ) : (
           <>
-            <button className="sendButtonFlat" onClick={sendMessage} disabled={sending||!input.trim()}>◀</button>
+            <button className="sendButtonFlat" onClick={sendMessage} disabled={sending || !input.trim()}>◀</button>
             <textarea
               ref={textareaRef}
               className="inputField"
               placeholder="הקלד הודעה..."
               value={input}
-              onChange={handleInput}
-              onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&(e.preventDefault(),sendMessage())}
+              onChange={handleInputChange}
+              onFocus={() => setError("")}
+              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
               disabled={sending}
               rows={1}
             />
             <div className="inputBar-right">
               <button className="attachBtn" onClick={handleAttach} disabled={sending}>📎</button>
               <button
-                className={`recordBtn${recording?" recording":""}`}
+                className={`recordBtn${recording ? " recording" : ""}`}
                 onMouseDown={handleRecordStart}
                 onMouseUp={handleRecordStop}
                 onMouseLeave={handleRecordStop}
