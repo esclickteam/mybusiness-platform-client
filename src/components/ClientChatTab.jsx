@@ -70,18 +70,17 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   // בקשת הרשאת מיקרופון ותחילת הקלטה אוטומטית
   useEffect(() => {
-    (async () => {
-      try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        setIsBlocked(false);
-        setError("");
-        handleRecordStart();
-      } catch {
-        setIsBlocked(true);
-        setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
-      }
-    })();
-  }, []);
+  (async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setIsBlocked(false);
+      setError("");
+    } catch {
+      setIsBlocked(true);
+      setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
+    }
+  })();
+}, []);
 
   // חיבור סוקט וטעינת היסטוריה
   useEffect(() => {
