@@ -1,3 +1,5 @@
+/* src/components/ClientChatTab.css */
+
 /* תצוגת צ'אט (ללקוח) */
 .chat-container.client,
 .message-list {
@@ -176,6 +178,53 @@
   background: #f6edff;
 }
 
+/* סגנונות לפאנל פריוויו ההקלטה */
+.recording-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #f6f1fb;
+  border-top: 1px solid #e1bee7;
+}
+.preview-btn {
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+.preview-btn.send { color: #7c43bd; font-size: 24px; }
+.preview-btn.pause { color: #e57373; }
+.preview-btn.pause.paused { color: #14bc5b; }
+.preview-btn.trash { color: #e57373; }
+.preview-timer {
+  font-size: 14px;
+  font-family: monospace;
+  min-width: 48px;
+  text-align: center;
+}
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.wave-dot {
+  width: 4px;
+  height: 16px;
+  background: #7c43bd;
+  animation: wave 1s infinite ease-in-out;
+}
+.wave-dot:nth-child(2) { animation-delay: 0.1s; }
+.wave-dot:nth-child(3) { animation-delay: 0.2s; }
+.wave-dot:nth-child(4) { animation-delay: 0.3s; }
+.wave-dot:nth-child(5) { animation-delay: 0.4s; }
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
 /* כפתור שליחה */
 .sendButtonFlat {
   order: -1;
@@ -243,7 +292,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
+ 	margin: 0;
   flex-shrink: 0;
 }
 .recordBtn.recording {
