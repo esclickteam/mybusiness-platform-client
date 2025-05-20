@@ -178,33 +178,7 @@
   background: #f6edff;
 }
 
-/* סגנונות לפאנל פריוויו ההקלטה */
-.recording-preview {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: #f6f1fb;
-  border-top: 1px solid #e1bee7;
-}
-.preview-btn {
-  width: 32px;
-  height: 32px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-}
-.preview-btn.send { color: #7c43bd; font-size: 24px; }
-.preview-btn.pause { color: #e57373; }
-.preview-btn.pause.paused { color: #14bc5b; }
-.preview-btn.trash { color: #e57373; }
-.preview-timer {
-  font-size: 14px;
-  font-family: monospace;
-  min-width: 48px;
-  text-align: center;
-}
+/* אנימציית גל הקלטה */
 .waveform {
   display: flex;
   align-items: center;
@@ -213,7 +187,7 @@
 .wave-dot {
   width: 4px;
   height: 16px;
-  background: #7c43bd;
+  background: #34b7f1; /* כחול וואטסאפ אופייני */
   animation: wave 1s infinite ease-in-out;
 }
 .wave-dot:nth-child(2) { animation-delay: 0.1s; }
@@ -223,6 +197,60 @@
 @keyframes wave {
   0%, 100% { transform: scaleY(0.4); }
   50% { transform: scaleY(1); }
+}
+
+/* טיימר הקלטה */
+.preview-timer {
+  font-size: 16px;
+  font-weight: 600;
+  color: #202c33;
+  font-family: monospace;
+  min-width: 48px;
+  text-align: center;
+  user-select: none;
+}
+
+/* כפתור מחיקה */
+.preview-btn.trash {
+  color: #d93025;
+  font-size: 22px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 10px;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+.preview-btn.trash:hover {
+  color: #a52714;
+}
+
+/* כפתור הקלטה (ממשק וואטסאפ) */
+.recordBtn {
+  order: 4;
+  width: 36px;
+  height: 36px;
+  background: #f6f1fb;
+  border-radius: 50%;
+  border: none;
+  font-size: 18px;
+  color: #7c43bd;
+  cursor: pointer;
+  transition: background 0.17s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  flex-shrink: 0;
+}
+.recordBtn.recording {
+  background: #d93025; /* אדום וואטסאפ אופייני */
+  color: white;
+  box-shadow: 0 0 10px #d93025aa;
+}
+.recordBtn:hover {
+  background: #ede7f6;
 }
 
 /* כפתור שליחה */
@@ -274,32 +302,6 @@
   flex-shrink: 0;
 }
 .attachBtn:hover {
-  background: #ede7f6;
-}
-
-/* כפתור הקלטה קולית */
-.recordBtn {
-  order: 4;
-  width: 36px;
-  height: 36px;
-  background: #f6f1fb;
-  border-radius: 50%;
-  border: none;
-  font-size: 18px;
-  color: #7c43bd;
-  cursor: pointer;
-  transition: background 0.17s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  flex-shrink: 0;
-}
-.recordBtn.recording {
-  background: #7c43bd;
-  color: white;
-}
-.recordBtn:hover {
   background: #ede7f6;
 }
 

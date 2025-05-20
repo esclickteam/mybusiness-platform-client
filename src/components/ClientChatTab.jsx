@@ -92,7 +92,13 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   // שליחת הודעת טקסט
   const sendMessage = () => {
     const text = input.trim();
-    if (!text || sending) return;
+    if ((!text && !recordedBlob) || sending) return;
+
+    if (recordedBlob) {
+      handleSendRecording();
+      return;
+    }
+
     setSending(true);
     setError("");
     socketRef.current.emit(
@@ -272,27 +278,33 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       </div>
 
       <div className="inputBar">
-        {!recordedBlob && error && <div className="error-alert">⚠ {error}</div>}
+        {error && <div className="error-alert">⚠ {error}</div>}
 
-        {recordedBlob ? (
-          <div className="recording-preview">
-            <audio controls src={URL.createObjectURL(recordedBlob)} style={{ verticalAlign: "middle" }} />
+        {recording ? (
+          <>
+            <button
+              className="recordBtn recording"
+              onClick={handleRecordStop}
+              title="עצור הקלטה"
+              type="button"
+            >
+              ⏸️
+            </button>
             <Waveform />
             <span className="preview-timer">
               {String(Math.floor(timer / 60)).padStart(2, "0")}:
               {String(timer % 60).padStart(2, "0")}
             </span>
-            <button className="preview-btn send" onClick={handleSendRecording} title="שלח">
-              ✔️
-            </button>
-            <button className="preview-btn trash" onClick={handleDiscard} title="מחק">
-              🗑
-            </button>
-          </div>
-        ) : (
-          <>
-            <button className="sendButtonFlat" onClick={sendMessage} disabled={sending || !input.trim()}>
-              ◀
+            <button
+              className="preview-btn trash"
+              onClick={() => {
+                handleDiscard();
+                handleRecordStop();
+              }}
+              title="בטל הקלטה"
+              type="button"
+            >
+              🗑️
             </button>
             <textarea
               ref={textareaRef}
@@ -301,12 +313,51 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
               value={input}
               onChange={handleInputChange}
               onFocus={() => setError("")}
-              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
+              onKeyDown={(e) =>
+                e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
+              }
               disabled={sending}
               rows={1}
             />
+            <button
+              className="sendButtonFlat"
+              onClick={sendMessage}
+              disabled={sending || (!input.trim() && !recordedBlob)}
+              type="button"
+            >
+              ◀
+            </button>
+          </>
+        ) : (
+          <>
+            <textarea
+              ref={textareaRef}
+              className="inputField"
+              placeholder="הקלד הודעה..."
+              value={input}
+              onChange={handleInputChange}
+              onFocus={() => setError("")}
+              onKeyDown={(e) =>
+                e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
+              }
+              disabled={sending}
+              rows={1}
+            />
+            <button
+              className="sendButtonFlat"
+              onClick={sendMessage}
+              disabled={sending || !input.trim()}
+              type="button"
+            >
+              ◀
+            </button>
             <div className="inputBar-right">
-              <button className="attachBtn" onClick={handleAttach} disabled={sending}>
+              <button
+                className="attachBtn"
+                onClick={handleAttach}
+                disabled={sending}
+                type="button"
+              >
                 📎
               </button>
               <button
@@ -318,6 +369,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                 onTouchEnd={handleRecordStop}
                 disabled={sending}
                 title="לחיצה ארוכה להקלטה"
+                type="button"
               >
                 🎤
               </button>
