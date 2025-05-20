@@ -203,12 +203,20 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   };
 
   // שליחת הקלטה
-  const handleSendRecording = () => {
-    if (!recordedBlob) return;
-    sendAudio(recordedBlob);
-    setRecordedBlob(null);
-    setTimer(0);
-  };
+  const handleSendRecording = async () => {
+  if (!recordedBlob) return;
+
+  if (recording && mediaRecorderRef.current) {
+    mediaRecorderRef.current.stop();
+    clearInterval(timerRef.current);
+    setRecording(false);
+    if (recordStopPromise.current) await recordStopPromise.current;
+  }
+
+  sendAudio(recordedBlob);
+  setRecordedBlob(null);
+  setTimer(0);
+};
 
   // מחיקת הקלטה
   const handleDiscard = () => {
