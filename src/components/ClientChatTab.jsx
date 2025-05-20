@@ -2,39 +2,34 @@ import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./ClientChatTab.css";
 
-export default function ClientChatTab({
-  conversationId,
-  businessId,
-  userId,
-  partnerId,
-}) {
+export default function ClientChatTab({ conversationId, businessId, userId, partnerId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userScrolledUp, setUserScrolledUp] = useState(false);
 
   const socketRef = useRef();
   const messageListRef = useRef();
   const typingTimeout = useRef();
   const fileInputRef = useRef();
+  const textareaRef = useRef();
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef();
   const recordedChunksRef = useRef([]);
 
-  // 1. התחברות והיסטוריה
+  // התחברות לסוקט וטעינת היסטוריה
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
 
-    // התחבר לסוקט
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       query: { conversationId, userId, role: "client", businessName: "" },
     });
 
-    // בקש היסטוריה
     socketRef.current.emit(
       "getHistory",
       { conversationId },
@@ -44,12 +39,10 @@ export default function ClientChatTab({
       }
     );
 
-    // מאזין להודעות חדשות
     socketRef.current.on("newMessage", (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
 
-    // מקבל "מקליד"
     socketRef.current.on("typing", ({ from }) => {
       if (from === businessId) {
         setIsTyping(true);
@@ -61,17 +54,40 @@ export default function ClientChatTab({
     return () => {
       socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
+      // שחרור URL-ים זמניים של הודעות מקומיות
+      messages.forEach(m => {
+        if (m.isLocal && m.fileUrl) {
+          URL.revokeObjectURL(m.fileUrl);
+        }
+      });
     };
   }, [conversationId, businessId, userId]);
 
-  // גלילה אוטומטית
+  // גלילה אוטומטית מכבדת גלילה ידנית
   useEffect(() => {
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    if (!userScrolledUp && messageListRef.current) {
+      messageListRef.current.scrollTo({
+        top: messageListRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
-  }, [messages, isTyping]);
+  }, [messages, isTyping, userScrolledUp]);
 
-  // שליחת טקסט
+  // מניעת גלילה אוטומטית אם המשתמש גולל למעלה
+  const onScroll = () => {
+    if (!messageListRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = messageListRef.current;
+    setUserScrolledUp(scrollTop + clientHeight < scrollHeight - 20);
+  };
+
+  // התאמת גובה הטקסטארא
+  const resizeTextarea = () => {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
+    textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+  };
+
+  // שליחת הודעה
   const sendMessage = () => {
     const text = input.trim();
     if (!text || sending) return;
@@ -121,9 +137,28 @@ export default function ClientChatTab({
     reader.readAsDataURL(file);
   };
 
-  // שליחת הקלטת קול
+  // שליחת קול עם יצירת URL זמני להצגה מידית
   const sendAudio = (blob) => {
     if (!conversationId) return;
+
+    // יצירת URL זמני להצגה מיידית
+    const audioUrl = URL.createObjectURL(blob);
+
+    // הוספת הודעה מקומית עם URL זמני
+    setMessages(prev => [
+      ...prev,
+      {
+        _id: Date.now(), // id זמני
+        from: userId,
+        to: businessId,
+        role: "client",
+        fileUrl: audioUrl,
+        fileName: "voice.webm",
+        timestamp: new Date().toISOString(),
+        isLocal: true,
+      }
+    ]);
+
     setSending(true);
     const reader = new FileReader();
     reader.onload = () => {
@@ -149,9 +184,10 @@ export default function ClientChatTab({
     reader.readAsDataURL(blob);
   };
 
-  // קלט הודעה
+  // שינוי שדה הקלט עם שליחה של אירוע "מקליד"
   const handleInput = (e) => {
     setInput(e.target.value);
+    resizeTextarea();
     if (socketRef.current && !sending) {
       socketRef.current.emit("typing", {
         conversationId,
@@ -161,7 +197,7 @@ export default function ClientChatTab({
     }
   };
 
-  // קבצים
+  // טיפול בקבצים
   const handleAttach = () => fileInputRef.current.click();
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -169,7 +205,7 @@ export default function ClientChatTab({
     e.target.value = null;
   };
 
-  // הקלטה קולית
+  // הקלטה קולית (כמו בקוד שלך)
   const handleRecordToggle = async () => {
     if (recording) {
       mediaRecorderRef.current.stop();
@@ -188,7 +224,7 @@ export default function ClientChatTab({
         };
         mediaRecorderRef.current.start();
         setRecording(true);
-      } catch (err) {
+      } catch {
         alert("לא הצלחנו להתחיל הקלטה");
       }
     }
@@ -196,13 +232,13 @@ export default function ClientChatTab({
 
   return (
     <div className="chat-container client">
-      <div className="message-list" ref={messageListRef}>
+      <div className="message-list" ref={messageListRef} onScroll={onScroll} aria-live="polite">
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
           <div
             key={m._id || i}
-            className={`message${m.from === userId ? " mine" : " theirs"}`}
+            className={`message${m.from === userId ? " mine" : " theirs"} fade-in`}
           >
             {m.fileUrl ? (
               m.fileUrl.match(/\.(mp3|webm|wav)$/i) ? (
@@ -214,7 +250,7 @@ export default function ClientChatTab({
                   style={{ maxWidth: "200px", borderRadius: "8px" }}
                 />
               ) : (
-                <a href={m.fileUrl} target="_blank" rel="noopener">
+                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
                   {m.fileName || "קובץ להורדה"}
                 </a>
               )
@@ -241,18 +277,21 @@ export default function ClientChatTab({
           onClick={sendMessage}
           disabled={sending || !input.trim()}
           title="שלח"
+          aria-label="שלח הודעה"
         >
           ◀
         </button>
-        {/* שדה הקלט */}
-        <input
+        {/* שדה הקלט (textarea) */}
+        <textarea
           className="inputField"
-          type="text"
           placeholder="הקלד הודעה..."
           value={input}
           disabled={sending}
           onChange={handleInput}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
+          ref={textareaRef}
+          rows={1}
+          aria-label="כתיבת הודעה"
         />
         {/* כפתורי ימין */}
         <div className="inputBar-right">
@@ -262,6 +301,7 @@ export default function ClientChatTab({
             title="צרף קובץ"
             onClick={handleAttach}
             disabled={sending}
+            aria-label="צרף קובץ"
           >
             📎
           </button>
@@ -271,6 +311,7 @@ export default function ClientChatTab({
             title={recording ? "עצור הקלטה" : "התחל הקלטה"}
             onClick={handleRecordToggle}
             disabled={sending}
+            aria-label={recording ? "עצור הקלטה קולית" : "התחל הקלטה קולית"}
           >
             🎤
           </button>
@@ -280,9 +321,10 @@ export default function ClientChatTab({
             style={{ display: "none" }}
             onChange={handleFileChange}
             disabled={sending}
+            aria-hidden="true"
           />
         </div>
       </div>
     </div>
-);
+  );
 }
