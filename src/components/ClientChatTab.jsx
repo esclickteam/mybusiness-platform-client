@@ -2,51 +2,29 @@ import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./ClientChatTab.css";
 
-// פונקציה שמחזירה משך קובץ אודיו מ־Blob
-function getAudioDuration(blob) {
-  return new Promise((resolve, reject) => {
-    const tempAudio = document.createElement("audio");
-    tempAudio.preload = "metadata";
-    tempAudio.src = URL.createObjectURL(blob);
-
-    tempAudio.onloadedmetadata = function () {
-      URL.revokeObjectURL(tempAudio.src);
-      if (isFinite(tempAudio.duration)) resolve(tempAudio.duration);
-      else reject("Invalid duration");
-    };
-    tempAudio.onerror = function () {
-      reject("Failed to load audio");
-    };
-  });
-}
-
-function WhatsAppAudioPlayer({ src, userAvatar }) {
+// קומפוננטה לניגון אודיו עם הצגת משך מהשרת (או מההודעה)
+function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const onTimeUpdate = () => setProgress(audio.currentTime);
-    const onLoadedMetadata = () => setDuration(audio.duration);
     const onEnded = () => {
       setPlaying(false);
       setProgress(0);
     };
 
     audio.addEventListener("timeupdate", onTimeUpdate);
-    audio.addEventListener("loadedmetadata", onLoadedMetadata);
     audio.addEventListener("ended", onEnded);
 
-    // טוען metadata מחדש (חשוב!)
     audio.load();
 
     return () => {
       audio.removeEventListener("timeupdate", onTimeUpdate);
-      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
       audio.removeEventListener("ended", onEnded);
     };
   }, [src]);
@@ -67,7 +45,8 @@ function WhatsAppAudioPlayer({ src, userAvatar }) {
   };
 
   const totalDots = 20;
-  const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
+  const audioDuration = duration || 0;
+  const activeDot = audioDuration ? Math.floor((progress / audioDuration) * totalDots) : 0;
   const containerClass = userAvatar
     ? "custom-audio-player with-avatar"
     : "custom-audio-player no-avatar";
@@ -93,7 +72,7 @@ function WhatsAppAudioPlayer({ src, userAvatar }) {
         ))}
       </div>
       <div className="time-display">
-        {formatTime(progress)} / {formatTime(duration)}
+        {formatTime(progress)} / {formatTime(audioDuration)}
       </div>
       <audio ref={audioRef} src={src} preload="metadata" />
     </div>
@@ -112,7 +91,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
-  const [localDuration, setLocalDuration] = useState(0);
 
   const socketRef = useRef(null);
   const messageListRef = useRef(null);
@@ -127,7 +105,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const getSupportedMimeType = () => {
     const preferred = "audio/webm";
     if (MediaRecorder.isTypeSupported(preferred)) {
-      console.log("Using mimeType:", preferred);
       return preferred;
     }
     return "audio/webm";
@@ -198,7 +175,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     if (recording || isBlocked) return;
     setError("");
     setRecordedBlob(null);
-    setLocalDuration(0);
     recordedChunksRef.current = [];
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((t) => t.stop());
@@ -211,33 +187,17 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
       const mimeType = getSupportedMimeType();
-      console.log("Starting recording with mimeType:", mimeType);
       const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
-        console.log("Data available, size:", e.data.size);
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
 
-      recorder.onstop = async () => {
+      recorder.onstop = () => {
         const blob = new Blob(recordedChunksRef.current, { type: mimeType });
-        console.log("Recording stopped, blob size:", blob.size);
-
-        try {
-          // --- נשלוף את משך ההקלטה כאן ---
-          const duration = await getAudioDuration(blob);
-          console.log("✅ duration from Blob:", duration);
-          setLocalDuration(duration);
-        } catch (err) {
-          console.warn("Failed to get duration:", err);
-          setLocalDuration(0);
-        }
-
         setRecordedBlob(blob);
         setRecording(false);
-        setTimer(0);
-
         if (mediaStreamRef.current) {
           mediaStreamRef.current.getTracks().forEach((t) => t.stop());
           mediaStreamRef.current = null;
@@ -248,7 +208,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       setRecording(true);
       timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     } catch (err) {
-      console.error("Error during recording start:", err);
       setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
       setIsBlocked(true);
     }
@@ -259,13 +218,11 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     mediaRecorderRef.current.stop();
     setRecording(false);
     if (timerRef.current) clearInterval(timerRef.current);
-    setTimer(0);
   };
 
   const handleDiscard = () => {
     setRecordedBlob(null);
     setTimer(0);
-    setLocalDuration(0);
     setError("");
     setRecording(false);
     recordedChunksRef.current = [];
@@ -278,13 +235,12 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   const handleSendRecording = () => {
     if (!recordedBlob) return;
-    sendAudio(recordedBlob, localDuration);
+    // שולחים timer כ־duration
+    sendAudio(recordedBlob, timer);
     setRecordedBlob(null);
     setTimer(0);
-    setLocalDuration(0);
   };
 
-  // שליחת קובץ אודיו (שמור גם את ה־duration)
   const sendAudio = (blob, duration) => {
     if (!blob) return;
     setSending(true);
@@ -300,7 +256,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
         file: {
           name: `voice.${blob.type.split("/")[1]}`,
           type: blob.type,
-          duration, // מוסיף משך הקלטה (שימושי להציג זמן בכל הודעה)
+          duration, // שולחים משך מהטיימר
         },
       },
       blob,
@@ -310,8 +266,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       }
     );
   };
-
-  // ---------------------------------------
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
@@ -387,6 +341,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                 <WhatsAppAudioPlayer
                   src={m.fileUrl}
                   userAvatar={m.userAvatar}
+                  duration={m.file?.duration}
                 />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img
@@ -409,7 +364,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                   minute: "2-digit",
                 })}
               </span>
-              {/* אם תוסיף m.file?.duration, תוכל להציג את הזמן גם בהודעות */}
               {m.file?.duration && (
                 <span className="audio-length">
                   {Math.floor(m.file.duration / 60)}:
@@ -457,24 +411,13 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                   src={URL.createObjectURL(recordedBlob)}
                   controls
                   style={{ height: 30 }}
-                  onLoadedMetadata={async (e) => {
-                    // קריאת משך הקלטה אם לא הצלחת כבר להוציא
-                    if (!localDuration) {
-                      try {
-                        const dur = await getAudioDuration(recordedBlob);
-                        setLocalDuration(dur);
-                      } catch { }
-                    }
-                  }}
                 />
-                {localDuration > 0 && (
-                  <div>
-                    משך הקלטה: {Math.floor(localDuration / 60)}:
-                    {Math.floor(localDuration % 60)
-                      .toString()
-                      .padStart(2, "0")}
-                  </div>
-                )}
+                <div>
+                  משך הקלטה: {Math.floor(timer / 60)}:
+                  {Math.floor(timer % 60)
+                    .toString()
+                    .padStart(2, "0")}
+                </div>
                 <button
                   className="send-btn"
                   onClick={handleSendRecording}
