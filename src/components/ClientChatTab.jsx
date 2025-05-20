@@ -48,87 +48,35 @@ function WhatsAppAudioPlayer({ src, userAvatar }) {
   const totalDots = 20;
   const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
 
+  const containerClass = userAvatar ? "custom-audio-player with-avatar" : "custom-audio-player no-avatar";
+
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        background: "#e5e5e5",
-        borderRadius: 20,
-        padding: "6px 12px",
-        maxWidth: 320,
-        gap: 10,
-        userSelect: "none",
-      }}
-    >
+    <div className={containerClass}>
       {userAvatar && (
-        <div style={{ position: "relative" }}>
-          <img
-            src={userAvatar}
-            alt="avatar"
-            style={{ width: 40, height: 40, borderRadius: "50%" }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              right: 0,
-              background: "#25D366",
-              borderRadius: "50%",
-              width: 16,
-              height: 16,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "white",
-              fontSize: 12,
-              border: "2px solid white",
-              boxSizing: "content-box",
-            }}
-          >
-            🎤
-          </div>
+        <div className="avatar-wrapper">
+          <img src={userAvatar} alt="avatar" />
+          <div className="mic-icon">🎤</div>
         </div>
       )}
 
       <button
         onClick={togglePlay}
         aria-label={playing ? "Pause audio" : "Play audio"}
-        style={{
-          borderRadius: "50%",
-          border: "none",
-          backgroundColor: playing ? "#25D366" : "#888",
-          color: "white",
-          width: 36,
-          height: 36,
-          fontSize: 18,
-          cursor: "pointer",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          userSelect: "none",
-        }}
+        className={`play-pause ${playing ? "playing" : ""}`}
       >
         {playing ? "❚❚" : "▶"}
       </button>
 
-      <div style={{ display: "flex", gap: 3, flexGrow: 1 }}>
+      <div className="progress-dots">
         {[...Array(totalDots)].map((_, i) => (
           <div
             key={i}
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              backgroundColor: i <= activeDot ? "#25D366" : "#ccc",
-              opacity: i === activeDot ? 1 : 0.5,
-              transition: "background-color 0.2s, opacity 0.2s",
-            }}
+            className={`dot${i <= activeDot ? " active" : ""}`}
           />
         ))}
       </div>
 
-      <div style={{ fontSize: 12, color: "#555", minWidth: 50, textAlign: "right" }}>
+      <div className="time-display">
         {formatTime(progress)} / {formatTime(duration)}
       </div>
 
@@ -421,7 +369,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
               m.fileType?.startsWith("audio") ? (
                 <WhatsAppAudioPlayer
                   src={m.fileUrl}
-                  userAvatar={m.userAvatar || "/default-avatar.png"}
+                  userAvatar={m.userAvatar || undefined} // pass undefined if no avatar
                 />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
