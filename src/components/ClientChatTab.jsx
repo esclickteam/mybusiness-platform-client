@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({ conversationId, businessId, userId }) {
-  // State
+  // States
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -12,7 +12,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [loading, setLoading] = useState(true);
   const [userScrolledUp, setUserScrolledUp] = useState(false);
   const [error, setError] = useState("");
-  // Recording state
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
@@ -29,7 +28,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const recordedChunksRef = useRef([]);
   const recordStopPromise = useRef(null);
 
-  // חיבור סוקט וטעינת הודעות קודמות
+  // חיבור סוקט וטעינת היסטוריה
   useEffect(() => {
     if (!conversationId) return;
 
@@ -66,7 +65,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     };
   }, [conversationId, businessId, userId]);
 
-  // גלילה אוטומטית
+  // גלילה אוטומטית בתחתית אלא אם המשתמש גלל למעלה
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
       messageListRef.current.scrollTo({
@@ -76,6 +75,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   }, [messages, isTyping, userScrolledUp]);
 
+  // טיפול בגלילה
   const onScroll = () => {
     if (!messageListRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = messageListRef.current;
@@ -89,7 +89,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // שליחת טקסט
+  // שליחת הודעת טקסט
   const sendMessage = () => {
     const text = input.trim();
     if (!text || sending) return;
@@ -156,8 +156,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     reader.readAsDataURL(blob);
   };
 
-  // ==== הקלטת אודיו ====
-  // יוצרים פרומיס שמוחזר ב-stop
+  // התחלת הקלטה
   const handleRecordStart = async () => {
     if (recording || isBlocked) return;
     try {
@@ -187,18 +186,17 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
-  // מחכים שהקלטה באמת תסתיים לפני מעבר ל-preview
+  // עצירת הקלטה (מחכה שה-blob ייווצר)
   const handleRecordStop = async () => {
     if (!recording || !mediaRecorderRef.current) return;
     mediaRecorderRef.current.stop();
     clearInterval(timerRef.current);
     setRecording(false);
-    // חכה שה־onstop יסיים
     if (recordStopPromise.current) await recordStopPromise.current;
     setTimer(0);
   };
 
-  // שלח הקלטה
+  // שליחת הקלטה
   const handleSendRecording = () => {
     if (!recordedBlob) return;
     sendAudio(recordedBlob);
@@ -212,7 +210,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setTimer(0);
   };
 
-  // שינוי אינפוט
+  // שינוי טקסט באינפוט
   const handleInputChange = (e) => {
     setInput(e.target.value);
     resizeTextarea();
@@ -221,14 +219,17 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
+  // פתיחת בחירת קובץ
   const handleAttach = () => fileInputRef.current.click();
+
+  // טיפול בקובץ שנבחר
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) sendFile(file);
     e.target.value = null;
   };
 
-  // גל אנימציה
+  // אנימציית גל הקלטה
   const Waveform = () => (
     <div className="waveform">
       {[...Array(5)].map((_, i) => (
@@ -237,7 +238,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     </div>
   );
 
-  // ==== JSX ====
   return (
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef} onScroll={onScroll}>
