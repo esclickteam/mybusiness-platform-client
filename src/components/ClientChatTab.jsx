@@ -9,9 +9,9 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userScrolledUp, setUserScrolledUp] = useState(false);
-  const [error, setError] = useState("");          // הודעות שגיאה UI
+  const [error, setError] = useState("");
   const [recording, setRecording] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false); // מצב חסימה/אי הרשאה להקלטה
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const socketRef = useRef();
   const messageListRef = useRef();
@@ -21,7 +21,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
   const mediaRecorderRef = useRef();
   const recordedChunksRef = useRef([]);
 
-  // התחברות לסוקט וטעינת היסטוריה
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
@@ -33,14 +32,10 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
       query: { conversationId, userId, role: "client", businessName: "" },
     });
 
-    socketRef.current.emit(
-      "getHistory",
-      { conversationId },
-      (history) => {
-        setMessages(Array.isArray(history) ? history : []);
-        setLoading(false);
-      }
-    );
+    socketRef.current.emit("getHistory", { conversationId }, (history) => {
+      setMessages(Array.isArray(history) ? history : []);
+      setLoading(false);
+    });
 
     socketRef.current.on("newMessage", (msg) => {
       setMessages((prev) => [...prev, msg]);
@@ -57,7 +52,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     return () => {
       socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
-      // שחרור URL-ים זמניים
       messages.forEach(m => {
         if (m.isLocal && m.fileUrl) {
           URL.revokeObjectURL(m.fileUrl);
@@ -66,7 +60,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     };
   }, [conversationId, businessId, userId]);
 
-  // גלילה אוטומטית מכבדת גלילה ידנית
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
       messageListRef.current.scrollTo({
@@ -76,21 +69,18 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     }
   }, [messages, isTyping, userScrolledUp]);
 
-  // מניעת גלילה אוטומטית אם המשתמש גולל למעלה
   const onScroll = () => {
     if (!messageListRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = messageListRef.current;
     setUserScrolledUp(scrollTop + clientHeight < scrollHeight - 20);
   };
 
-  // התאמת גובה הטקסטארא
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // שליחת הודעה עם טיפול בשגיאות UI
   const sendMessage = () => {
     const text = input.trim();
     if (!text || sending) return;
@@ -98,13 +88,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     setError("");
     socketRef.current.emit(
       "sendMessage",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        role: "client",
-        text,
-      },
+      { conversationId, from: userId, to: businessId, role: "client", text },
       (ack) => {
         setSending(false);
         if (ack?.ok) setInput("");
@@ -113,7 +97,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     );
   };
 
-  // שליחת קובץ עם טיפול בשגיאות UI
   const sendFile = (file) => {
     if (!file || !conversationId) return;
     setSending(true);
@@ -127,11 +110,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           from: userId,
           to: businessId,
           role: "client",
-          file: {
-            name: file.name,
-            type: file.type,
-            data: reader.result,
-          },
+          file: { name: file.name, type: file.type, data: reader.result },
         },
         (ack) => {
           setSending(false);
@@ -142,7 +121,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     reader.readAsDataURL(file);
   };
 
-  // שליחת קול (בלי הוספה מקומית) — הוספה רק אחרי קבלת ההודעה מהשרת
   const sendAudio = (blob) => {
     if (!conversationId) return;
 
@@ -157,11 +135,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           from: userId,
           to: businessId,
           role: "client",
-          file: {
-            name: "voice.webm",
-            type: "audio/webm",
-            data: reader.result,
-          },
+          file: { name: "voice.webm", type: "audio/webm", data: reader.result },
         },
         (ack) => {
           setSending(false);
@@ -172,20 +146,14 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     reader.readAsDataURL(blob);
   };
 
-  // שינוי שדה הקלט עם שליחת "מקליד"
   const handleInput = (e) => {
     setInput(e.target.value);
     resizeTextarea();
     if (socketRef.current && !sending) {
-      socketRef.current.emit("typing", {
-        conversationId,
-        from: userId,
-        to: businessId,
-      });
+      socketRef.current.emit("typing", { conversationId, from: userId, to: businessId });
     }
   };
 
-  // טיפול בקבצים
   const handleAttach = () => fileInputRef.current.click();
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -193,32 +161,34 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     e.target.value = null;
   };
 
-  // הקלטה קולית עם טיפול בבעיות הרשאה ומצב חסימה
-  const handleRecordToggle = async () => {
-    if (recording) {
-      mediaRecorderRef.current.stop();
-      setRecording(false);
-    } else {
-      recordedChunksRef.current = [];
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorderRef.current = new MediaRecorder(stream);
-        mediaRecorderRef.current.ondataavailable = (ev) => {
-          if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
-        };
-        mediaRecorderRef.current.onstop = () => {
-          const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
-          sendAudio(blob);
-        };
-        mediaRecorderRef.current.start();
-        setRecording(true);
-        setError("");
-        setIsBlocked(false);
-      } catch (err) {
-        setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
-        setIsBlocked(true);
-      }
+  // פונקציות להקלטה בשיטת לחיצה ארוכה
+  const handleRecordStart = async () => {
+    if (recording) return;
+    recordedChunksRef.current = [];
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      mediaRecorderRef.current.ondataavailable = (ev) => {
+        if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
+      };
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+        sendAudio(blob);
+      };
+      mediaRecorderRef.current.start();
+      setRecording(true);
+      setError("");
+      setIsBlocked(false);
+    } catch {
+      setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
+      setIsBlocked(true);
     }
+  };
+
+  const handleRecordStop = () => {
+    if (!recording) return;
+    mediaRecorderRef.current.stop();
+    setRecording(false);
   };
 
   return (
@@ -268,7 +238,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           </div>
         )}
 
-        {/* כפתור שלח - שמאל */}
         <button
           className="sendButtonFlat"
           onClick={sendMessage}
@@ -279,7 +248,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           ◀
         </button>
 
-        {/* שדה הקלט (textarea) */}
         <textarea
           className="inputField"
           placeholder="הקלד הודעה..."
@@ -292,7 +260,6 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           aria-label="כתיבת הודעה"
         />
 
-        {/* כפתורי ימין */}
         <div className="inputBar-right">
           <button
             type="button"
@@ -307,10 +274,13 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           <button
             type="button"
             className={`recordBtn${recording ? " recording" : ""}`}
-            title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-            onClick={handleRecordToggle}
+            title={recording ? "מקליט..." : "החזק להקלטה"}
+            onMouseDown={handleRecordStart}
+            onMouseUp={handleRecordStop}
+            onTouchStart={handleRecordStart}
+            onTouchEnd={handleRecordStop}
             disabled={sending}
-            aria-label={recording ? "עצור הקלטה קולית" : "התחל הקלטה קולית"}
+            aria-label={recording ? "מקליט" : "החזק להקלטה"}
           >
             🎤
           </button>
