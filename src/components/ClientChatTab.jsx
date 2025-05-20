@@ -92,35 +92,37 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   // התחלת הקלטה
   const handleRecordStart = async () => {
-    if (recording || isBlocked) return;
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaStreamRef.current = stream; // שמירת הזרם לסגירה מאוחרת יותר
+  if (recording || isBlocked) return;
+  setRecordedBlob(null);  // איפוס ההקלטה הישנה לפני התחלת חדשה
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaStreamRef.current = stream;
 
-      const recorder = new window.MediaRecorder(stream);
-      mediaRecorderRef.current = recorder;
-      recordedChunksRef.current = [];
+    const recorder = new window.MediaRecorder(stream);
+    mediaRecorderRef.current = recorder;
+    recordedChunksRef.current = [];
 
-      recordStopPromise.current = new Promise((resolve) => {
-        recorder.ondataavailable = (e) => {
-          if (e.data.size > 0) recordedChunksRef.current.push(e.data);
-        };
-        recorder.onstop = () => {
-          const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
-          setRecordedBlob(blob);
-          resolve(blob);
-        };
-      });
+    recordStopPromise.current = new Promise((resolve) => {
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+        setRecordedBlob(blob);
+        resolve(blob);
+      };
+    });
 
-      recorder.start();
-      setRecording(true);
-      setTimer(0);
-      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-    } catch {
-      setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
-      setIsBlocked(true);
-    }
-  };
+    recorder.start();
+    setRecording(true);
+    setTimer(0);
+    timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+  } catch {
+    setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
+    setIsBlocked(true);
+  }
+};
+
 
   // עצירת הקלטה
   const handleRecordStop = async () => {
@@ -230,27 +232,33 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   };
 
   // שליחת הודעת טקסט או הקלטה
-  const sendMessage = () => {
-    const text = input.trim();
-    if ((!text && !recordedBlob) || sending) return;
+  const sendMessage = async () => {
+  const text = input.trim();
+  if ((!text && !recordedBlob) || sending) return;
 
-    if (recordedBlob) {
-      handleSendRecording();
-      return;
+  setSending(true);
+  setError("");
+
+  if (recordedBlob) {
+    if (recording) {
+      await handleRecordStop(); // לעצור הקלטה ולהמתין ל-blob
     }
+    await handleSendRecording(); // לשלוח הקלטה
+    setSending(false);
+    return;
+  }
 
-    setSending(true);
-    setError("");
-    socketRef.current.emit(
-      "sendMessage",
-      { conversationId, from: userId, to: businessId, role: "client", text },
-      (ack) => {
-        setSending(false);
-        if (ack?.ok) setInput("");
-        else setError("שגיאה בשליחת ההודעה, נסה שוב");
-      }
-    );
-  };
+  socketRef.current.emit(
+    "sendMessage",
+    { conversationId, from: userId, to: businessId, role: "client", text },
+    (ack) => {
+      setSending(false);
+      if (ack?.ok) setInput("");
+      else setError("שגיאה בשליחת ההודעה, נסה שוב");
+    }
+  );
+};
+
 
   // אנימציית גל הקלטה
   const Waveform = () => (
