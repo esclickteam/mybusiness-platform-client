@@ -412,6 +412,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                   style={{ height: 30 }}
                   onLoadedMetadata={(e) => {
                     const dur = e.currentTarget.duration;
+                    console.log("Audio duration loaded:", dur);
                     if (!isNaN(dur) && isFinite(dur)) {
                       setLocalDuration(dur);
                     }
