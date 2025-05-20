@@ -250,10 +250,12 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   const sendAudio = (blob) => {
     if (!blob) return;
+    console.log("Sending audio blob size:", blob.size);
     setSending(true);
     setError("");
     const reader = new FileReader();
     reader.onload = () => {
+      console.log("Base64 length:", reader.result.length);
       socketRef.current.emit(
         "sendMessage",
         {
@@ -264,6 +266,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
           file: { name: "voice." + blob.type.split("/")[1], type: blob.type, data: reader.result },
         },
         (ack) => {
+          console.log("ACK from server:", ack);
           setSending(false);
           if (!ack?.ok) setError("שגיאה בשליחת הקלטה");
         }
@@ -369,7 +372,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
               m.fileType?.startsWith("audio") ? (
                 <WhatsAppAudioPlayer
                   src={m.fileUrl}
-                  userAvatar={m.userAvatar || undefined} // pass undefined if no avatar
+                  userAvatar={m.userAvatar || undefined}
                 />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
