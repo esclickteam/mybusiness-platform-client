@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({ conversationId, businessId, userId }) {
+  // messages & UI state
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -12,25 +13,31 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [userScrolledUp, setUserScrolledUp] = useState(false);
   const [error, setError] = useState("");
 
-  // recording states
+  // recording state
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
 
+  // refs
   const socketRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const recordedChunksRef = useRef([]);
   const messageListRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
   const timerRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const recordedChunksRef = useRef([]);
 
+  // connect & load history
   useEffect(() => {
     if (!conversationId) return;
+
     setLoading(true);
     setError("");
+    setIsBlocked(false);
+
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
@@ -60,6 +67,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     };
   }, [conversationId, businessId, userId]);
 
+  // auto-scroll
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
       messageListRef.current.scrollTo({
@@ -75,12 +83,14 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setUserScrolledUp(scrollTop + clientHeight < scrollHeight - 20);
   };
 
+  // textarea grow
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
+  // send text
   const sendMessage = () => {
     const text = input.trim();
     if (!text || sending) return;
@@ -97,6 +107,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     );
   };
 
+  // send file
   const sendFile = (file) => {
     if (!file) return;
     setSending(true);
@@ -121,6 +132,32 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     reader.readAsDataURL(file);
   };
 
+  // send audio blob
+  const sendAudio = (blob) => {
+    if (!blob) return;
+    setSending(true);
+    setError("");
+    const reader = new FileReader();
+    reader.onload = () => {
+      socketRef.current.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          file: { name: "voice.webm", type: "audio/webm", data: reader.result },
+        },
+        (ack) => {
+          setSending(false);
+          if (!ack?.ok) setError("שגיאה בשליחת הקלטה");
+        }
+      );
+    };
+    reader.readAsDataURL(blob);
+  };
+
+  // recording handlers
   const handleRecordStart = async () => {
     if (recording) return;
     try {
@@ -138,10 +175,12 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       recorder.start();
       setRecording(true);
       setIsPaused(false);
+      setIsBlocked(false);
       setTimer(0);
       timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-    } catch (err) {
+    } catch {
       setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
+      setIsBlocked(true);
     }
   };
 
@@ -154,7 +193,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   const handleSendRecording = () => {
     if (!recordedBlob) return;
-    // שליחת אודיו כ־blob
     sendAudio(recordedBlob);
     setRecordedBlob(null);
     setTimer(0);
@@ -165,6 +203,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setTimer(0);
   };
 
+  // input handlers
   const handleInputChange = (e) => {
     setInput(e.target.value);
     resizeTextarea();
@@ -180,6 +219,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     e.target.value = null;
   };
 
+  // waveform animation
   const Waveform = () => (
     <div className="waveform">
       {[...Array(5)].map((_, i) => (
@@ -201,14 +241,19 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
-                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
+                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
+                  {m.fileName}
+                </a>
               )
             ) : (
               <div className="text">{m.text ?? m.message}</div>
             )}
             <div className="meta">
               <span className="time">
-                {new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
             </div>
           </div>
@@ -221,20 +266,32 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
         {recordedBlob ? (
           <div className="recording-preview">
-            <button className="preview-btn send" onClick={handleSendRecording}>◀</button>
-            <button className={`preview-btn pause${isPaused ? " paused" : ""}`} onClick={() => {
-                mediaRecorderRef.current[isPaused?"resume":"pause"]();
+            <button className="preview-btn send" onClick={handleSendRecording}>
+              ◀
+            </button>
+            <button
+              className={`preview-btn pause${isPaused ? " paused" : ""}`}
+              onClick={() => {
+                mediaRecorderRef.current[isPaused ? "resume" : "pause"]();
                 setIsPaused((p) => !p);
-              }}>
+              }}
+            >
               {isPaused ? "▶" : "❚❚"}
             </button>
             <Waveform />
-            <span className="preview-timer">{`${String(Math.floor(timer/60)).padStart(2,'0')}:${String(timer%60).padStart(2,'0')}`}</span>
-            <button className="preview-btn trash" onClick={handleDiscard}>🗑</button>
+            <span className="preview-timer">
+              {String(Math.floor(timer / 60)).padStart(2, "0")}:
+              {String(timer % 60).padStart(2, "0")}
+            </span>
+            <button className="preview-btn trash" onClick={handleDiscard}>
+              🗑
+            </button>
           </div>
         ) : (
           <>
-            <button className="sendButtonFlat" onClick={sendMessage} disabled={sending || !input.trim()}>◀</button>
+            <button className="sendButtonFlat" onClick={sendMessage} disabled={sending || !input.trim()}>
+              ◀
+            </button>
             <textarea
               ref={textareaRef}
               className="inputField"
@@ -247,7 +304,9 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
               rows={1}
             />
             <div className="inputBar-right">
-              <button className="attachBtn" onClick={handleAttach} disabled={sending}>📎</button>
+              <button className="attachBtn" onClick={handleAttach} disabled={sending}>
+                📎
+              </button>
               <button
                 className={`recordBtn${recording ? " recording" : ""}`}
                 onMouseDown={handleRecordStart}
@@ -256,8 +315,16 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                 onTouchStart={handleRecordStart}
                 onTouchEnd={handleRecordStop}
                 disabled={sending}
-              >🎤</button>
-              <input type="file" ref={fileInputRef} className="fileInput" onChange={handleFileChange} disabled={sending} />
+              >
+                🎤
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="fileInput"
+                onChange={handleFileChange}
+                disabled={sending}
+              />
             </div>
           </>
         )}
