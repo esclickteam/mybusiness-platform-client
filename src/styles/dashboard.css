@@ -257,19 +257,23 @@
   }
   
   .dashboard-nav button {
-    padding: 8px 14px;
-    background: #f0f0f0;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s ease;
-  }
+  padding: 8px 14px;
+  background: #e9e4ff;              /* סגול פסטלי */
+  color: #3b237e;                   /* טקסט כהה */
+  border: 1.5px solid #c1b6f6;      /* גבול עדין */
+  border-radius: 6px;
+  font-weight: bold;
+  box-shadow: 0 1px 4px #c1b6f644;  /* צל רך */
+  cursor: pointer;
+  transition: 0.22s;
+  font-size: 15px;
+}
   
   .dashboard-nav button:hover {
-    background: #dbe8ff;
-    color: #1a237e;
-  }
+      background: #c9bbfa;              /* hover – סגול יותר חזק */
+  color: #231c59;
+  border-color: #8d7ee5;
+}
   .export-btn {
     padding: 8px 14px;
     margin-bottom: 20px;
@@ -285,11 +289,13 @@
   .export-btn:hover {
     background-color: #bbdefb;
   }
-  .dashboard-nav .active {
-    background-color: #d0e3ff;
-    color: #1a237e;
-    border: 1px solid #1a237e;
-  }
+  
+.dashboard-nav .active {
+  background: #7c4dff;
+  color: #fff;
+  border-color: #3b237e;
+  box-shadow: 0 2px 7px #bb98ff44;
+}
   .export-btn {
     padding: 8px 14px;
     margin: 10px auto 30px;
