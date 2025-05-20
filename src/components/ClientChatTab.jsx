@@ -154,8 +154,8 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   const handleSendRecording = () => {
     if (!recordedBlob) return;
-    const file = recordedBlob;
-    sendFile(file);
+    // שליחת אודיו כ־blob
+    sendAudio(recordedBlob);
     setRecordedBlob(null);
     setTimer(0);
   };
