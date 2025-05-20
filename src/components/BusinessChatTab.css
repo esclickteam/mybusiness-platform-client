@@ -8,20 +8,20 @@
 }
 
 /* מבטיח LTR לצ'אט בלבד */
-.chatContainer,
-.chatArea,
-.messageList {
+.chat-container,
+.message-list {
   direction: ltr !important;
 }
 
 /* קונטיינר ראשי */
-.chatContainer {
+.chat-container {
   max-width: 950px;
   width: 100%;
   height: 82vh;
   min-height: 380px;
   max-height: 700px;
   display: flex;
+  flex-direction: column;
   border-radius: 16px;
   box-shadow: 0 4px 32px #0002;
   overflow: hidden;
@@ -31,16 +31,7 @@
 }
 
 /* אזור הצ'אט */
-.chatArea {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: #efeae2;
-  min-width: 0;
-}
-
-/* רשימת הודעות */
-.messageList {
+.message-list {
   flex: 1;
   padding: 20px 18px 10px 18px;
   overflow-y: auto;
@@ -75,7 +66,8 @@
 }
 
 /* תמונות בהודעות */
-.message .content img.message-image {
+.message .content img,
+.message img {
   max-width: 200px;
   max-height: 200px;
   border-radius: 8px;
@@ -84,7 +76,8 @@
 }
 
 /* אודיו בהודעות */
-.message .content audio {
+.message .content audio,
+.message audio {
   width: 180px;
   outline: none;
   margin-bottom: 6px;
@@ -92,20 +85,20 @@
 
 /* הודעה שלך */
 .message.mine {
-  align-self: flex-end;      /* מוצמד לימין */
+  align-self: flex-end;
   background: #e3ffe5;
   text-align: right;
   margin-right: 0;
-  margin-left: 32px;         /* ריווח מצד שמאל */
+  margin-left: 32px;
 }
 
-/* הודעות של העסק — צד שמאל */
+/* הודעה מהצד השני */
 .message.theirs {
-  align-self: flex-start;    /* מוצמד לשמאל */
+  align-self: flex-start;
   background: #fff;
   text-align: left;
   margin-left: 0;
-  margin-right: 32px;        /* ריווח מצד ימין */
+  margin-right: 32px;
 }
 
 /* מטה של ההודעה (זמן וסטטוס) */
@@ -157,14 +150,14 @@
 .inputBar {
   display: flex;
   align-items: center;
-  justify-content: flex-start !important; /* הכרחי כדי לכפות מיקום שמאל */
+  justify-content: flex-start !important;
   gap: 10px;
   padding: 13px 15px 13px 12px;
   border-top: 1.5px solid #eee;
   background: #f7f7fa;
   min-height: 66px;
   z-index: 1;
-  direction: ltr !important; /* לוודא שפריסת flex לא תהיה הפוכה */
+  direction: ltr !important;
 }
 
 /* כפתור שליחה משמאל */
@@ -216,7 +209,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto; /* מזיז לצד ימין */
+  margin-left: auto;
 }
 
 /* כפתור הקלטה */
@@ -269,7 +262,7 @@
 }
 
 /* הודעה ריקה */
-.messageList .empty {
+.message-list .empty {
   color: #aaa;
   text-align: center;
   padding: 22px 0 0;
@@ -338,4 +331,130 @@
     height: 32px !important;
     font-size: 20px !important;
   }
+}
+
+/* קומפוננטת WhatsAppAudioPlayer */
+.custom-audio-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+  min-width: 160px;
+}
+.custom-audio-player .play-pause {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  color: #7c43bd;
+  border: 1.5px solid #ede7f6;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.17s;
+  outline: none;
+}
+.custom-audio-player .play-pause.playing {
+  background: #7c43bd;
+  color: #fff;
+}
+.custom-audio-player .progress-dots {
+  display: flex;
+  gap: 1.2px;
+}
+.custom-audio-player .dot {
+  width: 3.4px;
+  height: 9.2px;
+  border-radius: 2px;
+  background: #ede7f6;
+  opacity: 0.5;
+  margin: 0;
+}
+.custom-audio-player .dot.active {
+  background: #7c43bd;
+  opacity: 0.95;
+}
+.custom-audio-player .time-display {
+  font-size: 12px;
+  color: #888;
+  width: 50px;
+  text-align: left;
+  direction: ltr;
+}
+.avatar-wrapper {
+  width: 32px;
+  height: 32px;
+  position: relative;
+  margin-left: 5px;
+  margin-right: 2px;
+}
+.avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1.5px solid #e7e2f6;
+}
+.avatar-wrapper .mic-icon {
+  position: absolute;
+  bottom: -5px;
+  right: -7px;
+  background: #fff;
+  color: #7c43bd;
+  font-size: 14px;
+  border-radius: 50%;
+  border: 1px solid #ede7f6;
+  padding: 0 2px;
+}
+.audio-length {
+  font-size: 11px;
+  color: #917cbe;
+  margin-right: 4px;
+  direction: ltr;
+  opacity: 0.93;
+}
+.audio-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fcf7ff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 7px;
+  box-shadow: 0 2px 8px #d9cbff22;
+}
+.preview-timer {
+  color: #7c43bd;
+  font-size: 17px;
+  margin-right: 9px;
+  font-weight: 600;
+}
+.send-btn, .discard-btn, .preview-btn.trash {
+  background: #eee;
+  color: #7c43bd;
+  border: none;
+  border-radius: 10px;
+  padding: 7px 18px;
+  font-size: 15px;
+  margin-left: 7px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.send-btn:hover {
+  background: #aaffcc;
+}
+.preview-btn.trash, .discard-btn:hover {
+  background: #ffd0d0;
+  color: #d32f2f;
+}
+.error-alert {
+  background: #ffe7eb;
+  color: #d32f2f;
+  padding: 8px 13px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin-bottom: 7px;
+  text-align: center;
+  font-weight: 500;
 }

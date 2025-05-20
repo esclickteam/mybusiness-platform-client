@@ -3,6 +3,76 @@ import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./BusinessChatTab.css";
 
+// קומפוננטת נגן אודיו
+function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onTimeUpdate = () => setProgress(audio.currentTime);
+    const onEnded = () => { setPlaying(false); setProgress(0); };
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("ended", onEnded);
+    audio.load();
+    return () => {
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("ended", onEnded);
+    };
+  }, [src]);
+
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) audio.pause();
+    else audio.play();
+    setPlaying(!playing);
+  };
+
+  const formatTime = (time) => {
+    if (!time || isNaN(time) || !isFinite(time)) return "0:00";
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const totalDots = 20;
+  const audioDuration = duration || 0;
+  const activeDot = audioDuration ? Math.floor((progress / audioDuration) * totalDots) : 0;
+  const containerClass = userAvatar
+    ? "custom-audio-player with-avatar"
+    : "custom-audio-player no-avatar";
+
+  return (
+    <div className={containerClass}>
+      {userAvatar && (
+        <div className="avatar-wrapper">
+          <img src={userAvatar} alt="avatar" />
+          <div className="mic-icon">🎤</div>
+        </div>
+      )}
+      <button
+        onClick={togglePlay}
+        aria-label={playing ? "Pause audio" : "Play audio"}
+        className={`play-pause ${playing ? "playing" : ""}`}
+      >
+        {playing ? "❚❚" : "▶"}
+      </button>
+      <div className="progress-dots">
+        {[...Array(totalDots)].map((_, i) => (
+          <div key={i} className={`dot${i <= activeDot ? " active" : ""}`} />
+        ))}
+      </div>
+      <div className="time-display">
+        {formatTime(progress)} / {formatTime(audioDuration)}
+      </div>
+      <audio ref={audioRef} src={src} preload="metadata" />
+    </div>
+  );
+}
+
 export default function BusinessChatTab({ conversationId, businessId, customerId, businessName }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -10,6 +80,8 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
   const [recording, setRecording] = useState(false);
+  const [recordedBlob, setRecordedBlob] = useState(null);
+  const [timer, setTimer] = useState(0);
 
   const socketRef = useRef();
   const messageListRef = useRef();
@@ -17,7 +89,10 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   const fileInputRef = useRef();
   const mediaRecorder = useRef(null);
   const recordedChunks = useRef([]);
+  const timerRef = useRef(null);
+  const mediaStreamRef = useRef(null);
 
+  // התחברות
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
@@ -53,6 +128,11 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       socketRef.current.disconnect();
       clearTimeout(typingTimeout.current);
       setMessages([]);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+      }
     };
   }, [conversationId, businessId, customerId, businessName]);
 
@@ -62,35 +142,81 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     }
   }, [messages, isTyping]);
 
-  const handleRecordToggle = async () => {
-    if (recording) {
-      mediaRecorder.current.stop();
-      setRecording(false);
-    } else {
+  // ------------------- הקלטה -------------------
+  const getSupportedMimeType = () => {
+    const preferred = "audio/webm";
+    if (window.MediaRecorder && MediaRecorder.isTypeSupported(preferred)) {
+      return preferred;
+    }
+    return "audio/webm";
+  };
+
+  const handleRecordStart = async () => {
+    if (recording) return;
+    setRecordedBlob(null);
+    recordedChunks.current = [];
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+      mediaStreamRef.current = null;
+    }
+    if (timerRef.current) clearInterval(timerRef.current);
+    setTimer(0);
+
+    try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      recordedChunks.current = [];
-      mediaRecorder.current = new MediaRecorder(stream);
+      mediaStreamRef.current = stream;
+      const mimeType = getSupportedMimeType();
+      mediaRecorder.current = new MediaRecorder(stream, { mimeType });
       mediaRecorder.current.ondataavailable = (e) => {
         if (e.data.size > 0) recordedChunks.current.push(e.data);
       };
-      mediaRecorder.current.onstop = sendRecording;
+      mediaRecorder.current.onstop = () => {
+        const blob = new Blob(recordedChunks.current, { type: mimeType });
+        setRecordedBlob(blob);
+        setRecording(false);
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+          mediaStreamRef.current = null;
+        }
+      };
       mediaRecorder.current.start();
       setRecording(true);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } catch (err) {
+      alert("אין הרשאה להקלטה או שגיאת דפדפן.");
     }
   };
 
-  const sendRecording = () => {
-    const blob = new Blob(recordedChunks.current, { type: "audio/webm" });
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      sendFile({ name: `voice-${Date.now()}.webm`, type: "audio/webm", data: reader.result });
-    };
-    reader.readAsDataURL(blob);
+  const handleRecordStop = () => {
+    if (!recording || !mediaRecorder.current) return;
+    mediaRecorder.current.stop();
+    setRecording(false);
+    if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  const sendFile = (file) => {
-    if (!conversationId || !customerId) return;
+  const handleDiscard = () => {
+    setRecordedBlob(null);
+    setTimer(0);
+    setRecording(false);
+    recordedChunks.current = [];
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+      mediaStreamRef.current = null;
+    }
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  const handleSendRecording = () => {
+    if (!recordedBlob) return;
+    sendAudio(recordedBlob, timer);
+    setRecordedBlob(null);
+    setTimer(0);
+  };
+
+  const sendAudio = (blob, duration) => {
+    if (!blob) return;
     setSending(true);
+
     socketRef.current.emit(
       "sendMessage",
       {
@@ -98,26 +224,21 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
         from: businessId,
         to: customerId,
         role: "business",
-        text: "",
-        file,
+        file: {
+          name: `voice.${blob.type.split("/")[1]}`,
+          type: blob.type,
+          duration,
+        },
       },
+      blob,
       (ack) => {
         setSending(false);
-        if (!ack?.ok) alert("שגיאה בשליחת הקובץ");
+        if (!ack?.ok) alert("שגיאה בשליחת הקלטה");
       }
     );
   };
 
-  const handleAttach = () => fileInputRef.current.click();
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => sendFile({ name: file.name, type: file.type, data: reader.result });
-      reader.readAsDataURL(file);
-    }
-    e.target.value = "";
-  };
+  // --------------------------------------------
 
   const sendMessage = () => {
     if (!input.trim() || sending) return;
@@ -139,6 +260,33 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     );
   };
 
+  const handleAttach = () => fileInputRef.current.click();
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSending(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        socketRef.current.emit(
+          "sendMessage",
+          {
+            conversationId,
+            from: businessId,
+            to: customerId,
+            role: "business",
+            file: { name: file.name, type: file.type, data: reader.result },
+          },
+          (ack) => {
+            setSending(false);
+            if (!ack?.ok) alert("שגיאה בשליחת קובץ");
+          }
+        );
+      };
+      reader.readAsDataURL(file);
+    }
+    e.target.value = "";
+  };
+
   const handleInput = (e) => {
     setInput(e.target.value);
     if (socketRef.current && !sending) {
@@ -147,8 +295,8 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   };
 
   return (
-    <>
-      <div className="messageList" ref={messageListRef}>
+    <div className="chat-container business">
+      <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) =>
@@ -159,23 +307,27 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
               key={m._id || i}
               className={`message${m.from === businessId ? " mine" : " theirs"}`}
             >
-              <div className="content">
-                {m.fileUrl ? (
-                  m.fileUrl.endsWith(".webm") ? (
-                    <audio controls src={m.fileUrl} />
-                  ) : (
-                    <img src={m.fileUrl} alt={m.fileName} className="message-image" />
-                  )
-                ) : m.file ? (
-                  m.file.type.startsWith("audio") ? (
-                    <audio controls src={m.file.data} />
-                  ) : (
-                    <img src={m.file.data} alt={m.file.name} className="message-image" />
-                  )
+              {m.fileUrl ? (
+                m.fileType?.startsWith("audio") ? (
+                  <WhatsAppAudioPlayer
+                    src={m.fileUrl}
+                    userAvatar={m.userAvatar}
+                    duration={m.fileDuration}
+                  />
+                ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
+                  <img
+                    src={m.fileUrl}
+                    alt={m.fileName}
+                    style={{ maxWidth: 200, borderRadius: 8 }}
+                  />
                 ) : (
-                  <div className="text">{m.text}</div>
-                )}
-              </div>
+                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
+                    {m.fileName}
+                  </a>
+                )
+              ) : (
+                <div className="text">{m.text}</div>
+              )}
               <div className="meta">
                 <span className="time">
                   {new Date(m.timestamp).toLocaleTimeString("he-IL", {
@@ -183,7 +335,14 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
                     minute: "2-digit",
                   })}
                 </span>
-                {m.from === businessId && <span className={`status ${m.status || "sent"}`} />}
+                {m.fileDuration && (
+                  <span className="audio-length">
+                    {Math.floor(m.fileDuration / 60)}:
+                    {Math.floor(m.fileDuration % 60)
+                      .toString()
+                      .padStart(2, "0")}
+                  </span>
+                )}
               </div>
             </div>
           )
@@ -192,56 +351,114 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
       </div>
 
       <div className="inputBar">
-        {/* כפתור שליחה משמאל */}
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-          title="שלח"
-        >
-          ◀
-        </button>
-
-        {/* שדה הקלט באמצע */}
-        <input
-          className="inputField"
-          type="text"
-          placeholder="הקלד הודעה..."
-          value={input}
-          disabled={sending}
-          onChange={handleInput}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        />
-
-        {/* כפתורי צרף והקלטה מימין */}
-        <div className="inputBar-right">
-          <button
-            type="button"
-            className="attachBtn"
-            onClick={handleAttach}
-            disabled={sending}
-            title="צרף קובץ"
-          >
-            📎
-          </button>
-          <button
-            type="button"
-            className={`recordBtn${recording ? " recording" : ""}`}
-            onClick={handleRecordToggle}
-            disabled={sending}
-            title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-          >
-            🎤
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="fileInput"
-            onChange={handleFileChange}
-            accept="image/*,audio/*,video/*"
-          />
-        </div>
+        {(recording || recordedBlob) ? (
+          <div className="audio-preview-row">
+            {recording ? (
+              <>
+                <button
+                  className="recordBtn recording"
+                  onClick={handleRecordStop}
+                  title="עצור הקלטה"
+                  type="button"
+                >
+                  ⏹️
+                </button>
+                <span className="preview-timer">
+                  {String(Math.floor(timer / 60)).padStart(2, "0")}:
+                  {String(timer % 60).padStart(2, "0")}
+                </span>
+                <button
+                  className="preview-btn trash"
+                  onClick={handleDiscard}
+                  type="button"
+                >
+                  🗑️
+                </button>
+              </>
+            ) : (
+              <>
+                <audio
+                  src={URL.createObjectURL(recordedBlob)}
+                  controls
+                  style={{ height: 30 }}
+                />
+                <div>
+                  משך הקלטה: {Math.floor(timer / 60)}:
+                  {Math.floor(timer % 60)
+                    .toString()
+                    .padStart(2, "0")}
+                </div>
+                <button
+                  className="send-btn"
+                  onClick={handleSendRecording}
+                  disabled={sending}
+                >
+                  שלח
+                </button>
+                <button
+                  className="discard-btn"
+                  onClick={handleDiscard}
+                  type="button"
+                >
+                  מחק
+                </button>
+              </>
+            )}
+          </div>
+        ) : (
+          <>
+            <textarea
+              className="inputField"
+              placeholder="הקלד הודעה..."
+              value={input}
+              disabled={sending}
+              onChange={handleInput}
+              onKeyDown={(e) =>
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                (e.preventDefault(), sendMessage())
+              }
+              rows={1}
+            />
+            <button
+              className="sendButtonFlat"
+              onClick={sendMessage}
+              disabled={sending || !input.trim()}
+              title="שלח"
+            >
+              ◀
+            </button>
+            <div className="inputBar-right">
+              <button
+                type="button"
+                className="attachBtn"
+                onClick={handleAttach}
+                disabled={sending}
+                title="צרף קובץ"
+              >
+                📎
+              </button>
+              <button
+                type="button"
+                className={`recordBtn${recording ? " recording" : ""}`}
+                onClick={handleRecordStart}
+                disabled={sending}
+                title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+              >
+                🎤
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="fileInput"
+                onChange={handleFileChange}
+                accept="image/*,audio/*,video/*"
+                style={{ display: "none" }}
+              />
+            </div>
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 }
