@@ -3,8 +3,141 @@ import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./ClientChatTab.css";
 
+function WhatsAppAudioPlayer({ src, userAvatar }) {
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const onTimeUpdate = () => setProgress(audio.currentTime);
+    const onLoadedMetadata = () => setDuration(audio.duration);
+    const onEnded = () => {
+      setPlaying(false);
+      setProgress(0);
+    };
+
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("loadedmetadata", onLoadedMetadata);
+    audio.addEventListener("ended", onEnded);
+
+    return () => {
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
+      audio.removeEventListener("ended", onEnded);
+    };
+  }, [src]);
+
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) audio.pause();
+    else audio.play();
+    setPlaying(!playing);
+  };
+
+  const formatTime = (time) => {
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const totalDots = 20;
+  const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        background: "#e5e5e5",
+        borderRadius: 20,
+        padding: "6px 12px",
+        maxWidth: 320,
+        gap: 10,
+        userSelect: "none",
+      }}
+    >
+      {userAvatar && (
+        <div style={{ position: "relative" }}>
+          <img
+            src={userAvatar}
+            alt="avatar"
+            style={{ width: 40, height: 40, borderRadius: "50%" }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              right: 0,
+              background: "#25D366",
+              borderRadius: "50%",
+              width: 16,
+              height: 16,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+              fontSize: 12,
+              border: "2px solid white",
+              boxSizing: "content-box",
+            }}
+          >
+            🎤
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={togglePlay}
+        aria-label={playing ? "Pause audio" : "Play audio"}
+        style={{
+          borderRadius: "50%",
+          border: "none",
+          backgroundColor: playing ? "#25D366" : "#888",
+          color: "white",
+          width: 36,
+          height: 36,
+          fontSize: 18,
+          cursor: "pointer",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          userSelect: "none",
+        }}
+      >
+        {playing ? "❚❚" : "▶"}
+      </button>
+
+      <div style={{ display: "flex", gap: 3, flexGrow: 1 }}>
+        {[...Array(totalDots)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              backgroundColor: i <= activeDot ? "#25D366" : "#ccc",
+              opacity: i === activeDot ? 1 : 0.5,
+              transition: "background-color 0.2s, opacity 0.2s",
+            }}
+          />
+        ))}
+      </div>
+
+      <div style={{ fontSize: 12, color: "#555", minWidth: 50, textAlign: "right" }}>
+        {formatTime(progress)} / {formatTime(duration)}
+      </div>
+
+      <audio ref={audioRef} src={src} preload="metadata" />
+    </div>
+  );
+}
+
 export default function ClientChatTab({ conversationId, businessId, userId }) {
-  // States
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -17,7 +150,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [timer, setTimer] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
 
-  // Refs
   const socketRef = useRef(null);
   const messageListRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -28,7 +160,17 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // סוקט + טעינת היסטוריה
+  const getSupportedMimeType = () => {
+    const types = [
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/mp4",
+      "audio/mpeg",
+      "audio/wav",
+    ];
+    return types.find((type) => MediaRecorder.isTypeSupported(type)) || "audio/webm";
+  };
+
   useEffect(() => {
     if (!conversationId) return;
 
@@ -70,7 +212,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     };
   }, [conversationId, businessId, userId]);
 
-  // גלילה אוטומטית
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
       messageListRef.current.scrollTo({
@@ -80,42 +221,38 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   }, [messages, isTyping, userScrolledUp]);
 
-  // טיפול בגלילה
   const onScroll = () => {
     if (!messageListRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = messageListRef.current;
     setUserScrolledUp(scrollTop + clientHeight < scrollHeight - 20);
   };
 
-  // התאמת גובה textarea
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // התחלת הקלטה - מנקה הכל לפני כל התחלה!
   const handleRecordStart = async () => {
     if (recording || isBlocked) return;
-    // איפוס מוחלט לפני התחלה חדשה
     setError("");
     setRecordedBlob(null);
     setIsBlocked(false);
     recordedChunksRef.current = [];
 
-    // משחרר stream קודם אם קיים
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
     }
-    // מפסיק מד-דקה קודם
     if (timerRef.current) clearInterval(timerRef.current);
     setTimer(0);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
-      const recorder = new window.MediaRecorder(stream);
+
+      const mimeType = getSupportedMimeType();
+      const recorder = new window.MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
       recordedChunksRef.current = [];
 
@@ -123,7 +260,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
       recorder.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(recordedChunksRef.current, { type: mimeType });
         setRecordedBlob(blob);
         setRecording(false);
         setTimer(0);
@@ -143,7 +280,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
-  // עצירת הקלטה
   const handleRecordStop = () => {
     if (!recording || !mediaRecorderRef.current) return;
     mediaRecorderRef.current.stop();
@@ -157,7 +293,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
-  // שליחת הקלטה לאחר עצירה
   const handleSendRecording = () => {
     if (!recordedBlob) return;
     sendAudio(recordedBlob);
@@ -165,7 +300,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setTimer(0);
   };
 
-  // שליחת הקלטה קולית
   const sendAudio = (blob) => {
     if (!blob) return;
     setSending(true);
@@ -179,7 +313,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
           from: userId,
           to: businessId,
           role: "client",
-          file: { name: "voice.webm", type: "audio/webm", data: reader.result },
+          file: { name: "voice." + blob.type.split("/")[1], type: blob.type, data: reader.result },
         },
         (ack) => {
           setSending(false);
@@ -190,7 +324,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     reader.readAsDataURL(blob);
   };
 
-  // מחיקת הקלטה
   const handleDiscard = () => {
     setRecordedBlob(null);
     setTimer(0);
@@ -205,7 +338,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
-  // שינוי טקסט באינפוט
   const handleInputChange = (e) => {
     setInput(e.target.value);
     resizeTextarea();
@@ -214,17 +346,14 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
-  // פתיחת בחירת קובץ
   const handleAttach = () => fileInputRef.current.click();
 
-  // טיפול בקובץ שנבחר
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) sendFile(file);
     e.target.value = null;
   };
 
-  // שליחת קובץ
   const sendFile = (file) => {
     if (!file) return;
     setSending(true);
@@ -249,7 +378,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     reader.readAsDataURL(file);
   };
 
-  // שליחת הודעת טקסט או הקלטה
   const sendMessage = async () => {
     const text = input.trim();
     if ((!text && !recordedBlob) || sending) return;
@@ -274,7 +402,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     );
   };
 
-  // אנימציית גל הקלטה
   const Waveform = () => (
     <div className="waveform">
       {[...Array(5)].map((_, i) => (
@@ -292,7 +419,10 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
           <div key={m._id || i} className={`message${m.from === userId ? " mine" : " theirs"}`}>
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
-                <audio controls src={m.fileUrl} />
+                <WhatsAppAudioPlayer
+                  src={m.fileUrl}
+                  userAvatar={m.userAvatar || "/default-avatar.png"}
+                />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
@@ -319,7 +449,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
 
-        {/* תצוגת הקלטה */}
         {recording || recordedBlob ? (
           <div className="audio-preview-row">
             {recording && (
