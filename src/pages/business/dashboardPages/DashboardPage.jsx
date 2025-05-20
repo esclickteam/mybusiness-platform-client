@@ -1,4 +1,6 @@
+// src/pages/business/dashboardPages/DashboardPage.jsx
 import React, { useEffect, useState, useRef } from "react";
+import io from "socket.io-client";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import DashboardCards from "../../../components/DashboardCards";
@@ -47,10 +49,9 @@ const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // UX state ל־alert מהיר
   const [alert, setAlert] = useState(null);
 
+  // רפרנסים לניווט מהיר בין חלקים
   const cardsRef        = useRef(null);
   const insightsRef     = useRef(null);
   const comparisonRef   = useRef(null);
@@ -59,6 +60,10 @@ const DashboardPage = () => {
   const appointmentsRef = useRef(null);
   const calendarRef     = useRef(null);
 
+  // חיבור Socket - שומר על רפרנס למניעת פתיחה כפולה
+  const socketRef = useRef(null);
+
+  // טעינת הסטטיסטיקות מהשרת (פעם ראשונה)
   useEffect(() => {
     const fetchStats = async () => {
       if (!user) {
@@ -88,17 +93,50 @@ const DashboardPage = () => {
     fetchStats();
   }, [user]);
 
-  // פעולה מתוך quick actions (ניתן להרחיב)
+  // ===== חיבור SOCKET.IO (עדכון בלייב) =====
+  useEffect(() => {
+    if (!user?.businessId) return;
+
+    // פתיחת חיבור Socket רק פעם אחת
+    if (socketRef.current) return;
+
+    socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
+      path: "/socket.io",
+      query: {
+        businessId: user.businessId,
+        role: "business-dashboard",
+      },
+    });
+
+    // מאזין לכל עדכון מהשרת
+    socketRef.current.on("dashboardUpdate", (updatedStats) => {
+      setStats(updatedStats); // עדכן את הסטטיסטיקות
+    });
+
+    // אופציונלי: ניתן לקבל עדכונים על פעולות מסוימות (למשל התראה מהירה)
+    socketRef.current.on("dashboardAlert", (alertMsg) => {
+      setAlert(alertMsg);
+      setTimeout(() => setAlert(null), 3000);
+    });
+
+    // ניקוי סוקט בסיום
+    return () => {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    };
+  }, [user?.businessId]);
+
+  // פעולה מתוך quick actions (דמו)
   const handleQuickAction = (action) => {
     switch (action) {
       case "order":
-        setAlert("מעבר ליצירת הזמנה חדשה (בהמשך - ייפתח דיאלוג/עמוד)");
+        setAlert("מעבר ליצירת הזמנה חדשה (דמו)");
         break;
       case "meeting":
-        setAlert("מעבר להוספת פגישה חדשה (בהמשך - ייפתח דיאלוג/עמוד)");
+        setAlert("מעבר להוספת פגישה חדשה (דמו)");
         break;
       case "message":
-        setAlert("מעבר לשליחת הודעה (בהמשך - ייפתח דיאלוג/עמוד)");
+        setAlert("מעבר לשליחת הודעה (דמו)");
         break;
       default:
         break;
@@ -133,7 +171,7 @@ const DashboardPage = () => {
       {/* Quick Actions */}
       <QuickActions onAction={handleQuickAction} />
 
-      {/* Alert דינאמי (או מהיר) */}
+      {/* Alert דינאמי */}
       {alert && <DashboardAlert text={alert} type="info" />}
       {hasTodayMeetings && (
         <DashboardAlert
