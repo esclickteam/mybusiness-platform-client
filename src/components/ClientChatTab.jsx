@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import "./ClientChatTab.css";
 
 export default function ClientChatTab({ conversationId, businessId, userId }) {
-  // messages & UI state
+  // State
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -12,15 +12,13 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [loading, setLoading] = useState(true);
   const [userScrolledUp, setUserScrolledUp] = useState(false);
   const [error, setError] = useState("");
-
-  // recording state
+  // Recording state
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
-  const [isPaused, setIsPaused] = useState(false);
   const [timer, setTimer] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
 
-  // refs
+  // Refs
   const socketRef = useRef(null);
   const messageListRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -29,8 +27,9 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const timerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
+  const recordStopPromise = useRef(null);
 
-  // connect & load history
+  // חיבור סוקט וטעינת הודעות קודמות
   useEffect(() => {
     if (!conversationId) return;
 
@@ -41,7 +40,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      query: { conversationId, userId, role: "client", businessName: "" },
+      query: { conversationId, userId, role: "client" },
     });
 
     socketRef.current.emit("getHistory", { conversationId }, (history) => {
@@ -67,7 +66,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     };
   }, [conversationId, businessId, userId]);
 
-  // auto-scroll
+  // גלילה אוטומטית
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
       messageListRef.current.scrollTo({
@@ -83,14 +82,14 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setUserScrolledUp(scrollTop + clientHeight < scrollHeight - 20);
   };
 
-  // textarea grow
+  // התאמת גובה textarea
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // send text
+  // שליחת טקסט
   const sendMessage = () => {
     const text = input.trim();
     if (!text || sending) return;
@@ -107,7 +106,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     );
   };
 
-  // send file
+  // שליחת קובץ
   const sendFile = (file) => {
     if (!file) return;
     setSending(true);
@@ -132,7 +131,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     reader.readAsDataURL(file);
   };
 
-  // send audio blob
+  // שליחת הקלטה קולית
   const sendAudio = (blob) => {
     if (!blob) return;
     setSending(true);
@@ -157,25 +156,29 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     reader.readAsDataURL(blob);
   };
 
-  // recording handlers
+  // ==== הקלטת אודיו ====
+  // יוצרים פרומיס שמוחזר ב-stop
   const handleRecordStart = async () => {
-    if (recording) return;
+    if (recording || isBlocked) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      const recorder = new window.MediaRecorder(stream);
       mediaRecorderRef.current = recorder;
       recordedChunksRef.current = [];
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) recordedChunksRef.current.push(e.data);
-      };
-      recorder.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
-        setRecordedBlob(blob);
-      };
+
+      recordStopPromise.current = new Promise((resolve) => {
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+        };
+        recorder.onstop = () => {
+          const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+          setRecordedBlob(blob);
+          resolve(blob);
+        };
+      });
+
       recorder.start();
       setRecording(true);
-      setIsPaused(false);
-      setIsBlocked(false);
       setTimer(0);
       timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     } catch {
@@ -184,13 +187,18 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
-  const handleRecordStop = () => {
-    if (!recording) return;
+  // מחכים שהקלטה באמת תסתיים לפני מעבר ל-preview
+  const handleRecordStop = async () => {
+    if (!recording || !mediaRecorderRef.current) return;
     mediaRecorderRef.current.stop();
     clearInterval(timerRef.current);
     setRecording(false);
+    // חכה שה־onstop יסיים
+    if (recordStopPromise.current) await recordStopPromise.current;
+    setTimer(0);
   };
 
+  // שלח הקלטה
   const handleSendRecording = () => {
     if (!recordedBlob) return;
     sendAudio(recordedBlob);
@@ -198,12 +206,13 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setTimer(0);
   };
 
+  // מחיקת הקלטה
   const handleDiscard = () => {
     setRecordedBlob(null);
     setTimer(0);
   };
 
-  // input handlers
+  // שינוי אינפוט
   const handleInputChange = (e) => {
     setInput(e.target.value);
     resizeTextarea();
@@ -219,7 +228,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     e.target.value = null;
   };
 
-  // waveform animation
+  // גל אנימציה
   const Waveform = () => (
     <div className="waveform">
       {[...Array(5)].map((_, i) => (
@@ -228,6 +237,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     </div>
   );
 
+  // ==== JSX ====
   return (
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef} onScroll={onScroll}>
@@ -266,24 +276,16 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
         {recordedBlob ? (
           <div className="recording-preview">
-            <button className="preview-btn send" onClick={handleSendRecording}>
-              ◀
-            </button>
-            <button
-              className={`preview-btn pause${isPaused ? " paused" : ""}`}
-              onClick={() => {
-                mediaRecorderRef.current[isPaused ? "resume" : "pause"]();
-                setIsPaused((p) => !p);
-              }}
-            >
-              {isPaused ? "▶" : "❚❚"}
-            </button>
+            <audio controls src={URL.createObjectURL(recordedBlob)} style={{ verticalAlign: "middle" }} />
             <Waveform />
             <span className="preview-timer">
               {String(Math.floor(timer / 60)).padStart(2, "0")}:
               {String(timer % 60).padStart(2, "0")}
             </span>
-            <button className="preview-btn trash" onClick={handleDiscard}>
+            <button className="preview-btn send" onClick={handleSendRecording} title="שלח">
+              ✔️
+            </button>
+            <button className="preview-btn trash" onClick={handleDiscard} title="מחק">
               🗑
             </button>
           </div>
@@ -311,10 +313,11 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                 className={`recordBtn${recording ? " recording" : ""}`}
                 onMouseDown={handleRecordStart}
                 onMouseUp={handleRecordStop}
-                onMouseLeave={handleRecordStop}
+                onMouseLeave={recording ? handleRecordStop : undefined}
                 onTouchStart={handleRecordStart}
                 onTouchEnd={handleRecordStop}
                 disabled={sending}
+                title="לחיצה ארוכה להקלטה"
               >
                 🎤
               </button>
@@ -324,6 +327,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                 className="fileInput"
                 onChange={handleFileChange}
                 disabled={sending}
+                style={{ display: "none" }}
               />
             </div>
           </>
