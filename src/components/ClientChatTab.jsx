@@ -26,10 +26,9 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const timerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
-  const recordStopPromise = useRef(null);
-  const mediaStreamRef = useRef(null); // <-- Ref to hold the media stream
+  const mediaStreamRef = useRef(null);
 
-  // חיבור סוקט וטעינת היסטוריה
+  // סוקט + טעינת היסטוריה
   useEffect(() => {
     if (!conversationId) return;
 
@@ -63,10 +62,15 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     return () => {
       socketRef.current.disconnect();
       clearTimeout(typingTimeoutRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+      }
     };
   }, [conversationId, businessId, userId]);
 
-  // גלילה אוטומטית בתחתית אלא אם המשתמש גלל למעלה
+  // גלילה אוטומטית
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
       messageListRef.current.scrollTo({
@@ -90,65 +94,72 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // התחלת הקלטה
+  // התחלת הקלטה - מנקה הכל לפני כל התחלה!
   const handleRecordStart = async () => {
-  if (recording || isBlocked) return;
-  setRecordedBlob(null);  // איפוס ההקלטה הישנה לפני התחלת חדשה
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaStreamRef.current = stream;
-
-    const recorder = new window.MediaRecorder(stream);
-    mediaRecorderRef.current = recorder;
+    if (recording || isBlocked) return;
+    // איפוס מוחלט לפני התחלה חדשה
+    setError("");
+    setRecordedBlob(null);
+    setIsBlocked(false);
     recordedChunksRef.current = [];
 
-    recordStopPromise.current = new Promise((resolve) => {
+    // משחרר stream קודם אם קיים
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+    // מפסיק מד-דקה קודם
+    if (timerRef.current) clearInterval(timerRef.current);
+    setTimer(0);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      const recorder = new window.MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      recordedChunksRef.current = [];
+
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
       recorder.onstop = () => {
         const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
         setRecordedBlob(blob);
-        resolve(blob);
+        setRecording(false);
+        setTimer(0);
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+          mediaStreamRef.current = null;
+        }
       };
-    });
 
-    recorder.start();
-    setRecording(true);
-    setTimer(0);
-    timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-  } catch {
-    setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
-    setIsBlocked(true);
-  }
-};
-
+      recorder.start();
+      setRecording(true);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } catch {
+      setError("אין הרשאה להקלטה. בדוק הרשאות דפדפן.");
+      setIsBlocked(true);
+      setRecording(false);
+    }
+  };
 
   // עצירת הקלטה
-  const handleRecordStop = async () => {
+  const handleRecordStop = () => {
     if (!recording || !mediaRecorderRef.current) return;
     mediaRecorderRef.current.stop();
-    clearInterval(timerRef.current);
     setRecording(false);
+    if (timerRef.current) clearInterval(timerRef.current);
+    setTimer(0);
 
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
     }
-
-    if (recordStopPromise.current) await recordStopPromise.current;
-
-    setTimer(0);
   };
 
   // שליחת הקלטה לאחר עצירה
-  const handleSendRecording = async () => {
+  const handleSendRecording = () => {
     if (!recordedBlob) return;
-
-    if (recording && mediaRecorderRef.current) {
-      await handleRecordStop();
-    }
-
     sendAudio(recordedBlob);
     setRecordedBlob(null);
     setTimer(0);
@@ -185,6 +196,13 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setTimer(0);
     setError("");
     setIsBlocked(false);
+    setRecording(false);
+    recordedChunksRef.current = [];
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
   };
 
   // שינוי טקסט באינפוט
@@ -233,32 +251,28 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
 
   // שליחת הודעת טקסט או הקלטה
   const sendMessage = async () => {
-  const text = input.trim();
-  if ((!text && !recordedBlob) || sending) return;
+    const text = input.trim();
+    if ((!text && !recordedBlob) || sending) return;
 
-  setSending(true);
-  setError("");
+    setSending(true);
+    setError("");
 
-  if (recordedBlob) {
-    if (recording) {
-      await handleRecordStop(); // לעצור הקלטה ולהמתין ל-blob
-    }
-    await handleSendRecording(); // לשלוח הקלטה
-    setSending(false);
-    return;
-  }
-
-  socketRef.current.emit(
-    "sendMessage",
-    { conversationId, from: userId, to: businessId, role: "client", text },
-    (ack) => {
+    if (recordedBlob) {
+      handleSendRecording();
       setSending(false);
-      if (ack?.ok) setInput("");
-      else setError("שגיאה בשליחת ההודעה, נסה שוב");
+      return;
     }
-  );
-};
 
+    socketRef.current.emit(
+      "sendMessage",
+      { conversationId, from: userId, to: businessId, role: "client", text },
+      (ack) => {
+        setSending(false);
+        if (ack?.ok) setInput("");
+        else setError("שגיאה בשליחת ההודעה, נסה שוב");
+      }
+    );
+  };
 
   // אנימציית גל הקלטה
   const Waveform = () => (
@@ -305,58 +319,48 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
 
-        {recording ? (
-          <>
-            <button
-              className="recordBtn recording"
-              onClick={handleRecordStop}
-              title="עצור הקלטה"
-              type="button"
-              aria-label="עצור הקלטה"
-            >
-              ⏸️
-            </button>
-            <Waveform />
-            <span className="preview-timer" aria-live="polite" aria-atomic="true">
-              {String(Math.floor(timer / 60)).padStart(2, "0")}:
-              {String(timer % 60).padStart(2, "0")}
-            </span>
-            <button
-              className="preview-btn trash"
-              onClick={() => {
-                handleDiscard();
-                handleRecordStop();
-              }}
-              title="בטל הקלטה"
-              type="button"
-              aria-label="בטל הקלטה"
-            >
-              🗑️
-            </button>
-            <textarea
-              ref={textareaRef}
-              className="inputField"
-              placeholder="הקלד הודעה..."
-              value={input}
-              onChange={handleInputChange}
-              onFocus={() => setError("")}
-              onKeyDown={(e) =>
-                e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
-              }
-              disabled={sending}
-              rows={1}
-              aria-label="שדה טקסט להקלדת הודעה"
-            />
-            <button
-              className="sendButtonFlat"
-              onClick={sendMessage}
-              disabled={sending || (!input.trim() && !recordedBlob)}
-              type="button"
-              aria-label="שלח הודעה"
-            >
-              ◀
-            </button>
-          </>
+        {/* תצוגת הקלטה */}
+        {recording || recordedBlob ? (
+          <div className="audio-preview-row">
+            {recording && (
+              <>
+                <button
+                  className="recordBtn recording"
+                  onClick={handleRecordStop}
+                  title="עצור הקלטה"
+                  type="button"
+                  aria-label="עצור הקלטה"
+                >
+                  ⏹️
+                </button>
+                <Waveform />
+                <span className="preview-timer">
+                  {String(Math.floor(timer / 60)).padStart(2, "0")}:
+                  {String(timer % 60).padStart(2, "0")}
+                </span>
+                <button
+                  className="preview-btn trash"
+                  onClick={handleDiscard}
+                  title="בטל הקלטה"
+                  type="button"
+                  aria-label="בטל הקלטה"
+                >
+                  🗑️
+                </button>
+              </>
+            )}
+            {recordedBlob && (
+              <>
+                <audio src={URL.createObjectURL(recordedBlob)} controls style={{ height: 30 }} />
+                <button className="send-btn" onClick={handleSendRecording} disabled={sending}>
+                  שלח
+                </button>
+                <button className="discard-btn" onClick={handleDiscard}>
+                  מחק
+                </button>
+              </>
+            )}
+          </div>
         ) : (
           <>
             <textarea
@@ -394,13 +398,9 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
               </button>
               <button
                 className={`recordBtn${recording ? " recording" : ""}`}
-                onMouseDown={handleRecordStart}
-                onMouseUp={handleRecordStop}
-                onMouseLeave={recording ? handleRecordStop : undefined}
-                onTouchStart={handleRecordStart}
-                onTouchEnd={handleRecordStop}
+                onClick={handleRecordStart}
                 disabled={sending}
-                title="לחיצה ארוכה להקלטה"
+                title="התחל הקלטה"
                 type="button"
                 aria-label="הקלט קול"
               >

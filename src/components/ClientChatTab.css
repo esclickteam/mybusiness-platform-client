@@ -144,7 +144,7 @@
 .inputBar {
   display: flex;
   flex-direction: row;      /* input בימין, כפתורים בשמאל */
-  align-items: center;
+  align-items: flex-end;    /* בשביל textarea גבוהה */
   gap: 8px;
   padding: 12px 12px 12px 10px;
   border-top: 1.5px solid #e1bee7;
@@ -210,6 +210,42 @@
   user-select: none;
 }
 
+/* סגנון לשורה של תצוגת הקלטה */
+.audio-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: #fcf5ed;
+  padding: 8px 10px;
+  border-radius: 20px;
+  border: 1px solid #f3e3fa;
+  margin-bottom: 8px;
+}
+
+/* תצוגת כפתורי שליחה/מחק בתצוגה של הקלטה */
+.send-btn, .discard-btn {
+  background: #7c43bd;
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 5px 18px;
+  margin-right: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.16s;
+  min-width: 60px;
+}
+.send-btn:hover {
+  background: #5d2997;
+}
+.discard-btn {
+  background: #e53935;
+}
+.discard-btn:hover {
+  background: #ad1c1a;
+}
+
 /* כפתור מחיקה */
 .preview-btn.trash {
   color: #d93025;
@@ -226,7 +262,7 @@
   color: #a52714;
 }
 
-/* כפתור הקלטה (ממשק וואטסאפ) */
+/* כפתור הקלטה */
 .recordBtn {
   order: 4;
   width: 36px;
@@ -245,7 +281,7 @@
   flex-shrink: 0;
 }
 .recordBtn.recording {
-  background: #d93025; /* אדום וואטסאפ אופייני */
+  background: #d93025;
   color: white;
   box-shadow: 0 0 10px #d93025aa;
 }
@@ -308,6 +344,36 @@
 /* קלט קבצים מוסתר */
 .fileInput {
   display: none;
+}
+
+/* התראה על שגיאה */
+.error-alert {
+  width: 100%;
+  text-align: center;
+  color: #e53935;
+  background: #fff1f0;
+  border: 1px solid #ffe2e2;
+  border-radius: 12px;
+  padding: 7px 0;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* תמונה והקלטות בהודעה */
+.message img {
+  margin-top: 3px;
+  margin-bottom: 3px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #0001;
+  max-width: 180px;
+  max-height: 240px;
+}
+.message audio {
+  margin-top: 6px;
+  outline: none;
+  width: 100%;
+  max-width: 220px;
 }
 
 /* רספונסיביות */
