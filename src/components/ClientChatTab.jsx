@@ -142,23 +142,10 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
     reader.readAsDataURL(file);
   };
 
-  // שליחת קול עם הצגת הודעה מקומית וטעינת מצב הקלטה
+  // שליחת קול (בלי הוספה מקומית) — הוספה רק אחרי קבלת ההודעה מהשרת
   const sendAudio = (blob) => {
     if (!conversationId) return;
-    const audioUrl = URL.createObjectURL(blob);
-    setMessages(prev => [
-      ...prev,
-      {
-        _id: Date.now(),
-        from: userId,
-        to: businessId,
-        role: "client",
-        fileUrl: audioUrl,
-        fileName: "voice.webm",
-        timestamp: new Date().toISOString(),
-        isLocal: true,
-      }
-    ]);
+
     setSending(true);
     setError("");
     const reader = new FileReader();
@@ -246,10 +233,7 @@ export default function ClientChatTab({ conversationId, businessId, userId, part
           >
             {m.fileUrl ? (
               (m.fileType && m.fileType.startsWith('audio')) || m.fileUrl.match(/\.(mp3|webm|wav)/i) ? (
-                <>
-                  <div style={{ fontSize: '10px', color: '#666' }}>audio fileUrl: {m.fileUrl}</div>
-                  <audio controls src={m.fileUrl} />
-                </>
+                <audio controls src={m.fileUrl} />
               ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
                 <img
                   src={m.fileUrl}
