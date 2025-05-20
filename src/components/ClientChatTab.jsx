@@ -94,6 +94,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [localDuration, setLocalDuration] = useState(0);
 
   const socketRef = useRef(null);
   const messageListRef = useRef(null);
@@ -177,11 +178,11 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // התחלת הקלטה
   const handleRecordStart = async () => {
     if (recording || isBlocked) return;
     setError("");
     setRecordedBlob(null);
+    setLocalDuration(0);
     recordedChunksRef.current = [];
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((t) => t.stop());
@@ -220,7 +221,6 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     }
   };
 
-  // עצירת הקלטה
   const handleRecordStop = () => {
     if (!recording || !mediaRecorderRef.current) return;
     mediaRecorderRef.current.stop();
@@ -229,10 +229,10 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setTimer(0);
   };
 
-  // ביטול הקלטה
   const handleDiscard = () => {
     setRecordedBlob(null);
     setTimer(0);
+    setLocalDuration(0);
     setError("");
     setRecording(false);
     recordedChunksRef.current = [];
@@ -243,15 +243,14 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  // שליחת הקלטה
   const handleSendRecording = () => {
     if (!recordedBlob) return;
     sendAudio(recordedBlob);
     setRecordedBlob(null);
     setTimer(0);
+    setLocalDuration(0);
   };
 
-  // שולח את ה-blob עצמו (binary) דרך socket.io
   const sendAudio = (blob) => {
     if (!blob) return;
     setSending(true);
@@ -358,11 +357,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                   style={{ maxWidth: 200, borderRadius: 8 }}
                 />
               ) : (
-                <a
-                  href={m.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
                   {m.fileName}
                 </a>
               )
@@ -415,7 +410,21 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
                   src={URL.createObjectURL(recordedBlob)}
                   controls
                   style={{ height: 30 }}
+                  onLoadedMetadata={(e) => {
+                    const dur = e.currentTarget.duration;
+                    if (!isNaN(dur) && isFinite(dur)) {
+                      setLocalDuration(dur);
+                    }
+                  }}
                 />
+                {localDuration > 0 && (
+                  <div>
+                    משך הקלטה: {Math.floor(localDuration / 60)}:
+                    {Math.floor(localDuration % 60)
+                      .toString()
+                      .padStart(2, "0")}
+                  </div>
+                )}
                 <button
                   className="send-btn"
                   onClick={handleSendRecording}
