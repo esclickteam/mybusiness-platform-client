@@ -32,7 +32,7 @@ export default function BusinessChatPage() {
       transports: ["websocket"],
       withCredentials: true,  // חשוב! שולח עוגיות אוטומטית
       auth: {
-        role: "business",
+        role: "business-dashboard", // <-- פה העדכון
         userId: businessId,
       },
     });
