@@ -17,7 +17,7 @@ export default function BusinessChatPage() {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    console.log("BusinessChatPage init:", { initialized, businessId });
+    console.log("BusinessChatPage init:", { initialized, businessId, token });
     if (!initialized || !businessId || !token) {
       console.warn("Skipping socket connect: missing data", { initialized, businessId, token });
       return;
@@ -72,7 +72,7 @@ export default function BusinessChatPage() {
       socketRef.current = null;
       console.log("Socket disconnected and cleaned up");
     };
-  }, [initialized, businessId, selected]);
+  }, [initialized, businessId, token]);
 
   const handleSelect = (conversationId, partnerId) => {
     console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
