@@ -9,8 +9,8 @@ export default function BusinessChatPage() {
   const { user, initialized, token: authToken } = useAuth();
   // תמיכה בפורמט בו businessId מאוחסן תחת user.business._id
   const businessId = user?.businessId || user?.business?._id;
-  // קבלת הטוקן מצורות שונות: קונטקסט, שדה user, או localStorage
-  const token = authToken || user?.token || localStorage.getItem("token");
+  // משתמשים רק בטוקן מהקונטקסט, ללא גיבוי ל-localStorage או user.token
+  const token = authToken;
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
