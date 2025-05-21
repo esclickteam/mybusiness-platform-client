@@ -12,7 +12,10 @@ export function SSEProvider({ children, businessId }) {
       return;
     }
 
+    // וודא ש-VITE_SSE_URL מסתיים ללא /stream או /history
     const baseUrl = import.meta.env.VITE_SSE_URL || "/api/updates";
+
+    // שמור שלא יכפיל /stream
     const streamUrl = `${baseUrl}/stream/${businessId}`;
     const historyUrl = `${baseUrl}/history`;
 
@@ -20,7 +23,10 @@ export function SSEProvider({ children, businessId }) {
 
     // 1) טען היסטוריה
     fetch(historyUrl, { credentials: "include" })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        return res.json();
+      })
       .then(data => setUpdates(data))
       .catch(err => console.error("Error loading updates history:", err))
       .finally(() => {
