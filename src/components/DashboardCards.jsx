@@ -1,41 +1,72 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 import "../styles/dashboard.css";
 
-const DashboardCards = ({ stats }) => {
+const DashboardCards = ({ businessId }) => {
+  const [stats, setStats] = useState({
+    views_count: 0,
+    requests_count: 0,
+    orders_count: 0,
+    reviews_count: 0,
+    messages_count: 0,
+    upcoming_appointments: 0,
+  });
+
+  useEffect(() => {
+    if (!businessId) return;
+
+    const socket = io("https://api.esclick.co.il", {
+      query: { businessId },
+    });
+
+    socket.on("dashboardUpdate", (newStats) => {
+      setStats(newStats);
+    });
+
+    // בקשה ראשונית לנתונים (אופציונלי)
+    socket.emit("getDashboardStats", null, (response) => {
+      if (response.ok) setStats(response.stats);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [businessId]);
+
   const cards = [
     {
       label: "צפיות בפרופיל",
-      value: stats?.views_count || 0,
+      value: stats.views_count,
       icon: "👁️",
       bgColor: "#f0ebff",
     },
     {
       label: "בקשות שירות",
-      value: stats?.requests_count || 0,
+      value: stats.requests_count,
       icon: "📩",
       bgColor: "#ffeef0",
     },
     {
       label: "הזמנות שבוצעו",
-      value: stats?.orders_count || 0,
+      value: stats.orders_count,
       icon: "🛒",
       bgColor: "#e0f8ec",
     },
     {
       label: "ביקורות חיוביות",
-      value: stats?.reviews_count || 0,
+      value: stats.reviews_count,
       icon: "⭐",
       bgColor: "#fff7d6",
     },
     {
       label: "הודעות מלקוחות",
-      value: stats?.messages_count || 0,
+      value: stats.messages_count,
       icon: "💬",
       bgColor: "#e6f7ff",
     },
     {
       label: "פגישות עתידיות",
-      value: stats?.upcoming_appointments || 0,
+      value: stats.upcoming_appointments,
       icon: "📅",
       bgColor: "#fcefe3",
     },

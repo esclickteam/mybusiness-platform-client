@@ -25,9 +25,6 @@ import "../../../styles/dashboard.css";
 // קומפוננטה ל-Quick Actions
 const QuickActions = ({ onAction }) => (
   <div className="quick-actions-row">
-    <button className="quick-action-btn" onClick={() => onAction("order")}>
-      + הזמנה חדשה
-    </button>
     <button className="quick-action-btn" onClick={() => onAction("meeting")}>
       + פגישה חדשה
     </button>
@@ -97,7 +94,6 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!user?.businessId) return;
 
-    // פתיחת חיבור Socket רק פעם אחת
     if (socketRef.current) return;
 
     socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
@@ -108,18 +104,15 @@ const DashboardPage = () => {
       },
     });
 
-    // מאזין לכל עדכון מהשרת
     socketRef.current.on("dashboardUpdate", (updatedStats) => {
       setStats(updatedStats); // עדכן את הסטטיסטיקות
     });
 
-    // אופציונלי: ניתן לקבל עדכונים על פעולות מסוימות (למשל התראה מהירה)
     socketRef.current.on("dashboardAlert", (alertMsg) => {
       setAlert(alertMsg);
       setTimeout(() => setAlert(null), 3000);
     });
 
-    // ניקוי סוקט בסיום
     return () => {
       socketRef.current.disconnect();
       socketRef.current = null;
@@ -129,9 +122,6 @@ const DashboardPage = () => {
   // פעולה מתוך quick actions (דמו)
   const handleQuickAction = (action) => {
     switch (action) {
-      case "order":
-        setAlert("מעבר ליצירת הזמנה חדשה (דמו)");
-        break;
       case "meeting":
         setAlert("מעבר להוספת פגישה חדשה (דמו)");
         break;
@@ -151,13 +141,9 @@ const DashboardPage = () => {
     return <p className="error-text">{error}</p>;
   }
 
-  // דוגמה ל-alert: פגישות היום או יעד קרוב
+  // דוגמה ל-alert: פגישות היום
   const hasTodayMeetings =
     stats && stats.todaysAppointments && stats.todaysAppointments.length > 0;
-  const isGoalClose =
-    stats &&
-    stats.orders_count &&
-    stats.orders_count >= 0.8 * (stats.orders_goal || 20);
 
   return (
     <div className="dashboard-container">
@@ -179,12 +165,6 @@ const DashboardPage = () => {
           type="warning"
         />
       )}
-      {isGoalClose && (
-        <DashboardAlert
-          text={`🏆 אתה מתקרב ליעד ההזמנות! (${stats.orders_count} מתוך ${stats.orders_goal || 20})`}
-          type="success"
-        />
-      )}
 
       <DashboardNav
         refs={{
@@ -201,7 +181,17 @@ const DashboardPage = () => {
       {stats && <NotificationsPanel stats={stats} />}
 
       <div ref={cardsRef}>
-        <DashboardCards stats={stats} />
+        {/* דגש: סטטיסטיקות רלוונטיות לעסק תורים בלבד */}
+        <DashboardCards
+          stats={{
+            profile_views: stats.profile_views || 0,
+            requests_count: stats.requests_count || 0,
+            customer_messages: stats.customer_messages || 0,
+            future_appointments: stats.future_appointments || 0,
+            today_appointments: stats.today_appointments || 0,
+            positive_reviews: stats.positive_reviews || 0,
+          }}
+        />
       </div>
       <div ref={insightsRef}>
         <Insights stats={stats} />
@@ -211,23 +201,20 @@ const DashboardPage = () => {
       </div>
 
       <NextActions stats={stats} />
-      <StatsProgressBar
-        value={stats.orders_count || 0}
-        goal={stats.orders_goal || 20}
-        label="התקדמות לקראת יעד ההזמנות החודשי"
-      />
+      {/* ניתן להסתיר ProgressBar אם אין יעדי הזמנות */}
 
       <div ref={chartsRef} className="graph-row">
+        {/* תעדכן כאן גרפים לפגישות, ביקורות, הודעות וכו' */}
         <BarChart
           data={{
-            labels: ["לקוחות", "בקשות", "הזמנות"],
+            labels: ["פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"],
             datasets: [
               {
-                label: "נתוני העסק",
+                label: "פעילות העסק",
                 data: [
-                  stats.views_count   || 0,
-                  stats.requests_count|| 0,
-                  stats.orders_count  || 0,
+                  stats.future_appointments || 0,
+                  stats.requests_count || 0,
+                  stats.customer_messages || 0,
                 ],
                 borderRadius: 8,
               },
@@ -235,7 +222,6 @@ const DashboardPage = () => {
           }}
           options={{ responsive: true }}
         />
-
         {stats.income_distribution && (
           <div className="graph-box">
             <PieChart data={stats.income_distribution} />
