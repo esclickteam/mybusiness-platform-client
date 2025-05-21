@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
+import { startSSEConnection } from "../sse";  // <-- ייבוא הפונקציה
 
 export const AuthContext = createContext();
 
@@ -18,6 +19,9 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
+
+  // ref לשמירת EventSource
+  const eventSourceRef = useRef(null);
 
   useEffect(() => {
     if (initRan.current) return;
@@ -68,8 +72,19 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (user?.businessId) {
-      startSSEConnection(user.businessId);
+      // אם יש חיבור קודם, סוגר אותו קודם
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+      eventSourceRef.current = startSSEConnection(user.businessId);
     }
+    // כשמשתמש מתנתק או משתנה, סוגר חיבור SSE
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+    };
   }, [user]);
 
   const login = async (identifier, password, options = { skipRedirect: false }) => {
@@ -125,7 +140,11 @@ export function AuthProvider({ children }) {
         businessId: realBusinessId,
       });
 
-      startSSEConnection(realBusinessId);
+      // סוגר חיבור קודם אם קיים
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+      eventSourceRef.current = startSSEConnection(realBusinessId);
 
       if (!options.skipRedirect) {
         let path = "/";
@@ -174,6 +193,13 @@ export function AuthProvider({ children }) {
     } finally {
       localStorage.removeItem("token");
       setUser(null);
+
+      // סוגר חיבור SSE בעת התנתקות
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+
       setLoading(false);
       navigate("/", { replace: true });
     }
