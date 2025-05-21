@@ -1,4 +1,3 @@
-// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
@@ -30,14 +29,16 @@ export default function BusinessChatPage() {
     socketRef.current.on("connect", () => {
       console.log("Socket connected:", socketRef.current.id);
       socketRef.current.emit("getConversations", {}, (res) => {
+        const data = Array.isArray(res.conversations) ? res.conversations : [];
         if (res.ok) {
-          const data = Array.isArray(res.conversations) ? res.conversations : [];
           setConvos(data);
 
-          if (data.length && !selected) {
+          if (data.length > 0 && !selected) {
             const first = data[0];
             const convoId = first._id || first.conversationId;
-            const partnerId = first.participants.find((p) => p !== businessId) || "";
+            const partnerId = Array.isArray(first.participants)
+              ? first.participants.find((p) => p !== businessId) || ""
+              : "";
             setSelected({ conversationId: convoId, partnerId });
           }
         } else {
@@ -56,7 +57,7 @@ export default function BusinessChatPage() {
     });
 
     return () => {
-      socketRef.current.disconnect();
+      socketRef.current?.disconnect();
       socketRef.current = null;
     };
   }, [initialized, businessId, token]);
@@ -75,7 +76,7 @@ export default function BusinessChatPage() {
             <p className={styles.loading}>טוען שיחות…</p>
           ) : (
             <ConversationsList
-              conversations={convos}
+              conversations={convos || []}
               businessId={businessId}
               selectedConversationId={selected?.conversationId}
               onSelect={handleSelect}
