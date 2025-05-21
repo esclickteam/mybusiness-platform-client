@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
-import DashboardLive from "../../../components/DashboardLive";
+import DashboardCards from "../../../components/DashboardCards";
 import Insights from "../../../components/dashboard/Insights";
 import BusinessComparison from "../../../components/dashboard/BusinessComparison";
 import NextActions from "../../../components/dashboard/NextActions";
@@ -22,7 +22,7 @@ import "../../../styles/dashboard.css";
 
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,20 +36,15 @@ const DashboardPage = () => {
   const appointmentsRef = useRef(null);
   const calendarRef     = useRef(null);
 
+  // טוען את הסטטיסטיקות הראשוניות
   useEffect(() => {
     const fetchStats = async () => {
-      if (!user) return;
-      const bizId = user.businessId;
-      if (!bizId) {
-        setError("⚠️ מזהה העסק לא זוהה.");
-        setLoading(false);
-        return;
-      }
+      if (!user?.businessId) return;
       try {
-        const res = await API.get(`/business/${bizId}/stats`, { withCredentials: true });
+        const res = await API.get(`/business/${user.businessId}/stats`, { withCredentials: true });
         setStats(res.data);
       } catch (err) {
-        console.error("❌ שגיאה בטעינת נתונים:", err);
+        console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
       } finally {
         setLoading(false);
@@ -58,7 +53,29 @@ const DashboardPage = () => {
     fetchStats();
   }, [user]);
 
-  const handleQuickAction = action => {
+  // התחברות ל-SSE לעדכוני real-time
+  useEffect(() => {
+    if (!user?.businessId) return;
+    const es = new EventSource(
+      `${import.meta.env.VITE_API_URL}/updates/stream/${user.businessId}`,
+      { withCredentials: true }
+    );
+    es.addEventListener("statsUpdate", (e) => {
+      try {
+        const payload = JSON.parse(e.data);
+        setStats(payload.extra);
+      } catch (err) {
+        console.error("🚨 Error parsing SSE:", err);
+      }
+    });
+    es.onerror = () => {
+      console.error("🚨 SSE connection error, closing");
+      es.close();
+    };
+    return () => es.close();
+  }, [user]);
+
+  const handleQuickAction = (action) => {
     let msg = null;
     if (action === "meeting") msg = "מעבר להוספת פגישה חדשה (דמו)";
     if (action === "message") msg = "מעבר לשליחת הודעה (דמו)";
@@ -68,6 +85,9 @@ const DashboardPage = () => {
 
   if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
+
+  const todaysAppointments = stats.todaysAppointments || [];
+  const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
     <div className="dashboard-container">
@@ -80,6 +100,12 @@ const DashboardPage = () => {
 
       <QuickActions onAction={handleQuickAction} />
       {alert && <DashboardAlert text={alert} type="info" />}
+      {hasTodayMeetings && (
+        <DashboardAlert
+          text={`📅 יש לך ${todaysAppointments.length} פגישות היום!`}
+          type="warning"
+        />
+      )}
 
       <DashboardNav
         refs={{ cardsRef, insightsRef, comparisonRef, chartsRef, leadsRef, appointmentsRef, calendarRef }}
@@ -87,7 +113,16 @@ const DashboardPage = () => {
 
       {/* סטטיסטיקות ראשיות בזמן אמת */}
       <div ref={cardsRef}>
-        <DashboardLive businessId={user.businessId} />
+        <DashboardCards
+          stats={{
+            views_count:        stats.views_count || 0,
+            requests_count:     stats.requests_count || 0,
+            orders_count:       stats.orders_count || 0,
+            reviews_count:      stats.reviews_count || 0,
+            messages_count:     stats.messages_count || 0,
+            appointments_count: stats.appointments_count || 0,
+          }}
+        />
       </div>
 
       <div ref={insightsRef}>
@@ -104,11 +139,17 @@ const DashboardPage = () => {
         <BarChart
           data={{
             labels: ["פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"],
-            datasets: [{
-              label: "פעילות העסק",
-              data: [stats.appointments_count, stats.requests_count, stats.messages_count],
-              borderRadius: 8,
-            }],
+            datasets: [
+              {
+                label: "פעילות העסק",
+                data: [
+                  stats.appointments_count || 0,
+                  stats.requests_count   || 0,
+                  stats.messages_count   || 0,
+                ],
+                borderRadius: 8,
+              },
+            ],
           }}
           options={{ responsive: true }}
         />
@@ -144,7 +185,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={leadsRef} className="graph-row">
-        {/* … שאר הקומפוננטות … */}
+        <WeeklySummary stats={stats} />
         <OpenLeadsTable leads={stats.leads || []} />
       </div>
 
