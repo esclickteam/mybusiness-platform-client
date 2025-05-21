@@ -19,8 +19,10 @@ export default function DashboardLive({ businessId }) {
       return;
     }
 
+    console.log("🔥 VITE_SSE_URL =", import.meta.env.VITE_SSE_URL);
+
     const eventSource = new EventSource(
-      `${import.meta.env.VITE_API_URL}/updates/stream/${businessId}`,
+      `${import.meta.env.VITE_SSE_URL}/stream/${businessId}`,
       { withCredentials: true }
     );
 
