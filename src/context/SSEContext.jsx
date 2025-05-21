@@ -7,10 +7,16 @@ export function SSEProvider({ children }) {
   const [updates, setUpdates] = useState([]);
 
   useEffect(() => {
-    const streamUrl  = import.meta.env.VITE_SSE_URL || "/api/updates/stream";
-    const historyUrl = import.meta.env.VITE_SSE_URL
-      ? import.meta.env.VITE_SSE_URL.replace(/\/stream$/, "/history")
-      : "/api/updates/history";
+    // הבאת ה-businessId ממקום כלשהו - לדוגמה localStorage
+    const businessId = localStorage.getItem("businessId");
+    if (!businessId) {
+      console.error("No businessId found for SSE connection");
+      return;
+    }
+
+    const baseUrl = import.meta.env.VITE_SSE_URL || "/api/updates";
+    const streamUrl = `${baseUrl}/stream/${businessId}`;
+    const historyUrl = `${baseUrl}/history`;
 
     let es;
 
@@ -27,15 +33,13 @@ export function SSEProvider({ children }) {
           try {
             const ev = JSON.parse(e.data);
             setUpdates(prev => {
-              // בדיקה: אם בראש הרשימה כבר קיים אותו אירוע, אל תוסיף
               if (
                 prev.length > 0 &&
                 prev[0].timestamp === ev.timestamp &&
-                prev[0].message   === ev.message
+                prev[0].message === ev.message
               ) {
                 return prev;
               }
-              // אחרת, הוסף בראש ונקשור עד 20
               return [ev, ...prev].slice(0, 20);
             });
           } catch (err) {
@@ -49,7 +53,7 @@ export function SSEProvider({ children }) {
         };
       });
 
-    // 2) cleanup
+    // 2) Cleanup on unmount
     return () => {
       if (es) {
         es.close();
