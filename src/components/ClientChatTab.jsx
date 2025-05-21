@@ -120,7 +120,7 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   // פתח חיבור Socket.IO
   socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
     path: "/socket.io",
-    auth: { conversationId, userId, role: "client" },
+    auth: { conversationId, userId, businessId, role: "client" },
     transports: ["websocket"],
   });
 
