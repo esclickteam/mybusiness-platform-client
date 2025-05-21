@@ -18,7 +18,24 @@ export default function ClientChatSection() {
   const socketRef = useRef();
 
   useEffect(() => {
-    if (!initialized || !userId || !businessId) return;
+    console.log("Initializing chat with:", { initialized, userId, businessId });
+
+    if (!initialized) return;
+
+    if (!userId) {
+      setError("משתמש לא מזוהה");
+      setLoading(false);
+      return;
+    }
+
+    if (!businessId) {
+      setError("מזהה העסק חסר");
+      setLoading(false);
+      return;
+    }
+
+    setError("");
+    setLoading(true);
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
@@ -45,7 +62,9 @@ export default function ClientChatSection() {
     );
 
     return () => {
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
   }, [initialized, userId, businessId]);
 
@@ -54,7 +73,7 @@ export default function ClientChatSection() {
 
     socketRef.current.emit(
       "getConversations",
-      { userId },  // תוקן: שולח את userId הנכון (של הלקוח), לא את businessId
+      { userId },
       (res) => {
         if (res.ok) {
           const convos = Array.isArray(res.conversations) ? res.conversations : [];
