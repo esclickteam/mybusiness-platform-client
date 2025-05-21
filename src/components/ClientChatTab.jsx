@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import "./ClientChatTab.css";
 
-// קומפוננטה לניגון אודיו עם הצגת משך מהשרת (או מההודעה)
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -102,6 +101,8 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
+  const socketUrl = import.meta.env.VITE_SOCKET_URL;
+
   const getSupportedMimeType = () => {
     const preferred = "audio/webm";
     if (MediaRecorder.isTypeSupported(preferred)) {
@@ -111,61 +112,56 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   };
 
   useEffect(() => {
-  if (!conversationId) return;
+    if (!conversationId) return;
 
-  // איפוס שגיאות וחסימה
-  setError("");
-  setIsBlocked(false);
+    setError("");
+    setIsBlocked(false);
 
-  // פתח חיבור Socket.IO
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+
 socketRef.current = io(socketUrl, {
   path: "/socket.io",
   withCredentials: true,
   auth: {
     token,
     businessId,
-    role: "customer"
-
-  }
+    role: "customer", // או "client" בהתאם למה שמוגדר אצלך בשרת
+  },
 });
 
 
-  // רק לאחר חיבור מוצלח נדליק את ה-spinner ונטען היסטוריה
-  socketRef.current.on("connect", () => {
-    setLoading(true);
-    socketRef.current.emit("getHistory", { conversationId }, (history) => {
-      setMessages(Array.isArray(history) ? history : []);
-      setLoading(false);
+    socketRef.current.on("connect", () => {
+      setLoading(true);
+      socketRef.current.emit("getHistory", { conversationId }, (history) => {
+        setMessages(Array.isArray(history) ? history : []);
+        setLoading(false);
+      });
     });
-  });
 
-  // מאזין להודעות חדשות
-  socketRef.current.on("newMessage", (msg) => {
-    setMessages((prev) => [...prev, msg]);
-  });
+    socketRef.current.on("newMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
 
-  // מאזין לאירוע typing מהעסק
-  socketRef.current.on("typing", ({ from }) => {
-    if (from === businessId) {
-      setIsTyping(true);
+    socketRef.current.on("typing", ({ from }) => {
+      if (from === businessId) {
+        setIsTyping(true);
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
+      }
+    });
+
+    return () => {
+      socketRef.current.disconnect();
       clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
-    }
-  });
-
-  return () => {
-    socketRef.current.disconnect();
-    clearTimeout(typingTimeoutRef.current);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-      mediaStreamRef.current = null;
-    }
-  };
-}, [conversationId, businessId, userId]);
-
-
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+      }
+    };
+  }, [conversationId, businessId, userId]);
 
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
@@ -188,7 +184,7 @@ socketRef.current = io(socketUrl, {
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // ----------- הקלטה -----------
+  // הקלטה
   const handleRecordStart = async () => {
     if (recording || isBlocked) return;
     setError("");
@@ -253,7 +249,6 @@ socketRef.current = io(socketUrl, {
 
   const handleSendRecording = () => {
     if (!recordedBlob) return;
-    // שולחים timer כ־duration
     sendAudio(recordedBlob, timer);
     setRecordedBlob(null);
     setTimer(0);
@@ -274,7 +269,7 @@ socketRef.current = io(socketUrl, {
         file: {
           name: `voice.${blob.type.split("/")[1]}`,
           type: blob.type,
-          duration, // שולחים משך מהטיימר
+          duration,
         },
       },
       blob,
@@ -341,7 +336,6 @@ socketRef.current = io(socketUrl, {
     e.target.value = null;
   };
 
-  // --------- רנדר עיקרי ---------
   return (
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef} onScroll={onScroll}>
