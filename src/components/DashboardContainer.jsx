@@ -22,7 +22,7 @@ export default function DashboardLive({ businessId }) {
     console.log("🛰️ FRONTEND SOCKET_URL =", SOCKET_URL);
     console.log("🔑 Token in localStorage:", localStorage.getItem("token"));
 
-    // להתחבר ל־Socket.IO
+    // חיבור ל־Socket.IO
     const socket = io(SOCKET_URL, {
       path: "/socket.io",
       auth: { token: localStorage.getItem("token") },
@@ -30,23 +30,27 @@ export default function DashboardLive({ businessId }) {
       transports: ["websocket"],
     });
 
+    // לאחר חיבור, בקשה ראשונית לסטטיסטיקות
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
       socket.emit("getDashboardStats", null, ({ ok, stats: initial }) => {
         console.log("🔄 Initial stats response:", { ok, initial });
-        if (ok && initial) setStats(initial);
+        if (ok && initial) {
+          setStats(initial);
+        }
       });
     });
 
+    // עדכונים חיים
     socket.on("dashboardUpdate", updatedStats => {
       console.log("📊 Dashboard update:", updatedStats);
       setStats(updatedStats);
     });
 
+    // טיפול בנתק וחיבור שגוי
     socket.on("disconnect", reason => {
       console.log("⚠️ Socket disconnected:", reason);
     });
-
     socket.on("connect_error", err => {
       console.error("🚨 connect_error:", err.message);
     });
