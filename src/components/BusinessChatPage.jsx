@@ -28,14 +28,13 @@ export default function BusinessChatPage() {
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
 
     socketRef.current = io(socketUrl, {
-      path: "/socket.io",
-      transports: ["websocket"],
-      withCredentials: true,  // שולח עוגיות אוטומטית
-      auth: {
-        role: "business-dashboard",
-        businessId: businessId,
-      },
-    });
+  path: "/socket.io",
+  withCredentials: true,
+  auth: {
+    role: "business-dashboard",
+    businessId: businessId,
+  },
+});
 
     socketRef.current.on("connect", () => {
       console.log("Socket connected:", socketRef.current.id);
