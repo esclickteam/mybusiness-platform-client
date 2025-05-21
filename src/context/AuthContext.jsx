@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
-import { startSSEConnection } from "../sse";
 
 export const AuthContext = createContext();
 
