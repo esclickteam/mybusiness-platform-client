@@ -130,14 +130,16 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   console.log("Connecting socket with auth:", { token, businessId, role: "customer" });
 
   socketRef.current = io(socketUrl, {
-    path: "/socket.io",
-    withCredentials: true,
-    auth: {
-      token,
-      businessId,
-      role: "customer",
-    },
-  });
+  path: "/socket.io",
+  withCredentials: true,
+  transports: ['websocket'],
+  auth: {
+    token,
+    businessId,
+    role: "customer",
+  },
+});
+
 
   socketRef.current.on("connect", () => {
     console.log("Socket connected:", socketRef.current.id);
