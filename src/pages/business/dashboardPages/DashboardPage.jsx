@@ -1,51 +1,33 @@
 // src/pages/business/dashboardPages/DashboardPage.jsx
 import React, { useEffect, useState, useRef } from "react";
-import io from "socket.io-client";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
-import DashboardCards from "../../../components/DashboardCards";
-import LineChart from "../../../components/dashboard/LineChart";
-import StatsProgressBar from "../../../components/dashboard/StatsProgressBar";
+import DashboardLive from "../../../components/DashboardLive";
+import Insights from "../../../components/dashboard/Insights";
+import BusinessComparison from "../../../components/dashboard/BusinessComparison";
+import NextActions from "../../../components/dashboard/NextActions";
+import BarChart from "../../../components/dashboard/BarChart";
 import PieChart from "../../../components/dashboard/PieChart";
+import LineChart from "../../../components/dashboard/LineChart";
 import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart";
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
-import BarChart from "../../../components/dashboard/BarChart";
-import Insights from "../../../components/dashboard/Insights";
-import NextActions from "../../../components/dashboard/NextActions";
-import WeeklySummary from "../../../components/dashboard/WeeklySummary";
 import OpenLeadsTable from "../../../components/dashboard/OpenLeadsTable";
 import AppointmentsList from "../../../components/dashboard/AppointmentsList";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
-import BusinessComparison from "../../../components/dashboard/BusinessComparison";
-import NotificationsPanel from "../../../components/dashboard/NotificationsPanel";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
+import QuickActions from "../../../components/dashboard/QuickActions";
+import DashboardAlert from "../../../components/dashboard/DashboardAlert";
 import "../../../styles/dashboard.css";
-
-// קומפוננטה ל-Quick Actions
-const QuickActions = ({ onAction }) => (
-  <div className="quick-actions-row">
-    <button className="quick-action-btn" onClick={() => onAction("meeting")}>+ פגישה חדשה</button>
-    <button className="quick-action-btn" onClick={() => onAction("message")}>+ שלח הודעה</button>
-  </div>
-);
-
-// קומפוננטת Alert קצרה
-const DashboardAlert = ({ text, type = "info" }) => (
-  <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
-);
 
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
-
-  // סטטיסטיקות
   const [stats, setStats] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // רפרנסים לניווט מהיר
   const cardsRef        = useRef(null);
   const insightsRef     = useRef(null);
   const comparisonRef   = useRef(null);
@@ -54,25 +36,18 @@ const DashboardPage = () => {
   const appointmentsRef = useRef(null);
   const calendarRef     = useRef(null);
 
-  // SocketIO ref
-  const socketRef = useRef(null);
-
-  // טעינת הסטטיסטיקות בבקשה ראשונית
   useEffect(() => {
     const fetchStats = async () => {
       if (!user) return;
-      const businessUserId = user.businessId;
-      if (!businessUserId) {
+      const bizId = user.businessId;
+      if (!bizId) {
         setError("⚠️ מזהה העסק לא זוהה.");
         setLoading(false);
         return;
       }
       try {
-        const response = await API.get(
-          `/business/${businessUserId}/stats`,
-          { withCredentials: true }
-        );
-        setStats(response.data);
+        const res = await API.get(`/business/${bizId}/stats`, { withCredentials: true });
+        setStats(res.data);
       } catch (err) {
         console.error("❌ שגיאה בטעינת נתונים:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
@@ -83,36 +58,6 @@ const DashboardPage = () => {
     fetchStats();
   }, [user]);
 
-  // התחברות ל-Socket.IO לעדכוני LIVE
-  useEffect(() => {
-    if (!user?.businessId || socketRef.current) return;
-
-    socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
-  path: "/socket.io",
-  auth: {
-    businessId: user.businessId,
-    role: "business-dashboard",
-  },
-  transports: ["websocket"],
-});
-
-
-    socketRef.current.on("dashboardUpdate", updatedStats => {
-      setStats(updatedStats);
-    });
-
-    socketRef.current.on("dashboardAlert", alertMsg => {
-      setAlert(alertMsg);
-      setTimeout(() => setAlert(null), 3000);
-    });
-
-    return () => {
-      socketRef.current.disconnect();
-      socketRef.current = null;
-    };
-  }, [user?.businessId]);
-
-  // Quick actions handler
   const handleQuickAction = action => {
     let msg = null;
     if (action === "meeting") msg = "מעבר להוספת פגישה חדשה (דמו)";
@@ -123,9 +68,6 @@ const DashboardPage = () => {
 
   if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
-
-  const todaysAppointments = stats?.todaysAppointments || [];
-  const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
     <div className="dashboard-container">
@@ -138,29 +80,14 @@ const DashboardPage = () => {
 
       <QuickActions onAction={handleQuickAction} />
       {alert && <DashboardAlert text={alert} type="info" />}
-      {hasTodayMeetings && (
-        <DashboardAlert
-          text={`📅 יש לך ${todaysAppointments.length} פגישות היום!`}
-          type="warning"
-        />
-      )}
 
       <DashboardNav
         refs={{ cardsRef, insightsRef, comparisonRef, chartsRef, leadsRef, appointmentsRef, calendarRef }}
       />
 
-      {/* סטטיסטיקות ראשיות */}
+      {/* סטטיסטיקות ראשיות בזמן אמת */}
       <div ref={cardsRef}>
-        <DashboardCards
-          stats={{
-            views_count:        stats.views_count || 0,
-            requests_count:     stats.requests_count || 0,
-            orders_count:       stats.orders_count || 0,
-            reviews_count:      stats.reviews_count || 0,
-            messages_count:     stats.messages_count || 0,
-            appointments_count: stats.appointments_count || 0,
-          }}
-        />
+        <DashboardLive businessId={user.businessId} />
       </div>
 
       <div ref={insightsRef}>
@@ -173,22 +100,15 @@ const DashboardPage = () => {
 
       <NextActions stats={stats} />
 
-      {/* גרפים */}
       <div ref={chartsRef} className="graph-row">
         <BarChart
           data={{
             labels: ["פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"],
-            datasets: [
-              {
-                label: "פעילות העסק",
-                data: [
-                  stats.appointments_count || 0,
-                  stats.requests_count   || 0,
-                  stats.messages_count   || 0,
-                ],
-                borderRadius: 8,
-              },
-            ],
+            datasets: [{
+              label: "פעילות העסק",
+              data: [stats.appointments_count, stats.requests_count, stats.messages_count],
+              borderRadius: 8,
+            }],
           }}
           options={{ responsive: true }}
         />
@@ -224,7 +144,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={leadsRef} className="graph-row">
-        <WeeklySummary stats={stats} />
+        {/* … שאר הקומפוננטות … */}
         <OpenLeadsTable leads={stats.leads || []} />
       </div>
 
