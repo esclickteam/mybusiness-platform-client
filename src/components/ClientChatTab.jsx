@@ -112,56 +112,61 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   };
 
   useEffect(() => {
-    if (!conversationId) return;
+  if (!conversationId || !businessId || !userId) {
+    console.warn("Missing conversationId/businessId/userId, skipping socket connect");
+    setError("חסר conversationId, businessId או userId");
+    setLoading(false);
+    return;
+  }
 
-    setError("");
-    setIsBlocked(false);
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("Token missing in localStorage");
+    setError("חסר טוקן, אנא התחבר מחדש");
+    setLoading(false);
+    return;
+  }
 
-    const token = localStorage.getItem("token");
+  console.log("Connecting socket with auth:", { token, businessId, role: "customer" });
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+  socketRef.current = io(socketUrl, {
+    path: "/socket.io",
+    withCredentials: true,
+    auth: {
+      token,
+      businessId,
+      role: "customer",
+    },
+  });
 
-socketRef.current = io(socketUrl, {
-  path: "/socket.io",
-  withCredentials: true,
-  auth: {
-    token,
-    businessId,
-    role: "customer", // או "client" בהתאם למה שמוגדר אצלך בשרת
-  },
-});
-
-
-    socketRef.current.on("connect", () => {
-      setLoading(true);
-      socketRef.current.emit("getHistory", { conversationId }, (history) => {
-        setMessages(Array.isArray(history) ? history : []);
-        setLoading(false);
-      });
+  socketRef.current.on("connect", () => {
+    console.log("Socket connected:", socketRef.current.id);
+    setLoading(true);
+    socketRef.current.emit("getHistory", { conversationId }, (history) => {
+      setMessages(Array.isArray(history) ? history : []);
+      setLoading(false);
     });
+  });
 
-    socketRef.current.on("newMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+  socketRef.current.on("connect_error", (err) => {
+    console.error("Socket connection error:", err.message);
+    setError(`שגיאת חיבור בצ'אט: ${err.message}`);
+    setLoading(false);
+  });
 
-    socketRef.current.on("typing", ({ from }) => {
-      if (from === businessId) {
-        setIsTyping(true);
-        clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
-      }
-    });
+  socketRef.current.on("newMessage", (msg) => {
+    console.log("Received new message:", msg);
+    setMessages((prev) => [...prev, msg]);
+  });
 
-    return () => {
+  return () => {
+    if (socketRef.current) {
+      console.log("Disconnecting socket");
       socketRef.current.disconnect();
-      clearTimeout(typingTimeoutRef.current);
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-        mediaStreamRef.current = null;
-      }
-    };
-  }, [conversationId, businessId, userId]);
+    }
+  };
+}, [conversationId, businessId, userId]);
+
 
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
