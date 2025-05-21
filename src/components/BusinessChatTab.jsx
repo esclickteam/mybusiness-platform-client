@@ -28,8 +28,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (playing) audio.pause();
-    else audio.play();
+    playing ? audio.pause() : audio.play();
     setPlaying((p) => !p);
   };
 
@@ -103,42 +102,62 @@ export default function BusinessChatTab({
 
   // טעינת היסטוריה והאזנה לאירועים
   useEffect(() => {
-    if (!socket || !conversationId) return;
+    if (!conversationId) return;
+
     setLoading(true);
 
-    socket.emit("getHistory", { conversationId }, (history) => {
-      setMessages(Array.isArray(history) ? history : []);
-      setLoading(false);
-    });
-    socket.emit("joinRoom", conversationId);
+    // 1. נסיון ראשון: getHistory דרך socket
+    if (socket) {
+      socket.emit("getHistory", { conversationId }, (history) => {
+        console.log("⚡ getHistory response:", history);
+        if (Array.isArray(history) && history.length > 0) {
+          setMessages(history);
+          setLoading(false);
+        } else {
+          // 2. גיבוי: fetch רגיל מה-REST API
+          fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/messages`, {
+            credentials: "include",
+          })
+            .then((r) => r.json())
+            .then((data) => {
+              console.log("🌐 fetch history:", data.messages);
+              setMessages(data.messages || []);
+            })
+            .catch(console.error)
+            .finally(() => setLoading(false));
+        }
+      });
 
-    const handleNew = (msg) => {
-      if (msg.conversationId === conversationId) {
-        setMessages((prev) => [...prev, msg]);
-      }
-    };
-    socket.on("newMessage", handleNew);
+      socket.emit("joinRoom", conversationId);
 
-    const handleTyping = ({ from }) => {
-      if (from === customerId) {
-        setIsTyping(true);
+      const handleNew = (msg) => {
+        if (msg.conversationId === conversationId) {
+          setMessages((prev) => [...prev, msg]);
+        }
+      };
+      socket.on("newMessage", handleNew);
+
+      const handleTyping = ({ from }) => {
+        if (from === customerId) {
+          setIsTyping(true);
+          clearTimeout(typingTimeout.current);
+          typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
+        }
+      };
+      socket.on("typing", handleTyping);
+
+      return () => {
+        socket.off("newMessage", handleNew);
+        socket.off("typing", handleTyping);
         clearTimeout(typingTimeout.current);
-        typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
-      }
-    };
-    socket.on("typing", handleTyping);
-
-    return () => {
-      socket.off("newMessage", handleNew);
-      socket.off("typing", handleTyping);
-      clearTimeout(typingTimeout.current);
-      setMessages([]);
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-        mediaStreamRef.current = null;
-      }
-    };
+        setMessages([]);
+        if (timerRef.current) clearInterval(timerRef.current);
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+          mediaStreamRef.current = null;
+        }
+      };
+    }
   }, [socket, conversationId, customerId]);
 
   // גלילה אוטומטית
@@ -185,8 +204,16 @@ export default function BusinessChatTab({
     reader.onload = () => {
       socket.emit(
         "sendFile",
-        { conversationId, from: businessId, to: customerId, fileType: file.type, buffer: reader.result },
-        (ack) => { if (!ack.ok) console.error("sendFile error:", ack.error); }
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          fileType: file.type,
+          buffer: reader.result,
+        },
+        (ack) => {
+          if (!ack.ok) console.error("sendFile error:", ack.error);
+        }
       );
     };
     reader.readAsArrayBuffer(file);
@@ -202,8 +229,11 @@ export default function BusinessChatTab({
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaStreamRef.current = stream;
     recordedChunks.current = [];
-    mediaRecorder.current = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
-    mediaRecorder.current.ondataavailable = (e) => recordedChunks.current.push(e.data);
+    mediaRecorder.current = new MediaRecorder(stream, {
+      mimeType: getSupportedMimeType(),
+    });
+    mediaRecorder.current.ondataavailable = (e) =>
+      recordedChunks.current.push(e.data);
     mediaRecorder.current.start();
     setRecording(true);
     setTimer(0);
@@ -213,7 +243,9 @@ export default function BusinessChatTab({
     if (!mediaRecorder.current) return;
     mediaRecorder.current.stop();
     mediaRecorder.current.onstop = () => {
-      const blob = new Blob(recordedChunks.current, { type: mediaRecorder.current.mimeType });
+      const blob = new Blob(recordedChunks.current, {
+        type: mediaRecorder.current.mimeType,
+      });
       setRecordedBlob(blob);
     };
     setRecording(false);
@@ -226,8 +258,18 @@ export default function BusinessChatTab({
     reader.onload = () => {
       socket.emit(
         "sendAudio",
-        { conversationId, from: businessId, to: customerId, buffer: reader.result, fileType: recordedBlob.type, duration: timer },
-        (ack) => { if (ack.ok) setRecordedBlob(null); else console.error("sendAudio error:", ack.error); }
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          buffer: reader.result,
+          fileType: recordedBlob.type,
+          duration: timer,
+        },
+        (ack) => {
+          if (ack.ok) setRecordedBlob(null);
+          else console.error("sendAudio error:", ack.error);
+        }
       );
     };
     reader.readAsArrayBuffer(recordedBlob);
@@ -241,27 +283,51 @@ export default function BusinessChatTab({
 
         {messages.map((m, i) =>
           m.system ? (
-            <div key={i} className="system-message">{m.text}</div>
+            <div key={i} className="system-message">
+              {m.text}
+            </div>
           ) : (
-            <div key={m._id || i} className={`message${m.from === businessId ? " mine" : " theirs"}`}>
+            <div
+              key={m._id || i}
+              className={`message${m.from === businessId ? " mine" : " theirs"}`}
+            >
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
+                  <WhatsAppAudioPlayer
+                    src={m.fileUrl}
+                    userAvatar={m.userAvatar}
+                    duration={m.fileDuration}
+                  />
                 ) : /\.(jpe?g|png|gif)$/i.test(m.fileUrl) ? (
-                  <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
+                  <img
+                    src={m.fileUrl}
+                    alt={m.fileName}
+                    style={{ maxWidth: 200, borderRadius: 8 }}
+                  />
                 ) : (
-                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
+                  <a
+                    href={m.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {m.fileName}
+                  </a>
                 )
               ) : (
                 <div className="text">{m.text}</div>
               )}
               <div className="meta">
                 <span className="time">
-                  {new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
+                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </span>
                 {m.fileDuration && (
                   <span className="audio-length">
-                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:{String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")
+                    }:{
+                    String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
                   </span>
                 )}
               </div>
