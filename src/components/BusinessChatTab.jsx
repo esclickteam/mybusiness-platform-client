@@ -298,15 +298,17 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
   return (
     <div className="chat-container business">
       <div className="message-list" ref={messageListRef}>
-        {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m, i) =>
-          m.system ? (
-            <div key={i} className="system-message">{m.text}</div>
-          ) : (
-            <div
-              key={m._id || i}
-              className={`message${m.from === businessId ? " mine" : " theirs"}`}
+  {loading && <div className="loading">טוען...</div>}
+  {!loading && (!Array.isArray(messages) || messages.length === 0) && (
+    <div className="empty">עדיין אין הודעות</div>
+  )}
+  {Array.isArray(messages) && messages.map((m, i) =>
+    m.system ? (
+      <div key={i} className="system-message">{m.text}</div>
+    ) : (
+      <div
+        key={m._id || i}
+        className={`message${m.from === businessId ? " mine" : " theirs"}`}
             >
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
