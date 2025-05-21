@@ -36,14 +36,12 @@ import "../../../styles/dashboard.css";
 
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
+  const businessId = user?.businessId;
+  const token = localStorage.getItem("token");
 
-  // משתמשים בהוק לסוקט לקבלת עדכוני סטטיסטיקות בזמן אמת
-  const statsFromSocket = useDashboardSocket({
-    token: localStorage.getItem("token"),
-    businessId: user?.businessId,
-  });
+  // Real-time stats via custom hook
+  const statsFromSocket = useDashboardSocket({ token, businessId });
 
-  // סטייט מקומי לסטטיסטיקות שממוזג עם הנתונים מה-API והסוקט
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -64,16 +62,16 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // useRef לשמירת אובייקט הסוקט - אם תרצה לגשת בעתיד
   const socketRef = useRef(null);
 
-  // טעינת הסטטיסטיקות הראשונית מה-API
+  // Fetch initial stats from API
   useEffect(() => {
     const fetchStats = async () => {
-      if (!user?.businessId) return;
+      if (!businessId) return;
+      setLoading(true);
       try {
         const res = await API.get(
-          `/business/${user.businessId}/stats`,
+          `/business/${businessId}/stats`,
           { withCredentials: true }
         );
         setStats(res.data);
@@ -85,16 +83,20 @@ const DashboardPage = () => {
       }
     };
     fetchStats();
-  }, [user]);
+  }, [businessId]);
 
-  // סינכרון הנתונים המגיעים מהסוקט עם הסטייט המקומי
+  // Merge incoming socket updates into state
   useEffect(() => {
     if (statsFromSocket) {
-      setStats(statsFromSocket);
+      console.log("🔄 Merging stats from socket…", statsFromSocket);
+      setStats(prev => ({
+        ...prev,
+        ...statsFromSocket
+      }));
     }
   }, [statsFromSocket]);
 
-  const handleQuickAction = (action) => {
+  const handleQuickAction = action => {
     let msg = null;
     if (action === "meeting") msg = "מעבר להוספת פגישה חדשה (דמו)";
     if (action === "message") msg = "מעבר לשליחת הודעה (דמו)";
@@ -141,24 +143,18 @@ const DashboardPage = () => {
       <div>
         <DashboardCards
           stats={{
-            views_count: stats.views_count || 0,
-            requests_count: stats.requests_count || 0,
-            orders_count: stats.orders_count || 0,
-            reviews_count: stats.reviews_count || 0,
-            messages_count: stats.messages_count || 0,
-            appointments_count: stats.appointments_count || 0,
+            views_count: stats.views_count,
+            requests_count: stats.requests_count,
+            orders_count: stats.orders_count,
+            reviews_count: stats.reviews_count,
+            messages_count: stats.messages_count,
+            appointments_count: stats.appointments_count,
           }}
         />
       </div>
 
-      <div>
-        <Insights stats={stats} />
-      </div>
-
-      <div>
-        <BusinessComparison stats={stats} />
-      </div>
-
+      <div><Insights stats={stats} /></div>
+      <div><BusinessComparison stats={stats} /></div>
       <NextActions stats={stats} />
 
       <div>
@@ -169,9 +165,9 @@ const DashboardPage = () => {
               {
                 label: "פעילות העסק",
                 data: [
-                  stats.appointments_count || 0,
-                  stats.requests_count || 0,
-                  stats.messages_count || 0,
+                  stats.appointments_count,
+                  stats.requests_count,
+                  stats.messages_count,
                 ],
                 borderRadius: 8,
               },
@@ -180,9 +176,7 @@ const DashboardPage = () => {
           options={{ responsive: true }}
         />
         {stats.income_distribution && (
-          <div>
-            <PieChart data={stats.income_distribution} />
-          </div>
+          <PieChart data={stats.income_distribution} />
         )}
       </div>
 
@@ -197,17 +191,17 @@ const DashboardPage = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {stats.appointments?.length > 0 && (
+        {stats.appointments.length > 0 && (
           <AppointmentsList appointments={stats.appointments} />
         )}
       </div>
 
       <div>
         <WeeklySummary stats={stats} />
-        <OpenLeadsTable leads={stats.leads || []} />
+        <OpenLeadsTable leads={stats.leads} />
       </div>
 
-      {stats.appointments?.length > 0 && (
+      {stats.appointments.length > 0 && (
         <div>
           <CalendarView
             appointments={stats.appointments}
