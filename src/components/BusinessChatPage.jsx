@@ -9,7 +9,6 @@ import { io } from "socket.io-client";
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
-  const token = localStorage.getItem("token");
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -17,6 +16,7 @@ export default function BusinessChatPage() {
   const socketRef = useRef(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     console.log("BusinessChatPage init:", { initialized, businessId, token });
     if (!initialized || !businessId || !token) {
       console.warn("Skipping socket connect: missing data", { initialized, businessId, token });
@@ -48,7 +48,8 @@ export default function BusinessChatPage() {
             if (!selected && conversations.length > 0) {
               const first = conversations[0];
               const convoId = first._id || first.conversationId;
-              const partnerId = first.participants.find((p) => p !== businessId) || "";
+              const partnerId =
+                first.participants.find((p) => p !== businessId) || "";
               setSelected({ conversationId: convoId, partnerId });
             }
           } else {
@@ -72,10 +73,12 @@ export default function BusinessChatPage() {
       socketRef.current = null;
       console.log("Socket disconnected and cleaned up");
     };
-  }, [initialized, businessId, token]);
+  }, [initialized, businessId]);
 
   const handleSelect = (conversationId, partnerId) => {
-    console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
+    console.log(
+      `Conversation selected: ${conversationId} with partner ${partnerId}`
+    );
     setSelected({ conversationId, partnerId });
   };
 
@@ -99,7 +102,6 @@ export default function BusinessChatPage() {
             />
           )}
         </aside>
-
         <section className={styles.chatArea}>
           {selected?.conversationId && selected.partnerId ? (
             <BusinessChatTab
@@ -110,7 +112,9 @@ export default function BusinessChatPage() {
               socket={socketRef.current}
             />
           ) : (
-            <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+            <div className={styles.emptyMessage}>
+              בחרי שיחה כדי לראות הודעות
+            </div>
           )}
         </section>
       </div>
