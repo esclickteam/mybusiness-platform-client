@@ -112,58 +112,40 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   };
 
   useEffect(() => {
-  if (!conversationId || !businessId || !userId) {
-    console.warn("Missing conversationId/businessId/userId, skipping socket connect");
-    setError("חסר conversationId, businessId או userId");
-    setLoading(false);
-    return;
-  }
-
-  const token = localStorage.getItem("token");
-  if (!token) {
-    console.error("Token missing in localStorage");
-    setError("חסר טוקן, אנא התחבר מחדש");
-    setLoading(false);
-    return;
-  }
-
-  console.log("Connecting socket with auth:", { token, businessId, role: "customer" });
+  if (!conversationId || !businessId || !userId) return;
 
   socketRef.current = io(socketUrl, {
-  path: "/socket.io",
-  withCredentials: true,
-  transports: ['websocket'],
-  auth: {
-    token,
-    businessId,
-    role: "customer",
-  },
-});
+    auth: { token, businessId, role: "customer" },
+    path: "/socket.io",
+    withCredentials: true,
+  });
 
-
-  socketRef.current.on("connect", () => {
-    console.log("Socket connected:", socketRef.current.id);
-    setLoading(true);
-    socketRef.current.emit("getHistory", { conversationId }, (history) => {
+  socketRef.current.on('connect', () => {
+    console.log('[Client] Connected to socket:', socketRef.current.id);
+    socketRef.current.emit('getHistory', { conversationId }, (history) => {
+      console.log('[Client] Received chat history:', history);
       setMessages(Array.isArray(history) ? history : []);
       setLoading(false);
     });
   });
 
-  socketRef.current.on("connect_error", (err) => {
-    console.error("Socket connection error:", err.message);
-    setError(`שגיאת חיבור בצ'אט: ${err.message}`);
-    setLoading(false);
+  socketRef.current.on('newMessage', (msg) => {
+    console.log('[Client] New message received:', msg);
+    setMessages(prev => [...prev, msg]);
   });
 
-  socketRef.current.on("newMessage", (msg) => {
-    console.log("Received new message:", msg);
-    setMessages((prev) => [...prev, msg]);
+  socketRef.current.on('connect_error', (err) => {
+    console.error('[Client] Connection error:', err.message);
+    setError(`Connection error: ${err.message}`);
+  });
+
+  socketRef.current.on('disconnect', (reason) => {
+    console.log('[Client] Disconnected from socket:', reason);
   });
 
   return () => {
     if (socketRef.current) {
-      console.log("Disconnecting socket");
+      console.log('[Client] Disconnecting socket');
       socketRef.current.disconnect();
     }
   };
