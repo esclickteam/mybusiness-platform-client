@@ -31,17 +31,21 @@ export function AuthProvider({ children }) {
       setLoading(true);
       try {
         const { data } = await API.get("/auth/me");
+        console.log("initialize - /auth/me data:", data);
 
         let realBusinessId = data.businessId || null;
         if (data.role === "business" && !realBusinessId) {
           try {
             const resp = await API.get("/business/my");
+            console.log("initialize - /business/my response:", resp.data);
             const bizObj = resp.data.business || resp.data;
             realBusinessId = bizObj._id || bizObj.businessId || null;
-          } catch {
+          } catch (err) {
+            console.error("initialize - error fetching business info:", err);
             realBusinessId = null;
           }
         }
+        console.log("initialize - resolved realBusinessId:", realBusinessId);
 
         if (data.role === "business" && !realBusinessId) {
           setError(
@@ -58,7 +62,8 @@ export function AuthProvider({ children }) {
             businessId: realBusinessId,
           });
         }
-      } catch {
+      } catch (err) {
+        console.error("initialize - error in /auth/me:", err);
         setUser(null);
         setError(null);
       } finally {
@@ -104,6 +109,7 @@ export function AuthProvider({ children }) {
           password,
         });
       }
+      console.log("login - login response:", response);
 
       if (!response.data.token) {
         throw new Error("❌ לא התקבל טוקן מהשרת");
@@ -111,17 +117,21 @@ export function AuthProvider({ children }) {
       localStorage.setItem("token", response.data.token);
 
       const { data } = await API.get("/auth/me");
+      console.log("login - /auth/me data:", data);
 
       let realBusinessId = data.businessId || null;
       if (data.role === "business" && !realBusinessId) {
         try {
           const resp = await API.get("/business/my");
+          console.log("login - /business/my response:", resp.data);
           const bizObj = resp.data.business || resp.data;
           realBusinessId = bizObj._id || bizObj.businessId || null;
-        } catch {
+        } catch (err) {
+          console.error("login - error fetching business info:", err);
           realBusinessId = null;
         }
       }
+      console.log("login - resolved realBusinessId:", realBusinessId);
 
       if (data.role === "business" && !realBusinessId) {
         setError(
