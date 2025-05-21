@@ -18,7 +18,11 @@ import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import BusinessComparison from "../../../components/dashboard/BusinessComparison";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
 import QuickActions from "../../../components/dashboard/QuickActions";
-import DashboardAlert from "../../../components/dashboard/DashboardAlert";
+
+// Alert component for dashboard messages
+const DashboardAlert = ({ text, type = "info" }) => (
+  <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
+);
 import "../../../styles/dashboard.css";
 
 const DashboardPage = () => {
