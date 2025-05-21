@@ -3,18 +3,19 @@ import React, { useEffect, useState, useRef } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import DashboardCards from "../../../components/DashboardCards";
-import Insights from "../../../components/dashboard/Insights";
-import BusinessComparison from "../../../components/dashboard/BusinessComparison";
-import NextActions from "../../../components/dashboard/NextActions";
-import BarChart from "../../../components/dashboard/BarChart";
-import PieChart from "../../../components/dashboard/PieChart";
 import LineChart from "../../../components/dashboard/LineChart";
+import PieChart from "../../../components/dashboard/PieChart";
 import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart";
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
+import BarChart from "../../../components/dashboard/BarChart";
+import Insights from "../../../components/dashboard/Insights";
+import NextActions from "../../../components/dashboard/NextActions";
+import WeeklySummary from "../../../components/dashboard/WeeklySummary";
 import OpenLeadsTable from "../../../components/dashboard/OpenLeadsTable";
 import AppointmentsList from "../../../components/dashboard/AppointmentsList";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
+import BusinessComparison from "../../../components/dashboard/BusinessComparison";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
 import QuickActions from "../../../components/dashboard/QuickActions";
 import DashboardAlert from "../../../components/dashboard/DashboardAlert";
@@ -36,12 +37,14 @@ const DashboardPage = () => {
   const appointmentsRef = useRef(null);
   const calendarRef     = useRef(null);
 
-  // טוען את הסטטיסטיקות הראשוניות
   useEffect(() => {
     const fetchStats = async () => {
       if (!user?.businessId) return;
       try {
-        const res = await API.get(`/business/${user.businessId}/stats`, { withCredentials: true });
+        const res = await API.get(
+          `/business/${user.businessId}/stats`,
+          { withCredentials: true }
+        );
         setStats(res.data);
       } catch (err) {
         console.error("❌ Error fetching stats:", err);
@@ -53,7 +56,6 @@ const DashboardPage = () => {
     fetchStats();
   }, [user]);
 
-  // התחברות ל-SSE לעדכוני real-time
   useEffect(() => {
     if (!user?.businessId) return;
     const es = new EventSource(
@@ -111,7 +113,6 @@ const DashboardPage = () => {
         refs={{ cardsRef, insightsRef, comparisonRef, chartsRef, leadsRef, appointmentsRef, calendarRef }}
       />
 
-      {/* סטטיסטיקות ראשיות בזמן אמת */}
       <div ref={cardsRef}>
         <DashboardCards
           stats={{
@@ -140,15 +141,7 @@ const DashboardPage = () => {
           data={{
             labels: ["פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"],
             datasets: [
-              {
-                label: "פעילות העסק",
-                data: [
-                  stats.appointments_count || 0,
-                  stats.requests_count   || 0,
-                  stats.messages_count   || 0,
-                ],
-                borderRadius: 8,
-              },
+              { label: "פעילות העסק", data: [stats.appointments_count || 0, stats.requests_count || 0, stats.messages_count || 0], borderRadius: 8 }
             ],
           }}
           options={{ responsive: true }}
@@ -161,27 +154,13 @@ const DashboardPage = () => {
       </div>
 
       <div className="graph-row">
-        <div className="graph-box">
-          <LineChart stats={stats} />
-        </div>
-        {stats.monthly_comparison && (
-          <div className="graph-box">
-            <MonthlyComparisonChart data={stats.monthly_comparison} />
-          </div>
-        )}
+        <LineChart stats={stats} />
+        {stats.monthly_comparison && <MonthlyComparisonChart data={stats.monthly_comparison} />}
       </div>
 
       <div className="graph-row equal-height">
-        {stats.recent_activity && (
-          <div className="graph-box">
-            <RecentActivityTable activities={stats.recent_activity} />
-          </div>
-        )}
-        {stats.appointments?.length > 0 && (
-          <div className="graph-box appointments-box">
-            <AppointmentsList appointments={stats.appointments} />
-          </div>
-        )}
+        {stats.recent_activity && <RecentActivityTable activities={stats.recent_activity} />}
+        {stats.appointments?.length > 0 && <AppointmentsList appointments={stats.appointments} />}
       </div>
 
       <div ref={leadsRef} className="graph-row">
@@ -191,19 +170,8 @@ const DashboardPage = () => {
 
       {stats.appointments?.length > 0 && (
         <div ref={calendarRef} className="calendar-row">
-          <div className="calendar-grid-box">
-            <CalendarView
-              appointments={stats.appointments}
-              onDateClick={setSelectedDate}
-            />
-          </div>
-          <div className="day-agenda-box">
-            <DailyAgenda
-              date={selectedDate}
-              appointments={stats.appointments}
-              businessName={stats.businessName}
-            />
-          </div>
+          <CalendarView appointments={stats.appointments} onDateClick={setSelectedDate} />
+          <DailyAgenda date={selectedDate} appointments={stats.appointments} businessName={stats.businessName} />
         </div>
       )}
     </div>
