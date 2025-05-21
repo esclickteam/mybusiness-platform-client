@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -22,8 +21,6 @@ export function AuthProvider({ children }) {
       setLoading(true);
       try {
         const { data } = await API.get("/auth/me");
-
-        // נסה לתקן businessId חסר (משתמש עסקי בלבד)
         let realBusinessId = data.businessId || null;
         if (data.role === "business" && !realBusinessId) {
           try {
@@ -31,32 +28,28 @@ export function AuthProvider({ children }) {
             const bizObj = resp.data.business || resp.data;
             realBusinessId = bizObj._id || bizObj.businessId || null;
             if (realBusinessId) data.businessId = realBusinessId;
-          } catch (e) {
-            // לא הצלחנו לשלוף את העסק
+          } catch {
             realBusinessId = null;
           }
         }
-
-        // בדיקה מחמירה - אם זה עסק ואין businessId → הודעת שגיאה + לא להמשיך
         if (data.role === "business" && !realBusinessId) {
-          console.warn("🔴 אין businessId למשתמש עסקי!", data);
           setUser(null);
           setError("⚠️ לעסק שלך אין מזהה עסק (businessId) תקין. פנה לתמיכה או צור עסק חדש.");
           setLoading(false);
           setInitialized(true);
           return;
         }
-
         setUser({
-          userId:           data.userId,
-          name:             data.name,
-          email:            data.email,
-          role:             data.role,
+          userId: data.userId,
+          name: data.name,
+          email: data.email,
+          role: data.role,
           subscriptionPlan: data.subscriptionPlan,
-          businessId:       realBusinessId,
+          businessId: realBusinessId,
         });
-      } catch (e) {
+      } catch {
         setUser(null);
+        setError(null);
       } finally {
         setLoading(false);
         setInitialized(true);
@@ -70,19 +63,28 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
 
-    const clean = identifier.trim();
-    const isEmail = clean.includes("@");
-
     try {
-      if (isEmail) {
-        await API.post("/auth/login", { email: clean.toLowerCase(), password });
+      let response;
+      if (identifier.includes("@")) {
+        response = await API.post("/auth/login", {
+          email: identifier.toLowerCase(),
+          password,
+        });
       } else {
-        await API.post("/auth/staff-login", { username: clean, password });
+        response = await API.post("/auth/staff-login", {
+          username: identifier,
+          password,
+        });
+      }
+
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      } else {
+        throw new Error("❌ לא התקבל טוקן מהשרת");
       }
 
       const { data } = await API.get("/auth/me");
 
-      // נסה לתקן businessId חסר (משתמש עסקי בלבד)
       let realBusinessId = data.businessId || null;
       if (data.role === "business" && !realBusinessId) {
         try {
@@ -90,7 +92,7 @@ export function AuthProvider({ children }) {
           const bizObj = resp.data.business || resp.data;
           realBusinessId = bizObj._id || bizObj.businessId || null;
           if (realBusinessId) data.businessId = realBusinessId;
-        } catch (e) {
+        } catch {
           realBusinessId = null;
         }
       }
@@ -103,12 +105,12 @@ export function AuthProvider({ children }) {
       }
 
       setUser({
-        userId:           data.userId,
-        name:             data.name,
-        email:            data.email,
-        role:             data.role,
+        userId: data.userId,
+        name: data.name,
+        email: data.email,
+        role: data.role,
         subscriptionPlan: data.subscriptionPlan,
-        businessId:       realBusinessId,
+        businessId: realBusinessId,
       });
 
       if (!options.skipRedirect && data) {
@@ -138,7 +140,7 @@ export function AuthProvider({ children }) {
       setError(
         e.response?.status === 401
           ? "❌ אימייל/שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסה שוב"
+          : e.message || "❌ שגיאה בשרת, נסה שוב"
       );
       throw e;
     } finally {
@@ -153,10 +155,10 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await API.post("/auth/logout");
-      setSuccessMessage("✅ נותקת בהצלחה");
     } catch {
       console.warn("⚠️ Logout failed");
     } finally {
+      localStorage.removeItem("token");
       setUser(null);
       setLoading(false);
       navigate("/", { replace: true });
