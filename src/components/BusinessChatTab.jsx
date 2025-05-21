@@ -1,6 +1,5 @@
 // src/components/BusinessChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
-import io from "socket.io-client";
 import "./BusinessChatTab.css";
 
 // קומפוננטת נגן אודיו
@@ -13,7 +12,10 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
     const audio = audioRef.current;
     if (!audio) return;
     const onTimeUpdate = () => setProgress(audio.currentTime);
-    const onEnded = () => { setPlaying(false); setProgress(0); };
+    const onEnded = () => {
+      setPlaying(false);
+      setProgress(0);
+    };
     audio.addEventListener("timeupdate", onTimeUpdate);
     audio.addEventListener("ended", onEnded);
     audio.load();
@@ -40,7 +42,9 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
 
   const totalDots = 20;
   const audioDuration = duration || 0;
-  const activeDot = audioDuration ? Math.floor((progress / audioDuration) * totalDots) : 0;
+  const activeDot = audioDuration
+    ? Math.floor((progress / audioDuration) * totalDots)
+    : 0;
   const containerClass = userAvatar
     ? "custom-audio-player with-avatar"
     : "custom-audio-player no-avatar";
@@ -78,11 +82,9 @@ export default function BusinessChatTab({
   businessId,
   customerId,
   businessName,
+  socket, // use socket from parent
 }) {
-  // ensure messages is always an array
   const [messages, setMessages] = useState([]);
-  const safeMessages = Array.isArray(messages) ? messages : [];
-
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -91,7 +93,6 @@ export default function BusinessChatTab({
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
 
-  const socketRef = useRef();
   const messageListRef = useRef();
   const typingTimeout = useRef();
   const fileInputRef = useRef();
@@ -100,45 +101,36 @@ export default function BusinessChatTab({
   const timerRef = useRef(null);
   const mediaStreamRef = useRef(null);
 
-  // התחברות וטעינת היסטוריה
+  // טעינת היסטוריה והאזנה לאירועים
   useEffect(() => {
-    if (!conversationId) return;
+    if (!socket || !conversationId) return;
     setLoading(true);
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    socketRef.current = io(socketUrl, {
-      path: "/socket.io",
-      auth: { conversationId, userId: businessId, role: "business", businessName },
-      transports: ["websocket"],
+    socket.emit("getHistory", { conversationId }, (history) => {
+      setMessages(Array.isArray(history) ? history : []);
+      setLoading(false);
     });
+    socket.emit("joinRoom", conversationId);
 
-    socketRef.current.emit(
-      "getHistory",
-      { conversationId },
-      (history) => {
-        setMessages(Array.isArray(history) ? history : []);
-        setLoading(false);
+    const handleNew = (msg) => {
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => [...prev, msg]);
       }
-    );
+    };
+    socket.on("newMessage", handleNew);
 
-    socketRef.current.on("connect", () => {
-      socketRef.current.emit("joinRoom", conversationId);
-    });
-
-    socketRef.current.on("newMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    socketRef.current.on("typing", ({ from }) => {
+    const handleTyping = ({ from }) => {
       if (from === customerId) {
         setIsTyping(true);
         clearTimeout(typingTimeout.current);
         typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
       }
-    });
+    };
+    socket.on("typing", handleTyping);
 
     return () => {
-      socketRef.current?.disconnect();
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
       clearTimeout(typingTimeout.current);
       setMessages([]);
       if (timerRef.current) clearInterval(timerRef.current);
@@ -147,56 +139,115 @@ export default function BusinessChatTab({
         mediaStreamRef.current = null;
       }
     };
-  }, [conversationId, businessId, customerId, businessName]);
+  }, [socket, conversationId, customerId]);
 
-  // גלילה אוטומטית להודעה האחרונה
+  // גלילה אוטומטית
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
-  }, [safeMessages, isTyping]);
+  }, [messages, isTyping]);
 
-  // פונקציות הקלטה ושמע נשמרות ללא שינוי…
-  const getSupportedMimeType = () => {
-    const preferred = "audio/webm";
-    return window.MediaRecorder?.isTypeSupported(preferred) ? preferred : "audio/webm";
+  // טיפול בהקלדה
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    if (socket) {
+      socket.emit("typing", { conversationId, from: businessId });
+    }
   };
 
-  const handleRecordStart = async () => { /* … */ };
-  const handleRecordStop = () => { /* … */ };
-  const handleDiscard = () => { /* … */ };
-  const handleSendRecording = () => { /* … */ };
-  const sendAudio = (blob, duration) => { /* … */ };
+  // שליחת הודעה
+  const sendMessage = () => {
+    const text = input.trim();
+    if (!text || !socket) return;
+    setSending(true);
+    const payload = { conversationId, from: businessId, to: customerId, text };
+    socket.emit("sendMessage", payload, (ack) => {
+      setSending(false);
+      if (ack.ok) {
+        setMessages((prev) => [
+          ...prev,
+          { ...payload, timestamp: ack.timestamp, _id: ack._id },
+        ]);
+        setInput("");
+      } else {
+        console.error("sendMessage error:", ack.error);
+      }
+    });
+  };
 
-  const sendMessage = () => { /* … */ };
+  // צרוף קבצים
   const handleAttach = () => fileInputRef.current.click();
-  const handleFileChange = (e) => { /* … */ };
-  const handleInput = (e) => { /* … */ };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file || !socket) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendFile",
+        { conversationId, from: businessId, to: customerId, fileType: file.type, buffer: reader.result },
+        (ack) => { if (!ack.ok) console.error("sendFile error:", ack.error); }
+      );
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  // הקלטת שמע
+  const getSupportedMimeType = () => {
+    const pref = "audio/webm";
+    return window.MediaRecorder?.isTypeSupported(pref) ? pref : "audio/webm";
+  };
+  const handleRecordStart = async () => {
+    if (!navigator.mediaDevices || recording) return;
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaStreamRef.current = stream;
+    recordedChunks.current = [];
+    mediaRecorder.current = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
+    mediaRecorder.current.ondataavailable = (e) => recordedChunks.current.push(e.data);
+    mediaRecorder.current.start();
+    setRecording(true);
+    setTimer(0);
+    timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+  };
+  const handleRecordStop = () => {
+    if (!mediaRecorder.current) return;
+    mediaRecorder.current.stop();
+    mediaRecorder.current.onstop = () => {
+      const blob = new Blob(recordedChunks.current, { type: mediaRecorder.current.mimeType });
+      setRecordedBlob(blob);
+    };
+    setRecording(false);
+    clearInterval(timerRef.current);
+  };
+  const handleDiscard = () => setRecordedBlob(null);
+  const handleSendRecording = () => {
+    if (!recordedBlob || !socket) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendAudio",
+        { conversationId, from: businessId, to: customerId, buffer: reader.result, fileType: recordedBlob.type, duration: timer },
+        (ack) => { if (ack.ok) setRecordedBlob(null); else console.error("sendAudio error:", ack.error); }
+      );
+    };
+    reader.readAsArrayBuffer(recordedBlob);
+  };
 
   return (
     <div className="chat-container business">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
 
-        {!loading && safeMessages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
-
-        {safeMessages.map((m, i) =>
+        {messages.map((m, i) =>
           m.system ? (
             <div key={i} className="system-message">{m.text}</div>
           ) : (
-            <div
-              key={m._id || i}
-              className={`message${m.from === businessId ? " mine" : " theirs"}`}>
+            <div key={m._id || i} className={`message${m.from === businessId ? " mine" : " theirs"}`}>
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer
-                    src={m.fileUrl}
-                    userAvatar={m.userAvatar}
-                    duration={m.fileDuration}
-                  />
-                ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
+                  <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
+                ) : /\.(jpe?g|png|gif)$/i.test(m.fileUrl) ? (
                   <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
                 ) : (
                   <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
@@ -204,14 +255,13 @@ export default function BusinessChatTab({
               ) : (
                 <div className="text">{m.text}</div>
               )}
-
               <div className="meta">
                 <span className="time">
                   {new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
                 </span>
                 {m.fileDuration && (
                   <span className="audio-length">
-                    {Math.floor(m.fileDuration / 60)}:{Math.floor(m.fileDuration % 60).toString().padStart(2, "0")}
+                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:{String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
                   </span>
                 )}
               </div>

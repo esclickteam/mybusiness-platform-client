@@ -1,3 +1,4 @@
+// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
@@ -8,6 +9,7 @@ import { io } from "socket.io-client";
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
+  const token = localStorage.getItem("token");
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -16,11 +18,8 @@ export default function BusinessChatPage() {
 
   useEffect(() => {
     console.log("BusinessChatPage init:", { initialized, businessId });
-    if (!initialized || !businessId) {
-      console.warn("Skipping socket connect: missing data", {
-        initialized,
-        businessId,
-      });
+    if (!initialized || !businessId || !token) {
+      console.warn("Skipping socket connect: missing data", { initialized, businessId, token });
       return;
     }
 
@@ -28,34 +27,35 @@ export default function BusinessChatPage() {
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
 
     socketRef.current = io(socketUrl, {
-  path: "/socket.io",
-  withCredentials: true,
-  auth: {
-    role: "business-dashboard",
-    businessId: businessId,
-  },
-});
+      path: "/socket.io",
+      withCredentials: true,
+      auth: {
+        token,
+        role: "business-dashboard",
+        businessId,
+      },
+    });
 
     socketRef.current.on("connect", () => {
       console.log("Socket connected:", socketRef.current.id);
-      socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
-        const data = Array.isArray(res.conversations) ? res.conversations : [];
-        setLoading(false);
-        if (res.ok) {
-          setConvos(data);
-          if (data.length > 0 && !selected) {
-            const first = data[0];
-            const convoId = first._id || first.conversationId;
-            const partnerId = Array.isArray(first.participants)
-              ? first.participants.find((p) => p !== businessId) || ""
-              : "";
-            setSelected({ conversationId: convoId, partnerId });
-            console.log(`Selected first conversation ${convoId} with partner ${partnerId}`);
+      socketRef.current.emit(
+        "getConversations",
+        { userId: businessId },
+        ({ ok, conversations, error }) => {
+          setLoading(false);
+          if (ok && Array.isArray(conversations)) {
+            setConvos(conversations);
+            if (!selected && conversations.length > 0) {
+              const first = conversations[0];
+              const convoId = first._id || first.conversationId;
+              const partnerId = first.participants.find((p) => p !== businessId) || "";
+              setSelected({ conversationId: convoId, partnerId });
+            }
+          } else {
+            console.error("Error loading conversations:", error);
           }
-        } else {
-          console.error("Error loading conversations:", res.error);
         }
-      });
+      );
     });
 
     socketRef.current.on("connect_error", (err) => {
@@ -72,7 +72,7 @@ export default function BusinessChatPage() {
       socketRef.current = null;
       console.log("Socket disconnected and cleaned up");
     };
-  }, [initialized, businessId]); // שים לב - לא להוסיף selected כאן
+  }, [initialized, businessId, selected]);
 
   const handleSelect = (conversationId, partnerId) => {
     console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
@@ -85,7 +85,7 @@ export default function BusinessChatPage() {
 
   return (
     <div className={styles.whatsappBg}>
-      <div className={styles.chatContainer} style={{ flexDirection: "row" }}>
+      <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           {loading ? (
             <p className={styles.loading}>טוען שיחות…</p>
@@ -100,13 +100,13 @@ export default function BusinessChatPage() {
           )}
         </aside>
 
-        <section className={styles.chatArea} style={{ flex: 1 }}>
+        <section className={styles.chatArea}>
           {selected?.conversationId && selected.partnerId ? (
             <BusinessChatTab
               conversationId={selected.conversationId}
               businessId={businessId}
               customerId={selected.partnerId}
-              businessName={user?.businessName}
+              businessName={user?.businessName || user?.name}
               socket={socketRef.current}
             />
           ) : (
