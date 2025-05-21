@@ -29,10 +29,13 @@ export default function DashboardLive({ businessId }) {
     console.log("🔑 Token =", token);
 
     const socket = io(SOCKET_URL, {
-      path: "/socket.io",
-      transports: ["websocket"],
-      auth: { token },
-      query: { businessId, role: "business-dashboard" },
+      path: "/socket.io",          // ודא שהשרת מאזין לנתיב זה, אחרת הסר
+      transports: ["websocket"],   // מתחברים רק ב-websocket
+      auth: {                      // כל הפרמטרים נשלחים ב-auth
+        token,
+        businessId,
+        role: "business-dashboard",
+      },
     });
 
     socketRef.current = socket;
