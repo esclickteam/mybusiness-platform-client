@@ -17,27 +17,27 @@ export default function DashboardLive({ businessId }) {
   useEffect(() => {
     if (!businessId) return;
 
-    // צור חיבור עם token לאימות
+    // צור חיבור Socket.IO עם אימות ותפקיד
     const socket = io(process.env.REACT_APP_SOCKET_URL || "https://api.esclick.co.il", {
       path: "/socket.io",
       auth: {
-        token: localStorage.getItem("token")  // וודא שהטוקן נשמר ב-localStorage
+        token: localStorage.getItem("token"), // וודא שהטוקן נשמר שם
       },
-      query: { businessId },
+      query: {
+        businessId,
+        role: "business-dashboard",        // תפקיד לצורך זיהוי בסרבר
+      },
+      transports: ["websocket"],           // מאלץ WebSocket בלבד
+      autoConnect: true,
     });
 
-    // דיאגנוסטיקה
     console.log("🛰️ Connecting socket for businessId:", businessId);
 
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
-
-      // בקשה ראשונית לסטטיסטיקות
       socket.emit("getDashboardStats", null, ({ ok, stats: initial }) => {
-        console.log("🔄 Initial getDashboardStats response:", { ok, initial });
-        if (ok && initial) {
-          setStats(initial);
-        }
+        console.log("🔄 Initial stats:", { ok, initial });
+        if (ok && initial) setStats(initial);
       });
     });
 
