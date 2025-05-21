@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const statuses = ["ממתין למענה", "בטיפול", "נסגר"];
 
@@ -17,11 +17,10 @@ const getStatusColor = (status) => {
 
 const OpenLeadsTable = ({ leads = [] }) => {
   const today = new Date();
-  const [leadList, setLeadList] = useState([]);
-
-  useEffect(() => {
-    setLeadList(Array.isArray(leads) ? leads : []);
-  }, [leads]);
+  // אתחול leadList פעם אחת בלבד ללא useEffect
+  const [leadList, setLeadList] = useState(
+    Array.isArray(leads) ? leads : []
+  );
 
   const daysSince = (dateStr) => {
     const diff = (today - new Date(dateStr)) / (1000 * 60 * 60 * 24);
@@ -38,11 +37,10 @@ const OpenLeadsTable = ({ leads = [] }) => {
       };
       return updated;
     });
-
     // בעתיד: שמירת הסטטוס ב-API
   };
 
-  // אם אין לידים, ניתן להציג הודעה
+  // אם אין לידים, מציגים הודעה
   if (!Array.isArray(leadList) || leadList.length === 0) {
     return (
       <div className="graph-box">
