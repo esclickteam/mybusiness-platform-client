@@ -1,8 +1,8 @@
-// src/pages/business/dashboardPages/DashboardPage.jsx
 import React, { useEffect, useState, useRef } from "react";
-import { io } from "socket.io-client";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
+import useDashboardSocket from "../../../hooks/useDashboardSocket";
+
 import DashboardCards from "../../../components/DashboardCards";
 import LineChart from "../../../components/dashboard/LineChart";
 import PieChart from "../../../components/dashboard/PieChart";
@@ -36,6 +36,14 @@ import "../../../styles/dashboard.css";
 
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
+
+  // משתמשים בהוק לסוקט לקבלת עדכוני סטטיסטיקות בזמן אמת
+  const statsFromSocket = useDashboardSocket({
+    token: localStorage.getItem("token"),
+    businessId: user?.businessId,
+  });
+
+  // סטייט מקומי לסטטיסטיקות שממוזג עם הנתונים מה-API והסוקט
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -56,9 +64,10 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // useRef לשמירת אובייקט הסוקט
+  // useRef לשמירת אובייקט הסוקט - אם תרצה לגשת בעתיד
   const socketRef = useRef(null);
 
+  // טעינת הסטטיסטיקות הראשונית מה-API
   useEffect(() => {
     const fetchStats = async () => {
       if (!user?.businessId) return;
@@ -78,45 +87,12 @@ const DashboardPage = () => {
     fetchStats();
   }, [user]);
 
+  // סינכרון הנתונים המגיעים מהסוקט עם הסטייט המקומי
   useEffect(() => {
-    if (!user?.businessId) return;
-
-    // התחברות ל-Socket.IO עם פרטי אימות
-    const socket = io(import.meta.env.VITE_SOCKET_URL, {
-      path: '/socket.io',
-      auth: {
-        token: localStorage.getItem("token"),
-        role: "business-dashboard",
-        businessId: user.businessId,
-      },
-      transports: ["websocket"],
-    });
-
-    socketRef.current = socket;
-
-    socket.on("connect", () => {
-      console.log("🔌 Socket connected:", socket.id);
-    });
-
-    socket.on("dashboardUpdate", (updatedStats) => {
-      console.log("📊 Dashboard stats updated", updatedStats);
-      setStats(prev => ({ ...prev, ...updatedStats }));
-    });
-
-    socket.on("disconnect", (reason) => {
-      console.warn("🔴 Socket disconnected:", reason);
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("🔴 Socket connection error:", err);
-    });
-
-    return () => {
-      socket.disconnect();
-      socketRef.current = null;
-      console.log("🔌 Socket disconnected on cleanup");
-    };
-  }, [user]);
+    if (statsFromSocket) {
+      setStats(statsFromSocket);
+    }
+  }, [statsFromSocket]);
 
   const handleQuickAction = (action) => {
     let msg = null;
@@ -151,7 +127,15 @@ const DashboardPage = () => {
       )}
 
       <DashboardNav
-        refs={{ cardsRef: null, insightsRef: null, comparisonRef: null, chartsRef: null, leadsRef: null, appointmentsRef: null, calendarRef: null }}
+        refs={{
+          cardsRef: null,
+          insightsRef: null,
+          comparisonRef: null,
+          chartsRef: null,
+          leadsRef: null,
+          appointmentsRef: null,
+          calendarRef: null
+        }}
       />
 
       <div>
