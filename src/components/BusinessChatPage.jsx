@@ -7,9 +7,9 @@ import { io } from "socket.io-client";
 
 export default function BusinessChatPage() {
   const { user, initialized, token: authToken } = useAuth();
-  // fallback אם businessId ממוקם תחת user.business._id
+  // תמיכה בפורמט בו businessId מאוחסן תחת user.business._id
   const businessId = user?.businessId || user?.business?._id;
-  // השתמש בטוקן מהקונטקסט אם קיים, אחרת תפקח מ-localStorage
+  // קבלת הטוקן מקונטקסט או מ-localStorage
   const token = authToken || localStorage.getItem("token");
 
   const [convos, setConvos] = useState([]);
@@ -19,7 +19,14 @@ export default function BusinessChatPage() {
 
   useEffect(() => {
     console.log("BusinessChatPage init:", { initialized, businessId, token });
-    if (!initialized || !businessId) return;
+    if (!initialized || !businessId || !token) {
+      console.warn("Skipping socket connect: missing data", {
+        initialized,
+        businessId,
+        token,
+      });
+      return;
+    }
 
     setLoading(true);
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
@@ -34,8 +41,11 @@ export default function BusinessChatPage() {
       console.log("Socket connected:", socketRef.current.id);
       socketRef.current.emit("getConversations", {}, (res) => {
         const data = Array.isArray(res.conversations) ? res.conversations : [];
+        setLoading(false);
+
         if (res.ok) {
           setConvos(data);
+          // בחר אוטומטית את השיחה הראשונה אם לא נבחרה
           if (data.length > 0 && !selected) {
             const first = data[0];
             const convoId = first._id || first.conversationId;
@@ -47,12 +57,12 @@ export default function BusinessChatPage() {
         } else {
           console.error("Error loading conversations:", res.error);
         }
-        setLoading(false);
       });
     });
 
     socketRef.current.on("connect_error", (err) => {
       console.error("Socket connection error:", err.message);
+      setLoading(false);
     });
 
     socketRef.current.on("disconnect", (reason) => {
@@ -63,13 +73,15 @@ export default function BusinessChatPage() {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [initialized, businessId]);  // היינוורק תלות רק ב-init ו-businessId
+  }, [initialized, businessId, token]);
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
   };
 
-  if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
+  if (!initialized) {
+    return <p className={styles.loading}>טוען מידע…</p>;
+  }
 
   return (
     <div className={styles.whatsappBg}>
