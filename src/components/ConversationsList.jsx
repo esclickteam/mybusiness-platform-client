@@ -8,7 +8,8 @@ export default function ConversationsList({
   onSelect,
   isBusiness,
 }) {
-  if (!conversations || conversations.length === 0) {
+  // ודא ש-conversations הוא מערך תקין לפני כל שימוש
+  if (!Array.isArray(conversations) || conversations.length === 0) {
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
   }
 
