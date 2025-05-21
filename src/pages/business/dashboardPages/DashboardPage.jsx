@@ -25,12 +25,8 @@ import "../../../styles/dashboard.css";
 // קומפוננטה ל-Quick Actions
 const QuickActions = ({ onAction }) => (
   <div className="quick-actions-row">
-    <button className="quick-action-btn" onClick={() => onAction("meeting")}>
-      + פגישה חדשה
-    </button>
-    <button className="quick-action-btn" onClick={() => onAction("message")}>
-      + שלח הודעה
-    </button>
+    <button className="quick-action-btn" onClick={() => onAction("meeting")}>+ פגישה חדשה</button>
+    <button className="quick-action-btn" onClick={() => onAction("message")}>+ שלח הודעה</button>
   </div>
 );
 
@@ -42,13 +38,14 @@ const DashboardAlert = ({ text, type = "info" }) => (
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
 
+  // סטטיסטיקות
   const [stats, setStats] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // רפרנסים לניווט מהיר בין חלקים
+  // רפרנסים לניווט מהיר
   const cardsRef        = useRef(null);
   const insightsRef     = useRef(null);
   const comparisonRef   = useRef(null);
@@ -57,17 +54,13 @@ const DashboardPage = () => {
   const appointmentsRef = useRef(null);
   const calendarRef     = useRef(null);
 
-  // חיבור Socket - שומר על רפרנס למניעת פתיחה כפולה
+  // SocketIO ref
   const socketRef = useRef(null);
 
-  // טעינת הסטטיסטיקות מהשרת (פעם ראשונה)
+  // טעינת הסטטיסטיקות בבקשה ראשונית
   useEffect(() => {
     const fetchStats = async () => {
-      if (!user) {
-        setError("⚠️ יש להתחבר כדי לגשת לדף זה.");
-        setLoading(false);
-        return;
-      }
+      if (!user) return;
       const businessUserId = user.businessId;
       if (!businessUserId) {
         setError("⚠️ מזהה העסק לא זוהה.");
@@ -90,11 +83,9 @@ const DashboardPage = () => {
     fetchStats();
   }, [user]);
 
-  // ===== חיבור SOCKET.IO (עדכון בלייב) =====
+  // התחברות ל-Socket.IO לעדכוני LIVE
   useEffect(() => {
-    if (!user?.businessId) return;
-
-    if (socketRef.current) return;
+    if (!user?.businessId || socketRef.current) return;
 
     socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
       path: "/socket.io",
@@ -104,11 +95,11 @@ const DashboardPage = () => {
       },
     });
 
-    socketRef.current.on("dashboardUpdate", (updatedStats) => {
-      setStats(updatedStats); // עדכן את הסטטיסטיקות
+    socketRef.current.on("dashboardUpdate", updatedStats => {
+      setStats(updatedStats);
     });
 
-    socketRef.current.on("dashboardAlert", (alertMsg) => {
+    socketRef.current.on("dashboardAlert", alertMsg => {
       setAlert(alertMsg);
       setTimeout(() => setAlert(null), 3000);
     });
@@ -119,31 +110,20 @@ const DashboardPage = () => {
     };
   }, [user?.businessId]);
 
-  // פעולה מתוך quick actions (דמו)
-  const handleQuickAction = (action) => {
-    switch (action) {
-      case "meeting":
-        setAlert("מעבר להוספת פגישה חדשה (דמו)");
-        break;
-      case "message":
-        setAlert("מעבר לשליחת הודעה (דמו)");
-        break;
-      default:
-        break;
-    }
+  // Quick actions handler
+  const handleQuickAction = action => {
+    let msg = null;
+    if (action === "meeting") msg = "מעבר להוספת פגישה חדשה (דמו)";
+    if (action === "message") msg = "מעבר לשליחת הודעה (דמו)";
+    setAlert(msg);
     setTimeout(() => setAlert(null), 2500);
   };
 
-  if (authLoading || loading) {
-    return <p className="loading-text">⏳ טוען נתונים…</p>;
-  }
-  if (error) {
-    return <p className="error-text">{error}</p>;
-  }
+  if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (error) return <p className="error-text">{error}</p>;
 
-  // דוגמה ל-alert: פגישות היום
-  const hasTodayMeetings =
-    stats && stats.todaysAppointments && stats.todaysAppointments.length > 0;
+  const todaysAppointments = stats?.todaysAppointments || [];
+  const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
     <div className="dashboard-container">
@@ -154,57 +134,45 @@ const DashboardPage = () => {
         </span>
       </h2>
 
-      {/* Quick Actions */}
       <QuickActions onAction={handleQuickAction} />
-
-      {/* Alert דינאמי */}
       {alert && <DashboardAlert text={alert} type="info" />}
       {hasTodayMeetings && (
         <DashboardAlert
-          text={`📅 יש לך ${stats.todaysAppointments.length} פגישות היום!`}
+          text={`📅 יש לך ${todaysAppointments.length} פגישות היום!`}
           type="warning"
         />
       )}
 
       <DashboardNav
-        refs={{
-          cardsRef,
-          insightsRef,
-          comparisonRef,
-          chartsRef,
-          leadsRef,
-          appointmentsRef,
-          calendarRef
-        }}
+        refs={{ cardsRef, insightsRef, comparisonRef, chartsRef, leadsRef, appointmentsRef, calendarRef }}
       />
 
-      {stats && <NotificationsPanel stats={stats} />}
-
+      {/* סטטיסטיקות ראשיות */}
       <div ref={cardsRef}>
-        {/* דגש: סטטיסטיקות רלוונטיות לעסק תורים בלבד */}
         <DashboardCards
           stats={{
-            profile_views: stats.profile_views || 0,
-            requests_count: stats.requests_count || 0,
-            customer_messages: stats.customer_messages || 0,
-            future_appointments: stats.future_appointments || 0,
-            today_appointments: stats.today_appointments || 0,
-            positive_reviews: stats.positive_reviews || 0,
+            views_count:        stats.views_count || 0,
+            requests_count:     stats.requests_count || 0,
+            orders_count:       stats.orders_count || 0,
+            reviews_count:      stats.reviews_count || 0,
+            messages_count:     stats.messages_count || 0,
+            appointments_count: stats.appointments_count || 0,
           }}
         />
       </div>
+
       <div ref={insightsRef}>
         <Insights stats={stats} />
       </div>
+
       <div ref={comparisonRef}>
         <BusinessComparison stats={stats} />
       </div>
 
       <NextActions stats={stats} />
-      {/* ניתן להסתיר ProgressBar אם אין יעדי הזמנות */}
 
+      {/* גרפים */}
       <div ref={chartsRef} className="graph-row">
-        {/* תעדכן כאן גרפים לפגישות, ביקורות, הודעות וכו' */}
         <BarChart
           data={{
             labels: ["פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"],
@@ -212,9 +180,9 @@ const DashboardPage = () => {
               {
                 label: "פעילות העסק",
                 data: [
-                  stats.future_appointments || 0,
-                  stats.requests_count || 0,
-                  stats.customer_messages || 0,
+                  stats.appointments_count || 0,
+                  stats.requests_count   || 0,
+                  stats.messages_count   || 0,
                 ],
                 borderRadius: 8,
               },
@@ -263,7 +231,7 @@ const DashboardPage = () => {
           <div className="calendar-grid-box">
             <CalendarView
               appointments={stats.appointments}
-              onDateClick={(date) => setSelectedDate(date)}
+              onDateClick={setSelectedDate}
             />
           </div>
           <div className="day-agenda-box">

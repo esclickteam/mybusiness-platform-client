@@ -1,3 +1,4 @@
+// src/components/DashboardLive.jsx
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import DashboardCards from "./DashboardCards";
@@ -9,26 +10,29 @@ export default function DashboardLive({ businessId }) {
     orders_count: 0,
     reviews_count: 0,
     messages_count: 0,
-    upcoming_appointments: 0,
+    appointments_count: 0,   // <— תואם לשדה מהשרת
+    open_leads_count: 0      // <— אם אתם משתמשים גם בלידים
   });
 
   useEffect(() => {
     if (!businessId) return;
 
-    const socket = io("https://api.esclick.co.il", {
+    const socket = io(process.env.REACT_APP_SOCKET_URL || "https://api.esclick.co.il", {
       query: { businessId }
     });
 
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
-      // אפשר לבקש סטטיסטיקות אם תרצה:
-      socket.emit("getDashboardStats", null, (response) => {
-        if (response.ok) setStats(response.stats);
-        else console.error("Failed to get stats:", response.error);
+      socket.emit("getDashboardStats", null, ({ ok, stats }) => {
+        if (ok) {
+          setStats(stats);
+        } else {
+          console.error("Failed to get stats:", stats);
+        }
       });
     });
 
-    socket.on("dashboardUpdate", (newStats) => {
+    socket.on("dashboardUpdate", newStats => {
       console.log("📊 Dashboard update:", newStats);
       setStats(newStats);
     });

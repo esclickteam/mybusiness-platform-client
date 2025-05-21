@@ -1,3 +1,4 @@
+// src/components/DashboardCards.jsx
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import "../styles/dashboard.css";
@@ -9,7 +10,7 @@ const DashboardCards = ({ businessId }) => {
     orders_count: 0,
     reviews_count: 0,
     messages_count: 0,
-    upcoming_appointments: 0,
+    appointments_count: 0,   // ← שינינו לשם תואם
   });
 
   useEffect(() => {
@@ -19,13 +20,16 @@ const DashboardCards = ({ businessId }) => {
       query: { businessId },
     });
 
+    // על כל עדכון מהשרת, נעדכן את הסטייט
     socket.on("dashboardUpdate", (newStats) => {
       setStats(newStats);
     });
 
     // בקשה ראשונית לנתונים (אופציונלי)
     socket.emit("getDashboardStats", null, (response) => {
-      if (response.ok) setStats(response.stats);
+      if (response.ok) {
+        setStats(response.stats);
+      }
     });
 
     return () => {
@@ -66,7 +70,7 @@ const DashboardCards = ({ businessId }) => {
     },
     {
       label: "פגישות עתידיות",
-      value: stats.upcoming_appointments,
+      value: stats.appointments_count,  // ← תואם עכשיו
       icon: "📅",
       bgColor: "#fcefe3",
     },
