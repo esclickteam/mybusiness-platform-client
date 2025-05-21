@@ -1,3 +1,4 @@
+// src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from "react";
 import BusinessChatTab from "./BusinessChatTab";
 import ClientChatTab from "./ClientChatTab";
@@ -18,31 +19,27 @@ export default function ChatComponent({
 
   const socketRef = useRef();
 
-  // אתחול socket + טעינת שיחות ו/או יצירת שיחה
   useEffect(() => {
     if (!userId) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-socketRef.current = io(socketUrl, {
-  auth: { userId, role: isBusiness ? "business" : "client" },
-  transports: ["websocket"],
-});
-
+    socketRef.current = io(socketUrl, {
+      auth: { userId, role: isBusiness ? "business" : "customer" },
+      transports: ["websocket"],
+    });
 
     if (isBusiness) {
       setLoadingConvs(true);
-      socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
-  if (res.ok) {
+      socketRef.current.emit("getConversations", { userId }, (res) => {
+        if (res.ok) {
           const convs = Array.isArray(res.conversations) ? res.conversations : [];
           setConversations(convs);
           if (!conversationId && convs.length > 0) {
             const first = convs[0];
             const convoId = first._id || first.conversationId;
-            let custId = null;
-            if (first.customer?._id) custId = first.customer._id;
-            else if (first.participants && Array.isArray(first.participants)) {
-              custId = first.participants.find(pid => pid !== userId);
-            }
+            let custId = first.customer?._id
+              ? first.customer._id
+              : first.participants?.find((pid) => pid !== userId) || null;
             setConversationId(convoId);
             setCurrentCustomerId(custId);
           }
@@ -52,7 +49,6 @@ socketRef.current = io(socketUrl, {
         setLoadingConvs(false);
       });
     } else {
-      // לקוח - אם אין conversationId, צור שיחה חדשה דרך socket
       if (!conversationId && partnerId) {
         setLoadingInit(true);
         socketRef.current.emit("startConversation", { otherUserId: partnerId }, (res) => {
@@ -71,16 +67,15 @@ socketRef.current = io(socketUrl, {
     };
   }, [userId, isBusiness, partnerId]);
 
-  // סנכרון customerId עם conversationId כאשר מתחלף
   useEffect(() => {
     if (!isBusiness || !conversationId) return;
-    const conv = conversations.find(c => (c._id || c.conversationId) === conversationId);
+    const conv = conversations.find(
+      (c) => (c._id || c.conversationId) === conversationId
+    );
     if (conv) {
-      let custId = null;
-      if (conv.customer?._id) custId = conv.customer._id;
-      else if (conv.participants && Array.isArray(conv.participants)) {
-        custId = conv.participants.find(pid => pid !== userId);
-      }
+      const custId = conv.customer?._id
+        ? conv.customer._id
+        : conv.participants?.find((pid) => pid !== userId) || null;
       setCurrentCustomerId(custId);
     }
   }, [conversationId, isBusiness, conversations, userId]);
@@ -95,16 +90,14 @@ socketRef.current = io(socketUrl, {
       conversationId={conversationId}
       businessId={userId}
       customerId={currentCustomerId}
-      userId={userId}
-      socket={socketRef.current} // במידת הצורך
+      socket={socketRef.current}
     />
   ) : (
     <ClientChatTab
       conversationId={conversationId}
       businessId={partnerId}
       userId={userId}
-      partnerId={partnerId}
-      socket={socketRef.current} // במידת הצורך
+      socket={socketRef.current}
     />
   );
 }

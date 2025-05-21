@@ -17,50 +17,61 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const socketRef = useRef();
 
-  // התחבר ל-socket ופתח או איתר שיחה
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-socketRef.current = io(socketUrl, {
-  auth: { userId, role: "client" },
-  transports: ["websocket"],
-});
-
-
-    // יצירת או איתור שיחה עם העסק דרך socket
-    socketRef.current.emit("startConversation", { otherUserId: businessId }, (res) => {
-      if (res.ok) {
-        setConversationId(res.conversationId);
-      } else {
-        setError("שגיאה ביצירת השיחה: " + (res.error || "שגיאה לא ידועה"));
-      }
-      setLoading(false);
+    socketRef.current = io(socketUrl, {
+      path: "/socket.io",
+      auth: {
+        userId,
+        businessId,
+        role: "customer"
+      },
+      transports: ["websocket"],
     });
+
+    socketRef.current.emit(
+      "startConversation",
+      { otherUserId: businessId },
+      (res) => {
+        if (res.ok) {
+          setConversationId(res.conversationId);
+        } else {
+          setError("שגיאה ביצירת השיחה: " + (res.error || "שגיאה לא ידועה"));
+        }
+        setLoading(false);
+      }
+    );
 
     return () => {
       socketRef.current.disconnect();
     };
   }, [initialized, userId, businessId]);
 
-  // שליפת שם העסק מהשיחות
   useEffect(() => {
     if (!conversationId || !socketRef.current) return;
 
-    socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
-  if (res.ok) {
-        const convos = Array.isArray(res.conversations) ? res.conversations : [];
-        const conv = convos.find(c =>
-          [c.conversationId, c._id, c.id]
-            .map(String)
-            .includes(String(conversationId))
-        );
-        setBusinessName(conv?.businessName || "");
-      } else {
-        setError("שגיאה בטעינת שם העסק");
+    socketRef.current.emit(
+      "getConversations",
+      { userId: businessId },
+      (res) => {
+        if (res.ok) {
+          const convos = Array.isArray(res.conversations)
+            ? res.conversations
+            : [];
+          const conv = convos.find((c) =>
+            [c.conversationId, c._id, c.id]
+              .map(String)
+              .includes(String(conversationId))
+          );
+          setBusinessName(conv?.businessName || "");
+        } else {
+          setError("שגיאה בטעינת שם העסק");
+        }
       }
-    });
-  }, [conversationId]);
+    );
+  }, [conversationId, businessId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
@@ -68,7 +79,6 @@ socketRef.current = io(socketUrl, {
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
-        {/* Sidebar */}
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
           <div className={styles.convItemActive}>
@@ -76,15 +86,13 @@ socketRef.current = io(socketUrl, {
           </div>
         </aside>
 
-        {/* Chat area */}
         <section className={styles.chatArea}>
           {conversationId ? (
             <ClientChatTab
               conversationId={conversationId}
               businessId={businessId}
               userId={userId}
-              partnerId={businessId}
-              socket={socketRef.current} // אם תרצה להעביר את הסוקט
+              socket={socketRef.current}
             />
           ) : (
             <div className={styles.emptyMessage}>
