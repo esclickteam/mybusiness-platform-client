@@ -104,7 +104,8 @@ const DashboardPage = () => {
   if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
-  const todaysAppointments = stats.todaysAppointments || [];
+  // הוספתי בדיקת אופציונל צ'יינינג למניעת השגיאה
+  const todaysAppointments = stats?.todaysAppointments || [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
