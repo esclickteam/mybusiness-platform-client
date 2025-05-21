@@ -17,6 +17,7 @@ import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import BusinessComparison from "../../../components/dashboard/BusinessComparison";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
+
 // QuickActions component for quick dashboard actions
 const QuickActions = ({ onAction }) => (
   <div className="quick-actions-row">
@@ -29,11 +30,26 @@ const QuickActions = ({ onAction }) => (
 const DashboardAlert = ({ text, type = "info" }) => (
   <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
 );
+
 import "../../../styles/dashboard.css";
 
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
-  const [stats, setStats] = useState({});
+  const [stats, setStats] = useState({
+    views_count: 0,
+    requests_count: 0,
+    orders_count: 0,
+    reviews_count: 0,
+    messages_count: 0,
+    appointments_count: 0,
+    todaysAppointments: [],
+    income_distribution: null,
+    monthly_comparison: null,
+    recent_activity: null,
+    appointments: [],
+    leads: [],
+    businessName: "",
+  });
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -55,7 +71,7 @@ const DashboardPage = () => {
           `/business/${user.businessId}/stats`,
           { withCredentials: true }
         );
-        setStats(res.data);
+        setStats(prev => ({ ...prev, ...res.data }));
       } catch (err) {
         console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
@@ -79,7 +95,7 @@ const DashboardPage = () => {
     es.addEventListener("statsUpdate", (e) => {
       try {
         const payload = JSON.parse(e.data);
-        setStats(payload.extra);
+        setStats(prev => ({ ...prev, ...payload.extra }));
       } catch (err) {
         console.error("🚨 Error parsing SSE:", err);
       }
@@ -104,7 +120,6 @@ const DashboardPage = () => {
   if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
-  // הוספתי בדיקת אופציונל צ'יינינג למניעת השגיאה
   const todaysAppointments = stats?.todaysAppointments || [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
