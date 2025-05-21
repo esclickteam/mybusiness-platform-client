@@ -118,13 +118,12 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   setIsBlocked(false);
 
   // פתח חיבור Socket.IO
-  socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
+  socketRef.current = io(socketUrl, {
   path: "/socket.io",
   auth: {
-    conversationId,
     userId,
-    businessId,
-    role: "customer"
+    businessId,    // ← מוסיפים כאן
+    role: "customer" // או "client" לפי הצד שהשרת מצפה לו
   },
   transports: ["websocket"],
 });
