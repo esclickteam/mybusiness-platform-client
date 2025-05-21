@@ -9,8 +9,8 @@ export default function BusinessChatPage() {
   const { user, initialized, token: authToken } = useAuth();
   // תמיכה בפורמט בו businessId מאוחסן תחת user.business._id
   const businessId = user?.businessId || user?.business?._id;
-  // קבלת הטוקן מקונטקסט או מ-localStorage
-  const token = authToken || localStorage.getItem("token");
+  // קבלת הטוקן מצורות שונות: קונטקסט, שדה user, או localStorage
+  const token = authToken || user?.token || localStorage.getItem("token");
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -45,7 +45,6 @@ export default function BusinessChatPage() {
 
         if (res.ok) {
           setConvos(data);
-          // בחר אוטומטית את השיחה הראשונה אם לא נבחרה
           if (data.length > 0 && !selected) {
             const first = data[0];
             const convoId = first._id || first.conversationId;
