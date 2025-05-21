@@ -1,7 +1,7 @@
-import API from './api'; // נתיב ל-API שלך
-
 export function startSSEConnection(businessId) {
-  const url = `${API.defaults.baseURL}/updates/stream/${businessId}`;
+  // השתמש ב-VITE_SSE_URL שמוגדר בסביבת הפרודקשן/פיתוח
+  const url = `${import.meta.env.VITE_SSE_URL}/stream/${businessId}`;
+
   const eventSource = new EventSource(url, { withCredentials: true });
 
   eventSource.onopen = () => {
@@ -15,8 +15,7 @@ export function startSSEConnection(businessId) {
 
   eventSource.onerror = (err) => {
     console.error('🔴 [SSE] error', err);
-    // אל סוגר את החיבור אוטומטית כדי לבדוק אם הבעיה זמנית
-    // אם תרצה לסגור אחרי כמה שגיאות רצופות, אפשר להוסיף לוגיקה מתקדמת כאן
+    // לא סוגר אוטומטית כדי לבדוק שגיאות זמניות
   };
 
   return eventSource;

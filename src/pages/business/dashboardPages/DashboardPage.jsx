@@ -68,10 +68,14 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!user?.businessId) return;
+
+    console.log("🔥 VITE_SSE_URL =", import.meta.env.VITE_SSE_URL);
+
     const es = new EventSource(
-      `${import.meta.env.VITE_API_URL}/updates/stream/${user.businessId}`,
+      `${import.meta.env.VITE_SSE_URL}/stream/${user.businessId}`,
       { withCredentials: true }
     );
+
     es.addEventListener("statsUpdate", (e) => {
       try {
         const payload = JSON.parse(e.data);
@@ -80,10 +84,12 @@ const DashboardPage = () => {
         console.error("🚨 Error parsing SSE:", err);
       }
     });
+
     es.onerror = () => {
       console.error("🚨 SSE connection error, closing");
       es.close();
     };
+
     return () => es.close();
   }, [user]);
 
