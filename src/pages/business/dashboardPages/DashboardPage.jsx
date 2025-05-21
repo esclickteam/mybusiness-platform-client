@@ -17,7 +17,13 @@ import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import BusinessComparison from "../../../components/dashboard/BusinessComparison";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
-import QuickActions from "../../../components/dashboard/QuickActions";
+// QuickActions component for quick dashboard actions
+const QuickActions = ({ onAction }) => (
+  <div className="quick-actions-row">
+    <button className="quick-action-btn" onClick={() => onAction("meeting")}>+ פגישה חדשה</button>
+    <button className="quick-action-btn" onClick={() => onAction("message")}>+ שלח הודעה</button>
+  </div>
+);
 
 // Alert component for dashboard messages
 const DashboardAlert = ({ text, type = "info" }) => (
