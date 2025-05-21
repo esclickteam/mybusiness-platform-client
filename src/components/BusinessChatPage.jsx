@@ -16,10 +16,9 @@ export default function BusinessChatPage() {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log("BusinessChatPage init:", { initialized, businessId, token });
-    if (!initialized || !businessId || !token) {
-      console.warn("Skipping socket connect: missing data", { initialized, businessId, token });
+    console.log("BusinessChatPage init:", { initialized, businessId });
+    if (!initialized || !businessId) {
+      console.warn("Skipping socket connect: missing data", { initialized, businessId });
       return;
     }
 
@@ -30,7 +29,6 @@ export default function BusinessChatPage() {
       path: "/socket.io",
       withCredentials: true,
       auth: {
-        token,
         role: "business-dashboard",
         businessId,
       },
@@ -76,9 +74,7 @@ export default function BusinessChatPage() {
   }, [initialized, businessId]);
 
   const handleSelect = (conversationId, partnerId) => {
-    console.log(
-      `Conversation selected: ${conversationId} with partner ${partnerId}`
-    );
+    console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
     setSelected({ conversationId, partnerId });
   };
 
