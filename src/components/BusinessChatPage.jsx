@@ -30,9 +30,9 @@ export default function BusinessChatPage() {
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       transports: ["websocket"],
-      withCredentials: true,  // חשוב! שולח עוגיות אוטומטית
+      withCredentials: true,  // שולח עוגיות אוטומטית
       auth: {
-        role: "business-dashboard", // <-- פה העדכון
+        role: "business-dashboard",
         businessId: businessId,
       },
     });
@@ -40,9 +40,8 @@ export default function BusinessChatPage() {
     socketRef.current.on("connect", () => {
       console.log("Socket connected:", socketRef.current.id);
       socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
-  const data = Array.isArray(res.conversations) ? res.conversations : [];
-  setLoading(false);
-
+        const data = Array.isArray(res.conversations) ? res.conversations : [];
+        setLoading(false);
         if (res.ok) {
           setConvos(data);
           if (data.length > 0 && !selected) {
@@ -52,6 +51,7 @@ export default function BusinessChatPage() {
               ? first.participants.find((p) => p !== businessId) || ""
               : "";
             setSelected({ conversationId: convoId, partnerId });
+            console.log(`Selected first conversation ${convoId} with partner ${partnerId}`);
           }
         } else {
           console.error("Error loading conversations:", res.error);
@@ -71,10 +71,12 @@ export default function BusinessChatPage() {
     return () => {
       socketRef.current?.disconnect();
       socketRef.current = null;
+      console.log("Socket disconnected and cleaned up");
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId]); // שים לב - לא להוסיף selected כאן
 
   const handleSelect = (conversationId, partnerId) => {
+    console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
     setSelected({ conversationId, partnerId });
   };
 
