@@ -7,14 +7,17 @@ import { io } from "socket.io-client";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
-  const businessId = user?.businessId;
+  // fallback אם businessId ממוקם תחת user.business._id
+  const businessId = user?.businessId || user?.business?._id;
   const token = localStorage.getItem("token");
+
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const socketRef = useRef(null);
 
   useEffect(() => {
+    console.log("BusinessChatPage init:", { initialized, businessId, token });
     if (!initialized || !businessId || !token) return;
 
     setLoading(true);
@@ -32,7 +35,6 @@ export default function BusinessChatPage() {
         const data = Array.isArray(res.conversations) ? res.conversations : [];
         if (res.ok) {
           setConvos(data);
-
           if (data.length > 0 && !selected) {
             const first = data[0];
             const convoId = first._id || first.conversationId;
@@ -60,7 +62,7 @@ export default function BusinessChatPage() {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [initialized, businessId, token]);
+  }, [initialized, businessId, token, selected]);
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
@@ -76,7 +78,7 @@ export default function BusinessChatPage() {
             <p className={styles.loading}>טוען שיחות…</p>
           ) : (
             <ConversationsList
-              conversations={convos || []}
+              conversations={convos}
               businessId={businessId}
               selectedConversationId={selected?.conversationId}
               onSelect={handleSelect}
