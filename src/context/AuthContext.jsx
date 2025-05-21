@@ -146,8 +146,6 @@ export function AuthProvider({ children }) {
           case "admin":
             path = "/admin/dashboard";
             break;
-          default:
-            path = "/";
         }
         navigate(path, { replace: true });
       }
