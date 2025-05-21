@@ -102,63 +102,65 @@ export default function BusinessChatTab({
 
   // טעינת היסטוריה והאזנה לאירועים
   useEffect(() => {
-    if (!conversationId) return;
+  if (!conversationId) return;
 
-    setLoading(true);
+  setLoading(true);
 
+  if (socket) {
     // 1. נסיון ראשון: getHistory דרך socket
-    if (socket) {
-      socket.emit("getHistory", { conversationId }, (history) => {
-        console.log("⚡ getHistory response:", history);
-        if (Array.isArray(history) && history.length > 0) {
-          setMessages(history);
-          setLoading(false);
-        } else {
-          // 2. גיבוי: fetch רגיל מה-REST API
-          fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/messages`, {
-            credentials: "include",
+    socket.emit("getHistory", { conversationId }, (res) => {
+      console.log("⚡ getHistory response:", res);
+      const history = Array.isArray(res.messages) ? res.messages : [];
+      if (history.length > 0) {
+        setMessages(history);
+        setLoading(false);
+      } else {
+        // 2. גיבוי: fetch דרך ה-proxy (relative path)
+        fetch(`/api/conversations/${conversationId}/messages`, {
+          credentials: "include",
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            console.log("🌐 fetch history:", data.messages);
+            setMessages(data.messages || []);
           })
-            .then((r) => r.json())
-            .then((data) => {
-              console.log("🌐 fetch history:", data.messages);
-              setMessages(data.messages || []);
-            })
-            .catch(console.error)
-            .finally(() => setLoading(false));
-        }
-      });
+          .catch(console.error)
+          .finally(() => setLoading(false));
+      }
+    });
 
-      socket.emit("joinRoom", conversationId);
+    socket.emit("joinRoom", conversationId);
 
-      const handleNew = (msg) => {
-        if (msg.conversationId === conversationId) {
-          setMessages((prev) => [...prev, msg]);
-        }
-      };
-      socket.on("newMessage", handleNew);
+    const handleNew = (msg) => {
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => [...prev, msg]);
+      }
+    };
+    socket.on("newMessage", handleNew);
 
-      const handleTyping = ({ from }) => {
-        if (from === customerId) {
-          setIsTyping(true);
-          clearTimeout(typingTimeout.current);
-          typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
-        }
-      };
-      socket.on("typing", handleTyping);
-
-      return () => {
-        socket.off("newMessage", handleNew);
-        socket.off("typing", handleTyping);
+    const handleTyping = ({ from }) => {
+      if (from === customerId) {
+        setIsTyping(true);
         clearTimeout(typingTimeout.current);
-        setMessages([]);
-        if (timerRef.current) clearInterval(timerRef.current);
-        if (mediaStreamRef.current) {
-          mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-          mediaStreamRef.current = null;
-        }
-      };
-    }
-  }, [socket, conversationId, customerId]);
+        typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
+      }
+    };
+    socket.on("typing", handleTyping);
+
+    return () => {
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
+      clearTimeout(typingTimeout.current);
+      setMessages([]);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+      }
+    };
+  }
+}, [socket, conversationId, customerId]);
+
 
   // גלילה אוטומטית
   useEffect(() => {
