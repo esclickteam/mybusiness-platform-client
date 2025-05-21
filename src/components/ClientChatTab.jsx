@@ -111,45 +111,54 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   };
 
   useEffect(() => {
-    if (!conversationId) return;
+  if (!conversationId) return;
+
+  // איפוס שגיאות וחסימה
+  setError("");
+  setIsBlocked(false);
+
+  // פתח חיבור Socket.IO
+  socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
+    path: "/socket.io",
+    auth: { conversationId, userId, role: "client" },
+    transports: ["websocket"],
+  });
+
+  // רק לאחר חיבור מוצלח נדליק את ה-spinner ונטען היסטוריה
+  socketRef.current.on("connect", () => {
     setLoading(true);
-    setError("");
-    setIsBlocked(false);
-
-    socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
-  path: "/socket.io",
-  auth: { conversationId, userId, role: "client" },
-  transports: ["websocket"],
-});
-
-
     socketRef.current.emit("getHistory", { conversationId }, (history) => {
       setMessages(Array.isArray(history) ? history : []);
       setLoading(false);
     });
+  });
 
-    socketRef.current.on("newMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+  // מאזין להודעות חדשות
+  socketRef.current.on("newMessage", (msg) => {
+    setMessages((prev) => [...prev, msg]);
+  });
 
-    socketRef.current.on("typing", ({ from }) => {
-      if (from === businessId) {
-        setIsTyping(true);
-        clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
-      }
-    });
-
-    return () => {
-      socketRef.current.disconnect();
+  // מאזין לאירוע typing מהעסק
+  socketRef.current.on("typing", ({ from }) => {
+    if (from === businessId) {
+      setIsTyping(true);
       clearTimeout(typingTimeoutRef.current);
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-        mediaStreamRef.current = null;
-      }
-    };
-  }, [conversationId, businessId, userId]);
+      typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
+    }
+  });
+
+  return () => {
+    socketRef.current.disconnect();
+    clearTimeout(typingTimeoutRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+      mediaStreamRef.current = null;
+    }
+  };
+}, [conversationId, businessId, userId]);
+
+
 
   useEffect(() => {
     if (!userScrolledUp && messageListRef.current) {
