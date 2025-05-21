@@ -1,6 +1,6 @@
 // src/components/DashboardLive.jsx
 import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import DashboardCards from "./DashboardCards";
 
 export default function DashboardLive({ businessId }) {
@@ -17,33 +17,30 @@ export default function DashboardLive({ businessId }) {
   useEffect(() => {
     if (!businessId) return;
 
-    // צור חיבור Socket.IO עם אימות ותפקיד
-    const socket = io(process.env.REACT_APP_SOCKET_URL || "https://api.esclick.co.il", {
-      path: "/socket.io",
-      auth: {
-        token: localStorage.getItem("token"), // וודא שהטוקן נשמר שם
-      },
-      query: {
-        businessId,
-        role: "business-dashboard",        // תפקיד לצורך זיהוי בסרבר
-      },
-      transports: ["websocket"],           // מאלץ WebSocket בלבד
-      autoConnect: true,
-    });
+    // קבלת ה־URL מ־.env (Vite)
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+    console.log("🛰️ FRONTEND SOCKET_URL =", SOCKET_URL);
+    console.log("🔑 Token in localStorage:", localStorage.getItem("token"));
 
-    console.log("🛰️ Connecting socket for businessId:", businessId);
+    // להתחבר ל־Socket.IO
+    const socket = io(SOCKET_URL, {
+      path: "/socket.io",
+      auth: { token: localStorage.getItem("token") },
+      query: { businessId, role: "business-dashboard" },
+      transports: ["websocket"],
+    });
 
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
       socket.emit("getDashboardStats", null, ({ ok, stats: initial }) => {
-        console.log("🔄 Initial stats:", { ok, initial });
+        console.log("🔄 Initial stats response:", { ok, initial });
         if (ok && initial) setStats(initial);
       });
     });
 
-    socket.on("dashboardUpdate", newStats => {
-      console.log("📊 Dashboard update:", newStats);
-      setStats(newStats);
+    socket.on("dashboardUpdate", updatedStats => {
+      console.log("📊 Dashboard update:", updatedStats);
+      setStats(updatedStats);
     });
 
     socket.on("disconnect", reason => {
@@ -51,7 +48,7 @@ export default function DashboardLive({ businessId }) {
     });
 
     socket.on("connect_error", err => {
-      console.error("🚨 Socket connect_error:", err.message);
+      console.error("🚨 connect_error:", err.message);
     });
 
     return () => {
