@@ -80,6 +80,15 @@ export default function ChatComponent({
     }
   }, [conversationId, isBusiness, conversations, userId]);
 
+  // כאן התיקון העיקרי - מציאת businessId מתוך השיחה, לא להשתמש ב-partnerId ישירות
+  const currentConversation = conversations.find(
+    (c) => (c._id || c.conversationId) === conversationId
+  );
+
+  const businessIdFromConversation = currentConversation?.business?._id
+    || currentConversation?.participants?.find((pid) => pid !== userId)
+    || partnerId; // fallback ל-partnerId אם אין מידע בשיחה
+
   if (loadingInit) return <p>⏳ פותח שיחה…</p>;
   if (loadingConvs) return <p>⏳ טוען שיחות…</p>;
   if (!conversationId) return <p>⏳ אין שיחה זמינה</p>;
@@ -95,7 +104,7 @@ export default function ChatComponent({
   ) : (
     <ClientChatTab
       conversationId={conversationId}
-      businessId={partnerId}
+      businessId={businessIdFromConversation}  // כאן העברתי businessId אמיתי מהשיחה
       userId={userId}
       socket={socketRef.current}
     />

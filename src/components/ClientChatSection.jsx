@@ -26,7 +26,7 @@ export default function ClientChatSection() {
       auth: {
         userId,
         businessId,
-        role: "customer"
+        role: "customer",
       },
       transports: ["websocket"],
     });
@@ -54,16 +54,12 @@ export default function ClientChatSection() {
 
     socketRef.current.emit(
       "getConversations",
-      { userId: businessId },
+      { userId },  // תוקן: שולח את userId הנכון (של הלקוח), לא את businessId
       (res) => {
         if (res.ok) {
-          const convos = Array.isArray(res.conversations)
-            ? res.conversations
-            : [];
+          const convos = Array.isArray(res.conversations) ? res.conversations : [];
           const conv = convos.find((c) =>
-            [c.conversationId, c._id, c.id]
-              .map(String)
-              .includes(String(conversationId))
+            [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
           );
           setBusinessName(conv?.businessName || "");
         } else {
@@ -71,7 +67,7 @@ export default function ClientChatSection() {
         }
       }
     );
-  }, [conversationId, businessId]);
+  }, [conversationId, userId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
