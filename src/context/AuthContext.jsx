@@ -52,10 +52,20 @@ export function AuthProvider({ children }) {
     const isEmail = clean.includes("@");
 
     try {
+      let loginResponse;
+
       if (isEmail) {
-        await API.post("/auth/login", { email: clean.toLowerCase(), password });
+        loginResponse = await API.post("/auth/login", { email: clean.toLowerCase(), password });
       } else {
-        await API.post("/auth/staff-login", { username: clean, password });
+        loginResponse = await API.post("/auth/staff-login", { username: clean, password });
+      }
+
+      // Assuming the token is returned here:
+      const token = loginResponse.data.token;
+      if (token) {
+        localStorage.setItem("token", token);
+      } else {
+        console.warn("No token received from login response");
       }
 
       const { data } = await API.get("/auth/me");
@@ -115,6 +125,7 @@ export function AuthProvider({ children }) {
       console.warn("Logout failed:", e);
     } finally {
       setUser(null);
+      localStorage.removeItem("token"); // חשוב גם למחוק את הטוקן בלוגאוט
       setLoading(false);
       navigate("/", { replace: true });
     }
