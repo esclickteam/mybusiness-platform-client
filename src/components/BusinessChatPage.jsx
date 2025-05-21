@@ -29,8 +29,9 @@ export default function BusinessChatPage() {
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
-      query: { userId: businessId, role: "business" },
-    });
+  auth: { userId: businessId, role: "business" },
+  transports: ["websocket"],  // מומלץ להוסיף
+});
 
     socketRef.current.emit("getConversations", {}, (res) => {
       if (res.ok) {

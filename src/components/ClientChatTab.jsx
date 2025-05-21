@@ -117,9 +117,11 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
     setIsBlocked(false);
 
     socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
-      path: "/socket.io",
-      query: { conversationId, userId, role: "client" },
-    });
+  path: "/socket.io",
+  auth: { conversationId, userId, role: "client" },
+  transports: ["websocket"],
+});
+
 
     socketRef.current.emit("getHistory", { conversationId }, (history) => {
       setMessages(Array.isArray(history) ? history : []);

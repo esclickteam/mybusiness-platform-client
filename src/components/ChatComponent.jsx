@@ -23,9 +23,11 @@ export default function ChatComponent({
     if (!userId) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    socketRef.current = io(socketUrl, {
-      query: { userId, role: isBusiness ? "business" : "client" },
-    });
+socketRef.current = io(socketUrl, {
+  auth: { userId, role: isBusiness ? "business" : "client" },
+  transports: ["websocket"],
+});
+
 
     if (isBusiness) {
       setLoadingConvs(true);

@@ -22,9 +22,11 @@ export default function ClientChatSection() {
     if (!initialized || !userId || !businessId) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    socketRef.current = io(socketUrl, {
-      query: { userId, role: "client" },
-    });
+socketRef.current = io(socketUrl, {
+  auth: { userId, role: "client" },
+  transports: ["websocket"],
+});
+
 
     // יצירת או איתור שיחה עם העסק דרך socket
     socketRef.current.emit("startConversation", { otherUserId: businessId }, (res) => {

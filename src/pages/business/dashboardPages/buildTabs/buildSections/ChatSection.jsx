@@ -49,9 +49,11 @@ export default function ChatSection({ isBusiness = false }) {
     if (!initialized || !businessId) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    socketRef.current = io(socketUrl, {
-      query: { userId: businessId, role: "business" },
-    });
+socketRef.current = io(socketUrl, {
+  auth: { userId: businessId, role: "business" },
+  transports: ["websocket"],
+});
+
 
     fetchConversations();
 

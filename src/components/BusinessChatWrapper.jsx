@@ -16,9 +16,11 @@ export default function BusinessChatWrapper() {
     if (!businessId) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    socketRef.current = io(socketUrl, {
-      query: { userId: businessId, role: "business" },
-    });
+socketRef.current = io(socketUrl, {
+  auth: { userId: businessId, role: "business" },
+  transports: ["websocket"],
+});
+
 
     // בקש שיחות דרך socket (צריך להוסיף אירוע כזה בשרת)
     socketRef.current.emit("getConversations", {}, (res) => {

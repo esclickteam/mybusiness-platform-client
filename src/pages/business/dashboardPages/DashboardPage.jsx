@@ -88,12 +88,14 @@ const DashboardPage = () => {
     if (!user?.businessId || socketRef.current) return;
 
     socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
-      path: "/socket.io",
-      query: {
-        businessId: user.businessId,
-        role: "business-dashboard",
-      },
-    });
+  path: "/socket.io",
+  auth: {
+    businessId: user.businessId,
+    role: "business-dashboard",
+  },
+  transports: ["websocket"],
+});
+
 
     socketRef.current.on("dashboardUpdate", updatedStats => {
       setStats(updatedStats);

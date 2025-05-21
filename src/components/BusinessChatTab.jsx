@@ -100,7 +100,8 @@ export default function BusinessChatTab({ conversationId, businessId, customerId
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      query: { conversationId, userId: businessId, role: "business", businessName },
+      auth: { conversationId, userId: businessId, role: "business", businessName },
+      transports: ["websocket"],
     });
 
     socketRef.current.emit("getHistory", { conversationId }, (history) => {
