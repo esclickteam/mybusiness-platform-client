@@ -1,6 +1,14 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+// src/context/AuthContext.jsx
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
+import { startSSEConnection } from "../sse";
 
 export const AuthContext = createContext();
 
@@ -9,7 +17,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
@@ -21,32 +28,33 @@ export function AuthProvider({ children }) {
       setLoading(true);
       try {
         const { data } = await API.get("/auth/me");
+
         let realBusinessId = data.businessId || null;
         if (data.role === "business" && !realBusinessId) {
           try {
             const resp = await API.get("/business/my");
             const bizObj = resp.data.business || resp.data;
             realBusinessId = bizObj._id || bizObj.businessId || null;
-            if (realBusinessId) data.businessId = realBusinessId;
           } catch {
             realBusinessId = null;
           }
         }
+
         if (data.role === "business" && !realBusinessId) {
+          setError(
+            "⚠️ לעסק שלך אין מזהה עסק (businessId) תקין. פנה לתמיכה או צור עסק חדש."
+          );
           setUser(null);
-          setError("⚠️ לעסק שלך אין מזהה עסק (businessId) תקין. פנה לתמיכה או צור עסק חדש.");
-          setLoading(false);
-          setInitialized(true);
-          return;
+        } else {
+          setUser({
+            userId: data.userId,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            subscriptionPlan: data.subscriptionPlan,
+            businessId: realBusinessId,
+          });
         }
-        setUser({
-          userId: data.userId,
-          name: data.name,
-          email: data.email,
-          role: data.role,
-          subscriptionPlan: data.subscriptionPlan,
-          businessId: realBusinessId,
-        });
       } catch {
         setUser(null);
         setError(null);
@@ -58,6 +66,12 @@ export function AuthProvider({ children }) {
 
     initialize();
   }, []);
+
+  useEffect(() => {
+    if (user?.businessId) {
+      startSSEConnection(user.businessId);
+    }
+  }, [user]);
 
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
@@ -77,11 +91,10 @@ export function AuthProvider({ children }) {
         });
       }
 
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-      } else {
+      if (!response.data.token) {
         throw new Error("❌ לא התקבל טוקן מהשרת");
       }
+      localStorage.setItem("token", response.data.token);
 
       const { data } = await API.get("/auth/me");
 
@@ -91,16 +104,16 @@ export function AuthProvider({ children }) {
           const resp = await API.get("/business/my");
           const bizObj = resp.data.business || resp.data;
           realBusinessId = bizObj._id || bizObj.businessId || null;
-          if (realBusinessId) data.businessId = realBusinessId;
         } catch {
           realBusinessId = null;
         }
       }
 
       if (data.role === "business" && !realBusinessId) {
+        setError(
+          "⚠️ לעסק שלך אין מזהה עסק (businessId) תקין. פנה לתמיכה או צור עסק חדש."
+        );
         setUser(null);
-        setError("⚠️ לעסק שלך אין מזהה עסק (businessId) תקין. פנה לתמיכה או צור עסק חדש.");
-        setLoading(false);
         return null;
       }
 
@@ -113,11 +126,13 @@ export function AuthProvider({ children }) {
         businessId: realBusinessId,
       });
 
-      if (!options.skipRedirect && data) {
+      startSSEConnection(realBusinessId);
+
+      if (!options.skipRedirect) {
         let path = "/";
         switch (data.role) {
           case "business":
-            path = "/business/" + realBusinessId + "/dashboard";
+            path = `/business/${realBusinessId}/dashboard`;
             break;
           case "customer":
             path = "/client/dashboard";
@@ -131,6 +146,8 @@ export function AuthProvider({ children }) {
           case "admin":
             path = "/admin/dashboard";
             break;
+          default:
+            path = "/";
         }
         navigate(path, { replace: true });
       }
@@ -165,31 +182,10 @@ export function AuthProvider({ children }) {
     }
   };
 
-  useEffect(() => {
-    if (successMessage) {
-      const t = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(t);
-    }
-  }, [successMessage]);
-
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        initialized,
-        error,
-        login,
-        staffLogin,
-        logout,
-      }}
+      value={{ user, loading, initialized, error, login, staffLogin, logout }}
     >
-      {successMessage && (
-        <div className="global-success-toast">{successMessage}</div>
-      )}
-      {error && (
-        <div className="global-error-toast">{error}</div>
-      )}
       {children}
     </AuthContext.Provider>
   );
