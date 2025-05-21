@@ -107,8 +107,14 @@ const DashboardPage = () => {
   if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
-  const todaysAppointments = stats?.todaysAppointments || [];
+  const todaysAppointments = Array.isArray(stats.todaysAppointments)
+    ? stats.todaysAppointments
+    : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
+
+  const appointments = Array.isArray(stats.appointments)
+    ? stats.appointments
+    : [];
 
   return (
     <div className="dashboard-container">
@@ -191,8 +197,8 @@ const DashboardPage = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {stats.appointments.length > 0 && (
-          <AppointmentsList appointments={stats.appointments} />
+        {appointments.length > 0 && (
+          <AppointmentsList appointments={appointments} />
         )}
       </div>
 
@@ -201,15 +207,15 @@ const DashboardPage = () => {
         <OpenLeadsTable leads={stats.leads} />
       </div>
 
-      {stats.appointments.length > 0 && (
+      {appointments.length > 0 && (
         <div>
           <CalendarView
-            appointments={stats.appointments}
+            appointments={appointments}
             onDateClick={setSelectedDate}
           />
           <DailyAgenda
             date={selectedDate}
-            appointments={stats.appointments}
+            appointments={appointments}
             businessName={stats.businessName}
           />
         </div>
