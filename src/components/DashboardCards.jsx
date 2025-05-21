@@ -1,42 +1,8 @@
 // src/components/DashboardCards.jsx
-import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
+import React from "react";
 import "../styles/dashboard.css";
 
-const DashboardCards = ({ businessId }) => {
-  const [stats, setStats] = useState({
-    views_count: 0,
-    requests_count: 0,
-    orders_count: 0,
-    reviews_count: 0,
-    messages_count: 0,
-    appointments_count: 0,   // ← שינינו לשם תואם
-  });
-
-  useEffect(() => {
-    if (!businessId) return;
-
-    const socket = io("https://api.esclick.co.il", {
-      query: { businessId },
-    });
-
-    // על כל עדכון מהשרת, נעדכן את הסטייט
-    socket.on("dashboardUpdate", (newStats) => {
-      setStats(newStats);
-    });
-
-    // בקשה ראשונית לנתונים (אופציונלי)
-    socket.emit("getDashboardStats", null, (response) => {
-      if (response.ok) {
-        setStats(response.stats);
-      }
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [businessId]);
-
+const DashboardCards = ({ stats }) => {
   const cards = [
     {
       label: "צפיות בפרופיל",
@@ -70,10 +36,17 @@ const DashboardCards = ({ businessId }) => {
     },
     {
       label: "פגישות עתידיות",
-      value: stats.appointments_count,  // ← תואם עכשיו
+      value: stats.appointments_count,
       icon: "📅",
       bgColor: "#fcefe3",
     },
+    // אם יש צורך בלידים:
+    // {
+    //   label: "לידים פתוחים",
+    //   value: stats.open_leads_count,
+    //   icon: "💼",
+    //   bgColor: "#e8f5e9",
+    // },
   ];
 
   return (

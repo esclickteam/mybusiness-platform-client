@@ -10,24 +10,33 @@ export default function DashboardLive({ businessId }) {
     orders_count: 0,
     reviews_count: 0,
     messages_count: 0,
-    appointments_count: 0,   // <— תואם לשדה מהשרת
-    open_leads_count: 0      // <— אם אתם משתמשים גם בלידים
+    appointments_count: 0,
+    open_leads_count: 0,
   });
 
   useEffect(() => {
     if (!businessId) return;
 
+    // צור חיבור עם token לאימות
     const socket = io(process.env.REACT_APP_SOCKET_URL || "https://api.esclick.co.il", {
-      query: { businessId }
+      path: "/socket.io",
+      auth: {
+        token: localStorage.getItem("token")  // וודא שהטוקן נשמר ב-localStorage
+      },
+      query: { businessId },
     });
+
+    // דיאגנוסטיקה
+    console.log("🛰️ Connecting socket for businessId:", businessId);
 
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
-      socket.emit("getDashboardStats", null, ({ ok, stats }) => {
-        if (ok) {
-          setStats(stats);
-        } else {
-          console.error("Failed to get stats:", stats);
+
+      // בקשה ראשונית לסטטיסטיקות
+      socket.emit("getDashboardStats", null, ({ ok, stats: initial }) => {
+        console.log("🔄 Initial getDashboardStats response:", { ok, initial });
+        if (ok && initial) {
+          setStats(initial);
         }
       });
     });
@@ -37,8 +46,12 @@ export default function DashboardLive({ businessId }) {
       setStats(newStats);
     });
 
-    socket.on("disconnect", () => {
-      console.log("⚠️ Socket disconnected");
+    socket.on("disconnect", reason => {
+      console.log("⚠️ Socket disconnected:", reason);
+    });
+
+    socket.on("connect_error", err => {
+      console.error("🚨 Socket connect_error:", err.message);
     });
 
     return () => {
