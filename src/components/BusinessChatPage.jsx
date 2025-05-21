@@ -6,11 +6,8 @@ import styles from "./BusinessChatPage.module.css";
 import { io } from "socket.io-client";
 
 export default function BusinessChatPage() {
-  const { user, initialized, token: authToken } = useAuth();
-  // תמיכה בפורמט בו businessId מאוחסן תחת user.business._id
+  const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
-  // משתמשים רק בטוקן מהקונטקסט, ללא גיבוי ל-localStorage או user.token
-  const token = authToken;
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -18,12 +15,11 @@ export default function BusinessChatPage() {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    console.log("BusinessChatPage init:", { initialized, businessId, token });
-    if (!initialized || !businessId || !token) {
+    console.log("BusinessChatPage init:", { initialized, businessId });
+    if (!initialized || !businessId) {
       console.warn("Skipping socket connect: missing data", {
         initialized,
         businessId,
-        token,
       });
       return;
     }
@@ -33,8 +29,12 @@ export default function BusinessChatPage() {
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      auth: { token, userId: businessId, role: "business" },
       transports: ["websocket"],
+      withCredentials: true,  // חשוב! שולח עוגיות אוטומטית
+      auth: {
+        role: "business",
+        userId: businessId,
+      },
     });
 
     socketRef.current.on("connect", () => {
@@ -72,7 +72,7 @@ export default function BusinessChatPage() {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [initialized, businessId, token]);
+  }, [initialized, businessId]);
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
