@@ -118,12 +118,17 @@ export default function ClientChatTab({ conversationId, businessId, userId }) {
   setIsBlocked(false);
 
   // פתח חיבור Socket.IO
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-  socketRef.current = io(socketUrl, {
-    path: "/socket.io",
-    withCredentials: true,   // שולח את עוגיית ה-JWT אוטומטית
+  const token = localStorage.getItem("token");
+socketRef.current = io(socketUrl, {
+  path: "/socket.io",
+  withCredentials: true,
+  auth: {
+    token,
+    businessId,
+    role: "customer"
 
-  });
+  }
+});
 
 
   // רק לאחר חיבור מוצלח נדליק את ה-spinner ונטען היסטוריה
