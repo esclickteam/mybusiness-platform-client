@@ -8,7 +8,6 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -21,12 +20,6 @@ export function AuthProvider({ children }) {
     initRan.current = true;
 
     const initialize = async () => {
-      if (!token) {
-        setLoading(false);
-        setInitialized(true);
-        setUser(null);
-        return;
-      }
       setLoading(true);
       try {
         const { data } = await API.get("/auth/me");
@@ -40,15 +33,13 @@ export function AuthProvider({ children }) {
         });
       } catch {
         setUser(null);
-        setToken(null);
-        localStorage.removeItem("token");
       } finally {
         setLoading(false);
         setInitialized(true);
       }
     };
     initialize();
-  }, [token]);
+  }, []);
 
   /**
    * generic login (handles both customer/business by email and staff by username)
@@ -61,21 +52,10 @@ export function AuthProvider({ children }) {
     const isEmail = clean.includes("@");
 
     try {
-      let loginResponse;
-
       if (isEmail) {
-        loginResponse = await API.post("/auth/login", { email: clean.toLowerCase(), password });
+        await API.post("/auth/login", { email: clean.toLowerCase(), password });
       } else {
-        loginResponse = await API.post("/auth/staff-login", { username: clean, password });
-      }
-
-      // Assuming the token is returned here:
-      const newToken = loginResponse.data.token;
-      if (newToken) {
-        localStorage.setItem("token", newToken);
-        setToken(newToken);
-      } else {
-        console.warn("No token received from login response");
+        await API.post("/auth/staff-login", { username: clean, password });
       }
 
       const { data } = await API.get("/auth/me");
@@ -135,8 +115,6 @@ export function AuthProvider({ children }) {
       console.warn("Logout failed:", e);
     } finally {
       setUser(null);
-      setToken(null);
-      localStorage.removeItem("token");
       setLoading(false);
       navigate("/", { replace: true });
     }
@@ -154,7 +132,6 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
-        token,
         loading,
         initialized,
         error,
