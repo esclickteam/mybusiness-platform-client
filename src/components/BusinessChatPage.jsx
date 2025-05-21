@@ -33,7 +33,7 @@ export default function BusinessChatPage() {
       withCredentials: true,  // חשוב! שולח עוגיות אוטומטית
       auth: {
         role: "business-dashboard", // <-- פה העדכון
-        userId: businessId,
+        businessId: businessId,
       },
     });
 
