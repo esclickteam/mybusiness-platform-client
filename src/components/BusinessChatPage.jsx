@@ -6,10 +6,11 @@ import styles from "./BusinessChatPage.module.css";
 import { io } from "socket.io-client";
 
 export default function BusinessChatPage() {
-  const { user, initialized } = useAuth();
+  const { user, initialized, token: authToken } = useAuth();
   // fallback אם businessId ממוקם תחת user.business._id
   const businessId = user?.businessId || user?.business?._id;
-  const token = localStorage.getItem("token");
+  // השתמש בטוקן מהקונטקסט אם קיים, אחרת תפקח מ-localStorage
+  const token = authToken || localStorage.getItem("token");
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -18,7 +19,7 @@ export default function BusinessChatPage() {
 
   useEffect(() => {
     console.log("BusinessChatPage init:", { initialized, businessId, token });
-    if (!initialized || !businessId || !token) return;
+    if (!initialized || !businessId) return;
 
     setLoading(true);
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
@@ -62,7 +63,7 @@ export default function BusinessChatPage() {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [initialized, businessId, token, selected]);
+  }, [initialized, businessId]);  // היינוורק תלות רק ב-init ו-businessId
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
