@@ -3,12 +3,10 @@ import React, { createContext, useState, useEffect } from "react";
 
 export const SSEContext = createContext({ updates: [] });
 
-export function SSEProvider({ children }) {
+export function SSEProvider({ children, businessId }) {
   const [updates, setUpdates] = useState([]);
 
   useEffect(() => {
-    // הבאת ה-businessId ממקום כלשהו - לדוגמה localStorage
-    const businessId = localStorage.getItem("businessId");
     if (!businessId) {
       console.error("No businessId found for SSE connection");
       return;
@@ -60,7 +58,7 @@ export function SSEProvider({ children }) {
         console.log("🔴 [SSE] connection closed");
       }
     };
-  }, []);
+  }, [businessId]);
 
   return (
     <SSEContext.Provider value={{ updates }}>
