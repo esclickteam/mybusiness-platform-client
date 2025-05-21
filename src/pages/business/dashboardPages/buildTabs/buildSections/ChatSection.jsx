@@ -66,8 +66,8 @@ socketRef.current = io(socketUrl, {
     if (!socketRef.current) return;
     setIsLoading(true);
     setError("");
-    socketRef.current.emit("getConversations", {}, (res) => {
-      if (res.ok) {
+    socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
+  if (res.ok) {
         const convs = Array.isArray(res.conversations) ? res.conversations : [];
         setConversations(convs);
       } else {

@@ -39,9 +39,9 @@ export default function BusinessChatPage() {
 
     socketRef.current.on("connect", () => {
       console.log("Socket connected:", socketRef.current.id);
-      socketRef.current.emit("getConversations", {}, (res) => {
-        const data = Array.isArray(res.conversations) ? res.conversations : [];
-        setLoading(false);
+      socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
+  const data = Array.isArray(res.conversations) ? res.conversations : [];
+  setLoading(false);
 
         if (res.ok) {
           setConvos(data);

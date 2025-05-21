@@ -31,8 +31,8 @@ socketRef.current = io(socketUrl, {
 
     if (isBusiness) {
       setLoadingConvs(true);
-      socketRef.current.emit("getConversations", {}, (res) => {
-        if (res.ok) {
+      socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
+  if (res.ok) {
           const convs = Array.isArray(res.conversations) ? res.conversations : [];
           setConversations(convs);
           if (!conversationId && convs.length > 0) {

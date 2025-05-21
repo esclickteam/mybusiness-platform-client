@@ -23,10 +23,10 @@ socketRef.current = io(socketUrl, {
 
 
     // בקש שיחות דרך socket (צריך להוסיף אירוע כזה בשרת)
-    socketRef.current.emit("getConversations", {}, (res) => {
-      if (res.ok) {
-        const data = Array.isArray(res.conversations) ? res.conversations : [];
-        setConvos(data);
+    socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
+  if (res.ok) {
+    const data = Array.isArray(res.conversations) ? res.conversations : [];
+    setConvos(data);
 
         if (data.length > 0 && !selected) {
           const first = data[0];
