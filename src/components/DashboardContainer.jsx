@@ -1,8 +1,9 @@
 // src/components/DashboardLive.jsx
 import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import DashboardCards from "./DashboardCards";
 
-export default function DashboardLive({ businessId }) {
+export default function DashboardLive({ businessId, token }) {
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -14,38 +15,39 @@ export default function DashboardLive({ businessId }) {
   });
 
   useEffect(() => {
-    if (!businessId) {
-      console.warn("⚠️ No businessId provided to DashboardLive");
+    if (!businessId || !token) {
+      console.warn("⚠️ Missing businessId or token for DashboardLive");
       return;
     }
 
-    console.log("🔥 VITE_SSE_URL =", import.meta.env.VITE_SSE_URL);
-
-    const eventSource = new EventSource(
-      `${import.meta.env.VITE_SSE_URL}/stream/${businessId}`,
-      { withCredentials: true }
-    );
-
-    eventSource.addEventListener("statsUpdate", (e) => {
-      try {
-        const payload = JSON.parse(e.data);
-        // payload.extra מכיל את הסטטיסטיקות העדכניות
-        setStats(payload.extra);
-      } catch (err) {
-        console.error("Error parsing statsUpdate:", err);
-      }
+    const socket = io(import.meta.env.VITE_SOCKET_URL, {
+      auth: { token, role: "business-dashboard", businessId },
+      path: "/socket.io",
+      transports: ["websocket"],
     });
 
-    eventSource.onerror = (err) => {
-      console.error("🚨 SSE error:", err);
-      eventSource.close();
-    };
+    socket.on("connect", () => {
+      console.log("🟢 Socket.IO connected:", socket.id);
+    });
+
+    socket.on("dashboardUpdate", (data) => {
+      console.log("📨 dashboardUpdate received:", data);
+      setStats(data);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("🔴 Socket.IO disconnected");
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("⚠️ Socket.IO connection error:", err.message);
+    });
 
     return () => {
-      console.log("🔌 Closing SSE connection");
-      eventSource.close();
+      console.log("🔌 Disconnecting Socket.IO");
+      socket.disconnect();
     };
-  }, [businessId]);
+  }, [businessId, token]);
 
   return <DashboardCards stats={stats} />;
 }

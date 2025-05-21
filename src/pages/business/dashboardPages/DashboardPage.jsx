@@ -1,5 +1,6 @@
 // src/pages/business/dashboardPages/DashboardPage.jsx
 import React, { useEffect, useState, useRef } from "react";
+import { io } from "socket.io-client";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import DashboardCards from "../../../components/DashboardCards";
@@ -55,13 +56,8 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  const cardsRef        = useRef(null);
-  const insightsRef     = useRef(null);
-  const comparisonRef   = useRef(null);
-  const chartsRef       = useRef(null);
-  const leadsRef        = useRef(null);
-  const appointmentsRef = useRef(null);
-  const calendarRef     = useRef(null);
+  // useRef לשמירת אובייקט הסוקט
+  const socketRef = useRef(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -71,7 +67,7 @@ const DashboardPage = () => {
           `/business/${user.businessId}/stats`,
           { withCredentials: true }
         );
-        setStats(prev => ({ ...prev, ...res.data }));
+        setStats(res.data);
       } catch (err) {
         console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
@@ -85,28 +81,41 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!user?.businessId) return;
 
-    console.log("🔥 VITE_SSE_URL =", import.meta.env.VITE_SSE_URL);
-
-    const es = new EventSource(
-      `${import.meta.env.VITE_SSE_URL}/stream/${user.businessId}`,
-      { withCredentials: true }
-    );
-
-    es.addEventListener("statsUpdate", (e) => {
-      try {
-        const payload = JSON.parse(e.data);
-        setStats(prev => ({ ...prev, ...payload.extra }));
-      } catch (err) {
-        console.error("🚨 Error parsing SSE:", err);
-      }
+    // התחברות ל-Socket.IO עם פרטי אימות
+    const socket = io(import.meta.env.VITE_SOCKET_URL, {
+      path: '/socket.io',
+      auth: {
+        token: localStorage.getItem("token"),
+        role: "business-dashboard",
+        businessId: user.businessId,
+      },
+      transports: ["websocket"],
     });
 
-    es.onerror = () => {
-      console.error("🚨 SSE connection error, closing");
-      es.close();
-    };
+    socketRef.current = socket;
 
-    return () => es.close();
+    socket.on("connect", () => {
+      console.log("🔌 Socket connected:", socket.id);
+    });
+
+    socket.on("dashboardUpdate", (updatedStats) => {
+      console.log("📊 Dashboard stats updated", updatedStats);
+      setStats(prev => ({ ...prev, ...updatedStats }));
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.warn("🔴 Socket disconnected:", reason);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("🔴 Socket connection error:", err);
+    });
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+      console.log("🔌 Socket disconnected on cleanup");
+    };
   }, [user]);
 
   const handleQuickAction = (action) => {
@@ -142,68 +151,89 @@ const DashboardPage = () => {
       )}
 
       <DashboardNav
-        refs={{ cardsRef, insightsRef, comparisonRef, chartsRef, leadsRef, appointmentsRef, calendarRef }}
+        refs={{ cardsRef: null, insightsRef: null, comparisonRef: null, chartsRef: null, leadsRef: null, appointmentsRef: null, calendarRef: null }}
       />
 
-      <div ref={cardsRef}>
+      <div>
         <DashboardCards
           stats={{
-            views_count:        stats.views_count || 0,
-            requests_count:     stats.requests_count || 0,
-            orders_count:       stats.orders_count || 0,
-            reviews_count:      stats.reviews_count || 0,
-            messages_count:     stats.messages_count || 0,
+            views_count: stats.views_count || 0,
+            requests_count: stats.requests_count || 0,
+            orders_count: stats.orders_count || 0,
+            reviews_count: stats.reviews_count || 0,
+            messages_count: stats.messages_count || 0,
             appointments_count: stats.appointments_count || 0,
           }}
         />
       </div>
 
-      <div ref={insightsRef}>
+      <div>
         <Insights stats={stats} />
       </div>
 
-      <div ref={comparisonRef}>
+      <div>
         <BusinessComparison stats={stats} />
       </div>
 
       <NextActions stats={stats} />
 
-      <div ref={chartsRef} className="graph-row">
+      <div>
         <BarChart
           data={{
             labels: ["פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"],
             datasets: [
-              { label: "פעילות העסק", data: [stats.appointments_count || 0, stats.requests_count || 0, stats.messages_count || 0], borderRadius: 8 }
+              {
+                label: "פעילות העסק",
+                data: [
+                  stats.appointments_count || 0,
+                  stats.requests_count || 0,
+                  stats.messages_count || 0,
+                ],
+                borderRadius: 8,
+              },
             ],
           }}
           options={{ responsive: true }}
         />
         {stats.income_distribution && (
-          <div className="graph-box">
+          <div>
             <PieChart data={stats.income_distribution} />
           </div>
         )}
       </div>
 
-      <div className="graph-row">
+      <div>
         <LineChart stats={stats} />
-        {stats.monthly_comparison && <MonthlyComparisonChart data={stats.monthly_comparison} />}
+        {stats.monthly_comparison && (
+          <MonthlyComparisonChart data={stats.monthly_comparison} />
+        )}
       </div>
 
-      <div className="graph-row equal-height">
-        {stats.recent_activity && <RecentActivityTable activities={stats.recent_activity} />}
-        {stats.appointments?.length > 0 && <AppointmentsList appointments={stats.appointments} />}
+      <div>
+        {stats.recent_activity && (
+          <RecentActivityTable activities={stats.recent_activity} />
+        )}
+        {stats.appointments?.length > 0 && (
+          <AppointmentsList appointments={stats.appointments} />
+        )}
       </div>
 
-      <div ref={leadsRef} className="graph-row">
+      <div>
         <WeeklySummary stats={stats} />
         <OpenLeadsTable leads={stats.leads || []} />
       </div>
 
       {stats.appointments?.length > 0 && (
-        <div ref={calendarRef} className="calendar-row">
-          <CalendarView appointments={stats.appointments} onDateClick={setSelectedDate} />
-          <DailyAgenda date={selectedDate} appointments={stats.appointments} businessName={stats.businessName} />
+        <div>
+          <CalendarView
+            appointments={stats.appointments}
+            onDateClick={setSelectedDate}
+          />
+          <DailyAgenda
+            date={selectedDate}
+            appointments={stats.appointments}
+            businessName={stats.businessName}
+          />
         </div>
       )}
     </div>
