@@ -391,26 +391,28 @@ export default function BusinessChatTab({
               className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
             >
               {m.fileUrl ? (
-                m.fileType?.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer
-                    src={m.fileUrl}
-                    userAvatar={m.userAvatar}
-                    duration={m.fileDuration}
-                  />
-                ) : /\.(jpe?g|png|gif)$/i.test(m.fileUrl) ? (
-                  <img
-                    src={m.fileUrl}
-                    alt={m.fileName}
-                    style={{ maxWidth: 200, borderRadius: 8 }}
-                  />
-                ) : (
-                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
-                    {m.fileName}
-                  </a>
-                )
-              ) : (
-                <div className="text">{m.text}</div>
-              )}
+  m.fileType && m.fileType.startsWith("audio") ? (
+    <WhatsAppAudioPlayer
+      src={m.fileUrl}
+      userAvatar={m.userAvatar}
+      duration={m.fileDuration}
+    />
+  ) : (m.fileType && m.fileType.startsWith("image")) ||
+    /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
+    <img
+      src={m.fileUrl}
+      alt={m.fileName || "image"}
+      style={{ maxWidth: 200, borderRadius: 8 }}
+    />
+  ) : (
+    <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
+      {m.fileName || "קובץ להורדה"}
+    </a>
+  )
+) : (
+  <div className="text">{m.text}</div>
+)}
+
               <div className="meta">
                 <span className="time">
                   {new Date(m.timestamp).toLocaleTimeString("he-IL", {
