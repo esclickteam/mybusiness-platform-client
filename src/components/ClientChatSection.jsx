@@ -17,39 +17,30 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // 1️⃣ אתחול ה-socket רק פעם אחת
+  // 1️⃣ אתחל socket רק פעם אחת
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
-    if (socketRef.current) return; // כבר מחובר
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      transports: ["polling", "websocket"],
+      transports: ["polling","websocket"],
       auth: { token, role: "chat" },
       withCredentials: true,
     });
 
-    // לוגינג של חיבור/ניתוק
-    socketRef.current.on("connect", () =>
-      console.log("[ClientSection] socket connected", socketRef.current.id)
-    );
-    socketRef.current.on("disconnect", (reason) =>
-      console.log("[ClientSection] socket disconnected", reason)
-    );
-
     return () => {
       socketRef.current.disconnect();
     };
-  }, [initialized, userId, businessId]);
+  }, [initialized, userId, businessId]);  // אם אתה בטוח ש-businessId לא משתנה, אפשר להחליף ל-[]
 
-  // 2️⃣ יצירת או פתיחת השיחה (startConversation) – פעם אחת
+  // 2️⃣ פתח או קבל שיחה פעם אחת (לא בפעם כל רינדור)
   useEffect(() => {
     if (!socketRef.current || !businessId) return;
-    setLoading(true);
 
+    setLoading(true);
     socketRef.current.emit(
       "startConversation",
       { otherUserId: businessId },
@@ -61,7 +52,7 @@ export default function ClientChatSection() {
     );
   }, [businessId]);
 
-  // 3️⃣ ברגע שיש conversationId – טען שם העסק
+  // 3️⃣ אחרי שיש conversationId – טען את השם של העסק
   useEffect(() => {
     if (!socketRef.current || !conversationId) return;
 
@@ -84,7 +75,7 @@ export default function ClientChatSection() {
   }, [conversationId, userId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
+  if (error)   return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
@@ -95,7 +86,6 @@ export default function ClientChatSection() {
             {businessName || businessId}
           </div>
         </aside>
-
         <section className={styles.chatArea}>
           {conversationId ? (
             <ClientChatTab
@@ -105,9 +95,7 @@ export default function ClientChatSection() {
               userId={userId}
             />
           ) : (
-            <div className={styles.emptyMessage}>
-              לא הצלחנו לפתוח שיחה…
-            </div>
+            <div className={styles.emptyMessage}>לא הצלחנו לפתוח שיחה…</div>
           )}
         </section>
       </div>
