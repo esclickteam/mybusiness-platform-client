@@ -15,6 +15,7 @@ export default function BusinessChatPage() {
   const [loading, setLoading] = useState(false);
   const socketRef = useRef(null);
 
+  // יצירת חיבור socket ופעם אחת מאזין ל-newMessage
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -66,9 +67,9 @@ export default function BusinessChatPage() {
       console.log("Socket disconnected:", reason);
     });
 
-    // מאזין להודעות חדשות
+    // מאזין ל-newMessage פעם אחת בלבד
     const handleNewMessage = (msg) => {
-      console.log('newMessage received:', msg);    
+      console.log("newMessage received:", msg);
       setConvos((prevConvos) => {
         const convoIndex = prevConvos.findIndex(
           (c) =>
@@ -86,9 +87,13 @@ export default function BusinessChatPage() {
       });
 
       // אם זו ההודעה של השיחה הנבחרת - לעדכן את ההודעות ב-state
-      if (msg.conversationId === selected?.conversationId) {
-        setMessages((prev) => [...prev, msg]);
-      }
+      setMessages((prev) => {
+        if (msg.conversationId === selected?.conversationId) {
+          if (prev.some((m) => m._id === msg._id)) return prev;
+          return [...prev, msg];
+        }
+        return prev;
+      });
     };
 
     socketRef.current.on("newMessage", handleNewMessage);
@@ -99,9 +104,9 @@ export default function BusinessChatPage() {
       socketRef.current = null;
       console.log("Socket disconnected and cleaned up");
     };
-  }, [initialized, businessId, selected?.conversationId]);
+  }, [initialized, businessId, selected]); // לא לשים selected.conversationId
 
-  // הצטרפות לחדר השיחה הנבחרת
+  // הצטרפות לחדר השיחה הנבחרת בכל פעם שהוא משתנה
   useEffect(() => {
     if (socketRef.current && selected?.conversationId) {
       socketRef.current.emit("joinConversation", selected.conversationId, (ack) => {
@@ -122,23 +127,21 @@ export default function BusinessChatPage() {
     }
 
     async function fetchMessages() {
-  try {
-    setLoading(true);
-    const res = await fetch(`/api/conversations/history?conversationId=${selected.conversationId}`, {
-  credentials: 'include',
-});
-
-    if (!res.ok) throw new Error("Failed to fetch messages");
-    const data = await res.json();
-    setMessages(data);
-  } catch (err) {
-    console.error(err);
-    setMessages([]);
-  } finally {
-    setLoading(false);
-  }
-}
-
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/conversations/history?conversationId=${selected.conversationId}`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Failed to fetch messages");
+        const data = await res.json();
+        setMessages(data);
+      } catch (err) {
+        console.error(err);
+        setMessages([]);
+      } finally {
+        setLoading(false);
+      }
+    }
 
     fetchMessages();
   }, [selected?.conversationId]);
