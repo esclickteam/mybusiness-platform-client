@@ -25,8 +25,8 @@ export default function BusinessChatPage() {
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       withCredentials: true,
-      auth: { role: "business", businessId },
-
+      auth: { role: "chat", businessId }, // changed to 'chat' so getConversations is allowed
+      // transports not specified to allow polling fallback
     });
 
     socketRef.current.on("connect", () => {
@@ -62,7 +62,6 @@ export default function BusinessChatPage() {
 
     const handleNewMessage = (msg) => {
       console.log("newMessage received:", msg);
-      // Update conversations list order
       setConvos((prev) => {
         const idx = prev.findIndex(
           (c) => String(c._id) === String(msg.conversationId)
@@ -73,9 +72,9 @@ export default function BusinessChatPage() {
         copy.splice(idx, 1);
         return [updated, ...copy];
       });
-      // Append to messages if viewing
       setMessages((prev) =>
-        msg.conversationId === selected?.conversationId && !prev.some((m) => m._id === msg._id)
+        msg.conversationId === selected?.conversationId &&
+        !prev.some((m) => m._id === msg._id)
           ? [...prev, msg]
           : prev
       );
