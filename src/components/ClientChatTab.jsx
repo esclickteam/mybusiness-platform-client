@@ -103,8 +103,9 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     });
 
     const handleNew = (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    };
+  console.log("[Client] newMessage received:", msg);
+  setMessages((prev) => [...prev, msg]);
+};
     socket.on("newMessage", handleNew);
 
     socket.on("connect_error", (err) => {
@@ -227,7 +228,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
-          <div key={m._id || i} className={`message${m.from === userId ? " mine" : " theirs"}`}>
+          <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
+
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
                 <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
