@@ -80,12 +80,16 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!businessId) return;
 
-    const evtSource = new EventSource(`${process.env.REACT_APP_API_URL}/api/sse/dashboard-stats/${businessId}`);
+    const evtSource = new EventSource(`${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}`);
 
     evtSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("📨 SSE dashboardUpdate received:", data);
-      setStats(prev => ({ ...prev, ...data }));
+      try {
+        const data = JSON.parse(event.data);
+        console.log("📨 SSE dashboardUpdate received:", data);
+        setStats(prev => ({ ...prev, ...data }));
+      } catch (err) {
+        console.error("⚠️ Error parsing SSE data:", err);
+      }
     };
 
     evtSource.onerror = (err) => {
