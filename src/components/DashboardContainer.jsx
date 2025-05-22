@@ -18,9 +18,15 @@ export default function DashboardLive({ businessId }) {
       return;
     }
 
-    const evtSource = new EventSource(
-      `${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}`
-    );
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("⚠️ Missing auth token");
+      return;
+    }
+
+    const url = `${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
+
+    const evtSource = new EventSource(url);
 
     evtSource.onmessage = (event) => {
       try {
