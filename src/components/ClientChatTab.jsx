@@ -109,40 +109,37 @@ export default function ClientChatTab({
 
   // חיבור ל-socket, join room וקבלת היסטוריית הודעות
   useEffect(() => {
-  if (!(conversationId && businessId && userId && token && socketUrl)) return;
+  if (!conversationId || !businessId || !userId || !token) return;
 
-  // 1️⃣ יוזמה של socket.io עם poll→ws
   const socket = io(socketUrl, {
-    path: '/socket.io',
-    transports: ['polling', 'websocket'],
-    auth: {
-      token,
-      role: 'chat',           // דרוש כדי שהשרת יפעיל את ה־handlers של הצ'אט
-      conversationId,         // לא חובה אבל מאפשר auto-join
-    },
+    path: "/socket.io",
+    transports: ["polling","websocket"],
+    auth: { token, role: "chat" },
     withCredentials: true,
   });
   socketRef.current = socket;
 
-  // 2️⃣ מאזין לחיבור
-  socket.on('connect', () => {
-    console.log('[Client] connected', socket.id);
-    socket.emit('joinConversation', conversationId, ack => {
-      console.log(' joinConversation ack', ack);
+  socket.on("connect", () => {
+    console.log("[Client] connected", socket.id);
+    socket.emit("joinConversation", conversationId, ack => {
+      console.log("[Client] joinConversation ack", ack);
     });
-    socket.emit('getHistory', { conversationId }, history => {
+    socket.emit("getHistory", { conversationId }, history => {
+      console.log("[Client] history", history);
       setMessages(Array.isArray(history) ? history : []);
       setLoading(false);
     });
   });
 
-  // 3️⃣ הודעות נכנסות
-  socket.on('newMessage', msg => setMessages(prev => [...prev, msg]));
+  // מאזין להודעות חדשות – האירוע שהשרת שולח
+  socket.on("newMessage", msg => {
+    console.log("[Client] newMessage", msg);
+    setMessages(prev => [...prev, msg]);
+  });
 
-  // 4️⃣ ניתוק ושגיאות
-  socket.on('disconnect', reason => console.log('[Client] disconnected', reason));
-  socket.on('connect_error', err => {
-    console.error('[Client] connect_error', err);
+  socket.on("disconnect", reason => console.log("[Client] disconnected", reason));
+  socket.on("connect_error", err => {
+    console.error("[Client] connect_error", err);
     setError(err.message);
   });
 
@@ -150,9 +147,6 @@ export default function ClientChatTab({
     socket.disconnect();
   };
 }, [conversationId, businessId, userId, token, socketUrl]);
-
-
-
 
 
 
