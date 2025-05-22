@@ -107,33 +107,37 @@ export default function BusinessChatTab({
   setLoading(true);
 
   if (socket) {
-    // 1. נסיון ראשון: getHistory דרך socket
-    socket.emit("joinConversation", conversationId, (res) => {
-      console.log("⚡ getHistory response:", res);
-      const history = Array.isArray(res.messages) ? res.messages : [];
-      if (history.length > 0) {
-        setMessages(history);
-        setLoading(false);
-      } else {
-        // 2. גיבוי: fetch דרך ה-proxy (relative path)
-        fetch(`/api/conversations/${conversationId}`, {
-  credentials: "include",
-}).then(async (r) => {
-  if (!r.ok) throw new Error(`HTTP error ${r.status}`);
-  const data = await r.json();
-  return data;
-})
-.then((data) => {
-  console.log("🌐 fetch history:", data);
-  setMessages(data || []);
-})
-.catch((err) => {
-  console.error('Fetch history failed:', err);
-  setMessages([]);
-})
-.finally(() => setLoading(false));
-      }
-    });
+  // 1. נסיון ראשון: getHistory דרך socket
+  socket.emit("joinConversation", conversationId, (res) => {
+    console.log("⚡ getHistory response:", res);
+    const history = Array.isArray(res.messages) ? res.messages : [];
+
+    if (history.length > 0) {
+      setMessages(history);
+      setLoading(false);
+    } else {
+      // 2. גיבוי: fetch דרך ה-proxy (relative path) ל־history עם query param
+      fetch(
+        `/api/conversations/history?conversationId=${conversationId}`,
+        {
+          credentials: "include",
+        }
+      )
+        .then(async (r) => {
+          if (!r.ok) throw new Error(`HTTP error ${r.status}`);
+          return await r.json();
+        })
+        .then((data) => {
+          console.log("🌐 fetch history:", data);
+          setMessages(Array.isArray(data) ? data : []);
+        })
+        .catch((err) => {
+          console.error("Fetch history failed:", err);
+          setMessages([]);
+        })
+        .finally(() => setLoading(false));
+    }
+  });
 
     socket.emit("joinRoom", conversationId);
 
