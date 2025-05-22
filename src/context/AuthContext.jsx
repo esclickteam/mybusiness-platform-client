@@ -52,10 +52,19 @@ export function AuthProvider({ children }) {
     const isEmail = clean.includes("@");
 
     try {
+      let response;
       if (isEmail) {
-        await API.post("/auth/login", { email: clean.toLowerCase(), password });
+        response = await API.post("/auth/login", { email: clean.toLowerCase(), password });
       } else {
-        await API.post("/auth/staff-login", { username: clean, password });
+        response = await API.post("/auth/staff-login", { username: clean, password });
+      }
+
+      // שמירת הטוקן ב-localStorage
+      const token = response.data.token || response.data.accessToken; // ודא שזה השם הנכון בשרת שלך
+      if (token) {
+        localStorage.setItem("token", token);
+      } else {
+        console.warn("No token received from login response");
       }
 
       const { data } = await API.get("/auth/me");
@@ -111,6 +120,7 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
+      localStorage.removeItem("token"); // הסרת הטוקן בלוגאאוט
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
