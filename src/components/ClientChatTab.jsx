@@ -111,20 +111,20 @@ export default function ClientChatTab({
   useEffect(() => {
   if (!conversationId || !businessId || !userId || !token) return;
 
-  // init socket (polling → websocket)
+  // Init socket using polling first (then websocket if possible)
   socketRef.current = io(socketUrl, {
     path: "/socket.io",
-    auth: { token },             // מספיק לשלוח רק את הטוקן
+    auth: { token },
     withCredentials: true,
+    transports: ["polling"], // force polling
   });
 
   socketRef.current.on("connect", () => {
-    console.log("[Client] Connected:", socketRef.current.id);
+    console.log("[Client] Connected via polling:", socketRef.current.id);
 
     // הצטרפות לחדר
     socketRef.current.emit("joinConversation", conversationId, (ack) => {
-      if (ack?.ok) console.log("[Client] Joined", conversationId);
-      else console.warn("[Client] Join failed", ack);
+      console.log("[Client] join conv ack:", ack);
     });
 
     // קבלת היסטוריה
@@ -139,27 +139,25 @@ export default function ClientChatTab({
   });
 
   // מאזינים להודעות נכנסות
-  socketRef.current.on("newMessage", (msg) => {
-    setMessages((prev) => [...prev, msg]);
-  });
-  // במידה והשרת משתמש בשם אחר
-  socketRef.current.on("receiveMessage", (msg) => {
-    setMessages((prev) => [...prev, msg]);
-  });
+  socketRef.current.on("newMessage", (msg) =>
+    setMessages((prev) => [...prev, msg])
+  );
+  socketRef.current.on("receiveMessage", (msg) =>
+    setMessages((prev) => [...prev, msg])
+  );
 
-  socketRef.current.on("connect_error", (err) => {
-    console.error("[Client] Connection error:", err.message);
-    setError(`Connection error: ${err.message}`);
-  });
-
-  socketRef.current.on("disconnect", (reason) => {
-    console.log("[Client] Disconnected:", reason);
-  });
+  socketRef.current.on("connect_error", (err) =>
+    console.error("[Client] Connection error:", err)
+  );
+  socketRef.current.on("disconnect", (reason) =>
+    console.log("[Client] Disconnected:", reason)
+  );
 
   return () => {
     socketRef.current.disconnect();
   };
 }, [conversationId, businessId, userId, token, socketUrl]);
+
 
 
   // גלילה אוטומטית
