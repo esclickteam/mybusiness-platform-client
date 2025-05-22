@@ -22,16 +22,24 @@ export default function BusinessChatPage() {
 
     setLoading(true);
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    socketRef.current = io(socketUrl, {
+    const socket = io(socketUrl, {
       path: "/socket.io",
       withCredentials: true,
-      auth: { role: "chat", businessId }, // changed to 'chat' so getConversations is allowed
-      // transports not specified to allow polling fallback
+      auth: { role: "chat", businessId },
     });
+    socketRef.current = socket;
 
-    socketRef.current.on("connect", () => {
-      console.log("Socket connected:", socketRef.current.id);
-      socketRef.current.emit(
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+
+      // Auto-join if a conversation is already selected
+      if (selected?.conversationId) {
+        socket.emit("joinConversation", selected.conversationId, (ack) => {
+          if (!ack.ok) console.error("Auto-join failed:", ack.error);
+        });
+      }
+
+      socket.emit(
         "getConversations",
         { userId: businessId },
         ({ ok, conversations = [], error: errMsg }) => {
@@ -54,7 +62,7 @@ export default function BusinessChatPage() {
       );
     });
 
-    socketRef.current.on("connect_error", (err) => {
+    socket.on("connect_error", (err) => {
       console.error("Socket connection error:", err.message);
       setLoading(false);
       setError('שגיאת חיבור: ' + err.message);
@@ -63,9 +71,7 @@ export default function BusinessChatPage() {
     const handleNewMessage = (msg) => {
       console.log("newMessage received:", msg);
       setConvos((prev) => {
-        const idx = prev.findIndex(
-          (c) => String(c._id) === String(msg.conversationId)
-        );
+        const idx = prev.findIndex((c) => String(c._id) === msg.conversationId);
         if (idx === -1) return prev;
         const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
         const copy = [...prev];
@@ -73,22 +79,21 @@ export default function BusinessChatPage() {
         return [updated, ...copy];
       });
       setMessages((prev) =>
-        msg.conversationId === selected?.conversationId &&
-        !prev.some((m) => m._id === msg._id)
+        msg.conversationId === selected?.conversationId && !prev.some((m) => m._id === msg._id)
           ? [...prev, msg]
           : prev
       );
     };
 
-    socketRef.current.on("newMessage", handleNewMessage);
+    socket.on("newMessage", handleNewMessage);
 
     return () => {
-      socketRef.current.off("newMessage", handleNewMessage);
-      socketRef.current.disconnect();
+      socket.off("newMessage", handleNewMessage);
+      socket.disconnect();
       socketRef.current = null;
       console.log("Socket cleaned up");
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, selected]);
 
   // Join room when selected changes
   useEffect(() => {
@@ -98,11 +103,10 @@ export default function BusinessChatPage() {
         selected.conversationId,
         (ack) => {
           if (!ack.ok) console.error("Failed to join:", ack.error);
-          else console.log("Joined convo", selected.conversationId);
         }
       );
     }
-  }, [selected?.conversationId]);
+  }, [selected]);
 
   // Fetch history for selected
   useEffect(() => {
@@ -132,7 +136,7 @@ export default function BusinessChatPage() {
     };
 
     loadHistory();
-  }, [initialized, selected?.conversationId]);
+  }, [initialized, selected]);
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId: String(conversationId), partnerId });
