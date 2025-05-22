@@ -109,65 +109,48 @@ export default function ClientChatTab({
 
   // חיבור ל-socket, join room וקבלת היסטוריית הודעות
   useEffect(() => {
-  if (!conversationId || !businessId || !userId || !token) return;
+  if (!(conversationId && businessId && userId && token && socketUrl)) return;
 
+  // 1️⃣ יוזמה של socket.io עם poll→ws
   const socket = io(socketUrl, {
-    path: "/socket.io",
-    auth: { token, role: "chat", businessId, conversationId },
+    path: '/socket.io',
+    transports: ['polling', 'websocket'],
+    auth: {
+      token,
+      role: 'chat',           // דרוש כדי שהשרת יפעיל את ה־handlers של הצ'אט
+      conversationId,         // לא חובה אבל מאפשר auto-join
+    },
     withCredentials: true,
-    // transports: ["polling"], // אפשר לכפות polling לבדיקה
   });
   socketRef.current = socket;
 
-  // Debug: כל packet שמתקבל/נשלח
-  socket.io.engine.on("packet", (packet) => {
-    console.log("[Engine packet]", packet);
-  });
-  socket.io.engine.on("upgrade", () => {
-    console.log("[Engine] upgraded transport to websocket");
-  });
-
-  // Debug: כל event על הסוקט
-  socket.onAny((event, ...args) => {
-    console.log("[Socket event]", event, args);
-  });
-
-  socket.on("connect", () => {
-    console.log("[Client] connect:", socket.id);
-
-    socket.emit("joinConversation", conversationId, (ack) => {
-      console.log("[Client] joinConversation ack:", ack);
+  // 2️⃣ מאזין לחיבור
+  socket.on('connect', () => {
+    console.log('[Client] connected', socket.id);
+    socket.emit('joinConversation', conversationId, ack => {
+      console.log(' joinConversation ack', ack);
     });
-
-    socket.emit("getHistory", { conversationId }, (history) => {
-      console.log("[Client] getHistory callback:", history);
+    socket.emit('getHistory', { conversationId }, history => {
       setMessages(Array.isArray(history) ? history : []);
       setLoading(false);
     });
   });
 
-  socket.on("newMessage", (msg) => {
-    console.log("[Client] newMessage:", msg);
-    setMessages((prev) => [...prev, msg]);
-  });
-  socket.on("receiveMessage", (msg) => {
-    console.log("[Client] receiveMessage:", msg);
-    setMessages((prev) => [...prev, msg]);
-  });
+  // 3️⃣ הודעות נכנסות
+  socket.on('newMessage', msg => setMessages(prev => [...prev, msg]));
 
-  socket.on("connect_error", (err) => {
-    console.error("[Client] connect_error:", err);
-    setError(`Connection error: ${err.message}`);
-  });
-
-  socket.on("disconnect", (reason) => {
-    console.log("[Client] disconnect:", reason);
+  // 4️⃣ ניתוק ושגיאות
+  socket.on('disconnect', reason => console.log('[Client] disconnected', reason));
+  socket.on('connect_error', err => {
+    console.error('[Client] connect_error', err);
+    setError(err.message);
   });
 
   return () => {
     socket.disconnect();
   };
 }, [conversationId, businessId, userId, token, socketUrl]);
+
 
 
 
