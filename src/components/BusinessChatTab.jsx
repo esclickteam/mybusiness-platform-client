@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./BusinessChatTab.css";
 
-// קומפוננטת נגן אודיו
+// קומפוננטת נגן אודיו (לא שונה)
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -102,51 +102,52 @@ export default function BusinessChatTab({
 
   // טעינת היסטוריה והאזנה לאירועים
   useEffect(() => {
-  if (!conversationId) return;
+    if (!conversationId || !socket) return;
 
-  setLoading(true);
+    // אפס הודעות רק כאשר עוברים שיחה
+    setMessages([]);
+    setLoading(true);
 
-  if (socket) {
-  // 1. נסיון ראשון: getHistory דרך socket
-  socket.emit("joinConversation", conversationId, (res) => {
-    console.log("⚡ getHistory response:", res);
-    const history = Array.isArray(res.messages) ? res.messages : [];
-
-    if (history.length > 0) {
+    // נסיון ראשון: getHistory דרך socket
+    socket.emit("joinConversation", conversationId, (res) => {
+      console.log("⚡ getHistory response:", res);
+      const history = Array.isArray(res.messages) ? res.messages : [];
       setMessages(history);
       setLoading(false);
-    } else {
-      // 2. גיבוי: fetch דרך ה-proxy (relative path) ל־history עם query param
-      fetch(
-        `/api/conversations/history?conversationId=${conversationId}`,
-        {
+
+      // גיבוי ב-fetch אם אין היסטוריה (לא חובה)
+      if (!history.length) {
+        fetch(`/api/conversations/history?conversationId=${conversationId}`, {
           credentials: "include",
-        }
-      )
-        .then(async (r) => {
-          if (!r.ok) throw new Error(`HTTP error ${r.status}`);
-          return await r.json();
         })
-        .then((data) => {
-          console.log("🌐 fetch history:", data);
-          setMessages(Array.isArray(data) ? data : []);
-        })
-        .catch((err) => {
-          console.error("Fetch history failed:", err);
-          setMessages([]);
-        })
-        .finally(() => setLoading(false));
-    }
-  });
+          .then(async (r) => {
+            if (!r.ok) throw new Error(`HTTP error ${r.status}`);
+            return await r.json();
+          })
+          .then((data) => {
+            console.log("🌐 fetch history:", data);
+            setMessages(Array.isArray(data) ? data : []);
+          })
+          .catch((err) => {
+            console.error("Fetch history failed:", err);
+            setMessages([]);
+          })
+          .finally(() => setLoading(false));
+      }
+    });
 
     socket.emit("joinRoom", conversationId);
 
     const handleNew = (msg) => {
-  if (msg.conversationId === conversationId) {
-    console.log("Received new message:", msg);
-    setMessages((prev) => [...prev, msg]);
-  }
-};
+      console.log("Business received newMessage socket event:", msg);
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => {
+          // לא להוסיף כפול אם כבר קיים לפי _id
+          if (prev.some((m) => m._id === msg._id)) return prev;
+          return [...prev, msg];
+        });
+      }
+    };
     socket.on("newMessage", handleNew);
 
     const handleTyping = ({ from }) => {
@@ -158,20 +159,18 @@ export default function BusinessChatTab({
     };
     socket.on("typing", handleTyping);
 
+    // ניקוי מאזינים בלבד – לא מאפס הודעות!
     return () => {
       socket.off("newMessage", handleNew);
       socket.off("typing", handleTyping);
       clearTimeout(typingTimeout.current);
-      setMessages([]);
       if (timerRef.current) clearInterval(timerRef.current);
       if (mediaStreamRef.current) {
         mediaStreamRef.current.getTracks().forEach((t) => t.stop());
         mediaStreamRef.current = null;
       }
     };
-  }
-}, [socket, conversationId, customerId]);
-
+  }, [socket, conversationId, customerId]);
 
   // גלילה אוטומטית
   useEffect(() => {
@@ -188,7 +187,7 @@ export default function BusinessChatTab({
     }
   };
 
-  // שליחת הודעה
+  // שליחת הודעה (רק אחרי ack – מחכים ל-newMessage מהשרת!)
   const sendMessage = () => {
     const text = input.trim();
     if (!text || !socket) return;
@@ -197,11 +196,8 @@ export default function BusinessChatTab({
     socket.emit("sendMessage", payload, (ack) => {
       setSending(false);
       if (ack.ok) {
-        setMessages((prev) => [
-          ...prev,
-          { ...payload, timestamp: ack.timestamp, _id: ack._id },
-        ]);
         setInput("");
+        // לא מוסיפים ל-state כאן, מחכים ל-newMessage מהשרת (כדי למנוע כפילויות)
       } else {
         console.error("sendMessage error:", ack.error);
       }
