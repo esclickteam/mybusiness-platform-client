@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
-// קומפוננטת נגן אודיו (שמור כמו בקוד המקורי)
+// קומפוננטת נגן אודיו (כמו בקוד המקורי)
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -100,6 +101,7 @@ export default function BusinessChatTab({
   const timerRef = useRef(null);
   const mediaStreamRef = useRef(null);
 
+  // טעינת היסטוריה והאזנה לסוקט
   useEffect(() => {
     if (!conversationId || !socket) return;
 
@@ -158,100 +160,213 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, customerId, setMessages]);
 
+  // גלילה אוטומטית
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
+  // טיפוס בהקלדה
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
 
+  // שליחת הודעת טקסט אופטימיסטית עם uuid
   const sendMessage = () => {
     const text = input.trim();
     if (!text || !socket) return;
     setSending(true);
+
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      text,
+      timestamp: new Date().toISOString(),
+      sending: true,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setInput("");
+
     socket.emit(
       "sendMessage",
       { conversationId, from: businessId, to: customerId, text },
       (ack) => {
         setSending(false);
-        if (ack.ok) setInput("");
-        else console.error("sendMessage error:", ack.error);
+        if (ack.ok) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...ack.message, sending: false } : m
+            )
+          );
+        } else {
+          console.error("sendMessage error:", ack.error);
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...m, sending: false, failed: true } : m
+            )
+          );
+        }
       }
     );
   };
 
+  // פתיחת בחירת קובץ
   const handleAttach = () => fileInputRef.current.click();
+
+  // שליחת קובץ עם שליחה אופטימיסטית
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file || !socket) return;
+
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(file),
+      fileName: file.name,
+      fileType: file.type,
+      timestamp: new Date().toISOString(),
+      sending: true,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+
     const reader = new FileReader();
     reader.onload = () => {
       socket.emit(
         "sendFile",
-        { conversationId, from: businessId, to: customerId, fileType: file.type, buffer: reader.result, fileName: file.name },
-        (ack) => { if (!ack.ok) console.error("sendFile error:", ack.error); }
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          fileType: file.type,
+          buffer: reader.result,
+          fileName: file.name,
+        },
+        (ack) => {
+          if (ack.ok) {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m._id === tempId ? { ...m, sending: false } : m
+              )
+            );
+          } else {
+            console.error("sendFile error:", ack.error);
+            setMessages((prev) =>
+              prev.map((m) =>
+                m._id === tempId ? { ...m, sending: false, failed: true } : m
+              )
+            );
+          }
+        }
       );
     };
     reader.readAsArrayBuffer(file);
   };
 
+  // קבלת פורמט מועדף להקלטה
   const getSupportedMimeType = () => {
     const pref = "audio/webm";
     return window.MediaRecorder?.isTypeSupported(pref) ? pref : pref;
   };
+
+  // התחלת הקלטה
   const handleRecordStart = async () => {
-  console.log("🔴 handleRecordStart called");
-  if (!navigator.mediaDevices || recording) return;
+    if (!navigator.mediaDevices || recording) return;
 
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    console.log("🟢 got media stream");
-    mediaStreamRef.current = stream;
-    recordedChunks.current = [];
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      recordedChunks.current = [];
 
-    const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
-    recorder.onstart = () => console.log("🟢 recorder started");
-    recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
-    recorder.onstop = () => {
-      console.log("🟡 recorder stopped — building blob");
-      const blob = new Blob(recordedChunks.current, { type: recorder.mimeType });
-      setRecordedBlob(blob);
-    };
+      const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
+      recorder.onstart = () => {};
+      recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(recordedChunks.current, { type: recorder.mimeType });
+        setRecordedBlob(blob);
+      };
 
-    recorder.start();
-    mediaRecorderRef.current = recorder;
+      recorder.start();
+      mediaRecorderRef.current = recorder;
 
-    setRecording(true);
-    setTimer(0);
-    timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-  } catch (err) {
-    console.error("❌ startRecording failed:", err);
-  }
-};
+      setRecording(true);
+      setTimer(0);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } catch (err) {
+      console.error("startRecording failed:", err);
+    }
+  };
 
+  // עצירת הקלטה
+  const handleRecordStop = () => {
+    if (!mediaRecorderRef.current) return;
 
-const handleRecordStop = () => {
-  console.log("🔴 handleRecordStop called");
-  if (!mediaRecorderRef.current) return;
+    mediaRecorderRef.current.stop();
+    setRecording(false);
+    clearInterval(timerRef.current);
+  };
 
-  mediaRecorderRef.current.stop();  // this will trigger onstop
-  setRecording(false);
-  clearInterval(timerRef.current);
-};
-
+  // ביטול הקלטה
   const handleDiscard = () => setRecordedBlob(null);
+
+  // שליחת הקלטה עם שליחה אופטימיסטית
   const handleSendRecording = () => {
     if (!recordedBlob || !socket) return;
+
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(recordedBlob),
+      fileName: `audio.${recordedBlob.type.split("/")[1]}`,
+      fileType: recordedBlob.type,
+      fileDuration: timer,
+      timestamp: new Date().toISOString(),
+      sending: true,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setRecordedBlob(null);
+
     const reader = new FileReader();
     reader.onload = () => {
       socket.emit(
         "sendAudio",
-        { conversationId, from: businessId, to: customerId, buffer: reader.result, fileType: recordedBlob.type, duration: timer },
-        (ack) => { if (ack.ok) setRecordedBlob(null); else console.error("sendAudio error:", ack.error); }
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          buffer: reader.result,
+          fileType: recordedBlob.type,
+          duration: timer,
+        },
+        (ack) => {
+          if (ack.ok) {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m._id === tempId ? { ...m, sending: false } : m
+              )
+            );
+          } else {
+            console.error("sendAudio error:", ack.error);
+            setMessages((prev) =>
+              prev.map((m) =>
+                m._id === tempId ? { ...m, sending: false, failed: true } : m
+              )
+            );
+          }
+        }
       );
     };
     reader.readAsArrayBuffer(recordedBlob);
@@ -273,7 +388,7 @@ const handleRecordStop = () => {
           ) : (
             <div
               key={m._id || i}
-              className={`message${m.from === businessId ? " mine" : " theirs"}`}
+              className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
             >
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
@@ -309,6 +424,8 @@ const handleRecordStop = () => {
                     {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
                   </span>
                 )}
+                {m.sending && <span className="sending-indicator">⏳</span>}
+                {m.failed && <span className="failed-indicator">❌</span>}
               </div>
             </div>
           )
