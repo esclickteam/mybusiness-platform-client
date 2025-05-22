@@ -25,7 +25,6 @@ export default function DashboardLive({ businessId }) {
     }
 
     const url = `${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
-
     const evtSource = new EventSource(url);
 
     evtSource.onmessage = (event) => {
@@ -40,7 +39,7 @@ export default function DashboardLive({ businessId }) {
 
     evtSource.onerror = (err) => {
       console.error("⚠️ SSE error:", err);
-      evtSource.close();
+      // לא סוגר כאן מיד, אפשר לנסות reconnect אוטומטי
     };
 
     return () => {
