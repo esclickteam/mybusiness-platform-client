@@ -81,8 +81,8 @@ export default function BusinessChatTab({
   customerId,
   businessName,
   socket,
-  messages,    // מהורה
-  setMessages, // מהורה
+  messages,
+  setMessages,
 }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -92,10 +92,10 @@ export default function BusinessChatTab({
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
 
-  const messageListRef = useRef();
-  const typingTimeout = useRef();
-  const fileInputRef = useRef();
-  const mediaRecorder = useRef(null);
+  const messageListRef = useRef(null);
+  const typingTimeout = useRef(null);
+  const fileInputRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
   const recordedChunks = useRef([]);
   const timerRef = useRef(null);
   const mediaStreamRef = useRef(null);
@@ -115,13 +115,11 @@ export default function BusinessChatTab({
         fetch(`/api/conversations/history?conversationId=${conversationId}`, {
           credentials: "include",
         })
-          .then(async (r) => {
-            if (!r.ok) throw new Error(`HTTP error ${r.status}`);
-            return await r.json();
+          .then((r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
           })
-          .then((data) => {
-            setMessages(Array.isArray(data) ? data : []);
-          })
+          .then((data) => setMessages(Array.isArray(data) ? data : []))
           .catch((err) => {
             console.error("Fetch history failed:", err);
             setMessages([]);
@@ -130,17 +128,13 @@ export default function BusinessChatTab({
       }
     });
 
-    socket.emit("joinRoom", conversationId);
-
     const handleNew = (msg) => {
       if (msg.conversationId === conversationId) {
-        setMessages((prev) => {
-          if (prev.some((m) => m._id === msg._id)) return prev;
-          return [...prev, msg];
-        });
+        setMessages((prev) =>
+          prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
+        );
       }
     };
-
     socket.on("newMessage", handleNew);
 
     const handleTyping = ({ from }) => {
@@ -150,7 +144,6 @@ export default function BusinessChatTab({
         typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
       }
     };
-
     socket.on("typing", handleTyping);
 
     return () => {
@@ -173,25 +166,22 @@ export default function BusinessChatTab({
 
   const handleInput = (e) => {
     setInput(e.target.value);
-    if (socket) {
-      socket.emit("typing", { conversationId, from: businessId });
-    }
+    socket?.emit("typing", { conversationId, from: businessId });
   };
 
   const sendMessage = () => {
     const text = input.trim();
     if (!text || !socket) return;
     setSending(true);
-    const payload = { conversationId, from: businessId, to: customerId, text };
-    socket.emit("sendMessage", payload, (ack) => {
-      setSending(false);
-      if (ack.ok) {
-        setInput("");
-        // מחכים ל-newMessage מהשרת כדי לעדכן את ההודעות
-      } else {
-        console.error("sendMessage error:", ack.error);
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: businessId, to: customerId, text },
+      (ack) => {
+        setSending(false);
+        if (ack.ok) setInput("");
+        else console.error("sendMessage error:", ack.error);
       }
-    });
+    );
   };
 
   const handleAttach = () => fileInputRef.current.click();
@@ -202,16 +192,8 @@ export default function BusinessChatTab({
     reader.onload = () => {
       socket.emit(
         "sendFile",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          fileType: file.type,
-          buffer: reader.result,
-        },
-        (ack) => {
-          if (!ack.ok) console.error("sendFile error:", ack.error);
-        }
+        { conversationId, from: businessId, to: customerId, fileType: file.type, buffer: reader.result, fileName: file.name },
+        (ack) => { if (!ack.ok) console.error("sendFile error:", ack.error); }
       );
     };
     reader.readAsArrayBuffer(file);
@@ -219,30 +201,26 @@ export default function BusinessChatTab({
 
   const getSupportedMimeType = () => {
     const pref = "audio/webm";
-    return window.MediaRecorder?.isTypeSupported(pref) ? pref : "audio/webm";
+    return window.MediaRecorder?.isTypeSupported(pref) ? pref : pref;
   };
   const handleRecordStart = async () => {
     if (!navigator.mediaDevices || recording) return;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaStreamRef.current = stream;
     recordedChunks.current = [];
-    mediaRecorder.current = new MediaRecorder(stream, {
-      mimeType: getSupportedMimeType(),
-    });
-    mediaRecorder.current.ondataavailable = (e) =>
-      recordedChunks.current.push(e.data);
-    mediaRecorder.current.start();
+    const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
+    recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
+    recorder.start();
+    mediaRecorderRef.current = recorder;
     setRecording(true);
     setTimer(0);
     timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
   };
   const handleRecordStop = () => {
-    if (!mediaRecorder.current) return;
-    mediaRecorder.current.stop();
-    mediaRecorder.current.onstop = () => {
-      const blob = new Blob(recordedChunks.current, {
-        type: mediaRecorder.current.mimeType,
-      });
+    if (!mediaRecorderRef.current) return;
+    mediaRecorderRef.current.stop();
+    mediaRecorderRef.current.onstop = () => {
+      const blob = new Blob(recordedChunks.current, { type: mediaRecorderRef.current.mimeType });
       setRecordedBlob(blob);
     };
     setRecording(false);
@@ -255,18 +233,8 @@ export default function BusinessChatTab({
     reader.onload = () => {
       socket.emit(
         "sendAudio",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          buffer: reader.result,
-          fileType: recordedBlob.type,
-          duration: timer,
-        },
-        (ack) => {
-          if (ack.ok) setRecordedBlob(null);
-          else console.error("sendAudio error:", ack.error);
-        }
+        { conversationId, from: businessId, to: customerId, buffer: reader.result, fileType: recordedBlob.type, duration: timer },
+        (ack) => { if (ack.ok) setRecordedBlob(null); else console.error("sendAudio error:", ack.error); }
       );
     };
     reader.readAsArrayBuffer(recordedBlob);
@@ -276,54 +244,27 @@ export default function BusinessChatTab({
     <div className="chat-container business">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
 
         {messages.map((m, i) =>
           m.system ? (
-            <div key={i} className="system-message">
-              {m.text}
-            </div>
+            <div key={i} className="system-message">{m.text}</div>
           ) : (
-            <div
-              key={m._id || i}
-              className={`message${m.from === businessId ? " mine" : " theirs"}`}
-            >
+            <div key={m._id || i} className={`message${m.from === businessId ? " mine" : " theirs"}`}>
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer
-                    src={m.fileUrl}
-                    userAvatar={m.userAvatar}
-                    duration={m.fileDuration}
-                  />
+                  <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
                 ) : /\.(jpe?g|png|gif)$/i.test(m.fileUrl) ? (
-                  <img
-                    src={m.fileUrl}
-                    alt={m.fileName}
-                    style={{ maxWidth: 200, borderRadius: 8 }}
-                  />
+                  <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
                 ) : (
-                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
-                    {m.fileName}
-                  </a>
+                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
                 )
               ) : (
                 <div className="text">{m.text}</div>
               )}
               <div className="meta">
-                <span className="time">
-                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                {m.fileDuration && (
-                  <span className="audio-length">
-                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-                    {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-                  </span>
-                )}
+                <span className="time">{new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}</span>
+                {m.fileDuration && <span className="audio-length">{String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:{String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}</span>}
               </div>
             </div>
           )
@@ -417,12 +358,12 @@ export default function BusinessChatTab({
                 📎
               </button>
               <button
-                type="button"
-                className={`recordBtn${recording ? " recording" : ""}`}
-                onClick={handleRecordStart}
-                disabled={sending}
-                title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-              >
+                 type="button"
+  className={`recordBtn${recording ? " recording" : ""}`}
+  onClick={recording ? handleRecordStop : handleRecordStart}
+  disabled={sending}
+  title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+>
                 🎤
               </button>
               <input
