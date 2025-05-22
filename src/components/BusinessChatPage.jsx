@@ -11,16 +11,12 @@ export default function BusinessChatPage() {
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const socketRef = useRef(null);
 
-  // --- יצירת חיבור סוקט פעם אחת עם תלות רק ב-initialized ו-businessId ---
   useEffect(() => {
-    console.log("BusinessChatPage init:", { initialized, businessId });
-    if (!initialized || !businessId) {
-      console.warn("Skipping socket connect: missing data", { initialized, businessId });
-      return;
-    }
+    if (!initialized || !businessId) return;
 
     setLoading(true);
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
@@ -50,7 +46,6 @@ export default function BusinessChatPage() {
                 Array.isArray(first.participants)
                   ? first.participants.find((p) => p !== businessId)
                   : first.partnerId || "";
-              console.log("Auto-selecting conversation:", convoId, "partner:", partnerId);
               if (convoId && partnerId) {
                 setSelected({ conversationId: convoId, partnerId });
               }
@@ -71,7 +66,7 @@ export default function BusinessChatPage() {
       console.log("Socket disconnected:", reason);
     });
 
-    // עדכון שיחה עם הודעה חדשה - רק מעדכן רשימת שיחות (לא הודעות)
+    // מאזין להודעות חדשות
     const handleNewMessage = (msg) => {
       setConvos((prevConvos) => {
         const convoIndex = prevConvos.findIndex(
@@ -88,6 +83,11 @@ export default function BusinessChatPage() {
         newConvos.splice(convoIndex, 1);
         return [updatedConvo, ...newConvos];
       });
+
+      // אם זו ההודעה של השיחה הנבחרת - לעדכן את ההודעות ב-state
+      if (msg.conversationId === selected?.conversationId) {
+        setMessages((prev) => [...prev, msg]);
+      }
     };
 
     socketRef.current.on("newMessage", handleNewMessage);
@@ -98,9 +98,9 @@ export default function BusinessChatPage() {
       socketRef.current = null;
       console.log("Socket disconnected and cleaned up");
     };
-  }, [initialized, businessId]); // הוצאתי את selected!
+  }, [initialized, businessId, selected?.conversationId]);
 
-  // --- הצטרפות ל-room של השיחה הנבחרת בכל פעם שהשיחה משתנה ---
+  // הצטרפות לחדר השיחה הנבחרת
   useEffect(() => {
     if (socketRef.current && selected?.conversationId) {
       socketRef.current.emit("joinConversation", selected.conversationId, (ack) => {
@@ -113,9 +113,33 @@ export default function BusinessChatPage() {
     }
   }, [selected?.conversationId]);
 
+  // טעינת ההודעות של השיחה הנבחרת
+  useEffect(() => {
+    if (!selected?.conversationId) {
+      setMessages([]);
+      return;
+    }
+
+    async function fetchMessages() {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/conversations/${selected.conversationId}/messages`);
+        if (!res.ok) throw new Error("Failed to fetch messages");
+        const data = await res.json();
+        setMessages(data);
+      } catch (err) {
+        console.error(err);
+        setMessages([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMessages();
+  }, [selected?.conversationId]);
+
   const handleSelect = (conversationId, partnerId) => {
     if (conversationId && partnerId) {
-      console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
       setSelected({ conversationId: String(conversationId), partnerId: String(partnerId) });
     }
   };
@@ -148,11 +172,11 @@ export default function BusinessChatPage() {
               customerId={selected.partnerId}
               businessName={user?.businessName || user?.name}
               socket={socketRef.current}
+              messages={messages}
+              setMessages={setMessages}
             />
           ) : (
-            <div className={styles.emptyMessage}>
-              בחרי שיחה כדי לראות הודעות
-            </div>
+            <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
           )}
         </section>
       </div>

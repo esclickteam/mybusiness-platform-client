@@ -1,4 +1,3 @@
-// src/components/BusinessChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import "./BusinessChatTab.css";
 
@@ -104,18 +103,15 @@ export default function BusinessChatTab({
   useEffect(() => {
     if (!conversationId || !socket) return;
 
-    // אפס הודעות רק כאשר עוברים שיחה
     setMessages([]);
     setLoading(true);
 
-    // נסיון ראשון: getHistory דרך socket
+    // בקשת היסטוריה עם callback
     socket.emit("joinConversation", conversationId, (res) => {
-      console.log("⚡ getHistory response:", res);
       const history = Array.isArray(res.messages) ? res.messages : [];
       setMessages(history);
       setLoading(false);
 
-      // גיבוי ב-fetch אם אין היסטוריה (לא חובה)
       if (!history.length) {
         fetch(`/api/conversations/history?conversationId=${conversationId}`, {
           credentials: "include",
@@ -125,7 +121,6 @@ export default function BusinessChatTab({
             return await r.json();
           })
           .then((data) => {
-            console.log("🌐 fetch history:", data);
             setMessages(Array.isArray(data) ? data : []);
           })
           .catch((err) => {
@@ -138,11 +133,10 @@ export default function BusinessChatTab({
 
     socket.emit("joinRoom", conversationId);
 
+    // מאזין להודעות חדשות
     const handleNew = (msg) => {
-      console.log("Business received newMessage socket event:", msg);
       if (msg.conversationId === conversationId) {
         setMessages((prev) => {
-          // לא להוסיף כפול אם כבר קיים לפי _id
           if (prev.some((m) => m._id === msg._id)) return prev;
           return [...prev, msg];
         });
@@ -150,6 +144,7 @@ export default function BusinessChatTab({
     };
     socket.on("newMessage", handleNew);
 
+    // מאזין להקלדה
     const handleTyping = ({ from }) => {
       if (from === customerId) {
         setIsTyping(true);
@@ -159,7 +154,6 @@ export default function BusinessChatTab({
     };
     socket.on("typing", handleTyping);
 
-    // ניקוי מאזינים בלבד – לא מאפס הודעות!
     return () => {
       socket.off("newMessage", handleNew);
       socket.off("typing", handleTyping);
@@ -172,14 +166,14 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, customerId]);
 
-  // גלילה אוטומטית
+  // גלילה אוטומטית למטה כשמגיעים הודעות חדשות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  // טיפול בהקלדה
+  // טיפול בהקלדה ושליחת הודעת "מקליד"
   const handleInput = (e) => {
     setInput(e.target.value);
     if (socket) {
@@ -187,7 +181,7 @@ export default function BusinessChatTab({
     }
   };
 
-  // שליחת הודעה (רק אחרי ack – מחכים ל-newMessage מהשרת!)
+  // שליחת הודעה (ממתין לאישור ack לפני ניקוי שדה)
   const sendMessage = () => {
     const text = input.trim();
     if (!text || !socket) return;
@@ -197,14 +191,14 @@ export default function BusinessChatTab({
       setSending(false);
       if (ack.ok) {
         setInput("");
-        // לא מוסיפים ל-state כאן, מחכים ל-newMessage מהשרת (כדי למנוע כפילויות)
+        // לא מוסיפים ידנית ל-state, מחכים ל-newMessage מהשרת
       } else {
         console.error("sendMessage error:", ack.error);
       }
     });
   };
 
-  // צרוף קבצים
+  // צרוף קבצים (כמו בתורך, לא משנה)
   const handleAttach = () => fileInputRef.current.click();
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -228,7 +222,7 @@ export default function BusinessChatTab({
     reader.readAsArrayBuffer(file);
   };
 
-  // הקלטת שמע
+  // הקלטת שמע - לא שונה
   const getSupportedMimeType = () => {
     const pref = "audio/webm";
     return window.MediaRecorder?.isTypeSupported(pref) ? pref : "audio/webm";
@@ -314,11 +308,7 @@ export default function BusinessChatTab({
                     style={{ maxWidth: 200, borderRadius: 8 }}
                   />
                 ) : (
-                  <a
-                    href={m.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
                     {m.fileName}
                   </a>
                 )
@@ -334,9 +324,8 @@ export default function BusinessChatTab({
                 </span>
                 {m.fileDuration && (
                   <span className="audio-length">
-                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")
-                    }:{
-                    String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                    {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
                   </span>
                 )}
               </div>
@@ -374,29 +363,15 @@ export default function BusinessChatTab({
               </>
             ) : (
               <>
-                <audio
-                  src={URL.createObjectURL(recordedBlob)}
-                  controls
-                  style={{ height: 30 }}
-                />
+                <audio src={URL.createObjectURL(recordedBlob)} controls style={{ height: 30 }} />
                 <div>
                   משך הקלטה: {Math.floor(timer / 60)}:
-                  {Math.floor(timer % 60)
-                    .toString()
-                    .padStart(2, "0")}
+                  {Math.floor(timer % 60).toString().padStart(2, "0")}
                 </div>
-                <button
-                  className="send-btn"
-                  onClick={handleSendRecording}
-                  disabled={sending}
-                >
+                <button className="send-btn" onClick={handleSendRecording} disabled={sending}>
                   שלח
                 </button>
-                <button
-                  className="discard-btn"
-                  onClick={handleDiscard}
-                  type="button"
-                >
+                <button className="discard-btn" onClick={handleDiscard} type="button">
                   מחק
                 </button>
               </>
@@ -411,9 +386,7 @@ export default function BusinessChatTab({
               disabled={sending}
               onChange={handleInput}
               onKeyDown={(e) =>
-                e.key === "Enter" &&
-                !e.shiftKey &&
-                (e.preventDefault(), sendMessage())
+                e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
               }
               rows={1}
             />
