@@ -96,14 +96,21 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     socket.emit("joinConversation", conversationId, (ack) => {
       console.log("[Client] joinConversation ack", ack);
     });
-    socket.emit("getHistory", { conversationId }, (history) => {
-      console.log("[Client] history", history);
-      setMessages(Array.isArray(history) ? history : []);
-      setLoading(false);
-    });
+    socket.emit("getHistory", { conversationId }, (res) => {
+  console.log("[Client] history", res);
+  if (res.ok && Array.isArray(res.messages)) {
+    setMessages(res.messages);
+  } else {
+    setMessages([]);
+  }
+  setLoading(false);
+});
 
     const handleNew = (msg) => {
   console.log("[Client] newMessage received:", msg);
+  if (!msg.role) {
+    console.warn("Warning: received message without role", msg);
+  }
   setMessages((prev) => [...prev, msg]);
 };
     socket.on("newMessage", handleNew);
