@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./BusinessChatTab.css";
 
-// קומפוננטת נגן אודיו (לא שונה)
+// קומפוננטת נגן אודיו (שמור כמו בקוד המקורי)
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -80,9 +80,10 @@ export default function BusinessChatTab({
   businessId,
   customerId,
   businessName,
-  socket, // use socket from parent
+  socket,
+  messages,    // מהורה
+  setMessages, // מהורה
 }) {
-  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -99,14 +100,12 @@ export default function BusinessChatTab({
   const timerRef = useRef(null);
   const mediaStreamRef = useRef(null);
 
-  // טעינת היסטוריה והאזנה לאירועים
   useEffect(() => {
     if (!conversationId || !socket) return;
 
     setMessages([]);
     setLoading(true);
 
-    // בקשת היסטוריה עם callback
     socket.emit("joinConversation", conversationId, (res) => {
       const history = Array.isArray(res.messages) ? res.messages : [];
       setMessages(history);
@@ -133,20 +132,17 @@ export default function BusinessChatTab({
 
     socket.emit("joinRoom", conversationId);
 
-    // מאזין להודעות חדשות
     const handleNew = (msg) => {
-  console.log("handleNew called with msg:", msg);
-  if (msg.conversationId === conversationId) {
-    setMessages((prev) => {
-      if (prev.some((m) => m._id === msg._id)) return prev;
-      return [...prev, msg];
-    });
-  }
-};
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => {
+          if (prev.some((m) => m._id === msg._id)) return prev;
+          return [...prev, msg];
+        });
+      }
+    };
 
     socket.on("newMessage", handleNew);
 
-    // מאזין להקלדה
     const handleTyping = ({ from }) => {
       if (from === customerId) {
         setIsTyping(true);
@@ -154,6 +150,7 @@ export default function BusinessChatTab({
         typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
       }
     };
+
     socket.on("typing", handleTyping);
 
     return () => {
@@ -166,16 +163,14 @@ export default function BusinessChatTab({
         mediaStreamRef.current = null;
       }
     };
-  }, [socket, conversationId, customerId]);
+  }, [socket, conversationId, customerId, setMessages]);
 
-  // גלילה אוטומטית למטה כשמגיעים הודעות חדשות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  // טיפול בהקלדה ושליחת הודעת "מקליד"
   const handleInput = (e) => {
     setInput(e.target.value);
     if (socket) {
@@ -183,7 +178,6 @@ export default function BusinessChatTab({
     }
   };
 
-  // שליחת הודעה (ממתין לאישור ack לפני ניקוי שדה)
   const sendMessage = () => {
     const text = input.trim();
     if (!text || !socket) return;
@@ -193,14 +187,13 @@ export default function BusinessChatTab({
       setSending(false);
       if (ack.ok) {
         setInput("");
-        // לא מוסיפים ידנית ל-state, מחכים ל-newMessage מהשרת
+        // מחכים ל-newMessage מהשרת כדי לעדכן את ההודעות
       } else {
         console.error("sendMessage error:", ack.error);
       }
     });
   };
 
-  // צרוף קבצים (כמו בתורך, לא משנה)
   const handleAttach = () => fileInputRef.current.click();
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -224,7 +217,6 @@ export default function BusinessChatTab({
     reader.readAsArrayBuffer(file);
   };
 
-  // הקלטת שמע - לא שונה
   const getSupportedMimeType = () => {
     const pref = "audio/webm";
     return window.MediaRecorder?.isTypeSupported(pref) ? pref : "audio/webm";
@@ -284,7 +276,9 @@ export default function BusinessChatTab({
     <div className="chat-container business">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {!loading && messages.length === 0 && (
+          <div className="empty">עדיין אין הודעות</div>
+        )}
 
         {messages.map((m, i) =>
           m.system ? (
@@ -365,15 +359,27 @@ export default function BusinessChatTab({
               </>
             ) : (
               <>
-                <audio src={URL.createObjectURL(recordedBlob)} controls style={{ height: 30 }} />
+                <audio
+                  src={URL.createObjectURL(recordedBlob)}
+                  controls
+                  style={{ height: 30 }}
+                />
                 <div>
                   משך הקלטה: {Math.floor(timer / 60)}:
                   {Math.floor(timer % 60).toString().padStart(2, "0")}
                 </div>
-                <button className="send-btn" onClick={handleSendRecording} disabled={sending}>
+                <button
+                  className="send-btn"
+                  onClick={handleSendRecording}
+                  disabled={sending}
+                >
                   שלח
                 </button>
-                <button className="discard-btn" onClick={handleDiscard} type="button">
+                <button
+                  className="discard-btn"
+                  onClick={handleDiscard}
+                  type="button"
+                >
                   מחק
                 </button>
               </>
