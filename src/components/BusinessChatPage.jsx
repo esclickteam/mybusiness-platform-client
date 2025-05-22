@@ -121,19 +121,22 @@ export default function BusinessChatPage() {
     }
 
     async function fetchMessages() {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/conversations/${selected.conversationId}/messages`);
-        if (!res.ok) throw new Error("Failed to fetch messages");
-        const data = await res.json();
-        setMessages(data);
-      } catch (err) {
-        console.error(err);
-        setMessages([]);
-      } finally {
-        setLoading(false);
-      }
-    }
+  try {
+    setLoading(true);
+    const res = await fetch(`/api/conversations/history?conversationId=${selected.conversationId}`, {
+      credentials: 'include',
+    });
+    if (!res.ok) throw new Error("Failed to fetch messages");
+    const data = await res.json();
+    setMessages(data);
+  } catch (err) {
+    console.error(err);
+    setMessages([]);
+  } finally {
+    setLoading(false);
+  }
+}
+
 
     fetchMessages();
   }, [selected?.conversationId]);
