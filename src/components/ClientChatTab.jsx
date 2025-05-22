@@ -1,4 +1,3 @@
-// src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
 import "./ClientChatTab.css";
 
@@ -105,8 +104,10 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     });
 
     const handleNew = (msg) => {
-      console.log("[Client] newMessage received:", msg);
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => {
+        if (prev.some((m) => m._id === msg._id)) return prev; // למנוע כפילויות
+        return [...prev, msg];
+      });
     };
     socket.on("newMessage", handleNew);
 
