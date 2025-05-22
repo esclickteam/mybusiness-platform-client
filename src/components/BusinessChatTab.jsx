@@ -116,7 +116,7 @@ export default function BusinessChatTab({
         setLoading(false);
       } else {
         // 2. גיבוי: fetch דרך ה-proxy (relative path)
-        fetch(`/api/conversations/${conversationId}/messages`, {
+        fetch(`/api/conversations/${conversationId}`, {
           credentials: "include",
         })
           .then((r) => r.json())
