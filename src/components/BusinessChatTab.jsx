@@ -204,28 +204,45 @@ export default function BusinessChatTab({
     return window.MediaRecorder?.isTypeSupported(pref) ? pref : pref;
   };
   const handleRecordStart = async () => {
-    if (!navigator.mediaDevices || recording) return;
+  console.log("🔴 handleRecordStart called");
+  if (!navigator.mediaDevices || recording) return;
+
+  try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    console.log("🟢 got media stream");
     mediaStreamRef.current = stream;
     recordedChunks.current = [];
+
     const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
+    recorder.onstart = () => console.log("🟢 recorder started");
     recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
+    recorder.onstop = () => {
+      console.log("🟡 recorder stopped — building blob");
+      const blob = new Blob(recordedChunks.current, { type: recorder.mimeType });
+      setRecordedBlob(blob);
+    };
+
     recorder.start();
     mediaRecorderRef.current = recorder;
+
     setRecording(true);
     setTimer(0);
     timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-  };
-  const handleRecordStop = () => {
-    if (!mediaRecorderRef.current) return;
-    mediaRecorderRef.current.stop();
-    mediaRecorderRef.current.onstop = () => {
-      const blob = new Blob(recordedChunks.current, { type: mediaRecorderRef.current.mimeType });
-      setRecordedBlob(blob);
-    };
-    setRecording(false);
-    clearInterval(timerRef.current);
-  };
+  } catch (err) {
+    console.error("❌ startRecording failed:", err);
+  }
+};
+
+
+const handleRecordStop = () => {
+  console.log("🔴 handleRecordStop called");
+  if (!mediaRecorderRef.current) return;
+
+  mediaRecorderRef.current.stop();  // this will trigger onstop
+  setRecording(false);
+  clearInterval(timerRef.current);
+};
+
   const handleDiscard = () => setRecordedBlob(null);
   const handleSendRecording = () => {
     if (!recordedBlob || !socket) return;
