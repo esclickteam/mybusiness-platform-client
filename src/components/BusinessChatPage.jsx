@@ -1,4 +1,3 @@
-// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
@@ -14,7 +13,7 @@ export default function BusinessChatPage() {
   const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const socketRef = useRef(null);
 
   // Initialize socket and listeners once
@@ -26,7 +25,7 @@ export default function BusinessChatPage() {
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       withCredentials: true,
-      auth: { role: "business-dashboard", businessId },
+      auth: { role: "business", businessId },
       transports: ["websocket"],
     });
 
@@ -42,10 +41,9 @@ export default function BusinessChatPage() {
             if (!selected && conversations.length > 0) {
               const first = conversations[0];
               const convoId = first._id || first.conversationId;
-              const partnerId =
-                Array.isArray(first.participants)
-                  ? first.participants.find((p) => p !== businessId)
-                  : first.partnerId;
+              const partnerId = Array.isArray(first.participants)
+                ? first.participants.find((p) => p !== businessId)
+                : first.partnerId;
               setSelected({ conversationId: String(convoId), partnerId });
             }
           } else {
