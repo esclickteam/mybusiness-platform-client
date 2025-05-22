@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
-import useDashboardSocket from "../../../hooks/useDashboardSocket";
 
 import DashboardCards from "../../../components/DashboardCards";
 import LineChart from "../../../components/dashboard/LineChart";
@@ -19,7 +18,6 @@ import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import BusinessComparison from "../../../components/dashboard/BusinessComparison";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
 
-// QuickActions component for quick dashboard actions
 const QuickActions = ({ onAction }) => (
   <div className="quick-actions-row">
     <button className="quick-action-btn" onClick={() => onAction("meeting")}>+ פגישה חדשה</button>
@@ -27,7 +25,6 @@ const QuickActions = ({ onAction }) => (
   </div>
 );
 
-// Alert component for dashboard messages
 const DashboardAlert = ({ text, type = "info" }) => (
   <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
 );
@@ -37,10 +34,6 @@ import "../../../styles/dashboard.css";
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
   const businessId = user?.businessId;
-  const token = localStorage.getItem("token");
-
-  // Real-time stats via custom hook
-  const statsFromSocket = useDashboardSocket({ token, businessId });
 
   const [stats, setStats] = useState({
     views_count: 0,
@@ -62,9 +55,7 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  const socketRef = useRef(null);
-
-  // Fetch initial stats from API
+  // קריאת הנתונים הראשונית מה-API
   useEffect(() => {
     const fetchStats = async () => {
       if (!businessId) return;
@@ -85,16 +76,27 @@ const DashboardPage = () => {
     fetchStats();
   }, [businessId]);
 
-  // Merge incoming socket updates into state
+  // התחברות ל-SSE לקבלת עדכונים חיים
   useEffect(() => {
-    if (statsFromSocket) {
-      console.log("🔄 Merging stats from socket…", statsFromSocket);
-      setStats(prev => ({
-        ...prev,
-        ...statsFromSocket
-      }));
-    }
-  }, [statsFromSocket]);
+    if (!businessId) return;
+
+    const evtSource = new EventSource(`${process.env.REACT_APP_API_URL}/api/sse/dashboard-stats/${businessId}`);
+
+    evtSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("📨 SSE dashboardUpdate received:", data);
+      setStats(prev => ({ ...prev, ...data }));
+    };
+
+    evtSource.onerror = (err) => {
+      console.error("⚠️ SSE error:", err);
+      evtSource.close();
+    };
+
+    return () => {
+      evtSource.close();
+    };
+  }, [businessId]);
 
   const handleQuickAction = action => {
     let msg = null;
