@@ -123,7 +123,7 @@ export default function BusinessChatPage() {
     async function fetchMessages() {
   try {
     setLoading(true);
-    const res = await fetch(`/api/conversations/history?conversationId=${selected.conversationId}`, {
+    const res = await fetch(`/conversations/history?conversationId=${selected.conversationId}`, {
       credentials: 'include',
     });
     if (!res.ok) throw new Error("Failed to fetch messages");
