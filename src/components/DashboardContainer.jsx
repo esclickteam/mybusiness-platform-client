@@ -19,7 +19,7 @@ export default function DashboardLive({ businessId }) {
     }
 
     const evtSource = new EventSource(
-      `${import.meta.env.VITE_API_URL}/api/sse/dashboard-stats/${businessId}`
+      `${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}`
     );
 
     evtSource.onmessage = (event) => {
