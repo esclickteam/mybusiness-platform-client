@@ -17,25 +17,9 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
+  // 1️⃣ אתחל socket רק פעם אחת
   useEffect(() => {
-    console.log("Initializing chat with:", { initialized, userId, businessId });
-
-    if (!initialized) return;
-
-    if (!userId) {
-      setError("משתמש לא מזוהה");
-      setLoading(false);
-      return;
-    }
-
-    if (!businessId) {
-      setError("מזהה העסק חסר");
-      setLoading(false);
-      return;
-    }
-
-    setError("");
-    setLoading(true);
+    if (!initialized || !userId || !businessId) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
@@ -43,45 +27,41 @@ export default function ClientChatSection() {
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       transports: ["polling","websocket"],
-      auth: {
-        token,
-        role: "chat",
-      },
+      auth: { token, role: "chat" },
       withCredentials: true,
     });
 
-    // start or fetch conversation
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [initialized, userId, businessId]);  // אם אתה בטוח ש-businessId לא משתנה, אפשר להחליף ל-[]
+
+  // 2️⃣ פתח או קבל שיחה פעם אחת (לא בפעם כל רינדור)
+  useEffect(() => {
+    if (!socketRef.current || !businessId) return;
+
+    setLoading(true);
     socketRef.current.emit(
       "startConversation",
       { otherUserId: businessId },
       (res) => {
-        if (res.ok) {
-          setConversationId(res.conversationId);
-        } else {
-          setError("שגיאה ביצירת השיחה: " + (res.error || "שגיאה לא ידועה"));
-        }
+        if (res.ok) setConversationId(res.conversationId);
+        else setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
         setLoading(false);
       }
     );
+  }, [businessId]);
 
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-    };
-  }, [initialized, userId, businessId]);
-
+  // 3️⃣ אחרי שיש conversationId – טען את השם של העסק
   useEffect(() => {
-    if (!conversationId || !socketRef.current) return;
+    if (!socketRef.current || !conversationId) return;
 
-    // fetch business name via conversations list
     socketRef.current.emit(
       "getConversations",
       { userId },
       (res) => {
         if (res.ok) {
-          const convos = Array.isArray(res.conversations) ? res.conversations : [];
-          const conv = convos.find((c) =>
+          const conv = res.conversations.find((c) =>
             [c.conversationId, c._id, c.id]
               .map(String)
               .includes(String(conversationId))
@@ -95,7 +75,7 @@ export default function ClientChatSection() {
   }, [conversationId, userId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
+  if (error)   return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
@@ -106,7 +86,6 @@ export default function ClientChatSection() {
             {businessName || businessId}
           </div>
         </aside>
-
         <section className={styles.chatArea}>
           {conversationId ? (
             <ClientChatTab
@@ -116,9 +95,7 @@ export default function ClientChatSection() {
               userId={userId}
             />
           ) : (
-            <div className={styles.emptyMessage}>
-              לא הצלחנו לפתוח שיחה…
-            </div>
+            <div className={styles.emptyMessage}>לא הצלחנו לפתוח שיחה…</div>
           )}
         </section>
       </div>
