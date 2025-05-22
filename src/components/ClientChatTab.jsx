@@ -104,8 +104,9 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     });
 
     const handleNew = (msg) => {
+      // מניעת כפילויות לפי _id
       setMessages((prev) => {
-        if (prev.some((m) => m._id === msg._id)) return prev; // למנוע כפילויות
+        if (prev.some((m) => m._id === msg._id)) return prev;
         return [...prev, msg];
       });
     };
@@ -178,11 +179,13 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
   const handleRecordStop = () => {
     if (!recording) return;
-    mediaRecorderRef.current.stop();
+    if (!mediaRecorderRef.current) return;
+
     mediaRecorderRef.current.onstop = () => {
       const blob = new Blob(recordedChunksRef.current, { type: mediaRecorderRef.current.mimeType });
       setRecordedBlob(blob);
     };
+    mediaRecorderRef.current.stop();
     setRecording(false);
     clearInterval(timerRef.current);
   };
@@ -243,13 +246,24 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
           <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
-            {m.fileUrl ? (
-              m.fileType?.startsWith("audio") ? (
-                <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
-              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
-                <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
+            {(m.fileUrl || m.file?.data) ? (
+              m.fileType && m.fileType.startsWith("audio") ? (
+                <WhatsAppAudioPlayer
+                  src={m.fileUrl || m.file.data}
+                  userAvatar={m.userAvatar}
+                  duration={m.fileDuration}
+                />
+              ) : (m.fileType && m.fileType.startsWith("image")) ||
+                /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
+                <img
+                  src={m.fileUrl || m.file.data}
+                  alt={m.fileName || "image"}
+                  style={{ maxWidth: 200, borderRadius: 8 }}
+                />
               ) : (
-                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
+                <a href={m.fileUrl || m.file?.data} target="_blank" rel="noopener noreferrer" download>
+                  {m.fileName || "קובץ להורדה"}
+                </a>
               )
             ) : (
               <div className="text">{m.text}</div>
