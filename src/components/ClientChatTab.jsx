@@ -27,8 +27,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (playing) audio.pause();
-    else audio.play();
+    playing ? audio.pause() : audio.play();
     setPlaying((p) => !p);
   };
 
@@ -88,7 +87,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // handle chat events
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -97,22 +95,19 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       console.log("[Client] joinConversation ack", ack);
     });
     socket.emit("getHistory", { conversationId }, (res) => {
-  console.log("[Client] history", res);
-  if (res.ok && Array.isArray(res.messages)) {
-    setMessages(res.messages);
-  } else {
-    setMessages([]);
-  }
-  setLoading(false);
-});
+      console.log("[Client] history", res);
+      if (res.ok && Array.isArray(res.messages)) {
+        setMessages(res.messages);
+      } else {
+        setMessages([]);
+      }
+      setLoading(false);
+    });
 
     const handleNew = (msg) => {
-  console.log("[Client] newMessage received:", msg);
-  if (!msg.role) {
-    console.warn("Warning: received message without role", msg);
-  }
-  setMessages((prev) => [...prev, msg]);
-};
+      console.log("[Client] newMessage received:", msg);
+      setMessages((prev) => [...prev, msg]);
+    };
     socket.on("newMessage", handleNew);
 
     socket.on("connect_error", (err) => {
@@ -129,7 +124,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     };
   }, [socket, conversationId]);
 
-  // auto-scroll
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
@@ -157,7 +151,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     );
   };
 
-  // recording
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
 
@@ -198,7 +191,13 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     setSending(true);
     socket.emit(
       "sendMessage",
-      { conversationId, from: userId, to: businessId, role: "client", file: { name: `voice.webm`, type: recordedBlob.type, duration: timer } },
+      {
+        conversationId,
+        from: userId,
+        to: businessId,
+        role: "client",
+        file: { name: `voice.webm`, type: recordedBlob.type, duration: timer },
+      },
       recordedBlob,
       (ack) => {
         setSending(false);
@@ -210,6 +209,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   };
 
   const handleAttach = () => fileInputRef.current?.click();
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file || !socket) return;
@@ -218,7 +218,13 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     reader.onload = () => {
       socket.emit(
         "sendMessage",
-        { conversationId, from: userId, to: businessId, role: "client", file: { name: file.name, type: file.type, data: reader.result } },
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          file: { name: file.name, type: file.type, data: reader.result },
+        },
         (ack) => {
           setSending(false);
           if (!ack.ok) setError("שגיאה בשליחת הקובץ");
@@ -236,11 +242,10 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
           <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
-
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
                 <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
-              ) : /\.(jpe?g|png|gif)$/i.test(m.fileUrl) ? (
+              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
                 <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
                 <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
@@ -348,9 +353,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
                 📎
               </button>
               <button
-                className={`recordBtn${
-                  recording ? " recording" : ""
-                }`}
+                className={`recordBtn${recording ? " recording" : ""}`}
                 onClick={handleRecordStart}
                 disabled={sending}
                 type="button"

@@ -17,7 +17,7 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // 1️⃣ אתחל socket רק פעם אחת
+  // 1️⃣ Initialize socket once when dependencies are ready
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
 
@@ -26,17 +26,18 @@ export default function ClientChatSection() {
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      transports: ["polling","websocket"],
+      transports: ["polling", "websocket"],
       auth: { token, role: "chat" },
       withCredentials: true,
     });
 
     return () => {
       socketRef.current.disconnect();
+      socketRef.current = null;
     };
-  }, [initialized, userId, businessId]);  // אם אתה בטוח ש-businessId לא משתנה, אפשר להחליף ל-[]
+  }, [initialized, userId, businessId]);
 
-  // 2️⃣ פתח או קבל שיחה פעם אחת (לא בפעם כל רינדור)
+  // 2️⃣ Start or get conversation once
   useEffect(() => {
     if (!socketRef.current || !businessId) return;
 
@@ -52,7 +53,7 @@ export default function ClientChatSection() {
     );
   }, [businessId]);
 
-  // 3️⃣ אחרי שיש conversationId – טען את השם של העסק
+  // 3️⃣ After conversationId is ready, load business name
   useEffect(() => {
     if (!socketRef.current || !conversationId) return;
 
@@ -75,7 +76,7 @@ export default function ClientChatSection() {
   }, [conversationId, userId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
-  if (error)   return <div className={styles.error}>{error}</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
