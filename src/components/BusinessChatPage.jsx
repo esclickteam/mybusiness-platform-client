@@ -26,7 +26,7 @@ export default function BusinessChatPage() {
       path: "/socket.io",
       withCredentials: true,
       auth: { role: "business", businessId },
-      transports: ["websocket"],
+
     });
 
     socketRef.current.on("connect", () => {
