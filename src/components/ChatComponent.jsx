@@ -1,8 +1,8 @@
 // src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from "react";
 import BusinessChatTab from "./BusinessChatTab";
-import ClientChatTab from "./ClientChatTab";
-import io from "socket.io-client";
+import ClientChatTab   from "./ClientChatTab";
+import { io } from "socket.io-client";
 
 export default function ChatComponent({
   userId,
@@ -17,15 +17,22 @@ export default function ChatComponent({
   const [loadingInit, setLoadingInit] = useState(false);
   const [currentCustomerId, setCurrentCustomerId] = useState(customerIdProp || null);
 
-  const socketRef = useRef();
+  const socketRef = useRef(null);
 
   useEffect(() => {
     if (!userId) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    const token = localStorage.getItem("token");
+
     socketRef.current = io(socketUrl, {
-      auth: { userId, role: isBusiness ? "business" : "customer" },
-      transports: ["websocket"],
+      path: "/socket.io",
+      transports: ["polling", "websocket"],
+      auth: {
+        token,
+        role: isBusiness ? "business-dashboard" : "chat",
+      },
+      withCredentials: true,
     });
 
     if (isBusiness) {
@@ -36,10 +43,11 @@ export default function ChatComponent({
           setConversations(convs);
           if (!conversationId && convs.length > 0) {
             const first = convs[0];
-            const convoId = first._id || first.conversationId;
-            let custId = first.customer?._id
-              ? first.customer._id
-              : first.participants?.find((pid) => pid !== userId) || null;
+            const convoId = first._id ?? first.conversationId;
+            const custId =
+              first.customer?._id ??
+              first.participants.find((pid) => pid !== userId) ??
+              null;
             setConversationId(convoId);
             setCurrentCustomerId(custId);
           }
@@ -51,14 +59,18 @@ export default function ChatComponent({
     } else {
       if (!conversationId && partnerId) {
         setLoadingInit(true);
-        socketRef.current.emit("startConversation", { otherUserId: partnerId }, (res) => {
-          if (res.ok) {
-            setConversationId(res.conversationId);
-          } else {
-            console.error("Failed to start conversation:", res.error);
+        socketRef.current.emit(
+          "startConversation",
+          { otherUserId: partnerId },
+          (res) => {
+            if (res.ok) {
+              setConversationId(res.conversationId);
+            } else {
+              console.error("Failed to start conversation:", res.error);
+            }
+            setLoadingInit(false);
           }
-          setLoadingInit(false);
-        });
+        );
       }
     }
 
@@ -68,26 +80,27 @@ export default function ChatComponent({
   }, [userId, isBusiness, partnerId]);
 
   useEffect(() => {
-    if (!isBusiness || !conversationId) return;
-    const conv = conversations.find(
-      (c) => (c._id || c.conversationId) === conversationId
-    );
-    if (conv) {
-      const custId = conv.customer?._id
-        ? conv.customer._id
-        : conv.participants?.find((pid) => pid !== userId) || null;
-      setCurrentCustomerId(custId);
+    if (isBusiness && conversationId) {
+      const conv = conversations.find(
+        (c) => (c._id ?? c.conversationId) === conversationId
+      );
+      if (conv) {
+        const custId =
+          conv.customer?._id ??
+          conv.participants.find((pid) => pid !== userId) ??
+          null;
+        setCurrentCustomerId(custId);
+      }
     }
   }, [conversationId, isBusiness, conversations, userId]);
 
-  // כאן התיקון העיקרי - מציאת businessId מתוך השיחה, לא להשתמש ב-partnerId ישירות
   const currentConversation = conversations.find(
-    (c) => (c._id || c.conversationId) === conversationId
+    (c) => (c._id ?? c.conversationId) === conversationId
   );
-
-  const businessIdFromConversation = currentConversation?.business?._id
-    || currentConversation?.participants?.find((pid) => pid !== userId)
-    || partnerId; // fallback ל-partnerId אם אין מידע בשיחה
+  const businessIdFromConversation =
+    currentConversation?.business?._id ??
+    currentConversation?.participants.find((pid) => pid !== userId) ??
+    partnerId;
 
   if (loadingInit) return <p>⏳ פותח שיחה…</p>;
   if (loadingConvs) return <p>⏳ טוען שיחות…</p>;
@@ -104,7 +117,7 @@ export default function ChatComponent({
   ) : (
     <ClientChatTab
       conversationId={conversationId}
-      businessId={businessIdFromConversation}  // כאן העברתי businessId אמיתי מהשיחה
+      businessId={businessIdFromConversation}
       userId={userId}
       socket={socketRef.current}
     />

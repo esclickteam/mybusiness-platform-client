@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
@@ -15,7 +15,7 @@ export default function ClientChatSection() {
   const [businessName, setBusinessName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const socketRef = useRef();
+  const socketRef = useRef(null);
 
   useEffect(() => {
     console.log("Initializing chat with:", { initialized, userId, businessId });
@@ -38,16 +38,19 @@ export default function ClientChatSection() {
     setLoading(true);
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    const token = localStorage.getItem("token");
+
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
+      transports: ["polling","websocket"],
       auth: {
-        userId,
-        businessId,
-        role: "customer",
+        token,
+        role: "chat",
       },
-      transports: ["websocket"],
+      withCredentials: true,
     });
 
+    // start or fetch conversation
     socketRef.current.emit(
       "startConversation",
       { otherUserId: businessId },
@@ -71,6 +74,7 @@ export default function ClientChatSection() {
   useEffect(() => {
     if (!conversationId || !socketRef.current) return;
 
+    // fetch business name via conversations list
     socketRef.current.emit(
       "getConversations",
       { userId },
@@ -78,7 +82,9 @@ export default function ClientChatSection() {
         if (res.ok) {
           const convos = Array.isArray(res.conversations) ? res.conversations : [];
           const conv = convos.find((c) =>
-            [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
+            [c.conversationId, c._id, c.id]
+              .map(String)
+              .includes(String(conversationId))
           );
           setBusinessName(conv?.businessName || "");
         } else {
@@ -104,10 +110,10 @@ export default function ClientChatSection() {
         <section className={styles.chatArea}>
           {conversationId ? (
             <ClientChatTab
+              socket={socketRef.current}
               conversationId={conversationId}
               businessId={businessId}
               userId={userId}
-              socket={socketRef.current}
             />
           ) : (
             <div className={styles.emptyMessage}>
