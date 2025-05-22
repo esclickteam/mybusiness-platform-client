@@ -79,7 +79,8 @@ export default function BusinessProfileView() {
   // שליחת אירוע צפייה בפרופיל דרך socket
   useEffect(() => {
     if (socket && bizId && user?.userId) {
-      socket.emit("profileView", { businessId: bizId, viewerId: user.userId });
+      socket.emit('profileView', { businessId: currentBusinessId, viewerId: currentUserId });
+console.log('profileView event sent');
     }
   }, [socket, bizId, user?.userId]);
 
