@@ -111,59 +111,64 @@ export default function ClientChatTab({
   useEffect(() => {
   if (!conversationId || !businessId || !userId || !token) return;
 
-  // initialize socket with role="chat" so that server registers chat handlers
-  socketRef.current = io(socketUrl, {
+  const socket = io(socketUrl, {
     path: "/socket.io",
-    auth: {
-      token,
-      role: "chat",
-      businessId,        // optional for auto-join
-      conversationId,    // optional for auto-join
-    },
+    auth: { token, role: "chat", businessId, conversationId },
     withCredentials: true,
+    // transports: ["polling"], // אפשר לכפות polling לבדיקה
+  });
+  socketRef.current = socket;
+
+  // Debug: כל packet שמתקבל/נשלח
+  socket.io.engine.on("packet", (packet) => {
+    console.log("[Engine packet]", packet);
+  });
+  socket.io.engine.on("upgrade", () => {
+    console.log("[Engine] upgraded transport to websocket");
   });
 
-  socketRef.current.on("connect", () => {
-    console.log("[Client] Connected:", socketRef.current.id);
+  // Debug: כל event על הסוקט
+  socket.onAny((event, ...args) => {
+    console.log("[Socket event]", event, args);
+  });
 
-    // explicit join (in case you didn't auto-join)
-    socketRef.current.emit("joinConversation", conversationId, (ack) => {
+  socket.on("connect", () => {
+    console.log("[Client] connect:", socket.id);
+
+    socket.emit("joinConversation", conversationId, (ack) => {
       console.log("[Client] joinConversation ack:", ack);
     });
 
-    // fetch history
-    socketRef.current.emit(
-      "getHistory",
-      { conversationId },
-      (history) => {
-        console.log("[Client] history:", history);
-        setMessages(Array.isArray(history) ? history : []);
-        setLoading(false);
-      }
-    );
+    socket.emit("getHistory", { conversationId }, (history) => {
+      console.log("[Client] getHistory callback:", history);
+      setMessages(Array.isArray(history) ? history : []);
+      setLoading(false);
+    });
   });
 
-  // incoming messages
-  socketRef.current.on("newMessage", (msg) => {
+  socket.on("newMessage", (msg) => {
+    console.log("[Client] newMessage:", msg);
     setMessages((prev) => [...prev, msg]);
   });
-  socketRef.current.on("receiveMessage", (msg) => {
+  socket.on("receiveMessage", (msg) => {
+    console.log("[Client] receiveMessage:", msg);
     setMessages((prev) => [...prev, msg]);
   });
 
-  socketRef.current.on("connect_error", (err) => {
+  socket.on("connect_error", (err) => {
     console.error("[Client] connect_error:", err);
     setError(`Connection error: ${err.message}`);
   });
 
-  socketRef.current.on("disconnect", (reason) => {
-    console.log("[Client] disconnected:", reason);
+  socket.on("disconnect", (reason) => {
+    console.log("[Client] disconnect:", reason);
   });
 
   return () => {
-    socketRef.current.disconnect();
+    socket.disconnect();
   };
 }, [conversationId, businessId, userId, token, socketUrl]);
+
 
 
 
