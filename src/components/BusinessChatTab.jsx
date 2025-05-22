@@ -244,27 +244,54 @@ export default function BusinessChatTab({
     <div className="chat-container business">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {!loading && messages.length === 0 && (
+          <div className="empty">עדיין אין הודעות</div>
+        )}
 
         {messages.map((m, i) =>
           m.system ? (
-            <div key={i} className="system-message">{m.text}</div>
+            <div key={i} className="system-message">
+              {m.text}
+            </div>
           ) : (
-            <div key={m._id || i} className={`message${m.from === businessId ? " mine" : " theirs"}`}>
+            <div
+              key={m._id || i}
+              className={`message${m.from === businessId ? " mine" : " theirs"}`}
+            >
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
+                  <WhatsAppAudioPlayer
+                    src={m.fileUrl}
+                    userAvatar={m.userAvatar}
+                    duration={m.fileDuration}
+                  />
                 ) : /\.(jpe?g|png|gif)$/i.test(m.fileUrl) ? (
-                  <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
+                  <img
+                    src={m.fileUrl}
+                    alt={m.fileName}
+                    style={{ maxWidth: 200, borderRadius: 8 }}
+                  />
                 ) : (
-                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
+                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">
+                    {m.fileName}
+                  </a>
                 )
               ) : (
                 <div className="text">{m.text}</div>
               )}
               <div className="meta">
-                <span className="time">{new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}</span>
-                {m.fileDuration && <span className="audio-length">{String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:{String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}</span>}
+                <span className="time">
+                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                {m.fileDuration && (
+                  <span className="audio-length">
+                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                    {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+                  </span>
+                )}
               </div>
             </div>
           )
@@ -358,12 +385,12 @@ export default function BusinessChatTab({
                 📎
               </button>
               <button
-                 type="button"
-  className={`recordBtn${recording ? " recording" : ""}`}
-  onClick={recording ? handleRecordStop : handleRecordStart}
-  disabled={sending}
-  title={recording ? "עצור הקלטה" : "התחל הקלטה"}
->
+                type="button"
+                className={`recordBtn${recording ? " recording" : ""}`}
+                onClick={handleRecordStart}
+                disabled={sending}
+                title={recording ? "עצור הקלטה" : "התחל הקלטה"}
+              >
                 🎤
               </button>
               <input
