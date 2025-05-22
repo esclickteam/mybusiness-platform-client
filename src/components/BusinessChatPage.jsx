@@ -68,6 +68,7 @@ export default function BusinessChatPage() {
 
     // מאזין להודעות חדשות
     const handleNewMessage = (msg) => {
+      console.log('newMessage received:', msg);    
       setConvos((prevConvos) => {
         const convoIndex = prevConvos.findIndex(
           (c) =>

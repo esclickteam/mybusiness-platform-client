@@ -135,13 +135,15 @@ export default function BusinessChatTab({
 
     // מאזין להודעות חדשות
     const handleNew = (msg) => {
-      if (msg.conversationId === conversationId) {
-        setMessages((prev) => {
-          if (prev.some((m) => m._id === msg._id)) return prev;
-          return [...prev, msg];
-        });
-      }
-    };
+  console.log("handleNew called with msg:", msg);
+  if (msg.conversationId === conversationId) {
+    setMessages((prev) => {
+      if (prev.some((m) => m._id === msg._id)) return prev;
+      return [...prev, msg];
+    });
+  }
+};
+
     socket.on("newMessage", handleNew);
 
     // מאזין להקלדה
