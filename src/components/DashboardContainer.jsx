@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import DashboardCards from "./DashboardCards";
 
-export default function DashboardLive({ businessId, token }) {
+export default function DashboardLive({ businessId }) {
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -15,15 +15,16 @@ export default function DashboardLive({ businessId, token }) {
   });
 
   useEffect(() => {
-    if (!businessId || !token) {
-      console.warn("⚠️ Missing businessId or token for DashboardLive");
+    if (!businessId) {
+      console.warn("⚠️ Missing businessId for DashboardLive");
       return;
     }
 
     const socket = io(import.meta.env.VITE_SOCKET_URL, {
-      auth: { token, role: "business-dashboard", businessId },
+      auth: { role: "business-dashboard", businessId },  // לא שולחים token ידנית
       path: "/socket.io",
       transports: ["websocket"],
+      withCredentials: true, // חובה! כדי לשלוח cookie אוטומטית
     });
 
     socket.on("connect", () => {
@@ -47,7 +48,7 @@ export default function DashboardLive({ businessId, token }) {
       console.log("🔌 Disconnecting Socket.IO");
       socket.disconnect();
     };
-  }, [businessId, token]);
+  }, [businessId]);
 
   return <DashboardCards stats={stats} />;
 }

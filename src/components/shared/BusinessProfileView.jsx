@@ -78,11 +78,11 @@ export default function BusinessProfileView() {
 
   // שליחת אירוע צפייה בפרופיל דרך socket
   useEffect(() => {
-    if (socket && bizId && user?.userId) {
-      socket.emit('profileView', { businessId: currentBusinessId, viewerId: currentUserId });
-console.log('profileView event sent');
-    }
-  }, [socket, bizId, user?.userId]);
+  if (socket && bizId && user?.userId) {
+    socket.emit('profileView', { businessId: bizId, viewerId: user.userId });
+    console.log('profileView event sent');
+  }
+}, [socket, bizId, user?.userId]);
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;

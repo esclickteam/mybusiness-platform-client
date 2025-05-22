@@ -21,6 +21,15 @@ export function SocketProvider({ children }) {
     };
   }, []);
 
+  // מחזיר null בזמן שהחיבור עוד לא מוכן
+  if (!socket || !socket.connected) {
+    return (
+      <SocketContext.Provider value={null}>
+        {children}
+      </SocketContext.Provider>
+    );
+  }
+
   return (
     <SocketContext.Provider value={socket}>
       {children}
