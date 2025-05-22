@@ -1,4 +1,3 @@
-// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
@@ -45,10 +44,15 @@ export default function BusinessChatPage() {
             setConvos(conversations);
             if (!selected && conversations.length > 0) {
               const first = conversations[0];
-              const convoId = first._id || first.conversationId;
+              const convoId = first._id ? String(first._id) : ""; // תמיד string
               const partnerId =
-                first.participants.find((p) => p !== businessId) || "";
-              setSelected({ conversationId: convoId, partnerId });
+                Array.isArray(first.participants)
+                  ? first.participants.find((p) => p !== businessId)
+                  : first.partnerId || "";
+              console.log("Auto-selecting conversation:", convoId, "partner:", partnerId);
+              if (convoId && partnerId) {
+                setSelected({ conversationId: convoId, partnerId });
+              }
             }
           } else {
             console.error("Error loading conversations:", error);
@@ -66,28 +70,21 @@ export default function BusinessChatPage() {
       console.log("Socket disconnected:", reason);
     });
 
-    // הוספת האזנה ל-newMessage לעדכון השיחות בזמן אמת
+    // עדכון שיחה עם הודעה חדשה
     const handleNewMessage = (msg) => {
-      // עדכון השיחה שקיבלה הודעה חדשה לפי conversationId
       setConvos((prevConvos) => {
         const convoIndex = prevConvos.findIndex(
           (c) =>
             String(c._id) === String(msg.conversationId) ||
             String(c.conversationId) === String(msg.conversationId)
         );
-        if (convoIndex === -1) {
-          // שיחה חדשה? אפשר להוסיף או להשאיר ככה
-          return prevConvos;
-        }
-
+        if (convoIndex === -1) return prevConvos;
         const updatedConvo = {
           ...prevConvos[convoIndex],
           updatedAt: new Date().toISOString(),
         };
-
         const newConvos = [...prevConvos];
         newConvos.splice(convoIndex, 1);
-        // משאירים את השיחה המעודכנת במיקום הראשון כדי שתופיע בראש הרשימה
         return [updatedConvo, ...newConvos];
       });
     };
@@ -103,8 +100,11 @@ export default function BusinessChatPage() {
   }, [initialized, businessId, selected]);
 
   const handleSelect = (conversationId, partnerId) => {
-    console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
-    setSelected({ conversationId, partnerId });
+    // תמיד ודא string תקני!
+    if (conversationId && partnerId) {
+      console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
+      setSelected({ conversationId: String(conversationId), partnerId: String(partnerId) });
+    }
   };
 
   if (!initialized) {
