@@ -1,6 +1,5 @@
 // src/components/ClientChatTab.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
 import "./ClientChatTab.css";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
@@ -11,13 +10,11 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
     const onTimeUpdate = () => setProgress(audio.currentTime);
     const onEnded = () => {
       setPlaying(false);
       setProgress(0);
     };
-
     audio.addEventListener("timeupdate", onTimeUpdate);
     audio.addEventListener("ended", onEnded);
     audio.load();
@@ -32,7 +29,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
     if (!audio) return;
     if (playing) audio.pause();
     else audio.play();
-    setPlaying(!playing);
+    setPlaying((p) => !p);
   };
 
   const formatTime = (time) => {
@@ -43,13 +40,8 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   };
 
   const totalDots = 20;
-  const audioDuration = duration || 0;
-  const activeDot = audioDuration
-    ? Math.floor((progress / audioDuration) * totalDots)
-    : 0;
-  const containerClass = userAvatar
-    ? "custom-audio-player with-avatar"
-    : "custom-audio-player no-avatar";
+  const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
+  const containerClass = userAvatar ? "custom-audio-player with-avatar" : "custom-audio-player no-avatar";
 
   return (
     <div className={containerClass}>
@@ -62,8 +54,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
       <button
         onClick={togglePlay}
         aria-label={playing ? "Pause audio" : "Play audio"}
-        className={`play-pause ${playing ? "playing" : ""}`}
-      >
+        className={`play-pause ${playing ? "playing" : ""}`}>
         {playing ? "❚❚" : "▶"}
       </button>
       <div className="progress-dots">
@@ -72,30 +63,23 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
         ))}
       </div>
       <div className="time-display">
-        {formatTime(progress)} / {formatTime(audioDuration)}
+        {formatTime(progress)} / {formatTime(duration || 0)}
       </div>
       <audio ref={audioRef} src={src} preload="metadata" />
     </div>
   );
 }
 
-export default function ClientChatTab({
-  conversationId,
-  businessId,
-  userId,
-}) {
+export default function ClientChatTab({ socket, conversationId, businessId, userId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [userScrolledUp, setUserScrolledUp] = useState(false);
   const [error, setError] = useState("");
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
 
-  const socketRef = useRef(null);
   const messageListRef = useRef(null);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -104,110 +88,76 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  const socketUrl = process.env.REACT_APP_SOCKET_URL;
-  const token = localStorage.getItem("token");
-
-  // חיבור ל-socket, join room וקבלת היסטוריית הודעות
+  // handle chat events
   useEffect(() => {
-  if (!conversationId || !businessId || !userId || !token) return;
+    if (!socket || !conversationId) return;
 
-  const socket = io(socketUrl, {
-    path: "/socket.io",
-    transports: ["polling","websocket"],
-    auth: { token, role: "chat" },
-    withCredentials: true,
-  });
-  socketRef.current = socket;
-
-  socket.on("connect", () => {
-    console.log("[Client] connected", socket.id);
-    socket.emit("joinConversation", conversationId, ack => {
+    setLoading(true);
+    socket.emit("joinConversation", conversationId, (ack) => {
       console.log("[Client] joinConversation ack", ack);
     });
-    socket.emit("getHistory", { conversationId }, history => {
+    socket.emit("getHistory", { conversationId }, (history) => {
       console.log("[Client] history", history);
       setMessages(Array.isArray(history) ? history : []);
       setLoading(false);
     });
-  });
 
-  // מאזין להודעות חדשות – האירוע שהשרת שולח
-  socket.on("newMessage", msg => {
-    console.log("[Client] newMessage", msg);
-    setMessages(prev => [...prev, msg]);
-  });
+    const handleNew = (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    };
+    socket.on("newMessage", handleNew);
 
-  socket.on("disconnect", reason => console.log("[Client] disconnected", reason));
-  socket.on("connect_error", err => {
-    console.error("[Client] connect_error", err);
-    setError(err.message);
-  });
+    socket.on("connect_error", (err) => {
+      console.error("[Client] connect_error", err);
+      setError(err.message);
+      setLoading(false);
+    });
+    socket.on("disconnect", (reason) => {
+      console.log("[Client] disconnected", reason);
+    });
 
-  return () => {
-    socket.disconnect();
-  };
-}, [conversationId, businessId, userId, token, socketUrl]);
+    return () => {
+      socket.off("newMessage", handleNew);
+    };
+  }, [socket, conversationId]);
 
-
-
-
-  // גלילה אוטומטית
+  // auto-scroll
   useEffect(() => {
-    if (!userScrolledUp && messageListRef.current) {
-      messageListRef.current.scrollTo({
-        top: messageListRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
-  }, [messages, isTyping, userScrolledUp]);
-
-  const onScroll = () => {
-    if (!messageListRef.current) return;
-    const { scrollTop, scrollHeight, clientHeight } =
-      messageListRef.current;
-    setUserScrolledUp(
-      scrollTop + clientHeight < scrollHeight - 20
-    );
-  };
+  }, [messages]);
 
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
-    textareaRef.current.style.height =
-      textareaRef.current.scrollHeight + "px";
+    textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // שליחת טקסט
   const sendMessage = () => {
-    const text = input.trim();
-    if (!text || sending) return;
+    if (!input.trim() || sending || !socket) return;
     setSending(true);
     setError("");
-    socketRef.current.emit(
+    socket.emit(
       "sendMessage",
-      { conversationId, from: userId, to: businessId, role: "client", text },
+      { conversationId, from: userId, to: businessId, role: "client", text: input.trim() },
       (ack) => {
         setSending(false);
-        if (ack?.ok) setInput("");
+        if (ack.ok) setInput("");
         else setError("שגיאה בשליחת ההודעה");
       }
     );
   };
 
-  // טיפול בהקלטה ושליחת קובץ אודיו
+  // recording
   const getSupportedMimeType = () =>
-    MediaRecorder.isTypeSupported("audio/webm")
-      ? "audio/webm"
-      : "audio/webm";
+    MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
 
   const handleRecordStart = async () => {
     if (recording) return;
-    setError("");
     recordedChunksRef.current = [];
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
       const mimeType = getSupportedMimeType();
       const recorder = new MediaRecorder(stream, { mimeType });
@@ -215,17 +165,11 @@ export default function ClientChatTab({
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
-      recorder.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, {
-          type: mimeType,
-        });
-        setRecordedBlob(blob);
-        setRecording(false);
-      };
       recorder.start();
       setRecording(true);
+      setTimer(0);
       timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-    } catch (err) {
+    } catch {
       setError("אין הרשאה להקלטה");
     }
   };
@@ -233,55 +177,43 @@ export default function ClientChatTab({
   const handleRecordStop = () => {
     if (!recording) return;
     mediaRecorderRef.current.stop();
+    mediaRecorderRef.current.onstop = () => {
+      const blob = new Blob(recordedChunksRef.current, { type: mediaRecorderRef.current.mimeType });
+      setRecordedBlob(blob);
+    };
+    setRecording(false);
     clearInterval(timerRef.current);
   };
 
   const handleSendRecording = () => {
-    if (!recordedBlob) return;
+    if (!recordedBlob || !socket) return;
     setSending(true);
-    socketRef.current.emit(
+    socket.emit(
       "sendMessage",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        role: "client",
-        file: {
-          name: `voice.${recordedBlob.type.split("/")[1]}`,
-          type: recordedBlob.type,
-          duration: timer,
-        },
-      },
+      { conversationId, from: userId, to: businessId, role: "client", file: { name: `voice.webm`, type: recordedBlob.type, duration: timer } },
       recordedBlob,
       (ack) => {
         setSending(false);
         setRecordedBlob(null);
         setTimer(0);
-        if (!ack?.ok) setError("שגיאה בשליחת ההקלטה");
+        if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
       }
     );
   };
 
-  // לחיבור קבצים אחרים
-  const handleAttach = () => fileInputRef.current.click();
+  const handleAttach = () => fileInputRef.current?.click();
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !socket) return;
     setSending(true);
     const reader = new FileReader();
     reader.onload = () => {
-      socketRef.current.emit(
+      socket.emit(
         "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          to: businessId,
-          role: "client",
-          file: { name: file.name, type: file.type, data: reader.result },
-        },
+        { conversationId, from: userId, to: businessId, role: "client", file: { name: file.name, type: file.type, data: reader.result } },
         (ack) => {
           setSending(false);
-          if (!ack?.ok) setError("שגיאה בשליחת הקובץ");
+          if (!ack.ok) setError("שגיאה בשליחת הקובץ");
         }
       );
     };
@@ -291,68 +223,33 @@ export default function ClientChatTab({
 
   return (
     <div className="chat-container client">
-      <div
-        className="message-list"
-        ref={messageListRef}
-        onScroll={onScroll}
-      >
+      <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
-          <div
-            key={m._id || i}
-            className={`message${m.from === userId ? " mine" : " theirs"}`}
-          >
+          <div key={m._id || i} className={`message${m.from === userId ? " mine" : " theirs"}`}>
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl}
-                  userAvatar={m.userAvatar}
-                  duration={m.fileDuration}
-                />
-              ) : m.fileUrl.match(/\.(jpe?g|png|gif)$/i) ? (
-                <img
-                  src={m.fileUrl}
-                  alt={m.fileName}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
+                <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
+              ) : /\.(jpe?g|png|gif)$/i.test(m.fileUrl) ? (
+                <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
-                <a
-                  href={m.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {m.fileName}
-                </a>
+                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer">{m.fileName}</a>
               )
             ) : (
-              <div className="text">{m.text ?? m.message}</div>
+              <div className="text">{m.text}</div>
             )}
             <div className="meta">
               <span className="time">
-                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
               </span>
               {m.fileDuration && (
-                <span className="audio-length">
-                  {Math.floor(m.fileDuration / 60)}:
-                  {Math.floor(m.fileDuration % 60)
-                    .toString()
-                    .padStart(2, "0")}
-                </span>
+                <span className="audio-length">{Math.floor(m.fileDuration / 60).toString().padStart(2, "0")}:{Math.floor(m.fileDuration % 60).toString().padStart(2, "0")}</span>
               )}
             </div>
           </div>
         ))}
-        {isTyping && (
-          <div className="typing-indicator">העסק מקליד...</div>
-        )}
       </div>
-
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
 
