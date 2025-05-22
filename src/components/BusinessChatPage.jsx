@@ -31,14 +31,6 @@ export default function BusinessChatPage() {
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
-
-      // Auto-join if a conversation is already selected
-      if (selected?.conversationId) {
-        socket.emit("joinConversation", selected.conversationId, (ack) => {
-          if (!ack.ok) console.error("Auto-join failed:", ack.error);
-        });
-      }
-
       socket.emit(
         "getConversations",
         { userId: businessId },
@@ -93,11 +85,12 @@ export default function BusinessChatPage() {
       socketRef.current = null;
       console.log("Socket cleaned up");
     };
-  }, [initialized, businessId, selected]);
+  }, [initialized, businessId]);
 
-  // Join room when selected changes
+  // Auto-join room when selected changes
   useEffect(() => {
     if (socketRef.current && selected?.conversationId) {
+      console.log("Joining convo:", selected.conversationId);
       socketRef.current.emit(
         "joinConversation",
         selected.conversationId,
