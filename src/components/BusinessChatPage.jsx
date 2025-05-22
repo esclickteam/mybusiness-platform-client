@@ -14,6 +14,7 @@ export default function BusinessChatPage() {
   const [loading, setLoading] = useState(false);
   const socketRef = useRef(null);
 
+  // --- יצירת חיבור סוקט פעם אחת עם תלות רק ב-initialized ו-businessId ---
   useEffect(() => {
     console.log("BusinessChatPage init:", { initialized, businessId });
     if (!initialized || !businessId) {
@@ -44,7 +45,7 @@ export default function BusinessChatPage() {
             setConvos(conversations);
             if (!selected && conversations.length > 0) {
               const first = conversations[0];
-              const convoId = first._id ? String(first._id) : ""; // תמיד string
+              const convoId = first._id ? String(first._id) : "";
               const partnerId =
                 Array.isArray(first.participants)
                   ? first.participants.find((p) => p !== businessId)
@@ -70,7 +71,7 @@ export default function BusinessChatPage() {
       console.log("Socket disconnected:", reason);
     });
 
-    // עדכון שיחה עם הודעה חדשה
+    // עדכון שיחה עם הודעה חדשה - רק מעדכן רשימת שיחות (לא הודעות)
     const handleNewMessage = (msg) => {
       setConvos((prevConvos) => {
         const convoIndex = prevConvos.findIndex(
@@ -97,10 +98,22 @@ export default function BusinessChatPage() {
       socketRef.current = null;
       console.log("Socket disconnected and cleaned up");
     };
-  }, [initialized, businessId, selected]);
+  }, [initialized, businessId]); // הוצאתי את selected!
+
+  // --- הצטרפות ל-room של השיחה הנבחרת בכל פעם שהשיחה משתנה ---
+  useEffect(() => {
+    if (socketRef.current && selected?.conversationId) {
+      socketRef.current.emit("joinConversation", selected.conversationId, (ack) => {
+        if (!ack.ok) {
+          console.error("Failed to join conversation:", ack.error);
+        } else {
+          console.log("Joined conversation", selected.conversationId);
+        }
+      });
+    }
+  }, [selected?.conversationId]);
 
   const handleSelect = (conversationId, partnerId) => {
-    // תמיד ודא string תקני!
     if (conversationId && partnerId) {
       console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);
       setSelected({ conversationId: String(conversationId), partnerId: String(partnerId) });

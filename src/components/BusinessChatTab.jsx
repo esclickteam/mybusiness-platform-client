@@ -142,10 +142,11 @@ export default function BusinessChatTab({
     socket.emit("joinRoom", conversationId);
 
     const handleNew = (msg) => {
-      if (msg.conversationId === conversationId) {
-        setMessages((prev) => [...prev, msg]);
-      }
-    };
+  if (msg.conversationId === conversationId) {
+    console.log("Received new message:", msg);
+    setMessages((prev) => [...prev, msg]);
+  }
+};
     socket.on("newMessage", handleNew);
 
     const handleTyping = ({ from }) => {
