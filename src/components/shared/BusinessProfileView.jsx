@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { SocketContext } from "../../context/socketContext"; // ייבוא הקונטקסט של סוקט
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
@@ -23,6 +24,7 @@ const TABS = [
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
+  const socket = useContext(SocketContext); // קבלת ה-socket מהקונטקסט
   const bizId = paramId || user?.businessId;
 
   const [data, setData] = useState(null);
@@ -55,11 +57,12 @@ export default function BusinessProfileView() {
         );
         let sched = {};
         if (Array.isArray(resWH.data.workHours)) {
-          resWH.data.workHours.forEach(item => {
+          resWH.data.workHours.forEach((item) => {
             sched[Number(item.day)] = item;
           });
         } else if (
-          resWH.data.workHours && typeof resWH.data.workHours === "object"
+          resWH.data.workHours &&
+          typeof resWH.data.workHours === "object"
         ) {
           sched = resWH.data.workHours;
         }
@@ -72,6 +75,13 @@ export default function BusinessProfileView() {
       }
     })();
   }, [bizId]);
+
+  // שליחת אירוע צפייה בפרופיל דרך socket
+  useEffect(() => {
+    if (socket && bizId && user?.userId) {
+      socket.emit("profileView", { businessId: bizId, viewerId: user.userId });
+    }
+  }, [socket, bizId, user?.userId]);
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
@@ -94,7 +104,7 @@ export default function BusinessProfileView() {
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
-  const handleReviewSubmit = async formData => {
+  const handleReviewSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
       await api.post(`/business/${bizId}/reviews`, formData);
@@ -124,10 +134,26 @@ export default function BusinessProfileView() {
           )}
           <h1 className="business-name">{businessName}</h1>
           <div className="about-phone">
-            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
-            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {category && (
+              <p>
+                <strong>🏷️ קטגוריה:</strong> {category}
+              </p>
+            )}
+            {description && (
+              <p>
+                <strong>📝 תיאור:</strong> {description}
+              </p>
+            )}
+            {phone && (
+              <p>
+                <strong>📞 טלפון:</strong> {phone}
+              </p>
+            )}
+            {city && (
+              <p>
+                <strong>🏙️ עיר:</strong> {city}
+              </p>
+            )}
           </div>
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
@@ -136,7 +162,7 @@ export default function BusinessProfileView() {
           <hr className="profile-divider" />
 
           <div className="profile-tabs">
-            {TABS.map(tab => (
+            {TABS.map((tab) => (
               <button
                 key={tab}
                 className={`tab ${tab === currentTab ? "active" : ""}`}
@@ -154,8 +180,8 @@ export default function BusinessProfileView() {
               <div className="public-main-images">
                 {mainImages.length
                   ? mainImages.slice(0, 5).map((url, i) => (
-                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
-                  ))
+                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
+                    ))
                   : <p className="no-data">אין תמונות להצגה</p>}
               </div>
             )}
@@ -163,8 +189,8 @@ export default function BusinessProfileView() {
               <div className="public-main-images">
                 {gallery.length
                   ? gallery.map((url, i) => (
-                    <img key={i} src={url} alt={`גלריה ${i + 1}`} />
-                  ))
+                      <img key={i} src={url} alt={`גלריה ${i + 1}`} />
+                    ))
                   : <p className="no-data">אין תמונות בגלריה</p>}
               </div>
             )}
@@ -177,7 +203,7 @@ export default function BusinessProfileView() {
                 )}
                 {showReviewModal && (
                   <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
-                    <div className="#modal-inner" onClick={e => e.stopPropagation()}>
+                    <div className="#modal-inner" onClick={(e) => e.stopPropagation()}>
                       <ReviewForm
                         businessId={bizId}
                         onSubmit={handleReviewSubmit}
@@ -191,10 +217,10 @@ export default function BusinessProfileView() {
                 )}
                 {reviews.length
                   ? reviews.map((r, i) => (
-                    <div key={r._id || i} className="review-card improved">
-                      {/* תוכן הביקורת */}
-                    </div>
-                  ))
+                      <div key={r._id || i} className="review-card improved">
+                        {/* תוכן הביקורת */}
+                      </div>
+                    ))
                   : <p className="no-data">אין ביקורות</p>}
               </div>
             )}
@@ -203,11 +229,11 @@ export default function BusinessProfileView() {
                 {faqs.length === 0
                   ? <p className="no-data">אין עדיין שאלות ותשובות</p>
                   : faqs.map((faq, i) => (
-                    <div key={faq._id || i} className="faq-card">
-                      <p><strong>שאלה:</strong> {faq.question}</p>
-                      <p><strong>תשובה:</strong> {faq.answer}</p>
-                    </div>
-                  ))}
+                      <div key={faq._id || i} className="faq-card">
+                        <p><strong>שאלה:</strong> {faq.question}</p>
+                        <p><strong>תשובה:</strong> {faq.answer}</p>
+                      </div>
+                    ))}
               </div>
             )}
             {currentTab === "הודעות מלקוחות" && (
@@ -219,7 +245,6 @@ export default function BusinessProfileView() {
                 )}
                 {isOwner && (
                   <Link to={`/business/${bizId}/dashboard/messages`} className="chat-link-btn">
-
                     ▶️ ניהול הודעות מלקוחות
                   </Link>
                 )}
@@ -227,27 +252,24 @@ export default function BusinessProfileView() {
             )}
             {currentTab === "יומן" && (
               <div className="booking-tab">
-                <ServicesSelector
-                  services={services}
-                  onSelect={svc => setSelectedService(svc)}
-                />
-                {!selectedService
-                  ? <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
-                  : (
-                    <>
-                      <button className="back-btn" onClick={() => setSelectedService(null)}>
-                        ← שנה שירות
-                      </button>
-                      <div className="calendar-fullwidth">
-                        <ClientCalendar
-                          workHours={schedule}
-                          selectedService={selectedService}
-                          onBackToList={() => setSelectedService(null)}
-                          businessId={bizId}
-                        />
-                      </div>
-                    </>
-                  )}
+                <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
+                {!selectedService ? (
+                  <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
+                ) : (
+                  <>
+                    <button className="back-btn" onClick={() => setSelectedService(null)}>
+                      ← שנה שירות
+                    </button>
+                    <div className="calendar-fullwidth">
+                      <ClientCalendar
+                        workHours={schedule}
+                        selectedService={selectedService}
+                        onBackToList={() => setSelectedService(null)}
+                        businessId={bizId}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>

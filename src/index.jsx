@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SSEProvider } from './context/SSEContext';
+import { SocketProvider } from './context/socketContext'; // <-- ייבוא ה-SocketProvider
 
 // Polyfill ל-Buffer בדפדפן:
 import { Buffer } from 'buffer';
@@ -23,9 +24,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <SSEWrapper>
-          <App />
-        </SSEWrapper>
+        <SocketProvider> {/* עטיפה ב-SocketProvider */}
+          <SSEWrapper>
+            <App />
+          </SSEWrapper>
+        </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
