@@ -24,27 +24,35 @@ export default function DashboardLive({ businessId }) {
       return;
     }
 
-    const url = `${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
-    const evtSource = new EventSource(url);
+    let evtSource;
+    let reconnectTimeout;
 
-    evtSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log("📨 SSE dashboardUpdate received:", data);
-        setStats(data);
-      } catch (error) {
-        console.error("Error parsing SSE data:", error);
-      }
-    };
+    function connect() {
+      const url = `${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
+      evtSource = new EventSource(url);
 
-    evtSource.onerror = (err) => {
-      console.error("⚠️ SSE error:", err);
-      // לא סוגר כאן מיד, אפשר לנסות reconnect אוטומטי
-    };
+      evtSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          setStats(data);
+        } catch (error) {
+          console.error("Error parsing SSE data:", error);
+        }
+      };
+
+      evtSource.onerror = (err) => {
+        console.error("⚠️ SSE error, reconnecting in 3 seconds", err);
+        evtSource.close();
+        reconnectTimeout = setTimeout(connect, 3000);
+      };
+    }
+
+    connect();
 
     return () => {
-      console.log("🔌 Closing SSE connection");
-      evtSource.close();
+      if (evtSource) evtSource.close();
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      console.log("🔌 SSE connection closed");
     };
   }, [businessId]);
 
