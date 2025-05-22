@@ -23,9 +23,13 @@ export default function DashboardLive({ businessId }) {
     );
 
     evtSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("📨 SSE dashboardUpdate received:", data);
-      setStats(data);
+      try {
+        const data = JSON.parse(event.data);
+        console.log("📨 SSE dashboardUpdate received:", data);
+        setStats(data);
+      } catch (error) {
+        console.error("Error parsing SSE data:", error);
+      }
     };
 
     evtSource.onerror = (err) => {
