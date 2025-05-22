@@ -66,12 +66,41 @@ export default function BusinessChatPage() {
       console.log("Socket disconnected:", reason);
     });
 
+    // הוספת האזנה ל-newMessage לעדכון השיחות בזמן אמת
+    const handleNewMessage = (msg) => {
+      // עדכון השיחה שקיבלה הודעה חדשה לפי conversationId
+      setConvos((prevConvos) => {
+        const convoIndex = prevConvos.findIndex(
+          (c) =>
+            String(c._id) === String(msg.conversationId) ||
+            String(c.conversationId) === String(msg.conversationId)
+        );
+        if (convoIndex === -1) {
+          // שיחה חדשה? אפשר להוסיף או להשאיר ככה
+          return prevConvos;
+        }
+
+        const updatedConvo = {
+          ...prevConvos[convoIndex],
+          updatedAt: new Date().toISOString(),
+        };
+
+        const newConvos = [...prevConvos];
+        newConvos.splice(convoIndex, 1);
+        // משאירים את השיחה המעודכנת במיקום הראשון כדי שתופיע בראש הרשימה
+        return [updatedConvo, ...newConvos];
+      });
+    };
+
+    socketRef.current.on("newMessage", handleNewMessage);
+
     return () => {
+      socketRef.current?.off("newMessage", handleNewMessage);
       socketRef.current?.disconnect();
       socketRef.current = null;
       console.log("Socket disconnected and cleaned up");
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, selected]);
 
   const handleSelect = (conversationId, partnerId) => {
     console.log(`Conversation selected: ${conversationId} with partner ${partnerId}`);

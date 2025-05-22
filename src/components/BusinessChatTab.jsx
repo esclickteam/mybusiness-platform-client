@@ -108,7 +108,7 @@ export default function BusinessChatTab({
 
   if (socket) {
     // 1. נסיון ראשון: getHistory דרך socket
-    socket.emit("getHistory", { conversationId }, (res) => {
+    socket.emit("joinConversation", conversationId, (res) => {
       console.log("⚡ getHistory response:", res);
       const history = Array.isArray(res.messages) ? res.messages : [];
       if (history.length > 0) {
