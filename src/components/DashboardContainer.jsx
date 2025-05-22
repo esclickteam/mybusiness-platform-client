@@ -1,6 +1,4 @@
-// src/components/DashboardLive.jsx
 import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import DashboardCards from "./DashboardCards";
 
 export default function DashboardLive({ businessId }) {
@@ -20,33 +18,24 @@ export default function DashboardLive({ businessId }) {
       return;
     }
 
-    const socket = io(import.meta.env.VITE_SOCKET_URL, {
-      auth: { role: "business-dashboard", businessId },  // לא שולחים token ידנית
-      path: "/socket.io",
-      transports: ["websocket"],
-      withCredentials: true, // חובה! כדי לשלוח cookie אוטומטית
-    });
+    const evtSource = new EventSource(
+      `${import.meta.env.VITE_API_URL}/api/sse/dashboard-stats/${businessId}`
+    );
 
-    socket.on("connect", () => {
-      console.log("🟢 Socket.IO connected:", socket.id);
-    });
-
-    socket.on("dashboardUpdate", (data) => {
-      console.log("📨 dashboardUpdate received:", data);
+    evtSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("📨 SSE dashboardUpdate received:", data);
       setStats(data);
-    });
+    };
 
-    socket.on("disconnect", () => {
-      console.log("🔴 Socket.IO disconnected");
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("⚠️ Socket.IO connection error:", err.message);
-    });
+    evtSource.onerror = (err) => {
+      console.error("⚠️ SSE error:", err);
+      evtSource.close();
+    };
 
     return () => {
-      console.log("🔌 Disconnecting Socket.IO");
-      socket.disconnect();
+      console.log("🔌 Closing SSE connection");
+      evtSource.close();
     };
   }, [businessId]);
 
