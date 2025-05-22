@@ -117,15 +117,21 @@ export default function BusinessChatTab({
       } else {
         // 2. גיבוי: fetch דרך ה-proxy (relative path)
         fetch(`/api/conversations/${conversationId}`, {
-          credentials: "include",
-        })
-          .then((r) => r.json())
-          .then((data) => {
-            console.log("🌐 fetch history:", data.messages);
-            setMessages(data.messages || []);
-          })
-          .catch(console.error)
-          .finally(() => setLoading(false));
+  credentials: "include",
+}).then(async (r) => {
+  if (!r.ok) throw new Error(`HTTP error ${r.status}`);
+  const data = await r.json();
+  return data;
+})
+.then((data) => {
+  console.log("🌐 fetch history:", data);
+  setMessages(data || []);
+})
+.catch((err) => {
+  console.error('Fetch history failed:', err);
+  setMessages([]);
+})
+.finally(() => setLoading(false));
       }
     });
 
