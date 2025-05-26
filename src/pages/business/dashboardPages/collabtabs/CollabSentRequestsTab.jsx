@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import API from "../api"; // עדכן לפי הנתיב שלך
+import API from "../../../../../JS/api";
+
 
 export default function CollabSentRequestsTab() {
   const [sentRequests, setSentRequests] = useState([]);
