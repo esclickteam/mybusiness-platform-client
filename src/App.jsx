@@ -58,6 +58,8 @@ const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
 const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -101,6 +103,7 @@ export default function App() {
             <Route path="/staff-login" element={<StaffLogin />} />
             <Route path="/business/:businessId" element={<BusinessProfileView />} />
             <Route path="/book/:businessId" element={<BookingPage />} />
+            <Route path="/business-profile/:businessId" element={<BusinessProfilePage />} />
 
             {/* Client chat outside dashboard */}
             <Route
