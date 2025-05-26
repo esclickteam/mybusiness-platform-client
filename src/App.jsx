@@ -58,7 +58,7 @@ const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
-const CollabFindPartnerTab = lazy(() => import("./components/collaboration/CollabFindPartnerTab"));
+const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 
 
 function ScrollToTop() {
