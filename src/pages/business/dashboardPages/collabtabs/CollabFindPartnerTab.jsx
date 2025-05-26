@@ -111,6 +111,13 @@ export default function CollabFindPartnerTab({
     setSnackbarOpen(true);
   };
 
+  // לוג לבדיקת פרופס צ'אט
+  console.log("Chat props:", {
+    token: localStorage.getItem("token"),
+    myBusinessId,
+    chatWithBusinessId,
+  });
+
   return (
     <div>
       {/* --- Search Bar --- */}
@@ -207,7 +214,7 @@ export default function CollabFindPartnerTab({
       )}
 
       {/* --- BusinessChat Component --- */}
-      {chatWithBusinessId && (
+      {chatWithBusinessId && myBusinessId && localStorage.getItem("token") ? (
         <div className="business-chat-wrapper">
           <Button variant="outlined" onClick={closeChatModal} sx={{ mb: 2 }}>
             סגור צ'אט
@@ -221,7 +228,9 @@ export default function CollabFindPartnerTab({
             otherBusinessId={chatWithBusinessId}
           />
         </div>
-      )}
+      ) : chatWithBusinessId ? (
+        <p>טוען צ'אט...</p>
+      ) : null}
 
       {/* --- Proposal Modal --- */}
       <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
