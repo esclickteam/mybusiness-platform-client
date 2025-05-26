@@ -43,17 +43,19 @@ const AiPartnerTab = () => {
     setInput("");
     setLoading(true);
 
-    // קביעת כתובת ה־API על פי הסביבה (פיתוח או פרודקשן)
-    const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5005/api";  // אם לא נמצא REACT_APP_API_URL, תשתמש בכתובת localhost
+    const BASE_URL = process.env.REACT_APP_API_URL;
+    if (!BASE_URL) {
+      console.error("Missing REACT_APP_API_URL environment variable");
+      setChat((prev) => [...prev, { sender: "ai", text: "❌ שגיאה: כתובת ה-API לא מוגדרת." }]);
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(`${BASE_URL}/partner-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: finalPrompt,
-          profile: businessProfile
-        })
+        body: JSON.stringify({ prompt: finalPrompt, profile: businessProfile }),
       });
 
       const data = await response.json();
@@ -77,7 +79,6 @@ const AiPartnerTab = () => {
   return (
     <div className="ai-partner-container">
       <h2>🤖 שותף AI אישי לעסק</h2>
-
       <div className="partner-layout">
         <div className="profile-section">
           <h4>📝 הגדרת העסק</h4>
@@ -88,37 +89,24 @@ const AiPartnerTab = () => {
           <input type="text" name="goal" placeholder="מה היעד העיקרי שלך כרגע?" value={businessProfile.goal} onChange={handleProfileChange} />
           <button onClick={handleSaveProfile} className="save-profile-button">💾 שמור פרופיל</button>
         </div>
-
         <div className="chat-section">
           {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
-
           <div className="quick-buttons">
             {quickActions.map((text, index) => (
-              <button key={index} className="quick-button" onClick={() => handleSend(text)}>
-                {text}
-              </button>
+              <button key={index} className="quick-button" onClick={() => handleSend(text)}>{text}</button>
             ))}
           </div>
-
           <div className="chat-box">
             {chat.map((msg, i) => (
               <div key={i} className={`bubble ${msg.sender}`}>{msg.text}</div>
             ))}
             {loading && <div className="bubble ai">⌛ מחשב תשובה...</div>}
           </div>
-
           <div className="summary-button-wrapper">
             <button className="summary-button" onClick={() => handleSend("תן לי סיכום של השיחה הזו בבקשה")}>🧾 תן לי סיכום של השיחה</button>
           </div>
-
           <div className="chat-input">
-            <input
-              type="text"
-              placeholder="כתבי כאן כל שאלה או בקשה..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            />
+            <input type="text" placeholder="כתבי כאן כל שאלה או בקשה..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSend()} />
             <button onClick={() => handleSend()} disabled={loading}>שליחה</button>
           </div>
         </div>

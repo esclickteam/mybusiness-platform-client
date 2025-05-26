@@ -6,10 +6,15 @@ const BusinessXrayWrapper = () => {
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const apiBaseUrl = process.env.REACT_APP_API_URL;
+  if (!apiBaseUrl) {
+    throw new Error("Missing REACT_APP_API_URL environment variable");
+  }
+
   const handleSubmitAnswers = async (answers, businessType) => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5005/api/business-xray", {
+      const response = await fetch(`${apiBaseUrl}/business-xray`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

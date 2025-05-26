@@ -17,7 +17,10 @@ const BusinessAdvisorTab = () => {
     "איך בונים תוכנית עסקית פשוטה?"
   ];
 
-  const apiBaseUrl = process.env.REACT_APP_API_URL || "http://localhost:5005/api";
+  const apiBaseUrl = process.env.REACT_APP_API_URL;
+  if (!apiBaseUrl) {
+    throw new Error("Missing REACT_APP_API_URL environment variable");
+  }
 
   const sendMessage = async (newMessages) => {
     setLoading(true);

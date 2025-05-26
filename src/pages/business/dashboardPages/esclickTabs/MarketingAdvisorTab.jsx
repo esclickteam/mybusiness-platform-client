@@ -17,6 +17,11 @@ const MarketingAdvisorTab = () => {
     "באיזה רשת חברתית כדאי להתמקד?"
   ];
 
+  const apiBaseUrl = process.env.REACT_APP_API_URL;
+  if (!apiBaseUrl) {
+    throw new Error("Missing REACT_APP_API_URL environment variable");
+  }
+
   const sendMessage = async (newMessages) => {
     setLoading(true);
     const payload = {
@@ -25,7 +30,7 @@ const MarketingAdvisorTab = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5005/api/ask-ai", {
+      const response = await fetch(`${apiBaseUrl}/ask-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
