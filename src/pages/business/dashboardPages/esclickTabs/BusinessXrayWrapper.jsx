@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import XrayTab from "./XrayTab";
 import BusinessXrayReport from "./BusinessXrayReport";
+import "./BusinessXrayReport.css"; // להבטיח שיש עיצוב לכפתור ול־report
 
 const BusinessXrayWrapper = () => {
   const [reportData, setReportData] = useState(null);
@@ -9,7 +10,7 @@ const BusinessXrayWrapper = () => {
   const apiBaseUrl = import.meta.env.VITE_API_URL;
 
   if (!apiBaseUrl) {
-    throw new Error("Missing REACT_APP_API_URL environment variable");
+    throw new Error("Missing VITE_API_URL environment variable");
   }
 
   const handleSubmitAnswers = async (answers, businessType) => {
@@ -38,7 +39,7 @@ const BusinessXrayWrapper = () => {
   };
 
   return (
-    <div>
+    <div className="xray-wrapper">
       {!reportData ? (
         <XrayTab onSubmit={handleSubmitAnswers} loading={loading} />
       ) : (
@@ -48,8 +49,8 @@ const BusinessXrayWrapper = () => {
             insights={reportData.insights}
             businessType={reportData.businessType}
           />
-          <div style={{ textAlign: "center", marginTop: "2rem" }}>
-            <button onClick={handleReset} className="submit-button">
+          <div className="xray-reset-row">
+            <button onClick={handleReset} className="xray-reset-btn">
               🔁 התחלה מחדש
             </button>
           </div>

@@ -91,3 +91,32 @@
     background-color: #6843bb;
   }
   
+  .xray-wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 8px 40px;
+}
+
+.xray-reset-row {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.xray-reset-btn {
+  padding: 12px 28px;
+  background: #7e57c2;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(60, 0, 100, 0.08);
+  transition: background 0.18s;
+  margin: 0 auto;
+  letter-spacing: 0.2px;
+}
+
+.xray-reset-btn:hover {
+  background: #6843bb;
+}
