@@ -48,15 +48,15 @@ export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
 
     const formData = new FormData(e.target);
     const updatedData = {
-      businessName: formData.get("businessName"),
-      category: formData.get("category"),
-      area: formData.get("area"),
-      about: formData.get("about"),
-      collabPref: formData.get("collabPref"),
-      contact: formData.get("contact"),
-      phone: formData.get("phone"),
-      email: formData.get("email"),
-    };
+  businessName: formData.get("businessName"),
+  category: formData.get("category"),
+  area: formData.get("area"),                    // ← אזור פעילות
+  description: formData.get("about"),            // ← שים לב: נשלח description לשרת!
+  collabPref: formData.get("collabPref"),
+  contact: formData.get("contact"),              // ← איש קשר
+  phone: formData.get("phone"),
+  email: formData.get("email"),
+};
 
     try {
       // עדכון לוגו אם שונה
@@ -88,15 +88,16 @@ export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
 
   // ערכי ברירת מחדל
   const safeProfile = {
-    businessName: profileData?.businessName || "שם לא זמין",
-    category: profileData?.category || "קטגוריה לא זמינה",
-    area: profileData?.area || "אזור לא זמין",
-    about: profileData?.about || "אין תיאור",
-    collabPref: profileData?.collabPref || "",
-    contact: profileData?.contact || "-",
-    phone: profileData?.phone || "-",
-    email: profileData?.email || "-",
-  };
+  businessName: profileData?.businessName || "שם לא זמין",
+  category: profileData?.category || "קטגוריה לא זמינה",
+  area: profileData?.area || "אזור לא זמין",
+  about: profileData?.description || "אין תיאור",     // ← תציג description, לא about!
+  collabPref: profileData?.collabPref || "",
+  contact: profileData?.contact || "-",
+  phone: profileData?.phone || "-",
+  email: profileData?.email || "-",
+};
+
 
   return (
     <>
