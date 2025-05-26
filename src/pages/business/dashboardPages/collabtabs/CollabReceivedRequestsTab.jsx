@@ -31,7 +31,8 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
     } else {
       async function fetchReceivedRequests() {
         try {
-          const res = await API.get("/my/proposals/received"); // נתיב API מתוקן
+          const res = await API.get("/business/my/proposals/received");
+ 
           setReceivedRequests(res.data.proposalsReceived || []);
           setError(null);
         } catch (err) {
@@ -48,7 +49,8 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
   // אישור הצעה
   const handleAccept = async (proposalId) => {
     try {
-      await API.put(`/my/proposals/${proposalId}/status`, { status: "accepted" }); // נתיב API מתוקן
+      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
+ 
       setReceivedRequests(prev =>
         prev.map(p =>
           (p.proposalId === proposalId || p._id === proposalId)
@@ -67,7 +69,8 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
   // דחיית הצעה
   const handleReject = async (proposalId) => {
     try {
-      await API.put(`/my/proposals/${proposalId}/status`, { status: "rejected" }); // נתיב API מתוקן
+      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
+ 
       setReceivedRequests(prev =>
         prev.map(p =>
           (p.proposalId === proposalId || p._id === proposalId)

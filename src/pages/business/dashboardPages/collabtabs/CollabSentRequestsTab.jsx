@@ -11,7 +11,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     setLoading(true);
     async function fetchSentRequests() {
       try {
-        const res = await API.get("/my/proposals/sent");  // עדכן נתיב ל-API נכון
+        const res = await API.get("/business/my/proposals/sent");
         setSentRequests(res.data.proposalsSent || []);
         setError(null);
       } catch (err) {
@@ -28,7 +28,8 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
-      await API.delete(`/my/proposals/${proposalId}`); // עדכן נתיב נכון למחיקה
+      await API.delete(`/business/my/proposals/${proposalId}`);
+ 
       setSentRequests((prev) =>
         prev.filter((p) => p.proposalId !== proposalId)
       );
