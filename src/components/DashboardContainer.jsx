@@ -28,7 +28,8 @@ export default function DashboardLive({ businessId }) {
     let reconnectTimeout;
 
     function connect() {
-      const url = `${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
+      const url = `${import.meta.env.VITE_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
+
       evtSource = new EventSource(url);
 
       evtSource.onmessage = (event) => {

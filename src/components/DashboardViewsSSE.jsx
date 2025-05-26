@@ -16,7 +16,8 @@ export default function DashboardViewsSSE({ businessId }) {
         return;
       }
 
-      const url = `${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
+      const url = `${import.meta.env.VITE_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
+
       const evtSource = new EventSource(url);
       evtSourceRef.current = evtSource;
       setError(null);

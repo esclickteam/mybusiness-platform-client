@@ -80,7 +80,8 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!businessId) return;
 
-    const evtSource = new EventSource(`${process.env.REACT_APP_API_URL}/sse/dashboard-stats/${businessId}`);
+    const evtSource = new EventSource(`${import.meta.env.VITE_API_URL}/sse/dashboard-stats/${businessId}`);
+
 
     evtSource.onmessage = (event) => {
       try {
