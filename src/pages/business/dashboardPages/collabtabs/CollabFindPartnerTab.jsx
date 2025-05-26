@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import API from "../../../../api"; // <= עדכן לכיוון הנכון אצלך!
+import API from "../../../../api"; // עדכן לפי הנתיב אצלך
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -37,6 +37,17 @@ export default function CollabFindPartnerTab({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  // פונקציה להסרת כפילויות לפי id
+  function uniqueById(arr) {
+    const seen = new Set();
+    return arr.filter(item => {
+      const id = item._id || item.id;
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  }
+
   // שליפת רשימת השותפים + זיהוי העסק שלי
   useEffect(() => {
     async function fetchPartners() {
@@ -47,7 +58,6 @@ export default function CollabFindPartnerTab({
           relevant: res.data.relevant || [],
         });
 
-        // נזהה את העסק שלי לפי id שמגיע מהשרת (מומלץ להחזיר מהשרת myBusinessId)
         if (res.data.myBusinessId) {
           setMyBusinessId(res.data.myBusinessId);
         } else if (res.data.all) {
@@ -66,6 +76,33 @@ export default function CollabFindPartnerTab({
 
   // רשימת עסקים להצגה – רלוונטיים כברירת מחדל, או הכל
   const displayedPartners = showAll ? partners.all : partners.relevant;
+
+  // הסרת כפילויות לפני סינון החיפוש
+  const uniquePartners = uniqueById(displayedPartners);
+
+  // חיפוש/סינון קליינט
+  const filteredPartners = uniquePartners.filter((business) => {
+    if (searchMode === "category" && searchCategory) {
+      return (
+        business.category
+          .toLowerCase()
+          .includes(searchCategory.toLowerCase()) ||
+        (business.complementaryCategories &&
+          business.complementaryCategories.some((cat) =>
+            cat.toLowerCase().includes(searchCategory.toLowerCase())
+          ))
+      );
+    }
+    if (searchMode === "free" && freeText) {
+      const text = freeText.toLowerCase();
+      return (
+        business.businessName.toLowerCase().includes(text) ||
+        business.description.toLowerCase().includes(text) ||
+        business.category.toLowerCase().includes(text)
+      );
+    }
+    return true;
+  });
 
   const handleOpenProfile = (business) => {
     navigate(`/business-profile/${business._id || business.id}`);
@@ -100,30 +137,6 @@ export default function CollabFindPartnerTab({
       setSnackbarOpen(true);
     }
   };
-
-  // חיפוש/סינון קליינט
-  const filteredPartners = displayedPartners.filter((business) => {
-    if (searchMode === "category" && searchCategory) {
-      return (
-        business.category
-          .toLowerCase()
-          .includes(searchCategory.toLowerCase()) ||
-        (business.complementaryCategories &&
-          business.complementaryCategories.some((cat) =>
-            cat.toLowerCase().includes(searchCategory.toLowerCase())
-          ))
-      );
-    }
-    if (searchMode === "free" && freeText) {
-      const text = freeText.toLowerCase();
-      return (
-        business.businessName.toLowerCase().includes(text) ||
-        business.description.toLowerCase().includes(text) ||
-        business.category.toLowerCase().includes(text)
-      );
-    }
-    return true;
-  });
 
   return (
     <div>
@@ -205,7 +218,6 @@ export default function CollabFindPartnerTab({
               </span>
 
               <div className="collab-card-buttons">
-                {/* העסק שלי – לא מאפשר שליחה לעצמי */}
                 {isMine ? (
                   <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
                 ) : (
