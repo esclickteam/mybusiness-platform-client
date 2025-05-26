@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
+import { useAuth } from "../context/AuthContext"; // נניח שיש לך הקשר אימות
 
 export default function BusinessProfilePage() {
   const { businessId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +30,9 @@ export default function BusinessProfilePage() {
   if (error) return <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>{error}</p>;
   if (!business) return <p style={{ textAlign: "center", marginTop: 50 }}>העסק לא נמצא.</p>;
 
+  // בדיקה האם המשתמש הוא בעל עסק, והעסק בפרופיל הוא שונה מהעסק שלו
+  const showBackButton = user?.role === "business" && user.businessId !== businessId;
+
   return (
     <div style={{
       maxWidth: 700,
@@ -39,23 +44,25 @@ export default function BusinessProfilePage() {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       color: "#333"
     }}>
-      {/* כפתור חזרה */}
-      <button
-        onClick={() => navigate(`/business/${businessId}/dashboard`)}
-        style={{
-          backgroundColor: "transparent",
-          border: "none",
-          color: "#8e44ad",
-          cursor: "pointer",
-          fontSize: 16,
-          marginBottom: 24,
-          fontWeight: "600",
-          padding: 0
-        }}
-        aria-label="חזרה לדשבורד"
-      >
-        ← חזרה לדשבורד
-      </button>
+      {/* כפתור חזרה לשיתופי פעולה, רק אם זה לא הפרופיל של העסק שלו */}
+      {showBackButton && (
+        <button
+          onClick={() => navigate("/business/collaborations")} // שנה את הנתיב לפי מה שמתאים לשיתופי פעולה
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            color: "#8e44ad",
+            cursor: "pointer",
+            fontSize: 16,
+            marginBottom: 24,
+            fontWeight: "600",
+            padding: 0
+          }}
+          aria-label="חזרה לשיתופי פעולה"
+        >
+          ← חזרה לשיתופי פעולה
+        </button>
+      )}
 
       <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
         <img
