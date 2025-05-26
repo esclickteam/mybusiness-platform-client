@@ -1,4 +1,5 @@
 // src/App.jsx
+// src/App.jsx
 import React, { Suspense, lazy, useState } from "react";
 import {
   Routes,
@@ -13,10 +14,10 @@ import ClientChatSection from "./components/ClientChatSection";
 import BusinessChatPage from "./components/BusinessChatPage";
 import { useAuth } from "./context/AuthContext";
 import { SSEProvider } from "./context/SSEContext";
-import Collab from "./pages/business/dashboardPages/Collab";
 
 import "./styles/index.css";
 
+// Lazy-loaded pages
 const HomePage            = lazy(() => import("./pages/Home"));
 const About               = lazy(() => import("./pages/About"));
 const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
@@ -59,6 +60,9 @@ const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
+
+// Lazy-loaded Collab pages
+const Collab              = lazy(() => import("./pages/business/dashboardPages/Collab"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 
 function ScrollToTop() {
@@ -116,16 +120,17 @@ export default function App() {
             <Route path="/business/:businessId" element={<BusinessProfileView />} />
             <Route path="/book/:businessId" element={<BookingPage />} />
 
+            {/* Collaborations section under business */}
             <Route
-  path="/business/collaborations/:tab?"
-  element={
-    <ProtectedRoute roles={["business"]}>
-      <Collab />
-    </ProtectedRoute>
-  }
-/>
+              path="/business/:businessId/collaborations/:tab?"
+              element={
+                <ProtectedRoute roles={["business"]}>
+                  <Collab />
+                </ProtectedRoute>
+              }
+            />
 
-
+            {/* Business profile editor */}
             <Route
               path="/business-profile/:businessId"
               element={
@@ -181,119 +186,23 @@ export default function App() {
               <Route path="favorites" element={<FavoritesPage />} />
             </Route>
 
-            {/* Staff & Admin */}
-            <Route
-              path="/staff/dashboard"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <StaffDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/staff/session"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <WorkSession />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/staff/profile"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <PhoneProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/staff/tasks"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <MyTasks />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/staff/sales"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <MySales />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager/dashboard"
-              element={
-                <ProtectedRoute roles={["manager"]}>
-                  <ManagerDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/logs"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminLogs />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/plans"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminPlans />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/settings"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminSettings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/users"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminUsers />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/site-edit"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <EditSiteContent />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/roles"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <ManageRoles />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/affiliate-payouts"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminPayoutPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Staff & Admin routes */}
+            <Route path="/staff/dashboard" element={<ProtectedRoute roles={["worker"]}><StaffDashboard /></ProtectedRoute>} />
+            <Route path="/staff/session" element={<ProtectedRoute roles={["worker"]}><WorkSession /></ProtectedRoute>} />
+            <Route path="/staff/profile" element={<ProtectedRoute roles={["worker"]}><PhoneProfile /></ProtectedRoute>} />
+            <Route path="/staff/tasks" element={<ProtectedRoute roles={["worker"]}><MyTasks /></ProtectedRoute>} />
+            <Route path="/staff/sales" element={<ProtectedRoute roles={["worker"]}><MySales /></ProtectedRoute>} />
+
+            <Route path="/manager/dashboard" element={<ProtectedRoute roles={["manager"]}><ManagerDashboard /></ProtectedRoute>} />
+
+            <Route path="/admin/dashboard" element={<ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/logs" element={<ProtectedRoute roles={["admin"]}><AdminLogs /></ProtectedRoute>} />
+            <Route path="/admin/plans" element={<ProtectedRoute roles={["admin"]}><AdminPlans /></ProtectedRoute>} />
+            <Route path="/admin/settings" element={<ProtectedRoute roles={["admin"]}><AdminSettings /></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute roles={["admin"]}><AdminUsers /></ProtectedRoute>} />
+            <Route path="/admin/site-edit" element={<ProtectedRoute roles={["admin"]}><EditSiteContent /></ProtectedRoute>} />
+            <Route path="/admin/roles" element={<ProtectedRoute roles={["admin"]}><ManageRoles /></ProtectedRoute>} />
+            <Route path="/admin/affiliate-payouts" element={<ProtectedRoute roles={["admin"]}><AdminPayoutPage /></ProtectedRoute>} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
@@ -303,6 +212,7 @@ export default function App() {
     </>
   );
 }
+
 
 // Wrapper for business showing list of conversations
 function BusinessChatListWrapper() {
