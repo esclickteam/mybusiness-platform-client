@@ -58,6 +58,8 @@ const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
+const CollabFindPartnerTab = lazy(() => import("./components/collaboration/CollabFindPartnerTab"));
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -101,6 +103,16 @@ export default function App() {
             <Route path="/staff-login" element={<StaffLogin />} />
             <Route path="/business/:businessId" element={<BusinessProfileView />} />
             <Route path="/book/:businessId" element={<BookingPage />} />
+            
+<Route
+  path="/business/collaborations"
+  element={
+    <ProtectedRoute roles={["business"]}>
+      <CollabFindPartnerTab />
+    </ProtectedRoute>
+  }
+/>
+
 
             {/* כאן - העברת currentUserBusinessId */}
             <Route
