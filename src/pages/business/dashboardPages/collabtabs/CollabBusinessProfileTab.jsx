@@ -12,7 +12,7 @@ export default function CollabBusinessProfileTab({
   showEditProfile
 }) {
   const [logoPreview, setLogoPreview] = useState(profileImage);
-  const [logoFile, setLogoFile] = useState(null); // אם תרצה לשמור לשרת
+  const [logoFile, setLogoFile] = useState(null); // אם תרצי לשמור את הקובץ לשרת
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];

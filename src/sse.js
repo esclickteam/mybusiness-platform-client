@@ -1,6 +1,12 @@
 export function startSSEConnection(businessId) {
-  // השתמש ב-VITE_SSE_URL שמוגדר בסביבת הפרודקשן/פיתוח
-  const url = `${import.meta.env.VITE_SSE_URL}/stream/${businessId}`;
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("⚠️ No auth token found in localStorage");
+    return null; // או throw new Error(...) אם תרצה לעצור את התהליך
+  }
+
+  // הוספת הטוקן ל-URL כפרמטר
+  const url = `${import.meta.env.VITE_SSE_URL}/stream/${businessId}?token=${encodeURIComponent(token)}`;
 
   const eventSource = new EventSource(url, { withCredentials: true });
 

@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import axios from "axios";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -19,9 +20,8 @@ export default function CollabFindPartnerTab({
   setSelectedBusiness,
   setOpenModal,
   isDevUser,
-  handleSendProposal, // מגיע מהורה
-  handleOpenChat,
-  partners = []
+  handleSendProposal, // פונקציה להמשך טיפול בהצעות
+  handleOpenChat,     // פונקציה לפתיחת צ'אט
 }) {
   const navigate = useNavigate();
   const [localPartners, setLocalPartners] = useState([]);
@@ -34,31 +34,26 @@ export default function CollabFindPartnerTab({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  // שליפת רשימת השותפים מהשרת
   useEffect(() => {
-    if (partners.length === 0) {
-      setLocalPartners([
-        {
-          id: "biz1",
-          businessName: "מאיה שיווק דיגיטלי",
-          category: "שיווק",
-          description: "מומחית בקידום ממומן וכתיבה שיווקית.",
-          status: "מאושר"
-        },
-        {
-          id: "biz2",
-          businessName: "יוסי הדפסות",
-          category: "עיצוב גרפי",
-          description: "הדפסות איכותיות לכל מטרה.",
-          status: "ממתין"
-        }
-      ]);
-    } else {
-      setLocalPartners(partners);
+    async function fetchPartners() {
+      try {
+        const res = await axios.get("/api/businesses/findPartners");
+        setLocalPartners(res.data);
+      } catch (err) {
+        console.error("Error fetching partners", err);
+      }
     }
-  }, [partners]);
+
+    fetchPartners();
+
+    const intervalId = setInterval(fetchPartners, 10000); // עדכון כל 10 שניות
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleOpenProfile = (business) => {
-    navigate(`/business-profile/${business.id}`);
+    navigate(`/business-profile/${business._id || business.id}`);
   };
 
   const handleSendProposalWithModal = (business) => {
@@ -131,43 +126,67 @@ export default function CollabFindPartnerTab({
       {localPartners.length === 0 ? (
         <p>לא נמצאו שותפים.</p>
       ) : (
-        localPartners.map((business) => (
-          <div key={business.id} className="collab-card">
-            <h3 style={{ fontSize: "1.4rem", fontWeight: "700", marginBottom: "0.4rem" }}>
-              {business.businessName}
-            </h3>
-            <p className="business-category">{business.category}</p>
-            <p>{business.description}</p>
-            <span className="status-badge">סטטוס בקשה: {business.status}</span>
+        localPartners
+          .filter((business) => {
+            if (searchMode === "category" && searchCategory) {
+              return (
+                business.category
+                  .toLowerCase()
+                  .includes(searchCategory.toLowerCase()) ||
+                (business.complementaryCategories &&
+                  business.complementaryCategories.some((cat) =>
+                    cat.toLowerCase().includes(searchCategory.toLowerCase())
+                  ))
+              );
+            }
+            if (searchMode === "free" && freeText) {
+              const text = freeText.toLowerCase();
+              return (
+                business.businessName.toLowerCase().includes(text) ||
+                business.description.toLowerCase().includes(text) ||
+                business.category.toLowerCase().includes(text)
+              );
+            }
+            return true;
+          })
+          .map((business) => (
+            <div key={business._id || business.id} className="collab-card">
+              <h3 style={{ fontSize: "1.4rem", fontWeight: "700", marginBottom: "0.4rem" }}>
+                {business.businessName}
+              </h3>
+              <p className="business-category">{business.category}</p>
+              <p>{business.description}</p>
+              <span className="status-badge">סטטוס בקשה: {business.status || "לא ידוע"}</span>
 
-            <div className="collab-card-buttons">
-              <button
-                className="message-box-button"
-                onClick={() => handleSendProposalWithModal(business)}
-              >
-                שלח הצעה 📨
-              </button>
+              <div className="collab-card-buttons">
+                <button
+                  className="message-box-button"
+                  onClick={() => handleSendProposalWithModal(business)}
+                >
+                  שלח הצעה 📨
+                </button>
 
-              <button
-                className="message-box-button secondary"
-                onClick={() => handleOpenProfile(business)}
-              >
-                צפייה בפרופיל
-              </button>
+                <button
+                  className="message-box-button secondary"
+                  onClick={() => handleOpenProfile(business)}
+                >
+                  צפייה בפרופיל
+                </button>
 
-              <button
-                className="message-box-button secondary"
-                onClick={() => handleStartChat(business)}
-              >
-                צ'אט
-              </button>
+                <button
+                  className="message-box-button secondary"
+                  onClick={() => handleStartChat(business)}
+                >
+                  צ'אט
+                </button>
+              </div>
             </div>
-          </div>
-        ))
+          ))
       )}
 
+      {/* מודאל שליחת הודעה בצ'אט */}
       <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
-        <Box sx={{ backgroundColor: '#fff', padding: 4, borderRadius: 2, maxWidth: 400, margin: '10% auto' }}>
+        <Box sx={{ backgroundColor: "#fff", padding: 4, borderRadius: 2, maxWidth: 400, margin: "10% auto" }}>
           <h3>שלח הודעה אל {chatTarget?.businessName}</h3>
           <TextField
             multiline
@@ -177,19 +196,15 @@ export default function CollabFindPartnerTab({
             onChange={(e) => setMessageText(e.target.value)}
             placeholder="כתוב כאן את ההודעה שלך..."
           />
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginTop: 2 }}
-            onClick={handleSendChatMessage}
-          >
+          <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={handleSendChatMessage}>
             שלח הודעה
           </Button>
         </Box>
       </Modal>
 
+      {/* מודאל שליחת הצעת שיתוף פעולה */}
       <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
-        <Box sx={{ backgroundColor: '#fff', padding: 4, borderRadius: 2, maxWidth: 500, margin: '10% auto' }}>
+        <Box sx={{ backgroundColor: "#fff", padding: 4, borderRadius: 2, maxWidth: 500, margin: "10% auto" }}>
           <h3>שלח הצעה אל {proposalTarget?.businessName}</h3>
           <TextField
             multiline
@@ -199,12 +214,7 @@ export default function CollabFindPartnerTab({
             onChange={(e) => setProposalText(e.target.value)}
             placeholder="פרט את הצעת שיתוף הפעולה שלך..."
           />
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginTop: 2 }}
-            onClick={handleLocalSendProposal}
-          >
+          <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={handleLocalSendProposal}>
             שלח הצעה
           </Button>
         </Box>
@@ -214,9 +224,9 @@ export default function CollabFindPartnerTab({
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert severity="success" sx={{ width: '100%' }}>
+        <Alert severity="success" sx={{ width: "100%" }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
