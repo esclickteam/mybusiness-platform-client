@@ -18,10 +18,8 @@ const BusinessAdvisorTab = () => {
   ];
 
   const apiBaseUrl = import.meta.env.VITE_API_URL;
-
-
   if (!apiBaseUrl) {
-    throw new Error("Missing REACT_APP_API_URL environment variable");
+    throw new Error("Missing VITE_API_URL environment variable");
   }
 
   const sendMessage = async (newMessages) => {
@@ -95,15 +93,9 @@ const BusinessAdvisorTab = () => {
           {presetQuestions.map((q, index) => (
             <button
               key={index}
+              className="preset-question-btn"
               onClick={() => handlePresetQuestion(q)}
-              style={{
-                backgroundColor: "#f1f1f1",
-                border: "1px solid #ccc",
-                borderRadius: "12px",
-                padding: "10px 16px",
-                cursor: "pointer",
-                textAlign: "right"
-              }}
+              type="button"
             >
               {q}
             </button>
