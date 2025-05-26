@@ -20,10 +20,9 @@ export default function BusinessChat({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   useEffect(scrollToBottom, [messages]);
 
-  // יצירת חיבור Socket.IO עם אימות (רק פעם אחת)
+  // יצירת חיבור socket פעם אחת בלבד
   useEffect(() => {
     if (!token || !role || !myBusinessId) return;
 
@@ -53,25 +52,25 @@ export default function BusinessChat({
     };
   }, [token, role, myBusinessId, myBusinessName]);
 
-  // פתיחת שיחה (או קבלת שיחה קיימת) עם העסק השני
+  // פתיחת שיחה או קבלת שיחה קיימת
   useEffect(() => {
     if (!socket || !otherBusinessId || !myBusinessId) return;
 
+    console.log("Starting conversation with", otherBusinessId);
     socket.emit(
       "startConversation",
       { otherUserId: otherBusinessId },
       (res) => {
+        console.log("startConversation response:", res);
         if (res.ok) {
           setConversationId(res.conversationId);
 
-          // הצטרפות ל-room
           socket.emit("joinConversation", res.conversationId, (ack) => {
             if (!ack.ok) {
               console.error("Failed to join conversation:", ack.error);
             }
           });
 
-          // טעינת היסטוריית הודעות
           socket.emit("getHistory", { conversationId: res.conversationId }, (res2) => {
             if (res2.ok) setMessages(res2.messages);
           });
@@ -82,12 +81,13 @@ export default function BusinessChat({
     );
   }, [socket, otherBusinessId, myBusinessId]);
 
-  // האזנה להודעות חדשות רק לשיחה הנוכחית
+  // האזנה להודעות חדשות בשיחה הנוכחית
   useEffect(() => {
     if (!socket || !conversationId) return;
 
     const handler = (msg) => {
       if (msg.conversationId === conversationId) {
+        console.log("Received new message", msg);
         setMessages((prev) => [...prev, msg]);
       }
     };
@@ -101,7 +101,10 @@ export default function BusinessChat({
   // שליחת הודעה
   const sendMessage = () => {
     console.log("sendMessage triggered");
-    if (!input.trim() || !conversationId || !socket) return;
+    if (!input.trim() || !conversationId || !socket) {
+      console.log("Cannot send message: input or conversationId or socket missing");
+      return;
+    }
 
     socket.emit(
       "sendMessage",
