@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import {
   Routes,
   Route,
@@ -60,7 +60,6 @@ const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 
-
 function ScrollToTop() {
   const { pathname } = useLocation();
   React.useEffect(() => window.scrollTo(0, 0), [pathname]);
@@ -69,6 +68,18 @@ function ScrollToTop() {
 
 export default function App() {
   const { user, loading } = useAuth();
+
+  // ניהול סטייט חיפוש וסינון ברמה העליונה
+  const [searchMode, setSearchMode] = useState("category");
+  const [searchCategory, setSearchCategory] = useState("");
+  const [freeText, setFreeText] = useState("");
+
+  // פונקציה לאיפוס סינון חיפוש
+  const resetSearchFilters = () => {
+    setSearchMode("category");
+    setSearchCategory("");
+    setFreeText("");
+  };
 
   if (loading) return <div>טוען משתמש…</div>;
 
@@ -103,23 +114,29 @@ export default function App() {
             <Route path="/staff-login" element={<StaffLogin />} />
             <Route path="/business/:businessId" element={<BusinessProfileView />} />
             <Route path="/book/:businessId" element={<BookingPage />} />
-            
-<Route
-  path="/business/collaborations"
-  element={
-    <ProtectedRoute roles={["business"]}>
-      <CollabFindPartnerTab />
-    </ProtectedRoute>
-  }
-/>
 
+            <Route
+              path="/business/collaborations"
+              element={
+                <ProtectedRoute roles={["business"]}>
+                  <CollabFindPartnerTab
+                    searchMode={searchMode}
+                    setSearchMode={setSearchMode}
+                    searchCategory={searchCategory}
+                    setSearchCategory={setSearchCategory}
+                    freeText={freeText}
+                    setFreeText={setFreeText}
+                  />
+                </ProtectedRoute>
+              }
+            />
 
-            {/* כאן - העברת currentUserBusinessId */}
             <Route
               path="/business-profile/:businessId"
               element={
                 <BusinessProfilePage
                   currentUserBusinessId={user?.businessId || null}
+                  resetSearchFilters={resetSearchFilters}
                 />
               }
             />

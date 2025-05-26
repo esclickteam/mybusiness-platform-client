@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
 
-export default function BusinessProfilePage({ currentUserBusinessId }) {
+export default function BusinessProfilePage({ currentUserBusinessId, resetSearchFilters }) {
   const { businessId } = useParams();
   const navigate = useNavigate();
 
@@ -36,7 +36,10 @@ export default function BusinessProfilePage({ currentUserBusinessId }) {
       {/* כפתור חזרה לשיתופי פעולה - מחוץ לכרטיסיה */}
       {isOwnerViewingOther && (
         <button
-          onClick={() => navigate("/business/collaborations")}
+          onClick={() => {
+            if (resetSearchFilters) resetSearchFilters(); // איפוס סינון לפני ניווט
+            navigate("/business/collaborations");
+          }}
           style={{
             backgroundColor: "transparent",
             border: "none",
