@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
+import API from "../api"; // ודא שזה הנתיב שלך לאינסטנס
 import "./CollabBusinessProfileTab.css";
 
 export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
@@ -11,12 +12,11 @@ export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // 1. טוען את הפרופיל מהשרת
+  // טוען את הפרופיל מהשרת
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/business/my", { credentials: "include" });
-      const data = await res.json();
+      const { data } = await API.get("/business/my");
       if (data.business) {
         setProfileData(data.business);
         setLogoPreview(data.business.logo || null);
@@ -29,9 +29,10 @@ export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
 
   useEffect(() => {
     fetchProfile();
+    // eslint-disable-next-line
   }, []);
 
-  // 2. שינוי לוגו
+  // שינוי לוגו
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -40,7 +41,7 @@ export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
     }
   };
 
-  // 3. שמירת הפרופיל
+  // שמירת הפרופיל
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -58,31 +59,18 @@ export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
     };
 
     try {
-      // עדכון לוגו (אם שונה)
+      // עדכון לוגו אם שונה
       if (logoFile) {
         const logoFormData = new FormData();
         logoFormData.append("logo", logoFile);
-
-        const logoRes = await fetch("/api/business/my/logo", {
-          method: "PUT",
-          body: logoFormData,
-          credentials: "include",
+        const logoRes = await API.put("/business/my/logo", logoFormData, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
-        if (!logoRes.ok) throw new Error("שגיאה בהעלאת הלוגו");
-        const logoJson = await logoRes.json();
-        updatedData.logo = logoJson.logo;
+        updatedData.logo = logoRes.data.logo;
       }
 
-      // עדכון נתונים כלליים
-      const res = await fetch("/api/business/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(updatedData),
-      });
-      if (!res.ok) throw new Error("שגיאה בעדכון הפרופיל");
-
-      // שליפה מחדש מהשרת כדי להבטיח נתונים עדכניים
+      await API.put("/business/profile", updatedData);
+      // שליפה מחדש כדי להבטיח עדכון מהשרת
       await fetchProfile();
       setShowEditProfile(false);
       setLogoFile(null);
@@ -93,12 +81,12 @@ export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
     }
   };
 
-  // 4. מצב טעינה או חוסר נתונים
+  // מצב טעינה או חוסר נתונים
   if (loading || !profileData) {
     return <div style={{ textAlign: "center", margin: "2em" }}>טוען...</div>;
   }
 
-  // 5. ערכי ברירת מחדל
+  // ערכי ברירת מחדל
   const safeProfile = {
     businessName: profileData?.businessName || "שם לא זמין",
     category: profileData?.category || "קטגוריה לא זמינה",
