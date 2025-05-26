@@ -41,15 +41,19 @@ export default function CollabFindPartnerTab({
   const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
 
-  // טען מזהה העסק המחובר מה-API
+  // טען מזהה העסק המחובר מה-API עם לוגים
   useEffect(() => {
     async function fetchMyBusinessId() {
       try {
+        console.log("Fetching myBusinessId from /business/me...");
         const res = await API.get("/business/me");
+        console.log("Response from /business/me:", res.data);
         if (res.data?.myBusinessId) {
           setMyBusinessId(res.data.myBusinessId);
           localStorage.setItem("myBusinessId", res.data.myBusinessId);
-          console.log("Loaded myBusinessId:", res.data.myBusinessId);
+          console.log("myBusinessId set:", res.data.myBusinessId);
+        } else {
+          console.warn("myBusinessId not found in response");
         }
       } catch (err) {
         console.error("Error fetching my business id", err);
@@ -73,6 +77,7 @@ export default function CollabFindPartnerTab({
     return () => clearInterval(intervalId);
   }, []);
 
+  // סינון שותפים לפי חיפוש
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
@@ -93,15 +98,18 @@ export default function CollabFindPartnerTab({
     return true;
   });
 
+  // פתיחת פרופיל
   const handleOpenProfile = (business) => {
     navigate(`/business-profile/${business._id || business.id}`);
   };
 
+  // פתיחת מודל הצעה
   const openProposalModal = (business) => {
     setProposalTarget(business);
     setProposalModalOpen(true);
   };
 
+  // פתיחת צ'אט
   const openChatModal = (business) => {
     if (!myBusinessId) {
       alert("החיבור טרם הושלם, אנא המתן שנייה ונסה שוב");
@@ -116,6 +124,7 @@ export default function CollabFindPartnerTab({
     setChatWithBusinessName("");
   };
 
+  // שליחת הצעה
   const handleSubmitProposal = () => {
     if (!proposalText.trim()) return;
     handleSendProposal(proposalTarget._id || proposalTarget.id, proposalText.trim());
@@ -125,6 +134,7 @@ export default function CollabFindPartnerTab({
     setSnackbarOpen(true);
   };
 
+  // לוג פרופס צ'אט
   console.log("Chat props:", {
     token: localStorage.getItem("token"),
     myBusinessId,
@@ -133,7 +143,7 @@ export default function CollabFindPartnerTab({
 
   return (
     <div>
-      {/* --- Search Bar --- */}
+      {/* Search Bar */}
       <div className="search-container">
         <div className="search-type-toggle">
           <label>
@@ -172,7 +182,7 @@ export default function CollabFindPartnerTab({
         />
       </div>
 
-      {/* --- Partners List --- */}
+      {/* Partners List */}
       {filteredPartners.length === 0 ? (
         <p>לא נמצאו שותפים.</p>
       ) : (
@@ -226,7 +236,7 @@ export default function CollabFindPartnerTab({
         })
       )}
 
-      {/* --- BusinessChat Component --- */}
+      {/* BusinessChat Component */}
       {chatWithBusinessId && myBusinessId && localStorage.getItem("token") ? (
         <div className="business-chat-wrapper">
           <Button variant="outlined" onClick={closeChatModal} sx={{ mb: 2 }}>
@@ -245,7 +255,7 @@ export default function CollabFindPartnerTab({
         <p>טוען צ'אט...</p>
       ) : null}
 
-      {/* --- Proposal Modal --- */}
+      {/* Proposal Modal */}
       <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
         <Box sx={modalStyle}>
           <h3>שלח הצעה אל {proposalTarget?.businessName}</h3>
@@ -263,7 +273,7 @@ export default function CollabFindPartnerTab({
         </Box>
       </Modal>
 
-      {/* --- Snackbar --- */}
+      {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
