@@ -17,7 +17,9 @@ const BusinessAdvisorTab = () => {
     "איך בונים תוכנית עסקית פשוטה?"
   ];
 
-  const apiBaseUrl = process.env.REACT_APP_API_URL;
+  const apiBaseUrl = import.meta.env.VITE_API_URL;
+
+
   if (!apiBaseUrl) {
     throw new Error("Missing REACT_APP_API_URL environment variable");
   }

@@ -17,7 +17,8 @@ const MarketingAdvisorTab = () => {
     "באיזה רשת חברתית כדאי להתמקד?"
   ];
 
-  const apiBaseUrl = process.env.REACT_APP_API_URL;
+  const apiBaseUrl = import.meta.env.VITE_API_URL;
+
   if (!apiBaseUrl) {
     throw new Error("Missing REACT_APP_API_URL environment variable");
   }

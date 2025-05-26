@@ -43,7 +43,8 @@ const AiPartnerTab = () => {
     setInput("");
     setLoading(true);
 
-    const BASE_URL = process.env.REACT_APP_API_URL;
+    const apiBaseUrl = import.meta.env.VITE_API_URL;
+
     if (!BASE_URL) {
       console.error("Missing REACT_APP_API_URL environment variable");
       setChat((prev) => [...prev, { sender: "ai", text: "❌ שגיאה: כתובת ה-API לא מוגדרת." }]);
