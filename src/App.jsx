@@ -116,20 +116,14 @@ export default function App() {
             <Route path="/book/:businessId" element={<BookingPage />} />
 
             <Route
-              path="/business/collaborations"
-              element={
-                <ProtectedRoute roles={["business"]}>
-                  <CollabFindPartnerTab
-                    searchMode={searchMode}
-                    setSearchMode={setSearchMode}
-                    searchCategory={searchCategory}
-                    setSearchCategory={setSearchCategory}
-                    freeText={freeText}
-                    setFreeText={setFreeText}
-                  />
-                </ProtectedRoute>
-              }
-            />
+  path="/business/collaborations/:tab?"
+  element={
+    <ProtectedRoute roles={["business"]}>
+      <Collab />
+    </ProtectedRoute>
+  }
+/>
+
 
             <Route
               path="/business-profile/:businessId"
