@@ -32,15 +32,15 @@ export default function BusinessChat({
     if (!token || !role || !myBusinessId) return;
 
     const s = io(SOCKET_URL, {
-      path: "/socket.io",
-      transports: ["websocket", "polling"],
-      auth: {
-        token,
-        role,
-        businessId: myBusinessId,
-        businessName: myBusinessName,
-      },
-    });
+  path: "/socket.io",
+  auth: {
+    token,
+    role,
+    businessId: myBusinessId,
+    businessName: myBusinessName
+  }
+});
+
 
     s.on("connect", () => console.log("Socket connected:", s.id));
     s.on("disconnect", (reason) => console.log("Socket disconnected:", reason));
