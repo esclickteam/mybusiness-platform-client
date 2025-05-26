@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
-import Button from "@mui/material/Button";  // הוסף
+import Button from "@mui/material/Button";  // MUI Button
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -17,7 +17,6 @@ export default function BusinessChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // אם עדיין אין מזהה עסק — מוציא הודעה זמנית
   if (!myBusinessId) {
     return <p>טוען זיהוי העסק…</p>;
   }
@@ -28,7 +27,7 @@ export default function BusinessChat({
   };
   useEffect(scrollToBottom, [messages]);
 
-  // 1) יצירת חיבור socket רק אחרי שיש כל התלויות
+  // 1) יצירת חיבור socket
   useEffect(() => {
     if (!token || !role || !myBusinessId) return;
 
@@ -38,8 +37,8 @@ export default function BusinessChat({
         token,
         role,
         businessId: myBusinessId,
-        businessName: myBusinessName
-      }
+        businessName: myBusinessName,
+      },
     });
 
     s.on("connect", () => console.log("Socket connected:", s.id));
@@ -55,18 +54,13 @@ export default function BusinessChat({
   useEffect(() => {
     if (!socket || !otherBusinessId) return;
 
-    console.log("Starting conversation with", otherBusinessId);
     socket.emit(
       "startConversation",
       { otherUserId: otherBusinessId },
       (res) => {
         if (res.ok) {
           setConversationId(res.conversationId);
-
-          socket.emit("joinConversation", res.conversationId, (ack) => {
-            if (!ack.ok) console.error("joinConversation failed:", ack.error);
-          });
-
+          socket.emit("joinConversation", res.conversationId, () => {});
           socket.emit(
             "getHistory",
             { conversationId: res.conversationId },
@@ -74,8 +68,6 @@ export default function BusinessChat({
               if (res2.ok) setMessages(res2.messages);
             }
           );
-        } else {
-          console.error("startConversation failed:", res.error);
         }
       }
     );
@@ -87,7 +79,6 @@ export default function BusinessChat({
 
     const handleNew = (msg) => {
       if (msg.conversationId === conversationId) {
-        console.log("Received new message", msg);
         setMessages((prev) => [...prev, msg]);
       }
     };
@@ -98,7 +89,7 @@ export default function BusinessChat({
     };
   }, [socket, conversationId]);
 
-  // 4) פונקציית שליחת הודעה
+  // 4) שליחת הודעה
   const sendMessage = () => {
     if (!input.trim() || !socket) return;
 
@@ -109,7 +100,7 @@ export default function BusinessChat({
       text: input.trim(),
     };
 
-    const emitSend = () => {
+    const doSend = () => {
       socket.emit("sendMessage", payload, (ack) => {
         if (ack.ok) {
           setMessages((prev) => [...prev, ack.message]);
@@ -121,7 +112,6 @@ export default function BusinessChat({
     };
 
     if (!conversationId) {
-      // אם אין שיחה — פותחים קודם
       socket.emit(
         "startConversation",
         { otherUserId: otherBusinessId },
@@ -129,11 +119,8 @@ export default function BusinessChat({
           if (res.ok) {
             setConversationId(res.conversationId);
             socket.emit("joinConversation", res.conversationId, (ack) => {
-              if (!ack.ok) {
-                alert("לא הצלחנו להצטרף לשיחה: " + ack.error);
-                return;
-              }
-              emitSend();
+              if (ack.ok) doSend();
+              else alert("Failed to join: " + ack.error);
             });
           } else {
             alert("פתיחת שיחה נכשלה: " + res.error);
@@ -141,12 +128,19 @@ export default function BusinessChat({
         }
       );
     } else {
-      emitSend();
+      doSend();
     }
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: "auto" }}>
+    <div
+      style={{
+        maxWidth: 600,
+        margin: "auto",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <h3>צ'אט עסקי</h3>
       <div
         style={{
@@ -184,7 +178,6 @@ export default function BusinessChat({
           }
         }}
       />
-      {/* החלפת כפתור HTML רגיל ב־MUI Button */}
       <Button
         type="button"
         variant="contained"
