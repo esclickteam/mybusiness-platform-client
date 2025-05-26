@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import API from "../../../api";
+import API from "../../../../api";
 import "./CollabBusinessProfileTab.css";
 
 export default function CollabBusinessProfileTab({ setShowBusinessChat }) {
