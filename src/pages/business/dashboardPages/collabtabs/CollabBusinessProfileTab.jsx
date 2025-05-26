@@ -4,21 +4,82 @@ import Box from "@mui/material/Box";
 import "./CollabBusinessProfileTab.css";
 
 export default function CollabBusinessProfileTab({
-  profileData,
-  profileImage,
-  setShowEditProfile,
+  initialProfileData,
+  initialProfileImage,
   setShowBusinessChat,
-  handleSaveProfile,
-  showEditProfile
 }) {
-  const [logoPreview, setLogoPreview] = useState(profileImage);
-  const [logoFile, setLogoFile] = useState(null); // אם תרצי לשמור את הקובץ לשרת
+  const [profileData, setProfileData] = useState(initialProfileData);
+  const [logoPreview, setLogoPreview] = useState(initialProfileImage);
+  const [logoFile, setLogoFile] = useState(null);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setLogoFile(file);
       setLogoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+
+    const formData = new FormData(e.target);
+    const updatedData = {
+      businessName: formData.get("businessName"),
+      category: formData.get("category"),
+      area: formData.get("area"),
+      about: formData.get("about"),
+      collabPref: formData.get("collabPref"),
+      contact: formData.get("contact"),
+      phone: formData.get("phone"),
+      email: formData.get("email"),
+    };
+
+    try {
+      // אם יש לוגו חדש, טען אותו קודם
+      if (logoFile) {
+        const logoFormData = new FormData();
+        logoFormData.append("logo", logoFile);
+
+        const logoRes = await fetch("/api/business/my/logo", {
+          method: "PUT",
+          body: logoFormData,
+          credentials: "include",
+        });
+        if (!logoRes.ok) throw new Error("שגיאה בהעלאת הלוגו");
+        const logoJson = await logoRes.json();
+
+        // עדכון הלוגו בנתונים
+        updatedData.logo = logoJson.logo;
+      }
+
+      // שמירת שאר הנתונים בפרופיל
+      const res = await fetch("/api/business/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(updatedData),
+      });
+      if (!res.ok) throw new Error("שגיאה בעדכון הפרופיל");
+
+      const json = await res.json();
+
+      // עדכון הסטייט המקומי עם הנתונים המעודכנים מהשרת
+      setProfileData((prev) => ({
+        ...prev,
+        ...updatedData,
+      }));
+
+      setShowEditProfile(false);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -50,10 +111,16 @@ export default function CollabBusinessProfileTab({
             </div>
 
             <div className="flex gap-2">
-              <button className="collab-form-button" onClick={() => setShowEditProfile(true)}>
+              <button
+                className="collab-form-button"
+                onClick={() => setShowEditProfile(true)}
+              >
                 ✏️ עריכת פרופיל
               </button>
-              <button className="collab-form-button" onClick={() => setShowBusinessChat(true)}>
+              <button
+                className="collab-form-button"
+                onClick={() => setShowBusinessChat(true)}
+              >
                 💬 הודעות עסקיות
               </button>
             </div>
@@ -80,9 +147,15 @@ export default function CollabBusinessProfileTab({
 
           <div className="business-section">
             <h4>📞 פרטי קשר:</h4>
-            <p><strong>איש קשר:</strong> {profileData.contact}</p>
-            <p><strong>טלפון:</strong> {profileData.phone}</p>
-            <p><strong>אימייל:</strong> {profileData.email}</p>
+            <p>
+              <strong>איש קשר:</strong> {profileData.contact}
+            </p>
+            <p>
+              <strong>טלפון:</strong> {profileData.phone}
+            </p>
+            <p>
+              <strong>אימייל:</strong> {profileData.email}
+            </p>
           </div>
         </div>
       </div>
@@ -102,7 +175,9 @@ export default function CollabBusinessProfileTab({
             boxShadow: 5,
           }}
         >
-          <h3 style={{ textAlign: "center", marginBottom: "1.5rem" }}>עריכת פרופיל עסקי</h3>
+          <h3 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+            עריכת פרופיל עסקי
+          </h3>
 
           <form onSubmit={handleSaveProfile} className="styled-form">
             <div style={{ textAlign: "center" }}>
@@ -121,12 +196,18 @@ export default function CollabBusinessProfileTab({
                 style={{ display: "none" }}
                 onChange={handleLogoChange}
               />
-              <p style={{ fontSize: "0.9rem", color: "#666" }}>לחץ על הלוגו כדי לשנות</p>
+              <p style={{ fontSize: "0.9rem", color: "#666" }}>
+                לחץ על הלוגו כדי לשנות
+              </p>
             </div>
 
             <div>
               <label>שם העסק</label>
-              <input name="businessName" defaultValue={profileData.businessName} required />
+              <input
+                name="businessName"
+                defaultValue={profileData.businessName}
+                required
+              />
             </div>
 
             <div>
@@ -146,7 +227,11 @@ export default function CollabBusinessProfileTab({
 
             <div>
               <label>שיתופי פעולה רצויים</label>
-              <textarea name="collabPref" defaultValue={profileData.collabPref} rows="3" />
+              <textarea
+                name="collabPref"
+                defaultValue={profileData.collabPref}
+                rows="3"
+              />
             </div>
 
             <div>
@@ -165,8 +250,21 @@ export default function CollabBusinessProfileTab({
             </div>
 
             <div className="modal-buttons">
-              <button type="submit" className="collab-form-button">💾 שמירה</button>
-              <button type="button" className="collab-form-button secondary" onClick={() => setShowEditProfile(false)}>❌ ביטול</button>
+              <button
+                type="submit"
+                className="collab-form-button"
+                disabled={saving}
+              >
+                {saving ? "שומר..." : "💾 שמירה"}
+              </button>
+              <button
+                type="button"
+                className="collab-form-button secondary"
+                onClick={() => setShowEditProfile(false)}
+                disabled={saving}
+              >
+                ❌ ביטול
+              </button>
             </div>
           </form>
         </Box>
