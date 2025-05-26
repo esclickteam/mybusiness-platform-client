@@ -1,5 +1,4 @@
 // src/App.jsx
-// src/App.jsx
 import React, { Suspense, lazy } from "react";
 import {
   Routes,
@@ -60,7 +59,6 @@ const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 
-
 function ScrollToTop() {
   const { pathname } = useLocation();
   React.useEffect(() => window.scrollTo(0, 0), [pathname]);
@@ -103,7 +101,16 @@ export default function App() {
             <Route path="/staff-login" element={<StaffLogin />} />
             <Route path="/business/:businessId" element={<BusinessProfileView />} />
             <Route path="/book/:businessId" element={<BookingPage />} />
-            <Route path="/business-profile/:businessId" element={<BusinessProfilePage />} />
+
+            {/* כאן - העברת currentUserBusinessId */}
+            <Route
+              path="/business-profile/:businessId"
+              element={
+                <BusinessProfilePage
+                  currentUserBusinessId={user?.businessId || null}
+                />
+              }
+            />
 
             {/* Client chat outside dashboard */}
             <Route
@@ -273,7 +280,6 @@ export default function App() {
   );
 }
 
-
 // Wrapper for business showing list of conversations
 function BusinessChatListWrapper() {
   const { businessId } = useParams();
@@ -299,12 +305,12 @@ function BusinessChatListWrapper() {
 
   return (
     <ConversationsList
-  conversations={convos}
-  businessId={userId}
-  selectedConversationId={selected?.conversationId}
-  onSelect={handleSelect}
-  isBusiness={false}
-/>
+      conversations={convos}
+      businessId={userId}
+      selectedConversationId={selected?.conversationId}
+      onSelect={handleSelect}
+      isBusiness={false}
+    />
   );
 }
 
