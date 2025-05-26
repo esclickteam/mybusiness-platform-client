@@ -11,7 +11,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     setLoading(true);
     async function fetchSentRequests() {
       try {
-        const res = await API.get("/business/my/proposals/sent");
+        const res = await API.get("/my/proposals/sent");  // עדכן נתיב ל-API נכון
         setSentRequests(res.data.proposalsSent || []);
         setError(null);
       } catch (err) {
@@ -28,9 +28,9 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
-      await API.delete(`/business/my/proposals/${proposalId}`);
+      await API.delete(`/my/proposals/${proposalId}`); // עדכן נתיב נכון למחיקה
       setSentRequests((prev) =>
-        prev.filter((p) => (p.proposalId || p._id) !== proposalId)
+        prev.filter((p) => p.proposalId !== proposalId)
       );
       alert("ההצעה בוטלה בהצלחה");
     } catch (err) {
@@ -43,9 +43,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   const handleResendProposal = (proposal) => {
     alert(
       `פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${
-        proposal.toBusinessName ||
-        proposal.toBusiness?.businessName ||
-        "לא ידוע"
+        proposal.toBusinessId?.businessName || "לא ידוע"
       }`
     );
     // כאן אפשר לממש לוגיקה לשליחה מחדש או פתיחת טופס עריכה
@@ -61,17 +59,15 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         <p>לא נשלחו עדיין הצעות.</p>
       ) : (
         sentRequests.map((req) => {
-          const key = req.proposalId || req._id;
+          const key = req.proposalId;
           return (
             <div key={key} className="collab-card">
               <p>
                 <strong>אל:</strong>{" "}
-                {req.toBusinessName ||
-                  req.toBusiness?.businessName ||
-                  "לא ידוע"}
+                {req.toBusinessId?.businessName || "לא ידוע"}
               </p>
               <p>
-                <strong>הודעה:</strong> {req.message || req.text || "-"}
+                <strong>הודעה:</strong> {req.message || "-"}
               </p>
               <p>
                 <strong>סטטוס:</strong> {req.status || "לא ידוע"}

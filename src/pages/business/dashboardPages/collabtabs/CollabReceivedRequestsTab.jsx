@@ -31,7 +31,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
     } else {
       async function fetchReceivedRequests() {
         try {
-          const res = await API.get("/business/my/proposals/received");
+          const res = await API.get("/my/proposals/received"); // נתיב API מתוקן
           setReceivedRequests(res.data.proposalsReceived || []);
           setError(null);
         } catch (err) {
@@ -48,7 +48,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
   // אישור הצעה
   const handleAccept = async (proposalId) => {
     try {
-      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
+      await API.put(`/my/proposals/${proposalId}/status`, { status: "accepted" }); // נתיב API מתוקן
       setReceivedRequests(prev =>
         prev.map(p =>
           (p.proposalId === proposalId || p._id === proposalId)
@@ -57,7 +57,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
         )
       );
       alert("ההצעה אושרה בהצלחה");
-      onStatusChange();
+      onStatusChange?.();
     } catch (err) {
       console.error(err);
       alert("שגיאה באישור ההצעה");
@@ -67,7 +67,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
   // דחיית הצעה
   const handleReject = async (proposalId) => {
     try {
-      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
+      await API.put(`/my/proposals/${proposalId}/status`, { status: "rejected" }); // נתיב API מתוקן
       setReceivedRequests(prev =>
         prev.map(p =>
           (p.proposalId === proposalId || p._id === proposalId)
@@ -76,7 +76,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
         )
       );
       alert("ההצעה נדחתה בהצלחה");
-      onStatusChange();
+      onStatusChange?.();
     } catch (err) {
       console.error(err);
       alert("שגיאה בדחיית ההצעה");
@@ -94,8 +94,8 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
       ) : (
         receivedRequests.map(req => (
           <div key={req.proposalId || req._id} className="collab-card">
-            <p><strong>מאת:</strong> {req.fromBusiness?.businessName || "לא ידוע"}</p>
-            <p><strong>הודעה:</strong> {req.message || req.text || "-"}</p>
+            <p><strong>מאת:</strong> {req.fromBusinessId?.businessName || "לא ידוע"}</p>
+            <p><strong>הודעה:</strong> {req.message || "-"}</p>
             <p><strong>סטטוס:</strong> {req.status}</p>
             <p className="collab-tag">
               התקבל ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
