@@ -261,50 +261,46 @@ export default function CollabFindPartnerTab({
           <h3>צ'אט עם {chatTarget?.businessName}</h3>
           <div
             style={{
-              maxHeight: 300,
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              padding: 8,
-              marginBottom: 12,
-              backgroundColor: "#f9f9f9",
-            }}
-          >
-            {chatMessages.map((m, i) => (
-              <div
-                key={i}
-                style={{
-                  marginBottom: 8,
-                  textAlign:
-                    m.from === localStorage.getItem("businessId")
-                      ? "right"
-                      : "left",
-                }}
-              >
-                <b>{m.from === localStorage.getItem("businessId") ? "אני" : "הם"}:</b>{" "}
-                {m.text}
-              </div>
-            ))}
-          </div>
-          <TextField
-            multiline
-            minRows={3}
-            fullWidth
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            placeholder="כתוב כאן את ההודעה שלך..."
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendChatMessage();
-              }
-            }}
-            sx={{ marginTop: 1 }}
-          />
-          <Button variant="contained" sx={{ mt: 2 }} onClick={sendChatMessage}>
-            שלח הודעה
-          </Button>
-        </Box>
-      </Modal>
+               maxHeight: 300,
+        overflowY: "auto",
+        border: "1px solid #ccc",
+        padding: 8,
+        marginBottom: 12,
+        backgroundColor: "#f9f9f9",
+      }}
+    >
+      {chatMessages.map((m, i) => (
+        <div
+          key={i}
+          style={{
+            marginBottom: 8,
+            textAlign: m.from === myBusinessId ? "right" : "left",
+          }}
+        >
+          <b>{m.from === myBusinessId ? "אני" : "הם"}:</b> {m.text}
+        </div>
+      ))}
+    </div>
+    <TextField
+      multiline
+      minRows={3}
+      fullWidth
+      value={chatInput}
+      onChange={(e) => setChatInput(e.target.value)}
+      placeholder="כתוב כאן את ההודעה שלך..."
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendChatMessage();
+        }
+      }}
+      sx={{ marginTop: 1 }}
+    />
+    <Button variant="contained" sx={{ mt: 2 }} onClick={sendChatMessage}>
+      שלח הודעה
+    </Button>
+  </Box>
+</Modal>
 
       {/* --- Proposal Modal --- */}
       <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
