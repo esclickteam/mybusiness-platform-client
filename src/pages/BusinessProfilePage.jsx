@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
 
-export default function BusinessProfilePage({ currentUserId, currentUserBusinessId }) {
+export default function BusinessProfilePage({ currentUserBusinessId }) {
   const { businessId } = useParams();
   const navigate = useNavigate();
 
@@ -28,14 +28,12 @@ export default function BusinessProfilePage({ currentUserId, currentUserBusiness
   if (error) return <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>{error}</p>;
   if (!business) return <p style={{ textAlign: "center", marginTop: 50 }}>העסק לא נמצא.</p>;
 
-  // האם המשתמש הנוכחי הוא בעל העסק הנוכחי (העסק שמוצג בפרופיל)
-  const isOwnerViewingOther =
-    currentUserBusinessId && currentUserBusinessId !== businessId;
+  const isOwnerViewingOther = currentUserBusinessId && currentUserBusinessId !== businessId;
 
   return (
     <div style={{ maxWidth: 700, margin: "40px auto", padding: 30 }}>
-      
-      {/* כפתור חזרה לשיתופי פעולה — רק לבעל העסק שנכנס לפרופיל עסק אחר */}
+
+      {/* כפתור חזרה לשיתופי פעולה - מחוץ לכרטיסיה */}
       {isOwnerViewingOther && (
         <button
           onClick={() => navigate("/business/collaborations")}
@@ -56,7 +54,7 @@ export default function BusinessProfilePage({ currentUserId, currentUserBusiness
         </button>
       )}
 
-      {/* הכרטיס עם פרטי העסק — עיצוב כמו שהיה */}
+      {/* כרטיס פרטי העסק */}
       <div
         style={{
           backgroundColor: "#fff",
@@ -92,37 +90,33 @@ export default function BusinessProfilePage({ currentUserId, currentUserBusiness
         </div>
 
         <div style={{ lineHeight: 1.6, fontSize: 16 }}>
-          <p>
-            <b>📍 אזור פעילות:</b> {business.area || "לא מוגדר"}
-          </p>
-          <p>
-            <b>📝 תיאור העסק:</b>
-          </p>
+          <p><b>📍 אזור פעילות:</b> {business.area || "לא מוגדר"}</p>
+          <p><b>📝 תיאור העסק:</b></p>
           <p style={{ marginTop: 8, color: "#555" }}>
             {business.description || "אין תיאור זמין"}
           </p>
         </div>
-      </div>
 
-      {/* כפתור צור קשר מחוץ לכרטיס עם מרווח עליון */}
-      <button
-        style={{
-          marginTop: 30,
-          backgroundColor: "#8e44ad",
-          color: "white",
-          border: "none",
-          padding: "12px 28px",
-          borderRadius: 30,
-          cursor: "pointer",
-          fontSize: 16,
-          boxShadow: "0 4px 14px rgba(142, 68, 173, 0.4)",
-          transition: "background-color 0.3s ease"
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#732d91")}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#8e44ad")}
-      >
-        צור קשר עם העסק
-      </button>
+        {/* כפתור צור קשר בתוך הכרטיסיה */}
+        <button
+          style={{
+            marginTop: 30,
+            backgroundColor: "#8e44ad",
+            color: "white",
+            border: "none",
+            padding: "12px 28px",
+            borderRadius: 30,
+            cursor: "pointer",
+            fontSize: 16,
+            boxShadow: "0 4px 14px rgba(142, 68, 173, 0.4)",
+            transition: "background-color 0.3s ease"
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#732d91")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#8e44ad")}
+        >
+          צור קשר עם העסק
+        </button>
+      </div>
     </div>
   );
 }
