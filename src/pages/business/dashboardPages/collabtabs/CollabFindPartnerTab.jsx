@@ -113,12 +113,18 @@ export default function CollabFindPartnerTab({
   const sendChatMessage = () => {
   console.log("sendChatMessage נקרא");
   if (!chatInput.trim()) return;
+
+  // שליפת מזהה העסק מתוך businessDetails
+  const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
+  const myBusinessId = businessDetails._id || businessDetails.id;
+
   const msg = {
     conversationId,
-    from: localStorage.getItem("businessId"),
+    from: myBusinessId, // <-- כאן מתעדכן!
     to: chatTarget._id || chatTarget.id,
     text: chatInput.trim(),
   };
+
   console.log("מנסה לשלוח הודעה...", msg);
   socket.emit("sendMessage", msg, (ack) => {
     console.log("קיבלתי ack:", ack);
@@ -131,6 +137,7 @@ export default function CollabFindPartnerTab({
     }
   });
 };
+
 
 
   useEffect(() => {

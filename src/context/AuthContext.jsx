@@ -14,6 +14,24 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
+  // ============================
+  // פונקציית עזר לשמירת businessDetails
+  // ============================
+  const saveBusinessDetails = (data) => {
+    // אם יש אובייקט עסקי מלא, שמור הכל
+    if (data.business) {
+      localStorage.setItem("businessDetails", JSON.stringify(data.business));
+    } 
+    // אם יש רק businessId, שמור כאובייקט מינימלי
+    else if (data.businessId) {
+      localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+    } 
+    // אם אין עסק, נקה
+    else {
+      localStorage.removeItem("businessDetails");
+    }
+  };
+
   // 1. On mount: fetch current user if token exists
   useEffect(() => {
     if (initRan.current) return;
@@ -31,8 +49,11 @@ export function AuthProvider({ children }) {
           subscriptionPlan: data.subscriptionPlan,
           businessId:       data.businessId || null,
         });
+        // <<< שמירת businessDetails ב-localStorage >>>
+        saveBusinessDetails(data);
       } catch {
         setUser(null);
+        localStorage.removeItem("businessDetails");
       } finally {
         setLoading(false);
         setInitialized(true);
@@ -76,6 +97,9 @@ export function AuthProvider({ children }) {
         subscriptionPlan: data.subscriptionPlan,
         businessId:       data.businessId || null,
       });
+
+      // <<< שמירת businessDetails ב-localStorage >>>
+      saveBusinessDetails(data);
 
       if (!options.skipRedirect && data) {
         let path = "/";
@@ -121,6 +145,7 @@ export function AuthProvider({ children }) {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
       localStorage.removeItem("token"); // הסרת הטוקן בלוגאאוט
+      localStorage.removeItem("businessDetails"); // הוסף: הסרת פרטי עסק
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
