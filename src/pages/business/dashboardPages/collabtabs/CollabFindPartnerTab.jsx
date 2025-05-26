@@ -6,8 +6,8 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import API from "../../../../api"; // עדכן לפי הנתיב שלך
-import socket from "../../../../socket"; // חיבור לסוקט (socket.io client)
+import API from "../../../../api";
+import socket from "../../../../socket";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -99,6 +99,11 @@ export default function CollabFindPartnerTab({
       setChatTarget(business);
       setChatModalOpen(true);
 
+      // עדכון myBusinessId מה-localStorage בכל פתיחת צ'אט!
+      const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
+      const localBusinessId = businessDetails._id || businessDetails.id;
+      setMyBusinessId(localBusinessId);
+
       socket.emit("joinConversation", convId);
 
       const historyRes = await API.get(`/business-chat/${convId}/messages`);
@@ -111,43 +116,36 @@ export default function CollabFindPartnerTab({
   };
 
   const sendChatMessage = () => {
-  console.log("sendChatMessage נקרא");
-  if (!chatInput.trim()) return;
+    if (!chatInput.trim()) return;
 
-  // שליפת מזהה העסק מתוך businessDetails
-  const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
-  const myBusinessId = businessDetails._id || businessDetails.id;
+    // משתמשים ב-myBusinessId מהסטייט!
+    const msg = {
+      conversationId,
+      from: myBusinessId,
+      to: chatTarget._id || chatTarget.id,
+      text: chatInput.trim(),
+    };
 
-  const msg = {
-    conversationId,
-    from: myBusinessId, // <-- כאן מתעדכן!
-    to: chatTarget._id || chatTarget.id,
-    text: chatInput.trim(),
+    socket.emit("sendMessage", msg, (ack) => {
+      if (ack && ack.ok) {
+        setChatMessages((prev) => [...prev, ack.message]);
+        setChatInput("");
+      } else {
+        setSnackbarMessage("❌ שגיאה בשליחת ההודעה");
+        setSnackbarOpen(true);
+      }
+    });
   };
 
-  console.log("מנסה לשלוח הודעה...", msg);
-  socket.emit("sendMessage", msg, (ack) => {
-    console.log("קיבלתי ack:", ack);
-    if (ack && ack.ok) {
-      setChatMessages((prev) => [...prev, ack.message]);
-      setChatInput("");
-    } else {
-      setSnackbarMessage("❌ שגיאה בשליחת ההודעה");
-      setSnackbarOpen(true);
-    }
-  });
-};
-
-
-
   useEffect(() => {
-    socket.on("newMessage", (msg) => {
+    function handleNewMessage(msg) {
       if (msg.conversationId === conversationId) {
         setChatMessages((prev) => [...prev, msg]);
       }
-    });
+    }
+    socket.on("newMessage", handleNewMessage);
     return () => {
-      socket.off("newMessage");
+      socket.off("newMessage", handleNewMessage);
     };
   }, [conversationId]);
 
@@ -261,46 +259,59 @@ export default function CollabFindPartnerTab({
           <h3>צ'אט עם {chatTarget?.businessName}</h3>
           <div
             style={{
-               maxHeight: 300,
-        overflowY: "auto",
-        border: "1px solid #ccc",
-        padding: 8,
-        marginBottom: 12,
-        backgroundColor: "#f9f9f9",
-      }}
-    >
-      {chatMessages.map((m, i) => (
-        <div
-          key={i}
-          style={{
-            marginBottom: 8,
-            textAlign: m.from === myBusinessId ? "right" : "left",
-          }}
-        >
-          <b>{m.from === myBusinessId ? "אני" : "הם"}:</b> {m.text}
-        </div>
-      ))}
-    </div>
-    <TextField
-      multiline
-      minRows={3}
-      fullWidth
-      value={chatInput}
-      onChange={(e) => setChatInput(e.target.value)}
-      placeholder="כתוב כאן את ההודעה שלך..."
-      onKeyDown={(e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          sendChatMessage();
-        }
-      }}
-      sx={{ marginTop: 1 }}
-    />
-    <Button variant="contained" sx={{ mt: 2 }} onClick={sendChatMessage}>
-      שלח הודעה
-    </Button>
-  </Box>
-</Modal>
+              maxHeight: 300,
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              padding: 8,
+              marginBottom: 12,
+              backgroundColor: "#f9f9f9",
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+            }}
+          >
+            {chatMessages.map((m, i) => (
+              <div
+                key={i}
+                style={{
+                  alignSelf: m.from === myBusinessId ? "flex-end" : "flex-start",
+                  background: m.from === myBusinessId ? "#e6f7ff" : "#fff",
+                  color: "#222",
+                  borderRadius: 12,
+                  padding: "6px 12px",
+                  minWidth: 60,
+                  maxWidth: "80%",
+                  textAlign: "right",
+                  boxShadow: "0 1px 4px #eee",
+                }}
+              >
+                <b style={{ color: "#999", fontSize: 12 }}>
+                  {m.from === myBusinessId ? "אני" : chatTarget?.businessName || "הם"}
+                </b>
+                <div>{m.text}</div>
+              </div>
+            ))}
+          </div>
+          <TextField
+            multiline
+            minRows={3}
+            fullWidth
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="כתוב כאן את ההודעה שלך..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+              }
+            }}
+            sx={{ marginTop: 1 }}
+          />
+          <Button variant="contained" sx={{ mt: 2 }} onClick={sendChatMessage}>
+            שלח הודעה
+          </Button>
+        </Box>
+      </Modal>
 
       {/* --- Proposal Modal --- */}
       <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
@@ -341,8 +352,8 @@ const modalStyle = {
   borderRadius: 2,
   maxWidth: 500,
   m: "10% auto",
-  maxHeight: "80vh",     // מגביל גובה מודאל ל-80% גובה מסך
-  overflowY: "auto",    // מאפשר גלילה במודאל אם תוכן גבוה
+  maxHeight: "80vh",
+  overflowY: "auto",
   display: "flex",
   flexDirection: "column",
 };
