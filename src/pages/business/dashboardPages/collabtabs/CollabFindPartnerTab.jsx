@@ -52,10 +52,14 @@ export default function CollabFindPartnerTab({
       console.log("API response:", res.data);
       setPartners(res.data.relevant || []);
 
-      if (res.data.myBusinessId && res.data.myBusinessId !== myBusinessId) {
-        console.log("Updating myBusinessId from API:", res.data.myBusinessId);
-        setMyBusinessId(res.data.myBusinessId);
-        localStorage.setItem("myBusinessId", res.data.myBusinessId);
+      if (res.data.myBusinessId) {
+        if (res.data.myBusinessId !== myBusinessId) {
+          console.log("Updating myBusinessId from API:", res.data.myBusinessId);
+          setMyBusinessId(res.data.myBusinessId);
+          localStorage.setItem("myBusinessId", res.data.myBusinessId);
+        } else {
+          console.log("myBusinessId unchanged from API");
+        }
       } else {
         const mine = (res.data.relevant || []).find((b) => b.isMine);
         if (mine) {
@@ -64,7 +68,11 @@ export default function CollabFindPartnerTab({
             console.log("Updating myBusinessId from partners list:", newId);
             setMyBusinessId(newId);
             localStorage.setItem("myBusinessId", newId);
+          } else {
+            console.log("myBusinessId unchanged from partners list");
           }
+        } else {
+          console.log("No myBusinessId found in API or partners");
         }
       }
     } catch (err) {
@@ -74,7 +82,8 @@ export default function CollabFindPartnerTab({
   fetchPartners();
   const intervalId = setInterval(fetchPartners, 10000);
   return () => clearInterval(intervalId);
-}, [myBusinessId]);
+}, []); // תלות ריקה כדי שהאפקט ירוץ רק פעם אחת
+
 
 
   const filteredPartners = partners.filter((business) => {
