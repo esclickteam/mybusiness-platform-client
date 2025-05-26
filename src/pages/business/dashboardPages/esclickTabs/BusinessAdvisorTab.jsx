@@ -17,6 +17,8 @@ const BusinessAdvisorTab = () => {
     "איך בונים תוכנית עסקית פשוטה?"
   ];
 
+  const apiBaseUrl = process.env.REACT_APP_API_URL || "http://localhost:5005/api";
+
   const sendMessage = async (newMessages) => {
     setLoading(true);
     const payload = {
@@ -25,7 +27,7 @@ const BusinessAdvisorTab = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5005/api/ask-ai", {
+      const response = await fetch(`${apiBaseUrl}/ask-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
