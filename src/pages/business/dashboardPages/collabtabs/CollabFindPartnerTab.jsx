@@ -20,7 +20,7 @@ export default function CollabFindPartnerTab({
   setSelectedBusiness,
   setOpenModal,
   isDevUser,
-  handleSendProposal,
+  handleSendProposal, // מהורה: (toBusinessId, message)
   handleOpenChat,
 }) {
   const navigate = useNavigate();
@@ -36,37 +36,34 @@ export default function CollabFindPartnerTab({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  // Fetch partners & myBusinessId
   useEffect(() => {
     async function fetchPartners() {
       try {
         const res = await API.get("/business/findPartners");
         setPartners(res.data.relevant || []);
-
         if (res.data.myBusinessId) {
           setMyBusinessId(res.data.myBusinessId);
-        } else if (res.data.relevant) {
-          const myBiz = res.data.relevant.find((b) => b.isMine);
-          if (myBiz) setMyBusinessId(myBiz._id || myBiz.id);
+        } else {
+          const mine = (res.data.relevant || []).find((b) => b.isMine);
+          if (mine) setMyBusinessId(mine._id || mine.id);
         }
       } catch (err) {
         console.error("Error fetching partners", err);
       }
     }
-
     fetchPartners();
     const intervalId = setInterval(fetchPartners, 10000);
     return () => clearInterval(intervalId);
   }, []);
 
-  // סינון עסקים לפי חיפוש
+  // סינון עסקים
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
         business.category.toLowerCase().includes(searchCategory.toLowerCase()) ||
-        (business.complementaryCategories &&
-          business.complementaryCategories.some((cat) =>
-            cat.toLowerCase().includes(searchCategory.toLowerCase())
-          ))
+        (business.complementaryCategories || [])
+          .some((cat) => cat.toLowerCase().includes(searchCategory.toLowerCase()))
       );
     }
     if (searchMode === "free" && freeText) {
@@ -84,16 +81,17 @@ export default function CollabFindPartnerTab({
     navigate(`/business-profile/${business._id || business.id}`);
   };
 
-  const handleSendProposalWithModal = (business) => {
+  const openProposalModal = (business) => {
     setProposalTarget(business);
     setProposalModalOpen(true);
   };
 
-  const handleStartChat = (business) => {
+  const openChatModal = (business) => {
     setChatTarget(business);
     setChatModalOpen(true);
   };
 
+  // שולח הודעה בצ'אט דרך ההורה
   const handleSendChatMessage = () => {
     if (messageText.trim()) {
       handleOpenChat({ ...chatTarget, message: messageText });
@@ -104,18 +102,19 @@ export default function CollabFindPartnerTab({
     }
   };
 
-  const handleLocalSendProposal = () => {
-    if (proposalText.trim()) {
-      handleSendProposal({ ...proposalTarget, text: proposalText });
-      setProposalModalOpen(false);
-      setProposalText("");
-      setSnackbarMessage("✅ ההצעה נשלחה בהצלחה!");
-      setSnackbarOpen(true);
-    }
+  // שולח הצעה דרך ההורה (למעשה ל-API) עם שני ארגומנטים
+  const handleSubmitProposal = () => {
+    if (!proposalText.trim()) return;
+    handleSendProposal(proposalTarget._id || proposalTarget.id, proposalText);
+    setProposalModalOpen(false);
+    setProposalText("");
+    setSnackbarMessage("✅ ההצעה נשלחה בהצלחה!");
+    setSnackbarOpen(true);
   };
 
   return (
     <div>
+      {/* --- Search Bar --- */}
       <div className="search-container">
         <div className="search-type-toggle">
           <label>
@@ -137,7 +136,6 @@ export default function CollabFindPartnerTab({
             חיפוש חופשי
           </label>
         </div>
-
         <input
           className="search-input"
           type="text"
@@ -155,6 +153,7 @@ export default function CollabFindPartnerTab({
         />
       </div>
 
+      {/* --- Partners List --- */}
       {filteredPartners.length === 0 ? (
         <p>לא נמצאו שותפים.</p>
       ) : (
@@ -168,24 +167,15 @@ export default function CollabFindPartnerTab({
               key={business._id || business.id}
               className={`collab-card${isMine ? " my-business" : ""}`}
             >
-              <h3
-                style={{
-                  fontSize: "1.4rem",
-                  fontWeight: "700",
-                  marginBottom: "0.4rem",
-                }}
-              >
+              <h3 className="business-name">
                 {business.businessName}
-                {isMine && (
-                  <span className="my-business-badge"> (העסק שלי) </span>
-                )}
+                {isMine && <span className="my-business-badge"> (העסק שלי) </span>}
               </h3>
               <p className="business-category">{business.category}</p>
-              <p>{business.description}</p>
+              <p className="business-desc">{business.description}</p>
               <span className="status-badge">
                 סטטוס בקשה: {business.status || "לא ידוע"}
               </span>
-
               <div className="collab-card-buttons">
                 {isMine ? (
                   <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
@@ -193,21 +183,19 @@ export default function CollabFindPartnerTab({
                   <>
                     <button
                       className="message-box-button"
-                      onClick={() => handleSendProposalWithModal(business)}
+                      onClick={() => openProposalModal(business)}
                     >
                       שלח הצעה 📨
                     </button>
-
                     <button
                       className="message-box-button secondary"
                       onClick={() => handleOpenProfile(business)}
                     >
                       צפייה בפרופיל
                     </button>
-
                     <button
                       className="message-box-button secondary"
-                      onClick={() => handleStartChat(business)}
+                      onClick={() => openChatModal(business)}
                     >
                       צ'אט
                     </button>
@@ -219,17 +207,9 @@ export default function CollabFindPartnerTab({
         })
       )}
 
-      {/* מודאל שליחת הודעה בצ'אט */}
+      {/* --- Chat Modal --- */}
       <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
-        <Box
-          sx={{
-            backgroundColor: "#fff",
-            padding: 4,
-            borderRadius: 2,
-            maxWidth: 400,
-            margin: "10% auto",
-          }}
-        >
+        <Box sx={modalStyle}>
           <h3>שלח הודעה אל {chatTarget?.businessName}</h3>
           <TextField
             multiline
@@ -241,8 +221,7 @@ export default function CollabFindPartnerTab({
           />
           <Button
             variant="contained"
-            color="primary"
-            sx={{ marginTop: 2 }}
+            sx={{ mt: 2 }}
             onClick={handleSendChatMessage}
           >
             שלח הודעה
@@ -250,20 +229,12 @@ export default function CollabFindPartnerTab({
         </Box>
       </Modal>
 
-      {/* מודאל שליחת הצעת שיתוף פעולה */}
+      {/* --- Proposal Modal --- */}
       <Modal
         open={proposalModalOpen}
         onClose={() => setProposalModalOpen(false)}
       >
-        <Box
-          sx={{
-            backgroundColor: "#fff",
-            padding: 4,
-            borderRadius: 2,
-            maxWidth: 500,
-            margin: "10% auto",
-          }}
-        >
+        <Box sx={modalStyle}>
           <h3>שלח הצעה אל {proposalTarget?.businessName}</h3>
           <TextField
             multiline
@@ -275,15 +246,15 @@ export default function CollabFindPartnerTab({
           />
           <Button
             variant="contained"
-            color="primary"
-            sx={{ marginTop: 2 }}
-            onClick={handleLocalSendProposal}
+            sx={{ mt: 2 }}
+            onClick={handleSubmitProposal}
           >
             שלח הצעה
           </Button>
         </Box>
       </Modal>
 
+      {/* --- Snackbar --- */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
@@ -297,3 +268,12 @@ export default function CollabFindPartnerTab({
     </div>
   );
 }
+
+// סגנון אחיד למודאלים
+const modalStyle = {
+  backgroundColor: "#fff",
+  p: 4,
+  borderRadius: 2,
+  maxWidth: 500,
+  m: "10% auto",
+};

@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
-export default function CollabSentRequestsTab() {
+export default function CollabSentRequestsTab({ refreshFlag }) {
   const [sentRequests, setSentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // טען הצעות שנשלחו מהשרת
+  // טען הצעות שנשלחו מהשרת, ורענן בכל שינוי של refreshFlag
   useEffect(() => {
+    setLoading(true);
     async function fetchSentRequests() {
       try {
         const res = await API.get("/business/my/proposals/sent");
         setSentRequests(res.data.proposalsSent || []);
+        setError(null);
       } catch (err) {
+        console.error(err);
         setError("שגיאה בטעינת הצעות שנשלחו");
       } finally {
         setLoading(false);
       }
     }
     fetchSentRequests();
-  }, []);
+  }, [refreshFlag]);
 
   // ביטול הצעה לפי proposalId
   const handleCancelProposal = async (proposalId) => {
@@ -30,14 +33,21 @@ export default function CollabSentRequestsTab() {
         prev.filter((p) => (p.proposalId || p._id) !== proposalId)
       );
       alert("ההצעה בוטלה בהצלחה");
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("שגיאה בביטול ההצעה");
     }
   };
 
   // שליחה מחדש (דמו)
   const handleResendProposal = (proposal) => {
-    alert(`פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${proposal.toBusinessName || proposal.toBusiness?.businessName || "לא ידוע"}`);
+    alert(
+      `פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${
+        proposal.toBusinessName ||
+        proposal.toBusiness?.businessName ||
+        "לא ידוע"
+      }`
+    );
     // כאן אפשר לממש לוגיקה לשליחה מחדש או פתיחת טופס עריכה
   };
 
@@ -50,30 +60,45 @@ export default function CollabSentRequestsTab() {
       {sentRequests.length === 0 ? (
         <p>לא נשלחו עדיין הצעות.</p>
       ) : (
-        sentRequests.map((req) => (
-          <div key={req.proposalId || req._id} className="collab-card">
-            <p><strong>אל:</strong> {req.toBusinessName || req.toBusiness?.businessName || "לא ידוע"}</p>
-            <p><strong>הודעה:</strong> {req.message || req.text || "-"}</p>
-            <p><strong>סטטוס:</strong> {req.status || "לא ידוע"}</p>
-            <p className="collab-tag">נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}</p>
-            <div className="flex gap-2 mt-2">
-              <button
-                className="collab-form-button"
-                type="button"
-                onClick={() => handleResendProposal(req)}
-              >
-                📨 שלח שוב
-              </button>
-              <button
-                className="collab-form-button"
-                type="button"
-                onClick={() => handleCancelProposal(req.proposalId || req._id)}
-              >
-                🗑️ ביטול
-              </button>
+        sentRequests.map((req) => {
+          const key = req.proposalId || req._id;
+          return (
+            <div key={key} className="collab-card">
+              <p>
+                <strong>אל:</strong>{" "}
+                {req.toBusinessName ||
+                  req.toBusiness?.businessName ||
+                  "לא ידוע"}
+              </p>
+              <p>
+                <strong>הודעה:</strong> {req.message || req.text || "-"}
+              </p>
+              <p>
+                <strong>סטטוס:</strong> {req.status || "לא ידוע"}
+              </p>
+              <p className="collab-tag">
+                נשלח ב־
+                {new Date(req.createdAt).toLocaleDateString("he-IL")}
+              </p>
+              <div className="flex gap-2 mt-2">
+                <button
+                  className="collab-form-button"
+                  type="button"
+                  onClick={() => handleResendProposal(req)}
+                >
+                  📨 שלח שוב
+                </button>
+                <button
+                  className="collab-form-button"
+                  type="button"
+                  onClick={() => handleCancelProposal(key)}
+                >
+                  🗑️ ביטול
+                </button>
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );

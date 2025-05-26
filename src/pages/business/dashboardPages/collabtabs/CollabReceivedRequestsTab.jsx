@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
-export default function CollabReceivedRequestsTab({ isDevUser }) {
+export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onStatusChange }) {
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // טען הצעות שהתקבלו מהשרת
+  // טען הצעות שהתקבלו מהשרת, ורענן כש-isDevUser ו-refreshFlag משתנים
   useEffect(() => {
+    setLoading(true);
     if (isDevUser) {
       setReceivedRequests([
         {
@@ -25,13 +26,16 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
           createdAt: "2024-05-28"
         }
       ]);
+      setError(null);
       setLoading(false);
     } else {
       async function fetchReceivedRequests() {
         try {
           const res = await API.get("/business/my/proposals/received");
           setReceivedRequests(res.data.proposalsReceived || []);
+          setError(null);
         } catch (err) {
+          console.error(err);
           setError("שגיאה בטעינת הצעות שהתקבלו");
         } finally {
           setLoading(false);
@@ -39,21 +43,23 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
       }
       fetchReceivedRequests();
     }
-  }, [isDevUser]);
+  }, [isDevUser, refreshFlag]);
 
   // אישור הצעה
   const handleAccept = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
-      setReceivedRequests((prev) =>
-        prev.map((p) =>
+      setReceivedRequests(prev =>
+        prev.map(p =>
           (p.proposalId === proposalId || p._id === proposalId)
             ? { ...p, status: "accepted" }
             : p
         )
       );
       alert("ההצעה אושרה בהצלחה");
-    } catch {
+      onStatusChange();
+    } catch (err) {
+      console.error(err);
       alert("שגיאה באישור ההצעה");
     }
   };
@@ -62,21 +68,23 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
   const handleReject = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
-      setReceivedRequests((prev) =>
-        prev.map((p) =>
+      setReceivedRequests(prev =>
+        prev.map(p =>
           (p.proposalId === proposalId || p._id === proposalId)
             ? { ...p, status: "rejected" }
             : p
         )
       );
       alert("ההצעה נדחתה בהצלחה");
-    } catch {
+      onStatusChange();
+    } catch (err) {
+      console.error(err);
       alert("שגיאה בדחיית ההצעה");
     }
   };
 
   if (loading) return <p>טוען הצעות שהתקבלו...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error)   return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div className="collab-section">
@@ -84,14 +92,16 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
       {receivedRequests.length === 0 ? (
         <p>לא התקבלו עדיין הצעות.</p>
       ) : (
-        receivedRequests.map((req) => (
+        receivedRequests.map(req => (
           <div key={req.proposalId || req._id} className="collab-card">
             <p><strong>מאת:</strong> {req.fromBusiness?.businessName || "לא ידוע"}</p>
             <p><strong>הודעה:</strong> {req.message || req.text || "-"}</p>
             <p><strong>סטטוס:</strong> {req.status}</p>
-            <p className="collab-tag">התקבל ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}</p>
+            <p className="collab-tag">
+              התקבל ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
+            </p>
             <div className="flex gap-2 mt-2">
-              {req.status === "pending" && (
+              {req.status === "pending" ? (
                 <>
                   <button
                     className="collab-form-button"
@@ -108,8 +118,7 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
                     ❌ דחה
                   </button>
                 </>
-              )}
-              {(req.status === "accepted" || req.status === "rejected") && (
+              ) : (
                 <p>סטטוס: {req.status}</p>
               )}
             </div>
