@@ -46,30 +46,36 @@ export default function CollabFindPartnerTab({
   const myBusinessName = businessDetails.businessName || "";
 
   useEffect(() => {
-    async function fetchPartners() {
-      try {
-        const res = await API.get("/business/findPartners");
-        setPartners(res.data.relevant || []);
+  async function fetchPartners() {
+    try {
+      const res = await API.get("/business/findPartners");
+      console.log("API response:", res.data);
+      setPartners(res.data.relevant || []);
 
-        // אם myBusinessId חדש מתקבל, שמור ב-state וב-localStorage
-        if (res.data.myBusinessId && res.data.myBusinessId !== myBusinessId) {
-          setMyBusinessId(res.data.myBusinessId);
-          localStorage.setItem("myBusinessId", res.data.myBusinessId);
-        } else {
-          const mine = (res.data.relevant || []).find((b) => b.isMine);
-          if (mine && mine._id !== myBusinessId) {
-            setMyBusinessId(mine._id || mine.id);
-            localStorage.setItem("myBusinessId", mine._id || mine.id);
+      if (res.data.myBusinessId && res.data.myBusinessId !== myBusinessId) {
+        console.log("Updating myBusinessId from API:", res.data.myBusinessId);
+        setMyBusinessId(res.data.myBusinessId);
+        localStorage.setItem("myBusinessId", res.data.myBusinessId);
+      } else {
+        const mine = (res.data.relevant || []).find((b) => b.isMine);
+        if (mine) {
+          const newId = mine._id || mine.id;
+          if (newId !== myBusinessId) {
+            console.log("Updating myBusinessId from partners list:", newId);
+            setMyBusinessId(newId);
+            localStorage.setItem("myBusinessId", newId);
           }
         }
-      } catch (err) {
-        console.error("Error fetching partners", err);
       }
+    } catch (err) {
+      console.error("Error fetching partners", err);
     }
-    fetchPartners();
-    const intervalId = setInterval(fetchPartners, 10000);
-    return () => clearInterval(intervalId);
-  }, [myBusinessId]);
+  }
+  fetchPartners();
+  const intervalId = setInterval(fetchPartners, 10000);
+  return () => clearInterval(intervalId);
+}, [myBusinessId]);
+
 
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
