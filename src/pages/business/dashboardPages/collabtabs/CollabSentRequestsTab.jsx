@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
-
-
-
 export default function CollabSentRequestsTab() {
   const [sentRequests, setSentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,10 +25,10 @@ export default function CollabSentRequestsTab() {
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
-      // קריאה לשרת למחיקת ההצעה (צריך לממש בשרת)
       await API.delete(`/business/my/proposals/${proposalId}`);
-      // עדכון רשימת ההצעות בממשק
-      setSentRequests((prev) => prev.filter((p) => p.proposalId !== proposalId));
+      setSentRequests((prev) =>
+        prev.filter((p) => (p.proposalId || p._id) !== proposalId)
+      );
       alert("ההצעה בוטלה בהצלחה");
     } catch {
       alert("שגיאה בביטול ההצעה");
@@ -70,7 +67,7 @@ export default function CollabSentRequestsTab() {
               <button
                 className="collab-form-button"
                 type="button"
-                onClick={() => handleCancelProposal(req.proposalId)}
+                onClick={() => handleCancelProposal(req.proposalId || req._id)}
               >
                 🗑️ ביטול
               </button>

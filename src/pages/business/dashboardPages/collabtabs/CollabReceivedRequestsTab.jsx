@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
-
-
-
 export default function CollabReceivedRequestsTab({ isDevUser }) {
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,14 +13,14 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
         {
           _id: "demo-recv-1",
           fromBusiness: { businessName: "מעצבת גרפית" },
-          subject: "עיצוב משותף לחוברת",
+          message: "עיצוב משותף לחוברת",
           status: "pending",
           createdAt: "2024-05-30"
         },
         {
           _id: "demo-recv-2",
           fromBusiness: { businessName: "מפיקת אירועים" },
-          subject: "שיתוף פעולה לאירוע נשים",
+          message: "שיתוף פעולה לאירוע נשים",
           status: "rejected",
           createdAt: "2024-05-28"
         }
@@ -47,10 +44,10 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
   // אישור הצעה
   const handleAccept = async (proposalId) => {
     try {
-      await API.put(`/business/my/proposals/${proposalId}/accept`);
+      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
       setReceivedRequests((prev) =>
         prev.map((p) =>
-          p.proposalId === proposalId || p._id === proposalId
+          (p.proposalId === proposalId || p._id === proposalId)
             ? { ...p, status: "accepted" }
             : p
         )
@@ -64,10 +61,10 @@ export default function CollabReceivedRequestsTab({ isDevUser }) {
   // דחיית הצעה
   const handleReject = async (proposalId) => {
     try {
-      await API.put(`/business/my/proposals/${proposalId}/reject`);
+      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
       setReceivedRequests((prev) =>
         prev.map((p) =>
-          p.proposalId === proposalId || p._id === proposalId
+          (p.proposalId === proposalId || p._id === proposalId)
             ? { ...p, status: "rejected" }
             : p
         )
