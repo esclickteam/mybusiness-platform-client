@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
 
 export default function BusinessProfilePage() {
   const { businessId } = useParams();
+  const navigate = useNavigate();
+
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,6 +39,24 @@ export default function BusinessProfilePage() {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       color: "#333"
     }}>
+      {/* כפתור חזרה */}
+      <button
+        onClick={() => navigate(`/business/${businessId}/dashboard`)}
+        style={{
+          backgroundColor: "transparent",
+          border: "none",
+          color: "#8e44ad",
+          cursor: "pointer",
+          fontSize: 16,
+          marginBottom: 24,
+          fontWeight: "600",
+          padding: 0
+        }}
+        aria-label="חזרה לדשבורד"
+      >
+        ← חזרה לדשבורד
+      </button>
+
       <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
         <img
           src={business.logo || "/default-logo.png"}
@@ -67,7 +87,6 @@ export default function BusinessProfilePage() {
         <p style={{ marginTop: 8, color: "#555" }}>{business.description || "אין תיאור זמין"}</p>
       </div>
 
-      {/* דוגמת כפתור יצירת קשר */}
       <button
         style={{
           marginTop: 30,
