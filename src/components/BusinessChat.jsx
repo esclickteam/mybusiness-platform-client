@@ -16,13 +16,13 @@ export default function BusinessChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // גלילת המסך להודעה האחרונה
+  // Scroll to last message
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   useEffect(scrollToBottom, [messages]);
 
-  // יצירת חיבור socket פעם אחת בלבד
+  // Create socket connection once
   useEffect(() => {
     if (!token || !role || !myBusinessId) return;
 
@@ -52,7 +52,7 @@ export default function BusinessChat({
     };
   }, [token, role, myBusinessId, myBusinessName]);
 
-  // פתיחת שיחה או קבלת שיחה קיימת
+  // Start or get conversation
   useEffect(() => {
     if (!socket || !otherBusinessId || !myBusinessId) return;
 
@@ -81,7 +81,7 @@ export default function BusinessChat({
     );
   }, [socket, otherBusinessId, myBusinessId]);
 
-  // האזנה להודעות חדשות בשיחה הנוכחית
+  // Listen for new messages in conversation
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -98,7 +98,7 @@ export default function BusinessChat({
     };
   }, [socket, conversationId]);
 
-  // שליחת הודעה עם התחלת שיחה אוטומטית במידת הצורך
+  // Send message, start conversation automatically if needed
   const sendMessage = () => {
     console.log("sendMessage triggered");
     if (!input.trim() || !socket) {
@@ -107,7 +107,7 @@ export default function BusinessChat({
     }
 
     if (!conversationId) {
-      // התחלת שיחה לפני שליחה
+      // Start conversation first, then send message
       socket.emit(
         "startConversation",
         { otherUserId: otherBusinessId },
@@ -122,7 +122,6 @@ export default function BusinessChat({
                 return;
               }
 
-              // אחרי שהצטרפנו לשיחה, שולחים הודעה
               socket.emit(
                 "sendMessage",
                 {
@@ -147,7 +146,7 @@ export default function BusinessChat({
         }
       );
     } else {
-      // יש conversationId, שולחים הודעה רגילה
+      // Send message directly
       socket.emit(
         "sendMessage",
         {

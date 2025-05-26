@@ -25,10 +25,7 @@ export default function CollabFindPartnerTab({
 }) {
   const navigate = useNavigate();
 
-  // טען myBusinessId מ-localStorage כערך התחלתי
-  const storedMyBusinessId = localStorage.getItem("myBusinessId") || null;
-  const [myBusinessId, setMyBusinessId] = useState(storedMyBusinessId);
-
+  const [myBusinessId, setMyBusinessId] = useState(null);
   const [partners, setPartners] = useState([]);
 
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
@@ -41,50 +38,40 @@ export default function CollabFindPartnerTab({
   const [chatWithBusinessId, setChatWithBusinessId] = useState(null);
   const [chatWithBusinessName, setChatWithBusinessName] = useState("");
 
-  // שם העסק שלי מ-localStorage
   const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
 
+  // טען מזהה העסק המחובר מה-API
   useEffect(() => {
-  async function fetchPartners() {
-    try {
-      const res = await API.get("/business/findPartners");
-      console.log("API response:", res.data);
-      setPartners(res.data.relevant || []);
-
-      if (res.data.myBusinessId) {
-        if (res.data.myBusinessId !== myBusinessId) {
-          console.log("Updating myBusinessId from API:", res.data.myBusinessId);
+    async function fetchMyBusinessId() {
+      try {
+        const res = await API.get("/business/me");
+        if (res.data?.myBusinessId) {
           setMyBusinessId(res.data.myBusinessId);
           localStorage.setItem("myBusinessId", res.data.myBusinessId);
-        } else {
-          console.log("myBusinessId unchanged from API");
+          console.log("Loaded myBusinessId:", res.data.myBusinessId);
         }
-      } else {
-        const mine = (res.data.relevant || []).find((b) => b.isMine);
-        if (mine) {
-          const newId = mine._id || mine.id;
-          if (newId !== myBusinessId) {
-            console.log("Updating myBusinessId from partners list:", newId);
-            setMyBusinessId(newId);
-            localStorage.setItem("myBusinessId", newId);
-          } else {
-            console.log("myBusinessId unchanged from partners list");
-          }
-        } else {
-          console.log("No myBusinessId found in API or partners");
-        }
+      } catch (err) {
+        console.error("Error fetching my business id", err);
       }
-    } catch (err) {
-      console.error("Error fetching partners", err);
     }
-  }
-  fetchPartners();
-  const intervalId = setInterval(fetchPartners, 10000);
-  return () => clearInterval(intervalId);
-}, []); // תלות ריקה כדי שהאפקט ירוץ רק פעם אחת
+    fetchMyBusinessId();
+  }, []);
 
-
+  // טעינת שותפים
+  useEffect(() => {
+    async function fetchPartners() {
+      try {
+        const res = await API.get("/business/findPartners");
+        setPartners(res.data.relevant || []);
+      } catch (err) {
+        console.error("Error fetching partners", err);
+      }
+    }
+    fetchPartners();
+    const intervalId = setInterval(fetchPartners, 10000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
@@ -138,7 +125,6 @@ export default function CollabFindPartnerTab({
     setSnackbarOpen(true);
   };
 
-  // לוג פרופס צ'אט
   console.log("Chat props:", {
     token: localStorage.getItem("token"),
     myBusinessId,
