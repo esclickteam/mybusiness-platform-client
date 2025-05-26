@@ -6,7 +6,8 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import API from "../../../../api"; // עדכן לפי הנתיב אצלך
+import API from "../../../../api"; // עדכן לפי הנתיב שלך
+import socket from "../../../../socket"; // חיבור לסוקט (socket.io client)
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -20,13 +21,13 @@ export default function CollabFindPartnerTab({
   setSelectedBusiness,
   setOpenModal,
   isDevUser,
-  handleSendProposal, // מהורה: (toBusinessId, message)
-  handleOpenChat,
+  handleSendProposal, // פונקציה מהורה לשליחת הצעה: (toBusinessId, message)
 }) {
   const navigate = useNavigate();
   const [partners, setPartners] = useState([]);
   const [myBusinessId, setMyBusinessId] = useState(null);
 
+  // מודאלים וניהול צ'אט
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
@@ -36,7 +37,12 @@ export default function CollabFindPartnerTab({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  // Fetch partners & myBusinessId
+  // ניהול שיחה - מזהה היסטוריית הודעות
+  const [conversationId, setConversationId] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+
+  // טען שותפים ומזהה העסק שלי
   useEffect(() => {
     async function fetchPartners() {
       try {
@@ -57,13 +63,14 @@ export default function CollabFindPartnerTab({
     return () => clearInterval(intervalId);
   }, []);
 
-  // סינון עסקים
+  // סינון לפי חיפוש
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
         business.category.toLowerCase().includes(searchCategory.toLowerCase()) ||
-        (business.complementaryCategories || [])
-          .some((cat) => cat.toLowerCase().includes(searchCategory.toLowerCase()))
+        (business.complementaryCategories || []).some((cat) =>
+          cat.toLowerCase().includes(searchCategory.toLowerCase())
+        )
       );
     }
     if (searchMode === "free" && freeText) {
@@ -77,35 +84,76 @@ export default function CollabFindPartnerTab({
     return true;
   });
 
+  // ניווט לפרופיל עסק
   const handleOpenProfile = (business) => {
     navigate(`/business-profile/${business._id || business.id}`);
   };
 
+  // פתיחת מודאל שליחת הצעה
   const openProposalModal = (business) => {
     setProposalTarget(business);
     setProposalModalOpen(true);
   };
 
-  const openChatModal = (business) => {
-    setChatTarget(business);
-    setChatModalOpen(true);
-  };
+  // פתיחת מודאל צ'אט והתחלת שיחה
+  const openChatModal = async (business) => {
+    try {
+      const res = await API.post("/business-chat/start", {
+        otherBusinessId: business._id || business.id,
+      });
+      const convId = res.data.conversationId;
+      setConversationId(convId);
+      setChatTarget(business);
+      setChatModalOpen(true);
 
-  // שולח הודעה בצ'אט דרך ההורה
-  const handleSendChatMessage = () => {
-    if (messageText.trim()) {
-      handleOpenChat({ ...chatTarget, message: messageText });
-      setChatModalOpen(false);
-      setMessageText("");
-      setSnackbarMessage("✅ ההודעה נשלחה בהצלחה!");
+      socket.emit("joinConversation", convId);
+
+      // טען היסטוריית הודעות
+      const historyRes = await API.get(`/business-chat/${convId}/messages`);
+      setChatMessages(historyRes.data.messages);
+    } catch (err) {
+      console.error("Error starting chat:", err);
+      setSnackbarMessage("❌ שגיאה בפתיחת הצ'אט");
       setSnackbarOpen(true);
     }
   };
 
-  // שולח הצעה דרך ההורה (למעשה ל-API) עם שני ארגומנטים
+  // שליחת הודעה בצ'אט
+  const sendChatMessage = () => {
+    if (!chatInput.trim()) return;
+    const msg = {
+      conversationId,
+      from: localStorage.getItem("businessId"),
+      to: chatTarget._id || chatTarget.id,
+      text: chatInput.trim(),
+    };
+    socket.emit("sendMessage", msg, null, (ack) => {
+      if (ack.ok) {
+        setChatMessages((prev) => [...prev, ack.message]);
+        setChatInput("");
+      } else {
+        setSnackbarMessage("❌ שגיאה בשליחת ההודעה");
+        setSnackbarOpen(true);
+      }
+    });
+  };
+
+  // מאזין להודעות חדשות בסוקט
+  useEffect(() => {
+    socket.on("newMessage", (msg) => {
+      if (msg.conversationId === conversationId) {
+        setChatMessages((prev) => [...prev, msg]);
+      }
+    });
+    return () => {
+      socket.off("newMessage");
+    };
+  }, [conversationId]);
+
+  // שליחת הצעה
   const handleSubmitProposal = () => {
     if (!proposalText.trim()) return;
-    handleSendProposal(proposalTarget._id || proposalTarget.id, proposalText);
+    handleSendProposal(proposalTarget._id || proposalTarget.id, proposalText.trim());
     setProposalModalOpen(false);
     setProposalText("");
     setSnackbarMessage("✅ ההצעה נשלחה בהצלחה!");
@@ -210,30 +258,55 @@ export default function CollabFindPartnerTab({
       {/* --- Chat Modal --- */}
       <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
         <Box sx={modalStyle}>
-          <h3>שלח הודעה אל {chatTarget?.businessName}</h3>
+          <h3>צ'אט עם {chatTarget?.businessName}</h3>
+          <div
+            style={{
+              height: 300,
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              padding: 8,
+              marginBottom: 12,
+              backgroundColor: "#f9f9f9",
+            }}
+          >
+            {chatMessages.map((m, i) => (
+              <div
+                key={i}
+                style={{
+                  marginBottom: 8,
+                  textAlign:
+                    m.from === localStorage.getItem("businessId")
+                      ? "right"
+                      : "left",
+                }}
+              >
+                <b>{m.from === localStorage.getItem("businessId") ? "אני" : "הם"}:</b>{" "}
+                {m.text}
+              </div>
+            ))}
+          </div>
           <TextField
             multiline
-            rows={4}
+            rows={2}
             fullWidth
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
             placeholder="כתוב כאן את ההודעה שלך..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+              }
+            }}
           />
-          <Button
-            variant="contained"
-            sx={{ mt: 2 }}
-            onClick={handleSendChatMessage}
-          >
+          <Button variant="contained" sx={{ mt: 2 }} onClick={sendChatMessage}>
             שלח הודעה
           </Button>
         </Box>
       </Modal>
 
       {/* --- Proposal Modal --- */}
-      <Modal
-        open={proposalModalOpen}
-        onClose={() => setProposalModalOpen(false)}
-      >
+      <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
         <Box sx={modalStyle}>
           <h3>שלח הצעה אל {proposalTarget?.businessName}</h3>
           <TextField
@@ -244,11 +317,7 @@ export default function CollabFindPartnerTab({
             onChange={(e) => setProposalText(e.target.value)}
             placeholder="פרט את הצעת שיתוף הפעולה שלך..."
           />
-          <Button
-            variant="contained"
-            sx={{ mt: 2 }}
-            onClick={handleSubmitProposal}
-          >
+          <Button variant="contained" sx={{ mt: 2 }} onClick={handleSubmitProposal}>
             שלח הצעה
           </Button>
         </Box>
