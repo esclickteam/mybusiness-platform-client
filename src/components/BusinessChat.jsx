@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
+import Button from "@mui/material/Button";  // הוסף
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -32,15 +33,14 @@ export default function BusinessChat({
     if (!token || !role || !myBusinessId) return;
 
     const s = io(SOCKET_URL, {
-  path: "/socket.io",
-  auth: {
-    token,
-    role,
-    businessId: myBusinessId,
-    businessName: myBusinessName
-  }
-});
-
+      path: "/socket.io",
+      auth: {
+        token,
+        role,
+        businessId: myBusinessId,
+        businessName: myBusinessName
+      }
+    });
 
     s.on("connect", () => console.log("Socket connected:", s.id));
     s.on("disconnect", (reason) => console.log("Socket disconnected:", reason));
@@ -184,13 +184,16 @@ export default function BusinessChat({
           }
         }}
       />
-      <button
+      {/* החלפת כפתור HTML רגיל ב־MUI Button */}
+      <Button
+        type="button"
+        variant="contained"
         onClick={sendMessage}
         disabled={!input.trim()}
-        style={{ marginTop: 8, padding: "8px 16px" }}
+        sx={{ mt: 1, alignSelf: "flex-end" }}
       >
         שלח
-      </button>
+      </Button>
     </div>
   );
 }
