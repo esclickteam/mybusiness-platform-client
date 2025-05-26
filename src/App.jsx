@@ -13,6 +13,8 @@ import ClientChatSection from "./components/ClientChatSection";
 import BusinessChatPage from "./components/BusinessChatPage";
 import { useAuth } from "./context/AuthContext";
 import { SSEProvider } from "./context/SSEContext";
+import Collab from "./pages/business/dashboardPages/collabtabs/Collab";
+
 
 import "./styles/index.css";
 
