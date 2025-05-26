@@ -102,6 +102,7 @@ export default function BusinessProfilePage() {
         }}
         onMouseEnter={e => e.currentTarget.style.backgroundColor = "#732d91"}
         onMouseLeave={e => e.currentTarget.style.backgroundColor = "#8e44ad"}
+        aria-label="צור קשר עם העסק"
       >
         צור קשר עם העסק
       </button>
