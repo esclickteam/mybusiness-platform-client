@@ -98,31 +98,74 @@ export default function BusinessChat({
     };
   }, [socket, conversationId]);
 
-  // שליחת הודעה
+  // שליחת הודעה עם התחלת שיחה אוטומטית במידת הצורך
   const sendMessage = () => {
     console.log("sendMessage triggered");
-    if (!input.trim() || !conversationId || !socket) {
-      console.log("Cannot send message: input or conversationId or socket missing");
+    if (!input.trim() || !socket) {
+      console.log("Cannot send message: input or socket missing");
       return;
     }
 
-    socket.emit(
-      "sendMessage",
-      {
-        conversationId,
-        from: myBusinessId,
-        to: otherBusinessId,
-        text: input.trim(),
-      },
-      (ack) => {
-        if (ack.ok) {
-          setMessages((prev) => [...prev, ack.message]);
-          setInput("");
-        } else {
-          alert("Failed to send message: " + ack.error);
+    if (!conversationId) {
+      // התחלת שיחה לפני שליחה
+      socket.emit(
+        "startConversation",
+        { otherUserId: otherBusinessId },
+        (res) => {
+          if (res.ok) {
+            setConversationId(res.conversationId);
+
+            socket.emit("joinConversation", res.conversationId, (ack) => {
+              if (!ack.ok) {
+                console.error("Failed to join conversation:", ack.error);
+                alert("Failed to join conversation: " + ack.error);
+                return;
+              }
+
+              // אחרי שהצטרפנו לשיחה, שולחים הודעה
+              socket.emit(
+                "sendMessage",
+                {
+                  conversationId: res.conversationId,
+                  from: myBusinessId,
+                  to: otherBusinessId,
+                  text: input.trim(),
+                },
+                (ack) => {
+                  if (ack.ok) {
+                    setMessages((prev) => [...prev, ack.message]);
+                    setInput("");
+                  } else {
+                    alert("Failed to send message: " + ack.error);
+                  }
+                }
+              );
+            });
+          } else {
+            alert("Failed to start conversation: " + res.error);
+          }
         }
-      }
-    );
+      );
+    } else {
+      // יש conversationId, שולחים הודעה רגילה
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: myBusinessId,
+          to: otherBusinessId,
+          text: input.trim(),
+        },
+        (ack) => {
+          if (ack.ok) {
+            setMessages((prev) => [...prev, ack.message]);
+            setInput("");
+          } else {
+            alert("Failed to send message: " + ack.error);
+          }
+        }
+      );
+    }
   };
 
   return (
@@ -166,7 +209,7 @@ export default function BusinessChat({
       />
       <button
         onClick={sendMessage}
-        disabled={!input.trim() || !conversationId}
+        disabled={!input.trim()}
         style={{ marginTop: 8, padding: "8px 16px" }}
       >
         שלח
