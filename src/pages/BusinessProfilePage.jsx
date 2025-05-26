@@ -98,6 +98,30 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
           <p style={{ marginTop: 8, color: "#555" }}>
             {business.description || "אין תיאור זמין"}
           </p>
+
+          {/* שיתופי פעולה רצויים */}
+          {business.desiredCollaborations && business.desiredCollaborations.length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              <h3 style={{ color: "#6c3483" }}>🤝 שיתופי פעולה רצויים:</h3>
+              <ul style={{ paddingLeft: 20, marginTop: 8 }}>
+                {business.desiredCollaborations.map(collab => (
+                  <li key={collab.id} style={{ fontSize: 16, color: "#444" }}>
+                    {collab.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* פרטי איש הקשר */}
+          {business.contactPerson && (
+            <div style={{ marginTop: 20 }}>
+              <h3 style={{ color: "#6c3483" }}>📞 פרטי איש הקשר:</h3>
+              <p><b>שם:</b> {business.contactPerson.name}</p>
+              <p><b>טלפון:</b> {business.contactPerson.phone}</p>
+              <p><b>אימייל:</b> {business.contactPerson.email}</p>
+            </div>
+          )}
         </div>
 
         {/* כפתור צור קשר בתוך הכרטיסיה */}
