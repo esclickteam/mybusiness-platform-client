@@ -41,7 +41,7 @@ export default function CollabFindPartnerTab({
   useEffect(() => {
     async function fetchPartners() {
       try {
-        const res = await API.get("/businesses/findPartners");
+        const res = await API.get("/business/findPartners");
         setPartners({
           all: res.data.all || [],
           relevant: res.data.relevant || [],
