@@ -25,6 +25,12 @@ export default function CollabFindPartnerTab({
 }) {
   const navigate = useNavigate();
 
+  // 1️⃣ שליפת ה־myBusinessId מה־localStorage
+  const myBusinessId = localStorage.getItem("myBusinessId");
+  const businessDetails =
+    JSON.parse(localStorage.getItem("businessDetails") || "{}");
+  const myBusinessName = businessDetails.businessName || "";
+
   const [partners, setPartners] = useState([]);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [proposalText, setProposalText] = useState("");
@@ -33,10 +39,6 @@ export default function CollabFindPartnerTab({
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [chatWithBusinessId, setChatWithBusinessId] = useState(null);
   const [chatWithBusinessName, setChatWithBusinessName] = useState("");
-
-  const businessDetails =
-    JSON.parse(localStorage.getItem("businessDetails") || "{}");
-  const myBusinessName = businessDetails.businessName || "";
 
   // טעינת שותפים
   useEffect(() => {
@@ -157,8 +159,8 @@ export default function CollabFindPartnerTab({
         <p>לא נמצאו שותפים.</p>
       ) : (
         filteredPartners.map((business) => {
-          const isMine =
-            business._id === localStorage.getItem("myBusinessId");
+          // 2️⃣ שימוש ב־myBusinessId ל־isMine
+          const isMine = business._id === myBusinessId;
 
           return (
             <div
