@@ -8,7 +8,7 @@ export default function CollabBusinessProfileTab({
   initialProfileImage,
   setShowBusinessChat,
 }) {
-  const [profileData, setProfileData] = useState(initialProfileData);
+  const [profileData, setProfileData] = useState(initialProfileData || {});
   const [logoPreview, setLogoPreview] = useState(initialProfileImage);
   const [logoFile, setLogoFile] = useState(null);
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -39,7 +39,6 @@ export default function CollabBusinessProfileTab({
     };
 
     try {
-      // אם יש לוגו חדש, טען אותו קודם
       if (logoFile) {
         const logoFormData = new FormData();
         logoFormData.append("logo", logoFile);
@@ -52,11 +51,9 @@ export default function CollabBusinessProfileTab({
         if (!logoRes.ok) throw new Error("שגיאה בהעלאת הלוגו");
         const logoJson = await logoRes.json();
 
-        // עדכון הלוגו בנתונים
         updatedData.logo = logoJson.logo;
       }
 
-      // שמירת שאר הנתונים בפרופיל
       const res = await fetch("/api/business/profile", {
         method: "PUT",
         headers: {
@@ -69,7 +66,6 @@ export default function CollabBusinessProfileTab({
 
       const json = await res.json();
 
-      // עדכון הסטייט המקומי עם הנתונים המעודכנים מהשרת
       setProfileData((prev) => ({
         ...prev,
         ...updatedData,
@@ -81,6 +77,18 @@ export default function CollabBusinessProfileTab({
     } finally {
       setSaving(false);
     }
+  };
+
+  // הוספת בדיקות בטיחות עבור profileData לפני הגישה לשדות
+  const safeProfile = {
+    businessName: profileData?.businessName || "שם לא זמין",
+    category: profileData?.category || "קטגוריה לא זמינה",
+    area: profileData?.area || "אזור לא זמין",
+    about: profileData?.about || "אין תיאור",
+    collabPref: profileData?.collabPref || "",
+    contact: profileData?.contact || "-",
+    phone: profileData?.phone || "-",
+    email: profileData?.email || "-",
   };
 
   return (
@@ -106,8 +114,8 @@ export default function CollabBusinessProfileTab({
             </label>
 
             <div className="business-header-text">
-              <h2 className="business-name">{profileData.businessName}</h2>
-              <p className="business-category">{profileData.category}</p>
+              <h2 className="business-name">{safeProfile.businessName}</h2>
+              <p className="business-category">{safeProfile.category}</p>
             </div>
 
             <div className="flex gap-2">
@@ -128,18 +136,18 @@ export default function CollabBusinessProfileTab({
 
           <div className="business-section">
             <h4>📍 אזור פעילות:</h4>
-            <p>{profileData.area}</p>
+            <p>{safeProfile.area}</p>
           </div>
 
           <div className="business-section">
             <h4>📝 על העסק:</h4>
-            <p>{profileData.about}</p>
+            <p>{safeProfile.about}</p>
           </div>
 
           <div className="business-section">
             <h4>🤝 שיתופי פעולה רצויים:</h4>
             <ul>
-              {profileData.collabPref?.split("\n").map((line, index) => (
+              {safeProfile.collabPref.split("\n").map((line, index) => (
                 <li key={index}>{line}</li>
               ))}
             </ul>
@@ -148,13 +156,13 @@ export default function CollabBusinessProfileTab({
           <div className="business-section">
             <h4>📞 פרטי קשר:</h4>
             <p>
-              <strong>איש קשר:</strong> {profileData.contact}
+              <strong>איש קשר:</strong> {safeProfile.contact}
             </p>
             <p>
-              <strong>טלפון:</strong> {profileData.phone}
+              <strong>טלפון:</strong> {safeProfile.phone}
             </p>
             <p>
-              <strong>אימייל:</strong> {profileData.email}
+              <strong>אימייל:</strong> {safeProfile.email}
             </p>
           </div>
         </div>
@@ -205,48 +213,48 @@ export default function CollabBusinessProfileTab({
               <label>שם העסק</label>
               <input
                 name="businessName"
-                defaultValue={profileData.businessName}
+                defaultValue={safeProfile.businessName}
                 required
               />
             </div>
 
             <div>
               <label>תחום</label>
-              <input name="category" defaultValue={profileData.category} required />
+              <input name="category" defaultValue={safeProfile.category} required />
             </div>
 
             <div>
               <label>אזור פעילות</label>
-              <input name="area" defaultValue={profileData.area} required />
+              <input name="area" defaultValue={safeProfile.area} required />
             </div>
 
             <div>
               <label>על העסק</label>
-              <textarea name="about" defaultValue={profileData.about} rows="3" />
+              <textarea name="about" defaultValue={safeProfile.about} rows="3" />
             </div>
 
             <div>
               <label>שיתופי פעולה רצויים</label>
               <textarea
                 name="collabPref"
-                defaultValue={profileData.collabPref}
+                defaultValue={safeProfile.collabPref}
                 rows="3"
               />
             </div>
 
             <div>
               <label>שם איש קשר</label>
-              <input name="contact" defaultValue={profileData.contact} required />
+              <input name="contact" defaultValue={safeProfile.contact} required />
             </div>
 
             <div>
               <label>טלפון</label>
-              <input name="phone" defaultValue={profileData.phone} required />
+              <input name="phone" defaultValue={safeProfile.phone} required />
             </div>
 
             <div>
               <label>אימייל</label>
-              <input name="email" defaultValue={profileData.email} required />
+              <input name="email" defaultValue={safeProfile.email} required />
             </div>
 
             <div className="modal-buttons">
