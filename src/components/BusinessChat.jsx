@@ -1,67 +1,162 @@
-import React, { useEffect, useState } from "react";
-import socket from "../socket";
+import React, { useEffect, useState, useRef } from "react";
+import { io } from "socket.io-client";
 
-export default function BusinessChat({ conversationId }) {
+const SOCKET_URL = "https://api.esclick.co.il";
+
+
+export default function BusinessChat({
+  token,
+  role,
+  myBusinessId,
+  myBusinessName,
+  otherBusinessId,
+}) {
+  const [socket, setSocket] = useState(null);
+  const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const messagesEndRef = useRef(null);
 
+  // גלילת המסך להודעה האחרונה
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(scrollToBottom, [messages]);
+
+  // יצירת חיבור Socket.IO עם אימות
   useEffect(() => {
-    if (!conversationId) return;
+    if (!token || !role || !myBusinessId) return;
 
-    // הצטרפות לחדר השיחה
-    socket.emit("joinConversation", conversationId, (res) => {
-      if (!res.ok) {
-        alert("Failed to join conversation: " + res.error);
+    const s = io(SOCKET_URL, {
+      auth: {
+        token,
+        role,
+        businessId: myBusinessId,
+        businessName: myBusinessName,
+      },
+      path: "/socket.io",
+      transports: ["websocket", "polling"],
+    });
+
+    s.on("connect", () => {
+      console.log("Socket connected:", s.id);
+    });
+
+    s.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
+    });
+
+    // קבלת הודעות חדשות בזמן אמת
+    s.on("newMessage", (msg) => {
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => [...prev, msg]);
       }
     });
 
-    // קבלת הודעה חדשה
-    socket.on("newMessage", (message) => {
-      setMessages((prev) => [...prev, message]);
-    });
+    setSocket(s);
 
-    // בקשת היסטוריית הודעות בתחילת הטעינה
-    socket.emit("getHistory", { conversationId }, (res) => {
-      if (res.ok) setMessages(res.messages);
-    });
-
-    // ניקוי אירועים בהורדת הקומפוננטה
     return () => {
-      socket.off("newMessage");
+      s.disconnect();
     };
-  }, [conversationId]);
+  }, [token, role, myBusinessId, myBusinessName, conversationId]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    socket.emit("sendMessage", {
-      conversationId,
-      from: localStorage.getItem("businessId"),
-      to: "other-business-id", // כאן צריך לדעת את העסק השני
-      text: input,
-    }, (res) => {
-      if (!res.ok) alert("Failed to send message: " + res.error);
-      else setInput("");
-    });
+  // פתיחת שיחה (או קבלת שיחה קיימת) עם העסק השני
+  useEffect(() => {
+    if (!socket || !otherBusinessId || !myBusinessId) return;
+
+    socket.emit(
+      "startConversation",
+      { otherUserId: otherBusinessId },
+      (res) => {
+        if (res.ok) {
+          setConversationId(res.conversationId);
+          // הצטרפות ל-room
+          socket.emit("joinConversation", res.conversationId, (ack) => {
+            if (!ack.ok) {
+              console.error("Failed to join conversation:", ack.error);
+            }
+          });
+          // טעינת היסטוריית הודעות
+          socket.emit("getHistory", { conversationId: res.conversationId }, (res2) => {
+            if (res2.ok) setMessages(res2.messages);
+          });
+        } else {
+          console.error("Failed to start conversation:", res.error);
+        }
+      }
+    );
+  }, [socket, otherBusinessId, myBusinessId]);
+
+  // שליחת הודעה
+  const sendMessage = () => {
+    if (!input.trim() || !conversationId) return;
+
+    socket.emit(
+      "sendMessage",
+      {
+        conversationId,
+        from: myBusinessId,
+        to: otherBusinessId,
+        text: input.trim(),
+      },
+      (ack) => {
+        if (ack.ok) {
+          setMessages((prev) => [...prev, ack.message]);
+          setInput("");
+        } else {
+          alert("Failed to send message: " + ack.error);
+        }
+      }
+    );
   };
 
   return (
-    <div>
-      <div style={{ height: 400, overflowY: "scroll", border: "1px solid #ccc", padding: 10 }}>
+    <div style={{ maxWidth: 600, margin: "auto" }}>
+      <h3>צ'אט עסקי</h3>
+      <div
+        style={{
+          border: "1px solid #ccc",
+          padding: 10,
+          height: 400,
+          overflowY: "auto",
+          marginBottom: 10,
+          backgroundColor: "#f9f9f9",
+        }}
+      >
         {messages.map((msg, i) => (
-          <div key={i} style={{ marginBottom: 8 }}>
-            <b>{msg.businessName || msg.from}</b>: {msg.text || <i>{msg.fileName || "קובץ"}</i>}
+          <div
+            key={i}
+            style={{
+              marginBottom: 8,
+              textAlign: msg.from === myBusinessId ? "right" : "left",
+            }}
+          >
+            <b>{msg.from === myBusinessId ? "אני" : "הם"}</b>: {msg.text}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <input
-        type="text"
+      <textarea
+        rows={3}
+        style={{ width: "100%", resize: "none" }}
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
         placeholder="הקלד הודעה..."
-        style={{ width: "80%" }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        }}
       />
-      <button onClick={handleSend} style={{ width: "18%", marginLeft: "2%" }}>שלח</button>
+      <button
+        onClick={sendMessage}
+        disabled={!input.trim() || !conversationId}
+        style={{ marginTop: 8, padding: "8px 16px" }}
+      >
+        שלח
+      </button>
     </div>
   );
 }
