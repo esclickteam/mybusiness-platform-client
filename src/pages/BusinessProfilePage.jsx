@@ -37,7 +37,7 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
       {isOwnerViewingOther && (
         <button
           onClick={() => {
-            if (resetSearchFilters) resetSearchFilters(); // איפוס סינון לפני ניווט
+            if (resetSearchFilters) resetSearchFilters();
             navigate("/business/collaborations");
           }}
           style={{
@@ -99,7 +99,6 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
             {business.description || "אין תיאור זמין"}
           </p>
 
-          {/* שיתופי פעולה רצויים */}
           {(business.collabPref || (business.lookingFor && business.lookingFor.length) || (business.complementaryCategories && business.complementaryCategories.length)) && (
             <div style={{ marginTop: 20 }}>
               <h3 style={{ color: "#6c3483" }}>🤝 שיתופי פעולה רצויים:</h3>
@@ -127,16 +126,18 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
             </div>
           )}
 
-          {/* פרטי איש הקשר */}
           {business.contact && (
             <div style={{ marginTop: 20 }}>
               <h3 style={{ color: "#6c3483" }}>📞 פרטי איש הקשר:</h3>
               <p>{business.contact}</p>
+              <div style={{ marginTop: 12 }}>
+                {business.phone && <p><b>טלפון:</b> {business.phone}</p>}
+                {business.email && <p><b>אימייל:</b> {business.email}</p>}
+              </div>
             </div>
           )}
         </div>
 
-        {/* כפתור צור קשר בתוך הכרטיסיה */}
         <button
           style={{
             marginTop: 30,
