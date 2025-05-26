@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import Button from "@mui/material/Button"; // ייבוא Button מ-MUI
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
-import BusinessChat from "../../../../components/BusinessChat"; 
+import BusinessChat from "../../../../components/BusinessChat";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -38,6 +38,10 @@ export default function CollabFindPartnerTab({
   const [chatWithBusinessId, setChatWithBusinessId] = useState(null);
   // פרטים מלאים של העסק בצ׳אט (לכותרת למשל)
   const [chatWithBusinessName, setChatWithBusinessName] = useState("");
+
+  // קבלת שם העסק שלי מ-localStorage
+  const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
+  const myBusinessName = businessDetails.businessName || "";
 
   useEffect(() => {
     async function fetchPartners() {
@@ -213,7 +217,7 @@ export default function CollabFindPartnerTab({
             token={localStorage.getItem("token")}
             role="business"
             myBusinessId={myBusinessId}
-            myBusinessName={localStorage.getItem("businessDetails")?.businessName || ""}
+            myBusinessName={myBusinessName}
             otherBusinessId={chatWithBusinessId}
           />
         </div>
