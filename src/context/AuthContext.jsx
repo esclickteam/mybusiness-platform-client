@@ -18,15 +18,14 @@ export function AuthProvider({ children }) {
   // פונקציית עזר לשמירת businessDetails
   // ============================
   const saveBusinessDetails = (data) => {
-    // אם יש אובייקט עסקי מלא, שמור הכל
+    // אפשר להדפיס מה מתקבל ל־debug
+    // console.log("saveBusinessDetails: data =", data);
     if (data.business) {
       localStorage.setItem("businessDetails", JSON.stringify(data.business));
-    } 
-    // אם יש רק businessId, שמור כאובייקט מינימלי
+    }
     else if (data.businessId) {
       localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-    } 
-    // אם אין עסק, נקה
+    }
     else {
       localStorage.removeItem("businessDetails");
     }
@@ -49,9 +48,8 @@ export function AuthProvider({ children }) {
           subscriptionPlan: data.subscriptionPlan,
           businessId:       data.businessId || null,
         });
-        // <<< שמירת businessDetails ב-localStorage >>>
         saveBusinessDetails(data);
-      } catch {
+      } catch (e) {
         setUser(null);
         localStorage.removeItem("businessDetails");
       } finally {
@@ -81,13 +79,14 @@ export function AuthProvider({ children }) {
       }
 
       // שמירת הטוקן ב-localStorage
-      const token = response.data.token || response.data.accessToken; // ודא שזה השם הנכון בשרת שלך
+      const token = response.data.token || response.data.accessToken;
       if (token) {
         localStorage.setItem("token", token);
       } else {
         console.warn("No token received from login response");
       }
 
+      // הבאת פרטי המשתמש לאחר התחברות (תמיד משתמשים ב-data, אצלך data הוא שטוח)
       const { data } = await API.get("/auth/me");
       setUser({
         userId:           data.userId,
@@ -97,8 +96,6 @@ export function AuthProvider({ children }) {
         subscriptionPlan: data.subscriptionPlan,
         businessId:       data.businessId || null,
       });
-
-      // <<< שמירת businessDetails ב-localStorage >>>
       saveBusinessDetails(data);
 
       if (!options.skipRedirect && data) {
@@ -144,8 +141,8 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
-      localStorage.removeItem("token"); // הסרת הטוקן בלוגאאוט
-      localStorage.removeItem("businessDetails"); // הוסף: הסרת פרטי עסק
+      localStorage.removeItem("token");
+      localStorage.removeItem("businessDetails");
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
