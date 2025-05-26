@@ -24,8 +24,7 @@ export default function CollabFindPartnerTab({
   handleOpenChat,
 }) {
   const navigate = useNavigate();
-  const [partners, setPartners] = useState({ all: [], relevant: [] });
-  const [showAll, setShowAll] = useState(false);
+  const [partners, setPartners] = useState([]);
   const [myBusinessId, setMyBusinessId] = useState(null);
 
   const [chatModalOpen, setChatModalOpen] = useState(false);
@@ -37,31 +36,16 @@ export default function CollabFindPartnerTab({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  // פונקציה להסרת כפילויות לפי id
-  function uniqueById(arr) {
-    const seen = new Set();
-    return arr.filter(item => {
-      const id = item._id || item.id;
-      if (seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    });
-  }
-
-  // שליפת רשימת השותפים + זיהוי העסק שלי
   useEffect(() => {
     async function fetchPartners() {
       try {
         const res = await API.get("/business/findPartners");
-        setPartners({
-          all: res.data.all || [],
-          relevant: res.data.relevant || [],
-        });
+        setPartners(res.data.relevant || []);
 
         if (res.data.myBusinessId) {
           setMyBusinessId(res.data.myBusinessId);
-        } else if (res.data.all) {
-          const myBiz = res.data.all.find(b => b.isMine);
+        } else if (res.data.relevant) {
+          const myBiz = res.data.relevant.find((b) => b.isMine);
           if (myBiz) setMyBusinessId(myBiz._id || myBiz.id);
         }
       } catch (err) {
@@ -74,19 +58,11 @@ export default function CollabFindPartnerTab({
     return () => clearInterval(intervalId);
   }, []);
 
-  // רשימת עסקים להצגה – רלוונטיים כברירת מחדל, או הכל
-  const displayedPartners = showAll ? partners.all : partners.relevant;
-
-  // הסרת כפילויות לפני סינון החיפוש
-  const uniquePartners = uniqueById(displayedPartners);
-
-  // חיפוש/סינון קליינט
-  const filteredPartners = uniquePartners.filter((business) => {
+  // סינון עסקים לפי חיפוש
+  const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
-        business.category
-          .toLowerCase()
-          .includes(searchCategory.toLowerCase()) ||
+        business.category.toLowerCase().includes(searchCategory.toLowerCase()) ||
         (business.complementaryCategories &&
           business.complementaryCategories.some((cat) =>
             cat.toLowerCase().includes(searchCategory.toLowerCase())
@@ -177,13 +153,6 @@ export default function CollabFindPartnerTab({
               : setFreeText(e.target.value)
           }
         />
-
-        <button
-          className="toggle-button"
-          onClick={() => setShowAll((prev) => !prev)}
-        >
-          {showAll ? "הצג עסקים רלוונטיים בלבד" : "הצג את כל העסקים"}
-        </button>
       </div>
 
       {filteredPartners.length === 0 ? (
