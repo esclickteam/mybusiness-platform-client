@@ -111,24 +111,27 @@ export default function CollabFindPartnerTab({
   };
 
   const sendChatMessage = () => {
-      console.log("sendChatMessage נקרא");
-    if (!chatInput.trim()) return;
-    const msg = {
-      conversationId,
-      from: localStorage.getItem("businessId"),
-      to: chatTarget._id || chatTarget.id,
-      text: chatInput.trim(),
-    };
-    socket.emit("sendMessage", msg, null, (ack) => {
-      if (ack.ok) {
-        setChatMessages((prev) => [...prev, ack.message]);
-        setChatInput("");
-      } else {
-        setSnackbarMessage("❌ שגיאה בשליחת ההודעה");
-        setSnackbarOpen(true);
-      }
-    });
+  console.log("sendChatMessage נקרא");
+  if (!chatInput.trim()) return;
+  const msg = {
+    conversationId,
+    from: localStorage.getItem("businessId"),
+    to: chatTarget._id || chatTarget.id,
+    text: chatInput.trim(),
   };
+  console.log("מנסה לשלוח הודעה...", msg);
+  socket.emit("sendMessage", msg, (ack) => {
+    console.log("קיבלתי ack:", ack);
+    if (ack && ack.ok) {
+      setChatMessages((prev) => [...prev, ack.message]);
+      setChatInput("");
+    } else {
+      setSnackbarMessage("❌ שגיאה בשליחת ההודעה");
+      setSnackbarOpen(true);
+    }
+  });
+};
+
 
   useEffect(() => {
     socket.on("newMessage", (msg) => {
