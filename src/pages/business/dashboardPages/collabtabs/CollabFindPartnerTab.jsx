@@ -21,13 +21,12 @@ export default function CollabFindPartnerTab({
   setSelectedBusiness,
   setOpenModal,
   isDevUser,
-  handleSendProposal, // פונקציה מהורה לשליחת הצעה: (toBusinessId, message)
+  handleSendProposal,
 }) {
   const navigate = useNavigate();
   const [partners, setPartners] = useState([]);
   const [myBusinessId, setMyBusinessId] = useState(null);
 
-  // מודאלים וניהול צ'אט
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
@@ -37,12 +36,10 @@ export default function CollabFindPartnerTab({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  // ניהול שיחה - מזהה היסטוריית הודעות
   const [conversationId, setConversationId] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
 
-  // טען שותפים ומזהה העסק שלי
   useEffect(() => {
     async function fetchPartners() {
       try {
@@ -63,7 +60,6 @@ export default function CollabFindPartnerTab({
     return () => clearInterval(intervalId);
   }, []);
 
-  // סינון לפי חיפוש
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
@@ -84,18 +80,15 @@ export default function CollabFindPartnerTab({
     return true;
   });
 
-  // ניווט לפרופיל עסק
   const handleOpenProfile = (business) => {
     navigate(`/business-profile/${business._id || business.id}`);
   };
 
-  // פתיחת מודאל שליחת הצעה
   const openProposalModal = (business) => {
     setProposalTarget(business);
     setProposalModalOpen(true);
   };
 
-  // פתיחת מודאל צ'אט והתחלת שיחה
   const openChatModal = async (business) => {
     try {
       const res = await API.post("/business-chat/start", {
@@ -108,7 +101,6 @@ export default function CollabFindPartnerTab({
 
       socket.emit("joinConversation", convId);
 
-      // טען היסטוריית הודעות
       const historyRes = await API.get(`/business-chat/${convId}/messages`);
       setChatMessages(historyRes.data.messages);
     } catch (err) {
@@ -118,7 +110,6 @@ export default function CollabFindPartnerTab({
     }
   };
 
-  // שליחת הודעה בצ'אט
   const sendChatMessage = () => {
     if (!chatInput.trim()) return;
     const msg = {
@@ -138,7 +129,6 @@ export default function CollabFindPartnerTab({
     });
   };
 
-  // מאזין להודעות חדשות בסוקט
   useEffect(() => {
     socket.on("newMessage", (msg) => {
       if (msg.conversationId === conversationId) {
@@ -150,7 +140,6 @@ export default function CollabFindPartnerTab({
     };
   }, [conversationId]);
 
-  // שליחת הצעה
   const handleSubmitProposal = () => {
     if (!proposalText.trim()) return;
     handleSendProposal(proposalTarget._id || proposalTarget.id, proposalText.trim());
@@ -261,7 +250,7 @@ export default function CollabFindPartnerTab({
           <h3>צ'אט עם {chatTarget?.businessName}</h3>
           <div
             style={{
-              height: 300,
+              maxHeight: 300,
               overflowY: "auto",
               border: "1px solid #ccc",
               padding: 8,
@@ -287,7 +276,7 @@ export default function CollabFindPartnerTab({
           </div>
           <TextField
             multiline
-            rows={2}
+            minRows={3}
             fullWidth
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
@@ -298,6 +287,7 @@ export default function CollabFindPartnerTab({
                 sendChatMessage();
               }
             }}
+            sx={{ marginTop: 1 }}
           />
           <Button variant="contained" sx={{ mt: 2 }} onClick={sendChatMessage}>
             שלח הודעה
@@ -338,11 +328,14 @@ export default function CollabFindPartnerTab({
   );
 }
 
-// סגנון אחיד למודאלים
 const modalStyle = {
   backgroundColor: "#fff",
   p: 4,
   borderRadius: 2,
   maxWidth: 500,
   m: "10% auto",
+  maxHeight: "80vh",     // מגביל גובה מודאל ל-80% גובה מסך
+  overflowY: "auto",    // מאפשר גלילה במודאל אם תוכן גבוה
+  display: "flex",
+  flexDirection: "column",
 };
