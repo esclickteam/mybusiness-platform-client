@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
-import { useAuth } from "../context/AuthContext"; // נניח שיש לך הקשר אימות
+import { useAuth } from "../context/AuthContext";
 
 export default function BusinessProfilePage() {
   const { businessId } = useParams();
@@ -30,8 +30,10 @@ export default function BusinessProfilePage() {
   if (error) return <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>{error}</p>;
   if (!business) return <p style={{ textAlign: "center", marginTop: 50 }}>העסק לא נמצא.</p>;
 
-  // בדיקה האם המשתמש הוא בעל עסק, והעסק בפרופיל הוא שונה מהעסק שלו
-  const showBackButton = user?.role === "business" && user.businessId !== businessId;
+  // בדיקה האם המשתמש בעל עסק וצופה בפרופיל של עסק אחר
+  const isBusinessUser = user?.role === "business";
+  const isNotOwnProfile = user?.businessId !== businessId;
+  const showBackToCollaborationsButton = isBusinessUser && isNotOwnProfile;
 
   return (
     <div style={{
@@ -44,10 +46,10 @@ export default function BusinessProfilePage() {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       color: "#333"
     }}>
-      {/* כפתור חזרה לשיתופי פעולה, רק אם זה לא הפרופיל של העסק שלו */}
-      {showBackButton && (
+      {/* כפתור חזרה לשיתופי פעולה - רק אם זה לא הפרופיל של העסק עצמו */}
+      {showBackToCollaborationsButton && (
         <button
-          onClick={() => navigate("/business/collaborations")} // שנה את הנתיב לפי מה שמתאים לשיתופי פעולה
+          onClick={() => navigate("/business/collaborations")} // כאן הנתיב לשיתופי פעולה מחוץ לדשבורד
           style={{
             backgroundColor: "transparent",
             border: "none",
