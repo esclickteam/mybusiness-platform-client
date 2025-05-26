@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import API from "../../../../../JS/api";
+import API from "../../../../JS/api";
+
 
 
 export default function CollabSentRequestsTab() {
