@@ -3,7 +3,6 @@ import { io } from "socket.io-client";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
-
 export default function BusinessChat({
   token,
   role,
@@ -24,7 +23,7 @@ export default function BusinessChat({
 
   useEffect(scrollToBottom, [messages]);
 
-  // יצירת חיבור Socket.IO עם אימות
+  // יצירת חיבור Socket.IO עם אימות (רק פעם אחת)
   useEffect(() => {
     if (!token || !role || !myBusinessId) return;
 
@@ -47,19 +46,12 @@ export default function BusinessChat({
       console.log("Socket disconnected:", reason);
     });
 
-    // קבלת הודעות חדשות בזמן אמת
-    s.on("newMessage", (msg) => {
-      if (msg.conversationId === conversationId) {
-        setMessages((prev) => [...prev, msg]);
-      }
-    });
-
     setSocket(s);
 
     return () => {
       s.disconnect();
     };
-  }, [token, role, myBusinessId, myBusinessName, conversationId]);
+  }, [token, role, myBusinessId, myBusinessName]);
 
   // פתיחת שיחה (או קבלת שיחה קיימת) עם העסק השני
   useEffect(() => {
@@ -71,12 +63,14 @@ export default function BusinessChat({
       (res) => {
         if (res.ok) {
           setConversationId(res.conversationId);
+
           // הצטרפות ל-room
           socket.emit("joinConversation", res.conversationId, (ack) => {
             if (!ack.ok) {
               console.error("Failed to join conversation:", ack.error);
             }
           });
+
           // טעינת היסטוריית הודעות
           socket.emit("getHistory", { conversationId: res.conversationId }, (res2) => {
             if (res2.ok) setMessages(res2.messages);
@@ -88,9 +82,26 @@ export default function BusinessChat({
     );
   }, [socket, otherBusinessId, myBusinessId]);
 
+  // האזנה להודעות חדשות רק לשיחה הנוכחית
+  useEffect(() => {
+    if (!socket || !conversationId) return;
+
+    const handler = (msg) => {
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => [...prev, msg]);
+      }
+    };
+
+    socket.on("newMessage", handler);
+    return () => {
+      socket.off("newMessage", handler);
+    };
+  }, [socket, conversationId]);
+
   // שליחת הודעה
   const sendMessage = () => {
-    if (!input.trim() || !conversationId) return;
+    console.log("sendMessage triggered");
+    if (!input.trim() || !conversationId || !socket) return;
 
     socket.emit(
       "sendMessage",
