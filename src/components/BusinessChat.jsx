@@ -16,154 +16,132 @@ export default function BusinessChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // Scroll to last message
+  // אם עדיין אין מזהה עסק — מוציא הודעה זמנית
+  if (!myBusinessId) {
+    return <p>טוען זיהוי העסק…</p>;
+  }
+
+  // גלילה להודעה האחרונה
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   useEffect(scrollToBottom, [messages]);
 
-  // Create socket connection once
+  // 1) יצירת חיבור socket רק אחרי שיש כל התלויות
   useEffect(() => {
     if (!token || !role || !myBusinessId) return;
 
     const s = io(SOCKET_URL, {
+      path: "/socket.io",
+      transports: ["websocket", "polling"],
       auth: {
         token,
         role,
         businessId: myBusinessId,
         businessName: myBusinessName,
       },
-      path: "/socket.io",
-      transports: ["websocket", "polling"],
     });
 
-    s.on("connect", () => {
-      console.log("Socket connected:", s.id);
-    });
-
-    s.on("disconnect", (reason) => {
-      console.log("Socket disconnected:", reason);
-    });
+    s.on("connect", () => console.log("Socket connected:", s.id));
+    s.on("disconnect", (reason) => console.log("Socket disconnected:", reason));
 
     setSocket(s);
-
     return () => {
       s.disconnect();
     };
   }, [token, role, myBusinessId, myBusinessName]);
 
-  // Start or get conversation
+  // 2) פתיחה או שליפת שיחה קיימת
   useEffect(() => {
-    if (!socket || !otherBusinessId || !myBusinessId) return;
+    if (!socket || !otherBusinessId) return;
 
     console.log("Starting conversation with", otherBusinessId);
     socket.emit(
       "startConversation",
       { otherUserId: otherBusinessId },
       (res) => {
-        console.log("startConversation response:", res);
         if (res.ok) {
           setConversationId(res.conversationId);
 
           socket.emit("joinConversation", res.conversationId, (ack) => {
-            if (!ack.ok) {
-              console.error("Failed to join conversation:", ack.error);
-            }
+            if (!ack.ok) console.error("joinConversation failed:", ack.error);
           });
 
-          socket.emit("getHistory", { conversationId: res.conversationId }, (res2) => {
-            if (res2.ok) setMessages(res2.messages);
-          });
+          socket.emit(
+            "getHistory",
+            { conversationId: res.conversationId },
+            (res2) => {
+              if (res2.ok) setMessages(res2.messages);
+            }
+          );
         } else {
-          console.error("Failed to start conversation:", res.error);
+          console.error("startConversation failed:", res.error);
         }
       }
     );
-  }, [socket, otherBusinessId, myBusinessId]);
+  }, [socket, otherBusinessId]);
 
-  // Listen for new messages in conversation
+  // 3) הקשבה להודעות חדשות
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    const handler = (msg) => {
+    const handleNew = (msg) => {
       if (msg.conversationId === conversationId) {
         console.log("Received new message", msg);
         setMessages((prev) => [...prev, msg]);
       }
     };
 
-    socket.on("newMessage", handler);
+    socket.on("newMessage", handleNew);
     return () => {
-      socket.off("newMessage", handler);
+      socket.off("newMessage", handleNew);
     };
   }, [socket, conversationId]);
 
-  // Send message, start conversation automatically if needed
+  // 4) פונקציית שליחת הודעה
   const sendMessage = () => {
-    console.log("sendMessage triggered");
-    if (!input.trim() || !socket) {
-      console.log("Cannot send message: input or socket missing");
-      return;
-    }
+    if (!input.trim() || !socket) return;
+
+    const payload = {
+      conversationId,
+      from: myBusinessId,
+      to: otherBusinessId,
+      text: input.trim(),
+    };
+
+    const emitSend = () => {
+      socket.emit("sendMessage", payload, (ack) => {
+        if (ack.ok) {
+          setMessages((prev) => [...prev, ack.message]);
+          setInput("");
+        } else {
+          alert("שליחת הודעה נכשלה: " + ack.error);
+        }
+      });
+    };
 
     if (!conversationId) {
-      // Start conversation first, then send message
+      // אם אין שיחה — פותחים קודם
       socket.emit(
         "startConversation",
         { otherUserId: otherBusinessId },
         (res) => {
           if (res.ok) {
             setConversationId(res.conversationId);
-
             socket.emit("joinConversation", res.conversationId, (ack) => {
               if (!ack.ok) {
-                console.error("Failed to join conversation:", ack.error);
-                alert("Failed to join conversation: " + ack.error);
+                alert("לא הצלחנו להצטרף לשיחה: " + ack.error);
                 return;
               }
-
-              socket.emit(
-                "sendMessage",
-                {
-                  conversationId: res.conversationId,
-                  from: myBusinessId,
-                  to: otherBusinessId,
-                  text: input.trim(),
-                },
-                (ack) => {
-                  if (ack.ok) {
-                    setMessages((prev) => [...prev, ack.message]);
-                    setInput("");
-                  } else {
-                    alert("Failed to send message: " + ack.error);
-                  }
-                }
-              );
+              emitSend();
             });
           } else {
-            alert("Failed to start conversation: " + res.error);
+            alert("פתיחת שיחה נכשלה: " + res.error);
           }
         }
       );
     } else {
-      // Send message directly
-      socket.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: myBusinessId,
-          to: otherBusinessId,
-          text: input.trim(),
-        },
-        (ack) => {
-          if (ack.ok) {
-            setMessages((prev) => [...prev, ack.message]);
-            setInput("");
-          } else {
-            alert("Failed to send message: " + ack.error);
-          }
-        }
-      );
+      emitSend();
     }
   };
 
