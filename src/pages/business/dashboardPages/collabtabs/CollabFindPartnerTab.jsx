@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
-import socket from "../../../../socket";
+import BusinessChat from "../../../../components/BusinessChat"; 
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -27,18 +27,17 @@ export default function CollabFindPartnerTab({
   const [partners, setPartners] = useState([]);
   const [myBusinessId, setMyBusinessId] = useState(null);
 
-  const [chatModalOpen, setChatModalOpen] = useState(false);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
-  const [messageText, setMessageText] = useState("");
   const [proposalText, setProposalText] = useState("");
-  const [chatTarget, setChatTarget] = useState(null);
   const [proposalTarget, setProposalTarget] = useState(null);
+
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const [conversationId, setConversationId] = useState(null);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [chatInput, setChatInput] = useState("");
+  // מזהה העסק שאליו נפתח הצ׳אט
+  const [chatWithBusinessId, setChatWithBusinessId] = useState(null);
+  // פרטים מלאים של העסק בצ׳אט (לכותרת למשל)
+  const [chatWithBusinessName, setChatWithBusinessName] = useState("");
 
   useEffect(() => {
     async function fetchPartners() {
@@ -89,65 +88,15 @@ export default function CollabFindPartnerTab({
     setProposalModalOpen(true);
   };
 
-  const openChatModal = async (business) => {
-    try {
-      const res = await API.post("/business-chat/start", {
-        otherBusinessId: business._id || business.id,
-      });
-      const convId = res.data.conversationId;
-      setConversationId(convId);
-      setChatTarget(business);
-      setChatModalOpen(true);
-
-      // עדכון myBusinessId מה-localStorage בכל פתיחת צ'אט!
-      const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
-      const localBusinessId = businessDetails._id || businessDetails.id;
-      setMyBusinessId(localBusinessId);
-
-      socket.emit("joinConversation", convId);
-
-      const historyRes = await API.get(`/business-chat/${convId}/messages`);
-      setChatMessages(historyRes.data.messages);
-    } catch (err) {
-      console.error("Error starting chat:", err);
-      setSnackbarMessage("❌ שגיאה בפתיחת הצ'אט");
-      setSnackbarOpen(true);
-    }
+  const openChatModal = (business) => {
+    setChatWithBusinessId(business._id || business.id);
+    setChatWithBusinessName(business.businessName);
   };
 
-  const sendChatMessage = () => {
-    if (!chatInput.trim()) return;
-
-    // משתמשים ב-myBusinessId מהסטייט!
-    const msg = {
-      conversationId,
-      from: myBusinessId,
-      to: chatTarget._id || chatTarget.id,
-      text: chatInput.trim(),
-    };
-
-    socket.emit("sendMessage", msg, (ack) => {
-      if (ack && ack.ok) {
-        setChatMessages((prev) => [...prev, ack.message]);
-        setChatInput("");
-      } else {
-        setSnackbarMessage("❌ שגיאה בשליחת ההודעה");
-        setSnackbarOpen(true);
-      }
-    });
+  const closeChatModal = () => {
+    setChatWithBusinessId(null);
+    setChatWithBusinessName("");
   };
-
-  useEffect(() => {
-    function handleNewMessage(msg) {
-      if (msg.conversationId === conversationId) {
-        setChatMessages((prev) => [...prev, msg]);
-      }
-    }
-    socket.on("newMessage", handleNewMessage);
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-    };
-  }, [conversationId]);
 
   const handleSubmitProposal = () => {
     if (!proposalText.trim()) return;
@@ -253,43 +202,22 @@ export default function CollabFindPartnerTab({
         })
       )}
 
-      {/* --- Chat Modal --- */}
-      <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
-        <Box sx={modalStyle}>
-          <h3>צ'אט עם {chatTarget?.businessName}</h3>
-          <div className="chat-messages-container">
-            {chatMessages.map((m, i) => (
-              <div
-                key={i}
-                className={`chat-bubble ${m.from === myBusinessId ? "me" : "them"}`}
-              >
-                <span className="sender">
-                  {m.from === myBusinessId ? "אני" : chatTarget?.businessName || "הם"}
-                </span>
-                {m.text}
-              </div>
-            ))}
-          </div>
-          <TextField
-            multiline
-            minRows={3}
-            fullWidth
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            placeholder="כתוב כאן את ההודעה שלך..."
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendChatMessage();
-              }
-            }}
-            sx={{ marginTop: 1 }}
-          />
-          <Button variant="contained" sx={{ mt: 2 }} onClick={sendChatMessage}>
-            שלח הודעה
+      {/* --- BusinessChat Component --- */}
+      {chatWithBusinessId && (
+        <div className="business-chat-wrapper">
+          <Button variant="outlined" onClick={closeChatModal} sx={{ mb: 2 }}>
+            סגור צ'אט
           </Button>
-        </Box>
-      </Modal>
+          <h3>צ'אט עם {chatWithBusinessName}</h3>
+          <BusinessChat
+            token={localStorage.getItem("token")}
+            role="business"
+            myBusinessId={myBusinessId}
+            myBusinessName={localStorage.getItem("businessDetails")?.businessName || ""}
+            otherBusinessId={chatWithBusinessId}
+          />
+        </div>
+      )}
 
       {/* --- Proposal Modal --- */}
       <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
