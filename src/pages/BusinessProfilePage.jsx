@@ -100,26 +100,38 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
           </p>
 
           {/* שיתופי פעולה רצויים */}
-          {business.desiredCollaborations && business.desiredCollaborations.length > 0 && (
+          {(business.collabPref || (business.lookingFor && business.lookingFor.length) || (business.complementaryCategories && business.complementaryCategories.length)) && (
             <div style={{ marginTop: 20 }}>
               <h3 style={{ color: "#6c3483" }}>🤝 שיתופי פעולה רצויים:</h3>
-              <ul style={{ paddingLeft: 20, marginTop: 8 }}>
-                {business.desiredCollaborations.map(collab => (
-                  <li key={collab.id} style={{ fontSize: 16, color: "#444" }}>
-                    {collab.name}
-                  </li>
-                ))}
-              </ul>
+              {business.collabPref && <p><b>העדפה כללית:</b> {business.collabPref}</p>}
+              {business.lookingFor && business.lookingFor.length > 0 && (
+                <>
+                  <p><b>מחפש שיתופי פעולה בתחומים:</b></p>
+                  <ul style={{ paddingLeft: 20 }}>
+                    {business.lookingFor.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {business.complementaryCategories && business.complementaryCategories.length > 0 && (
+                <>
+                  <p><b>קטגוריות משלימות:</b></p>
+                  <ul style={{ paddingLeft: 20 }}>
+                    {business.complementaryCategories.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
           )}
 
           {/* פרטי איש הקשר */}
-          {business.contactPerson && (
+          {business.contact && (
             <div style={{ marginTop: 20 }}>
               <h3 style={{ color: "#6c3483" }}>📞 פרטי איש הקשר:</h3>
-              <p><b>שם:</b> {business.contactPerson.name}</p>
-              <p><b>טלפון:</b> {business.contactPerson.phone}</p>
-              <p><b>אימייל:</b> {business.contactPerson.email}</p>
+              <p>{business.contact}</p>
             </div>
           )}
         </div>
