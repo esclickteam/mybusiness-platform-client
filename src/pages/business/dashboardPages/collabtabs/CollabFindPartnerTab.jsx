@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
-import BusinessChat from "../../../../components/BusinessChat";
+import BusinessChatContainer from "../../../../components/BusinessChatContainer";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -25,42 +25,18 @@ export default function CollabFindPartnerTab({
 }) {
   const navigate = useNavigate();
 
-  const [myBusinessId, setMyBusinessId] = useState(null);
   const [partners, setPartners] = useState([]);
-
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [proposalText, setProposalText] = useState("");
   const [proposalTarget, setProposalTarget] = useState(null);
-
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-
   const [chatWithBusinessId, setChatWithBusinessId] = useState(null);
   const [chatWithBusinessName, setChatWithBusinessName] = useState("");
 
-  const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
+  const businessDetails =
+    JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
-
-  // טען מזהה העסק המחובר מה-API עם לוגים
-  useEffect(() => {
-    async function fetchMyBusinessId() {
-      try {
-        console.log("Fetching myBusinessId from /business/me...");
-        const res = await API.get("/business/me");
-        console.log("Response from /business/me:", res.data);
-        if (res.data?.myBusinessId) {
-          setMyBusinessId(res.data.myBusinessId);
-          localStorage.setItem("myBusinessId", res.data.myBusinessId);
-          console.log("myBusinessId set:", res.data.myBusinessId);
-        } else {
-          console.warn("myBusinessId not found in response");
-        }
-      } catch (err) {
-        console.error("Error fetching my business id", err);
-      }
-    }
-    fetchMyBusinessId();
-  }, []);
 
   // טעינת שותפים
   useEffect(() => {
@@ -81,7 +57,9 @@ export default function CollabFindPartnerTab({
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
-        business.category.toLowerCase().includes(searchCategory.toLowerCase()) ||
+        business.category
+          .toLowerCase()
+          .includes(searchCategory.toLowerCase()) ||
         (business.complementaryCategories || []).some((cat) =>
           cat.toLowerCase().includes(searchCategory.toLowerCase())
         )
@@ -111,10 +89,6 @@ export default function CollabFindPartnerTab({
 
   // פתיחת צ'אט
   const openChatModal = (business) => {
-    if (!myBusinessId) {
-      alert("החיבור טרם הושלם, אנא המתן שנייה ונסה שוב");
-      return;
-    }
     setChatWithBusinessId(business._id || business.id);
     setChatWithBusinessName(business.businessName);
   };
@@ -127,19 +101,15 @@ export default function CollabFindPartnerTab({
   // שליחת הצעה
   const handleSubmitProposal = () => {
     if (!proposalText.trim()) return;
-    handleSendProposal(proposalTarget._id || proposalTarget.id, proposalText.trim());
+    handleSendProposal(
+      proposalTarget._id || proposalTarget.id,
+      proposalText.trim()
+    );
     setProposalModalOpen(false);
     setProposalText("");
     setSnackbarMessage("✅ ההצעה נשלחה בהצלחה!");
     setSnackbarOpen(true);
   };
-
-  // לוג פרופס צ'אט
-  console.log("Chat props:", {
-    token: localStorage.getItem("token"),
-    myBusinessId,
-    chatWithBusinessId,
-  });
 
   return (
     <div>
@@ -188,8 +158,7 @@ export default function CollabFindPartnerTab({
       ) : (
         filteredPartners.map((business) => {
           const isMine =
-            myBusinessId &&
-            (business._id === myBusinessId || business.id === myBusinessId);
+            business._id === localStorage.getItem("myBusinessId");
 
           return (
             <div
@@ -198,7 +167,9 @@ export default function CollabFindPartnerTab({
             >
               <h3 className="business-name">
                 {business.businessName}
-                {isMine && <span className="my-business-badge"> (העסק שלי) </span>}
+                {isMine && (
+                  <span className="my-business-badge"> (העסק שלי) </span>
+                )}
               </h3>
               <p className="business-category">{business.category}</p>
               <p className="business-desc">{business.description}</p>
@@ -236,27 +207,31 @@ export default function CollabFindPartnerTab({
         })
       )}
 
-      {/* BusinessChat Component */}
-      {chatWithBusinessId && myBusinessId && localStorage.getItem("token") ? (
+      {/* Chat Modal */}
+      {chatWithBusinessId && (
         <div className="business-chat-wrapper">
-          <Button variant="outlined" onClick={closeChatModal} sx={{ mb: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={closeChatModal}
+            sx={{ mb: 2 }}
+          >
             סגור צ'אט
           </Button>
           <h3>צ'אט עם {chatWithBusinessName}</h3>
-          <BusinessChat
+          <BusinessChatContainer
             token={localStorage.getItem("token")}
             role="business"
-            myBusinessId={myBusinessId}
             myBusinessName={myBusinessName}
             otherBusinessId={chatWithBusinessId}
           />
         </div>
-      ) : chatWithBusinessId ? (
-        <p>טוען צ'אט...</p>
-      ) : null}
+      )}
 
       {/* Proposal Modal */}
-      <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
+      <Modal
+        open={proposalModalOpen}
+        onClose={() => setProposalModalOpen(false)}
+      >
         <Box sx={modalStyle}>
           <h3>שלח הצעה אל {proposalTarget?.businessName}</h3>
           <TextField
@@ -267,7 +242,11 @@ export default function CollabFindPartnerTab({
             onChange={(e) => setProposalText(e.target.value)}
             placeholder="פרט את הצעת שיתוף הפעולה שלך..."
           />
-          <Button variant="contained" sx={{ mt: 2 }} onClick={handleSubmitProposal}>
+          <Button
+            variant="contained"
+            sx={{ mt: 2 }}
+            onClick={handleSubmitProposal}
+          >
             שלח הצעה
           </Button>
         </Box>

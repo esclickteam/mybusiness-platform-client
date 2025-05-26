@@ -1,23 +1,28 @@
-// BusinessChatContainer.jsx
+// src/components/BusinessChatContainer.jsx
 import React, { useEffect, useState } from 'react';
-import API from '../api';
+import API from '../api';             // ודא שה־API הזה מכוּון ל-baseURL הנכון
 import BusinessChat from './BusinessChat';
 
-export default function BusinessChatContainer({ token, role, myBusinessName, otherBusinessId }) {
+export default function BusinessChatContainer({
+  token,
+  role,
+  myBusinessName,
+  otherBusinessId,
+}) {
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // שלב 2
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
         const res = await API.get('/business/me', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
-        // שמור את ה־_id ב־state
+        // שים לב למבנה התשובה: אולי זה res.data._id או res.data.business._id
         setMyBusinessId(res.data.business._id);
+        console.log('myBusinessId fetched:', res.data.business._id);
       } catch (err) {
-        console.error('שגיאה בשליפת העסק:', err);
+        console.error('Error fetching my business id:', err);
       } finally {
         setLoading(false);
       }
@@ -25,11 +30,14 @@ export default function BusinessChatContainer({ token, role, myBusinessName, oth
     fetchMyBusiness();
   }, [token]);
 
-  // שלב 3
   if (loading) return <p>טוען פרטי העסק…</p>;
-  if (!myBusinessId) return <p style={{ color: 'red' }}>לא נמצא מזהה עסק תקין.</p>;
+  if (!myBusinessId)
+    return (
+      <p style={{ color: 'red' }}>
+        ✖ לא קיבלתי מזהה עסק תקין. בדוק את ה־API ו־token.
+      </p>
+    );
 
-  // שלב 4
   return (
     <BusinessChat
       token={token}
