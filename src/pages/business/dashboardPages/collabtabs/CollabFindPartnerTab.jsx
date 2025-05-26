@@ -257,38 +257,16 @@ export default function CollabFindPartnerTab({
       <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
         <Box sx={modalStyle}>
           <h3>צ'אט עם {chatTarget?.businessName}</h3>
-          <div
-            style={{
-              maxHeight: 300,
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              padding: 8,
-              marginBottom: 12,
-              backgroundColor: "#f9f9f9",
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-            }}
-          >
+          <div className="chat-messages-container">
             {chatMessages.map((m, i) => (
               <div
                 key={i}
-                style={{
-                  alignSelf: m.from === myBusinessId ? "flex-end" : "flex-start",
-                  background: m.from === myBusinessId ? "#e6f7ff" : "#fff",
-                  color: "#222",
-                  borderRadius: 12,
-                  padding: "6px 12px",
-                  minWidth: 60,
-                  maxWidth: "80%",
-                  textAlign: "right",
-                  boxShadow: "0 1px 4px #eee",
-                }}
+                className={`chat-bubble ${m.from === myBusinessId ? "me" : "them"}`}
               >
-                <b style={{ color: "#999", fontSize: 12 }}>
+                <span className="sender">
                   {m.from === myBusinessId ? "אני" : chatTarget?.businessName || "הם"}
-                </b>
-                <div>{m.text}</div>
+                </span>
+                {m.text}
               </div>
             ))}
           </div>
