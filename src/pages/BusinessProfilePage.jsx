@@ -31,8 +31,15 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
   const isOwnerViewingOther = currentUserBusinessId && currentUserBusinessId !== businessId;
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto", padding: 30 }}>
-
+    <div
+      style={{
+        maxWidth: 700,
+        margin: "40px auto",
+        padding: 30,
+        direction: "rtl",
+        textAlign: "right",
+      }}
+    >
       {/* כפתור חזרה לשיתופי פעולה - מחוץ לכרטיסיה */}
       {isOwnerViewingOther && (
         <button
