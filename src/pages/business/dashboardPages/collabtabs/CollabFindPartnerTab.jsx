@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import axios from "axios";
+import API from "../../../../api"; // <= עדכן לכיוון הנכון אצלך!
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -20,11 +20,14 @@ export default function CollabFindPartnerTab({
   setSelectedBusiness,
   setOpenModal,
   isDevUser,
-  handleSendProposal, // פונקציה להמשך טיפול בהצעות
-  handleOpenChat,     // פונקציה לפתיחת צ'אט
+  handleSendProposal,
+  handleOpenChat,
 }) {
   const navigate = useNavigate();
-  const [localPartners, setLocalPartners] = useState([]);
+  const [partners, setPartners] = useState({ all: [], relevant: [] });
+  const [showAll, setShowAll] = useState(false);
+  const [myBusinessId, setMyBusinessId] = useState(null);
+
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
@@ -34,23 +37,35 @@ export default function CollabFindPartnerTab({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  // שליפת רשימת השותפים מהשרת
+  // שליפת רשימת השותפים + זיהוי העסק שלי
   useEffect(() => {
     async function fetchPartners() {
       try {
-        const res = await axios.get("/api/businesses/findPartners");
-        setLocalPartners(res.data);
+        const res = await API.get("/businesses/findPartners");
+        setPartners({
+          all: res.data.all || [],
+          relevant: res.data.relevant || [],
+        });
+
+        // נזהה את העסק שלי לפי id שמגיע מהשרת (מומלץ להחזיר מהשרת myBusinessId)
+        if (res.data.myBusinessId) {
+          setMyBusinessId(res.data.myBusinessId);
+        } else if (res.data.all) {
+          const myBiz = res.data.all.find(b => b.isMine);
+          if (myBiz) setMyBusinessId(myBiz._id || myBiz.id);
+        }
       } catch (err) {
         console.error("Error fetching partners", err);
       }
     }
 
     fetchPartners();
-
-    const intervalId = setInterval(fetchPartners, 10000); // עדכון כל 10 שניות
-
+    const intervalId = setInterval(fetchPartners, 10000);
     return () => clearInterval(intervalId);
   }, []);
+
+  // רשימת עסקים להצגה – רלוונטיים כברירת מחדל, או הכל
+  const displayedPartners = showAll ? partners.all : partners.relevant;
 
   const handleOpenProfile = (business) => {
     navigate(`/business-profile/${business._id || business.id}`);
@@ -86,6 +101,30 @@ export default function CollabFindPartnerTab({
     }
   };
 
+  // חיפוש/סינון קליינט
+  const filteredPartners = displayedPartners.filter((business) => {
+    if (searchMode === "category" && searchCategory) {
+      return (
+        business.category
+          .toLowerCase()
+          .includes(searchCategory.toLowerCase()) ||
+        (business.complementaryCategories &&
+          business.complementaryCategories.some((cat) =>
+            cat.toLowerCase().includes(searchCategory.toLowerCase())
+          ))
+      );
+    }
+    if (searchMode === "free" && freeText) {
+      const text = freeText.toLowerCase();
+      return (
+        business.businessName.toLowerCase().includes(text) ||
+        business.description.toLowerCase().includes(text) ||
+        business.category.toLowerCase().includes(text)
+      );
+    }
+    return true;
+  });
+
   return (
     <div>
       <div className="search-container">
@@ -113,7 +152,11 @@ export default function CollabFindPartnerTab({
         <input
           className="search-input"
           type="text"
-          placeholder={searchMode === "category" ? "הקלד תחום לעסק..." : "הקלד מילות מפתח"}
+          placeholder={
+            searchMode === "category"
+              ? "הקלד תחום לעסק..."
+              : "הקלד מילות מפתח"
+          }
           value={searchMode === "category" ? searchCategory : freeText}
           onChange={(e) =>
             searchMode === "category"
@@ -121,72 +164,91 @@ export default function CollabFindPartnerTab({
               : setFreeText(e.target.value)
           }
         />
+
+        <button
+          className="toggle-button"
+          onClick={() => setShowAll((prev) => !prev)}
+        >
+          {showAll ? "הצג עסקים רלוונטיים בלבד" : "הצג את כל העסקים"}
+        </button>
       </div>
 
-      {localPartners.length === 0 ? (
+      {filteredPartners.length === 0 ? (
         <p>לא נמצאו שותפים.</p>
       ) : (
-        localPartners
-          .filter((business) => {
-            if (searchMode === "category" && searchCategory) {
-              return (
-                business.category
-                  .toLowerCase()
-                  .includes(searchCategory.toLowerCase()) ||
-                (business.complementaryCategories &&
-                  business.complementaryCategories.some((cat) =>
-                    cat.toLowerCase().includes(searchCategory.toLowerCase())
-                  ))
-              );
-            }
-            if (searchMode === "free" && freeText) {
-              const text = freeText.toLowerCase();
-              return (
-                business.businessName.toLowerCase().includes(text) ||
-                business.description.toLowerCase().includes(text) ||
-                business.category.toLowerCase().includes(text)
-              );
-            }
-            return true;
-          })
-          .map((business) => (
-            <div key={business._id || business.id} className="collab-card">
-              <h3 style={{ fontSize: "1.4rem", fontWeight: "700", marginBottom: "0.4rem" }}>
+        filteredPartners.map((business) => {
+          const isMine =
+            myBusinessId &&
+            (business._id === myBusinessId || business.id === myBusinessId);
+
+          return (
+            <div
+              key={business._id || business.id}
+              className={`collab-card${isMine ? " my-business" : ""}`}
+            >
+              <h3
+                style={{
+                  fontSize: "1.4rem",
+                  fontWeight: "700",
+                  marginBottom: "0.4rem",
+                }}
+              >
                 {business.businessName}
+                {isMine && (
+                  <span className="my-business-badge"> (העסק שלי) </span>
+                )}
               </h3>
               <p className="business-category">{business.category}</p>
               <p>{business.description}</p>
-              <span className="status-badge">סטטוס בקשה: {business.status || "לא ידוע"}</span>
+              <span className="status-badge">
+                סטטוס בקשה: {business.status || "לא ידוע"}
+              </span>
 
               <div className="collab-card-buttons">
-                <button
-                  className="message-box-button"
-                  onClick={() => handleSendProposalWithModal(business)}
-                >
-                  שלח הצעה 📨
-                </button>
+                {/* העסק שלי – לא מאפשר שליחה לעצמי */}
+                {isMine ? (
+                  <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
+                ) : (
+                  <>
+                    <button
+                      className="message-box-button"
+                      onClick={() => handleSendProposalWithModal(business)}
+                    >
+                      שלח הצעה 📨
+                    </button>
 
-                <button
-                  className="message-box-button secondary"
-                  onClick={() => handleOpenProfile(business)}
-                >
-                  צפייה בפרופיל
-                </button>
+                    <button
+                      className="message-box-button secondary"
+                      onClick={() => handleOpenProfile(business)}
+                    >
+                      צפייה בפרופיל
+                    </button>
 
-                <button
-                  className="message-box-button secondary"
-                  onClick={() => handleStartChat(business)}
-                >
-                  צ'אט
-                </button>
+                    <button
+                      className="message-box-button secondary"
+                      onClick={() => handleStartChat(business)}
+                    >
+                      צ'אט
+                    </button>
+                  </>
+                )}
               </div>
             </div>
-          ))
+          );
+        })
       )}
 
       {/* מודאל שליחת הודעה בצ'אט */}
       <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
-        <Box sx={{ backgroundColor: "#fff", padding: 4, borderRadius: 2, maxWidth: 400, margin: "10% auto" }}>
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            padding: 4,
+            borderRadius: 2,
+            maxWidth: 400,
+            margin: "10% auto",
+          }}
+        >
           <h3>שלח הודעה אל {chatTarget?.businessName}</h3>
           <TextField
             multiline
@@ -196,15 +258,31 @@ export default function CollabFindPartnerTab({
             onChange={(e) => setMessageText(e.target.value)}
             placeholder="כתוב כאן את ההודעה שלך..."
           />
-          <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={handleSendChatMessage}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginTop: 2 }}
+            onClick={handleSendChatMessage}
+          >
             שלח הודעה
           </Button>
         </Box>
       </Modal>
 
       {/* מודאל שליחת הצעת שיתוף פעולה */}
-      <Modal open={proposalModalOpen} onClose={() => setProposalModalOpen(false)}>
-        <Box sx={{ backgroundColor: "#fff", padding: 4, borderRadius: 2, maxWidth: 500, margin: "10% auto" }}>
+      <Modal
+        open={proposalModalOpen}
+        onClose={() => setProposalModalOpen(false)}
+      >
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            padding: 4,
+            borderRadius: 2,
+            maxWidth: 500,
+            margin: "10% auto",
+          }}
+        >
           <h3>שלח הצעה אל {proposalTarget?.businessName}</h3>
           <TextField
             multiline
@@ -214,7 +292,12 @@ export default function CollabFindPartnerTab({
             onChange={(e) => setProposalText(e.target.value)}
             placeholder="פרט את הצעת שיתוף הפעולה שלך..."
           />
-          <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={handleLocalSendProposal}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginTop: 2 }}
+            onClick={handleLocalSendProposal}
+          >
             שלח הצעה
           </Button>
         </Box>
