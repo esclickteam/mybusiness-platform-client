@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button"; // ייבוא Button מ-MUI
+import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -24,8 +24,12 @@ export default function CollabFindPartnerTab({
   handleSendProposal,
 }) {
   const navigate = useNavigate();
+
+  // טען myBusinessId מ-localStorage כערך התחלתי
+  const storedMyBusinessId = localStorage.getItem("myBusinessId") || null;
+  const [myBusinessId, setMyBusinessId] = useState(storedMyBusinessId);
+
   const [partners, setPartners] = useState([]);
-  const [myBusinessId, setMyBusinessId] = useState(null);
 
   const [proposalModalOpen, setProposalModalOpen] = useState(false);
   const [proposalText, setProposalText] = useState("");
@@ -34,12 +38,10 @@ export default function CollabFindPartnerTab({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  // מזהה העסק שאליו נפתח הצ׳אט
   const [chatWithBusinessId, setChatWithBusinessId] = useState(null);
-  // פרטים מלאים של העסק בצ׳אט (לכותרת למשל)
   const [chatWithBusinessName, setChatWithBusinessName] = useState("");
 
-  // קבלת שם העסק שלי מ-localStorage
+  // שם העסק שלי מ-localStorage
   const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
 
@@ -48,11 +50,17 @@ export default function CollabFindPartnerTab({
       try {
         const res = await API.get("/business/findPartners");
         setPartners(res.data.relevant || []);
-        if (res.data.myBusinessId) {
+
+        // אם myBusinessId חדש מתקבל, שמור ב-state וב-localStorage
+        if (res.data.myBusinessId && res.data.myBusinessId !== myBusinessId) {
           setMyBusinessId(res.data.myBusinessId);
+          localStorage.setItem("myBusinessId", res.data.myBusinessId);
         } else {
           const mine = (res.data.relevant || []).find((b) => b.isMine);
-          if (mine) setMyBusinessId(mine._id || mine.id);
+          if (mine && mine._id !== myBusinessId) {
+            setMyBusinessId(mine._id || mine.id);
+            localStorage.setItem("myBusinessId", mine._id || mine.id);
+          }
         }
       } catch (err) {
         console.error("Error fetching partners", err);
@@ -61,7 +69,7 @@ export default function CollabFindPartnerTab({
     fetchPartners();
     const intervalId = setInterval(fetchPartners, 10000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [myBusinessId]);
 
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
@@ -93,6 +101,10 @@ export default function CollabFindPartnerTab({
   };
 
   const openChatModal = (business) => {
+    if (!myBusinessId) {
+      alert("החיבור טרם הושלם, אנא המתן שנייה ונסה שוב");
+      return;
+    }
     setChatWithBusinessId(business._id || business.id);
     setChatWithBusinessName(business.businessName);
   };
@@ -111,7 +123,7 @@ export default function CollabFindPartnerTab({
     setSnackbarOpen(true);
   };
 
-  // לוג לבדיקת פרופס צ'אט
+  // לוג פרופס צ'אט
   console.log("Chat props:", {
     token: localStorage.getItem("token"),
     myBusinessId,
