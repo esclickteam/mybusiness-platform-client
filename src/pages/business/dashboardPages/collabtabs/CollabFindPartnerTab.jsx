@@ -111,6 +111,7 @@ export default function CollabFindPartnerTab({
   };
 
   const sendChatMessage = () => {
+      console.log("sendChatMessage נקרא");
     if (!chatInput.trim()) return;
     const msg = {
       conversationId,
