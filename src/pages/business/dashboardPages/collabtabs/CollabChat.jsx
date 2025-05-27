@@ -119,7 +119,7 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה עם דיבאגים
+  // שליחת הודעה עם המרה ל-string ל־ObjectId
   const sendMessage = () => {
     if (!input.trim() || !selectedConversation) {
       console.warn("sendMessage aborted: empty input or no selected conversation");
@@ -130,9 +130,11 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
       return;
     }
 
+    // המרה ל-string כדי להשוות ObjectId נכון
     const otherBusinessId = selectedConversation.participants.find(
-      (id) => id !== myBusinessId
+      (id) => id.toString() !== myBusinessId.toString()
     );
+
     if (!otherBusinessId) {
       console.warn("sendMessage aborted: otherBusinessId not found");
       return;
@@ -167,7 +169,7 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
   // הצגת שם העסק הנגדי
   const getPartnerBusiness = (conv) => {
     if (!conv || !conv.participants || !conv.participantsInfo) return { businessName: "עסק" };
-    const idx = conv.participants.findIndex((id) => id !== myBusinessId);
+    const idx = conv.participants.findIndex((id) => id.toString() !== myBusinessId.toString());
     return conv.participantsInfo[idx] || { businessName: "עסק" };
   };
 
@@ -272,9 +274,11 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
                   key={i}
                   sx={{
                     background:
-                      msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                      msg.fromBusinessId.toString() === myBusinessId.toString()
+                        ? "#e6ddff"
+                        : "#fff",
                     alignSelf:
-                      msg.fromBusinessId === myBusinessId
+                      msg.fromBusinessId.toString() === myBusinessId.toString()
                         ? "flex-end"
                         : "flex-start",
                     p: 1.2,
