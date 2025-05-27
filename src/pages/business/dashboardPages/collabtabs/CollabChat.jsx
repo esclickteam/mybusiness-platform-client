@@ -22,6 +22,11 @@ export default function CollabChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
+  // דיבאג: עקוב אחרי שינויי input
+  useEffect(() => {
+    console.log("Input value changed:", JSON.stringify(input));
+  }, [input]);
+
   // טען שיחות מ-API
   const fetchConversations = async () => {
     try {
@@ -83,13 +88,11 @@ export default function CollabChat({
     const handler = (msg) => {
       console.log("Received newMessage event:", msg);
 
-      // אם ההודעה שייכת לשיחה הנבחרת - עדכן את ההודעות
       if (msg.conversationId === selectedConversation?._id) {
         console.log("Appending new message to messages state");
         setMessages((prev) => [...prev, msg]);
       }
 
-      // עדכן את רשימת השיחות עם ההודעה החדשה כדי לשמור סנכרון
       setConversations((prevConvs) =>
         prevConvs.map((conv) => {
           if (conv._id === msg.conversationId) {
@@ -145,10 +148,11 @@ export default function CollabChat({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה דרך ה-socket
+  // שליחת הודעה דרך ה-socket עם לוגים לדיבאג
   const sendMessage = () => {
+    console.log("sendMessage called with input:", JSON.stringify(input));
     if (!input.trim() || !selectedConversation) {
-      console.log("SendMessage aborted: input empty or no conversation selected");
+      console.log("SendMessage aborted: empty input or no conversation selected");
       return;
     }
     if (!socketRef.current) {
@@ -365,11 +369,19 @@ export default function CollabChat({
               size="small"
               placeholder="כתוב הודעה..."
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                console.log("TextField onChange:", JSON.stringify(e.target.value));
+                setInput(e.target.value);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  sendMessage();
+                  console.log("Enter pressed with input:", JSON.stringify(input));
+                  if (input.trim()) {
+                    sendMessage();
+                  } else {
+                    console.log("Prevented sending empty message via Enter key");
+                  }
                 }
               }}
             />
