@@ -6,6 +6,8 @@ import { SocketContext } from "../../context/socketContext"; // ייבוא הק�
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
+import { isTokenExpired } from "../../utils/authHelpers";
+import { refreshToken } from "../../utils/tokenHelpers";
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
@@ -39,42 +41,54 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-    if (!bizId) {
-      setError("Invalid business ID");
-      setLoading(false);
-      return;
-    }
-    (async () => {
-      try {
-        setLoading(true);
-        const resBiz = await api.get(`/business/${bizId}`);
-        const biz = resBiz.data.business || resBiz.data;
-        setData(biz);
-        setFaqs(biz.faqs || []);
-        setServices(biz.services || []);
-        const resWH = await api.get(
-          `/appointments/get-work-hours?businessId=${bizId}`
-        );
-        let sched = {};
-        if (Array.isArray(resWH.data.workHours)) {
-          resWH.data.workHours.forEach((item) => {
-            sched[Number(item.day)] = item;
-          });
-        } else if (
-          resWH.data.workHours &&
-          typeof resWH.data.workHours === "object"
-        ) {
-          sched = resWH.data.workHours;
-        }
-        setSchedule(sched);
-      } catch (err) {
-        console.error(err);
-        setError("שגיאה בטעינת הנתונים");
-      } finally {
-        setLoading(false);
+  if (!bizId) {
+    setError("Invalid business ID");
+    setLoading(false);
+    return;
+  }
+  (async () => {
+    try {
+      setLoading(true);
+
+      // קבלת טוקן מהלוקל
+      let token = localStorage.getItem("accessToken");
+      if (isTokenExpired(token)) {
+        token = await refreshToken();
       }
-    })();
-  }, [bizId]);
+
+      // קריאה לנתוני העסק
+      const resBiz = await api.get(`/business/${bizId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const biz = resBiz.data.business || resBiz.data;
+      setData(biz);
+      setFaqs(biz.faqs || []);
+      setServices(biz.services || []);
+
+      // קריאה לשעות עבודה עם Authorization
+      const resWH = await api.get(`/appointments/get-work-hours?businessId=${bizId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      let sched = {};
+      if (Array.isArray(resWH.data.workHours)) {
+        resWH.data.workHours.forEach((item) => {
+          sched[Number(item.day)] = item;
+        });
+      } else if (resWH.data.workHours && typeof resWH.data.workHours === "object") {
+        sched = resWH.data.workHours;
+      }
+      setSchedule(sched);
+
+    } catch (err) {
+      console.error(err);
+      setError("שגיאה בטעינת הנתונים");
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, [bizId]);
+
 
   // שליחת אירוע צפייה בפרופיל דרך socket
   useEffect(() => {
