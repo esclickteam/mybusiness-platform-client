@@ -21,6 +21,7 @@ export default function BusinessChat({
 
   // 0) אם אין עדיין מזהה — הצג טוען
   if (!myBusinessId) {
+    console.log("⌛ טוען מזהה העסק...");
     return <p>טוען זיהוי העסק…</p>;
   }
 
@@ -29,37 +30,54 @@ export default function BusinessChat({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 2) יצירת חיבור Socket.IO (ברירת מחדל, בלי transports)
+  // 2) יצירת חיבור Socket.IO
   useEffect(() => {
-    if (!token || !role || !myBusinessId) return;
+    if (!token || !role || !myBusinessId) {
+      console.warn("אין token/role/ח.ז.עסק, לא מתחבר ל־socket");
+      return;
+    }
 
+    console.log("🔌 Connecting socket with", { token, role, myBusinessId });
     const s = io(SOCKET_URL, {
       path: "/socket.io",
       auth: { token, role, businessId: myBusinessId, businessName: myBusinessName },
     });
 
-    s.on("connect", () => console.log("Socket connected:", s.id));
-    s.on("disconnect", (reason) => console.log("Socket disconnected:", reason));
+    s.on("connect", () => console.log("✅ Socket connected:", s.id));
+    s.on("disconnect", (reason) => console.log("❌ Socket disconnected:", reason));
 
     setSocket(s);
-    return () => void s.disconnect();
+    return () => {
+      console.log("🛑 Disconnecting socket");
+      s.disconnect();
+    };
   }, [token, role, myBusinessId, myBusinessName]);
 
   // 3) התחלת שיחה או שליפת היסטוריה
   useEffect(() => {
-    if (!socket || !otherBusinessId) return;
+    if (!socket || !otherBusinessId) {
+      console.warn("אין socket/otherBusinessId, לא מתחיל שיחה");
+      return;
+    }
 
+    console.log("▶️ startConversation to", otherBusinessId);
     socket.emit(
       "startConversation",
       { otherUserId: otherBusinessId },
       (res) => {
+        console.log("↩️ startConversation response:", res);
         if (!res.ok) return console.error("startConversation failed:", res.error);
         setConversationId(res.conversationId);
-        socket.emit("joinConversation", res.conversationId, () => {});
+        socket.emit("joinConversation", res.conversationId, (ack) =>
+          console.log("↩️ joinConversation ack:", ack)
+        );
         socket.emit(
           "getHistory",
           { conversationId: res.conversationId },
-          (h) => h.ok && setMessages(h.messages)
+          (h) => {
+            console.log("↩️ getHistory:", h);
+            if (h.ok) setMessages(h.messages);
+          }
         );
       }
     );
@@ -68,18 +86,26 @@ export default function BusinessChat({
   // 4) הקשבה להודעות חדשות
   useEffect(() => {
     if (!socket || !conversationId) return;
+
     const handler = (msg) => {
+      console.log("📥 newMessage:", msg);
       if (msg.conversationId === conversationId) {
         setMessages((prev) => [...prev, msg]);
       }
     };
     socket.on("newMessage", handler);
-    return () => void socket.off("newMessage", handler);
+    return () => {
+      socket.off("newMessage", handler);
+    };
   }, [socket, conversationId]);
 
   // 5) שליחת הודעה
   const sendMessage = () => {
-    if (!input.trim() || !socket) return;
+    console.log("▶️ sendMessage()", { conversationId, input, socket: !!socket });
+    if (!input.trim() || !socket) {
+      console.warn("אין מה לשלוח או שאין socket, abort");
+      return;
+    }
 
     const payload = {
       conversationId,
@@ -88,26 +114,33 @@ export default function BusinessChat({
       text: input.trim(),
     };
 
-    const doSend = () =>
+    const doSend = () => {
+      console.log("🚀 emitting sendMessage", payload);
       socket.emit("sendMessage", payload, (ack) => {
+        console.log("↩️ sendMessage ack:", ack);
         if (ack.ok) {
           setMessages((prev) => [...prev, ack.message]);
           setInput("");
         } else {
+          console.error("❗️שליחה נכשלה:", ack.error);
           alert("שליחת הודעה נכשלה: " + ack.error);
         }
       });
+    };
 
     if (!conversationId) {
+      console.log("❓ עדיין בלי conversationId, מפתח שיחה קודם");
       socket.emit(
         "startConversation",
         { otherUserId: otherBusinessId },
         (res) => {
+          console.log("↩️ startConversation (in send) =>", res);
           if (!res.ok) return alert("פתיחת שיחה נכשלה: " + res.error);
           setConversationId(res.conversationId);
-          socket.emit("joinConversation", res.conversationId, (ack) =>
-            ack.ok ? doSend() : alert("Failed to join: " + ack.error)
-          );
+          socket.emit("joinConversation", res.conversationId, (ack) => {
+            console.log("↩️ joinConversation (in send) =>", ack);
+            ack.ok ? doSend() : alert("Failed to join: " + ack.error);
+          });
         }
       );
     } else {
@@ -154,7 +187,10 @@ export default function BusinessChat({
         rows={3}
         style={{ width: "100%", resize: "none" }}
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={(e) => {
+          console.log("✏️ input changed:", e.target.value);
+          setInput(e.target.value);
+        }}
         placeholder="הקלד הודעה..."
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
@@ -165,18 +201,12 @@ export default function BusinessChat({
       />
 
       <Button
-        type="button"
         variant="contained"
-        onClick={sendMessage}
-        disabled={!input.trim()}
-        sx={{
-          mt: 1,
-          alignSelf: "flex-end",
-          // override הגלובלי index-Z0FAwCce.css:1
-          "&:hover": {
-            backgroundColor: "primary.dark",
-          },
+        onClick={() => {
+          console.log("👆 Button clicked");
+          sendMessage();
         }}
+        sx={{ mt: 1, alignSelf: "flex-end" }}
       >
         שלח
       </Button>
