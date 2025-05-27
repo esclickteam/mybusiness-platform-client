@@ -121,50 +121,52 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
 
   // שליחת הודעה עם המרה ל-string ל־ObjectId
   const sendMessage = () => {
-    if (!input.trim() || !selectedConversation) {
-      console.warn("sendMessage aborted: empty input or no selected conversation");
-      return;
-    }
-    if (!socketRef.current) {
-      console.warn("sendMessage aborted: socket not connected");
-      return;
-    }
+  if (!input.trim() || !selectedConversation) {
+    console.warn("sendMessage aborted: empty input or no selected conversation");
+    return;
+  }
+  if (!socketRef.current) {
+    console.warn("sendMessage aborted: socket not connected");
+    return;
+  }
 
-    // המרה ל-string כדי להשוות ObjectId נכון
-    const otherBusinessId = selectedConversation.participants.find(
-      (id) => id.toString() !== myBusinessId.toString()
-    );
+  // שולף את מזהה העסק השני מתוך participants (מערך מזהים בלבד)
+  const otherBusinessId = selectedConversation.participants.find(
+    (id) => id.toString() !== myBusinessId.toString()
+  );
 
-    if (!otherBusinessId) {
-      console.warn("sendMessage aborted: otherBusinessId not found");
-      return;
-    }
+  if (!otherBusinessId) {
+    console.warn("sendMessage aborted: otherBusinessId not found");
+    return;
+  }
 
-    console.log("Sending message:", {
+  console.log("Sending message:", {
+    conversationId: selectedConversation._id,
+    from: myBusinessId,
+    to: otherBusinessId,
+    text: input.trim(),
+  });
+
+  // שולח רק את המזהה בלבד (string או ObjectId), לא אובייקט מורכב
+  socketRef.current.emit(
+    "sendMessage",
+    {
       conversationId: selectedConversation._id,
       from: myBusinessId,
       to: otherBusinessId,
       text: input.trim(),
-    });
-
-    socketRef.current.emit(
-      "sendMessage",
-      {
-        conversationId: selectedConversation._id,
-        from: myBusinessId,
-        to: otherBusinessId,
-        text: input.trim(),
-      },
-      (ack) => {
-        if (!ack.ok) {
-          alert("שליחת הודעה נכשלה: " + ack.error);
-          console.error("SendMessage failed:", ack.error);
-        } else {
-          setInput("");
-        }
+    },
+    (ack) => {
+      if (!ack.ok) {
+        alert("שליחת הודעה נכשלה: " + ack.error);
+        console.error("SendMessage failed:", ack.error);
+      } else {
+        setInput("");
       }
-    );
-  };
+    }
+  );
+};
+
 
   // הצגת שם העסק הנגדי
   const getPartnerBusiness = (conv) => {
