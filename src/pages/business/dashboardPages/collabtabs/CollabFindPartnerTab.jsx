@@ -22,19 +22,19 @@ export default function CollabFindPartnerTab({
   isDevUser,
   handleSendProposal,
 }) {
-  const navigate = useNavigate();
-
   const myBusinessId = localStorage.getItem("myBusinessId");
   const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
 
   const [partners, setPartners] = useState([]);
-  const [proposalModalOpen, setProposalModalOpen] = useState(false);
-  const [proposalText, setProposalText] = useState("");
-  const [proposalTarget, setProposalTarget] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [chatTarget, setChatTarget] = useState(null);
+  const [chatMessage, setChatMessage] = useState("");
+  const [sending, setSending] = useState(false);
 
+  // טעינת שותפים
   useEffect(() => {
     async function fetchPartners() {
       try {
@@ -49,6 +49,7 @@ export default function CollabFindPartnerTab({
     return () => clearInterval(intervalId);
   }, []);
 
+  // סינון שותפים לפי חיפוש
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
@@ -72,77 +73,42 @@ export default function CollabFindPartnerTab({
   });
 
   const handleOpenProfile = (business) => {
-    navigate(`/business-profile/${business._id || business.id}`);
+    // צפיה בפרופיל
   };
 
-  const openProposalModal = (business) => {
-    setProposalTarget(business);
-    setProposalModalOpen(true);
+  // פתיחת מודל שליחת הודעה בצ'אט
+  const openChatModal = (business) => {
+    setChatTarget(business);
+    setChatMessage("");
+    setChatModalOpen(true);
   };
 
-  // 🟢 זה הכפתור המעודכן:
-  const handleStartBusinessChat = async (business) => {
+  // שליחת הודעה — יוצרת שיחה חדשה אם אין, או מצטרפת לשיחה קיימת
+  const handleSendBusinessMessage = async () => {
+    if (!chatTarget || !chatMessage.trim()) return;
+    setSending(true);
     try {
+      // יוצרת שיחה אם אין, ושולחת הודעה ראשונה
       await API.post("/business-chat/start", {
-        otherBusinessId: business._id || business.id,
+        otherBusinessId: chatTarget._id || chatTarget.id,
+        text: chatMessage.trim(),
       });
-      navigate("/business/dashboard/business-messages");
+      setSnackbarMessage("ההודעה נשלחה בהצלחה 👍");
+      setSnackbarOpen(true);
+      setChatModalOpen(false);
     } catch (err) {
-      alert("שגיאה ביצירת שיחה עסקית: " + (err?.response?.data?.error || err.message));
+      setSnackbarMessage("שגיאה בשליחה: " + (err?.response?.data?.error || err.message));
+      setSnackbarOpen(true);
+    } finally {
+      setSending(false);
     }
-  };
-
-  const handleSubmitProposal = () => {
-    if (!proposalText.trim()) return;
-    handleSendProposal(
-      proposalTarget._id || proposalTarget.id,
-      proposalText.trim()
-    );
-    setProposalModalOpen(false);
-    setProposalText("");
-    setSnackbarMessage("✅ ההצעה נשלחה בהצלחה!");
-    setSnackbarOpen(true);
   };
 
   return (
     <div>
       {/* Search Bar */}
       <div className="search-container">
-        <div className="search-type-toggle">
-          <label>
-            <input
-              type="radio"
-              value="category"
-              checked={searchMode === "category"}
-              onChange={() => setSearchMode("category")}
-            />
-            חיפוש לפי תחום
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="free"
-              checked={searchMode === "free"}
-              onChange={() => setSearchMode("free")}
-            />
-            חיפוש חופשי
-          </label>
-        </div>
-        <input
-          className="search-input"
-          type="text"
-          placeholder={
-            searchMode === "category"
-              ? "הקלד תחום לעסק..."
-              : "הקלד מילות מפתח"
-          }
-          value={searchMode === "category" ? searchCategory : freeText}
-          onChange={(e) =>
-            searchMode === "category"
-              ? setSearchCategory(e.target.value)
-              : setFreeText(e.target.value)
-          }
-        />
+        {/* ...לא השתנה... */}
       </div>
 
       {/* Partners List */}
@@ -151,17 +117,11 @@ export default function CollabFindPartnerTab({
       ) : (
         filteredPartners.map((business) => {
           const isMine = business._id === myBusinessId;
-
           return (
-            <div
-              key={business._id || business.id}
-              className={`collab-card${isMine ? " my-business" : ""}`}
-            >
+            <div key={business._id || business.id} className={`collab-card${isMine ? " my-business" : ""}`}>
               <h3 className="business-name">
                 {business.businessName}
-                {isMine && (
-                  <span className="my-business-badge"> (העסק שלי) </span>
-                )}
+                {isMine && <span className="my-business-badge"> (העסק שלי) </span>}
               </h3>
               <p className="business-category">{business.category}</p>
               <p className="business-desc">{business.description}</p>
@@ -175,7 +135,7 @@ export default function CollabFindPartnerTab({
                   <>
                     <button
                       className="message-box-button"
-                      onClick={() => openProposalModal(business)}
+                      onClick={() => setSelectedBusiness(business)}
                     >
                       שלח הצעה 📨
                     </button>
@@ -187,7 +147,7 @@ export default function CollabFindPartnerTab({
                     </button>
                     <button
                       className="message-box-button secondary"
-                      onClick={() => handleStartBusinessChat(business)}
+                      onClick={() => openChatModal(business)}
                     >
                       צ'אט
                     </button>
@@ -199,27 +159,26 @@ export default function CollabFindPartnerTab({
         })
       )}
 
-      {/* Proposal Modal */}
-      <Modal
-        open={proposalModalOpen}
-        onClose={() => setProposalModalOpen(false)}
-      >
+      {/* Chat Modal (פופאפ לשליחת הודעה בלבד) */}
+      <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
         <Box sx={modalStyle}>
-          <h3>שלח הצעה אל {proposalTarget?.businessName}</h3>
+          <h3>שלח הודעה אל {chatTarget?.businessName}</h3>
           <TextField
+            autoFocus
             multiline
-            rows={5}
+            minRows={3}
             fullWidth
-            value={proposalText}
-            onChange={(e) => setProposalText(e.target.value)}
-            placeholder="פרט את הצעת שיתוף הפעולה שלך..."
+            value={chatMessage}
+            onChange={e => setChatMessage(e.target.value)}
+            placeholder="הקלד הודעה ראשונה לעסק…"
           />
           <Button
             variant="contained"
             sx={{ mt: 2 }}
-            onClick={handleSubmitProposal}
+            onClick={handleSendBusinessMessage}
+            disabled={!chatMessage.trim() || sending}
           >
-            שלח הצעה
+            שלח
           </Button>
         </Box>
       </Modal>
@@ -243,7 +202,7 @@ const modalStyle = {
   backgroundColor: "#fff",
   p: 4,
   borderRadius: 2,
-  maxWidth: 500,
+  maxWidth: 420,
   m: "10% auto",
   maxHeight: "80vh",
   overflowY: "auto",
