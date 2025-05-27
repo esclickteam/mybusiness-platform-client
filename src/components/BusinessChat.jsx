@@ -86,7 +86,10 @@ export default function BusinessChat({
 
     s.on("connect", () => {
       console.log("✅ Socket connected:", s.id);
-      // לא מפעילים initConversation כאן יותר, מפעילים ב-useEffect לעיל
+      // כאן מפעילים initConversation מיד אחרי חיבור אם יש otherBusinessId
+      if (otherBusinessId) {
+        initConversation();
+      }
     });
 
     s.on("disconnect", (reason) => {
@@ -98,7 +101,7 @@ export default function BusinessChat({
       console.log("🛑 Disconnecting socket");
       s.disconnect();
     };
-  }, [token, role, myBusinessId, myBusinessName]);
+  }, [token, role, myBusinessId, myBusinessName, otherBusinessId, initConversation]);
 
   // מאזין להודעות חדשות, רק אם יש conversationId
   useEffect(() => {
