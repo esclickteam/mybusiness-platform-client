@@ -16,11 +16,18 @@ export default function CollabChat({
   onClose,
 }) {
   const socketRef = useRef(null);
+  const selectedConversationRef = useRef(null);
+
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+
+  // Sync selectedConversation to ref for use inside socket listener
+  useEffect(() => {
+    selectedConversationRef.current = selectedConversation;
+  }, [selectedConversation]);
 
   useEffect(() => {
     console.log("Input value changed:", JSON.stringify(input));
@@ -80,7 +87,7 @@ export default function CollabChat({
     // eslint-disable-next-line
   }, [token, myBusinessId, myBusinessName]);
 
-  // מאזין להודעות חדשות (newMessage)
+  // מאזין להודעות חדשות - מחובר פעם אחת בלבד
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -93,8 +100,8 @@ export default function CollabChat({
         toBusinessId: msg.toBusinessId || msg.to,
       };
 
-      // עדכן רק אם ההודעה שייכת לשיחה הנבחרת
-      if (normalizedMsg.conversationId === selectedConversation?._id) {
+      // עדכן רק אם ההודעה שייכת לשיחה הנבחרת (בעזרת ref)
+      if (normalizedMsg.conversationId === selectedConversationRef.current?._id) {
         setMessages((prev) => {
           if (prev.some((m) => m._id === normalizedMsg._id)) return prev;
           return [...prev, normalizedMsg];
@@ -120,7 +127,7 @@ export default function CollabChat({
     return () => {
       socketRef.current.off("newMessage", handler);
     };
-  }, [selectedConversation]);
+  }, []);
 
   // טעינת הודעות בשיחה נבחרת ויצירת חדר ב-socket
   useEffect(() => {
@@ -131,7 +138,10 @@ export default function CollabChat({
       return;
     }
 
-    console.log("Leaving previous conversation room and joining new one:", selectedConversation._id);
+    console.log(
+      "Leaving previous conversation room and joining new one:",
+      selectedConversation._id
+    );
     socketRef.current.emit("leaveConversation");
     socketRef.current.emit("joinConversation", selectedConversation._id);
 
@@ -217,7 +227,9 @@ export default function CollabChat({
         setMessages((prev) => prev.filter((m) => m._id !== optimisticMsg._id));
       } else if (ack.message?._id) {
         setMessages((prev) => {
-          const filtered = prev.filter((m) => m._id !== optimisticMsg._id && m._id !== ack.message._id);
+          const filtered = prev.filter(
+            (m) => m._id !== optimisticMsg._id && m._id !== ack.message._id
+          );
           const realMsg = {
             ...ack.message,
             fromBusinessId: ack.message.fromBusinessId || ack.message.from,
@@ -237,7 +249,7 @@ export default function CollabChat({
           // תוסיף כאן fileUrl, fileName, fileType אם תומך
         },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
     } catch (err) {
