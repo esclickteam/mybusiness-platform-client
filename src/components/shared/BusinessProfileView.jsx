@@ -94,23 +94,42 @@ const resWH = await API.get("/appointments/get-work-hours", {
 
   // שליחת אירוע צפייה בפרופיל דרך socket
   useEffect(() => {
-  if (!socket || !bizId || !user?.userId) return;
+  if (!socket) {
+    console.log("Socket instance is null");
+    return;
+  }
+  if (!bizId) {
+    console.log("Business ID is missing");
+    return;
+  }
+  if (!user?.userId) {
+    console.log("User ID is missing");
+    return;
+  }
 
   const sendProfileView = () => {
+    console.log("Emitting profileView event with:", { businessId: bizId, viewerId: user.userId });
     socket.emit('profileView', { businessId: bizId, viewerId: user.userId });
     console.log('profileView event sent');
   };
 
   if (socket.connected) {
+    console.log("Socket is connected, sending profileView event now");
     sendProfileView();
   } else {
-    socket.once('connect', sendProfileView);
+    console.log("Socket not connected yet, waiting for connect event");
+    socket.once('connect', () => {
+      console.log("Socket connected, now sending profileView");
+      sendProfileView();
+    });
   }
 
   return () => {
+    console.log("Cleanup: removing connect listener for profileView event");
     socket.off('connect', sendProfileView);
   };
 }, [socket, bizId, user?.userId]);
+
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
