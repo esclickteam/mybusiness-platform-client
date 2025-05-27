@@ -16,10 +16,7 @@ const API = axios.create({
   },
 });
 
-let accessToken = localStorage.getItem("accessToken") || null;
-
 export function setAccessToken(token) {
-  accessToken = token;
   if (token) {
     localStorage.setItem("accessToken", token);
   } else {
@@ -38,8 +35,9 @@ export function setRefreshToken(token) {
 // attach token header & debug log on each request
 API.interceptors.request.use(
   (config) => {
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    const token = localStorage.getItem("accessToken"); // כל פעם מחדש
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     if (!isProd) {
       console.log(
@@ -98,7 +96,7 @@ API.interceptors.response.use(
         setAccessToken(newAccessToken);
         setRefreshToken(newRefreshToken);
 
-        // retry original request
+        // retry original request with new token
         config.headers.Authorization = `Bearer ${newAccessToken}`;
         return API(config);
       } catch (err) {
