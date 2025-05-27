@@ -4,7 +4,7 @@ import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
-import API from "../api";
+import API, { setAccessToken } from "../api";  // הוספת הגדרת הטוקן ב-API "../api";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
@@ -16,6 +16,12 @@ export default function ClientChatSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const socketRef = useRef(null);
+
+  // 0️⃣ הגדרת טוקן לאוט' ב-API
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) setAccessToken(token);
+  }, []);
 
   // 1️⃣ Initialize socket
   useEffect(() => {
