@@ -42,23 +42,35 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId]);
 
-  // 2️⃣ Start or get existing conversation
+  // 2️⃣ Start or get existing conversation via REST
   useEffect(() => {
-    if (!socketRef.current || !businessId) return;
-    setLoading(true);
-    socketRef.current.emit(
-      "startConversation",
-      { otherUserId: businessId },
-      (res) => {
-        setLoading(false);
-        if (res.ok) {
-          setConversationId(res.conversationId);
+    if (!initialized || !userId || !businessId) return;
+    (async () => {
+      setLoading(true);
+      try {
+        // 2a. נסה למצוא שיחה קיימת
+        const res = await API.get("/conversations", { params: { businessId: userId } });
+        const conv = res.data.find(c => String(c.partnerId) === String(businessId));
+        if (conv) {
+          setConversationId(conv.conversationId);
+          setBusinessName(conv.businessName || "");
         } else {
-          setError("שגיאה ביצירת שיחה: " + (res.error || "לא ידוע"));
+          // 2b. אם לא נמצאה, צור חדשה
+          const post = await API.post("/conversations", { otherId: businessId });
+          setConversationId(post.data.conversationId);
+          // אחרי יצירה, קרא שוב כדי לקבל שם העסק
+          const getRes = await API.get("/conversations", { params: { businessId: userId } });
+          const newConv = getRes.data.find(c => c.conversationId === post.data.conversationId);
+          setBusinessName(newConv?.businessName || "");
         }
+      } catch (e) {
+        console.error("Error init client conversation:", e);
+        setError("שגיאה בטעינת השיחה");
+      } finally {
+        setLoading(false);
       }
-    );
-  }, [businessId]);
+    })();
+  }, [initialized, userId, businessId]);
 
   // 3️⃣ Load business name via socket
   useEffect(() => {
