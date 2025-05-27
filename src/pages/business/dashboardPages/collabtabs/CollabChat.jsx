@@ -7,10 +7,13 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
+import { isTokenExpired } from "../../../../utils/authHelpers";
+import { refreshToken } from "../../../../utils/tokenHelpers";
+
 const SOCKET_URL = "https://api.esclick.co.il";
 
 export default function CollabChat({
-  token,
+  token: initialToken,
   myBusinessId,
   myBusinessName,
   onClose,
@@ -18,6 +21,7 @@ export default function CollabChat({
   const socketRef = useRef(null);
   const selectedConversationRef = useRef(null);
 
+  const [token, setToken] = useState(initialToken);
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -55,36 +59,56 @@ export default function CollabChat({
     }
   };
 
-  // Connect to socket.io once
+  // Connect to socket.io with token refresh logic
   useEffect(() => {
     if (!token || !myBusinessId) return;
 
-    console.log("Connecting to socket...");
-    socketRef.current = io(SOCKET_URL, {
-      path: "/socket.io",
-      auth: {
-        token,
-        role: "business",
-        businessId: myBusinessId,
-        businessName: myBusinessName,
-      },
-    });
+    let isMounted = true;
 
-    socketRef.current.on("connect", () => {
-      console.log("Socket connected with id:", socketRef.current.id);
-    });
+    async function connectSocket() {
+      let validToken = token;
 
-    socketRef.current.on("connect_error", (err) => {
-      console.error("Socket connection error:", err);
-    });
+      if (isTokenExpired(validToken)) {
+        try {
+          validToken = await refreshToken();
+          if (isMounted) setToken(validToken);
+        } catch (err) {
+          console.error("Cannot refresh token, please login again");
+          return;
+        }
+      }
 
-    fetchConversations();
+      socketRef.current = io(SOCKET_URL, {
+        path: "/socket.io",
+        auth: {
+          token: validToken,
+          role: "business",
+          businessId: myBusinessId,
+          businessName: myBusinessName,
+        },
+      });
+
+      socketRef.current.on("connect", () => {
+        console.log("Socket connected with id:", socketRef.current.id);
+      });
+
+      socketRef.current.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
+        if (err.message === "jwt expired") {
+          socketRef.current.disconnect();
+          // אפשר להוסיף כאן רענון טוקן נוסף וניסיון חיבור מחדש אם תרצה
+        }
+      });
+
+      fetchConversations();
+    }
+
+    connectSocket();
 
     return () => {
-      console.log("Disconnecting socket...");
-      socketRef.current.disconnect();
+      isMounted = false;
+      socketRef.current?.disconnect();
     };
-    // eslint-disable-next-line
   }, [token, myBusinessId, myBusinessName]);
 
   // Listen for new messages once
@@ -182,9 +206,7 @@ export default function CollabChat({
 
     // Update ref to current selected conversation
     selectedConversationRef.current = selectedConversation;
-
-    // eslint-disable-next-line
-  }, [selectedConversation]);
+  }, [selectedConversation, token]);
 
   // Auto scroll to last message
   useEffect(() => {
@@ -193,15 +215,8 @@ export default function CollabChat({
 
   // Send message through socket and API
   const sendMessage = async () => {
-    console.log("sendMessage called with input:", JSON.stringify(input));
-    if (!input.trim() || !selectedConversation) {
-      console.log("SendMessage aborted: empty input or no conversation selected");
-      return;
-    }
-    if (!socketRef.current) {
-      console.log("SendMessage aborted: socket not connected");
-      return;
-    }
+    if (!input.trim() || !selectedConversation) return;
+    if (!socketRef.current) return;
 
     let otherBusinessId;
     if (selectedConversation.participantsInfo?.length) {
@@ -214,10 +229,7 @@ export default function CollabChat({
         (id) => id.toString() !== myBusinessId.toString()
       );
     }
-    if (!otherBusinessId) {
-      console.log("SendMessage aborted: could not determine otherBusinessId");
-      return;
-    }
+    if (!otherBusinessId) return;
 
     const payload = {
       conversationId: selectedConversation._id,
@@ -226,8 +238,7 @@ export default function CollabChat({
       text: input.trim(),
     };
 
-    console.log("Sending message payload:", payload);
-    // Optimistic add
+    // Optimistic update
     const optimisticMsg = {
       ...payload,
       timestamp: new Date().toISOString(),
@@ -238,11 +249,9 @@ export default function CollabChat({
     setMessages((prev) => [...prev, optimisticMsg]);
     setInput("");
 
-    // Send via socket
     socketRef.current.emit("sendMessage", payload, (ack) => {
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
-        console.error("SendMessage failed:", ack.error);
         setMessages((prev) => prev.filter((m) => m._id !== optimisticMsg._id));
       } else if (ack.message?._id) {
         setMessages((prev) => {
@@ -259,17 +268,11 @@ export default function CollabChat({
       }
     });
 
-    // Also send to API to save in DB
     try {
       await API.post(
         `/business-chat/${selectedConversation._id}/message`,
-        {
-          text: input.trim(),
-          // add fileUrl, fileName, fileType if supported
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { text: input.trim() },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (err) {
       console.error("שליחת הודעה ל־API נכשלה", err);
@@ -442,9 +445,7 @@ export default function CollabChat({
               size="small"
               placeholder="כתוב הודעה..."
               value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-              }}
+              onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
