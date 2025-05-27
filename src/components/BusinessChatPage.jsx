@@ -33,14 +33,18 @@ export default function BusinessChatPage() {
     socketRef.current?.disconnect();
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    console.log("Connecting socket to:", socketUrl);
+
     const socket = io(socketUrl, {
       path: "/socket.io",
       withCredentials: true,
       auth: { token, role: "business", businessId },
     });
+
     socketRef.current = socket;
 
     socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
       socket.emit("getConversations", { businessId }, ({ ok, conversations = [], error: errMsg }) => {
         if (ok) {
           setConvos(conversations);
@@ -54,6 +58,7 @@ export default function BusinessChatPage() {
           }
         } else {
           setError("לא ניתן לטעון שיחות: " + errMsg);
+          console.error("getConversations error:", errMsg);
         }
       });
     });
@@ -61,9 +66,19 @@ export default function BusinessChatPage() {
     socket.on("connect_error", err => {
       setError("שגיאת socket: " + err.message);
       setLoading(false);
+      console.error("Socket connect_error:", err);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.warn("Socket disconnected:", reason);
+      if (reason === "io server disconnect") {
+        // Server forcefully disconnected, try reconnect manually
+        socket.connect();
+      }
     });
 
     socket.on("newMessage", msg => {
+      console.log("Received newMessage:", msg);
       setConvos(prev => {
         const idx = prev.findIndex(c => String(c._id) === msg.conversationId);
         if (idx === -1) return prev;
@@ -78,7 +93,6 @@ export default function BusinessChatPage() {
     });
   }
 
-  // התחלת חיבור Socket
   useEffect(() => {
     if (!initialized || !businessId) return;
     let isMounted = true;
@@ -90,7 +104,9 @@ export default function BusinessChatPage() {
       if (!isTokenValid(token)) {
         try {
           token = await refreshToken();
-        } catch {
+          console.log("Token refreshed");
+        } catch (err) {
+          console.error("Token refresh failed", err);
           if (isMounted) {
             setError("טוקן לא תקף ולא ניתן לרענן");
             setLoading(false);
@@ -105,11 +121,13 @@ export default function BusinessChatPage() {
 
     return () => {
       isMounted = false;
-      socketRef.current?.disconnect();
+      if (socketRef.current) {
+        console.log("Disconnecting socket");
+        socketRef.current.disconnect();
+      }
     };
   }, [initialized, businessId, user?.accessToken]);
 
-  // REST fallback אם אין שיחות
   useEffect(() => {
     if (!initialized || loading || convos.length > 0) return;
     (async () => {
@@ -119,22 +137,26 @@ export default function BusinessChatPage() {
         setConvos(res.data);
       } catch (e) {
         console.error("REST fallback failed:", e);
+        setError("שגיאה בטעינת שיחות");
       } finally {
         setLoading(false);
       }
     })();
   }, [initialized, loading, convos.length, businessId]);
 
-  // הצטרפות לשיחה נבחרת
   useEffect(() => {
     if (socketRef.current && selected?.conversationId) {
       socketRef.current.emit("joinConversation", selected.conversationId, ack => {
-        if (!ack.ok) console.error("join failed:", ack.error);
+        if (!ack.ok) {
+          console.error("joinConversation failed:", ack.error);
+          setError("לא ניתן להצטרף לשיחה");
+        } else {
+          console.log("Joined conversation", selected.conversationId);
+        }
       });
     }
   }, [selected]);
 
-  // טעינת היסטוריית הודעות
   useEffect(() => {
     if (!initialized || !selected?.conversationId) {
       setMessages([]);
@@ -143,8 +165,9 @@ export default function BusinessChatPage() {
     setLoading(true);
     API.get('/conversations/history', { params: { conversationId: selected.conversationId } })
       .then(res => setMessages(res.data))
-      .catch(() => {
+      .catch((e) => {
         setError("שגיאה בטעינת היסטוריה");
+        console.error("Load history error:", e);
         setMessages([]);
       })
       .finally(() => setLoading(false));
