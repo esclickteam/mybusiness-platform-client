@@ -5,6 +5,7 @@ import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import { io } from "socket.io-client";
+import API from "../api";  // הוספת ייבוא ל-REST fallback
 
 export default function BusinessChatPage() {
   const { user, initialized, refreshToken } = useAuth();
@@ -100,6 +101,15 @@ export default function BusinessChatPage() {
       }
 
       await initSocket(token);
+      // REST fallback אם לא טעון דבר
+      if (convos.length === 0) {
+        try {
+          const res = await API.get(`/chat/business/${businessId}/conversations`);
+          setConvos(res.data);
+        } catch (e) {
+          console.error("REST fallback failed:", e);
+        }
+      }
       setLoading(false);
     })();
 
