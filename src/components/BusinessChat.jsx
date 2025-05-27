@@ -1,6 +1,8 @@
+// src/components/BusinessChat.jsx
+
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
-import Button from "@mui/material/Button";  // MUI Button
+import Button from "@mui/material/Button";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -17,40 +19,33 @@ export default function BusinessChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
+  // 0) אם אין עדיין מזהה — הצג טוען
   if (!myBusinessId) {
     return <p>טוען זיהוי העסק…</p>;
   }
 
-  // גלילה להודעה האחרונה
-  const scrollToBottom = () => {
+  // 1) גלילת המסך
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  useEffect(scrollToBottom, [messages]);
+  }, [messages]);
 
-  // 1) יצירת חיבור socket
+  // 2) יצירת חיבור Socket.IO (ברירת מחדל, בלי transports)
   useEffect(() => {
     if (!token || !role || !myBusinessId) return;
 
     const s = io(SOCKET_URL, {
       path: "/socket.io",
-      auth: {
-        token,
-        role,
-        businessId: myBusinessId,
-        businessName: myBusinessName,
-      },
+      auth: { token, role, businessId: myBusinessId, businessName: myBusinessName },
     });
 
     s.on("connect", () => console.log("Socket connected:", s.id));
     s.on("disconnect", (reason) => console.log("Socket disconnected:", reason));
 
     setSocket(s);
-    return () => {
-      s.disconnect();
-    };
+    return () => void s.disconnect();
   }, [token, role, myBusinessId, myBusinessName]);
 
-  // 2) פתיחה או שליפת שיחה קיימת
+  // 3) התחלת שיחה או שליפת היסטוריה
   useEffect(() => {
     if (!socket || !otherBusinessId) return;
 
@@ -58,38 +53,31 @@ export default function BusinessChat({
       "startConversation",
       { otherUserId: otherBusinessId },
       (res) => {
-        if (res.ok) {
-          setConversationId(res.conversationId);
-          socket.emit("joinConversation", res.conversationId, () => {});
-          socket.emit(
-            "getHistory",
-            { conversationId: res.conversationId },
-            (res2) => {
-              if (res2.ok) setMessages(res2.messages);
-            }
-          );
-        }
+        if (!res.ok) return console.error("startConversation failed:", res.error);
+        setConversationId(res.conversationId);
+        socket.emit("joinConversation", res.conversationId, () => {});
+        socket.emit(
+          "getHistory",
+          { conversationId: res.conversationId },
+          (h) => h.ok && setMessages(h.messages)
+        );
       }
     );
   }, [socket, otherBusinessId]);
 
-  // 3) הקשבה להודעות חדשות
+  // 4) הקשבה להודעות חדשות
   useEffect(() => {
     if (!socket || !conversationId) return;
-
-    const handleNew = (msg) => {
+    const handler = (msg) => {
       if (msg.conversationId === conversationId) {
         setMessages((prev) => [...prev, msg]);
       }
     };
-
-    socket.on("newMessage", handleNew);
-    return () => {
-      socket.off("newMessage", handleNew);
-    };
+    socket.on("newMessage", handler);
+    return () => void socket.off("newMessage", handler);
   }, [socket, conversationId]);
 
-  // 4) שליחת הודעה
+  // 5) שליחת הודעה
   const sendMessage = () => {
     if (!input.trim() || !socket) return;
 
@@ -100,7 +88,7 @@ export default function BusinessChat({
       text: input.trim(),
     };
 
-    const doSend = () => {
+    const doSend = () =>
       socket.emit("sendMessage", payload, (ack) => {
         if (ack.ok) {
           setMessages((prev) => [...prev, ack.message]);
@@ -109,22 +97,17 @@ export default function BusinessChat({
           alert("שליחת הודעה נכשלה: " + ack.error);
         }
       });
-    };
 
     if (!conversationId) {
       socket.emit(
         "startConversation",
         { otherUserId: otherBusinessId },
         (res) => {
-          if (res.ok) {
-            setConversationId(res.conversationId);
-            socket.emit("joinConversation", res.conversationId, (ack) => {
-              if (ack.ok) doSend();
-              else alert("Failed to join: " + ack.error);
-            });
-          } else {
-            alert("פתיחת שיחה נכשלה: " + res.error);
-          }
+          if (!res.ok) return alert("פתיחת שיחה נכשלה: " + res.error);
+          setConversationId(res.conversationId);
+          socket.emit("joinConversation", res.conversationId, (ack) =>
+            ack.ok ? doSend() : alert("Failed to join: " + ack.error)
+          );
         }
       );
     } else {
@@ -142,6 +125,7 @@ export default function BusinessChat({
       }}
     >
       <h3>צ'אט עסקי</h3>
+
       <div
         style={{
           border: "1px solid #ccc",
@@ -165,6 +149,7 @@ export default function BusinessChat({
         ))}
         <div ref={messagesEndRef} />
       </div>
+
       <textarea
         rows={3}
         style={{ width: "100%", resize: "none" }}
@@ -178,12 +163,20 @@ export default function BusinessChat({
           }
         }}
       />
+
       <Button
         type="button"
         variant="contained"
         onClick={sendMessage}
         disabled={!input.trim()}
-        sx={{ mt: 1, alignSelf: "flex-end" }}
+        sx={{
+          mt: 1,
+          alignSelf: "flex-end",
+          // override הגלובלי index-Z0FAwCce.css:1
+          "&:hover": {
+            backgroundColor: "primary.dark",
+          },
+        }}
       >
         שלח
       </Button>
