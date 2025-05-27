@@ -88,23 +88,28 @@ export default function CollabChat({
     const handler = (msg) => {
       console.log("Received newMessage event:", msg);
 
+      // ודא שלכל הודעה יש fromBusinessId ו-toBusinessId
+      const normalizedMsg = {
+        ...msg,
+        fromBusinessId: msg.fromBusinessId || msg.from,
+        toBusinessId: msg.toBusinessId || msg.to,
+      };
+
       // עדכן רק אם ההודעה שייכת לשיחה הנבחרת
-      if (msg.conversationId === selectedConversation?._id) {
+      if (normalizedMsg.conversationId === selectedConversation?._id) {
         setMessages((prev) => {
-          // אם ההודעה כבר קיימת בסטייט (מניעת כפילויות)
-          if (prev.some(m => m._id === msg._id)) return prev;
-          return [...prev, msg];
+          if (prev.some((m) => m._id === normalizedMsg._id)) return prev;
+          return [...prev, normalizedMsg];
         });
       }
 
       // עדכון השיחה ברשימת השיחות
       setConversations((prevConvs) =>
         prevConvs.map((conv) => {
-          if (conv._id === msg.conversationId) {
+          if (conv._id === normalizedMsg.conversationId) {
             const msgs = conv.messages || [];
-            // הוסף את ההודעה רק אם לא קיימת
-            if (!msgs.some(m => m._id === msg._id)) {
-              return { ...conv, messages: [...msgs, msg] };
+            if (!msgs.some((m) => m._id === normalizedMsg._id)) {
+              return { ...conv, messages: [...msgs, normalizedMsg] };
             }
           }
           return conv;
@@ -139,8 +144,13 @@ export default function CollabChat({
           `/business-chat/${selectedConversation._id}/messages`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log("Fetched messages:", res.data.messages.length);
-        setMessages(res.data.messages || []);
+        // ודא שלכל הודעה יש fromBusinessId ו-toBusinessId
+        const normMsgs = (res.data.messages || []).map((msg) => ({
+          ...msg,
+          fromBusinessId: msg.fromBusinessId || msg.from,
+          toBusinessId: msg.toBusinessId || msg.to,
+        }));
+        setMessages(normMsgs);
       } catch (err) {
         console.error("Failed fetching messages:", err);
         setMessages([]);
@@ -155,7 +165,7 @@ export default function CollabChat({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה דרך ה-socket עם לוגים ודילוג על שליחת הודעה ריקה
+  // שליחת הודעה דרך ה-socket
   const sendMessage = () => {
     console.log("sendMessage called with input:", JSON.stringify(input));
     if (!input.trim() || !selectedConversation) {
@@ -191,25 +201,37 @@ export default function CollabChat({
     };
 
     console.log("Sending message payload:", payload);
+    // הוספה אופטימית
+    const optimisticMsg = {
+      ...payload,
+      timestamp: new Date().toISOString(),
+      _id: "pending-" + Math.random().toString(36).substr(2, 9),
+      fromBusinessId: payload.from,
+      toBusinessId: payload.to,
+    };
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setInput("");
+
+    // שלח לסוקט
     socketRef.current.emit("sendMessage", payload, (ack) => {
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
         console.error("SendMessage failed:", ack.error);
-      } else {
-        console.log("Message sent successfully, updating local messages state");
-        const newMsg = {
-          ...payload,
-          timestamp: new Date().toISOString(),
-          _id: ack.message?._id || Math.random().toString(36).substr(2, 9), // שימוש ב-ID אם קיים
-          fromBusinessId: payload.from,
-          toBusinessId: payload.to,
-        };
+        // מחק את ההודעה האופטימית אם נכשל
+        setMessages((prev) => prev.filter((m) => m._id !== optimisticMsg._id));
+      } else if (ack.message?._id) {
+        // החלף את ההודעה האופטימית בהודעה מהשרת (אם כבר לא הגיעה מ-newMessage)
         setMessages((prev) => {
-          // למנוע כפילויות
-          if (prev.some(m => m._id === newMsg._id)) return prev;
-          return [...prev, newMsg];
+          // מחק אופטימית אם קיימת, ואז תוודא שהודעה אמיתית לא קיימת כבר
+          const filtered = prev.filter((m) => m._id !== optimisticMsg._id && m._id !== ack.message._id);
+          // נורמליזציה
+          const realMsg = {
+            ...ack.message,
+            fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+            toBusinessId: ack.message.toBusinessId || ack.message.to,
+          };
+          return [...filtered, realMsg];
         });
-        setInput("");
       }
     });
   };
@@ -322,7 +344,7 @@ export default function CollabChat({
               </Box>
               {messages.map((msg, i) => (
                 <Box
-                  key={i}
+                  key={msg._id || i}
                   sx={{
                     background:
                       msg.fromBusinessId?.toString() === myBusinessId.toString()
@@ -381,17 +403,13 @@ export default function CollabChat({
               placeholder="כתוב הודעה..."
               value={input}
               onChange={(e) => {
-                console.log("TextField onChange:", JSON.stringify(e.target.value));
                 setInput(e.target.value);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  console.log("Enter pressed with input:", JSON.stringify(input));
                   if (input.trim()) {
                     sendMessage();
-                  } else {
-                    console.log("Prevented sending empty message via Enter key");
                   }
                 }
               }}
