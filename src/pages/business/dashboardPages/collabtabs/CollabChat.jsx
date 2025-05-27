@@ -81,24 +81,31 @@ export default function CollabChat({
     // eslint-disable-next-line
   }, [token, myBusinessId, myBusinessName]);
 
-  // מאזין להודעות חדשות
+  // מאזין להודעות חדשות (newMessage)
   useEffect(() => {
     if (!socketRef.current) return;
 
     const handler = (msg) => {
       console.log("Received newMessage event:", msg);
 
+      // עדכן רק אם ההודעה שייכת לשיחה הנבחרת
       if (msg.conversationId === selectedConversation?._id) {
-        console.log("Appending new message to messages state");
-        setMessages((prev) => [...prev, msg]);
+        setMessages((prev) => {
+          // אם ההודעה כבר קיימת בסטייט (מניעת כפילויות)
+          if (prev.some(m => m._id === msg._id)) return prev;
+          return [...prev, msg];
+        });
       }
 
+      // עדכון השיחה ברשימת השיחות
       setConversations((prevConvs) =>
         prevConvs.map((conv) => {
           if (conv._id === msg.conversationId) {
-            const updatedMessages = conv.messages ? [...conv.messages, msg] : [msg];
-            console.log(`Updating conversation ${conv._id} messages count:`, updatedMessages.length);
-            return { ...conv, messages: updatedMessages };
+            const msgs = conv.messages || [];
+            // הוסף את ההודעה רק אם לא קיימת
+            if (!msgs.some(m => m._id === msg._id)) {
+              return { ...conv, messages: [...msgs, msg] };
+            }
           }
           return conv;
         })
@@ -148,7 +155,7 @@ export default function CollabChat({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה דרך ה-socket עם לוגים לדיבאג
+  // שליחת הודעה דרך ה-socket עם לוגים ודילוג על שליחת הודעה ריקה
   const sendMessage = () => {
     console.log("sendMessage called with input:", JSON.stringify(input));
     if (!input.trim() || !selectedConversation) {
@@ -191,13 +198,17 @@ export default function CollabChat({
       } else {
         console.log("Message sent successfully, updating local messages state");
         const newMsg = {
-          conversationId: payload.conversationId,
+          ...payload,
+          timestamp: new Date().toISOString(),
+          _id: ack.message?._id || Math.random().toString(36).substr(2, 9), // שימוש ב-ID אם קיים
           fromBusinessId: payload.from,
           toBusinessId: payload.to,
-          text: payload.text,
-          timestamp: new Date().toISOString(),
         };
-        setMessages((prev) => [...prev, newMsg]);
+        setMessages((prev) => {
+          // למנוע כפילויות
+          if (prev.some(m => m._id === newMsg._id)) return prev;
+          return [...prev, newMsg];
+        });
         setInput("");
       }
     });
