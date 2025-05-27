@@ -1,6 +1,7 @@
-// src/context/socketContext.jsx
 import React, { createContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { isTokenExpired } from "../utils/authHelpers";  // פונקציה לבדיקה
+import { refreshToken } from "../utils/tokenHelpers";    // פונקציה לרענון טוקן
 
 export const SocketContext = createContext(null);
 
@@ -8,23 +9,41 @@ export function SocketProvider({ children }) {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return; // אפשר להוסיף טיפול טוב יותר אם אין טוקן
+    async function initSocket() {
+      let token = localStorage.getItem("token");
+      if (!token) return;
 
-    const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
-      auth: { token, role: "client" }, // שנה לפי תפקיד מתאים
-      path: "/socket.io",
-      transports: ["websocket"],
-    });
+      // בדיקת תוקף טוקן
+      if (isTokenExpired(token)) {
+        try {
+          token = await refreshToken();
+          if (!token) {
+            console.warn("Failed to refresh token");
+            return;
+          }
+          localStorage.setItem("token", token);  // שמירת הטוקן החדש
+        } catch (e) {
+          console.error("Error refreshing token:", e);
+          return;
+        }
+      }
 
-    setSocket(newSocket);
+      const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
+        auth: { token, role: "client" }, // שנה לפי תפקיד מתאים
+        path: "/socket.io",
+        transports: ["websocket"],
+      });
 
-    return () => {
-      newSocket.disconnect();
-    };
+      setSocket(newSocket);
+
+      return () => {
+        newSocket.disconnect();
+      };
+    }
+
+    initSocket();
   }, []);
 
-  // מחזיר את ה-socket גם אם עדיין לא מחובר (לא מחזיר null)
   return (
     <SocketContext.Provider value={socket}>
       {children}
