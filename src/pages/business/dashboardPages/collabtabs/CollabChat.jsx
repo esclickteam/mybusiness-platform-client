@@ -103,10 +103,20 @@ export default function CollabChat({
 
   // שליחת הודעה
   const sendMessage = async () => {
-    if (!input.trim() || !selectedConversation) return;
+    console.log("sendMessage called", { input, selectedConversation });
+    if (!input.trim() || !selectedConversation) {
+      console.warn("sendMessage aborted: empty input or no selected conversation");
+      return;
+    }
     const otherBusinessId = selectedConversation.participants.find(
       (id) => id !== myBusinessId
     );
+    console.log("Emitting sendMessage event", {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: otherBusinessId,
+      text: input.trim(),
+    });
     socket.emit(
       "sendMessage",
       {
@@ -116,15 +126,20 @@ export default function CollabChat({
         text: input.trim(),
       },
       (ack) => {
-        if (!ack.ok) alert("שליחת הודעה נכשלה: " + ack.error);
-        setInput("");
+        if (!ack.ok) {
+          console.error("SendMessage failed:", ack.error);
+          alert("שליחת הודעה נכשלה: " + ack.error);
+        } else {
+          setInput("");
+        }
       }
     );
   };
 
   // הצגת שם העסק הנגדי
   const getPartnerBusiness = (conv) => {
-    if (!conv || !conv.participants || !conv.participantsInfo) return { businessName: "עסק" };
+    if (!conv || !conv.participants || !conv.participantsInfo)
+      return { businessName: "עסק" };
     const idx = conv.participants.findIndex((id) => id !== myBusinessId);
     return conv.participantsInfo[idx] || { businessName: "עסק" };
   };
@@ -169,10 +184,7 @@ export default function CollabChat({
         )}
         {conversations.map((conv) => {
           const partner = getPartnerBusiness(conv);
-          const lastMsg =
-            conv.messages?.length
-              ? conv.messages[conv.messages.length - 1].text
-              : "";
+          const lastMsg = conv.messages?.length ? conv.messages[conv.messages.length - 1].text : "";
           return (
             <Box
               key={conv._id}
@@ -181,8 +193,7 @@ export default function CollabChat({
                 py: 1.5,
                 cursor: "pointer",
                 borderBottom: "1px solid #f3f0fa",
-                background:
-                  selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
               }}
               onClick={() => setSelectedConversation(conv)}
             >
@@ -229,14 +240,8 @@ export default function CollabChat({
                 <Box
                   key={i}
                   sx={{
-                    background:
-                      msg.fromBusinessId === myBusinessId
-                        ? "#e6ddff"
-                        : "#fff",
-                    alignSelf:
-                      msg.fromBusinessId === myBusinessId
-                        ? "flex-end"
-                        : "flex-start",
+                    background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                    alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
                     p: 1.2,
                     borderRadius: 2,
                     mb: 1,
