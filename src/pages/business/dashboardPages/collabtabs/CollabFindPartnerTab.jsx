@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -72,23 +71,24 @@ export default function CollabFindPartnerTab({
     return true;
   });
 
+  // צפיה בפרופיל (פונקציה קיימת)
   const handleOpenProfile = (business) => {
-    // צפיה בפרופיל
+    // add navigation/view logic here
   };
 
-  // פתיחת מודל שליחת הודעה בצ'אט
+  // פתיחת מודאל לשליחת הודעה ראשונה
   const openChatModal = (business) => {
     setChatTarget(business);
     setChatMessage("");
     setChatModalOpen(true);
   };
 
-  // שליחת הודעה — יוצרת שיחה חדשה אם אין, או מצטרפת לשיחה קיימת
+  // שליחת הודעה ראשונה שמייצרת שיחה
   const handleSendBusinessMessage = async () => {
     if (!chatTarget || !chatMessage.trim()) return;
     setSending(true);
     try {
-      // יוצרת שיחה אם אין, ושולחת הודעה ראשונה
+      // יצירת שיחה (אם אין) ושליחת הודעה ראשונה
       await API.post("/business-chat/start", {
         otherBusinessId: chatTarget._id || chatTarget.id,
         text: chatMessage.trim(),
