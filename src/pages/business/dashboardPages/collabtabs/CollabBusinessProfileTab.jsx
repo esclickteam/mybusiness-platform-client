@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import API from "../../../../api";
-import CollabChat from "../CollabChat"; // עדכן לנתיב שבו שמרת את CollabChat.jsx
+import CollabChat from "./CollabChat";
 import "./CollabBusinessProfileTab.css";
 
 export default function CollabBusinessProfileTab() {
@@ -10,11 +10,11 @@ export default function CollabBusinessProfileTab() {
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
   const [showEditProfile, setShowEditProfile] = useState(false);
-  const [showBusinessChat, setShowBusinessChat] = useState(false); // חדש
+  const [showBusinessChat, setShowBusinessChat] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // כאן נטען גם את מזהה העסק עבור הצ'אט
+  // מזהי עסק לצ'אט
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
 
@@ -24,7 +24,6 @@ export default function CollabBusinessProfileTab() {
     // eslint-disable-next-line
   }, []);
 
-  // טעינת פרופיל
   const fetchProfile = async () => {
     setLoading(true);
     try {
@@ -45,12 +44,9 @@ export default function CollabBusinessProfileTab() {
     try {
       const { data } = await API.get("/business-chat/me");
       if (data.myBusinessId) setMyBusinessId(data.myBusinessId);
-    } catch (e) {
-      // אפשר להוסיף alert או טיפול בבעיה
-    }
+    } catch (e) {}
   };
 
-  // שינוי לוגו
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -59,11 +55,9 @@ export default function CollabBusinessProfileTab() {
     }
   };
 
-  // שמירת הפרופיל
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
-
     const formData = new FormData(e.target);
     const updatedData = {
       businessName: formData.get("businessName"),
@@ -75,7 +69,6 @@ export default function CollabBusinessProfileTab() {
       phone: formData.get("phone"),
       email: formData.get("email"),
     };
-
     try {
       if (logoFile) {
         const logoFormData = new FormData();
@@ -180,6 +173,7 @@ export default function CollabBusinessProfileTab() {
           </div>
         </div>
       </div>
+
       {/* מודאל עריכת פרופיל */}
       <Modal open={showEditProfile} onClose={() => setShowEditProfile(false)}>
         <Box
@@ -200,7 +194,63 @@ export default function CollabBusinessProfileTab() {
             עריכת פרופיל עסקי
           </h3>
           <form onSubmit={handleSaveProfile} className="styled-form">
-            {/* ...שדות טופס כמו קודם... */}
+            <div>
+              <label>שם העסק</label>
+              <input
+                name="businessName"
+                defaultValue={safeProfile.businessName}
+                required
+              />
+            </div>
+            <div>
+              <label>תחום</label>
+              <input name="category" defaultValue={safeProfile.category} required />
+            </div>
+            <div>
+              <label>אזור פעילות</label>
+              <input name="area" defaultValue={safeProfile.area} required />
+            </div>
+            <div>
+              <label>על העסק</label>
+              <textarea name="about" defaultValue={safeProfile.about} rows="3" />
+            </div>
+            <div>
+              <label>שיתופי פעולה רצויים</label>
+              <textarea
+                name="collabPref"
+                defaultValue={safeProfile.collabPref}
+                rows="3"
+              />
+            </div>
+            <div>
+              <label>שם איש קשר</label>
+              <input name="contact" defaultValue={safeProfile.contact} required />
+            </div>
+            <div>
+              <label>טלפון</label>
+              <input name="phone" defaultValue={safeProfile.phone} required />
+            </div>
+            <div>
+              <label>אימייל</label>
+              <input name="email" defaultValue={safeProfile.email} required />
+            </div>
+            <div className="modal-buttons">
+              <button
+                type="submit"
+                className="collab-form-button"
+                disabled={saving}
+              >
+                {saving ? "שומר..." : "💾 שמירה"}
+              </button>
+              <button
+                type="button"
+                className="collab-form-button secondary"
+                onClick={() => setShowEditProfile(false)}
+                disabled={saving}
+              >
+                ❌ ביטול
+              </button>
+            </div>
           </form>
         </Box>
       </Modal>

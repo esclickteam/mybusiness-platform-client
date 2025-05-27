@@ -10,11 +10,10 @@ import Collab             from "./dashboardPages/Collab";
 import Upgrade            from "./dashboardPages/Upgrade";
 import CartPage           from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
 
-// 🟢 הודעות עם לקוחות (כבר קיים)
 import BusinessChatPage   from "../../components/BusinessChatPage";
 
-// 🟢 חדש! צ'אט עסקי אמיתי בין עסקים
-import CollabChatPage     from "../../components/CollabChatPage"; // שם הקומפוננטה CollabChatPage.jsx
+// 🟢 צ'אט עסקי אמיתי בין עסקים — עדכון ייבוא!
+import CollabChat         from "./dashboardPages/collabtabs/CollabChat";
 
 import AffiliatePage      from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor     from "./dashboardPages/EsclickAdvisor";
@@ -54,7 +53,7 @@ const BusinessDashboardRoutes = () => (
       <Route path="messages" element={<BusinessChatPage />} />
 
       {/* 🟢 הודעות עסקיות בין עסקים */}
-      <Route path="business-messages" element={<CollabChatPage />} />
+      <Route path="business-messages" element={<CollabChat />} />
 
       {/* שותפים ואפיליאייט */}
       <Route path="affiliate" element={<AffiliatePage />} />
