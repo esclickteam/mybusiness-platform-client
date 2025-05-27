@@ -69,6 +69,7 @@ export default function BusinessChat({
 
     s.on("connect", () => {
       console.log("✅ Socket connected:", s.id);
+      // הפעל initConversation אחרי חיבור
       initConversation();
     });
 
@@ -81,7 +82,7 @@ export default function BusinessChat({
       console.log("🛑 Disconnecting socket");
       s.disconnect();
     };
-  }, [token, role, myBusinessId, myBusinessName, initConversation]);
+  }, [token, role, myBusinessId, myBusinessName]); // הסרנו initConversation מהרשימה
 
   // חיבור מאזין להודעות חדשות
   useEffect(() => {
