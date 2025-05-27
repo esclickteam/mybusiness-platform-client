@@ -7,7 +7,6 @@ import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
-import BusinessChatContainer from "../../../../components/BusinessChatContainer";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -25,10 +24,8 @@ export default function CollabFindPartnerTab({
 }) {
   const navigate = useNavigate();
 
-  // 1️⃣ שליפת ה־myBusinessId מה־localStorage
   const myBusinessId = localStorage.getItem("myBusinessId");
-  const businessDetails =
-    JSON.parse(localStorage.getItem("businessDetails") || "{}");
+  const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
 
   const [partners, setPartners] = useState([]);
@@ -37,10 +34,7 @@ export default function CollabFindPartnerTab({
   const [proposalTarget, setProposalTarget] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [chatWithBusinessId, setChatWithBusinessId] = useState(null);
-  const [chatWithBusinessName, setChatWithBusinessName] = useState("");
 
-  // טעינת שותפים
   useEffect(() => {
     async function fetchPartners() {
       try {
@@ -55,7 +49,6 @@ export default function CollabFindPartnerTab({
     return () => clearInterval(intervalId);
   }, []);
 
-  // סינון שותפים לפי חיפוש
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
@@ -78,29 +71,27 @@ export default function CollabFindPartnerTab({
     return true;
   });
 
-  // פתיחת פרופיל
   const handleOpenProfile = (business) => {
     navigate(`/business-profile/${business._id || business.id}`);
   };
 
-  // פתיחת מודל הצעה
   const openProposalModal = (business) => {
     setProposalTarget(business);
     setProposalModalOpen(true);
   };
 
-  // פתיחת צ'אט
-  const openChatModal = (business) => {
-    setChatWithBusinessId(business._id || business.id);
-    setChatWithBusinessName(business.businessName);
+  // 🟢 זה הכפתור המעודכן:
+  const handleStartBusinessChat = async (business) => {
+    try {
+      await API.post("/business-chat/start", {
+        otherBusinessId: business._id || business.id,
+      });
+      navigate("/business/dashboard/business-messages");
+    } catch (err) {
+      alert("שגיאה ביצירת שיחה עסקית: " + (err?.response?.data?.error || err.message));
+    }
   };
 
-  const closeChatModal = () => {
-    setChatWithBusinessId(null);
-    setChatWithBusinessName("");
-  };
-
-  // שליחת הצעה
   const handleSubmitProposal = () => {
     if (!proposalText.trim()) return;
     handleSendProposal(
@@ -159,7 +150,6 @@ export default function CollabFindPartnerTab({
         <p>לא נמצאו שותפים.</p>
       ) : (
         filteredPartners.map((business) => {
-          // 2️⃣ שימוש ב־myBusinessId ל־isMine
           const isMine = business._id === myBusinessId;
 
           return (
@@ -197,7 +187,7 @@ export default function CollabFindPartnerTab({
                     </button>
                     <button
                       className="message-box-button secondary"
-                      onClick={() => openChatModal(business)}
+                      onClick={() => handleStartBusinessChat(business)}
                     >
                       צ'אט
                     </button>
@@ -207,26 +197,6 @@ export default function CollabFindPartnerTab({
             </div>
           );
         })
-      )}
-
-      {/* Chat Modal */}
-      {chatWithBusinessId && (
-        <div className="business-chat-wrapper">
-          <Button
-            variant="outlined"
-            onClick={closeChatModal}
-            sx={{ mb: 2 }}
-          >
-            סגור צ'אט
-          </Button>
-          <h3>צ'אט עם {chatWithBusinessName}</h3>
-          <BusinessChatContainer
-            token={localStorage.getItem("token")}
-            role="business"
-            myBusinessName={myBusinessName}
-            otherBusinessId={chatWithBusinessId}
-          />
-        </div>
       )}
 
       {/* Proposal Modal */}
