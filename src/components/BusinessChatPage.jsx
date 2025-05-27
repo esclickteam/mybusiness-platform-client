@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import jwtDecode from "jwt-decode";
+import * as jwtDecode from "jwt-decode";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -21,7 +21,8 @@ export default function BusinessChatPage() {
   function isTokenValid(token) {
     if (!token) return false;
     try {
-      const { exp } = jwtDecode(token);
+      const decode = typeof jwtDecode.default === 'function' ? jwtDecode.default : jwtDecode;
+      const { exp } = decode(token);
       return Date.now() < exp * 1000;
     } catch {
       return false;
