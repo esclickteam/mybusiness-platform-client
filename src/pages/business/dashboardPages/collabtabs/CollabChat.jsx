@@ -22,7 +22,6 @@ export default function CollabChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // דיבאג: עקוב אחרי שינויי input
   useEffect(() => {
     console.log("Input value changed:", JSON.stringify(input));
   }, [input]);
@@ -88,7 +87,6 @@ export default function CollabChat({
     const handler = (msg) => {
       console.log("Received newMessage event:", msg);
 
-      // ודא שלכל הודעה יש fromBusinessId ו-toBusinessId
       const normalizedMsg = {
         ...msg,
         fromBusinessId: msg.fromBusinessId || msg.from,
@@ -144,7 +142,6 @@ export default function CollabChat({
           `/business-chat/${selectedConversation._id}/messages`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        // ודא שלכל הודעה יש fromBusinessId ו-toBusinessId
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
           fromBusinessId: msg.fromBusinessId || msg.from,
@@ -165,8 +162,8 @@ export default function CollabChat({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה דרך ה-socket
-  const sendMessage = () => {
+  // שליחת הודעה דרך ה-socket וגם ל-API
+  const sendMessage = async () => {
     console.log("sendMessage called with input:", JSON.stringify(input));
     if (!input.trim() || !selectedConversation) {
       console.log("SendMessage aborted: empty input or no conversation selected");
@@ -217,14 +214,10 @@ export default function CollabChat({
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
         console.error("SendMessage failed:", ack.error);
-        // מחק את ההודעה האופטימית אם נכשל
         setMessages((prev) => prev.filter((m) => m._id !== optimisticMsg._id));
       } else if (ack.message?._id) {
-        // החלף את ההודעה האופטימית בהודעה מהשרת (אם כבר לא הגיעה מ-newMessage)
         setMessages((prev) => {
-          // מחק אופטימית אם קיימת, ואז תוודא שהודעה אמיתית לא קיימת כבר
           const filtered = prev.filter((m) => m._id !== optimisticMsg._id && m._id !== ack.message._id);
-          // נורמליזציה
           const realMsg = {
             ...ack.message,
             fromBusinessId: ack.message.fromBusinessId || ack.message.from,
@@ -234,6 +227,22 @@ export default function CollabChat({
         });
       }
     });
+
+    // שלח גם ל-API כדי לשמור ב-DB
+    try {
+      await API.post(
+        `/business-chat/${selectedConversation._id}/message`,
+        {
+          text: input.trim(),
+          // תוסיף כאן fileUrl, fileName, fileType אם תומך
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+    } catch (err) {
+      console.error("שליחת הודעה ל־API נכשלה", err);
+    }
   };
 
   // הצגת שם העסק הנגדי בשיחה
