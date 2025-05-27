@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAccessToken } from "../api";
@@ -39,7 +38,9 @@ export function AuthProvider({ children }) {
         if (refreshToken) {
           const res = await API.post("/auth/refresh-token", { refreshToken });
           setAccessToken(res.data.accessToken);
-          localStorage.setItem("refreshToken", res.data.refreshToken);
+          if (res.data.refreshToken) {
+            localStorage.setItem("refreshToken", res.data.refreshToken);
+          }
         }
         const { data } = await API.get("/auth/me");
         setUser({

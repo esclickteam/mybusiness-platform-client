@@ -15,10 +15,15 @@ const API = axios.create({
   },
 });
 
-let accessToken = null;
+let accessToken = localStorage.getItem("accessToken") || null;
 
 export function setAccessToken(token) {
   accessToken = token;
+  if (token) {
+    localStorage.setItem("accessToken", token);
+  } else {
+    localStorage.removeItem("accessToken");
+  }
 }
 
 API.interceptors.request.use(
@@ -69,12 +74,18 @@ API.interceptors.response.use(
         const res = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken });
 
         const newAccessToken = res.data.accessToken;
-        setAccessToken(newAccessToken);
+        const newRefreshToken = res.data.refreshToken;
 
-        // Retry original request with new access token
+        setAccessToken(newAccessToken);
+        if (newRefreshToken) {
+          localStorage.setItem("refreshToken", newRefreshToken);
+        }
+
         config.headers.Authorization = `Bearer ${newAccessToken}`;
         return API(config);
       } catch (err) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         window.location.replace("/login");
         return Promise.reject(err);
       }
