@@ -19,15 +19,16 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // Attach token to API
+  // Configure Axios auth header
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) setAccessToken(token);
   }, []);
 
-  // Initialize socket and load conversations
+  // Setup Socket.IO and fetch conversations
   useEffect(() => {
     if (!initialized || !userId) return;
+    setLoading(true);
     const socket = io(import.meta.env.VITE_SOCKET_URL, {
       path: "/socket.io",
       withCredentials: true,
@@ -37,8 +38,12 @@ export default function ClientChatSection() {
 
     socket.on("connect", () => {
       socket.emit("getConversations", { userId }, ({ ok, conversations }) => {
-        if (ok) setConversations(conversations);
-        else setError("שגיאה בטעינת שיחות");
+        if (ok) {
+          setConversations(conversations);
+          setError("");
+        } else {
+          setError("שגיאה בטעינת שיחות");
+        }
         setLoading(false);
       });
     });
@@ -49,8 +54,7 @@ export default function ClientChatSection() {
         const idx = prev.findIndex((c) => c.conversationId === msg.conversationId);
         if (idx === -1) return prev;
         const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
-        const reordered = [updated, ...prev.filter((_, i) => i !== idx)];
-        return reordered;
+        return [updated, ...prev.filter((_, i) => i !== idx)];
       });
     });
 
@@ -62,19 +66,22 @@ export default function ClientChatSection() {
     return () => socket.disconnect();
   }, [initialized, userId, selectedConvId]);
 
-  // Select first conversation by default
+  // Auto-select first conversation
   useEffect(() => {
     if (!selectedConvId && conversations.length > 0) {
       setSelectedConvId(conversations[0].conversationId);
     }
-  }, [conversations]);
+  }, [conversations, selectedConvId]);
 
-  // Load message history when selection changes
+  // Load message history
   useEffect(() => {
     if (!selectedConvId) return;
     setLoading(true);
     API.get("/conversations/history", { params: { conversationId: selectedConvId } })
-      .then((res) => setMessages(res.data))
+      .then((res) => {
+        setMessages(res.data);
+        setError("");
+      })
       .catch(() => setError("שגיאה בטעינת היסטוריה"))
       .finally(() => setLoading(false));
   }, [selectedConvId]);
