@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import jwtDecode from "jwt-decode";
+import * as jwtDecode from "jwt-decode";  // <-- שינוי כאן
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import { io } from "socket.io-client";
+
+function decodeJwt(token) {
+  return jwtDecode.default ? jwtDecode.default(token) : jwtDecode(token);
+}
 
 export default function BusinessChatPage() {
   const { user, initialized, refreshToken } = useAuth();
@@ -20,7 +24,7 @@ export default function BusinessChatPage() {
   function isTokenValid(token) {
     if (!token) return false;
     try {
-      const { exp } = jwtDecode(token);
+      const { exp } = decodeJwt(token);
       return Date.now() < exp * 1000;
     } catch {
       return false;
