@@ -32,7 +32,7 @@ const DashboardAlert = ({ text, type = "info" }) => (
 
 import "../../../styles/dashboard.css";
 
-const SOCKET_URL = "https://api.esclick.co.il";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -81,11 +81,16 @@ const DashboardPage = () => {
 
   // התחברות ל-Socket.IO לקבלת עדכונים חיים בזמן אמת
   useEffect(() => {
-    if (!businessId) return;
+    if (!businessId || !user?.token) return;
+
+    // שולח טוקן בלי מילת מפתח 'Bearer', רק הטוקן עצמו
+    const tokenValue = user.token.startsWith("Bearer ")
+      ? user.token.slice(7)
+      : user.token;
 
     const socket = io(SOCKET_URL, {
       path: "/socket.io",
-      auth: { token: user?.token, role: "business-dashboard", businessId },
+      auth: { token: tokenValue, role: "business-dashboard", businessId },
     });
 
     socket.on("connect", () => {
@@ -110,7 +115,7 @@ const DashboardPage = () => {
     };
   }, [businessId, user?.token]);
 
-  const handleQuickAction = action => {
+  const handleQuickAction = (action) => {
     let msg = null;
     if (action === "meeting") msg = "מעבר להוספת פגישה חדשה (דמו)";
     if (action === "message") msg = "מעבר לשליחת הודעה (דמו)";
@@ -156,7 +161,7 @@ const DashboardPage = () => {
           chartsRef: null,
           leadsRef: null,
           appointmentsRef: null,
-          calendarRef: null
+          calendarRef: null,
         }}
       />
 
@@ -173,8 +178,12 @@ const DashboardPage = () => {
         />
       </div>
 
-      <div><Insights stats={stats} /></div>
-      <div><BusinessComparison stats={stats} /></div>
+      <div>
+        <Insights stats={stats} />
+      </div>
+      <div>
+        <BusinessComparison stats={stats} />
+      </div>
       <NextActions stats={stats} />
 
       <div>
