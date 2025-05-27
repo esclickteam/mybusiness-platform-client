@@ -123,41 +123,48 @@ export default function CollabChat({
 
   // שליחת הודעה עם עדכון ל-state לאחר אישור השרת
   const sendMessage = () => {
-    if (!input.trim() || !selectedConversation) return;
-    if (!socketRef.current) return;
+  if (!input.trim() || !selectedConversation) return;
+  if (!socketRef.current) return;
 
-    // מוציאים את האובייקט המלא מתוך participantsInfo
+  // שליפת otherBusinessId: קודם מ־participantsInfo (אם קיים), אחרת מ־participants
+  let otherBusinessId;
+  if (selectedConversation.participantsInfo?.length) {
     const otherBiz = selectedConversation.participantsInfo.find(
-      (b) => b._id.toString() !== myBusinessId.toString()
+      b => b._id.toString() !== myBusinessId.toString()
     );
-    const otherBusinessId = otherBiz?._id;
-    if (!otherBusinessId) return;
+    otherBusinessId = otherBiz?._id;
+  } else {
+    otherBusinessId = selectedConversation.participants.find(
+      id => id.toString() !== myBusinessId.toString()
+    );
+  }
+  if (!otherBusinessId) return;
 
-    const payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessId,
-      to: otherBusinessId,
-      text: input.trim(),
-    };
-
-    console.log("Sending message:", payload);
-    socketRef.current.emit("sendMessage", payload, (ack) => {
-      if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + ack.error);
-        console.error("SendMessage failed:", ack.error);
-      } else {
-        const newMsg = {
-          conversationId: payload.conversationId,
-          fromBusinessId: payload.from,
-          toBusinessId: payload.to,
-          text: payload.text,
-          timestamp: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, newMsg]);
-        setInput("");
-      }
-    });
+  const payload = {
+    conversationId: selectedConversation._id,
+    from: myBusinessId,
+    to: otherBusinessId,
+    text: input.trim(),
   };
+
+  console.log("Sending message:", payload);
+  socketRef.current.emit("sendMessage", payload, ack => {
+    if (!ack.ok) {
+      alert("שליחת הודעה נכשלה: " + ack.error);
+      console.error("SendMessage failed:", ack.error);
+    } else {
+      const newMsg = {
+        conversationId: payload.conversationId,
+        fromBusinessId: payload.from,
+        toBusinessId: payload.to,
+        text: payload.text,
+        timestamp: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, newMsg]);
+      setInput("");
+    }
+  });
+};
 
   // הצגת שם העסק הנגדי
   const getPartnerBusiness = (conv) => {
