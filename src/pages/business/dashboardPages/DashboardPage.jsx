@@ -88,6 +88,9 @@ const DashboardPage = () => {
       ? user.token.slice(7)
       : user.token;
 
+    console.log("Connecting to socket at", SOCKET_URL, "with businessId:", businessId);
+    console.log("Using token:", tokenValue);
+
     const socket = io(SOCKET_URL, {
       path: "/socket.io",
       auth: { token: tokenValue, role: "business-dashboard", businessId },
@@ -102,8 +105,8 @@ const DashboardPage = () => {
       setStats(newStats);
     });
 
-    socket.on("disconnect", () => {
-      console.log("Dashboard socket disconnected");
+    socket.on("disconnect", (reason) => {
+      console.log("Dashboard socket disconnected, reason:", reason);
     });
 
     socket.on("connect_error", (err) => {
@@ -111,6 +114,7 @@ const DashboardPage = () => {
     });
 
     return () => {
+      console.log("Disconnecting dashboard socket");
       socket.disconnect();
     };
   }, [businessId, user?.token]);
