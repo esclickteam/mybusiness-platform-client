@@ -20,7 +20,7 @@ export default function BusinessChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // גלילה לתחתית ברגע שמגיעות הודעות
+  // גלילת המסך לתחתית בהודעות
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -54,7 +54,7 @@ export default function BusinessChat({
     );
   }, [socket, otherBusinessId]);
 
-  // חיבור Socket.IO + מאזינים
+  // הקמת חיבור Socket.IO — רץ פעם אחת בלבד
   useEffect(() => {
     if (!token || !role || !myBusinessId) {
       console.warn("🚫 missing token/role/myBusinessId — skipping socket connect");
@@ -76,21 +76,27 @@ export default function BusinessChat({
       console.log("❌ Socket disconnected:", reason);
     });
 
-    s.on("newMessage", (msg) => {
-      console.log("📥 newMessage:", msg);
-      if (msg.conversationId === conversationId) {
-        setMessages((prev) => [...prev, msg]);
-      }
-    });
-
     setSocket(s);
     return () => {
       console.log("🛑 Disconnecting socket");
       s.disconnect();
     };
-  }, [token, role, myBusinessId, myBusinessName, initConversation, conversationId]);
+  }, [token, role, myBusinessId, myBusinessName, initConversation]);
 
-  // כאשר otherBusinessId משתנה
+  // חיבור מאזין להודעות חדשות
+  useEffect(() => {
+    if (!socket) return;
+    const handler = (msg) => {
+      console.log("📥 newMessage:", msg);
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => [...prev, msg]);
+      }
+    };
+    socket.on("newMessage", handler);
+    return () => socket.off("newMessage", handler);
+  }, [socket, conversationId]);
+
+  // אתחול שיחה במקרה ש-otherBusinessId משתנה אחרי החיבור
   useEffect(() => {
     if (socket?.connected && otherBusinessId) {
       initConversation();
@@ -125,11 +131,7 @@ export default function BusinessChat({
     });
   };
 
-  if (!myBusinessId) {
-    console.log("⌛ טוען מזהה העסק...");
-    return <p>טוען זיהוי העסק…</p>;
-  }
-
+  // UI
   return (
     <div style={{ maxWidth: 600, margin: "auto", display: "flex", flexDirection: "column" }}>
       <h3>צ'אט עסקי</h3>
