@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "../../api";
+import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { SocketContext } from "../../context/socketContext"; // ייבוא הקונטקסט של סוקט
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
