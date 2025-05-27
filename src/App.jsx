@@ -1,19 +1,22 @@
-// src/App.jsx
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useState, useEffect } from "react";
 import {
   Routes,
   Route,
   Navigate,
   useLocation,
+  useParams,
+  useNavigate,
 } from "react-router-dom";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ClientChatSection from "./components/ClientChatSection";
 import BusinessChatPage from "./components/BusinessChatPage";
+import ConversationsList from "./components/ConversationsList"; // ודא שיש רכיב כזה
+import ChatPage from "./components/ChatPage"; // ודא שיש רכיב כזה
 import { useAuth } from "./context/AuthContext";
 import { SSEProvider } from "./context/SSEContext";
-
+import API from "./api";
 
 const HomePage            = lazy(() => import("./pages/Home"));
 const About               = lazy(() => import("./pages/About"));
@@ -60,8 +63,6 @@ const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
 
-
-
 function ScrollToTop() {
   const { pathname } = useLocation();
   React.useEffect(() => window.scrollTo(0, 0), [pathname]);
@@ -92,7 +93,7 @@ export default function App() {
         <ScrollToTop />
         <Suspense fallback={<div>🔄 טוען…</div>}>
           <Routes>
-            {/* Public pages */}
+            {/* דפים ציבוריים */}
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<About />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -118,22 +119,23 @@ export default function App() {
             <Route path="/book/:businessId" element={<BookingPage />} />
 
             <Route
-  path="/business/collaborations/:tab?"
-  element={
-    <ProtectedRoute roles={["business"]}>
-      <Collab />
-    </ProtectedRoute>
-  }
-/>
-
+              path="/business/collaborations/:tab?"
+              element={
+                <ProtectedRoute roles={["business"]}>
+                  <Collab />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/business-profile/:businessId"
               element={
-                <BusinessProfilePage
-                  currentUserBusinessId={user?.businessId || null}
-                  resetSearchFilters={resetSearchFilters}
-                />
+                <ProtectedRoute roles={["business", "customer", "worker", "manager", "admin"]}>
+                  <BusinessProfilePage
+                    currentUserBusinessId={user?.businessId || null}
+                    resetSearchFilters={resetSearchFilters}
+                  />
+                </ProtectedRoute>
               }
             />
 
@@ -306,7 +308,7 @@ export default function App() {
 }
 
 // Wrapper for business showing list of conversations
-function BusinessChatListWrapper() {
+export function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
   const navigate = useNavigate();
@@ -331,16 +333,16 @@ function BusinessChatListWrapper() {
   return (
     <ConversationsList
       conversations={convos}
-      businessId={userId}
-      selectedConversationId={selected?.conversationId}
+      businessId={businessId}
+      selectedConversationId={selectedClientId}
       onSelect={handleSelect}
-      isBusiness={false}
+      isBusiness={true}
     />
   );
 }
 
 // Wrapper for a specific business-client chat
-function BusinessChatWrapper() {
+export function BusinessChatWrapper() {
   const { businessId, clientId } = useParams();
   const { state } = useLocation();
   const { user, loading } = useAuth();

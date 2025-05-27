@@ -15,8 +15,17 @@ const API = axios.create({
   },
 });
 
+let accessToken = null;
+
+export function setAccessToken(token) {
+  accessToken = token;
+}
+
 API.interceptors.request.use(
   (config) => {
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
     if (!isProd) {
       console.log(`API Request: ${config.method.toUpperCase()} ${config.baseURL}${config.url}`);
     }
@@ -40,7 +49,7 @@ API.interceptors.response.use(
     }
     return response;
   },
-  (error) => {
+  async (error) => {
     const { response, config } = error;
     if (!response) {
       if (!isProd) console.error("Network error:", error);
@@ -48,11 +57,27 @@ API.interceptors.response.use(
     }
     if (
       response.status === 401 &&
-      !config.url.endsWith("/auth/me") &&
+      !config._retry &&
+      !config.url.endsWith("/auth/refresh-token") &&
       window.location.pathname !== "/login"
     ) {
-      window.location.replace("/login");
-      return;
+      config._retry = true;
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) throw new Error("No refresh token");
+
+        const res = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken });
+
+        const newAccessToken = res.data.accessToken;
+        setAccessToken(newAccessToken);
+
+        // Retry original request with new access token
+        config.headers.Authorization = `Bearer ${newAccessToken}`;
+        return API(config);
+      } catch (err) {
+        window.location.replace("/login");
+        return Promise.reject(err);
+      }
     }
     const contentType = response.headers["content-type"] || "";
     let message;
