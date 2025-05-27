@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+// src/components/DashboardLive.jsx
+import React, { useEffect, useState, useContext } from "react";
 import DashboardCards from "./DashboardCards";
+import { SocketContext } from "../context/socketContext";
 
 export default function DashboardLive({ businessId }) {
+  const socket = useContext(SocketContext);
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -13,49 +16,27 @@ export default function DashboardLive({ businessId }) {
   });
 
   useEffect(() => {
-    if (!businessId) {
-      console.warn("⚠️ Missing businessId for DashboardLive");
+    if (!businessId || !socket) {
+      console.warn("⚠️ Missing businessId or socket for DashboardLive");
       return;
     }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.warn("⚠️ Missing auth token");
-      return;
-    }
+    // Handler לעדכונים בזמן אמת
+    const statsHandler = (newStats) => {
+      setStats((prev) => ({ ...prev, ...newStats }));
+    };
 
-    let evtSource;
-    let reconnectTimeout;
+    // הירשם לאירוע העדכון
+    socket.on("dashboardStatsUpdate", statsHandler);
 
-    function connect() {
-      const url = `${import.meta.env.VITE_API_URL}/sse/dashboard-stats/${businessId}?token=${encodeURIComponent(token)}`;
-
-      evtSource = new EventSource(url);
-
-      evtSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          setStats(data);
-        } catch (error) {
-          console.error("Error parsing SSE data:", error);
-        }
-      };
-
-      evtSource.onerror = (err) => {
-        console.error("⚠️ SSE error, reconnecting in 3 seconds", err);
-        evtSource.close();
-        reconnectTimeout = setTimeout(connect, 3000);
-      };
-    }
-
-    connect();
+    // בקש את המצב ההתחלתי
+    socket.emit("getDashboardStats", { businessId });
 
     return () => {
-      if (evtSource) evtSource.close();
-      if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      console.log("🔌 SSE connection closed");
+      socket.off("dashboardStatsUpdate", statsHandler);
     };
-  }, [businessId]);
+  }, [businessId, socket]);
 
   return <DashboardCards stats={stats} />;
 }
+בחר שיחה כדי לראות הודעות

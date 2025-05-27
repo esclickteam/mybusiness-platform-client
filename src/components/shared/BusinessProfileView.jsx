@@ -26,7 +26,7 @@ const TABS = [
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
-  const socket = useContext(SocketContext); // קבלת ה-socket מהקונטקסט
+  const socket = useContext(SocketContext);
   const bizId = paramId || user?.businessId;
 
   const [data, setData] = useState(null);
@@ -40,95 +40,83 @@ export default function BusinessProfileView() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
 
+  // count של צפיות בפרופיל
+  const [profileViewsCount, setProfileViewsCount] = useState(0);
+
   useEffect(() => {
-  if (!bizId) {
-    setError("Invalid business ID");
-    setLoading(false);
-    return;
-  }
-  (async () => {
-    try {
-      setLoading(true);
-
-      // קבלת טוקן מהלוקל
-      let token = localStorage.getItem("accessToken");
-      if (isTokenExpired(token)) {
-        token = await refreshToken();
-      }
-
-      // קריאה לנתוני העסק
-      const resBiz = await API.get(`/business/${bizId}`, {
-  headers: { Authorization: `Bearer ${token}` },
-});
-const biz = resBiz.data.business || resBiz.data;
-setData(biz);
-setFaqs(biz.faqs || []);
-setServices(biz.services || []);
-
-// קריאה לשעות עבודה עם Authorization
-const resWH = await API.get("/appointments/get-work-hours", {
-  params: { businessId: bizId },
-});
-
-
-
-      let sched = {};
-      if (Array.isArray(resWH.data.workHours)) {
-        resWH.data.workHours.forEach((item) => {
-          sched[Number(item.day)] = item;
-        });
-      } else if (resWH.data.workHours && typeof resWH.data.workHours === "object") {
-        sched = resWH.data.workHours;
-      }
-      setSchedule(sched);
-
-    } catch (err) {
-      console.error(err);
-      setError("שגיאה בטעינת הנתונים");
-    } finally {
+    if (!bizId) {
+      setError("Invalid business ID");
       setLoading(false);
+      return;
     }
-  })();
-}, [bizId]);
+    (async () => {
+      try {
+        setLoading(true);
+        let token = localStorage.getItem("accessToken");
+        if (isTokenExpired(token)) {
+          token = await refreshToken();
+        }
+        const resBiz = await API.get(`/business/${bizId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const biz = resBiz.data.business || resBiz.data;
+        setData(biz);
+        setFaqs(biz.faqs || []);
+        setServices(biz.services || []);
 
+        const resWH = await API.get("/appointments/get-work-hours", {
+          params: { businessId: bizId },
+        });
+        let sched = {};
+        if (Array.isArray(resWH.data.workHours)) {
+          resWH.data.workHours.forEach((item) => {
+            sched[Number(item.day)] = item;
+          });
+        } else if (resWH.data.workHours && typeof resWH.data.workHours === "object") {
+          sched = resWH.data.workHours;
+        }
+        setSchedule(sched);
+      } catch (err) {
+        console.error(err);
+        setError("שגיאה בטעינת הנתונים");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [bizId]);
 
-  // שליחת אירוע צפייה בפרופיל דרך socket
+  // שליחת צפייה והאזנה לעדכון ה-count
   useEffect(() => {
-  if (!socket) {
-    console.log("Socket instance is null");
-    return;
-  }
-  if (!bizId) {
-    console.log("Business ID is missing");
-    return;
-  }
-  if (!user?.userId) {
-    console.log("User ID is missing");
-    return;
-  }
+    if (!socket || !bizId || !user?.userId) return;
 
-  const sendProfileView = () => {
-    console.log("Emitting profileView event with:", { businessId: bizId, viewerId: user.userId });
-    socket.emit('profileView', { businessId: bizId, viewerId: user.userId });
-    console.log('profileView event sent');
-  };
+    // מאזין לעדכון count
+    const countHandler = (newCount) => {
+      console.log("Received profileViewCount:", newCount);
+      setProfileViewsCount(newCount);
+    };
+    socket.on("profileViewCount", countHandler);
 
-  if (socket.connected) {
-    console.log("Socket is connected, sending profileView event now");
-    sendProfileView();
-  } else {
-    console.log("Socket not connected yet, waiting for connect event");
-    socket.once('connect', () => {
-      console.log("Socket connected, now sending profileView");
+    // פונקציית שליחה
+    const sendProfileView = () => {
+      console.log("Emitting profileView event with:", { businessId: bizId, viewerId: user.userId });
+      socket.emit("profileView", { businessId: bizId, viewerId: user.userId });
+    };
+    const connectHandler = () => {
+      console.log("Socket connected, sending profileView");
       sendProfileView();
-    });
-  }
+    };
 
-  return () => {
-    console.log("Cleanup: removing connect listener for profileView event");
-    socket.off('connect', sendProfileView);
-  };
-}, [socket, bizId, user?.userId]);
+    if (socket.connected) {
+      sendProfileView();
+    } else {
+      socket.once("connect", connectHandler);
+    }
+
+    return () => {
+      socket.off("profileViewCount", countHandler);
+      socket.off("connect", connectHandler);
+    };
+  }, [socket, bizId, user?.userId]);
 
 
   if (loading) return <div className="loading">טוען…</div>;

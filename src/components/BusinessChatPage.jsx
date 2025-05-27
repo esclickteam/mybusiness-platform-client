@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
+import jwtDecode from "jwt-decode";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import { io } from "socket.io-client";
 
 export default function BusinessChatPage() {
-  const { user, initialized } = useAuth();
+  const { user, initialized, refreshToken } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
   const [convos, setConvos] = useState([]);
@@ -16,16 +17,26 @@ export default function BusinessChatPage() {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // Initialize socket and listeners once
-  useEffect(() => {
-    if (!initialized || !businessId) return;
+  function isTokenValid(token) {
+    if (!token) return false;
+    try {
+      const { exp } = jwtDecode(token);
+      return Date.now() < exp * 1000;
+    } catch {
+      return false;
+    }
+  }
 
-    setLoading(true);
+  async function initSocket(token) {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const socket = io(socketUrl, {
       path: "/socket.io",
       withCredentials: true,
-      auth: { role: "chat", businessId },
+      auth: { token, role: "chat", businessId },
     });
     socketRef.current = socket;
 
@@ -48,7 +59,7 @@ export default function BusinessChatPage() {
             }
           } else {
             console.error("Error loading conversations:", errMsg);
-            setError('לא ניתן לטעון שיחות: ' + errMsg);
+            setError("לא ניתן לטעון שיחות: " + errMsg);
           }
         }
       );
@@ -57,7 +68,7 @@ export default function BusinessChatPage() {
     socket.on("connect_error", (err) => {
       console.error("Socket connection error:", err.message);
       setLoading(false);
-      setError('שגיאת חיבור: ' + err.message);
+      setError("שגיאת חיבור: " + err.message);
     });
 
     const handleNewMessage = (msg) => {
@@ -78,16 +89,40 @@ export default function BusinessChatPage() {
     };
 
     socket.on("newMessage", handleNewMessage);
+  }
+
+  useEffect(() => {
+    if (!initialized || !businessId) return;
+
+    async function prepareSocket() {
+      setLoading(true);
+      let token = user?.accessToken;
+
+      if (!isTokenValid(token)) {
+        try {
+          token = await refreshToken();
+        } catch (e) {
+          setError("טוקן לא תקף ולא ניתן לרענן");
+          setLoading(false);
+          return;
+        }
+      }
+
+      await initSocket(token);
+      setLoading(false);
+    }
+
+    prepareSocket();
 
     return () => {
-      socket.off("newMessage", handleNewMessage);
-      socket.disconnect();
-      socketRef.current = null;
-      console.log("Socket cleaned up");
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+        console.log("Socket disconnected");
+      }
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, user?.accessToken]);
 
-  // Auto-join room when selected changes
   useEffect(() => {
     if (socketRef.current && selected?.conversationId) {
       console.log("Joining convo:", selected.conversationId);
@@ -101,7 +136,6 @@ export default function BusinessChatPage() {
     }
   }, [selected]);
 
-  // Fetch history for selected
   useEffect(() => {
     if (!initialized) return;
     if (!selected?.conversationId) {
@@ -114,15 +148,15 @@ export default function BusinessChatPage() {
         setLoading(true);
         const res = await fetch(
           `/api/conversations/history?conversationId=${selected.conversationId}`,
-          { credentials: 'include' }
+          { credentials: "include" }
         );
-        if (!res.ok) throw new Error('Fetch failed');
+        if (!res.ok) throw new Error("Fetch failed");
         const data = await res.json();
         setMessages(data);
       } catch (e) {
         console.error(e);
         setMessages([]);
-        setError('שגיאה בטעינת היסטוריה');
+        setError("שגיאה בטעינת היסטוריה");
       } finally {
         setLoading(false);
       }
