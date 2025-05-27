@@ -20,6 +20,9 @@ export default function BusinessChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
+  // Ref לשמירת הערך הקודם של otherBusinessId
+  const previousOtherBusinessId = useRef(null);
+
   // גלילת המסך לתחתית בהודעות
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -53,6 +56,16 @@ export default function BusinessChat({
     });
   }, [socket, otherBusinessId]);
 
+  // UseEffect שמאזין לשינוי socket ו-otherBusinessId ומפעיל initConversation רק אם otherBusinessId שונה
+  useEffect(() => {
+    if (!socket || !socket.connected || !otherBusinessId) return;
+
+    if (previousOtherBusinessId.current !== otherBusinessId) {
+      previousOtherBusinessId.current = otherBusinessId;
+      initConversation();
+    }
+  }, [socket, otherBusinessId, initConversation]);
+
   // הקמת חיבור Socket.IO — רץ פעם אחת בלבד
   useEffect(() => {
     if (!token || !role || !myBusinessId) {
@@ -68,7 +81,7 @@ export default function BusinessChat({
 
     s.on("connect", () => {
       console.log("✅ Socket connected:", s.id);
-      initConversation();
+      // לא מפעילים initConversation כאן יותר, מפעילים ב-useEffect לעיל
     });
 
     s.on("disconnect", (reason) => {
@@ -80,7 +93,7 @@ export default function BusinessChat({
       console.log("🛑 Disconnecting socket");
       s.disconnect();
     };
-  }, [token, role, myBusinessId, myBusinessName, initConversation]);
+  }, [token, role, myBusinessId, myBusinessName]);
 
   // מאזין להודעות חדשות, רק אם יש conversationId
   useEffect(() => {
@@ -99,13 +112,6 @@ export default function BusinessChat({
       socket.off("newMessage", handler);
     };
   }, [socket, conversationId]);
-
-  // אם otherBusinessId משתנה אחרי החיבור - מאתחל שיחה חדשה
-  useEffect(() => {
-    if (socket?.connected && otherBusinessId) {
-      initConversation();
-    }
-  }, [otherBusinessId, socket, initConversation]);
 
   // שליחת הודעה
   const sendMessage = () => {
