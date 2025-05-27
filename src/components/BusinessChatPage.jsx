@@ -104,7 +104,7 @@ export default function BusinessChatPage() {
     (async () => {
       try {
         setLoading(true);
-        const res = await API.get(`/chat/business/${businessId}/conversations`);
+        const res = await API.get(`/api/conversations/business/${businessId}`);
         setConvos(res.data);
       } catch (e) {
         console.error("REST fallback failed:", e);
