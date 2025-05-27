@@ -9,7 +9,12 @@ import TextField from "@mui/material/TextField";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
-export default function CollabChat({ token, myBusinessId, myBusinessName, onClose }) {
+export default function CollabChat({
+  token,
+  myBusinessId,
+  myBusinessName,
+  onClose,
+}) {
   const socketRef = useRef(null);
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -66,7 +71,7 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
     // eslint-disable-next-line
   }, [token, myBusinessId, myBusinessName]);
 
-  // מאזין להודעות חדשות בזמן אמת - מאזין אחד לכל החיים
+  // מאזין להודעות חדשות בזמן אמת
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -94,19 +99,17 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
       return;
     }
 
-    // שליחת אירוע יציאה מהחדר הקודם - אם מתממש בצד שרת
     socketRef.current.emit("leaveConversation");
-
-    // הצטרפות לחדר החדש
     socketRef.current.emit("joinConversation", selectedConversation._id);
 
     async function fetchMsgs() {
       try {
-        const res = await API.get(`/business-chat/${selectedConversation._id}/messages`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await API.get(
+          `/business-chat/${selectedConversation._id}/messages`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         setMessages(res.data.messages || []);
-      } catch (err) {
+      } catch {
         setMessages([]);
       }
     }
@@ -119,59 +122,62 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה עם המרה ל-string ל־ObjectId
+  // שליחת הודעה עם עדכון ל-state לאחר אישור השרת
   const sendMessage = () => {
-  if (!input.trim() || !selectedConversation) {
-    console.warn("sendMessage aborted: empty input or no selected conversation");
-    return;
-  }
-  if (!socketRef.current) {
-    console.warn("sendMessage aborted: socket not connected");
-    return;
-  }
+    if (!input.trim() || !selectedConversation) {
+      console.warn(
+        "sendMessage aborted: empty input or no selected conversation"
+      );
+      return;
+    }
+    if (!socketRef.current) {
+      console.warn("sendMessage aborted: socket not connected");
+      return;
+    }
 
-  // שולף את מזהה העסק השני מתוך participants (מערך מזהים בלבד)
-  const otherBusinessId = selectedConversation.participants.find(
-    (id) => id.toString() !== myBusinessId.toString()
-  );
+    const otherBusinessId = selectedConversation.participants.find(
+      (id) => id.toString() !== myBusinessId.toString()
+    );
+    if (!otherBusinessId) {
+      console.warn("sendMessage aborted: otherBusinessId not found");
+      return;
+    }
 
-  if (!otherBusinessId) {
-    console.warn("sendMessage aborted: otherBusinessId not found");
-    return;
-  }
-
-  console.log("Sending message:", {
-    conversationId: selectedConversation._id,
-    from: myBusinessId,
-    to: otherBusinessId,
-    text: input.trim(),
-  });
-
-  // שולח רק את המזהה בלבד (string או ObjectId), לא אובייקט מורכב
-  socketRef.current.emit(
-    "sendMessage",
-    {
+    const payload = {
       conversationId: selectedConversation._id,
       from: myBusinessId,
       to: otherBusinessId,
       text: input.trim(),
-    },
-    (ack) => {
+    };
+
+    console.log("Sending message:", payload);
+
+    socketRef.current.emit("sendMessage", payload, (ack) => {
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
         console.error("SendMessage failed:", ack.error);
       } else {
+        // optimistic update
+        const newMsg = {
+          conversationId: payload.conversationId,
+          fromBusinessId: payload.from,
+          toBusinessId: payload.to,
+          text: payload.text,
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, newMsg]);
         setInput("");
       }
-    }
-  );
-};
-
+    });
+  };
 
   // הצגת שם העסק הנגדי
   const getPartnerBusiness = (conv) => {
-    if (!conv || !conv.participants || !conv.participantsInfo) return { businessName: "עסק" };
-    const idx = conv.participants.findIndex((id) => id.toString() !== myBusinessId.toString());
+    if (!conv || !conv.participants || !conv.participantsInfo)
+      return { businessName: "עסק" };
+    const idx = conv.participants.findIndex(
+      (id) => id.toString() !== myBusinessId.toString()
+    );
     return conv.participantsInfo[idx] || { businessName: "עסק" };
   };
 
@@ -227,7 +233,9 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
                 cursor: "pointer",
                 borderBottom: "1px solid #f3f0fa",
                 background:
-                  selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                  selectedConversation?._id === conv._id
+                    ? "#f3f0fe"
+                    : "#fff",
               }}
               onClick={() => setSelectedConversation(conv)}
             >
@@ -276,11 +284,13 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
                   key={i}
                   sx={{
                     background:
-                      msg.fromBusinessId.toString() === myBusinessId.toString()
+                      msg.fromBusinessId.toString() ===
+                      myBusinessId.toString()
                         ? "#e6ddff"
                         : "#fff",
                     alignSelf:
-                      msg.fromBusinessId.toString() === myBusinessId.toString()
+                      msg.fromBusinessId.toString() ===
+                      myBusinessId.toString()
                         ? "flex-end"
                         : "flex-start",
                     p: 1.2,
@@ -351,7 +361,10 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
         )}
 
         {onClose && (
-          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
+          <Button
+            sx={{ position: "absolute", top: 13, left: 18 }}
+            onClick={onClose}
+          >
             ✖
           </Button>
         )}
