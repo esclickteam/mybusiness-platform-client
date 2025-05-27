@@ -130,9 +130,11 @@ const [shopMode, setShopMode] = useState(null);
     .finally(() => setFirstLoad(false));
 
   // Load work hours correctly - לא לעשות reduce!
-  API.get('/appointments/get-work-hours')
-  .then(res => {
-    let map = {};
+  API.get('/appointments/get-work-hours', {
+  params: { businessId: currentUser?.businessId || "" }
+})
+.then(res => {
+  let map = {};
     // אם המידע הגיע כמערך
     if (Array.isArray(res.data.workHours)) {
       res.data.workHours.forEach(item => {

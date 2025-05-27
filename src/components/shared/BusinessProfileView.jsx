@@ -66,9 +66,10 @@ export default function BusinessProfileView() {
       setServices(biz.services || []);
 
       // קריאה לשעות עבודה עם Authorization
-      const resWH = await api.get(`/appointments/get-work-hours?businessId=${bizId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const resWH = await API.get("/appointments/get-work-hours", {
+  params: { businessId: bizId },
+});
+
 
       let sched = {};
       if (Array.isArray(resWH.data.workHours)) {

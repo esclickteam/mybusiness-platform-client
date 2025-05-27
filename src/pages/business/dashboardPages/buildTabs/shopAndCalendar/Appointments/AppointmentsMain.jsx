@@ -54,11 +54,13 @@ const AppointmentsMain = ({
   // --- Fetch & normalize workHours (if you fetch here, or from parent do it there!) ---
   useEffect(() => {
     if (!isPreview && setWorkHours) {
-      API.get('/appointments/get-work-hours')
-        .then(res => {
-          setWorkHours(normalizeWorkHours(res.data));
-        })
-        .catch(() => setWorkHours({}));
+      API.get('/appointments/get-work-hours', {
+  params: { businessId: currentUser?.businessId || "" }
+})
+  .then(res => {
+    setWorkHours(normalizeWorkHours(res.data));
+  })
+  .catch(() => setWorkHours({}));
     }
   }, [isPreview, setWorkHours]);
 
