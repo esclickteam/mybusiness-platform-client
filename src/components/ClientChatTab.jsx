@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./ClientChatTab.css";
-import { Buffer } from "buffer"; // polyfill ל-Buffer בדפדפן
+import { Buffer } from "buffer";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
@@ -72,7 +72,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
-export default function ClientChatTab({ socket, conversationId, businessId, userId }) {
+export default function ClientChatTab({ socket, conversationId, businessId, userId, API }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -90,24 +90,44 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
+  // 1️⃣ טען היסטוריית הודעות דרך REST בכל שינוי של conversationId
+  useEffect(() => {
+    if (!conversationId) return;
+    setLoading(true);
+    setError("");
+    API.get("/conversations/history", { params: { conversationId } })
+      .then((res) => {
+        setMessages(res.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setMessages([]);
+        setError("שגיאה בטעינת היסטוריית ההודעות");
+        setLoading(false);
+      });
+  }, [conversationId, API]);
+
+  // 2️⃣ קבלת הודעות חדשות בזמן אמת דרך socket
   useEffect(() => {
     if (!socket || !conversationId) return;
-    setLoading(true);
-    socket.emit("joinConversation", conversationId, () => {});
-    socket.emit("getHistory", { conversationId }, (res) => {
-      if (res.ok && Array.isArray(res.messages)) setMessages(res.messages);
-      else setMessages([]);
-      setLoading(false);
-    });
 
-    const handleNew = (msg) => {
+    const handleNewMessage = (msg) => {
       setMessages((prev) => (prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]));
     };
-    socket.on("newMessage", handleNew);
+
+    socket.on("newMessage", handleNewMessage);
     socket.on("connect_error", (err) => setError(err.message));
-    return () => socket.off("newMessage", handleNew);
+
+    // הצטרפות לשיחה
+    socket.emit("joinConversation", conversationId);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.emit("leaveConversation", conversationId);
+    };
   }, [socket, conversationId]);
 
+  // 3️⃣ גלילה אוטומטית לתחתית ההודעות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
@@ -120,6 +140,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
+  // 4️⃣ שליחת הודעה טקסט
   const sendMessage = () => {
     if (!input.trim() || sending || !socket) return;
     setSending(true);
@@ -135,6 +156,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       }
     );
   };
+
+  // 5️⃣ הקלטת קול (MediaRecorder) - start/stop וכו' נשאר כפי שקודם
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
@@ -173,7 +196,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     mediaRecorderRef.current.stop();
   };
 
-  // **עדכון**: המרת Blob ל-Buffer לפני שליחה
+  // 6️⃣ שליחת הקלטת קול (המרה ל-Buffer ושליחה דרך socket)
   const handleSendRecording = async () => {
     if (!recordedBlob || !socket) return;
     setSending(true);
@@ -203,7 +226,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     }
   };
 
-  // **עדכון**: המרת File ל-Buffer לפני שליחה
+  // 7️⃣ שליחת קובץ נבחר (המרה ל-Buffer ושליחה)
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !socket) return;
@@ -286,6 +309,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           </div>
         ))}
       </div>
+
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
 
