@@ -38,7 +38,8 @@ export default function BusinessChat({
     if (!socket || !otherBusinessId) return;
     console.log("▶️ initConversation to", otherBusinessId);
 
-    socket.emit("startConversation", { otherUserId: otherBusinessId }, (res) => {
+    socket.emit("startConversation", { otherBusinessId }, (res) => {
+
       console.log("↩️ startConversation response:", res);
       if (!res.ok) return console.error(res.error);
 
