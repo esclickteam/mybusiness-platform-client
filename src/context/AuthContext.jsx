@@ -1,3 +1,5 @@
+// src/context/AuthContext.jsx
+
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAccessToken } from "../api";
@@ -37,11 +39,17 @@ export function AuthProvider({ children }) {
         const refreshToken = localStorage.getItem("refreshToken");
         if (refreshToken) {
           const res = await API.post("/auth/refresh-token", { refreshToken });
-          setAccessToken(res.data.accessToken);
+          // server עשוי להחזיר את ה-accessToken בשדה accessToken או token
+          const newAccessToken = res.data.accessToken || res.data.token;
+          if (newAccessToken) {
+            localStorage.setItem("accessToken", newAccessToken);
+            setAccessToken(newAccessToken);
+          }
           if (res.data.refreshToken) {
             localStorage.setItem("refreshToken", res.data.refreshToken);
           }
         }
+
         const { data } = await API.get("/auth/me");
         setUser({
           userId:           data.userId,
@@ -62,6 +70,7 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     };
+
     initialize();
   }, []);
 
