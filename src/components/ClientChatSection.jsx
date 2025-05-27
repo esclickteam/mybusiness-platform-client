@@ -4,7 +4,7 @@ import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
-import API, { setAccessToken } from "../api";  // הוספת הגדרת הטוקן ב-API "../api";
+import API, { setAccessToken } from "../api";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
@@ -17,13 +17,13 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // 0️⃣ הגדרת טוקן לאוט' ב-API
+  // הגדרת טוקן לאוט' ב-API
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) setAccessToken(token);
   }, []);
 
-  // 1️⃣ Initialize socket
+  // Initialize socket
   useEffect(() => {
     if (!initialized || !userId) return;
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
@@ -48,37 +48,50 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId]);
 
-  // 2️⃣ Start or get existing conversation via REST
+  // Start or get existing conversation via REST
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
     (async () => {
       setLoading(true);
+      setError("");
       try {
-        // 2a. נסה למצוא שיחה קיימת
-        const res = await API.get("/conversations", { params: { businessId: userId } });
+        console.log("ClientChatSection: Fetching conversations for userId:", userId);
+        // 2a. נסה למצוא שיחה קיימת - שים לב לפרמטר: userId (ולא businessId)
+        const res = await API.get("/conversations", { params: { userId } });
+        console.log("Conversations received:", res.data);
+
         const conv = res.data.find(c => String(c.partnerId) === String(businessId));
         if (conv) {
           setConversationId(conv.conversationId);
           setBusinessName(conv.businessName || "");
+          console.log("Using existing conversation:", conv.conversationId);
         } else {
           // 2b. אם לא נמצאה, צור חדשה
+          console.log("No existing conversation, creating new one with otherId:", businessId);
           const post = await API.post("/conversations", { otherId: businessId });
           setConversationId(post.data.conversationId);
           // אחרי יצירה, קרא שוב כדי לקבל שם העסק
-          const getRes = await API.get("/conversations", { params: { businessId: userId } });
+          const getRes = await API.get("/conversations", { params: { userId } });
           const newConv = getRes.data.find(c => c.conversationId === post.data.conversationId);
           setBusinessName(newConv?.businessName || "");
+          console.log("Created and loaded new conversation:", post.data.conversationId);
         }
       } catch (e) {
         console.error("Error init client conversation:", e);
-        setError("שגיאה בטעינת השיחה");
+        if (e.response) {
+          setError(`שגיאה מהשרת: ${e.response.status} - ${e.response.data?.message || e.response.statusText}`);
+        } else if (e.request) {
+          setError("שגיאת רשת - לא התקבל מענה מהשרת");
+        } else {
+          setError("שגיאה לא צפויה: " + e.message);
+        }
       } finally {
         setLoading(false);
       }
     })();
   }, [initialized, userId, businessId]);
 
-  // 3️⃣ Load business name via socket
+  // Load business name via socket
   useEffect(() => {
     if (!socketRef.current || !conversationId) return;
     socketRef.current.emit(
@@ -99,14 +112,14 @@ export default function ClientChatSection() {
     );
   }, [conversationId, userId]);
 
-  // 4️⃣ REST fallback: get conversations list and find existing
+  // REST fallback: get conversations list and find existing
   useEffect(() => {
     if (!initialized || !userId || conversationId) {
       setLoading(false);
       return;
     }
     setLoading(true);
-    API.get("/conversations", { params: { businessId: userId } })
+    API.get("/conversations", { params: { userId } })
       .then((res) => {
         const conv = res.data.find((c) =>
           [c.conversationId, c._id, c.id]
@@ -118,7 +131,10 @@ export default function ClientChatSection() {
           setBusinessName(conv.businessName || "");
         }
       })
-      .catch((e) => console.error("REST fallback client failed:", e))
+      .catch((e) => {
+        console.error("REST fallback client failed:", e);
+        setError("שגיאה בטעינת שיחות");
+      })
       .finally(() => setLoading(false));
   }, [initialized, userId, conversationId]);
 
