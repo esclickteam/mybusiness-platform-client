@@ -83,7 +83,6 @@ export default function CollabChat({
     };
 
     socketRef.current.on("newMessage", handler);
-
     return () => {
       socketRef.current.off("newMessage", handler);
     };
@@ -124,24 +123,15 @@ export default function CollabChat({
 
   // שליחת הודעה עם עדכון ל-state לאחר אישור השרת
   const sendMessage = () => {
-    if (!input.trim() || !selectedConversation) {
-      console.warn(
-        "sendMessage aborted: empty input or no selected conversation"
-      );
-      return;
-    }
-    if (!socketRef.current) {
-      console.warn("sendMessage aborted: socket not connected");
-      return;
-    }
+    if (!input.trim() || !selectedConversation) return;
+    if (!socketRef.current) return;
 
-    const otherBusinessId = selectedConversation.participants.find(
-      (id) => id.toString() !== myBusinessId.toString()
+    // מוציאים את האובייקט המלא מתוך participantsInfo
+    const otherBiz = selectedConversation.participantsInfo.find(
+      (b) => b._id.toString() !== myBusinessId.toString()
     );
-    if (!otherBusinessId) {
-      console.warn("sendMessage aborted: otherBusinessId not found");
-      return;
-    }
+    const otherBusinessId = otherBiz?._id;
+    if (!otherBusinessId) return;
 
     const payload = {
       conversationId: selectedConversation._id,
@@ -151,13 +141,11 @@ export default function CollabChat({
     };
 
     console.log("Sending message:", payload);
-
     socketRef.current.emit("sendMessage", payload, (ack) => {
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
         console.error("SendMessage failed:", ack.error);
       } else {
-        // optimistic update
         const newMsg = {
           conversationId: payload.conversationId,
           fromBusinessId: payload.from,
