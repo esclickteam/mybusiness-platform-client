@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API, { setAccessToken } from "../api";
+import API, { setAccessToken as setAPIAccessToken } from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -41,6 +42,7 @@ export function AuthProvider({ children }) {
           if (newAccessToken) {
             localStorage.setItem("accessToken", newAccessToken);
             setAccessToken(newAccessToken);
+            setAPIAccessToken(newAccessToken);
           }
           if (res.data.refreshToken) {
             localStorage.setItem("refreshToken", res.data.refreshToken);
@@ -60,6 +62,7 @@ export function AuthProvider({ children }) {
         }
       } catch (e) {
         setUser(null);
+        setAccessToken(null);
         localStorage.removeItem("businessDetails");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
@@ -91,14 +94,15 @@ export function AuthProvider({ children }) {
       }
 
       // שמירת הטוקנים
-      const accessToken = response.data.accessToken || response.data.token;
-      const refreshToken = response.data.refreshToken;
-      if (accessToken) {
-        localStorage.setItem("accessToken", accessToken);
-        setAccessToken(accessToken);
+      const newAccessToken = response.data.accessToken || response.data.token;
+      const newRefreshToken = response.data.refreshToken;
+      if (newAccessToken) {
+        localStorage.setItem("accessToken", newAccessToken);
+        setAccessToken(newAccessToken);
+        setAPIAccessToken(newAccessToken);
       }
-      if (refreshToken) {
-        localStorage.setItem("refreshToken", refreshToken);
+      if (newRefreshToken) {
+        localStorage.setItem("refreshToken", newRefreshToken);
       }
 
       // השמטת קריאה מיותרת ל-/auth/me: משתמש כבר מגיע בתגובה
@@ -159,11 +163,12 @@ export function AuthProvider({ children }) {
       console.warn("Logout failed:", e);
     } finally {
       setUser(null);
+      setAccessToken(null);
       setLoading(false);
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("businessDetails");
-      setAccessToken(null);
+      setAPIAccessToken(null);
       navigate("/", { replace: true });
     }
   };
@@ -180,6 +185,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        accessToken,
         loading,
         initialized,
         error,
