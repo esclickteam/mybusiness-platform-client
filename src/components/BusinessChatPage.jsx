@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import * as jwtDecode from "jwt-decode";  // <-- שינוי כאן
+import * as jwtDecode from "jwt-decode";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -33,10 +33,12 @@ export default function BusinessChatPage() {
 
   async function initSocket(token) {
     if (socketRef.current) {
+      console.log("Disconnecting old socket");
       socketRef.current.disconnect();
       socketRef.current = null;
     }
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    console.log("Connecting socket to", socketUrl);
     const socket = io(socketUrl, {
       path: "/socket.io",
       withCredentials: true,
@@ -50,6 +52,7 @@ export default function BusinessChatPage() {
         "getConversations",
         { userId: businessId },
         ({ ok, conversations = [], error: errMsg }) => {
+          console.log("getConversations response:", { ok, conversations, errMsg });
           setLoading(false);
           if (ok) {
             setConvos(conversations);
@@ -57,8 +60,9 @@ export default function BusinessChatPage() {
               const first = conversations[0];
               const convoId = first._id || first.conversationId;
               const partnerId = Array.isArray(first.participants)
-                ? first.participants.find((p) => p !== businessId)
+                ? first.participants.find((p) => String(p) !== String(businessId))
                 : first.partnerId;
+              console.log("Selecting first conversation:", convoId, partnerId);
               setSelected({ conversationId: String(convoId), partnerId });
             }
           } else {
@@ -75,7 +79,7 @@ export default function BusinessChatPage() {
       setError("שגיאת חיבור: " + err.message);
     });
 
-    const handleNewMessage = (msg) => {
+    socket.on("newMessage", (msg) => {
       console.log("newMessage received:", msg);
       setConvos((prev) => {
         const idx = prev.findIndex((c) => String(c._id) === msg.conversationId);
@@ -90,21 +94,22 @@ export default function BusinessChatPage() {
           ? [...prev, msg]
           : prev
       );
-    };
-
-    socket.on("newMessage", handleNewMessage);
+    });
   }
 
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     async function prepareSocket() {
+      console.log("Preparing socket with businessId:", businessId);
       setLoading(true);
       let token = user?.accessToken;
 
       if (!isTokenValid(token)) {
+        console.log("Token expired or invalid, refreshing...");
         try {
           token = await refreshToken();
+          console.log("Token refreshed:", token);
         } catch (e) {
           setError("טוקן לא תקף ולא ניתן לרענן");
           setLoading(false);
@@ -120,9 +125,9 @@ export default function BusinessChatPage() {
 
     return () => {
       if (socketRef.current) {
+        console.log("Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
-        console.log("Socket disconnected");
       }
     };
   }, [initialized, businessId, user?.accessToken]);
@@ -135,6 +140,7 @@ export default function BusinessChatPage() {
         selected.conversationId,
         (ack) => {
           if (!ack.ok) console.error("Failed to join:", ack.error);
+          else console.log("Joined conversation successfully");
         }
       );
     }
@@ -143,12 +149,14 @@ export default function BusinessChatPage() {
   useEffect(() => {
     if (!initialized) return;
     if (!selected?.conversationId) {
+      console.log("No conversation selected, clearing messages");
       setMessages([]);
       return;
     }
 
     const loadHistory = async () => {
       try {
+        console.log("Loading message history for conversation:", selected.conversationId);
         setLoading(true);
         const res = await fetch(
           `/api/conversations/history?conversationId=${selected.conversationId}`,
@@ -156,9 +164,10 @@ export default function BusinessChatPage() {
         );
         if (!res.ok) throw new Error("Fetch failed");
         const data = await res.json();
+        console.log("Message history loaded:", data.length, "messages");
         setMessages(data);
       } catch (e) {
-        console.error(e);
+        console.error("Error loading history:", e);
         setMessages([]);
         setError("שגיאה בטעינת היסטוריה");
       } finally {
@@ -170,6 +179,7 @@ export default function BusinessChatPage() {
   }, [initialized, selected]);
 
   const handleSelect = (conversationId, partnerId) => {
+    console.log("Conversation selected:", conversationId, partnerId);
     setSelected({ conversationId: String(conversationId), partnerId });
   };
 
@@ -189,6 +199,7 @@ export default function BusinessChatPage() {
               isBusiness={true}
             />
           )}
+          {error && <p style={{ color: "red" }}>{error}</p>}
         </aside>
         <section className={styles.chatArea}>
           {selected?.conversationId && selected.partnerId ? (
