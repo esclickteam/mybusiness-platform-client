@@ -14,9 +14,7 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  // ============================
-  // פונקציית עזר לשמירת businessDetails
-  // ============================
+  // שמירת פרטי העסק בלוקל סטורג'
   const saveBusinessDetails = (data) => {
     if (data.business) {
       localStorage.setItem("businessDetails", JSON.stringify(data.business));
@@ -27,7 +25,34 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 1. On mount: try refresh token + load user only if token exists
+  // פונקציה לרענון טוקן
+  async function refreshToken() {
+    try {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) throw new Error("No refresh token");
+      const res = await API.post("/auth/refresh-token", { refreshToken });
+      const newAccessToken = res.data.accessToken || res.data.token;
+
+      if (newAccessToken) {
+        localStorage.setItem("accessToken", newAccessToken);
+        setAccessToken(newAccessToken);
+        setAPIAccessToken(newAccessToken);
+      }
+      if (res.data.refreshToken) {
+        localStorage.setItem("refreshToken", res.data.refreshToken);
+      }
+      return newAccessToken;
+    } catch (e) {
+      setUser(null);
+      setAccessToken(null);
+      localStorage.removeItem("businessDetails");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      throw e;
+    }
+  }
+
+  // אתחול על mount - רענון טוקן וטעינת משתמש
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -35,20 +60,11 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (refreshToken) {
-          const res = await API.post("/auth/refresh-token", { refreshToken });
-          const newAccessToken = res.data.accessToken || res.data.token;
-          if (newAccessToken) {
-            localStorage.setItem("accessToken", newAccessToken);
-            setAccessToken(newAccessToken);
-            setAPIAccessToken(newAccessToken);
-          }
-          if (res.data.refreshToken) {
-            localStorage.setItem("refreshToken", res.data.refreshToken);
-          }
+        const refreshTokenStored = localStorage.getItem("refreshToken");
+        if (refreshTokenStored) {
+          await refreshToken();
 
-          // Load user data after successful refresh
+          // טען נתוני משתמש אחרי רענון מוצלח
           const { data } = await API.get("/auth/me");
           setUser({
             userId:           data.userId,
@@ -75,9 +91,7 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  /**
-   * generic login (handles both customer/business by email and staff by username)
-   */
+  // פונקציית התחברות כללית
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -93,7 +107,7 @@ export function AuthProvider({ children }) {
         response = await API.post("/auth/staff-login", { username: clean, password });
       }
 
-      // שמירת הטוקנים
+      // שמירת טוקנים
       const newAccessToken = response.data.accessToken || response.data.token;
       const newRefreshToken = response.data.refreshToken;
       if (newAccessToken) {
@@ -105,7 +119,6 @@ export function AuthProvider({ children }) {
         localStorage.setItem("refreshToken", newRefreshToken);
       }
 
-      // השמטת קריאה מיותרת ל-/auth/me: משתמש כבר מגיע בתגובה
       const userData = response.data.user;
       setUser({
         userId:           userData.userId,
@@ -173,7 +186,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // clear success message after 4s
+  // ניקוי הודעות הצלחה אוטומטי
   useEffect(() => {
     if (successMessage) {
       const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -192,6 +205,7 @@ export function AuthProvider({ children }) {
         login,
         staffLogin,
         logout,
+        refreshToken,   // <-- הוספת הפונקציה כאן
       }}
     >
       {successMessage && (
