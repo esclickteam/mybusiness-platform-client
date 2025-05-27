@@ -1,3 +1,4 @@
+// src/context/socketContext.jsx
 import React, { createContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
@@ -8,6 +9,8 @@ export function SocketProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    if (!token) return; // אפשר להוסיף טיפול טוב יותר אם אין טוקן
+
     const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
       auth: { token, role: "client" }, // שנה לפי תפקיד מתאים
       path: "/socket.io",
@@ -21,15 +24,7 @@ export function SocketProvider({ children }) {
     };
   }, []);
 
-  // מחזיר null בזמן שהחיבור עוד לא מוכן
-  if (!socket || !socket.connected) {
-    return (
-      <SocketContext.Provider value={null}>
-        {children}
-      </SocketContext.Provider>
-    );
-  }
-
+  // מחזיר את ה-socket גם אם עדיין לא מחובר (לא מחזיר null)
   return (
     <SocketContext.Provider value={socket}>
       {children}
