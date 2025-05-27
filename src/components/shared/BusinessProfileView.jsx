@@ -94,9 +94,14 @@ const resWH = await API.get("/appointments/get-work-hours", {
 
   // שליחת אירוע צפייה בפרופיל דרך socket
   useEffect(() => {
-  if (socket && bizId && user?.userId) {
-    socket.emit('profileView', { businessId: bizId, viewerId: user.userId });
-    console.log('profileView event sent');
+  if (socket) {
+    console.log("socket exists, connected?", socket.connected);
+    if (socket.connected && bizId && user?.userId) {
+      socket.emit('profileView', { businessId: bizId, viewerId: user.userId });
+      console.log('profileView event sent');
+    }
+  } else {
+    console.log("socket is null");
   }
 }, [socket, bizId, user?.userId]);
 
