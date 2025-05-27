@@ -2,25 +2,24 @@ import React from "react";
 import styles from "./ConversationsList.module.css";
 
 export default function ConversationsList({
-  conversations = [],     // אתחל מערך ריק כברירת מחדל
+  conversations = [],
   businessId,
   selectedConversationId,
   onSelect,
   isBusiness,
 }) {
-  // אם אין שיחות — הצג הודעה
   if (conversations.length === 0) {
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
   }
 
   // מסננים כפילויות לפי partnerId
   const uniqueConvs = conversations.filter((conv, idx, arr) => {
-    const participants = Array.isArray(conv.participants) ? conv.participants : [];
-    const partnerId = participants.find((p) => p !== businessId) || conv.partnerId || "";
+    const parts = Array.isArray(conv.participants) ? conv.participants : [];
+    const partnerId = parts.find(p => p !== businessId) || conv.partnerId || "";
     return (
-      arr.findIndex((c) => {
-        const cParticipants = Array.isArray(c.participants) ? c.participants : [];
-        const pid = cParticipants.find((p) => p !== businessId) || c.partnerId || "";
+      arr.findIndex(c => {
+        const cParts = Array.isArray(c.participants) ? c.participants : [];
+        const pid = cParts.find(p => p !== businessId) || c.partnerId || "";
         return pid === partnerId;
       }) === idx
     );
@@ -33,8 +32,8 @@ export default function ConversationsList({
           {isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק"}
         </div>
         {uniqueConvs.map((conv, idx) => {
-          const participants = Array.isArray(conv.participants) ? conv.participants : [];
-          const partnerId = participants.find((p) => p !== businessId) || conv.partnerId || "";
+          const parts = Array.isArray(conv.participants) ? conv.participants : [];
+          const partnerId = parts.find(p => p !== businessId) || conv.partnerId || "";
           const convoId = conv.conversationId || conv._id || conv.id || `conv-${idx}`;
 
           const displayName = isBusiness
