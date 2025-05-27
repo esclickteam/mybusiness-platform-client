@@ -5,7 +5,7 @@ import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import { io } from "socket.io-client";
-import API from "../api";  // הוספת ייבוא ל-REST fallback
+import API from "../api";
 
 export default function BusinessChatPage() {
   const { user, initialized, refreshToken } = useAuth();
@@ -30,7 +30,6 @@ export default function BusinessChatPage() {
 
   async function initSocket(token) {
     socketRef.current?.disconnect();
-
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const socket = io(socketUrl, {
       path: "/socket.io",
@@ -40,32 +39,26 @@ export default function BusinessChatPage() {
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      setLoading(true);
-      socket.emit(
-        "getConversations",
-        { businessId },
-        ({ ok, conversations = [], error: errMsg }) => {
-          setLoading(false);
-          if (ok) {
-            setConvos(conversations);
-            if (!selected && conversations.length > 0) {
-              const first = conversations[0];
-              const convoId = first._id || first.conversationId;
-              const partnerId = Array.isArray(first.participants)
-                ? first.participants.find(p => String(p) !== String(businessId))
-                : first.partnerId;
-              setSelected({ conversationId: String(convoId), partnerId });
-            }
-          } else {
-            setError("לא ניתן לטעון שיחות: " + errMsg);
+      socket.emit("getConversations", { businessId }, ({ ok, conversations = [], error: errMsg }) => {
+        if (ok) {
+          setConvos(conversations);
+          if (!selected && conversations.length > 0) {
+            const first = conversations[0];
+            const convoId = first._id || first.conversationId;
+            const partnerId = Array.isArray(first.participants)
+              ? first.participants.find(p => String(p) !== String(businessId))
+              : first.partnerId;
+            setSelected({ conversationId: String(convoId), partnerId });
           }
+        } else {
+          setError("לא ניתן לטעון שיחות: " + errMsg);
         }
-      );
+      });
     });
 
     socket.on("connect_error", err => {
-      setLoading(false);
       setError("שגיאת socket: " + err.message);
+      setLoading(false);
     });
 
     socket.on("newMessage", msg => {
@@ -78,63 +71,61 @@ export default function BusinessChatPage() {
         return [updated, ...copy];
       });
       if (msg.conversationId === selected?.conversationId) {
-        setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
+        setMessages(prev => (prev.some(m => m._id === msg._id) ? prev : [...prev, msg]));
       }
     });
   }
 
+  // ראשוני: חיבור socket
   useEffect(() => {
     if (!initialized || !businessId) return;
-
+    let isMounted = true;
     (async () => {
       setLoading(true);
       let token = user?.accessToken;
-
       if (!isTokenValid(token)) {
-        try {
-          token = await refreshToken();
-        } catch {
-          setError("טוקן לא תקף ולא ניתן לרענן");
-          setLoading(false);
+        try { token = await refreshToken(); } catch {
+          if (isMounted) {
+            setError("טוקן לא תקף ולא ניתן לרענן");
+            setLoading(false);
+          }
           return;
         }
       }
-
       await initSocket(token);
-      // REST fallback אם לא טעון דבר
-      if (convos.length === 0) {
-        try {
-          const res = await API.get(`/chat/business/${businessId}/conversations`);
-          setConvos(res.data);
-        } catch (e) {
-          console.error("REST fallback failed:", e);
-        }
-      }
-      setLoading(false);
+      if (isMounted) setLoading(false);
     })();
-
-    return () => socketRef.current?.disconnect();
+    return () => { isMounted = false; socketRef.current?.disconnect(); };
   }, [initialized, businessId, user?.accessToken]);
 
+  // REST fallback אם אין שיחות
+  useEffect(() => {
+    if (!initialized || loading || convos.length > 0) return;
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await API.get(`/chat/business/${businessId}/conversations`);
+        setConvos(res.data);
+      } catch (e) {
+        console.error("REST fallback failed:", e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [initialized, loading, convos.length, businessId]);
+
+  // הצטרפות לשיחה נבחרת
   useEffect(() => {
     if (socketRef.current && selected?.conversationId) {
-      socketRef.current.emit(
-        "joinConversation",
-        selected.conversationId,
-        ack => {
-          if (!ack.ok) console.error("join failed:", ack.error);
-        }
-      );
+      socketRef.current.emit("joinConversation", selected.conversationId, ack => {
+        if (!ack.ok) console.error("join failed:", ack.error);
+      });
     }
   }, [selected]);
 
+  // טעינת היסטוריית הודעות
   useEffect(() => {
-    if (!initialized) return;
-    if (!selected?.conversationId) {
-      setMessages([]);
-      return;
-    }
-
+    if (!initialized || !selected?.conversationId) return setMessages([]);
     (async () => {
       setLoading(true);
       try {
@@ -142,7 +133,7 @@ export default function BusinessChatPage() {
           `/api/conversations/history?conversationId=${selected.conversationId}`,
           { credentials: "include" }
         );
-        if (!res.ok) throw new Error("Fetch failed");
+        if (!res.ok) throw new Error();
         const data = await res.json();
         setMessages(data);
       } catch {
