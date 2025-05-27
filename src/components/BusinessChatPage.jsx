@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import jwtDecode from "jwt-decode";
+import * as jwtDecode from "jwt-decode";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -20,7 +20,7 @@ export default function BusinessChatPage() {
   function isTokenValid(token) {
     if (!token) return false;
     try {
-      const { exp } = jwtDecode(token);
+      const { exp } = jwtDecode.default(token);
       return Date.now() < exp * 1000;
     } catch {
       return false;
@@ -28,10 +28,7 @@ export default function BusinessChatPage() {
   }
 
   async function initSocket(token) {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
-    }
+    socketRef.current?.disconnect();
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const socket = io(socketUrl, {
@@ -50,7 +47,6 @@ export default function BusinessChatPage() {
           setLoading(false);
           if (ok) {
             setConvos(conversations);
-            // בחר שיחה ראשונה כברירת מחדל
             if (!selected && conversations.length > 0) {
               const first = conversations[0];
               const convoId = first._id || first.conversationId;
@@ -72,7 +68,6 @@ export default function BusinessChatPage() {
     });
 
     socket.on("newMessage", msg => {
-      // עדכון רכיב הרשימה
       setConvos(prev => {
         const idx = prev.findIndex(c => String(c._id) === msg.conversationId);
         if (idx === -1) return prev;
@@ -81,7 +76,6 @@ export default function BusinessChatPage() {
         copy.splice(idx, 1);
         return [updated, ...copy];
       });
-      // הוספת הודעות אם במצב פתוח
       if (msg.conversationId === selected?.conversationId) {
         setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
       }
@@ -91,7 +85,7 @@ export default function BusinessChatPage() {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    async function prepare() {
+    (async () => {
       setLoading(true);
       let token = user?.accessToken;
 
@@ -107,14 +101,9 @@ export default function BusinessChatPage() {
 
       await initSocket(token);
       setLoading(false);
-    }
+    })();
 
-    prepare();
-
-    return () => {
-      socketRef.current?.disconnect();
-      socketRef.current = null;
-    };
+    return () => socketRef.current?.disconnect();
   }, [initialized, businessId, user?.accessToken]);
 
   useEffect(() => {
@@ -136,7 +125,7 @@ export default function BusinessChatPage() {
       return;
     }
 
-    async function loadHistory() {
+    (async () => {
       setLoading(true);
       try {
         const res = await fetch(
@@ -152,9 +141,7 @@ export default function BusinessChatPage() {
       } finally {
         setLoading(false);
       }
-    }
-
-    loadHistory();
+    })();
   }, [initialized, selected]);
 
   function handleSelect(conversationId, partnerId) {
