@@ -9,13 +9,8 @@ import TextField from "@mui/material/TextField";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
-export default function CollabChat({
-  token,
-  myBusinessId,
-  myBusinessName,
-  onClose,
-}) {
-  const [socket, setSocket] = useState(null);
+export default function CollabChat({ token, myBusinessId, myBusinessName, onClose }) {
+  const socketRef = useRef(null);
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -42,10 +37,11 @@ export default function CollabChat({
     }
   };
 
-  // התחברות ל־socket.io
+  // התחברות ל־socket.io ושמירת החיבור ב-ref
   useEffect(() => {
     if (!token || !myBusinessId) return;
-    const s = io(SOCKET_URL, {
+
+    socketRef.current = io(SOCKET_URL, {
       path: "/socket.io",
       auth: {
         token,
@@ -54,47 +50,62 @@ export default function CollabChat({
         businessName: myBusinessName,
       },
     });
-    setSocket(s);
+
     fetchConversations();
-    return () => s.disconnect();
+
+    return () => {
+      socketRef.current.disconnect();
+    };
     // eslint-disable-next-line
   }, [token, myBusinessId, myBusinessName]);
 
-  // טעינת הודעות של שיחה נבחרת
+  // מאזין להודעות חדשות בזמן אמת - מאזין אחד לכל החיים
   useEffect(() => {
-    if (!selectedConversation) {
-      setMessages([]);
-      return;
-    }
-    async function fetchMsgs() {
-      const res = await API.get(
-        `/business-chat/${selectedConversation._id}/messages`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setMessages(res.data.messages || []);
-    }
-    fetchMsgs();
-    // הצטרף לחדר socket.io
-    socket?.emit("joinConversation", selectedConversation._id);
-    // eslint-disable-next-line
-  }, [selectedConversation]);
+    if (!socketRef.current) return;
 
-  // מאזין להודעות חדשות בזמן אמת
-  useEffect(() => {
-    if (!socket) return;
     const handler = (msg) => {
       if (msg.conversationId === selectedConversation?._id) {
         setMessages((prev) => [...prev, msg]);
       }
-      // רענון רשימת השיחות תמיד, כדי ששיחה תופיע מיד בצד השני
       fetchConversations();
     };
-    socket.on("newMessage", handler);
-    return () => socket.off("newMessage", handler);
+
+    socketRef.current.on("newMessage", handler);
+
+    return () => {
+      socketRef.current.off("newMessage", handler);
+    };
     // eslint-disable-next-line
-  }, [socket, selectedConversation]);
+  }, [selectedConversation]);
+
+  // טעינת הודעות של שיחה נבחרת + ניהול הצטרפות לחדר
+  useEffect(() => {
+    if (!socketRef.current) return;
+
+    if (!selectedConversation) {
+      setMessages([]);
+      return;
+    }
+
+    // שליחת אירוע יציאה מהחדר הקודם - אם מתממש בצד שרת
+    socketRef.current.emit("leaveConversation");
+
+    // הצטרפות לחדר החדש
+    socketRef.current.emit("joinConversation", selectedConversation._id);
+
+    async function fetchMsgs() {
+      try {
+        const res = await API.get(`/business-chat/${selectedConversation._id}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setMessages(res.data.messages || []);
+      } catch (err) {
+        setMessages([]);
+      }
+    }
+    fetchMsgs();
+    // eslint-disable-next-line
+  }, [selectedConversation]);
 
   // גלילה אוטומטית למטה
   useEffect(() => {
@@ -102,22 +113,14 @@ export default function CollabChat({
   }, [messages]);
 
   // שליחת הודעה
-  const sendMessage = async () => {
-    console.log("sendMessage called", { input, selectedConversation });
-    if (!input.trim() || !selectedConversation) {
-      console.warn("sendMessage aborted: empty input or no selected conversation");
-      return;
-    }
+  const sendMessage = () => {
+    if (!input.trim() || !selectedConversation) return;
+
     const otherBusinessId = selectedConversation.participants.find(
       (id) => id !== myBusinessId
     );
-    console.log("Emitting sendMessage event", {
-      conversationId: selectedConversation._id,
-      from: myBusinessId,
-      to: otherBusinessId,
-      text: input.trim(),
-    });
-    socket.emit(
+
+    socketRef.current.emit(
       "sendMessage",
       {
         conversationId: selectedConversation._id,
@@ -127,8 +130,8 @@ export default function CollabChat({
       },
       (ack) => {
         if (!ack.ok) {
-          console.error("SendMessage failed:", ack.error);
           alert("שליחת הודעה נכשלה: " + ack.error);
+          console.error("SendMessage failed:", ack.error);
         } else {
           setInput("");
         }
@@ -138,8 +141,7 @@ export default function CollabChat({
 
   // הצגת שם העסק הנגדי
   const getPartnerBusiness = (conv) => {
-    if (!conv || !conv.participants || !conv.participantsInfo)
-      return { businessName: "עסק" };
+    if (!conv || !conv.participants || !conv.participantsInfo) return { businessName: "עסק" };
     const idx = conv.participants.findIndex((id) => id !== myBusinessId);
     return conv.participantsInfo[idx] || { businessName: "עסק" };
   };
@@ -184,7 +186,9 @@ export default function CollabChat({
         )}
         {conversations.map((conv) => {
           const partner = getPartnerBusiness(conv);
-          const lastMsg = conv.messages?.length ? conv.messages[conv.messages.length - 1].text : "";
+          const lastMsg = conv.messages?.length
+            ? conv.messages[conv.messages.length - 1].text
+            : "";
           return (
             <Box
               key={conv._id}
@@ -193,7 +197,8 @@ export default function CollabChat({
                 py: 1.5,
                 cursor: "pointer",
                 borderBottom: "1px solid #f3f0fa",
-                background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                background:
+                  selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
               }}
               onClick={() => setSelectedConversation(conv)}
             >
@@ -213,6 +218,7 @@ export default function CollabChat({
           );
         })}
       </Box>
+
       {/* צ'אט */}
       <Box
         sx={{
@@ -240,8 +246,12 @@ export default function CollabChat({
                 <Box
                   key={i}
                   sx={{
-                    background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-                    alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
+                    background:
+                      msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                    alignSelf:
+                      msg.fromBusinessId === myBusinessId
+                        ? "flex-end"
+                        : "flex-start",
                     p: 1.2,
                     borderRadius: 2,
                     mb: 1,
@@ -274,6 +284,7 @@ export default function CollabChat({
             </Box>
           )}
         </Box>
+
         {/* אינפוט */}
         {selectedConversation && (
           <Box
@@ -307,11 +318,9 @@ export default function CollabChat({
             </Button>
           </Box>
         )}
+
         {onClose && (
-          <Button
-            sx={{ position: "absolute", top: 13, left: 18 }}
-            onClick={onClose}
-          >
+          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
             ✖
           </Button>
         )}
