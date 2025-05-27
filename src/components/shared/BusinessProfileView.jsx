@@ -57,18 +57,19 @@ export default function BusinessProfileView() {
       }
 
       // קריאה לנתוני העסק
-      const resBiz = await api.get(`/business/${bizId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const biz = resBiz.data.business || resBiz.data;
-      setData(biz);
-      setFaqs(biz.faqs || []);
-      setServices(biz.services || []);
+      const resBiz = await API.get(`/business/${bizId}`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+const biz = resBiz.data.business || resBiz.data;
+setData(biz);
+setFaqs(biz.faqs || []);
+setServices(biz.services || []);
 
-      // קריאה לשעות עבודה עם Authorization
-      const resWH = await API.get("/appointments/get-work-hours", {
+// קריאה לשעות עבודה עם Authorization
+const resWH = await API.get("/appointments/get-work-hours", {
   params: { businessId: bizId },
 });
+
 
 
       let sched = {};
@@ -123,9 +124,9 @@ export default function BusinessProfileView() {
   const handleReviewSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
-      await api.post(`/business/${bizId}/reviews`, formData);
+      await API.post(`/business/${bizId}/reviews`, formData);
       setShowReviewModal(false);
-      const res = await api.get(`/business/${bizId}`);
+      const res = await API.get(`/business/${bizId}`);
       setData(res.data.business || res.data);
     } catch {
       alert("שגיאה בשליחת ביקורת");
