@@ -1,3 +1,5 @@
+// src/pages/business/BusinessDashboardRoutes.jsx
+
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
@@ -8,11 +10,11 @@ import Collab             from "./dashboardPages/Collab";
 import Upgrade            from "./dashboardPages/Upgrade";
 import CartPage           from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
 
-// 🟢 משתמשים ברכיב העמוד המלא של הצ'אט לקוחות
+// 🟢 הודעות עם לקוחות (כבר קיים)
 import BusinessChatPage   from "../../components/BusinessChatPage";
 
-// 🟢 חדש! צ'אט עסקי
-import CollabChatPage     from "../../components/CollabChatPage";
+// 🟢 חדש! צ'אט עסקי אמיתי בין עסקים
+import CollabChatPage     from "../../components/CollabChatPage"; // שם הקומפוננטה CollabChatPage.jsx
 
 import AffiliatePage      from "./dashboardPages/AffiliatePage";
 import EsclickAdvisor     from "./dashboardPages/EsclickAdvisor";
@@ -48,10 +50,10 @@ const BusinessDashboardRoutes = () => (
       <Route path="esclick" element={<EsclickAdvisor />} />
       <Route path="goals"   element={<GoalsPage />} />
 
-      {/* לשונית ההודעות בדשבורד העסק (לקוחות) */}
+      {/* לשונית ההודעות עם לקוחות */}
       <Route path="messages" element={<BusinessChatPage />} />
-      
-      {/* ⬅️ חדש: הודעות עסקיות בין עסקים */}
+
+      {/* 🟢 הודעות עסקיות בין עסקים */}
       <Route path="business-messages" element={<CollabChatPage />} />
 
       {/* שותפים ואפיליאייט */}
