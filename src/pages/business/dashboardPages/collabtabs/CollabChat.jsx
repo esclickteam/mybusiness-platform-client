@@ -24,7 +24,6 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
         headers: { Authorization: `Bearer ${token}` },
       });
       setConversations(res.data.conversations || []);
-      // בחר שיחה ראשונה אם אין נבחרת
       if (
         !selectedConversation &&
         res.data.conversations &&
@@ -49,6 +48,14 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
         businessId: myBusinessId,
         businessName: myBusinessName,
       },
+    });
+
+    socketRef.current.on("connect", () => {
+      console.log("Socket connected:", socketRef.current.id);
+    });
+
+    socketRef.current.on("connect_error", (err) => {
+      console.error("Socket connect error:", err);
     });
 
     fetchConversations();
@@ -112,13 +119,31 @@ export default function CollabChat({ token, myBusinessId, myBusinessName, onClos
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה
+  // שליחת הודעה עם דיבאגים
   const sendMessage = () => {
-    if (!input.trim() || !selectedConversation) return;
+    if (!input.trim() || !selectedConversation) {
+      console.warn("sendMessage aborted: empty input or no selected conversation");
+      return;
+    }
+    if (!socketRef.current) {
+      console.warn("sendMessage aborted: socket not connected");
+      return;
+    }
 
     const otherBusinessId = selectedConversation.participants.find(
       (id) => id !== myBusinessId
     );
+    if (!otherBusinessId) {
+      console.warn("sendMessage aborted: otherBusinessId not found");
+      return;
+    }
+
+    console.log("Sending message:", {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: otherBusinessId,
+      text: input.trim(),
+    });
 
     socketRef.current.emit(
       "sendMessage",
