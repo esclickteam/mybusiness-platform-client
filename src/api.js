@@ -1,4 +1,3 @@
-// src/api.js
 import axios from "axios";
 
 const isProd = import.meta.env.MODE === "production";
@@ -32,10 +31,25 @@ export function setRefreshToken(token) {
   }
 }
 
-// attach token header & debug log on each request
+// ========== Refresh Logic ==========
+let isRefreshing = false;
+let refreshQueue = [];
+
+function processQueue(error, newAccessToken) {
+  refreshQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(newAccessToken);
+    }
+  });
+  refreshQueue = [];
+}
+
+// ========== REQUEST INTERCEPTOR ==========
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken"); // כל פעם מחדש
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -57,7 +71,7 @@ API.interceptors.request.use(
   }
 );
 
-// handle responses, auto-refresh token on 401
+// ========== RESPONSE INTERCEPTOR ==========
 API.interceptors.response.use(
   (response) => {
     if (!isProd) {
@@ -74,7 +88,6 @@ API.interceptors.response.use(
       return Promise.reject(new Error("שגיאת רשת"));
     }
 
-    // refresh flow
     const isAuthFail =
       response.status === 401 &&
       !config._retry &&
@@ -83,28 +96,51 @@ API.interceptors.response.use(
 
     if (isAuthFail) {
       config._retry = true;
+
+      if (isRefreshing) {
+        // המתן עד שהרענון יסתיים ואז נסה שוב
+        return new Promise((resolve, reject) => {
+          refreshQueue.push({
+            resolve: (token) => {
+              config.headers.Authorization = `Bearer ${token}`;
+              resolve(API(config));
+            },
+            reject: (err) => {
+              reject(err);
+            },
+          });
+        });
+      }
+
+      isRefreshing = true;
       try {
         const refreshToken = localStorage.getItem("refreshToken");
         if (!refreshToken) throw new Error("No refresh token");
 
-        // use API instance so baseURL and withCredentials stay in effect
-        const res = await API.post("/auth/refresh-token", { refreshToken });
+        // שימוש ב־axios ללא אינטרספטורים כדי למנוע לולאה!
+        const refreshInstance = axios.create({
+          baseURL: BASE_URL,
+          withCredentials: true,
+        });
+        const res = await refreshInstance.post("/auth/refresh-token", { refreshToken });
 
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-          res.data;
-
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = res.data;
         setAccessToken(newAccessToken);
         setRefreshToken(newRefreshToken);
 
-        // retry original request with new token
+        API.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+        processQueue(null, newAccessToken);
+
         config.headers.Authorization = `Bearer ${newAccessToken}`;
         return API(config);
       } catch (err) {
-        // failed to refresh → logout
+        processQueue(err, null);
         setAccessToken(null);
         setRefreshToken(null);
         window.location.replace("/login");
         return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
 
