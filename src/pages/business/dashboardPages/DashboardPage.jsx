@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
+import { io } from "socket.io-client";
 
 import DashboardCards from "../../../components/DashboardCards";
 import LineChart from "../../../components/dashboard/LineChart";
@@ -30,6 +31,8 @@ const DashboardAlert = ({ text, type = "info" }) => (
 );
 
 import "../../../styles/dashboard.css";
+
+const SOCKET_URL = "https://api.esclick.co.il";
 
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -76,32 +79,36 @@ const DashboardPage = () => {
     fetchStats();
   }, [businessId]);
 
-  // התחברות ל-SSE לקבלת עדכונים חיים
+  // התחברות ל-Socket.IO לקבלת עדכונים חיים בזמן אמת
   useEffect(() => {
     if (!businessId) return;
 
-    const evtSource = new EventSource(`${import.meta.env.VITE_API_URL}/sse/dashboard-stats/${businessId}`);
+    const socket = io(SOCKET_URL, {
+      path: "/socket.io",
+      auth: { token: user?.token, role: "business-dashboard", businessId },
+    });
 
+    socket.on("connect", () => {
+      console.log("Dashboard socket connected:", socket.id);
+    });
 
-    evtSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log("📨 SSE dashboardUpdate received:", data);
-        setStats(prev => ({ ...prev, ...data }));
-      } catch (err) {
-        console.error("⚠️ Error parsing SSE data:", err);
-      }
-    };
+    socket.on("dashboardUpdate", (newStats) => {
+      console.log("Dashboard update received:", newStats);
+      setStats(newStats);
+    });
 
-    evtSource.onerror = (err) => {
-      console.error("⚠️ SSE error:", err);
-      evtSource.close();
-    };
+    socket.on("disconnect", () => {
+      console.log("Dashboard socket disconnected");
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
+    });
 
     return () => {
-      evtSource.close();
+      socket.disconnect();
     };
-  }, [businessId]);
+  }, [businessId, user?.token]);
 
   const handleQuickAction = action => {
     let msg = null;
