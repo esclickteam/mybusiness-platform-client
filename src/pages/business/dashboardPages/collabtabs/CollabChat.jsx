@@ -24,7 +24,7 @@ export default function CollabChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // Sync selectedConversation to ref for use inside socket listener
+  // Sync selectedConversation to ref for use inside socket listener and for leave/join events
   useEffect(() => {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation]);
@@ -33,7 +33,7 @@ export default function CollabChat({
     console.log("Input value changed:", JSON.stringify(input));
   }, [input]);
 
-  // טען שיחות מ-API
+  // Load conversations from API
   const fetchConversations = async () => {
     try {
       console.log("Fetching conversations...");
@@ -55,7 +55,7 @@ export default function CollabChat({
     }
   };
 
-  // התחברות ל-socket.io פעם אחת
+  // Connect to socket.io once
   useEffect(() => {
     if (!token || !myBusinessId) return;
 
@@ -87,7 +87,7 @@ export default function CollabChat({
     // eslint-disable-next-line
   }, [token, myBusinessId, myBusinessName]);
 
-  // מאזין להודעות חדשות - מחובר פעם אחת בלבד
+  // Listen for new messages once
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -100,7 +100,7 @@ export default function CollabChat({
         toBusinessId: msg.toBusinessId || msg.to,
       };
 
-      // עדכן רק אם ההודעה שייכת לשיחה הנבחרת (בעזרת ref)
+      // Update only if message belongs to the selected conversation (using ref)
       if (normalizedMsg.conversationId === selectedConversationRef.current?._id) {
         setMessages((prev) => {
           if (prev.some((m) => m._id === normalizedMsg._id)) return prev;
@@ -108,7 +108,7 @@ export default function CollabChat({
         });
       }
 
-      // עדכון השיחה ברשימת השיחות
+      // Update the conversation in the conversations list
       setConversations((prevConvs) =>
         prevConvs.map((conv) => {
           if (conv._id === normalizedMsg.conversationId) {
@@ -129,7 +129,7 @@ export default function CollabChat({
     };
   }, []);
 
-  // טעינת הודעות בשיחה נבחרת ויצירת חדר ב-socket
+  // Load messages for selected conversation and manage socket rooms
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -138,12 +138,27 @@ export default function CollabChat({
       return;
     }
 
-    console.log(
-      "Leaving previous conversation room and joining new one:",
-      selectedConversation._id
-    );
-    socketRef.current.emit("leaveConversation");
-    socketRef.current.emit("joinConversation", selectedConversation._id);
+    const prevConvId = selectedConversationRef.current?._id;
+
+    // Leave previous room if any
+    if (prevConvId && prevConvId !== selectedConversation._id) {
+      socketRef.current.emit("leaveConversation", prevConvId, (res) => {
+        if (!res.ok) {
+          console.warn("Failed to leave previous conversation room:", res.error);
+        } else {
+          console.log(`Left previous conversation room: ${prevConvId}`);
+        }
+      });
+    }
+
+    // Join new conversation room with acknowledgement
+    socketRef.current.emit("joinConversation", selectedConversation._id, (res) => {
+      if (!res.ok) {
+        console.error("Failed to join conversation room:", res.error);
+        return;
+      }
+      console.log("Joined conversation room:", selectedConversation._id);
+    });
 
     async function fetchMsgs() {
       try {
@@ -164,15 +179,19 @@ export default function CollabChat({
       }
     }
     fetchMsgs();
+
+    // Update ref to current selected conversation
+    selectedConversationRef.current = selectedConversation;
+
     // eslint-disable-next-line
   }, [selectedConversation]);
 
-  // גלילה אוטומטית להודעה האחרונה
+  // Auto scroll to last message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה דרך ה-socket וגם ל-API
+  // Send message through socket and API
   const sendMessage = async () => {
     console.log("sendMessage called with input:", JSON.stringify(input));
     if (!input.trim() || !selectedConversation) {
@@ -208,7 +227,7 @@ export default function CollabChat({
     };
 
     console.log("Sending message payload:", payload);
-    // הוספה אופטימית
+    // Optimistic add
     const optimisticMsg = {
       ...payload,
       timestamp: new Date().toISOString(),
@@ -219,7 +238,7 @@ export default function CollabChat({
     setMessages((prev) => [...prev, optimisticMsg]);
     setInput("");
 
-    // שלח לסוקט
+    // Send via socket
     socketRef.current.emit("sendMessage", payload, (ack) => {
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
@@ -240,13 +259,13 @@ export default function CollabChat({
       }
     });
 
-    // שלח גם ל-API כדי לשמור ב-DB
+    // Also send to API to save in DB
     try {
       await API.post(
         `/business-chat/${selectedConversation._id}/message`,
         {
           text: input.trim(),
-          // תוסיף כאן fileUrl, fileName, fileType אם תומך
+          // add fileUrl, fileName, fileType if supported
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -257,7 +276,7 @@ export default function CollabChat({
     }
   };
 
-  // הצגת שם העסק הנגדי בשיחה
+  // Get partner business name
   const getPartnerBusiness = (conv) => {
     if (!conv || !conv.participants || !conv.participantsInfo)
       return { businessName: "עסק" };
@@ -280,7 +299,7 @@ export default function CollabChat({
         overflow: "hidden",
       }}
     >
-      {/* רשימת שיחות */}
+      {/* Conversations list */}
       <Box
         sx={{
           width: 270,
@@ -340,7 +359,7 @@ export default function CollabChat({
         })}
       </Box>
 
-      {/* צ'אט */}
+      {/* Chat area */}
       <Box
         sx={{
           flex: 1,
@@ -408,7 +427,7 @@ export default function CollabChat({
           )}
         </Box>
 
-        {/* אינפוט להקלדת הודעה */}
+        {/* Input area */}
         {selectedConversation && (
           <Box
             sx={{
