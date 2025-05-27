@@ -28,6 +28,11 @@ export default function BusinessChat({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // לוג לשינוי conversationId
+  useEffect(() => {
+    console.log("🆕 conversationId updated:", conversationId);
+  }, [conversationId]);
+
   // אתחול או טעינת שיחה
   const initConversation = useCallback(() => {
     if (!socket || !otherBusinessId) return;
@@ -187,7 +192,7 @@ export default function BusinessChat({
       <Button
         variant="contained"
         onClick={sendMessage}
-        disabled={!input.trim()}
+        disabled={!input.trim() || !conversationId}
         sx={{ mt: 1, alignSelf: "flex-end" }}
       >
         שלח
