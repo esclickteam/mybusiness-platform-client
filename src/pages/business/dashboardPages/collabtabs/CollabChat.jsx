@@ -16,18 +16,12 @@ export default function CollabChat({
   onClose,
 }) {
   const socketRef = useRef(null);
-  const selectedConversationRef = useRef(null);
 
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
-
-  // Sync selectedConversation to ref for use inside socket listener
-  useEffect(() => {
-    selectedConversationRef.current = selectedConversation;
-  }, [selectedConversation]);
 
   useEffect(() => {
     console.log("Input value changed:", JSON.stringify(input));
@@ -87,7 +81,7 @@ export default function CollabChat({
     // eslint-disable-next-line
   }, [token, myBusinessId, myBusinessName]);
 
-  // מאזין להודעות חדשות - מחובר פעם אחת בלבד
+  // מאזין להודעות חדשות - מחובר פעם אחת בלבד, מקבל את כל ההודעות
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -100,15 +94,11 @@ export default function CollabChat({
         toBusinessId: msg.toBusinessId || msg.to,
       };
 
-      // עדכן רק אם ההודעה שייכת לשיחה הנבחרת (בעזרת ref)
-      if (normalizedMsg.conversationId === selectedConversationRef.current?._id) {
-        setMessages((prev) => {
-          if (prev.some((m) => m._id === normalizedMsg._id)) return prev;
-          return [...prev, normalizedMsg];
-        });
-      }
+      setMessages((prev) => {
+        if (prev.some((m) => m._id === normalizedMsg._id)) return prev;
+        return [...prev, normalizedMsg];
+      });
 
-      // עדכון השיחה ברשימת השיחות
       setConversations((prevConvs) =>
         prevConvs.map((conv) => {
           if (conv._id === normalizedMsg.conversationId) {
@@ -267,6 +257,11 @@ export default function CollabChat({
     return conv.participantsInfo[idx] || { businessName: "עסק" };
   };
 
+  // סינון ההודעות להצגה רק של השיחה הנבחרת
+  const filteredMessages = messages.filter(
+    (msg) => msg.conversationId === selectedConversation?._id
+  );
+
   return (
     <Box
       sx={{
@@ -363,7 +358,7 @@ export default function CollabChat({
               >
                 שיחה עם {getPartnerBusiness(selectedConversation).businessName}
               </Box>
-              {messages.map((msg, i) => (
+              {filteredMessages.map((msg, i) => (
                 <Box
                   key={msg._id || i}
                   sx={{
