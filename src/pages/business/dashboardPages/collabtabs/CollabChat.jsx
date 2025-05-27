@@ -22,12 +22,14 @@ export default function CollabChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // טען שיחות ב־REST API בלבד
+  // טען שיחות מ-API
   const fetchConversations = async () => {
     try {
+      console.log("Fetching conversations...");
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Fetched conversations:", res.data.conversations);
       setConversations(res.data.conversations || []);
       if (
         !selectedConversation &&
@@ -36,15 +38,17 @@ export default function CollabChat({
       ) {
         setSelectedConversation(res.data.conversations[0]);
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed fetching conversations:", err);
       setConversations([]);
     }
   };
 
-  // התחברות ל־socket.io ושמירת החיבור ב-ref
+  // התחברות ל-socket.io פעם אחת
   useEffect(() => {
     if (!token || !myBusinessId) return;
 
+    console.log("Connecting to socket...");
     socketRef.current = io(SOCKET_URL, {
       path: "/socket.io",
       auth: {
@@ -56,40 +60,56 @@ export default function CollabChat({
     });
 
     socketRef.current.on("connect", () => {
-      console.log("Socket connected:", socketRef.current.id);
+      console.log("Socket connected with id:", socketRef.current.id);
     });
 
     socketRef.current.on("connect_error", (err) => {
-      console.error("Socket connect error:", err);
+      console.error("Socket connection error:", err);
     });
 
     fetchConversations();
 
     return () => {
+      console.log("Disconnecting socket...");
       socketRef.current.disconnect();
     };
     // eslint-disable-next-line
   }, [token, myBusinessId, myBusinessName]);
 
-  // מאזין להודעות חדשות בזמן אמת
+  // מאזין להודעות חדשות
   useEffect(() => {
     if (!socketRef.current) return;
 
     const handler = (msg) => {
+      console.log("Received newMessage event:", msg);
+
+      // אם ההודעה שייכת לשיחה הנבחרת - עדכן את ההודעות
       if (msg.conversationId === selectedConversation?._id) {
+        console.log("Appending new message to messages state");
         setMessages((prev) => [...prev, msg]);
       }
-      fetchConversations();
+
+      // עדכן את רשימת השיחות עם ההודעה החדשה כדי לשמור סנכרון
+      setConversations((prevConvs) =>
+        prevConvs.map((conv) => {
+          if (conv._id === msg.conversationId) {
+            const updatedMessages = conv.messages ? [...conv.messages, msg] : [msg];
+            console.log(`Updating conversation ${conv._id} messages count:`, updatedMessages.length);
+            return { ...conv, messages: updatedMessages };
+          }
+          return conv;
+        })
+      );
     };
 
     socketRef.current.on("newMessage", handler);
+
     return () => {
       socketRef.current.off("newMessage", handler);
     };
-    // eslint-disable-next-line
   }, [selectedConversation]);
 
-  // טעינת הודעות של שיחה נבחרת + ניהול הצטרפות לחדר
+  // טעינת הודעות בשיחה נבחרת ויצירת חדר ב-socket
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -98,17 +118,21 @@ export default function CollabChat({
       return;
     }
 
+    console.log("Leaving previous conversation room and joining new one:", selectedConversation._id);
     socketRef.current.emit("leaveConversation");
     socketRef.current.emit("joinConversation", selectedConversation._id);
 
     async function fetchMsgs() {
       try {
+        console.log("Fetching messages for conversation:", selectedConversation._id);
         const res = await API.get(
           `/business-chat/${selectedConversation._id}/messages`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        console.log("Fetched messages:", res.data.messages.length);
         setMessages(res.data.messages || []);
-      } catch {
+      } catch (err) {
+        console.error("Failed fetching messages:", err);
         setMessages([]);
       }
     }
@@ -116,57 +140,66 @@ export default function CollabChat({
     // eslint-disable-next-line
   }, [selectedConversation]);
 
-  // גלילה אוטומטית למטה
+  // גלילה אוטומטית להודעה האחרונה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה עם עדכון ל-state לאחר אישור השרת
+  // שליחת הודעה דרך ה-socket
   const sendMessage = () => {
-  if (!input.trim() || !selectedConversation) return;
-  if (!socketRef.current) return;
+    if (!input.trim() || !selectedConversation) {
+      console.log("SendMessage aborted: input empty or no conversation selected");
+      return;
+    }
+    if (!socketRef.current) {
+      console.log("SendMessage aborted: socket not connected");
+      return;
+    }
 
-  // שליפת otherBusinessId: קודם מ־participantsInfo (אם קיים), אחרת מ־participants
-  let otherBusinessId;
-  if (selectedConversation.participantsInfo?.length) {
-    const otherBiz = selectedConversation.participantsInfo.find(
-      b => b._id.toString() !== myBusinessId.toString()
-    );
-    otherBusinessId = otherBiz?._id;
-  } else {
-    otherBusinessId = selectedConversation.participants.find(
-      id => id.toString() !== myBusinessId.toString()
-    );
-  }
-  if (!otherBusinessId) return;
+    let otherBusinessId;
+    if (selectedConversation.participantsInfo?.length) {
+      const otherBiz = selectedConversation.participantsInfo.find(
+        (b) => b._id.toString() !== myBusinessId.toString()
+      );
+      otherBusinessId = otherBiz?._id;
+    } else {
+      otherBusinessId = selectedConversation.participants.find(
+        (id) => id.toString() !== myBusinessId.toString()
+      );
+    }
+    if (!otherBusinessId) {
+      console.log("SendMessage aborted: could not determine otherBusinessId");
+      return;
+    }
 
-  const payload = {
-    conversationId: selectedConversation._id,
-    from: myBusinessId,
-    to: otherBusinessId,
-    text: input.trim(),
+    const payload = {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: otherBusinessId,
+      text: input.trim(),
+    };
+
+    console.log("Sending message payload:", payload);
+    socketRef.current.emit("sendMessage", payload, (ack) => {
+      if (!ack.ok) {
+        alert("שליחת הודעה נכשלה: " + ack.error);
+        console.error("SendMessage failed:", ack.error);
+      } else {
+        console.log("Message sent successfully, updating local messages state");
+        const newMsg = {
+          conversationId: payload.conversationId,
+          fromBusinessId: payload.from,
+          toBusinessId: payload.to,
+          text: payload.text,
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, newMsg]);
+        setInput("");
+      }
+    });
   };
 
-  console.log("Sending message:", payload);
-  socketRef.current.emit("sendMessage", payload, ack => {
-    if (!ack.ok) {
-      alert("שליחת הודעה נכשלה: " + ack.error);
-      console.error("SendMessage failed:", ack.error);
-    } else {
-      const newMsg = {
-        conversationId: payload.conversationId,
-        fromBusinessId: payload.from,
-        toBusinessId: payload.to,
-        text: payload.text,
-        timestamp: new Date().toISOString(),
-      };
-      setMessages(prev => [...prev, newMsg]);
-      setInput("");
-    }
-  });
-};
-
-  // הצגת שם העסק הנגדי
+  // הצגת שם העסק הנגדי בשיחה
   const getPartnerBusiness = (conv) => {
     if (!conv || !conv.participants || !conv.participantsInfo)
       return { businessName: "עסק" };
@@ -228,9 +261,7 @@ export default function CollabChat({
                 cursor: "pointer",
                 borderBottom: "1px solid #f3f0fa",
                 background:
-                  selectedConversation?._id === conv._id
-                    ? "#f3f0fe"
-                    : "#fff",
+                  selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
               }}
               onClick={() => setSelectedConversation(conv)}
             >
@@ -279,13 +310,11 @@ export default function CollabChat({
                   key={i}
                   sx={{
                     background:
-                      msg.fromBusinessId.toString() ===
-                      myBusinessId.toString()
+                      msg.fromBusinessId?.toString() === myBusinessId.toString()
                         ? "#e6ddff"
                         : "#fff",
                     alignSelf:
-                      msg.fromBusinessId.toString() ===
-                      myBusinessId.toString()
+                      msg.fromBusinessId?.toString() === myBusinessId.toString()
                         ? "flex-end"
                         : "flex-start",
                     p: 1.2,
@@ -321,7 +350,7 @@ export default function CollabChat({
           )}
         </Box>
 
-        {/* אינפוט */}
+        {/* אינפוט להקלדת הודעה */}
         {selectedConversation && (
           <Box
             sx={{
