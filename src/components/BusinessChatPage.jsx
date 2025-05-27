@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import * as jwtDecode from "jwt-decode";
+import jwtDecode from "jwt-decode";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -21,7 +21,7 @@ export default function BusinessChatPage() {
   function isTokenValid(token) {
     if (!token) return false;
     try {
-      const { exp } = jwtDecode.default(token);
+      const { exp } = jwtDecode(token);
       return Date.now() < exp * 1000;
     } catch {
       return false;
@@ -30,6 +30,7 @@ export default function BusinessChatPage() {
 
   async function initSocket(token) {
     socketRef.current?.disconnect();
+
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const socket = io(socketUrl, {
       path: "/socket.io",
@@ -71,20 +72,24 @@ export default function BusinessChatPage() {
         return [updated, ...copy];
       });
       if (msg.conversationId === selected?.conversationId) {
-        setMessages(prev => (prev.some(m => m._id === msg._id) ? prev : [...prev, msg]));
+        setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
       }
     });
   }
 
-  // ראשוני: חיבור socket
+  // התחלת חיבור Socket
   useEffect(() => {
     if (!initialized || !businessId) return;
     let isMounted = true;
+
     (async () => {
       setLoading(true);
       let token = user?.accessToken;
+
       if (!isTokenValid(token)) {
-        try { token = await refreshToken(); } catch {
+        try {
+          token = await refreshToken();
+        } catch {
           if (isMounted) {
             setError("טוקן לא תקף ולא ניתן לרענן");
             setLoading(false);
@@ -92,19 +97,24 @@ export default function BusinessChatPage() {
           return;
         }
       }
+
       await initSocket(token);
       if (isMounted) setLoading(false);
     })();
-    return () => { isMounted = false; socketRef.current?.disconnect(); };
+
+    return () => {
+      isMounted = false;
+      socketRef.current?.disconnect();
+    };
   }, [initialized, businessId, user?.accessToken]);
 
   // REST fallback אם אין שיחות
   useEffect(() => {
     if (!initialized || loading || convos.length > 0) return;
     (async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-        const res = await API.get(`/conversations?businessId=${businessId}`);
+        const res = await API.get(`/conversations`, { params: { businessId } });
         setConvos(res.data);
       } catch (e) {
         console.error("REST fallback failed:", e);
@@ -125,24 +135,18 @@ export default function BusinessChatPage() {
 
   // טעינת היסטוריית הודעות
   useEffect(() => {
-    if (!initialized || !selected?.conversationId) return setMessages([]);
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `/api/conversations/history?conversationId=${selected.conversationId}`,
-          { credentials: "include" }
-        );
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        setMessages(data);
-      } catch {
+    if (!initialized || !selected?.conversationId) {
+      setMessages([]);
+      return;
+    }
+    setLoading(true);
+    API.get('/conversations/history', { params: { conversationId: selected.conversationId } })
+      .then(res => setMessages(res.data))
+      .catch(() => {
         setError("שגיאה בטעינת היסטוריה");
         setMessages([]);
-      } finally {
-        setLoading(false);
-      }
-    })();
+      })
+      .finally(() => setLoading(false));
   }, [initialized, selected]);
 
   function handleSelect(conversationId, partnerId) {
