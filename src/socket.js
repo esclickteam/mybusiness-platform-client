@@ -40,7 +40,7 @@ export function createSocket() {
   socket.on("tokenExpired", async () => {
     try {
       console.log("🔄 Refreshing token...");
-      
+
       const response = await fetch(`${SOCKET_URL}/refresh-token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -58,9 +58,13 @@ export function createSocket() {
         console.log("✅ Access token refreshed and reconnected");
       } else {
         console.error("Failed to refresh token");
+        // הפניית המשתמש להתחברות מחדש אם רענון הטוקן נכשל
+        window.location.href = "/login";
       }
     } catch (error) {
       console.error("Error refreshing token:", error);
+      // הפניית המשתמש להתחברות מחדש אם הייתה שגיאה ברענון
+      window.location.href = "/login";
     }
   });
 
