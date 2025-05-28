@@ -124,17 +124,25 @@ export function AuthProvider({ children }) {
   const logout = async () => {
   setLoading(true);
   try {
-    await API.post("/auth/logout");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (refreshToken) {
+      await API.post("/auth/logout", { refreshToken });  // שלח את ה-refreshToken בעת ההתנתקות
+    } else {
+      console.warn("No refresh token found during logout");
+    }
+
     setSuccessMessage("✅ נותקת בהצלחה");
 
-    // הסרת הטוקן מ־localStorage
+    // הסרת הטוקנים מ־localStorage
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
 
     // ניקוי ה־Authorization header
     delete API.defaults.headers['Authorization'];
 
-    // הסרת הטוקן מהקוקי
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/"; // נקה קוקי אם יש
+    // אם יש גם businessDetails, מחוק אותו
+    localStorage.removeItem("businessDetails");
 
   } catch (e) {
     console.warn("Logout failed:", e);
