@@ -79,20 +79,7 @@ export default function App() {
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
 
-  // כל הנתיבים הציבוריים שאסור לעשות אליהם redirect חוזר
-  const publicRoutes = [
-    "/login",
-    "/register",
-    "/reset-password",
-    "/change-password",
-    "/staff-login"
-  ];
-
-  // כדי למנוע redirect לולאתי – מבצעים הפנייה רק אם לא נמצאים בנתיב ציבורי
-  if (!loading && !user && !publicRoutes.includes(location.pathname)) {
-    return <Navigate to="/login" replace />;
-  }
-
+   
   // חיפוש וסינון
   const [searchMode, setSearchMode] = useState("category");
   const [searchCategory, setSearchCategory] = useState("");
