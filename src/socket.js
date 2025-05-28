@@ -51,8 +51,11 @@ export function createSocket() {
       if (data.accessToken) {
         // עדכון ה־accessToken החדש
         socket.auth.token = data.accessToken;
+
+        // הפסק את החיבור הקודם והתחבר מחדש עם ה־accessToken החדש
+        socket.disconnect();
         socket.connect();  // התחבר מחדש עם ה־accessToken החדש
-        console.log("✅ Access token refreshed");
+        console.log("✅ Access token refreshed and reconnected");
       } else {
         console.error("Failed to refresh token");
       }
