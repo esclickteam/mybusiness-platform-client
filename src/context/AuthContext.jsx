@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
+import jwt from 'jsonwebtoken';
 
 export const AuthContext = createContext();
 
@@ -21,7 +22,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // אתחול המשתמש
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -29,31 +29,28 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
-        // טען access token ושמור ב-axios
         const token = localStorage.getItem("token");
-        if (token) applyAccessToken(token);
-
-        // קבל פרטי משתמש
-        const { data } = await API.get("/auth/me");
-        setUser({
-          userId: data.userId,
-          name: data.name,
-          email: data.email,
-          role: data.role,
-          subscriptionPlan: data.subscriptionPlan,
-          businessId: data.businessId || null,
-        });
-
-        if (data.businessId) {
-          localStorage.setItem(
-            "businessDetails",
-            JSON.stringify({ businessId: data.businessId, _id: data.businessId })
-          );
+        if (token) {
+          applyAccessToken(token);
+          // קבל פרטי משתמש
+          const { data } = await API.get("/auth/me");
+          setUser({
+            userId: data.userId,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            subscriptionPlan: data.subscriptionPlan,
+            businessId: data.businessId || null,
+          });
+          if (data.businessId) {
+            localStorage.setItem("businessDetails", JSON.stringify({ businessId: data.businessId }));
+          } else {
+            localStorage.removeItem("businessDetails");
+          }
         } else {
-          localStorage.removeItem("businessDetails");
+          setUser(null);
         }
-      } catch {
-        // במידה וה־/auth/me נכשל
+      } catch (error) {
         setUser(null);
         localStorage.removeItem("businessDetails");
         applyAccessToken(null);
@@ -62,45 +59,10 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     };
-
+    
     initialize();
   }, []);
 
-  // פונקציה לרענן את ה־accessToken
-  const refreshTokenIfNeeded = async () => {
-    const token = localStorage.getItem("token"); // קבל את ה־accessToken מה־localStorage
-    const refreshToken = localStorage.getItem("refreshToken");
-
-    // אם ה־accessToken פג תוקף, נבצע רענון
-    if (token && isTokenExpired(token)) {
-      try {
-        const response = await API.post("/refresh-token", { refreshToken });
-        const { accessToken } = response.data;
-
-        if (accessToken) {
-          localStorage.setItem("token", accessToken);  // עדכון ה־token ב־localStorage
-          applyAccessToken(accessToken);  // עדכון ה־axios עם ה־accessToken החדש
-        } else {
-          console.error("Unable to refresh token");
-        }
-      } catch (err) {
-        console.error("Error refreshing token:", err);
-      }
-    }
-  };
-
-  // בדיקת תקפות ה־accessToken
-  const isTokenExpired = (token) => {
-    if (!token) return true;
-    try {
-      const { exp } = jwt.decode(token);
-      return Date.now() >= exp * 1000;
-    } catch {
-      return true;
-    }
-  };
-
-  // פונקציית login
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -109,7 +71,6 @@ export function AuthProvider({ children }) {
     const isEmail = clean.includes("@");
 
     try {
-      // שלח בקשת login
       const response = isEmail
         ? await API.post("/auth/login", { email: clean.toLowerCase(), password })
         : await API.post("/auth/staff-login", { username: clean, password });
@@ -121,7 +82,6 @@ export function AuthProvider({ children }) {
         applyAccessToken(token);
       }
 
-      // קבל מחדש פרטי משתמש
       const { data } = await API.get("/auth/me");
       setUser({
         userId: data.userId,
@@ -133,15 +93,11 @@ export function AuthProvider({ children }) {
       });
 
       if (data.businessId) {
-        localStorage.setItem(
-          "businessDetails",
-          JSON.stringify({ businessId: data.businessId, _id: data.businessId })
-        );
+        localStorage.setItem("businessDetails", JSON.stringify({ businessId: data.businessId }));
       } else {
         localStorage.removeItem("businessDetails");
       }
 
-      // ניתוב לפי תפקיד
       if (!options.skipRedirect) {
         let path = "/";
         switch (data.role) {
@@ -166,21 +122,13 @@ export function AuthProvider({ children }) {
 
       return data;
     } catch (e) {
-      setError(
-        e.response?.status === 401
-          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסה שוב"
-      );
+      setError(e.response?.status === 401 ? "❌ אימייל/שם משתמש או סיסמה שגויים" : "❌ שגיאה בשרת, נסה שוב");
       throw e;
     } finally {
       setLoading(false);
     }
   };
 
-  const staffLogin = (username, password) =>
-    login(username, password, { skipRedirect: true });
-
-  // פונקציית logout
   const logout = async () => {
     setLoading(true);
     try {
@@ -198,12 +146,36 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ניהול הודעת הצלחה
-  useEffect(() => {
-    if (!successMessage) return;
-    const timer = setTimeout(() => setSuccessMessage(null), 4000);
-    return () => clearTimeout(timer);
-  }, [successMessage]);
+  const refreshTokenIfNeeded = async () => {
+    const token = localStorage.getItem("token");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (token && isTokenExpired(token)) {
+      try {
+        const response = await API.post("/refresh-token", { refreshToken });
+        const { accessToken } = response.data;
+
+        if (accessToken) {
+          localStorage.setItem("token", accessToken);
+          applyAccessToken(accessToken);
+        } else {
+          console.error("Unable to refresh token");
+        }
+      } catch (err) {
+        console.error("Error refreshing token:", err);
+      }
+    }
+  };
+
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    try {
+      const { exp } = jwt.decode(token);
+      return Date.now() >= exp * 1000;
+    } catch {
+      return true;
+    }
+  };
 
   return (
     <AuthContext.Provider
@@ -213,14 +185,10 @@ export function AuthProvider({ children }) {
         initialized,
         error,
         login,
-        staffLogin,
         logout,
-        refreshTokenIfNeeded,  // הוספנו את הפונקציה לרענון ה־token
+        refreshTokenIfNeeded,
       }}
     >
-      {successMessage && (
-        <div className="global-success-toast">{successMessage}</div>
-      )}
       {children}
     </AuthContext.Provider>
   );
