@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API, { setAccessToken, setRefreshToken } from "../api";
+import API from "../api";
 
 export const AuthContext = createContext();
 
@@ -16,29 +16,44 @@ export function AuthProvider({ children }) {
   const getToken = () => localStorage.getItem("token");
   const getRefreshToken = () => localStorage.getItem("refreshToken");
 
-  const refreshToken = async () => {
-    try {
-      const response = await API.post("/auth/refresh-token", {}, {
-        headers: { 'x-refresh-token': getRefreshToken() }
-      });
-      const newToken = response.data.token;
-      const newRefresh = response.data.refreshToken;
-      if (newToken) {
-        localStorage.setItem("token", newToken);
-        setAccessToken(newToken);
-      }
-      if (newRefresh) {
-        localStorage.setItem("refreshToken", newRefresh);
-        setRefreshToken(newRefresh);
-      }
-      return newToken;
-    } catch (error) {
-      console.error("Failed to refresh token", error);
-      throw error;
+  const applyAccessToken = (token) => {
+    if (token) {
+      API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    } else {
+      delete API.defaults.headers.common["Authorization"];
+    }
+  };
+  const applyRefreshToken = (token) => {
+    if (token) {
+      API.defaults.headers.common["x-refresh-token"] = token;
+    } else {
+      delete API.defaults.headers.common["x-refresh-token"];
     }
   };
 
-  // Initialize API header and user state
+  const refreshToken = async () => {
+    try {
+      const response = await API.post(
+        "/auth/refresh-token",
+        {},
+        { headers: { 'x-refresh-token': getRefreshToken() } }
+      );
+      const { token: newToken, refreshToken: newRefresh } = response.data;
+      if (newToken) {
+        localStorage.setItem("token", newToken);
+        applyAccessToken(newToken);
+      }
+      if (newRefresh) {
+        localStorage.setItem("refreshToken", newRefresh);
+        applyRefreshToken(newRefresh);
+      }
+      return newToken;
+    } catch (err) {
+      console.error("Failed to refresh token", err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -48,7 +63,9 @@ export function AuthProvider({ children }) {
       try {
         const token = getToken();
         if (!token) throw new Error("No token");
-        setAccessToken(token);
+        applyAccessToken(token);
+        const refresh = getRefreshToken();
+        if (refresh) applyRefreshToken(refresh);
 
         const { data } = await API.get("/auth/me");
         setUser({
@@ -82,33 +99,22 @@ export function AuthProvider({ children }) {
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
-
     const clean = identifier.trim();
     const isEmail = clean.includes("@");
 
     try {
-      let response;
-      if (isEmail) {
-        response = await API.post("/auth/login", {
-          email: clean.toLowerCase(),
-          password,
-        });
-      } else {
-        response = await API.post("/auth/staff-login", {
-          username: clean,
-          password,
-        });
-      }
+      const response = isEmail
+        ? await API.post("/auth/login", { email: clean.toLowerCase(), password })
+        : await API.post("/auth/staff-login", { username: clean, password });
+      const { token, refreshToken: refresh } = response.data;
 
-      const token = response.data.token;
-      const refresh = response.data.refreshToken;
       if (token) {
         localStorage.setItem("token", token);
-        setAccessToken(token);
+        applyAccessToken(token);
       }
       if (refresh) {
         localStorage.setItem("refreshToken", refresh);
-        setRefreshToken(refresh);
+        applyRefreshToken(refresh);
       }
 
       const { data } = await API.get("/auth/me");
@@ -130,28 +136,17 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("businessDetails");
       }
 
-      if (!options.skipRedirect && data) {
+      if (!options.skipRedirect) {
         let path = "/";
         switch (data.role) {
-          case "business":
-            path = `/business/${data.businessId}/dashboard`;
-            break;
-          case "customer":
-            path = "/client/dashboard";
-            break;
-          case "worker":
-            path = "/staff/dashboard";
-            break;
-          case "manager":
-            path = "/manager/dashboard";
-            break;
-          case "admin":
-            path = "/admin/dashboard";
-            break;
+          case "business": path = `/business/${data.businessId}/dashboard`; break;
+          case "customer": path = "/client/dashboard"; break;
+          case "worker": path = "/staff/dashboard"; break;
+          case "manager": path = "/manager/dashboard"; break;
+          case "admin": path = "/admin/dashboard"; break;
         }
         navigate(path, { replace: true });
       }
-
       return data;
     } catch (e) {
       setError(
@@ -165,8 +160,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const staffLogin = (username, password) =>
-    login(username, password, { skipRedirect: true });
+  const staffLogin = (username, password) => login(username, password, { skipRedirect: true });
 
   const logout = async () => {
     setLoading(true);
@@ -176,10 +170,10 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("businessDetails");
-      setAccessToken(null);
-      setRefreshToken(null);
-    } catch (e) {
-      console.warn("Logout failed:", e);
+      applyAccessToken(null);
+      applyRefreshToken(null);
+    } catch (err) {
+      console.warn("Logout failed:", err);
     } finally {
       setUser(null);
       setLoading(false);
@@ -196,16 +190,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        initialized,
-        error,
-        login,
-        staffLogin,
-        logout,
-        refreshToken,
-      }}
+      value={{ user, loading, initialized, error, login, staffLogin, logout, refreshToken }}
     >
       {successMessage && (
         <div className="global-success-toast">{successMessage}</div>
