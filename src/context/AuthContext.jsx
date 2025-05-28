@@ -1,7 +1,6 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api";
+import API, { setAccessToken } from "../api";
 
 export const AuthContext = createContext();
 
@@ -22,6 +21,7 @@ export function AuthProvider({ children }) {
       const newToken = response.data.token;
       if (newToken) {
         localStorage.setItem("token", newToken);
+        setAccessToken(newToken);
         return newToken;
       }
       throw new Error("No new token received");
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // אתחול משתמש - טעינת פרטי המשתמש ושמירת פרטי העסק ב-localStorage
+  // Initialize API header and user state
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -41,6 +41,7 @@ export function AuthProvider({ children }) {
       try {
         const token = getToken();
         if (!token) throw new Error("No token");
+        setAccessToken(token);
 
         const { data } = await API.get("/auth/me");
         setUser({
@@ -95,6 +96,7 @@ export function AuthProvider({ children }) {
       const token = response.data.token || response.data.accessToken;
       if (token) {
         localStorage.setItem("token", token);
+        setAccessToken(token);
       } else {
         console.warn("No token received from login response");
       }
@@ -163,6 +165,7 @@ export function AuthProvider({ children }) {
       setSuccessMessage("✅ נותקת בהצלחה");
       localStorage.removeItem("token");
       localStorage.removeItem("businessDetails");
+      setAccessToken(null);
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
