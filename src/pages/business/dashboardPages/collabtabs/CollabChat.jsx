@@ -1,14 +1,11 @@
-// src/pages/business/dashboardPages/collabtabs/CollabChat.jsx
-
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import API from "../../../../api";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-
 import { isTokenExpired } from "../../../../utils/authHelpers";
-import { refreshToken } from "../../../../utils/tokenHelpers";
+import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -18,6 +15,7 @@ export default function CollabChat({
   myBusinessName,
   onClose,
 }) {
+  const { refreshToken } = useAuth();
   const socketRef = useRef(null);
   const selectedConversationRef = useRef(null);
 
@@ -28,7 +26,6 @@ export default function CollabChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // Sync selectedConversation to ref for use inside socket listener and for leave/join events
   useEffect(() => {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation]);
@@ -37,7 +34,6 @@ export default function CollabChat({
     console.log("Input value changed:", JSON.stringify(input));
   }, [input]);
 
-  // Load conversations from API
   const fetchConversations = async () => {
     try {
       console.log("Fetching conversations...");
@@ -46,11 +42,7 @@ export default function CollabChat({
       });
       console.log("Fetched conversations:", res.data.conversations);
       setConversations(res.data.conversations || []);
-      if (
-        !selectedConversation &&
-        res.data.conversations &&
-        res.data.conversations.length > 0
-      ) {
+      if (!selectedConversation && res.data.conversations?.length > 0) {
         setSelectedConversation(res.data.conversations[0]);
       }
     } catch (err) {
@@ -59,15 +51,12 @@ export default function CollabChat({
     }
   };
 
-  // Connect to socket.io with token refresh logic
   useEffect(() => {
     if (!token || !myBusinessId) return;
-
     let isMounted = true;
 
     async function connectSocket() {
       let validToken = token;
-
       if (isTokenExpired(validToken)) {
         try {
           validToken = await refreshToken();
@@ -96,7 +85,6 @@ export default function CollabChat({
         console.error("Socket connection error:", err);
         if (err.message === "jwt expired") {
           socketRef.current.disconnect();
-          // אפשר להוסיף כאן רענון טוקן נוסף וניסיון חיבור מחדש אם תרצה
         }
       });
 
@@ -104,93 +92,64 @@ export default function CollabChat({
     }
 
     connectSocket();
-
     return () => {
       isMounted = false;
       socketRef.current?.disconnect();
     };
   }, [token, myBusinessId, myBusinessName]);
 
-  // Listen for new messages once
   useEffect(() => {
     if (!socketRef.current) return;
-
     const handler = (msg) => {
-      console.log("Received newMessage event:", msg);
-
       const normalizedMsg = {
         ...msg,
         fromBusinessId: msg.fromBusinessId || msg.from,
         toBusinessId: msg.toBusinessId || msg.to,
       };
-
-      // Update only if message belongs to the selected conversation (using ref)
       if (normalizedMsg.conversationId === selectedConversationRef.current?._id) {
         setMessages((prev) => {
           if (prev.some((m) => m._id === normalizedMsg._id)) return prev;
           return [...prev, normalizedMsg];
         });
       }
-
-      // Update the conversation in the conversations list
       setConversations((prevConvs) =>
-        prevConvs.map((conv) => {
-          if (conv._id === normalizedMsg.conversationId) {
-            const msgs = conv.messages || [];
-            if (!msgs.some((m) => m._id === normalizedMsg._id)) {
-              return { ...conv, messages: [...msgs, normalizedMsg] };
-            }
-          }
-          return conv;
-        })
+        prevConvs.map((conv) =>
+          conv._id === normalizedMsg.conversationId
+            ? {
+                ...conv,
+                messages: [...(conv.messages || []), normalizedMsg],
+              }
+            : conv
+        )
       );
     };
 
     socketRef.current.on("newMessage", handler);
-
-    return () => {
-      socketRef.current.off("newMessage", handler);
-    };
+    return () => socketRef.current.off("newMessage", handler);
   }, []);
 
-  // Load messages for selected conversation and manage socket rooms
   useEffect(() => {
-    if (!socketRef.current) return;
-
-    if (!selectedConversation) {
+    if (!socketRef.current || !selectedConversation) {
       setMessages([]);
       return;
     }
 
     const prevConvId = selectedConversationRef.current?._id;
-
-    // Leave previous room if any
     if (prevConvId && prevConvId !== selectedConversation._id) {
       socketRef.current.emit("leaveConversation", prevConvId, (res) => {
-        if (!res.ok) {
-          console.warn("Failed to leave previous conversation room:", res.error);
-        } else {
-          console.log(`Left previous conversation room: ${prevConvId}`);
-        }
+        if (!res.ok) console.warn("Failed to leave:", res.error);
       });
     }
 
-    // Join new conversation room with acknowledgement
     socketRef.current.emit("joinConversation", selectedConversation._id, (res) => {
-      if (!res.ok) {
-        console.error("Failed to join conversation room:", res.error);
-        return;
-      }
-      console.log("Joined conversation room:", selectedConversation._id);
+      if (!res.ok) console.error("Join failed:", res.error);
     });
 
     async function fetchMsgs() {
       try {
-        console.log("Fetching messages for conversation:", selectedConversation._id);
-        const res = await API.get(
-          `/business-chat/${selectedConversation._id}/messages`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await API.get(`/business-chat/${selectedConversation._id}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
           fromBusinessId: msg.fromBusinessId || msg.from,
@@ -198,37 +157,25 @@ export default function CollabChat({
         }));
         setMessages(normMsgs);
       } catch (err) {
-        console.error("Failed fetching messages:", err);
+        console.error("Fetch messages failed:", err);
         setMessages([]);
       }
     }
-    fetchMsgs();
 
-    // Update ref to current selected conversation
+    fetchMsgs();
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation, token]);
 
-  // Auto scroll to last message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Send message through socket and API
   const sendMessage = async () => {
-    if (!input.trim() || !selectedConversation) return;
-    if (!socketRef.current) return;
+    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+    const otherBusinessId =
+      selectedConversation.participantsInfo?.find((b) => b._id.toString() !== myBusinessId.toString())?._id ||
+      selectedConversation.participants.find((id) => id.toString() !== myBusinessId.toString());
 
-    let otherBusinessId;
-    if (selectedConversation.participantsInfo?.length) {
-      const otherBiz = selectedConversation.participantsInfo.find(
-        (b) => b._id.toString() !== myBusinessId.toString()
-      );
-      otherBusinessId = otherBiz?._id;
-    } else {
-      otherBusinessId = selectedConversation.participants.find(
-        (id) => id.toString() !== myBusinessId.toString()
-      );
-    }
     if (!otherBusinessId) return;
 
     const payload = {
@@ -238,7 +185,6 @@ export default function CollabChat({
       text: input.trim(),
     };
 
-    // Optimistic update
     const optimisticMsg = {
       ...payload,
       timestamp: new Date().toISOString(),
@@ -246,6 +192,7 @@ export default function CollabChat({
       fromBusinessId: payload.from,
       toBusinessId: payload.to,
     };
+
     setMessages((prev) => [...prev, optimisticMsg]);
     setInput("");
 
@@ -254,41 +201,28 @@ export default function CollabChat({
         alert("שליחת הודעה נכשלה: " + ack.error);
         setMessages((prev) => prev.filter((m) => m._id !== optimisticMsg._id));
       } else if (ack.message?._id) {
-        setMessages((prev) => {
-          const filtered = prev.filter(
-            (m) => m._id !== optimisticMsg._id && m._id !== ack.message._id
-          );
-          const realMsg = {
-            ...ack.message,
-            fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-            toBusinessId: ack.message.toBusinessId || ack.message.to,
-          };
-          return [...filtered, realMsg];
-        });
+        const realMsg = {
+          ...ack.message,
+          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+          toBusinessId: ack.message.toBusinessId || ack.message.to,
+        };
+        setMessages((prev) => [...prev.filter((m) => m._id !== optimisticMsg._id), realMsg]);
       }
     });
 
     try {
-      await API.post(
-        `/business-chat/${selectedConversation._id}/message`,
-        { text: input.trim() },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await API.post(`/business-chat/${selectedConversation._id}/message`, { text: input.trim() }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
     } catch (err) {
       console.error("שליחת הודעה ל־API נכשלה", err);
     }
   };
 
-  // Get partner business name
   const getPartnerBusiness = (conv) => {
-    if (!conv || !conv.participants || !conv.participantsInfo)
-      return { businessName: "עסק" };
-    const idx = conv.participants.findIndex(
-      (id) => id.toString() !== myBusinessId.toString()
-    );
-    return conv.participantsInfo[idx] || { businessName: "עסק" };
+    const idx = conv?.participants?.findIndex((id) => id.toString() !== myBusinessId.toString());
+    return conv?.participantsInfo?.[idx] || { businessName: "עסק" };
   };
-
   return (
     <Box
       sx={{
