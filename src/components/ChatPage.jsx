@@ -1,4 +1,4 @@
-עדכן // src/components/ChatPage.jsx
+ // src/components/ChatPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import ChatComponent from './ChatComponent';

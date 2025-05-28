@@ -1,4 +1,4 @@
-עדכן // src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
+// src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import ChatComponent from "../../../../../components/ChatComponent";

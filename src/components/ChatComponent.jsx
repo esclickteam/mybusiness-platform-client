@@ -1,4 +1,4 @@
-עדכן // src/components/ChatComponent.jsx
+ // src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from "react";
 import BusinessChatTab from "./BusinessChatTab";
 import ClientChatTab   from "./ClientChatTab";
