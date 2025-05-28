@@ -23,14 +23,8 @@ export function AuthProvider({ children }) {
       delete API.defaults.headers.common["Authorization"];
     }
   };
-  const applyRefreshToken = (token) => {
-    if (token) {
-      API.defaults.headers.common["x-refresh-token"] = token;
-    } else {
-      delete API.defaults.headers.common["x-refresh-token"];
-    }
-  };
 
+  // רק ב-refreshToken שולחים את ה-refresh header
   const refreshToken = async () => {
     try {
       const response = await API.post(
@@ -45,7 +39,6 @@ export function AuthProvider({ children }) {
       }
       if (newRefresh) {
         localStorage.setItem("refreshToken", newRefresh);
-        applyRefreshToken(newRefresh);
       }
       return newToken;
     } catch (err) {
@@ -64,8 +57,6 @@ export function AuthProvider({ children }) {
         const token = getToken();
         if (!token) throw new Error("No token");
         applyAccessToken(token);
-        const refresh = getRefreshToken();
-        if (refresh) applyRefreshToken(refresh);
 
         const { data } = await API.get("/auth/me");
         setUser({
@@ -114,7 +105,6 @@ export function AuthProvider({ children }) {
       }
       if (refresh) {
         localStorage.setItem("refreshToken", refresh);
-        applyRefreshToken(refresh);
       }
 
       const { data } = await API.get("/auth/me");
@@ -171,7 +161,6 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("businessDetails");
       applyAccessToken(null);
-      applyRefreshToken(null);
     } catch (err) {
       console.warn("Logout failed:", err);
     } finally {
@@ -192,9 +181,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{ user, loading, initialized, error, login, staffLogin, logout, refreshToken }}
     >
-      {successMessage && (
-        <div className="global-success-toast">{successMessage}</div>
-      )}
+      {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
   );
