@@ -76,19 +76,16 @@ export function AuthProvider({ children }) {
         } else {
           localStorage.removeItem("businessDetails");
         }
-      } catch (error) {
+      } catch {
         setUser(null);
         localStorage.removeItem("businessDetails");
-        if (error.response?.status === 401) {
-          navigate("/login", { replace: true });
-        }
       } finally {
         setLoading(false);
         setInitialized(true);
       }
     };
     initialize();
-  }, [navigate]);
+  }, []);
 
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
