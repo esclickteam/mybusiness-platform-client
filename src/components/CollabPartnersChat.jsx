@@ -1,37 +1,34 @@
-// src/components/CollabPartnersChat.jsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import API from "../api";
-import createSocket from "../socket";
+import { createSocket } from "../socket";
 
 export default function CollabPartnersChat() {
-  const [partners, setPartners]             = useState([]);
+  const [partners, setPartners] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [conversationId, setConversationId] = useState(null);
-  const [messages, setMessages]            = useState([]);
-  const [input, setInput]                  = useState("");
-
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
   const socketRef = useRef(null);
 
-  // 1. Load partners
+  // Load collaborators
   useEffect(() => {
     API.get("/my/collab-partners")
-      .then(res => setPartners(res.data.partners))
+      .then(res => setPartners(res.data.partners || []))
       .catch(console.error);
   }, []);
 
-  // 2. Initialize socket once
+  // Initialize socket once
   useEffect(() => {
     const sock = createSocket();
     socketRef.current = sock;
     sock.connect();
-
     return () => {
       sock.disconnect();
     };
   }, []);
 
-  // 3. Start or get existing conversation
-  const startChat = useCallback(async partnerId => {
+  // Start or fetch existing conversation
+  const startChat = useCallback(async (partnerId) => {
     if (!socketRef.current) return;
     try {
       const res = await API.post("/business-chat/start", { otherBusinessId: partnerId });
@@ -48,24 +45,23 @@ export default function CollabPartnersChat() {
     }
   }, []);
 
-  // 4. Listen for new messages on the current conversation
+  // Listen for new messages on active conversation
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId) return;
 
-    const handler = msg => {
+    const handler = (msg) => {
       if (msg.conversationId === conversationId) {
         setMessages(prev => [...prev, msg]);
       }
     };
     sock.on("newMessage", handler);
-
     return () => {
       sock.off("newMessage", handler);
     };
   }, [conversationId]);
 
-  // 5. Send a message
+  // Send message
   const sendMessage = () => {
     if (!input.trim() || !socketRef.current || !conversationId) return;
     const msg = {
@@ -74,7 +70,7 @@ export default function CollabPartnersChat() {
       to: selectedPartner,
       text: input.trim(),
     };
-    socketRef.current.emit("sendMessage", msg, ack => {
+    socketRef.current.emit("sendMessage", msg, (ack) => {
       if (ack.ok) {
         setMessages(prev => [...prev, ack.message]);
         setInput("");
@@ -88,8 +84,7 @@ export default function CollabPartnersChat() {
       <ul>
         {partners.map(p => (
           <li key={p._id}>
-            {p.businessName}{" "}
-            <button onClick={() => startChat(p._id)}>צ'אט</button>
+            {p.businessName} <button onClick={() => startChat(p._id)}>צ'אט</button>
           </li>
         ))}
       </ul>
@@ -97,25 +92,12 @@ export default function CollabPartnersChat() {
       {conversationId && (
         <div>
           <h3>
-            צ'אט עם{" "}
-            {partners.find(p => p._id === selectedPartner)?.businessName ||
-              selectedPartner}
+            צ'אט עם {partners.find(p => p._id === selectedPartner)?.businessName || selectedPartner}
           </h3>
-          <div
-            style={{
-              border: "1px solid #ccc",
-              height: 300,
-              overflowY: "auto",
-              padding: 8,
-              marginBottom: 8,
-            }}
-          >
+          <div style={{ border: "1px solid #ccc", height: 300, overflowY: "auto", padding: 8, marginBottom: 8 }}>
             {messages.map((m, i) => (
               <div key={i}>
-                <b>
-                  {m.from === localStorage.getItem("businessId") ? "אני" : "הם"}:
-                </b>{" "}
-                {m.text}
+                <b>{m.from === localStorage.getItem("businessId") ? "אני" : "הם"}:</b> {m.text}
               </div>
             ))}
           </div>
