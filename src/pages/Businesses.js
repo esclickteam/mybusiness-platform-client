@@ -7,13 +7,13 @@ const Lead = require("../models/Lead");
 
 // אימות טוקן
 const authenticateToken = (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1];
+  const token = req.header("Authorization")?.split(" ")[1]; // שליפת הטוקן מה-header
   if (!token) return res.status(401).json({ message: "❌ אין טוקן" });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "❌ טוקן לא תקין" });
-    req.user = user;
-    next();
+    if (err) return res.status(403).json({ message: "❌ טוקן לא תקין או פג תוקף" });
+    req.user = user; // שים את המשתמש ב-request
+    next(); // המשך לעיבוד הבקשה
   });
 };
 
