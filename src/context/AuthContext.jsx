@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAccessToken as setAPIAccessToken, setRefreshToken as setAPIRefreshToken } from "../api";
@@ -64,24 +63,22 @@ export function AuthProvider({ children }) {
     initRan.current = true;
 
     const initialize = async () => {
+      debugger; // עצור כאן לבדיקה בדפדפן
       setLoading(true);
       try {
         const storedAT = localStorage.getItem("accessToken");
         const storedRT = localStorage.getItem("refreshToken");
         if (storedAT) {
-          // הגדר ל-API את הטוקן שנשמר
           setAccessToken(storedAT);
         }
         if (storedRT) {
           setAPIRefreshToken(storedRT);
         }
 
-        // נסה לרענן לפני טעינת המשתמש
         if (storedRT) {
           await refreshToken();
         }
 
-        // טען נתוני משתמש
         const { data } = await API.get("/auth/me");
         setUser({
           userId:           data.userId,
@@ -92,8 +89,8 @@ export function AuthProvider({ children }) {
           businessId:       data.businessId || null,
         });
         saveBusinessDetails(data);
-      } catch {
-        // לא יעלה – משתמש לא מחובר
+      } catch (error) {
+        console.error("AuthContext: initialization error", error);
         setUser(null);
         setAccessToken(null);
         localStorage.removeItem("businessDetails");
