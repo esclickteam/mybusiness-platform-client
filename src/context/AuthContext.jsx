@@ -14,10 +14,8 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  // טוקן ברגע זה (מאוחסן ב-localStorage)
   const getToken = () => localStorage.getItem("token");
 
-  // פונקציה לרענון הטוקן
   const refreshToken = async () => {
     try {
       const response = await API.post("/auth/refresh-token");
@@ -33,7 +31,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // אתחול משתמש - בדיקת טוקן קיים וקבלת פרטי משתמש
+  // אתחול משתמש - טעינת פרטי המשתמש ושמירת פרטי העסק ב-localStorage
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -44,19 +42,27 @@ export function AuthProvider({ children }) {
         const token = getToken();
         if (!token) throw new Error("No token");
 
-        // אופציונלי: כאן אפשר להוסיף בדיקה אם הטוקן פג, ואז לקרוא ל-refreshToken
-
         const { data } = await API.get("/auth/me");
         setUser({
-          userId:           data.userId,
-          name:             data.name,
-          email:            data.email,
-          role:             data.role,
+          userId: data.userId,
+          name: data.name,
+          email: data.email,
+          role: data.role,
           subscriptionPlan: data.subscriptionPlan,
-          businessId:       data.businessId || null,
+          businessId: data.businessId || null,
         });
+
+        if (data.businessId) {
+          localStorage.setItem(
+            "businessDetails",
+            JSON.stringify({ businessId: data.businessId, _id: data.businessId })
+          );
+        } else {
+          localStorage.removeItem("businessDetails");
+        }
       } catch {
         setUser(null);
+        localStorage.removeItem("businessDetails");
       } finally {
         setLoading(false);
         setInitialized(true);
@@ -75,9 +81,15 @@ export function AuthProvider({ children }) {
     try {
       let response;
       if (isEmail) {
-        response = await API.post("/auth/login", { email: clean.toLowerCase(), password });
+        response = await API.post("/auth/login", {
+          email: clean.toLowerCase(),
+          password,
+        });
       } else {
-        response = await API.post("/auth/staff-login", { username: clean, password });
+        response = await API.post("/auth/staff-login", {
+          username: clean,
+          password,
+        });
       }
 
       const token = response.data.token || response.data.accessToken;
@@ -89,13 +101,22 @@ export function AuthProvider({ children }) {
 
       const { data } = await API.get("/auth/me");
       setUser({
-        userId:           data.userId,
-        name:             data.name,
-        email:            data.email,
-        role:             data.role,
+        userId: data.userId,
+        name: data.name,
+        email: data.email,
+        role: data.role,
         subscriptionPlan: data.subscriptionPlan,
-        businessId:       data.businessId || null,
+        businessId: data.businessId || null,
       });
+
+      if (data.businessId) {
+        localStorage.setItem(
+          "businessDetails",
+          JSON.stringify({ businessId: data.businessId, _id: data.businessId })
+        );
+      } else {
+        localStorage.removeItem("businessDetails");
+      }
 
       if (!options.skipRedirect && data) {
         let path = "/";
@@ -141,6 +162,7 @@ export function AuthProvider({ children }) {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
       localStorage.removeItem("token");
+      localStorage.removeItem("businessDetails");
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
@@ -150,7 +172,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // clear success message after 4s
   useEffect(() => {
     if (successMessage) {
       const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -168,7 +189,7 @@ export function AuthProvider({ children }) {
         login,
         staffLogin,
         logout,
-        refreshToken,       // <-- הוספת הפונקציה כאן
+        refreshToken,
       }}
     >
       {successMessage && (
