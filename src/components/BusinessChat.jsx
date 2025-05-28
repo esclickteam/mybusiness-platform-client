@@ -5,7 +5,8 @@ import { io } from "socket.io-client";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
-const SOCKET_URL = "https://api.esclick.co.il";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";  // השתמש במשתנה סביבה
+
 
 export default function BusinessChat({
   token,

@@ -12,7 +12,7 @@ export function SocketProvider({ children }) {
   useEffect(() => {
     if (!user) return;  // מחכה ל־user
 
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
     const token = localStorage.getItem("token");
     if (!token) return;
 

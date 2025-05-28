@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/collabtabs/CollabChat.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import API from "../../../../api";
@@ -6,7 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
-const SOCKET_URL = "https://api.esclick.co.il";
+const SOCKET_URL = "https://api.esclick.co.il"; // כתובת השרת שלך
 
 export default function CollabChat({
   myBusinessId,
@@ -21,8 +20,9 @@ export default function CollabChat({
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [error, setError] = useState("");
 
-  // Fetch conversations from API
+  // טען שיחות עסקיות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -36,10 +36,11 @@ export default function CollabChat({
     } catch (err) {
       console.error("Failed fetching conversations:", err);
       setConversations([]);
+      setError("לא הצלחנו לטעון שיחות");
     }
   };
 
-  // Initialize socket & load conversations
+  // אתחול חיבור לסוקט וטעינת שיחות
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token || !myBusinessId) return;
@@ -48,11 +49,12 @@ export default function CollabChat({
       path: "/socket.io",
       auth: {
         token,
-        role: "business",
+        role: "business", // תפקיד של עסק
         businessId: myBusinessId,
         businessName: myBusinessName,
       },
     });
+
     socketRef.current = sock;
 
     sock.on("connect", () => {
@@ -69,7 +71,7 @@ export default function CollabChat({
     };
   }, [myBusinessId, myBusinessName]);
 
-  // Listen for incoming messages
+  // הקשבה להודעות חדשות
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -79,13 +81,15 @@ export default function CollabChat({
         fromBusinessId: msg.fromBusinessId || msg.from,
         toBusinessId: msg.toBusinessId || msg.to,
       };
-      // update message list
+
+      // עדכון הודעות בשיחה הנבחרת
       if (normalized.conversationId === selectedConversationRef.current?._id) {
         setMessages((prev) =>
           prev.some((m) => m._id === normalized._id) ? prev : [...prev, normalized]
         );
       }
-      // update conversation preview
+
+      // עדכון תצוגת שיחה
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === normalized.conversationId
@@ -96,12 +100,13 @@ export default function CollabChat({
     };
 
     socketRef.current.on("newMessage", handler);
+
     return () => {
       socketRef.current.off("newMessage", handler);
     };
   }, []);
 
-  // Join/leave conversations and fetch history
+  // הצטרפות/עזיבת שיחות וטעינת היסטוריית הודעות
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -138,12 +143,12 @@ export default function CollabChat({
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation]);
 
-  // Auto-scroll on new message
+  // גלילה אוטומטית על הודעה חדשה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Send message
+  // שליחת הודעה
   const sendMessage = () => {
     if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
@@ -186,7 +191,7 @@ export default function CollabChat({
       }
     });
 
-    // also post to REST for persistence
+    // גם שלח ל-API לשמירה
     API.post(
       `/business-chat/${selectedConversation._id}/message`,
       { text: optimistic.text },
@@ -196,7 +201,7 @@ export default function CollabChat({
     });
   };
 
-  // Helper to get partner info
+  // עזרה להוצאת פרטי השותף בשיחה
   const getPartnerBusiness = (conv) => {
     const idx = conv.participants.findIndex((id) => id !== myBusinessId);
     return conv.participantsInfo?.[idx] || { businessName: "עסק" };
@@ -215,7 +220,7 @@ export default function CollabChat({
         overflow: "hidden",
       }}
     >
-      {/* Conversations list */}
+      {/* רשימת שיחות */}
       <Box
         sx={{
           width: 270,
@@ -273,7 +278,7 @@ export default function CollabChat({
         })}
       </Box>
 
-      {/* Chat area */}
+      {/* אזור צ'אט */}
       <Box
         sx={{
           flex: 1,
@@ -342,7 +347,7 @@ export default function CollabChat({
           )}
         </Box>
 
-        {/* Input area */}
+        {/* אזור הזנת הודעה */}
         {selectedConversation && (
           <Box
             sx={{

@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import ChatComponent from "../../../../../components/ChatComponent";
@@ -22,6 +21,9 @@ export default function ChatSection({ isBusiness = false }) {
   const businessId = user?.businessId;
   const socketRef = useRef();
 
+  // הגדרת URL אחיד
+  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il"; // דומיין ברירת מחדל אם משתנה הסביבה לא מוגדר
+
   // טען לקוחות
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -31,10 +33,7 @@ export default function ChatSection({ isBusiness = false }) {
 
   const fetchClients = async () => {
     try {
-      // כאן תוכל להשאיר API רגיל כי זה לא צ׳אט
-      const res = await fetch("/business/clients", {
-        credentials: "include"
-      });
+      const res = await fetch("/business/clients", { credentials: "include" });
       const data = await res.json();
       setClients(data);
     } catch (err) {
@@ -48,17 +47,32 @@ export default function ChatSection({ isBusiness = false }) {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-socketRef.current = io(socketUrl, {
-  auth: { userId: businessId, role: "business" },
-  transports: ["websocket"],
-});
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
 
+    if (!accessToken || !refreshToken) {
+      console.error("Missing accessToken or refreshToken");
+      return;
+    }
+
+    socketRef.current = io(SOCKET_URL, {
+      auth: { token: accessToken, refreshToken, role: "business", userId: businessId },
+      transports: ["websocket"],
+    });
+
+    socketRef.current.on("connect", () => {
+      console.log("🔌 Connected to dashboard socket:", socketRef.current.id);
+    });
+
+    socketRef.current.on("connect_error", (err) => {
+      console.error("❌ Dashboard socket connection error:", err.message);
+    });
 
     fetchConversations();
 
     return () => {
       socketRef.current.disconnect();
+      console.log("🔌 Disconnected dashboard socket");
     };
   }, [initialized, businessId]);
 
@@ -67,7 +81,7 @@ socketRef.current = io(socketUrl, {
     setIsLoading(true);
     setError("");
     socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
-  if (res.ok) {
+      if (res.ok) {
         const convs = Array.isArray(res.conversations) ? res.conversations : [];
         setConversations(convs);
       } else {
@@ -118,7 +132,7 @@ socketRef.current = io(socketUrl, {
             customerId={selected.customerId}
             initialConversationId={selected.conversationId}
             isBusiness={isBusiness}
-            socket={socketRef.current} // במידת הצורך
+            socket={socketRef.current}
           />
         ) : (
           <div className={styles.chatPlaceholder}>
