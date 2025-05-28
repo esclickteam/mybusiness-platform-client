@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// הגדרת BASE_URL דינמית לפי סביבת הפיתוח או הפרודקשן
+// הגדרת BASE_URL דינמית לפי סביבה (פיתוח / פרודקשן)
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
   ? "https://api.esclick.co.il/api"
@@ -50,7 +50,7 @@ API.interceptors.response.use(
         const refreshToken = localStorage.getItem("refreshToken");
 
         if (refreshToken) {
-          const refreshResponse = await axios.post("/refresh-token", { refreshToken });
+          const refreshResponse = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken });
 
           if (refreshResponse.data.accessToken) {
             // עדכון הטוקן החדש ב־localStorage
@@ -63,6 +63,7 @@ API.interceptors.response.use(
         }
       } catch (err) {
         console.error("Error refreshing token:", err);
+        // ניווט ללוגין אם לא הצלחנו לחדש את הטוקן
         window.location.replace("/login");
       }
     }
