@@ -1,16 +1,15 @@
-// src/components/BusinessProfileView.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { SocketContext } from "../../context/socketContext"; // ייבוא הקונטקסט של סוקט
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
-import { createSocket } from "../../socket";
-import { ensureValidToken, getBusinessId } from "../../utils/authHelpers";
+import { isTokenExpired } from "../../utils/authHelpers";
+import { refreshToken } from "../../utils/tokenHelpers";
 
-
-
+// עיצובים
 import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
 import "./BusinessProfileView.css";
@@ -25,10 +24,10 @@ const TABS = [
 ];
 
 export default function BusinessProfileView() {
-  const { initialized, refreshToken } = useAuth();
   const { businessId: paramId } = useParams();
-  const bizId = paramId || getBusinessId();
-  const user = useAuth().user;
+  const { user } = useAuth();
+  const socket = useContext(SocketContext);
+  const bizId = paramId || user?.businessId;
 
   const [data, setData] = useState(null);
   const [faqs, setFaqs] = useState([]);
@@ -41,10 +40,9 @@ export default function BusinessProfileView() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
 
+  // count של צפיות בפרופיל
   const [profileViewsCount, setProfileViewsCount] = useState(0);
-  const socketRef = useRef(null);
 
-  // 1. Fetch business data
   useEffect(() => {
     if (!bizId) {
       setError("Invalid business ID");
@@ -52,10 +50,12 @@ export default function BusinessProfileView() {
       return;
     }
     (async () => {
-      setLoading(true);
       try {
-        const token = await ensureValidToken(refreshToken);
-
+        setLoading(true);
+        let token = localStorage.getItem("accessToken");
+        if (isTokenExpired(token)) {
+          token = await refreshToken();
+        }
         const resBiz = await API.get(`/business/${bizId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -67,13 +67,14 @@ export default function BusinessProfileView() {
         const resWH = await API.get("/appointments/get-work-hours", {
           params: { businessId: bizId },
         });
-        const wh = resWH.data.workHours;
-        const sched = Array.isArray(wh)
-          ? wh.reduce((acc, item) => {
-              acc[Number(item.day)] = item;
-              return acc;
-            }, {})
-          : wh || {};
+        let sched = {};
+        if (Array.isArray(resWH.data.workHours)) {
+          resWH.data.workHours.forEach((item) => {
+            sched[Number(item.day)] = item;
+          });
+        } else if (resWH.data.workHours && typeof resWH.data.workHours === "object") {
+          sched = resWH.data.workHours;
+        }
         setSchedule(sched);
       } catch (err) {
         console.error(err);
@@ -82,51 +83,45 @@ export default function BusinessProfileView() {
         setLoading(false);
       }
     })();
-  }, [bizId, initialized, refreshToken]);
+  }, [bizId]);
 
-  // 2. Initialize socket and handle profileView count
+  // שליחת צפייה והאזנה לעדכון ה-count
   useEffect(() => {
-    if (!initialized || !bizId || !user?.userId) return;
-    let sock;
-    (async () => {
-      try {
-        const token = await ensureValidToken(refreshToken);
+    if (!socket || !bizId || !user?.userId) return;
 
-        sock = createSocket();
-        sock.auth = { token, role: "client", businessId: bizId };
-        sock.connect();
-        socketRef.current = sock;
-
-        const countHandler = newCount => {
-          setProfileViewsCount(newCount);
-        };
-        sock.on("profileViewCount", countHandler);
-
-        const sendView = () => {
-          sock.emit("profileView", {
-            businessId: bizId,
-            viewerId: user.userId,
-          });
-        };
-        if (sock.connected) {
-          sendView();
-        } else {
-          sock.once("connect", sendView);
-        }
-      } catch (e) {
-        console.error("Socket init failed:", e);
-      }
-    })();
-    return () => {
-      sock?.off("profileViewCount");
-      sock?.off("connect");
-      sock?.disconnect();
+    // מאזין לעדכון count
+    const countHandler = (newCount) => {
+      console.log("Received profileViewCount:", newCount);
+      setProfileViewsCount(newCount);
     };
-  }, [bizId, initialized, refreshToken, user]);
+    socket.on("profileViewCount", countHandler);
+
+    // פונקציית שליחה
+    const sendProfileView = () => {
+      console.log("Emitting profileView event with:", { businessId: bizId, viewerId: user.userId });
+      socket.emit("profileView", { businessId: bizId, viewerId: user.userId });
+    };
+    const connectHandler = () => {
+      console.log("Socket connected, sending profileView");
+      sendProfileView();
+    };
+
+    if (socket.connected) {
+      sendProfileView();
+    } else {
+      socket.once("connect", connectHandler);
+    }
+
+    return () => {
+      socket.off("profileViewCount", countHandler);
+      socket.off("connect", connectHandler);
+    };
+  }, [socket, bizId, user?.userId]);
+
 
   if (loading) return <div className="loading">טוען…</div>;
-  if (error)   return <div className="error">{error}</div>;
-  if (!data)   return <div className="error">העסק לא נמצא</div>;
+  if (error) return <div className="error">{error}</div>;
+  if (!data) return <div className="error">העסק לא נמצא</div>;
 
   const {
     businessName,
@@ -145,7 +140,7 @@ export default function BusinessProfileView() {
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
-  const handleReviewSubmit = async formData => {
+  const handleReviewSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
       await API.post(`/business/${bizId}/reviews`, formData);
@@ -174,12 +169,27 @@ export default function BusinessProfileView() {
             </div>
           )}
           <h1 className="business-name">{businessName}</h1>
-          <p><strong>צפיות בפרופיל:</strong> {profileViewsCount}</p>
           <div className="about-phone">
-            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
-            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone &&       <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city &&        <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {category && (
+              <p>
+                <strong>🏷️ קטגוריה:</strong> {category}
+              </p>
+            )}
+            {description && (
+              <p>
+                <strong>📝 תיאור:</strong> {description}
+              </p>
+            )}
+            {phone && (
+              <p>
+                <strong>📞 טלפון:</strong> {phone}
+              </p>
+            )}
+            {city && (
+              <p>
+                <strong>🏙️ עיר:</strong> {city}
+              </p>
+            )}
           </div>
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
@@ -188,7 +198,7 @@ export default function BusinessProfileView() {
           <hr className="profile-divider" />
 
           <div className="profile-tabs">
-            {TABS.map(tab => (
+            {TABS.map((tab) => (
               <button
                 key={tab}
                 className={`tab ${tab === currentTab ? "active" : ""}`}
@@ -201,13 +211,12 @@ export default function BusinessProfileView() {
               </button>
             ))}
           </div>
-
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {mainImages.length
                   ? mainImages.slice(0, 5).map((url, i) => (
-                      <img key={i} src={url} alt={`תמונה ראשית ${i+1}`} />
+                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
                     ))
                   : <p className="no-data">אין תמונות להצגה</p>}
               </div>
@@ -216,7 +225,7 @@ export default function BusinessProfileView() {
               <div className="public-main-images">
                 {gallery.length
                   ? gallery.map((url, i) => (
-                      <img key={i} src={url} alt={`גלריה ${i+1}`} />
+                      <img key={i} src={url} alt={`גלריה ${i + 1}`} />
                     ))
                   : <p className="no-data">אין תמונות בגלריה</p>}
               </div>
@@ -230,7 +239,7 @@ export default function BusinessProfileView() {
                 )}
                 {showReviewModal && (
                   <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
-                    <div className="#modal-inner" onClick={e => e.stopPropagation()}>
+                    <div className="#modal-inner" onClick={(e) => e.stopPropagation()}>
                       <ReviewForm
                         businessId={bizId}
                         onSubmit={handleReviewSubmit}
@@ -243,8 +252,8 @@ export default function BusinessProfileView() {
                   </div>
                 )}
                 {reviews.length
-                  ? reviews.map((r,i) => (
-                      <div key={r._id||i} className="review-card improved">
+                  ? reviews.map((r, i) => (
+                      <div key={r._id || i} className="review-card improved">
                         {/* תוכן הביקורת */}
                       </div>
                     ))
@@ -255,8 +264,8 @@ export default function BusinessProfileView() {
               <div className="faqs-public">
                 {faqs.length === 0
                   ? <p className="no-data">אין עדיין שאלות ותשובות</p>
-                  : faqs.map((faq,i) => (
-                      <div key={faq._id||i} className="faq-card">
+                  : faqs.map((faq, i) => (
+                      <div key={faq._id || i} className="faq-card">
                         <p><strong>שאלה:</strong> {faq.question}</p>
                         <p><strong>תשובה:</strong> {faq.answer}</p>
                       </div>
@@ -264,8 +273,8 @@ export default function BusinessProfileView() {
               </div>
             )}
             {currentTab === "הודעות מלקוחות" && (
-              <div style={{textAlign:"center",margin:"36px 0"}}>
-                {user?.role==="customer" && (
+              <div style={{ textAlign: "center", margin: "36px 0" }}>
+                {user && user.role === "customer" && (
                   <Link to={`/business/${bizId}/messages`} className="chat-link-btn">
                     💬 שלח הודעה לעסק
                   </Link>
@@ -279,25 +288,24 @@ export default function BusinessProfileView() {
             )}
             {currentTab === "יומן" && (
               <div className="booking-tab">
-                <ServicesSelector
-                  services={services}
-                  onSelect={svc => setSelectedService(svc)}
-                />
-                {!selectedService
-                  ? <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
-                  : <>
-                      <button className="back-btn" onClick={() => setSelectedService(null)}>
-                        ← שנה שירות
-                      </button>
-                      <div className="calendar-fullwidth">
-                        <ClientCalendar
-                          workHours={schedule}
-                          selectedService={selectedService}
-                          onBackToList={() => setSelectedService(null)}
-                          businessId={bizId}
-                        />
-                      </div>
-                    </>}
+                <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
+                {!selectedService ? (
+                  <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
+                ) : (
+                  <>
+                    <button className="back-btn" onClick={() => setSelectedService(null)}>
+                      ← שנה שירות
+                    </button>
+                    <div className="calendar-fullwidth">
+                      <ClientCalendar
+                        workHours={schedule}
+                        selectedService={selectedService}
+                        onBackToList={() => setSelectedService(null)}
+                        businessId={bizId}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>

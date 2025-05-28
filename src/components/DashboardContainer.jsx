@@ -1,16 +1,10 @@
 // src/components/DashboardLive.jsx
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import DashboardCards from "./DashboardCards";
-import { useAuth } from "../context/AuthContext";
-import { createSocket } from "../socket";
-import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
+import { SocketContext } from "../context/socketContext";
 
-
-export default function DashboardLive() {
-  const { initialized, refreshToken } = useAuth();
-  const businessId = getBusinessId();
-  const socketRef = useRef(null);
-
+export default function DashboardLive({ businessId }) {
+  const socket = useContext(SocketContext);
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -22,41 +16,26 @@ export default function DashboardLive() {
   });
 
   useEffect(() => {
-    if (!initialized || !businessId) return;
-    let sock;
+    if (!businessId || !socket) {
+      console.warn("⚠️ Missing businessId or socket for DashboardLive");
+      return;
+    }
 
-    (async () => {
-      try {
-        const token = await ensureValidToken(refreshToken);
+    // Handler לעדכונים בזמן אמת
+    const statsHandler = (newStats) => {
+      setStats((prev) => ({ ...prev, ...newStats }));
+    };
 
-        sock = createSocket();
-        sock.auth = { token, role: "business-dashboard", businessId };
-        sock.connect();
-        socketRef.current = sock;
+    // הירשם לאירוע העדכון
+    socket.on("dashboardStatsUpdate", statsHandler);
 
-        // initial fetch
-        sock.emit("getDashboardStats", { businessId }, (res) => {
-          if (res.ok) setStats(res.stats);
-        });
-
-        const handler = (newStats) => {
-          setStats((prev) => ({ ...prev, ...newStats }));
-        };
-        sock.on("dashboardUpdate", handler);
-        sock.on("dashboardStatsUpdate", handler);
-      } catch (e) {
-        console.error("Dashboard socket init failed:", e);
-      }
-    })();
+    // בקש את המצב ההתחלתי
+    socket.emit("getDashboardStats", { businessId });
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.off("dashboardUpdate");
-        socketRef.current.off("dashboardStatsUpdate");
-        socketRef.current.disconnect();
-      }
+      socket.off("dashboardStatsUpdate", statsHandler);
     };
-  }, [initialized, businessId, refreshToken]);
+  }, [businessId, socket]);
 
   return <DashboardCards stats={stats} />;
 }

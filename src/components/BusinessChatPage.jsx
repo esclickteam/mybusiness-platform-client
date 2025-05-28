@@ -4,15 +4,12 @@ import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
-import { createSocket } from "../socket";
+import socket from "../socket";
 import API from "../api";
-import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
-
 
 export default function BusinessChatPage() {
   const { user, initialized, refreshToken } = useAuth();
-  const businessId = getBusinessId();
-  const socketRef = useRef(null);
+  const businessId = user?.businessId || user?.business?._id;
 
   const [convos, setConvos]     = useState([]);
   const [selected, setSelected] = useState(null);
@@ -21,42 +18,39 @@ export default function BusinessChatPage() {
   const [error, setError]       = useState("");
   const hasJoinedRef            = useRef(false);
 
-  // 1. Initialize socket once with valid token
+  // 1. ואתחול הסוקט עם טוקן תקף
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    let isMounted = true;
     (async () => {
       setLoading(true);
+      let token = user.accessToken;
+
+      // רענון טוקן אם פג
       try {
-        const token = await ensureValidToken(refreshToken);
-
-        const socket = createSocket();
-        socket.auth = { token, role: "business", businessId };
-        socket.connect();
-        socketRef.current = socket;
-      } catch (e) {
-        console.error("Cannot initialize socket:", e);
-        if (isMounted) setError("❌ טוקן לא תקף ולא ניתן להתחבר");
-      } finally {
-        if (isMounted) setLoading(false);
+        token = await refreshToken();
+      } catch {
+        setError("❌ טוקן לא תקף ולא ניתן לרענן");
+        setLoading(false);
+        return;
       }
+
+      // אתחול הסוקט
+      socket.auth = { token, role: "business", businessId };
+      socket.connect();
+
+      setLoading(false);
     })();
+  }, [initialized, businessId]);
 
-    return () => {
-      isMounted = false;
-      socketRef.current?.disconnect();
-    };
-  }, [initialized, businessId, refreshToken]);
-
-  // 2. Fetch conversations via socket
+  // 2. קבלת רשימת שיחות דרך Socket.IO
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket?.connected || !businessId) return;
+    if (!socket.connected || !businessId) return;
 
     socket.emit("getConversations", { businessId }, ({ ok, conversations, error: errMsg }) => {
       if (ok) {
         setConvos(conversations);
+        // אם אין שיחה נבחרת, בחרי באחת ראשונה
         if (!selected && conversations.length > 0) {
           const first = conversations[0];
           const convoId = first._id || first.conversationId;
@@ -64,41 +58,42 @@ export default function BusinessChatPage() {
           setSelected({ conversationId: convoId, partnerId });
         }
       } else {
-        console.error("getConversations error:", errMsg);
         setError("לא ניתן לטעון שיחות: " + errMsg);
+        console.error("getConversations error:", errMsg);
       }
     });
-  }, [socketRef.current?.connected, businessId, selected]);
+  }, [socket.connected, businessId]);
 
-  // 3. Listen for new messages
+  // 3. האזנה להודעות חדשות
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket) return;
-
     const handler = (msg) => {
+      // עדכון רשימת השיחות לפי עדכוןAt
       setConvos(prev => {
         const idx = prev.findIndex(c => String(c._id) === msg.conversationId);
         if (idx === -1) return prev;
         const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
+      // עדכון היסטוריית הודעות אם זו השיחה הנבחרת
       if (msg.conversationId === selected?.conversationId) {
         setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
       }
     };
-
     socket.on("newMessage", handler);
-    return () => socket.off("newMessage", handler);
+    return () => {
+      socket.off("newMessage", handler);
+    };
   }, [selected]);
 
-  // 4. Join conversation room
+  // 4. הצטרפות לחדר השיחה
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket?.connected || !selected?.conversationId) return;
+    if (!socket.connected || !selected?.conversationId) return;
 
+    // אם הצטרפת לפני כן — עזוב קודם
     if (hasJoinedRef.current) {
       socket.emit("leaveConversation", selected.conversationId);
     }
+
     socket.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) {
         console.error("joinConversation failed:", ack.error);
@@ -106,17 +101,21 @@ export default function BusinessChatPage() {
       }
     });
     hasJoinedRef.current = true;
-  }, [socketRef.current?.connected, selected]);
+  }, [selected, socket.connected]);
 
-  // 5. Load history via REST fallback
+  // 5. טעינת היסטוריה דרך HTTP (fallback)
   useEffect(() => {
     if (!initialized || !selected?.conversationId) {
       setMessages([]);
       return;
     }
     setLoading(true);
-    API.get("/conversations/history", { params: { conversationId: selected.conversationId } })
-      .then(res => setMessages(res.data))
+    API.get("/conversations/history", {
+      params: { conversationId: selected.conversationId }
+    })
+      .then(res => {
+        setMessages(res.data);
+      })
       .catch(e => {
         console.error("Load history error:", e);
         setError("שגיאה בטעינת היסטוריה");
@@ -125,11 +124,14 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, selected]);
 
+  // בחירת שיחה מהצד
   function handleSelect(conversationId, partnerId) {
     setSelected({ conversationId, partnerId });
   }
 
-  if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
+  if (!initialized) {
+    return <p className={styles.loading}>טוען מידע…</p>;
+  }
 
   return (
     <div className={styles.chatContainer}>
@@ -153,12 +155,14 @@ export default function BusinessChatPage() {
             businessId={businessId}
             customerId={selected.partnerId}
             businessName={user?.businessName || user?.name}
-            socket={socketRef.current}
+            socket={socket}
             messages={messages}
             setMessages={setMessages}
           />
         ) : (
-          <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+          <div className={styles.emptyMessage}>
+            בחר שיחה כדי לראות הודעות
+          </div>
         )}
       </section>
     </div>
