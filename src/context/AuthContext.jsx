@@ -14,7 +14,26 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  // 1. On mount: fetch current user if token exists
+  // טוקן ברגע זה (מאוחסן ב-localStorage)
+  const getToken = () => localStorage.getItem("token");
+
+  // פונקציה לרענון הטוקן
+  const refreshToken = async () => {
+    try {
+      const response = await API.post("/auth/refresh-token");
+      const newToken = response.data.token;
+      if (newToken) {
+        localStorage.setItem("token", newToken);
+        return newToken;
+      }
+      throw new Error("No new token received");
+    } catch (error) {
+      console.error("Failed to refresh token", error);
+      throw error;
+    }
+  };
+
+  // אתחול משתמש - בדיקת טוקן קיים וקבלת פרטי משתמש
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -22,6 +41,11 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
+        const token = getToken();
+        if (!token) throw new Error("No token");
+
+        // אופציונלי: כאן אפשר להוסיף בדיקה אם הטוקן פג, ואז לקרוא ל-refreshToken
+
         const { data } = await API.get("/auth/me");
         setUser({
           userId:           data.userId,
@@ -41,9 +65,6 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  /**
-   * generic login (handles both customer/business by email and staff by username)
-   */
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -59,8 +80,7 @@ export function AuthProvider({ children }) {
         response = await API.post("/auth/staff-login", { username: clean, password });
       }
 
-      // שמירת הטוקן ב-localStorage
-      const token = response.data.token || response.data.accessToken; // ודא שזה השם הנכון בשרת שלך
+      const token = response.data.token || response.data.accessToken;
       if (token) {
         localStorage.setItem("token", token);
       } else {
@@ -120,7 +140,7 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
-      localStorage.removeItem("token"); // הסרת הטוקן בלוגאאוט
+      localStorage.removeItem("token");
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
@@ -148,6 +168,7 @@ export function AuthProvider({ children }) {
         login,
         staffLogin,
         logout,
+        refreshToken,       // <-- הוספת הפונקציה כאן
       }}
     >
       {successMessage && (
