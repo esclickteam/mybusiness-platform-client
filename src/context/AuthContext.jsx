@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
+import jwt from 'jsonwebtoken';
 
 export const AuthContext = createContext();
 
@@ -15,8 +16,10 @@ export function AuthProvider({ children }) {
 
   const applyAccessToken = (token) => {
     if (token) {
+      console.log('עדכון תוקן ב־Axios:', token);
       API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     } else {
+      console.log('נמחק תוקן מ־Axios');
       delete API.defaults.headers.common["Authorization"];
     }
   };
@@ -31,7 +34,12 @@ export function AuthProvider({ children }) {
       try {
         // טען access token ושמור ב-axios
         const token = localStorage.getItem("token");
-        if (token) applyAccessToken(token);
+        if (token) {
+          console.log('נמצא תוקן ב-localStorage:', token);
+          applyAccessToken(token);
+        } else {
+          console.log('לא נמצא תוקן ב-localStorage');
+        }
 
         // קבל פרטי משתמש
         const { data } = await API.get("/auth/me");
@@ -45,11 +53,13 @@ export function AuthProvider({ children }) {
         });
 
         if (data.businessId) {
+          console.log('שומר פרטי עסק ב-localStorage:', data.businessId);
           localStorage.setItem(
             "businessDetails",
             JSON.stringify({ businessId: data.businessId, _id: data.businessId })
           );
         } else {
+          console.log('לא נמצא פרטי עסק, מוחק מ-localStorage');
           localStorage.removeItem("businessDetails");
         }
       } catch {
@@ -71,6 +81,7 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem("token"); // קבל את ה־accessToken מה־localStorage
     const refreshToken = localStorage.getItem("refreshToken");
 
+    console.log('בודק אם ה-token פג תוקף...');
     // אם ה־accessToken פג תוקף, נבצע רענון
     if (token && isTokenExpired(token)) {
       try {
@@ -78,6 +89,7 @@ export function AuthProvider({ children }) {
         const { accessToken } = response.data;
 
         if (accessToken) {
+          console.log('רענן תוקן, שומר ב-localStorage:', accessToken);
           localStorage.setItem("token", accessToken);  // עדכון ה־token ב־localStorage
           applyAccessToken(accessToken);  // עדכון ה־axios עם ה־accessToken החדש
         } else {
@@ -116,6 +128,7 @@ export function AuthProvider({ children }) {
 
       const { token, refreshToken } = response.data;
       if (token) {
+        console.log('שומר תוקן ו-refreshToken ב-localStorage:', token, refreshToken);
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         applyAccessToken(token);
@@ -133,11 +146,13 @@ export function AuthProvider({ children }) {
       });
 
       if (data.businessId) {
+        console.log('שומר פרטי עסק ב-localStorage:', data.businessId);
         localStorage.setItem(
           "businessDetails",
           JSON.stringify({ businessId: data.businessId, _id: data.businessId })
         );
       } else {
+        console.log('לא נמצא פרטי עסק, מוחק מ-localStorage');
         localStorage.removeItem("businessDetails");
       }
 
