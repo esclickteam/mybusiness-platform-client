@@ -1,3 +1,4 @@
+// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
@@ -44,35 +45,37 @@ export default function BusinessChatPage() {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, [initialized, businessId, refreshToken]);
+// בתלותות: רק רכיבים שמשתנים באמת כשהעמוד נטען
+  }, [initialized, businessId]);
 
-  // 2. אחרי חיבור הסוקט – שליפת רשימת השיחות (פעם אחת בלבד!
+  // 2. אחרי חיבור הסוקט – שליפת רשימת השיחות (פעם אחת בלבד)
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const onConnect = () => {
-      sock.emit("getConversations", { businessId }, ({ ok, conversations, error: errMsg }) => {
-        if (ok) {
-          setConvos(conversations);
-          if (conversations.length > 0) {
-            const first = conversations[0];
-            const convoId   = first._id || first.conversationId;
-            const partnerId = first.partnerId || first.participants.find(p => p !== businessId);
-            setSelected({ conversationId: convoId, partnerId });
+      sock.emit(
+        "getConversations",
+        { businessId },
+        ({ ok, conversations, error: errMsg }) => {
+          if (ok) {
+            setConvos(conversations);
+            if (conversations.length > 0) {
+              const first = conversations[0];
+              const convoId   = first._id || first.conversationId;
+              const partnerId = first.partnerId || first.participants.find(p => p !== businessId);
+              setSelected({ conversationId: convoId, partnerId });
+            }
+          } else {
+            setError("לא ניתן לטעון שיחות: " + errMsg);
           }
-        } else {
-          setError("לא ניתן לטעון שיחות: " + errMsg);
+          setLoading(false);
         }
-        setLoading(false);
-      });
+      );
     };
 
-    // מאזין ל־connect רק פעם אחת
     sock.once("connect", onConnect);
-    return () => {
-      sock.off("connect", onConnect);
-    };
+    return () => sock.off("connect", onConnect);
   }, [businessId]);
 
   // 3. האזנה להודעות חדשות
@@ -85,19 +88,22 @@ export default function BusinessChatPage() {
       setConvos(prev => {
         const idx = prev.findIndex(c => String(c._id) === msg.conversationId);
         if (idx === -1) return prev;
-        const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
+        const updated = {
+          ...prev[idx],
+          updatedAt: msg.timestamp || new Date().toISOString()
+        };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
-      // עדכון היסטוריה אם זו השיחה הנבחרת
+      // עדכון היסטוריית ההודעות אם זו השיחה הנבחרת
       if (msg.conversationId === selected?.conversationId) {
-        setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
+        setMessages(prev =>
+          prev.some(m => m._id === msg._id) ? prev : [...prev, msg]
+        );
       }
     };
 
     sock.on("newMessage", handler);
-    return () => {
-      sock.off("newMessage", handler);
-    };
+    return () => sock.off("newMessage", handler);
   }, [selected]);
 
   // 4. הצטרפות לחדר השיחה ונטישתו
