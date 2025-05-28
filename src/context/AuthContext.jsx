@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -21,22 +20,28 @@ export function AuthProvider({ children }) {
 
     const initialize = async () => {
       setLoading(true);
-      try {
-        const { data } = await API.get("/auth/me");
-        setUser({
-          userId:           data.userId,
-          name:             data.name,
-          email:            data.email,
-          role:             data.role,
-          subscriptionPlan: data.subscriptionPlan,
-          businessId:       data.businessId || null,
-        });
-      } catch {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          API.defaults.headers['Authorization'] = `Bearer ${token}`; // קביעת הטוקן כ־Authorization header
+
+          const { data } = await API.get("/auth/me");
+          setUser({
+            userId:           data.userId,
+            name:             data.name,
+            email:            data.email,
+            role:             data.role,
+            subscriptionPlan: data.subscriptionPlan,
+            businessId:       data.businessId || null,
+          });
+        } catch {
+          setUser(null);
+        }
+      } else {
         setUser(null);
-      } finally {
-        setLoading(false);
-        setInitialized(true);
       }
+      setLoading(false);
+      setInitialized(true);
     };
     initialize();
   }, []);
@@ -59,10 +64,11 @@ export function AuthProvider({ children }) {
         response = await API.post("/auth/staff-login", { username: clean, password });
       }
 
-      // שמירת הטוקן ב-localStorage
+      // שמירת הטוקן ב־localStorage
       const token = response.data.token || response.data.accessToken; // ודא שזה השם הנכון בשרת שלך
       if (token) {
-        localStorage.setItem("token", token);
+        localStorage.setItem("token", token);  // שמור את הטוקן ב־localStorage
+        API.defaults.headers['Authorization'] = `Bearer ${token}`; // הגדר את הטוקן עבור כל בקשה עתידית
       } else {
         console.warn("No token received from login response");
       }
@@ -120,7 +126,8 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
-      localStorage.removeItem("token"); // הסרת הטוקן בלוגאאוט
+      localStorage.removeItem("token"); // הסרת הטוקן מ־localStorage
+      delete API.defaults.headers['Authorization']; // ניקוי ה־Authorization header
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
