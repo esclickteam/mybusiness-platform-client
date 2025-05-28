@@ -14,12 +14,13 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  // עטיפות setState עם לוגים חכמים כדי לעקוב מתי משתנים
+  // שימוש ב-refs למניעת עדכונים מיותרים
   const userRef = useRef();
   const loadingRef = useRef();
 
+  // setUser משווה לפי userId בלבד
   const setUser = (value) => {
-    if (JSON.stringify(userRef.current) !== JSON.stringify(value)) {
+    if (userRef.current?.userId !== value?.userId) {
       console.log("setUser called with", value);
       userRef.current = value;
       _setUser(value);
@@ -82,6 +83,8 @@ export function AuthProvider({ children }) {
             await refreshToken();
           } catch (err) {
             console.error("שגיאת רענון טוקן:", err);
+            setUser(null);
+            setAccessToken(null);
           }
         }
 
