@@ -73,6 +73,21 @@ function ScrollToTop() {
 
 export default function App() {
   const { user, loading } = useAuth();
+  const location = useLocation();
+
+  // כל הנתיבים הציבוריים שאסור לעשות אליהם redirect חוזר
+  const publicRoutes = [
+    "/login",
+    "/register",
+    "/reset-password",
+    "/change-password",
+    "/staff-login"
+  ];
+
+  // כדי למנוע redirect לולאתי – מבצעים הפנייה רק אם לא נמצאים בנתיב ציבורי
+  if (!loading && !user && !publicRoutes.includes(location.pathname)) {
+    return <Navigate to="/login" replace />;
+  }
 
   // חיפוש וסינון
   const [searchMode, setSearchMode] = useState("category");
@@ -85,7 +100,6 @@ export default function App() {
     setFreeText("");
   };
 
-  // רק לאחר שהמשתמש נטען עוטפים ב־Providers
   if (loading) return <div>טוען משתמש…</div>;
 
   return (
