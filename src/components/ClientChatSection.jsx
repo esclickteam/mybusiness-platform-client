@@ -6,7 +6,7 @@ import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
 import { createSocket } from "../socket";
 import API, { setAccessToken } from "../api";
-import { ensureValidToken } from "../authHelpers";
+import { ensureValidToken } from "../utils/authHelpers";
 
 export default function ClientChatSection() {
   const { businessId: routeBusinessId } = useParams();
