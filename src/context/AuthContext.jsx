@@ -8,19 +8,39 @@ import API, {
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, _setUser] = useState(null);
   const [accessToken, _setAccessToken] = useState(localStorage.getItem("accessToken"));
-  const [loading, setLoading] = useState(true);
+  const [loading, _setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  const setAccessToken = token => {
+  // עטיפות setState עם לוגים חכמים כדי לעקוב מתי משתנים
+  const userRef = useRef();
+  const loadingRef = useRef();
+
+  const setUser = (value) => {
+    if (JSON.stringify(userRef.current) !== JSON.stringify(value)) {
+      console.log("setUser called with", value);
+      userRef.current = value;
+      _setUser(value);
+    }
+  };
+
+  const setLoading = (value) => {
+    if (loadingRef.current !== value) {
+      console.log("setLoading called with", value);
+      loadingRef.current = value;
+      _setLoading(value);
+    }
+  };
+
+  const setAccessToken = (token) => {
     _setAccessToken(token);
     setAPIAccessToken(token);
     token ? localStorage.setItem("accessToken", token) : localStorage.removeItem("accessToken");
   };
 
-  const saveBusinessDetails = data => {
+  const saveBusinessDetails = (data) => {
     if (data.business) {
       localStorage.setItem("businessDetails", JSON.stringify(data.business));
     } else if (data.businessId) {
@@ -45,59 +65,54 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-  if (initRan.current) return;
-  initRan.current = true;
+    if (initRan.current) return;
+    initRan.current = true;
 
-  (async () => {
-    setLoading(true);
-    try {
-      const storedAT = localStorage.getItem("accessToken");
-      const storedRT = localStorage.getItem("refreshToken");
-
-      // קודם כל מגדירים את הטוקנים במערכת
-      if (storedAT) setAccessToken(storedAT);
-      if (storedRT) setAPIRefreshToken(storedRT);
-
-      // נסה לרענן טוקן אם יש refreshToken
-      if (storedRT) {
-        try {
-          await refreshToken();
-        } catch (err) {
-          console.error("שגיאת רענון טוקן:", err);
-          // טוקן לא בתוקף – ממשיכים למצב לא מחובר
-        }
-      }
-
-      // נסה תמיד להביא את המשתמש (אם יש accessToken)
+    (async () => {
+      setLoading(true);
       try {
-        const { data } = await API.get("/auth/me");
-        setUser({
-          userId:           data.userId,
-          name:             data.name,
-          email:            data.email,
-          role:             data.role,
-          subscriptionPlan: data.subscriptionPlan,
-          businessId:       data.businessId || null,
-        });
-        saveBusinessDetails(data);
+        const storedAT = localStorage.getItem("accessToken");
+        const storedRT = localStorage.getItem("refreshToken");
+
+        if (storedAT) setAccessToken(storedAT);
+        if (storedRT) setAPIRefreshToken(storedRT);
+
+        if (storedRT) {
+          try {
+            await refreshToken();
+          } catch (err) {
+            console.error("שגיאת רענון טוקן:", err);
+          }
+        }
+
+        try {
+          const { data } = await API.get("/auth/me");
+          setUser({
+            userId:           data.userId,
+            name:             data.name,
+            email:            data.email,
+            role:             data.role,
+            subscriptionPlan: data.subscriptionPlan,
+            businessId:       data.businessId || null,
+          });
+          saveBusinessDetails(data);
+        } catch (err) {
+          console.error("שגיאת הבאת משתמש:", err);
+          setUser(null);
+          setAccessToken(null);
+          localStorage.removeItem("businessDetails");
+        }
       } catch (err) {
-        console.error("שגיאת הבאת משתמש:", err);
+        console.error("שגיאה כללית ב-AuthContext:", err);
         setUser(null);
         setAccessToken(null);
         localStorage.removeItem("businessDetails");
+      } finally {
+        setLoading(false);
+        setInitialized(true);
       }
-    } catch (err) {
-      console.error("שגיאה כללית ב-AuthContext:", err);
-      setUser(null);
-      setAccessToken(null);
-      localStorage.removeItem("businessDetails");
-    } finally {
-      setLoading(false);
-      setInitialized(true);
-    }
-  })();
-}, []);
-
+    })();
+  }, []);
 
   const login = async (identifier, password) => {
     setLoading(true);

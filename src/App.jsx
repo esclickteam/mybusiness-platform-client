@@ -18,6 +18,7 @@ import { useAuth } from "./context/AuthContext";
 import { SSEProvider } from "./context/SSEContext";
 import { SocketProvider } from "./context/socketContext";
 import API from "./api";
+import { useOnceLogger } from "./utils/useOnceLogger";
 
 // ---- כל הייבוא הדינמי כפי שהיה ----
 const HomePage            = lazy(() => import("./pages/Home"));
@@ -74,6 +75,9 @@ function ScrollToTop() {
 export default function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
+
+  useOnceLogger("App render - user", user);
+  useOnceLogger("App render - loading", loading);
 
   // כל הנתיבים הציבוריים שאסור לעשות אליהם redirect חוזר
   const publicRoutes = [
