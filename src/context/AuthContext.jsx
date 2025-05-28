@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
-import jwt from "jsonwebtoken";  // הוספתי את ה-import של jwt כדי לבצע בדיקות על הטוקן
 
 export const AuthContext = createContext();
 
