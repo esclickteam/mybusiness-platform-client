@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import { createSocket } from "../socket";
+import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
 
 
 export default function CollabPartnersChat() {

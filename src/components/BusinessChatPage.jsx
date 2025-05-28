@@ -6,6 +6,7 @@ import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import { createSocket } from "../socket";
 import API from "../api";
+import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
 
 
 export default function BusinessChatPage() {

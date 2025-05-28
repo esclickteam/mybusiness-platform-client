@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useAuth } from "../context/AuthContext";
 import { createSocket } from "../socket";
+import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
 
 export default function BusinessChat({ otherBusinessId }) {
   const { initialized, refreshToken } = useAuth();

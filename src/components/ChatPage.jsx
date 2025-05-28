@@ -7,6 +7,7 @@ import ChatComponent from './ChatComponent';
 import API from '../api';
 import { createSocket } from '../socket';
 import './ChatPage.css';
+import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
 
 export default function ChatPage({ isBusiness }) {
   const { initialized, refreshToken } = useAuth();

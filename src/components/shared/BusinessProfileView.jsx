@@ -6,8 +6,9 @@ import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
-import { ensureValidToken, getBusinessId } from "../../utils/authHelpers";
 import { createSocket } from "../../socket";
+import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
+
 
 import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
