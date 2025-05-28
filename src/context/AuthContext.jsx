@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
-import jwt from 'jsonwebtoken';
 
 export const AuthContext = createContext();
 
@@ -30,9 +29,11 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
+        // טען access token ושמור ב-axios
         const token = localStorage.getItem("token");
         if (token) applyAccessToken(token);
 
+        // קבל פרטי משתמש
         const { data } = await API.get("/auth/me");
         setUser({
           userId: data.userId,
@@ -44,11 +45,15 @@ export function AuthProvider({ children }) {
         });
 
         if (data.businessId) {
-          localStorage.setItem("businessDetails", JSON.stringify({ businessId: data.businessId, _id: data.businessId }));
+          localStorage.setItem(
+            "businessDetails",
+            JSON.stringify({ businessId: data.businessId, _id: data.businessId })
+          );
         } else {
           localStorage.removeItem("businessDetails");
         }
       } catch {
+        // במידה וה־/auth/me נכשל
         setUser(null);
         localStorage.removeItem("businessDetails");
         applyAccessToken(null);
@@ -63,17 +68,18 @@ export function AuthProvider({ children }) {
 
   // פונקציה לרענן את ה־accessToken
   const refreshTokenIfNeeded = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token"); // קבל את ה־accessToken מה־localStorage
     const refreshToken = localStorage.getItem("refreshToken");
 
+    // אם ה־accessToken פג תוקף, נבצע רענון
     if (token && isTokenExpired(token)) {
       try {
         const response = await API.post("/refresh-token", { refreshToken });
         const { accessToken } = response.data;
 
         if (accessToken) {
-          localStorage.setItem("token", accessToken);
-          applyAccessToken(accessToken);
+          localStorage.setItem("token", accessToken);  // עדכון ה־token ב־localStorage
+          applyAccessToken(accessToken);  // עדכון ה־axios עם ה־accessToken החדש
         } else {
           console.error("Unable to refresh token");
         }
@@ -103,6 +109,7 @@ export function AuthProvider({ children }) {
     const isEmail = clean.includes("@");
 
     try {
+      // שלח בקשת login
       const response = isEmail
         ? await API.post("/auth/login", { email: clean.toLowerCase(), password })
         : await API.post("/auth/staff-login", { username: clean, password });
@@ -114,6 +121,7 @@ export function AuthProvider({ children }) {
         applyAccessToken(token);
       }
 
+      // קבל מחדש פרטי משתמש
       const { data } = await API.get("/auth/me");
       setUser({
         userId: data.userId,
@@ -125,11 +133,15 @@ export function AuthProvider({ children }) {
       });
 
       if (data.businessId) {
-        localStorage.setItem("businessDetails", JSON.stringify({ businessId: data.businessId, _id: data.businessId }));
+        localStorage.setItem(
+          "businessDetails",
+          JSON.stringify({ businessId: data.businessId, _id: data.businessId })
+        );
       } else {
         localStorage.removeItem("businessDetails");
       }
 
+      // ניתוב לפי תפקיד
       if (!options.skipRedirect) {
         let path = "/";
         switch (data.role) {
@@ -165,8 +177,10 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const staffLogin = (username, password) => login(username, password, { skipRedirect: true });
+  const staffLogin = (username, password) =>
+    login(username, password, { skipRedirect: true });
 
+  // פונקציית logout
   const logout = async () => {
     setLoading(true);
     try {
@@ -184,6 +198,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // ניהול הודעת הצלחה
   useEffect(() => {
     if (!successMessage) return;
     const timer = setTimeout(() => setSuccessMessage(null), 4000);
@@ -200,10 +215,12 @@ export function AuthProvider({ children }) {
         login,
         staffLogin,
         logout,
-        refreshTokenIfNeeded,
+        refreshTokenIfNeeded,  // הוספנו את הפונקציה לרענון ה־token
       }}
     >
-      {successMessage && <div className="global-success-toast">{successMessage}</div>}
+      {successMessage && (
+        <div className="global-success-toast">{successMessage}</div>
+      )}
       {children}
     </AuthContext.Provider>
   );
