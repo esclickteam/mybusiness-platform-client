@@ -1,8 +1,8 @@
- // src/components/ChatComponent.jsx
+// src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from "react";
 import BusinessChatTab from "./BusinessChatTab";
-import ClientChatTab   from "./ClientChatTab";
-import { io } from "socket.io-client";
+import ClientChatTab from "./ClientChatTab";
+import createSocket from "../socket"; // השתמשנו בפונקציה שאתה מייצא מקובץ socket.js
 
 export default function ChatComponent({
   userId,
@@ -19,25 +19,20 @@ export default function ChatComponent({
 
   const socketRef = useRef(null);
 
+  // 1. אתחול הסוקט (פעם אחת בלבד) וטעינת שיחות/פתיחת שיחה
   useEffect(() => {
     if (!userId) return;
+    if (socketRef.current) return; // כבר אתחלנו
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    const token = localStorage.getItem("token");
+    const sock = createSocket();
+    socketRef.current = sock;
+    sock.connect();
 
-    socketRef.current = io(socketUrl, {
-      path: "/socket.io",
-      transports: ["polling", "websocket"],
-      auth: {
-        token,
-        role: isBusiness ? "business-dashboard" : "chat",
-      },
-      withCredentials: true,
-    });
-
+    // טעינת שיחות עבור עסק
     if (isBusiness) {
       setLoadingConvs(true);
-      socketRef.current.emit("getConversations", { userId }, (res) => {
+      sock.emit("getConversations", { userId }, (res) => {
+        setLoadingConvs(false);
         if (res.ok) {
           const convs = Array.isArray(res.conversations) ? res.conversations : [];
           setConversations(convs);
@@ -54,53 +49,41 @@ export default function ChatComponent({
         } else {
           console.error("Error loading conversations:", res.error);
         }
-        setLoadingConvs(false);
       });
     } else {
+      // פתיחת שיחה עבור לקוח
       if (!conversationId && partnerId) {
         setLoadingInit(true);
-        socketRef.current.emit(
-          "startConversation",
-          { otherUserId: partnerId },
-          (res) => {
-            if (res.ok) {
-              setConversationId(res.conversationId);
-            } else {
-              console.error("Failed to start conversation:", res.error);
-            }
-            setLoadingInit(false);
+        sock.emit("startConversation", { otherUserId: partnerId }, (res) => {
+          setLoadingInit(false);
+          if (res.ok) {
+            setConversationId(res.conversationId);
+          } else {
+            console.error("Failed to start conversation:", res.error);
           }
-        );
+        });
       }
     }
 
     return () => {
-      socketRef.current.disconnect();
+      sock.disconnect();
+      socketRef.current = null;
     };
-  }, [userId, isBusiness, partnerId]);
+  }, [userId, isBusiness, partnerId, conversationId]);
 
+  // 2. עדכון currentCustomerId כשרשות שיחה משתנה
   useEffect(() => {
-    if (isBusiness && conversationId) {
+    if (isBusiness && conversationId && conversations.length) {
       const conv = conversations.find(
         (c) => (c._id ?? c.conversationId) === conversationId
       );
       if (conv) {
         const custId =
-          conv.customer?._id ??
-          conv.participants.find((pid) => pid !== userId) ??
-          null;
+          conv.customer?._id ?? conv.participants.find((pid) => pid !== userId);
         setCurrentCustomerId(custId);
       }
     }
   }, [conversationId, isBusiness, conversations, userId]);
-
-  const currentConversation = conversations.find(
-    (c) => (c._id ?? c.conversationId) === conversationId
-  );
-  const businessIdFromConversation =
-    currentConversation?.business?._id ??
-    currentConversation?.participants.find((pid) => pid !== userId) ??
-    partnerId;
 
   if (loadingInit) return <p>⏳ פותח שיחה…</p>;
   if (loadingConvs) return <p>⏳ טוען שיחות…</p>;
@@ -117,7 +100,7 @@ export default function ChatComponent({
   ) : (
     <ClientChatTab
       conversationId={conversationId}
-      businessId={businessIdFromConversation}
+      businessId={currentCustomerId}
       userId={userId}
       socket={socketRef.current}
     />

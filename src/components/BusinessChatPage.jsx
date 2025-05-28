@@ -19,9 +19,10 @@ export default function BusinessChatPage() {
   const socketRef               = useRef(null);
   const hasJoinedRef            = useRef(false);
 
-  // 1. אתחול והתחברות לסוקט ברגע שהמשתמש מאותחל
+  // 1. אתחול והתחברות לסוקט (פעם אחת בלבד)
   useEffect(() => {
     if (!initialized || !businessId) return;
+    if (socketRef.current) return; // אם כבר אתחולנו—אל נפעיל שוב
 
     (async () => {
       try {
@@ -37,16 +38,14 @@ export default function BusinessChatPage() {
       sock.connect();
 
       sock.on("connect_error", err => {
-        setError("Socket error: " + err.message);
+        setError("שגיאת socket: " + err.message);
         setLoading(false);
       });
 
-      // אחרי חיבור — טען שיחות
       sock.once("connect", () => {
         sock.emit("getConversations", { businessId }, ({ ok, conversations, error: errMsg }) => {
           if (ok) {
             setConvos(conversations);
-            // בחר שיחה ראשונה אוטומטית
             if (conversations.length > 0) {
               const first = conversations[0];
               const convoId   = first._id || first.conversationId;
@@ -64,7 +63,7 @@ export default function BusinessChatPage() {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, [initialized, businessId, refreshToken]);
+  }, [initialized, businessId]); // הסרנו את refreshToken מתלות
 
   // 2. האזנה להודעות חדשות
   useEffect(() => {
@@ -72,14 +71,12 @@ export default function BusinessChatPage() {
     if (!sock) return;
 
     const handler = msg => {
-      // עדכון sidebar
       setConvos(prev => {
         const idx = prev.findIndex(c => String(c._id) === msg.conversationId);
         if (idx === -1) return prev;
         const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
-      // עדכון היסטוריה אם זו השיחה הנבחרת
       if (msg.conversationId === selected?.conversationId) {
         setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
       }
@@ -91,7 +88,7 @@ export default function BusinessChatPage() {
     };
   }, [selected]);
 
-  // 3. הצטרפות לחדר השיחה ונטישתו
+  // 3. הצטרפות ועזיבת חדר השיחה
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock?.connected || !selected?.conversationId) return;
@@ -105,7 +102,7 @@ export default function BusinessChatPage() {
     hasJoinedRef.current = true;
   }, [selected]);
 
-  // 4. טעינת היסטוריית ההודעות דרך HTTP (fallback)
+  // 4. טעינת היסטוריה (fallback)
   useEffect(() => {
     if (!selected?.conversationId) {
       setMessages([]);
