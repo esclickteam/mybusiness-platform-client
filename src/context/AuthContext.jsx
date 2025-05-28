@@ -91,12 +91,13 @@ export function AuthProvider({ children }) {
       }
 
       // שמירת הטוקן ב־localStorage
-      const token = response.data.token || response.data.accessToken;
-      if (token) {
-        localStorage.setItem("token", token);  // שמור את ה־Access Token ב־localStorage
-        API.defaults.headers['Authorization'] = `Bearer ${token}`; // הגדר את הטוקן עבור כל בקשה עתידית
+      const { accessToken, refreshToken } = response.data;  // החזרת שני הטוקנים
+      if (accessToken && refreshToken) {
+        localStorage.setItem("token", accessToken);  // שמור את ה־Access Token
+        localStorage.setItem("refreshToken", refreshToken);  // שמור את ה־Refresh Token
+        API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;  // הגדר את הטוקן עבור כל בקשה עתידית
       } else {
-        console.warn("No token received from login response");
+        console.warn("No tokens received from login response");
       }
 
       const { data } = await API.get("/auth/me");
