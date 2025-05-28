@@ -1,5 +1,5 @@
 // src/authHelpers.js
-import jwtDecode from "jwt-decode";
+import * as jwtDecode from "jwt-decode";
 import { refreshToken as contextRefreshToken } from "../context/AuthContext";
 
 // בודק אם הטוקן פג
