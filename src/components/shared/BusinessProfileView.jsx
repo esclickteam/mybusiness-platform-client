@@ -7,7 +7,6 @@ import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 import { isTokenExpired } from "../../utils/authHelpers";
-import { refreshToken } from "../../utils/tokenHelpers";
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
@@ -25,7 +24,7 @@ const TABS = [
 
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
-  const { user } = useAuth();
+  const { user, refreshToken } = useAuth();
   const socket = useContext(SocketContext);
   const bizId = paramId || user?.businessId;
 
