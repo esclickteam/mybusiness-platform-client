@@ -59,11 +59,13 @@ export function createSocket() {
       } else {
         console.error("Failed to refresh token");
         // הפניית המשתמש להתחברות מחדש אם רענון הטוקן נכשל
+        alert("Session expired. Please log in again.");
         window.location.href = "/login";
       }
     } catch (error) {
       console.error("Error refreshing token:", error);
       // הפניית המשתמש להתחברות מחדש אם הייתה שגיאה ברענון
+      alert("An error occurred while refreshing the token. Please try again.");
       window.location.href = "/login";
     }
   });
