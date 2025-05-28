@@ -3,7 +3,6 @@ import { getAccessToken, getRefreshToken, getBusinessId } from "./utils/authHelp
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";  // עדכון משתנה סביבה
 
-
 export function createSocket() {
   const token = getAccessToken();
   const refreshToken = getRefreshToken();  // קבל את ה־refreshToken
@@ -12,6 +11,8 @@ export function createSocket() {
   // בדוק אם אחד מהערכים חסר
   if (!token || !refreshToken || !businessId) {
     console.error("Missing token, refreshToken, or businessId");
+    alert("Missing required authentication data. Please log in again.");
+    window.location.href = "/login";
     return null;
   }
 
