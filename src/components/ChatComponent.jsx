@@ -31,7 +31,8 @@ export default function ChatComponent({
     (async () => {
       try {
         setLoadingInit(true);
-        const token = await ensureValidToken();
+        const token = await ensureValidToken(refreshToken);
+
         sock = createSocket();
         sock.auth = {
           token,

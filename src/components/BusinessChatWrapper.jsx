@@ -25,7 +25,8 @@ export default function BusinessChatWrapper() {
 
     (async () => {
       try {
-        const token = await ensureValidToken();
+        const token = await ensureValidToken(refreshToken);
+
         sock = createSocket();
         sock.auth = { token, role: 'business', businessId };
         sock.connect();

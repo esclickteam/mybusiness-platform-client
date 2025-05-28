@@ -29,7 +29,8 @@ export default function CollabPartnersChat() {
     let sock;
     (async () => {
       try {
-        const token = await ensureValidToken();
+        const token = await ensureValidToken(refreshToken);
+
         sock = createSocket();
         sock.auth = {
           token,

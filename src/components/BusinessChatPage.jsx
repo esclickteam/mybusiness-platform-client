@@ -28,7 +28,8 @@ export default function BusinessChatPage() {
     (async () => {
       setLoading(true);
       try {
-        const token = await ensureValidToken();
+        const token = await ensureValidToken(refreshToken);
+
         const socket = createSocket();
         socket.auth = { token, role: "business", businessId };
         socket.connect();

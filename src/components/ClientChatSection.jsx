@@ -37,7 +37,8 @@ export default function ClientChatSection() {
     (async () => {
       setLoading(true);
       try {
-        const token = await ensureValidToken();
+        const token = await ensureValidToken(refreshToken);
+
         const socket = createSocket();
         socket.auth = { token, role: "client", businessId };
         socket.connect();

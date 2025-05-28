@@ -26,7 +26,8 @@ export default function DashboardLive() {
 
     (async () => {
       try {
-        const token = await ensureValidToken();
+        const token = await ensureValidToken(refreshToken);
+
         sock = createSocket();
         sock.auth = { token, role: "business-dashboard", businessId };
         sock.connect();

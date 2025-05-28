@@ -52,7 +52,8 @@ export default function BusinessProfileView() {
     (async () => {
       setLoading(true);
       try {
-        const token = await ensureValidToken();
+        const token = await ensureValidToken(refreshToken);
+
         const resBiz = await API.get(`/business/${bizId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -87,7 +88,8 @@ export default function BusinessProfileView() {
     let sock;
     (async () => {
       try {
-        const token = await ensureValidToken();
+        const token = await ensureValidToken(refreshToken);
+
         sock = createSocket();
         sock.auth = { token, role: "client", businessId: bizId };
         sock.connect();
