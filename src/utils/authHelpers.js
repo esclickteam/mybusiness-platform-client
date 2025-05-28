@@ -1,6 +1,6 @@
 // src/authHelpers.js
 import jwtDecode from "jwt-decode";
-import { refreshToken as contextRefreshToken } from "./context/AuthContext";
+import { refreshToken as contextRefreshToken } from "../context/AuthContext";
 
 // בודק אם הטוקן פג
 export function isTokenExpired(token) {
