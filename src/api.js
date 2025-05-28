@@ -37,7 +37,7 @@ API.interceptors.response.use(
     console.log(`API Response: ${response.status} ${response.config.url}`);
     return response;
   },
-  (error) => {
+  async (error) => {
     const { response, config } = error;
     if (!response) {
       console.error("Network error:", error);
@@ -45,13 +45,26 @@ API.interceptors.response.use(
     }
 
     // במקרה של 401 (לא auth/me) – נווט ללוגין
-    if (
-      response.status === 401 &&
-      !config.url.endsWith("/auth/me") &&
-      window.location.pathname !== "/login"
-    ) {
-      window.location.replace("/login");
-      return;
+    if (response.status === 401 && !config.url.endsWith("/auth/me")) {
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        if (refreshToken) {
+          const refreshResponse = await axios.post("/refresh-token", { refreshToken });
+
+          if (refreshResponse.data.accessToken) {
+            // עדכון הטוקן החדש ב־localStorage
+            localStorage.setItem("token", refreshResponse.data.accessToken);
+            // עדכון ה־Axios
+            API.defaults.headers.common["Authorization"] = `Bearer ${refreshResponse.data.accessToken}`;
+            // נסה שנית את הבקשה המקורית
+            return API(config);
+          }
+        }
+      } catch (err) {
+        console.error("Error refreshing token:", err);
+        window.location.replace("/login");
+      }
     }
 
     // קריאה לתוכן השגיאה
