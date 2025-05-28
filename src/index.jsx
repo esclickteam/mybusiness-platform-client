@@ -12,7 +12,13 @@ window.Buffer = window.Buffer || Buffer;
 
 // קומפוננטת Wrapper ששלפה את ה-businessId מה-AuthContext ומעבירה ל-SSEProvider
 function SSEWrapper({ children }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    // מחזיר null בזמן טעינת המשתמש כדי למנוע רינדור מוקדם
+    return null;
+  }
+
   return (
     <SSEProvider businessId={user?.businessId}>
       {children}
