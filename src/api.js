@@ -1,3 +1,4 @@
+// src/api/index.js
 import axios from "axios";
 
 // הגדרת BASE_URL דינמית לפי סביבת הפיתוח או הפרודקשן
@@ -9,7 +10,7 @@ const BASE_URL = isProd
 // יצירת instance של Axios
 const API = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,        // שולח את ה־HttpOnly cookie אוטומטית
+  withCredentials: true,        // שולח HttpOnly cookie אוטומטית
   timeout: 5000,                // timeout לאחר 5 שניות
   headers: {
     Accept: "application/json",
@@ -31,7 +32,19 @@ API.interceptors.request.use(
   }
 );
 
-// interceptor לתשובות: טיפול ב־401, הפקת שגיאות ולוג
+// interceptor לתשובות: טיפול ב־401 + רענון טוקן + retry + הפקת שגיאות ולוג
+let isRefreshing = false;
+let subscribers = [];
+
+function onRefreshed() {
+  subscribers.forEach(cb => cb());
+  subscribers = [];
+}
+
+function addSubscriber(cb) {
+  subscribers.push(cb);
+}
+
 API.interceptors.response.use(
   (response) => {
     console.log(`API Response: ${response.status} ${response.config.url}`);
@@ -39,21 +52,43 @@ API.interceptors.response.use(
   },
   (error) => {
     const { response, config } = error;
+
+    // רשתית
     if (!response) {
       console.error("Network error:", error);
       return Promise.reject(new Error("שגיאת רשת"));
     }
 
-    // במקרה של 401 (לא auth/me) – נווט ללוגין
-    if (
-      response.status === 401 &&
-      !config.url.endsWith("/auth/me") &&
-      window.location.pathname !== "/login"
-    ) {
-      window.location.replace("/login");
-      return;
+    // טיפול ב־401
+    if (response.status === 401 && !config._retry) {
+      config._retry = true;
+
+      // אם כבר ברענון, נחכה לתוצאות
+      if (isRefreshing) {
+        return new Promise(resolve => {
+          addSubscriber(() => resolve(API(config)));
+        });
+      }
+
+      isRefreshing = true;
+      // ביצוע רענון טוקן דרך ה-cookie
+      return API.post("/auth/refresh-token")
+        .then(res => {
+          isRefreshing = false;
+          onRefreshed();
+          // אחרי רענון, נריץ שוב את הקריאה המקורית
+          return API(config);
+        })
+        .catch(err => {
+          isRefreshing = false;
+          console.warn("Refresh token failed:", err);
+          // כשל ברענון -> נשלח ל־login
+          window.location.replace("/login");
+          return Promise.reject(err);
+        });
     }
 
+    // לא 401 רגיל או כבר ניסינו ורענון כשל
     // קריאה לתוכן השגיאה
     const contentType = response.headers["content-type"] || "";
     let message;

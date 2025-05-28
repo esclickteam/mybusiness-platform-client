@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -13,9 +14,6 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  const getToken = () => localStorage.getItem("token");
-  const getRefreshToken = () => localStorage.getItem("refreshToken");
-
   const applyAccessToken = (token) => {
     if (token) {
       API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -24,29 +22,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // רק ב-refreshToken שולחים את ה-refresh header
-  const refreshToken = async () => {
-    try {
-      const response = await API.post(
-        "/auth/refresh-token",
-        {},
-        { headers: { 'x-refresh-token': getRefreshToken() } }
-      );
-      const { token: newToken, refreshToken: newRefresh } = response.data;
-      if (newToken) {
-        localStorage.setItem("token", newToken);
-        applyAccessToken(newToken);
-      }
-      if (newRefresh) {
-        localStorage.setItem("refreshToken", newRefresh);
-      }
-      return newToken;
-    } catch (err) {
-      console.error("Failed to refresh token", err);
-      throw err;
-    }
-  };
-
+  // אתחול המשתמש
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -54,10 +30,6 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
-        const token = getToken();
-        if (!token) throw new Error("No token");
-        applyAccessToken(token);
-
         const { data } = await API.get("/auth/me");
         setUser({
           userId: data.userId,
@@ -84,9 +56,11 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     };
+
     initialize();
   }, []);
 
+  // הפונקציה ל־login
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -97,16 +71,18 @@ export function AuthProvider({ children }) {
       const response = isEmail
         ? await API.post("/auth/login", { email: clean.toLowerCase(), password })
         : await API.post("/auth/staff-login", { username: clean, password });
-      const { token, refreshToken: refresh } = response.data;
+      const { token, refreshToken } = response.data;
 
+      // שומרים טוקנים ומעדכנים header
       if (token) {
         localStorage.setItem("token", token);
         applyAccessToken(token);
       }
-      if (refresh) {
-        localStorage.setItem("refreshToken", refresh);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
       }
 
+      // משאירים את ה-cookie ל־HttpOnly
       const { data } = await API.get("/auth/me");
       setUser({
         userId: data.userId,
@@ -129,14 +105,25 @@ export function AuthProvider({ children }) {
       if (!options.skipRedirect) {
         let path = "/";
         switch (data.role) {
-          case "business": path = `/business/${data.businessId}/dashboard`; break;
-          case "customer": path = "/client/dashboard"; break;
-          case "worker": path = "/staff/dashboard"; break;
-          case "manager": path = "/manager/dashboard"; break;
-          case "admin": path = "/admin/dashboard"; break;
+          case "business":
+            path = `/business/${data.businessId}/dashboard`;
+            break;
+          case "customer":
+            path = "/client/dashboard";
+            break;
+          case "worker":
+            path = "/staff/dashboard";
+            break;
+          case "manager":
+            path = "/manager/dashboard";
+            break;
+          case "admin":
+            path = "/admin/dashboard";
+            break;
         }
         navigate(path, { replace: true });
       }
+
       return data;
     } catch (e) {
       setError(
@@ -150,7 +137,8 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const staffLogin = (username, password) => login(username, password, { skipRedirect: true });
+  const staffLogin = (username, password) =>
+    login(username, password, { skipRedirect: true });
 
   const logout = async () => {
     setLoading(true);
@@ -170,6 +158,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // ניהול תצוגת הודעת הצלחה
   useEffect(() => {
     if (successMessage) {
       const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -179,9 +168,19 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, initialized, error, login, staffLogin, logout, refreshToken }}
+      value={{
+        user,
+        loading,
+        initialized,
+        error,
+        login,
+        staffLogin,
+        logout,
+      }}
     >
-      {successMessage && <div className="global-success-toast">{successMessage}</div>}
+      {successMessage && (
+        <div className="global-success-toast">{successMessage}</div>
+      )}
       {children}
     </AuthContext.Provider>
   );
