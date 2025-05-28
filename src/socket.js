@@ -1,4 +1,3 @@
-// src/socket.js
 import { io } from "socket.io-client";
 import { getAccessToken, getRefreshToken, getBusinessId } from "./utils/authHelpers";
 
@@ -9,11 +8,13 @@ export function createSocket() {
   const refreshToken = getRefreshToken();  // קבל את ה־refreshToken
   const businessId = getBusinessId();
 
+  // בדוק אם אחד מהערכים חסר
   if (!token || !refreshToken || !businessId) {
     console.error("Missing token, refreshToken, or businessId");
     return null;
   }
 
+  // יצירת החיבור לסוקט
   const socket = io(SOCKET_URL, {
     path: "/socket.io",
     transports: ["websocket"],
@@ -47,6 +48,10 @@ export function createSocket() {
         body: JSON.stringify({ refreshToken }),
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to refresh token');
+      }
+
       const data = await response.json();
       if (data.accessToken) {
         // עדכון ה־accessToken החדש
@@ -57,7 +62,7 @@ export function createSocket() {
         socket.connect();  // התחבר מחדש עם ה־accessToken החדש
         console.log("✅ Access token refreshed and reconnected");
       } else {
-        console.error("Failed to refresh token");
+        console.error("Failed to refresh token: No access token returned");
         // הפניית המשתמש להתחברות מחדש אם רענון הטוקן נכשל
         alert("Session expired. Please log in again.");
         window.location.href = "/login";
