@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -67,6 +66,40 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
+  // פונקציה לרענן את ה־accessToken
+  const refreshTokenIfNeeded = async () => {
+    const token = localStorage.getItem("token"); // קבל את ה־accessToken מה־localStorage
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    // אם ה־accessToken פג תוקף, נבצע רענון
+    if (token && isTokenExpired(token)) {
+      try {
+        const response = await API.post("/refresh-token", { refreshToken });
+        const { accessToken } = response.data;
+
+        if (accessToken) {
+          localStorage.setItem("token", accessToken);  // עדכון ה־token ב־localStorage
+          applyAccessToken(accessToken);  // עדכון ה־axios עם ה־accessToken החדש
+        } else {
+          console.error("Unable to refresh token");
+        }
+      } catch (err) {
+        console.error("Error refreshing token:", err);
+      }
+    }
+  };
+
+  // בדיקת תקפות ה־accessToken
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    try {
+      const { exp } = jwt.decode(token);
+      return Date.now() >= exp * 1000;
+    } catch {
+      return true;
+    }
+  };
+
   // פונקציית login
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
@@ -81,9 +114,10 @@ export function AuthProvider({ children }) {
         ? await API.post("/auth/login", { email: clean.toLowerCase(), password })
         : await API.post("/auth/staff-login", { username: clean, password });
 
-      const { token } = response.data;
+      const { token, refreshToken } = response.data;
       if (token) {
         localStorage.setItem("token", token);
+        localStorage.setItem("refreshToken", refreshToken);
         applyAccessToken(token);
       }
 
@@ -181,6 +215,7 @@ export function AuthProvider({ children }) {
         login,
         staffLogin,
         logout,
+        refreshTokenIfNeeded,  // הוספנו את הפונקציה לרענון ה־token
       }}
     >
       {successMessage && (
