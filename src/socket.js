@@ -60,7 +60,7 @@ export function createSocket() {
 
       const data = await response.json();
       if (data.accessToken) {
-        console.log('✅ New accessToken received:', data.accessToken);
+        console.log('✅ New accessToken received');
         socket.auth.token = data.accessToken;
 
         // הפסק את החיבור הקודם והתחבר מחדש עם ה־accessToken החדש

@@ -6,7 +6,7 @@ import { useAuth } from "./AuthContext";
 export const SocketContext = createContext(null);
 
 export function SocketProvider({ children }) {
-  const { user } = useAuth();
+  const { user } = useAuth();  // קח את פרטי המשתמש מקונטקסט
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -14,15 +14,18 @@ export function SocketProvider({ children }) {
 
     const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
     const token = localStorage.getItem("token");
-    if (!token) return;
+    const businessId = localStorage.getItem("businessId"); // קח את ה-businessId מ-localStorage
+    
+    if (!token || !businessId) return; // ודא ש-businessId ו-token קיימים
 
     const sock = io(SOCKET_URL, {
       path: "/socket.io",
       transports: ["websocket"],
       withCredentials: true,
       auth: {
-        token,
-        role: user.role || "client",
+        token,          // שלח את ה־accessToken עם החיבור
+        role: user.role || "client",  // שלח את ה-role של המשתמש
+        businessId,     // שלח את ה-businessId כחלק מהאימות
       },
     });
 
@@ -39,7 +42,7 @@ export function SocketProvider({ children }) {
     setSocket(sock);
 
     return () => {
-      sock.disconnect();
+      sock.disconnect();  // נתק את החיבור כשלא צריך יותר
     };
   }, [user]);
 
