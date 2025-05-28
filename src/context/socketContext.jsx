@@ -1,52 +1,69 @@
-import React, { createContext, useEffect, useState } from "react";
+// src/context/SocketContext.jsx
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { isTokenExpired } from "../utils/authHelpers";  // פונקציה לבדיקה
-import { refreshToken } from "../utils/tokenHelpers";    // פונקציה לרענון טוקן
+import { useAuth } from "./AuthContext";
 
 export const SocketContext = createContext(null);
 
 export function SocketProvider({ children }) {
+  const { accessToken, refreshToken, user } = useAuth();
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
+    let sock;
+
     async function initSocket() {
-      let token = localStorage.getItem("token");
+      let token = accessToken;
       if (!token) return;
 
-      // בדיקת תוקף טוקן
-      if (isTokenExpired(token)) {
-        try {
-          token = await refreshToken();
-          if (!token) {
-            console.warn("Failed to refresh token");
-            return;
-          }
-          localStorage.setItem("token", token);  // שמירת הטוקן החדש
-        } catch (e) {
-          console.error("Error refreshing token:", e);
-          return;
-        }
+      // בדיקת תוקף ורענון אם צריך
+      try {
+        token = await refreshToken(); // אם הטוקן פג, ירענן ויחזיר חדש
+      } catch {
+        console.warn("לא הצלחנו לרענן את הטוקן – לא מתחברים לסוקט");
+        return;
       }
 
-      const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
-        auth: { token, role: "client" }, // שנה לפי תפקיד מתאים
+      // URL בלי /api
+      const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+
+      sock = io(SOCKET_URL, {
         path: "/socket.io",
         transports: ["websocket"],
+        auth: {
+          token,
+          role: user?.role || "client",
+        },
       });
 
-      setSocket(newSocket);
+      // אופציונלי: listeners
+      sock.on("connect", () => {
+        console.log("🔌 Socket connected:", sock.id);
+      });
+      sock.on("disconnect", (reason) => {
+        console.log("🔌 Socket disconnected:", reason);
+      });
+      sock.on("connect_error", (err) => {
+        console.error("❌ Socket connect error:", err.message);
+      });
 
-      return () => {
-        newSocket.disconnect();
-      };
+      setSocket(sock);
     }
 
     initSocket();
-  }, []);
+
+    return () => {
+      if (sock) sock.disconnect();
+    };
+  }, [accessToken, refreshToken, user]);
 
   return (
     <SocketContext.Provider value={socket}>
       {children}
     </SocketContext.Provider>
   );
+}
+
+export function useSocket() {
+  return useContext(SocketContext);
 }
