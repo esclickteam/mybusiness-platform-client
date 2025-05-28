@@ -2,25 +2,40 @@
 import API from "../api";
 
 /**
- * פונקציה לרענון ה־access token
+ * בודק אם הטוקן פג תוקף
  */
-export async function refreshToken() {
+export function isTokenExpired(token) {
+  if (!token) return true;
   try {
-    const token = localStorage.getItem("token"); // שלוף את ה־access token
-    if (!token) throw new Error("No access token stored");
-
-    // שלח את ה־access token לשרת כדי לקבל טוקן חדש
-    const res = await API.post("/auth/refresh-token", { token });
-
-    const newAccessToken = res.data.accessToken || res.data.token;
-    if (!newAccessToken) throw new Error("No token in refresh response");
-
-    // שמור את ה־access token החדש
-    localStorage.setItem("token", newAccessToken);
-
-    return newAccessToken;
-  } catch (err) {
-    console.error("Failed to refresh token:", err);
-    throw err;
+    const { exp } = jwtDecode(token);
+    return Date.now() >= exp * 1000;
+  } catch {
+    return true;
   }
+}
+
+/**
+ * מביא את ה־accessToken מה־localStorage
+ */
+export function getAccessToken() {
+  return localStorage.getItem("token"); // רק הטוקן החדש נשמר ב־localStorage
+}
+
+/**
+ * מביא את ה־businessId מה־localStorage
+ */
+export function getBusinessId() {
+  try {
+    const biz = JSON.parse(localStorage.getItem("businessDetails") || "{}");
+    return biz._id || biz.businessId || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * לא מבצע רענון אוטומטי יותר.
+ */
+export function ensureValidToken() {
+  return getAccessToken(); // מחזיר את ה־accessToken בלבד
 }
