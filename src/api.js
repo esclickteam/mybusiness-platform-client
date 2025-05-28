@@ -1,6 +1,6 @@
 // src/api.js
 import axios from "axios";
-import { isTokenExpired } from "../utils/authHelpers";          // הוספה
+import { isTokenExpired } from "./utils/authHelpers";          // הוספה
 import { refreshToken as contextRefreshToken } from "../context/AuthContext"; // ייבוא רענון טוקן
 
 const isProd = import.meta.env.MODE === "production";
