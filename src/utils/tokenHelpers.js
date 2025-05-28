@@ -1,4 +1,3 @@
-// src/utils/tokenHelpers.js
 import API from "../api";
 
 export async function refreshToken() {
