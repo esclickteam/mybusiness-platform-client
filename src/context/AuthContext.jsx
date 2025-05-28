@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API, { setAccessToken } from "../api";
+import API, { setAccessToken, setRefreshToken } from "../api";
 
 export const AuthContext = createContext();
 
@@ -14,17 +14,24 @@ export function AuthProvider({ children }) {
   const initRan = useRef(false);
 
   const getToken = () => localStorage.getItem("token");
+  const getRefreshToken = () => localStorage.getItem("refreshToken");
 
   const refreshToken = async () => {
     try {
-      const response = await API.post("/auth/refresh-token");
+      const response = await API.post("/auth/refresh-token", {}, {
+        headers: { 'x-refresh-token': getRefreshToken() }
+      });
       const newToken = response.data.token;
+      const newRefresh = response.data.refreshToken;
       if (newToken) {
         localStorage.setItem("token", newToken);
         setAccessToken(newToken);
-        return newToken;
       }
-      throw new Error("No new token received");
+      if (newRefresh) {
+        localStorage.setItem("refreshToken", newRefresh);
+        setRefreshToken(newRefresh);
+      }
+      return newToken;
     } catch (error) {
       console.error("Failed to refresh token", error);
       throw error;
@@ -93,12 +100,15 @@ export function AuthProvider({ children }) {
         });
       }
 
-      const token = response.data.token || response.data.accessToken;
+      const token = response.data.token;
+      const refresh = response.data.refreshToken;
       if (token) {
         localStorage.setItem("token", token);
         setAccessToken(token);
-      } else {
-        console.warn("No token received from login response");
+      }
+      if (refresh) {
+        localStorage.setItem("refreshToken", refresh);
+        setRefreshToken(refresh);
       }
 
       const { data } = await API.get("/auth/me");
@@ -164,8 +174,10 @@ export function AuthProvider({ children }) {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
       localStorage.removeItem("businessDetails");
       setAccessToken(null);
+      setRefreshToken(null);
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
