@@ -6,7 +6,6 @@ import ConversationsList from './ConversationsList';
 import ChatComponent from './ChatComponent';
 import API from '../api';
 import { createSocket } from '../socket';
-import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
 import './ChatPage.css';
 
 export default function ChatPage({ isBusiness }) {

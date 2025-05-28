@@ -6,7 +6,6 @@ import ConversationsList from './ConversationsList';
 import ChatPage from './ChatPage';
 import './ConversationsList.css';
 import { createSocket } from '../socket';
-import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
 
 export default function BusinessChatWrapper() {
   const { businessId: routeBusinessId } = useParams();

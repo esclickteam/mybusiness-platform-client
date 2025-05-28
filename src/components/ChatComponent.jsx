@@ -6,7 +6,6 @@ import ClientChatTab from "./ClientChatTab";
 import ConversationsList from "./ConversationsList";
 import API from "../api";
 import { createSocket } from "../socket";
-import { ensureValidToken, getBusinessId } from "../utils/authHelpers";
 
 export default function ChatComponent({
   initialConversationId,
