@@ -45,21 +45,31 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    if (initRan.current) return;
-    initRan.current = true;
+  if (initRan.current) return;
+  initRan.current = true;
 
-    (async () => {
-      setLoading(true);
-      try {
-        const storedAT = localStorage.getItem("accessToken");
-        const storedRT = localStorage.getItem("refreshToken");
+  (async () => {
+    setLoading(true);
+    try {
+      const storedAT = localStorage.getItem("accessToken");
+      const storedRT = localStorage.getItem("refreshToken");
 
-        if (storedAT) setAccessToken(storedAT);
-        if (storedRT) {
-          setAPIRefreshToken(storedRT);
+      // קודם כל מגדירים את הטוקנים במערכת
+      if (storedAT) setAccessToken(storedAT);
+      if (storedRT) setAPIRefreshToken(storedRT);
+
+      // נסה לרענן טוקן אם יש refreshToken
+      if (storedRT) {
+        try {
           await refreshToken();
+        } catch (err) {
+          console.error("שגיאת רענון טוקן:", err);
+          // טוקן לא בתוקף – ממשיכים למצב לא מחובר
         }
+      }
 
+      // נסה תמיד להביא את המשתמש (אם יש accessToken)
+      try {
         const { data } = await API.get("/auth/me");
         setUser({
           userId:           data.userId,
@@ -70,16 +80,24 @@ export function AuthProvider({ children }) {
           businessId:       data.businessId || null,
         });
         saveBusinessDetails(data);
-      } catch {
+      } catch (err) {
+        console.error("שגיאת הבאת משתמש:", err);
         setUser(null);
         setAccessToken(null);
         localStorage.removeItem("businessDetails");
-      } finally {
-        setLoading(false);
-        setInitialized(true);
       }
-    })();
-  }, []);
+    } catch (err) {
+      console.error("שגיאה כללית ב-AuthContext:", err);
+      setUser(null);
+      setAccessToken(null);
+      localStorage.removeItem("businessDetails");
+    } finally {
+      setLoading(false);
+      setInitialized(true);
+    }
+  })();
+}, []);
+
 
   const login = async (identifier, password) => {
     setLoading(true);
