@@ -12,13 +12,12 @@ export function AuthProvider({ children }) {
   const [accessToken, _setAccessToken] = useState(localStorage.getItem("accessToken"));
   const [loading, _setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
+  const [authFailed, setAuthFailed] = useState(false);
   const initRan = useRef(false);
 
-  // שימוש ב-refs למניעת עדכונים מיותרים
   const userRef = useRef();
   const loadingRef = useRef();
 
-  // setUser משווה לפי userId בלבד
   const setUser = (value) => {
     if (userRef.current?.userId !== value?.userId) {
       console.log("setUser called with", value);
@@ -91,12 +90,12 @@ export function AuthProvider({ children }) {
         try {
           const { data } = await API.get("/auth/me");
           setUser({
-            userId:           data.userId,
-            name:             data.name,
-            email:            data.email,
-            role:             data.role,
+            userId: data.userId,
+            name: data.name,
+            email: data.email,
+            role: data.role,
             subscriptionPlan: data.subscriptionPlan,
-            businessId:       data.businessId || null,
+            businessId: data.businessId || null,
           });
           saveBusinessDetails(data);
         } catch (err) {
@@ -104,12 +103,14 @@ export function AuthProvider({ children }) {
           setUser(null);
           setAccessToken(null);
           localStorage.removeItem("businessDetails");
+          setAuthFailed(true);
         }
       } catch (err) {
         console.error("שגיאה כללית ב-AuthContext:", err);
         setUser(null);
         setAccessToken(null);
         localStorage.removeItem("businessDetails");
+        setAuthFailed(true);
       } finally {
         setLoading(false);
         setInitialized(true);
@@ -139,15 +140,16 @@ export function AuthProvider({ children }) {
 
       const u = response.data.user;
       const userData = {
-        userId:           u.userId,
-        name:             u.name,
-        email:            u.email,
-        role:             u.role,
+        userId: u.userId,
+        name: u.name,
+        email: u.email,
+        role: u.role,
         subscriptionPlan: u.subscriptionPlan,
-        businessId:       u.businessId || null,
+        businessId: u.businessId || null,
       };
       setUser(userData);
       saveBusinessDetails(u);
+      setAuthFailed(false);
       return userData;
     } finally {
       setLoading(false);
@@ -168,7 +170,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, accessToken, loading, initialized, login, logout, refreshToken }}
+      value={{ user, accessToken, loading, initialized, authFailed, login, logout, refreshToken }}
     >
       {children}
     </AuthContext.Provider>
