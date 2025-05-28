@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState, useEffect } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import {
   Routes,
   Route,
@@ -12,14 +12,14 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ClientChatSection from "./components/ClientChatSection";
 import BusinessChatPage from "./components/BusinessChatPage";
-import ConversationsList from "./components/ConversationsList"; // ודא שיש רכיב כזה
-import ChatPage from "./components/ChatPage"; // ודא שיש רכיב כזה
+import ConversationsList from "./components/ConversationsList";
+import ChatPage from "./components/ChatPage";
 import { useAuth } from "./context/AuthContext";
 import { SSEProvider } from "./context/SSEContext";
-import API from "./api";
 import { SocketProvider } from "./context/socketContext";
+import API from "./api";
 
-
+// ---- כל הייבוא הדינמי כפי שהיה ----
 const HomePage            = lazy(() => import("./pages/Home"));
 const About               = lazy(() => import("./pages/About"));
 const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
@@ -74,25 +74,25 @@ function ScrollToTop() {
 export default function App() {
   const { user, loading } = useAuth();
 
-  // ניהול סטייט חיפוש וסינון ברמה העליונה
+  // חיפוש וסינון
   const [searchMode, setSearchMode] = useState("category");
   const [searchCategory, setSearchCategory] = useState("");
   const [freeText, setFreeText] = useState("");
 
-  // פונקציה לאיפוס סינון חיפוש
   const resetSearchFilters = () => {
     setSearchMode("category");
     setSearchCategory("");
     setFreeText("");
   };
 
+  // רק לאחר שהמשתמש נטען עוטפים ב־Providers
   if (loading) return <div>טוען משתמש…</div>;
 
   return (
-    <>
-      <Header />
-      <SocketProvider>
-        <SSEProvider businessId={user?.businessId}>
+    <SocketProvider>
+      <SSEProvider businessId={user?.businessId}>
+        <>
+          <Header />
           <ScrollToTop />
           <Suspense fallback={<div>🔄 טוען…</div>}>
             <Routes>
@@ -305,13 +305,13 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
-        </SSEProvider>
-      </SocketProvider>
-    </>
+        </>
+      </SSEProvider>
+    </SocketProvider>
   );
 }
 
-// Wrapper for business showing list of conversations
+// ------ כאן נשארים ה־wrappers שלך (BusinessChatListWrapper, BusinessChatWrapper) כפי שהם ------
 export function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
@@ -321,7 +321,7 @@ export function BusinessChatListWrapper() {
     ? pathname.split("/").pop()
     : null;
 
-  useEffect(() => {
+  React.useEffect(() => {
     API.get("/messages/conversations", { withCredentials: true })
       .then(res => setConvos(res.data))
       .catch(console.error);
@@ -345,7 +345,6 @@ export function BusinessChatListWrapper() {
   );
 }
 
-// Wrapper for a specific business-client chat
 export function BusinessChatWrapper() {
   const { businessId, clientId } = useParams();
   const { state } = useLocation();
