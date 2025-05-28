@@ -1,10 +1,10 @@
-import jwtDecode from "jwt-decode";
+import { jwt_decode } from "jwt-decode";
 
 // בודק אם הטוקן פג
 export function isTokenExpired(token) {
   if (!token) return true;
   try {
-    const { exp } = jwtDecode(token);
+    const { exp } = jwt_decode(token);
     return Date.now() >= exp * 1000;
   } catch {
     return true;
