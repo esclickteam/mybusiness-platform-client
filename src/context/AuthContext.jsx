@@ -16,8 +16,10 @@ export function AuthProvider({ children }) {
   const applyAccessToken = (token) => {
     if (token) {
       API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      console.log("הוזן טוקן חדש ל-axios:", token);
     } else {
       delete API.defaults.headers.common["Authorization"];
+      console.log("הוסר טוקן מ-axios");
     }
   };
 
@@ -29,12 +31,15 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
-        // טען access token ושמור ב-axios
+        // טען את ה- accessToken
         const token = localStorage.getItem("token");
+        console.log("נשלף טוקן מ-localStorage:", token);
         if (token) applyAccessToken(token);
 
         // קבל פרטי משתמש
         const { data } = await API.get("/auth/me");
+        console.log("פרטי משתמש התקבלו:", data);
+
         setUser({
           userId: data.userId,
           name: data.name,
@@ -44,7 +49,9 @@ export function AuthProvider({ children }) {
           businessId: data.businessId || null,
         });
 
+        // שמור את פרטי העסק אם קיימים
         if (data.businessId) {
+          console.log("שומר את פרטי העסק ב-localStorage:", data.businessId);
           localStorage.setItem(
             "businessDetails",
             JSON.stringify({ businessId: data.businessId, _id: data.businessId })
@@ -52,8 +59,8 @@ export function AuthProvider({ children }) {
         } else {
           localStorage.removeItem("businessDetails");
         }
-      } catch {
-        // במידה וה־/auth/me נכשל
+      } catch (err) {
+        console.error("שגיאה בהתחול:", err);
         setUser(null);
         localStorage.removeItem("businessDetails");
         applyAccessToken(null);
@@ -66,30 +73,34 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  // פונקציה לרענן את ה־accessToken
+  // פונקציה לרענן את ה- accessToken
   const refreshTokenIfNeeded = async () => {
-    const token = localStorage.getItem("token"); // קבל את ה־accessToken מה־localStorage
+    const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("refreshToken");
 
-    // אם ה־accessToken פג תוקף, נבצע רענון
+    console.log("בודק אם יש צורך לרענן את הטוקן");
+
     if (token && isTokenExpired(token)) {
+      console.log("הטוקן פג תוקף, מנסה לרענן");
+
       try {
         const response = await API.post("/refresh-token", { refreshToken });
         const { accessToken } = response.data;
 
         if (accessToken) {
-          localStorage.setItem("token", accessToken);  // עדכון ה־token ב־localStorage
-          applyAccessToken(accessToken);  // עדכון ה־axios עם ה־accessToken החדש
+          console.log("טוקן חדש התקבל:", accessToken);
+          localStorage.setItem("token", accessToken);
+          applyAccessToken(accessToken);
         } else {
-          console.error("Unable to refresh token");
+          console.error("לא ניתן לרענן את הטוקן");
         }
       } catch (err) {
-        console.error("Error refreshing token:", err);
+        console.error("שגיאה ברענון הטוקן:", err);
       }
     }
   };
 
-  // בדיקת תקפות ה־accessToken
+  // בדיקת תקפות ה- accessToken
   const isTokenExpired = (token) => {
     if (!token) return true;
     try {
@@ -116,6 +127,7 @@ export function AuthProvider({ children }) {
 
       const { token, refreshToken } = response.data;
       if (token) {
+        console.log("שומר טוקן ב-localStorage:", token);
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         applyAccessToken(token);
@@ -123,6 +135,8 @@ export function AuthProvider({ children }) {
 
       // קבל מחדש פרטי משתמש
       const { data } = await API.get("/auth/me");
+      console.log("פרטי משתמש התקבלו לאחר התחברות:", data);
+
       setUser({
         userId: data.userId,
         name: data.name,
@@ -133,6 +147,7 @@ export function AuthProvider({ children }) {
       });
 
       if (data.businessId) {
+        console.log("שומר את פרטי העסק ב-localStorage:", data.businessId);
         localStorage.setItem(
           "businessDetails",
           JSON.stringify({ businessId: data.businessId, _id: data.businessId })
@@ -186,6 +201,7 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
+      console.log("מבצע logout, מנקה את ה-localStorage");
       localStorage.removeItem("token");
       localStorage.removeItem("businessDetails");
       applyAccessToken(null);
@@ -215,7 +231,7 @@ export function AuthProvider({ children }) {
         login,
         staffLogin,
         logout,
-        refreshTokenIfNeeded,  // הוספנו את הפונקציה לרענון ה־token
+        refreshTokenIfNeeded,  // הוספנו את הפונקציה לרענון ה- token
       }}
     >
       {successMessage && (
