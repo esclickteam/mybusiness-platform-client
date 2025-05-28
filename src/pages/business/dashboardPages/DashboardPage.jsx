@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+// src/pages/business/dashboardPages/DashboardPage.jsx
+import React, { useEffect, useState, useRef } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
-import { io } from "socket.io-client";
+import { createSocket } from "../../../socket";
+import { ensureValidToken, getBusinessId } from "../../../authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
 import LineChart from "../../../components/dashboard/LineChart";
@@ -19,10 +21,16 @@ import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import BusinessComparison from "../../../components/dashboard/BusinessComparison";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
 
+import "../../../styles/dashboard.css";
+
 const QuickActions = ({ onAction }) => (
   <div className="quick-actions-row">
-    <button className="quick-action-btn" onClick={() => onAction("meeting")}>+ פגישה חדשה</button>
-    <button className="quick-action-btn" onClick={() => onAction("message")}>+ שלח הודעה</button>
+    <button className="quick-action-btn" onClick={() => onAction("meeting")}>
+      + פגישה חדשה
+    </button>
+    <button className="quick-action-btn" onClick={() => onAction("message")}>
+      + שלח הודעה
+    </button>
   </div>
 );
 
@@ -30,13 +38,13 @@ const DashboardAlert = ({ text, type = "info" }) => (
   <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
 );
 
-import "../../../styles/dashboard.css";
-
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 const DashboardPage = () => {
-  const { user, loading: authLoading } = useAuth();
-  const businessId = user?.businessId;
+  const { user, accessToken, refreshToken, initialized } = useAuth();
+  const businessId = getBusinessId();
+  const socketRef = useRef(null);
 
   const [stats, setStats] = useState({
     views_count: 0,
@@ -58,16 +66,15 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // קריאת הנתונים הראשונית מה-API
+  // Initial stats fetch
   useEffect(() => {
+    if (!businessId) return;
     const fetchStats = async () => {
-      if (!businessId) return;
       setLoading(true);
       try {
-        const res = await API.get(
-          `/business/${businessId}/stats`,
-          { withCredentials: true }
-        );
+        const res = await API.get(`/business/${businessId}/stats`, {
+          withCredentials: true,
+        });
         setStats(res.data);
       } catch (err) {
         console.error("❌ Error fetching stats:", err);
@@ -79,45 +86,49 @@ const DashboardPage = () => {
     fetchStats();
   }, [businessId]);
 
-  // התחברות ל-Socket.IO לקבלת עדכונים חיים בזמן אמת
+  // Real-time socket connection
   useEffect(() => {
-    if (!businessId || !user?.token) return;
+    if (!initialized || !businessId) return;
+    let sock;
 
-    // שולח טוקן בלי מילת מפתח 'Bearer', רק הטוקן עצמו
-    const tokenValue = user.token.startsWith("Bearer ")
-      ? user.token.slice(7)
-      : user.token;
+    (async () => {
+      try {
+        const token = await ensureValidToken();
+        sock = createSocket();
+        sock.auth = {
+          token,
+          role: "business-dashboard",
+          businessId,
+        };
+        sock.connect();
+        socketRef.current = sock;
 
-    console.log("Connecting to socket at", SOCKET_URL, "with businessId:", businessId);
-    console.log("Using token:", tokenValue);
+        sock.on("connect", () => {
+          console.log("Dashboard socket connected:", sock.id);
+        });
 
-    const socket = io(SOCKET_URL, {
-      path: "/socket.io",
-      auth: { token: tokenValue, role: "business-dashboard", businessId },
-    });
+        sock.on("dashboardUpdate", (newStats) => {
+          console.log("Dashboard update received:", newStats);
+          setStats(newStats);
+        });
 
-    socket.on("connect", () => {
-      console.log("Dashboard socket connected:", socket.id);
-    });
+        sock.on("disconnect", (reason) => {
+          console.log("Dashboard socket disconnected, reason:", reason);
+        });
 
-    socket.on("dashboardUpdate", (newStats) => {
-      console.log("Dashboard update received:", newStats);
-      setStats(newStats);
-    });
-
-    socket.on("disconnect", (reason) => {
-      console.log("Dashboard socket disconnected, reason:", reason);
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("Socket connection error:", err);
-    });
+        sock.on("connect_error", (err) => {
+          console.error("Socket connection error:", err);
+        });
+      } catch (e) {
+        console.error("Socket init failed:", e);
+      }
+    })();
 
     return () => {
       console.log("Disconnecting dashboard socket");
-      socket.disconnect();
+      sock?.disconnect();
     };
-  }, [businessId, user?.token]);
+  }, [initialized, businessId, refreshToken]);
 
   const handleQuickAction = (action) => {
     let msg = null;
@@ -127,17 +138,18 @@ const DashboardPage = () => {
     setTimeout(() => setAlert(null), 2500);
   };
 
-  if (authLoading || loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (!initialized || loading)
+    return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
   const todaysAppointments = Array.isArray(stats.todaysAppointments)
     ? stats.todaysAppointments
     : [];
-  const hasTodayMeetings = todaysAppointments.length > 0;
-
   const appointments = Array.isArray(stats.appointments)
     ? stats.appointments
     : [];
+
+  const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
     <div className="dashboard-container">
@@ -169,25 +181,19 @@ const DashboardPage = () => {
         }}
       />
 
-      <div>
-        <DashboardCards
-          stats={{
-            views_count: stats.views_count,
-            requests_count: stats.requests_count,
-            orders_count: stats.orders_count,
-            reviews_count: stats.reviews_count,
-            messages_count: stats.messages_count,
-            appointments_count: stats.appointments_count,
-          }}
-        />
-      </div>
+      <DashboardCards
+        stats={{
+          views_count: stats.views_count,
+          requests_count: stats.requests_count,
+          orders_count: stats.orders_count,
+          reviews_count: stats.reviews_count,
+          messages_count: stats.messages_count,
+          appointments_count: stats.appointments_count,
+        }}
+      />
 
-      <div>
-        <Insights stats={stats} />
-      </div>
-      <div>
-        <BusinessComparison stats={stats} />
-      </div>
+      <Insights stats={stats} />
+      <BusinessComparison stats={stats} />
       <NextActions stats={stats} />
 
       <div>

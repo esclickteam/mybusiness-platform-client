@@ -1,10 +1,15 @@
 // src/components/DashboardLive.jsx
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DashboardCards from "./DashboardCards";
-import { SocketContext } from "../context/socketContext";
+import { useAuth } from "../context/AuthContext";
+import { createSocket } from "../socket";
+import { ensureValidToken, getBusinessId } from "../authHelpers";
 
-export default function DashboardLive({ businessId }) {
-  const socket = useContext(SocketContext);
+export default function DashboardLive() {
+  const { initialized, refreshToken } = useAuth();
+  const businessId = getBusinessId();
+  const socketRef = useRef(null);
+
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -16,27 +21,40 @@ export default function DashboardLive({ businessId }) {
   });
 
   useEffect(() => {
-    if (!businessId || !socket) {
-      console.warn("⚠️ Missing businessId or socket for DashboardLive");
-      return;
-    }
+    if (!initialized || !businessId) return;
+    let sock;
 
-    // Handler לעדכונים בזמן אמת
-    const statsHandler = (newStats) => {
-      setStats((prev) => ({ ...prev, ...newStats }));
-    };
+    (async () => {
+      try {
+        const token = await ensureValidToken();
+        sock = createSocket();
+        sock.auth = { token, role: "business-dashboard", businessId };
+        sock.connect();
+        socketRef.current = sock;
 
-    // הירשם לאירוע העדכון
-    socket.on("dashboardStatsUpdate", statsHandler);
+        // initial fetch
+        sock.emit("getDashboardStats", { businessId }, (res) => {
+          if (res.ok) setStats(res.stats);
+        });
 
-    // בקש את המצב ההתחלתי
-    socket.emit("getDashboardStats", { businessId });
+        const handler = (newStats) => {
+          setStats((prev) => ({ ...prev, ...newStats }));
+        };
+        sock.on("dashboardUpdate", handler);
+        sock.on("dashboardStatsUpdate", handler);
+      } catch (e) {
+        console.error("Dashboard socket init failed:", e);
+      }
+    })();
 
     return () => {
-      socket.off("dashboardStatsUpdate", statsHandler);
+      if (socketRef.current) {
+        socketRef.current.off("dashboardUpdate");
+        socketRef.current.off("dashboardStatsUpdate");
+        socketRef.current.disconnect();
+      }
     };
-  }, [businessId, socket]);
+  }, [initialized, businessId, refreshToken]);
 
   return <DashboardCards stats={stats} />;
 }
-בחר שיחה כדי לראות הודעות

@@ -1,123 +1,152 @@
 // src/components/ChatComponent.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useAuth } from "../context/AuthContext";
 import BusinessChatTab from "./BusinessChatTab";
-import ClientChatTab   from "./ClientChatTab";
-import { io } from "socket.io-client";
+import ClientChatTab from "./ClientChatTab";
+import ConversationsList from "./ConversationsList";
+import API from "../api";
+import { createSocket } from "../socket";
+import { ensureValidToken, getBusinessId } from "../authHelpers";
 
 export default function ChatComponent({
-  userId,
-  partnerId,
   initialConversationId,
-  customerId: customerIdProp,
+  partnerId: partnerIdProp,
   isBusiness,
 }) {
-  const [conversationId, setConversationId] = useState(initialConversationId);
-  const [conversations, setConversations] = useState([]);
-  const [loadingConvs, setLoadingConvs] = useState(false);
-  const [loadingInit, setLoadingInit] = useState(false);
-  const [currentCustomerId, setCurrentCustomerId] = useState(customerIdProp || null);
+  const { user, initialized, refreshToken } = useAuth();
+  const userId = user?.userId;
+  const businessId = getBusinessId();
 
+  const [conversationId, setConversationId]   = useState(initialConversationId);
+  const [conversations, setConversations]     = useState([]);
+  const [loadingConvs, setLoadingConvs]       = useState(false);
+  const [loadingInit, setLoadingInit]         = useState(false);
+  const [currentCustomerId, setCurrentCustomerId] = useState(partnerIdProp || null);
   const socketRef = useRef(null);
+  const hasJoinedRef = useRef(false);
 
+  // 1. Initialize socket
   useEffect(() => {
-    if (!userId) return;
+    if (!initialized) return;
+    let sock;
+    (async () => {
+      try {
+        setLoadingInit(true);
+        const token = await ensureValidToken();
+        sock = createSocket();
+        sock.auth = {
+          token,
+          role: isBusiness ? "business" : "client",
+          businessId,
+        };
+        sock.connect();
+        socketRef.current = sock;
+      } catch (e) {
+        console.error("Socket init failed:", e);
+      } finally {
+        setLoadingInit(false);
+      }
+    })();
+    return () => {
+      sock?.disconnect();
+    };
+  }, [initialized, businessId, refreshToken]);
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    const token = localStorage.getItem("token");
-
-    socketRef.current = io(socketUrl, {
-      path: "/socket.io",
-      transports: ["polling", "websocket"],
-      auth: {
-        token,
-        role: isBusiness ? "business-dashboard" : "chat",
-      },
-      withCredentials: true,
-    });
+  // 2. Load or start conversations
+  useEffect(() => {
+    const sock = socketRef.current;
+    if (!sock?.connected) return;
 
     if (isBusiness) {
       setLoadingConvs(true);
-      socketRef.current.emit("getConversations", { userId }, (res) => {
+      sock.emit("getConversations", { businessId }, (res) => {
+        setLoadingConvs(false);
         if (res.ok) {
-          const convs = Array.isArray(res.conversations) ? res.conversations : [];
-          setConversations(convs);
-          if (!conversationId && convs.length > 0) {
-            const first = convs[0];
-            const convoId = first._id ?? first.conversationId;
-            const custId =
-              first.customer?._id ??
-              first.participants.find((pid) => pid !== userId) ??
-              null;
+          setConversations(res.conversations);
+          if (!conversationId && res.conversations.length) {
+            const first = res.conversations[0];
+            const convoId = first._id || first.conversationId;
+            const custId = first.customer?._id
+              || first.participants.find(p => p !== businessId);
             setConversationId(convoId);
             setCurrentCustomerId(custId);
           }
         } else {
-          console.error("Error loading conversations:", res.error);
+          console.error("getConversations error:", res.error);
         }
-        setLoadingConvs(false);
       });
     } else {
-      if (!conversationId && partnerId) {
+      if (!conversationId && partnerIdProp) {
         setLoadingInit(true);
-        socketRef.current.emit(
-          "startConversation",
-          { otherUserId: partnerId },
-          (res) => {
-            if (res.ok) {
-              setConversationId(res.conversationId);
-            } else {
-              console.error("Failed to start conversation:", res.error);
-            }
-            setLoadingInit(false);
+        sock.emit("startConversation", { otherUserId: partnerIdProp }, (res) => {
+          setLoadingInit(false);
+          if (res.ok) {
+            setConversationId(res.conversationId);
+          } else {
+            console.error("startConversation failed:", res.error);
           }
-        );
+        });
       }
     }
+  }, [socketRef.current?.connected, isBusiness, partnerIdProp]);
 
-    return () => {
-      socketRef.current.disconnect();
-    };
-  }, [userId, isBusiness, partnerId]);
-
+  // 3. Update currentCustomerId for business
   useEffect(() => {
-    if (isBusiness && conversationId) {
-      const conv = conversations.find(
-        (c) => (c._id ?? c.conversationId) === conversationId
-      );
+    if (isBusiness && conversationId && conversations.length) {
+      const conv = conversations.find(c => (c._id || c.conversationId) === conversationId);
       if (conv) {
-        const custId =
-          conv.customer?._id ??
-          conv.participants.find((pid) => pid !== userId) ??
-          null;
+        const custId = conv.customer?._id
+          || conv.participants.find(p => p !== businessId);
         setCurrentCustomerId(custId);
       }
     }
-  }, [conversationId, isBusiness, conversations, userId]);
+  }, [conversationId, isBusiness, conversations]);
 
-  const currentConversation = conversations.find(
-    (c) => (c._id ?? c.conversationId) === conversationId
-  );
-  const businessIdFromConversation =
-    currentConversation?.business?._id ??
-    currentConversation?.participants.find((pid) => pid !== userId) ??
-    partnerId;
+  // 4. Join conversation and listen for messages
+  useEffect(() => {
+    const sock = socketRef.current;
+    if (!sock?.connected || !conversationId) return;
 
-  if (loadingInit) return <p>⏳ פותח שיחה…</p>;
+    if (hasJoinedRef.current) {
+      sock.emit("leaveConversation", conversationId);
+    }
+    sock.emit("joinConversation", conversationId, (ack) => {
+      if (!ack.ok) console.error("joinConversation failed:", ack.error);
+    });
+    hasJoinedRef.current = true;
+  }, [socketRef.current?.connected, conversationId]);
+
+  // 5. Listen for incoming messages
+  useEffect(() => {
+    const sock = socketRef.current;
+    if (!sock) return;
+
+    const handler = msg => {
+      if (msg.conversationId !== conversationId) return;
+      // messages are managed in parent via props...
+    };
+    sock.on("newMessage", handler);
+    return () => {
+      sock.off("newMessage", handler);
+    };
+  }, [conversationId]);
+
+  if (!initialized) return <p>⏳ טוען משתמש…</p>;
+  if (loadingInit)  return <p>⏳ פותח שיחה…</p>;
   if (loadingConvs) return <p>⏳ טוען שיחות…</p>;
   if (!conversationId) return <p>⏳ אין שיחה זמינה</p>;
-  if (!userId) return <p>⏳ טוען משתמש…</p>;
 
   return isBusiness ? (
     <BusinessChatTab
       conversationId={conversationId}
-      businessId={userId}
+      businessId={businessId}
       customerId={currentCustomerId}
       socket={socketRef.current}
     />
   ) : (
     <ClientChatTab
       conversationId={conversationId}
-      businessId={businessIdFromConversation}
+      businessId={businessId}
       userId={userId}
       socket={socketRef.current}
     />

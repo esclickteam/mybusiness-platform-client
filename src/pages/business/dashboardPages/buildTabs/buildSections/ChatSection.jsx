@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import ChatComponent from "../../../../../components/ChatComponent";
 import styles from "./ChatSection.module.css";
-import io from "socket.io-client";
+import socket from "../../../../../socket";
+import API from "../../../../../api";
 
 export default function ChatSection({ isBusiness = false }) {
-  const { user, initialized } = useAuth();
+  const { accessToken, user, initialized, refreshToken } = useAuth();
+  const businessId = user?.businessId;
 
   const [clients, setClients] = useState([]);
   const [newPartnerId, setNewPartnerId] = useState("");
@@ -18,107 +20,114 @@ export default function ChatSection({ isBusiness = false }) {
   const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const hasJoinedRef = useRef(false);
 
-  const businessId = user?.businessId;
-  const socketRef = useRef();
-
-  // טען לקוחות
+  // Load clients list
   useEffect(() => {
     if (!initialized || !businessId) return;
     setIsLoading(true);
-    fetchClients();
+    fetch("/business/clients", { credentials: "include" })
+      .then(r => r.json())
+      .then(data => setClients(data))
+      .catch(err => {
+        console.error("שגיאה בטעינת לקוחות", err);
+        setError("לא ניתן לטעון לקוחות");
+      })
+      .finally(() => setIsLoading(false));
   }, [initialized, businessId]);
 
-  const fetchClients = async () => {
-    try {
-      // כאן תוכל להשאיר API רגיל כי זה לא צ׳אט
-      const res = await fetch("/business/clients", {
-        credentials: "include"
-      });
-      const data = await res.json();
-      setClients(data);
-    } catch (err) {
-      console.error("שגיאה בטעינת לקוחות", err);
-      setError("לא ניתן לטעון לקוחות");
-    }
-    setIsLoading(false);
-  };
-
-  // התחבר ל-socket וטעינת שיחות
+  // Initialize socket
   useEffect(() => {
-    if (!initialized || !businessId) return;
+    if (!initialized || !businessId || !accessToken) return;
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-socketRef.current = io(socketUrl, {
-  auth: { userId: businessId, role: "business" },
-  transports: ["websocket"],
-});
-
-
-    fetchConversations();
+    (async () => {
+      let token = accessToken;
+      try {
+        token = await refreshToken();
+      } catch {
+        setError("❌ טוקן לא תקף");
+        return;
+      }
+      socket.auth = { token, role: "business", businessId };
+      socket.connect();
+    })();
 
     return () => {
-      socketRef.current.disconnect();
+      socket.disconnect();
+      setConversations([]);
+      setSelected({
+        conversationId: null,
+        partnerId: null,
+        customerId: null
+      });
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, accessToken]);
 
-  const fetchConversations = () => {
-    if (!socketRef.current) return;
+  // Fetch existing conversations
+  useEffect(() => {
+    if (!socket.connected) return;
     setIsLoading(true);
     setError("");
-    socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
-  if (res.ok) {
-        const convs = Array.isArray(res.conversations) ? res.conversations : [];
-        setConversations(convs);
+    socket.emit("getConversations", { userId: businessId }, res => {
+      setIsLoading(false);
+      if (res.ok) {
+        setConversations(res.conversations);
       } else {
+        console.error("שגיאה בטעינת שיחות", res.error);
         setError("שגיאה בטעינת שיחות");
       }
-      setIsLoading(false);
     });
-  };
+  }, [socket.connected]);
 
-  // התחלת שיחה חדשה דרך socket
+  // Start new conversation
   const startNewConversation = () => {
-    if (!newPartnerId || !socketRef.current) return;
+    if (!newPartnerId || !socket.connected) return;
     setIsLoading(true);
     setError("");
-    socketRef.current.emit("startConversation", { otherUserId: newPartnerId }, (res) => {
+    socket.emit("startConversation", { otherUserId: newPartnerId }, res => {
+      setIsLoading(false);
       if (res.ok) {
-        fetchConversations();
+        const convoId = res.conversationId;
         setSelected({
-          conversationId: res.conversationId,
+          conversationId: convoId,
           partnerId: newPartnerId,
           customerId: newPartnerId
         });
+        // Refresh list
+        socket.emit("getConversations", { userId: businessId }, r => {
+          if (r.ok) setConversations(r.conversations);
+        });
       } else {
+        console.error("לא ניתן לפתוח שיחה", res.error);
         setError("לא ניתן לפתוח שיחה");
       }
-      setIsLoading(false);
     });
   };
 
   const handleSelect = ({ conversationId, partnerId, customerId }) => {
+    // Leave previous
+    if (hasJoinedRef.current) {
+      socket.emit("leaveConversation", selected.conversationId);
+    }
+    // Join new
+    socket.emit("joinConversation", conversationId);
+    hasJoinedRef.current = true;
     setSelected({ conversationId, partnerId, customerId });
   };
 
-  if (!initialized) {
+  if (!initialized)
     return <div className={styles.loadingScreen}>🔄 טוען…</div>;
-  }
-  if (!businessId) {
+  if (!businessId)
     return <div className={styles.errorBanner}>לא נמצא מזהה עסק</div>;
-  }
 
   return (
     <div className={styles.chatSection}>
       <main className={styles.chatMain}>
         {selected.conversationId ? (
           <ChatComponent
-            userId={user.id}
-            partnerId={selected.partnerId}
-            customerId={selected.customerId}
-            initialConversationId={selected.conversationId}
             isBusiness={isBusiness}
-            socket={socketRef.current} // במידת הצורך
+            initialConversationId={selected.conversationId}
+            partnerId={selected.partnerId}
           />
         ) : (
           <div className={styles.chatPlaceholder}>
@@ -151,28 +160,29 @@ socketRef.current = io(socketUrl, {
         </div>
         {isLoading && <div className={styles.spinner}>טעינה…</div>}
         {error && <div className={styles.errorBanner}>{error}</div>}
-        {!isLoading && conversations.length === 0 && (
-          <div className={styles.noConversations}>אין שיחות קיימות</div>
-        )}
         <ul className={styles.convoList}>
           {conversations.map(conv => {
-            const isUserBus = isBusiness || user.id === conv.business._id;
-            const partnerId = isUserBus ? conv.customer._id : conv.business._id;
+            const isUserBus = isBusiness;
+            const partnerId = isUserBus
+              ? conv.customer._id
+              : conv.business._id;
             const partnerName = isUserBus
               ? conv.customer.name
               : conv.business.businessName;
-            const customerId = conv.customer?._id;
+            const convoId = conv.conversationId;
             return (
               <li
-                key={conv.conversationId}
+                key={convoId}
                 className={`${styles.convoItem} ${
-                  selected.conversationId === conv.conversationId ? styles.selected : ""
+                  selected.conversationId === convoId
+                    ? styles.selected
+                    : ""
                 }`}
                 onClick={() =>
                   handleSelect({
-                    conversationId: conv.conversationId,
+                    conversationId: convoId,
                     partnerId,
-                    customerId
+                    customerId: conv.customer._id
                   })
                 }
               >

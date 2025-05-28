@@ -1,5 +1,7 @@
 // src/api.js
 import axios from "axios";
+import { isTokenExpired } from "./authHelpers";         // הוספה
+import { refreshToken as contextRefreshToken } from "./context/AuthContext"; // ייבוא רענון טוקן
 
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
@@ -54,7 +56,19 @@ function processQueue(error, newToken) {
 
 // ---------- אינטרספטור לבקשות יוצאות ----------
 API.interceptors.request.use(
-  config => {
+  async config => {
+    // אם הטוקן פג, רענן אותו אוטומטית
+    if (isTokenExpired(accessToken)) {
+      try {
+        const newAT = await contextRefreshToken();
+        setAccessToken(newAT);
+      } catch {
+        // כישלון ברענון → ניווט ל־login
+        window.location.replace("/login");
+        return Promise.reject(new Error("Session expired"));
+      }
+    }
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -82,7 +96,6 @@ API.interceptors.response.use(
   },
   async error => {
     const { response, config } = error;
-    // שגיאת רשת
     if (!response) {
       if (!isProd) console.error("❌ Network error:", error);
       return Promise.reject(new Error("שגיאת רשת"));
@@ -98,16 +111,13 @@ API.interceptors.response.use(
       config._retry = true;
 
       if (isRefreshing) {
-        // המתן עד לסיום הרענון
         return new Promise((resolve, reject) => {
           refreshQueue.push({
-            resolve: (token) => {
+            resolve: token => {
               config.headers.Authorization = `Bearer ${token}`;
               resolve(API(config));
             },
-            reject: (err) => {
-              reject(err);
-            },
+            reject: err => reject(err),
           });
         });
       }
@@ -117,7 +127,6 @@ API.interceptors.response.use(
         const rToken = localStorage.getItem("refreshToken");
         if (!rToken) throw new Error("אין refresh token");
 
-        // אינסטנס נקי בלי אינטרספטורים
         const refreshInstance = axios.create({
           baseURL: BASE_URL,
           withCredentials: true,
@@ -142,7 +151,6 @@ API.interceptors.response.use(
       }
     }
 
-    // טיפול בשגיאות אחרות
     const contentType = response.headers["content-type"] || "";
     let message;
     if (!contentType.includes("application/json")) {

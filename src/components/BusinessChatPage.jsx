@@ -1,180 +1,130 @@
+// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import * as jwtDecode from "jwt-decode";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
-import { io } from "socket.io-client";
+import { createSocket } from "../socket";
 import API from "../api";
+import { ensureValidToken, getBusinessId } from "../authHelpers";
 
 export default function BusinessChatPage() {
   const { user, initialized, refreshToken } = useAuth();
-  const businessId = user?.businessId || user?.business?._id;
-
-  const [convos, setConvos] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const businessId = getBusinessId();
   const socketRef = useRef(null);
 
-  function isTokenValid(token) {
-    if (!token) return false;
-    try {
-      const decode = typeof jwtDecode.default === 'function' ? jwtDecode.default : jwtDecode;
-      const { exp } = decode(token);
-      return Date.now() < exp * 1000;
-    } catch {
-      return false;
-    }
-  }
+  const [convos, setConvos]     = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState("");
+  const hasJoinedRef            = useRef(false);
 
-  async function initSocket(token) {
-    socketRef.current?.disconnect();
-
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    console.log("Connecting socket to:", socketUrl);
-
-    const socket = io(socketUrl, {
-      path: "/socket.io",
-      withCredentials: true,
-      auth: { token, role: "business", businessId },
-    });
-
-    socketRef.current = socket;
-
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-      socket.emit("getConversations", { businessId }, ({ ok, conversations = [], error: errMsg }) => {
-        if (ok) {
-          setConvos(conversations);
-          if (!selected && conversations.length > 0) {
-            const first = conversations[0];
-            const convoId = first._id || first.conversationId;
-            const partnerId = Array.isArray(first.participants)
-              ? first.participants.find(p => String(p) !== String(businessId))
-              : first.partnerId;
-            setSelected({ conversationId: String(convoId), partnerId });
-          }
-        } else {
-          setError("לא ניתן לטעון שיחות: " + errMsg);
-          console.error("getConversations error:", errMsg);
-        }
-      });
-    });
-
-    socket.on("connect_error", err => {
-      setError("שגיאת socket: " + err.message);
-      setLoading(false);
-      console.error("Socket connect_error:", err);
-    });
-
-    socket.on("disconnect", (reason) => {
-      console.warn("Socket disconnected:", reason);
-      if (reason === "io server disconnect") {
-        // Server forcefully disconnected, try reconnect manually
-        socket.connect();
-      }
-    });
-
-    socket.on("newMessage", msg => {
-      console.log("Received newMessage:", msg);
-      setConvos(prev => {
-        const idx = prev.findIndex(c => String(c._id) === msg.conversationId);
-        if (idx === -1) return prev;
-        const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
-        const copy = [...prev];
-        copy.splice(idx, 1);
-        return [updated, ...copy];
-      });
-      if (msg.conversationId === selected?.conversationId) {
-        setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
-      }
-    });
-  }
-
+  // 1. Initialize socket once with valid token
   useEffect(() => {
     if (!initialized || !businessId) return;
-    let isMounted = true;
 
+    let isMounted = true;
     (async () => {
       setLoading(true);
-      let token = user?.accessToken;
-
-      if (!isTokenValid(token)) {
-        try {
-          token = await refreshToken();
-          console.log("Token refreshed");
-        } catch (err) {
-          console.error("Token refresh failed", err);
-          if (isMounted) {
-            setError("טוקן לא תקף ולא ניתן לרענן");
-            setLoading(false);
-          }
-          return;
-        }
+      try {
+        const token = await ensureValidToken();
+        const socket = createSocket();
+        socket.auth = { token, role: "business", businessId };
+        socket.connect();
+        socketRef.current = socket;
+      } catch (e) {
+        console.error("Cannot initialize socket:", e);
+        if (isMounted) setError("❌ טוקן לא תקף ולא ניתן להתחבר");
+      } finally {
+        if (isMounted) setLoading(false);
       }
-
-      await initSocket(token);
-      if (isMounted) setLoading(false);
     })();
 
     return () => {
       isMounted = false;
-      if (socketRef.current) {
-        console.log("Disconnecting socket");
-        socketRef.current.disconnect();
+      socketRef.current?.disconnect();
+    };
+  }, [initialized, businessId, refreshToken]);
+
+  // 2. Fetch conversations via socket
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket?.connected || !businessId) return;
+
+    socket.emit("getConversations", { businessId }, ({ ok, conversations, error: errMsg }) => {
+      if (ok) {
+        setConvos(conversations);
+        if (!selected && conversations.length > 0) {
+          const first = conversations[0];
+          const convoId = first._id || first.conversationId;
+          const partnerId = first.partnerId || first.participants.find(p => p !== businessId);
+          setSelected({ conversationId: convoId, partnerId });
+        }
+      } else {
+        console.error("getConversations error:", errMsg);
+        setError("לא ניתן לטעון שיחות: " + errMsg);
+      }
+    });
+  }, [socketRef.current?.connected, businessId, selected]);
+
+  // 3. Listen for new messages
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    const handler = (msg) => {
+      setConvos(prev => {
+        const idx = prev.findIndex(c => String(c._id) === msg.conversationId);
+        if (idx === -1) return prev;
+        const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
+        return [updated, ...prev.filter((_, i) => i !== idx)];
+      });
+      if (msg.conversationId === selected?.conversationId) {
+        setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
       }
     };
-  }, [initialized, businessId, user?.accessToken]);
 
-  useEffect(() => {
-    if (!initialized || loading || convos.length > 0) return;
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await API.get(`/conversations`, { params: { businessId } });
-        setConvos(res.data);
-      } catch (e) {
-        console.error("REST fallback failed:", e);
-        setError("שגיאה בטעינת שיחות");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [initialized, loading, convos.length, businessId]);
-
-  useEffect(() => {
-    if (socketRef.current && selected?.conversationId) {
-      socketRef.current.emit("joinConversation", selected.conversationId, ack => {
-        if (!ack.ok) {
-          console.error("joinConversation failed:", ack.error);
-          setError("לא ניתן להצטרף לשיחה");
-        } else {
-          console.log("Joined conversation", selected.conversationId);
-        }
-      });
-    }
+    socket.on("newMessage", handler);
+    return () => socket.off("newMessage", handler);
   }, [selected]);
 
+  // 4. Join conversation room
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket?.connected || !selected?.conversationId) return;
+
+    if (hasJoinedRef.current) {
+      socket.emit("leaveConversation", selected.conversationId);
+    }
+    socket.emit("joinConversation", selected.conversationId, (ack) => {
+      if (!ack.ok) {
+        console.error("joinConversation failed:", ack.error);
+        setError("לא ניתן להצטרף לשיחה");
+      }
+    });
+    hasJoinedRef.current = true;
+  }, [socketRef.current?.connected, selected]);
+
+  // 5. Load history via REST fallback
   useEffect(() => {
     if (!initialized || !selected?.conversationId) {
       setMessages([]);
       return;
     }
     setLoading(true);
-    API.get('/conversations/history', { params: { conversationId: selected.conversationId } })
+    API.get("/conversations/history", { params: { conversationId: selected.conversationId } })
       .then(res => setMessages(res.data))
-      .catch((e) => {
-        setError("שגיאה בטעינת היסטוריה");
+      .catch(e => {
         console.error("Load history error:", e);
+        setError("שגיאה בטעינת היסטוריה");
         setMessages([]);
       })
       .finally(() => setLoading(false));
   }, [initialized, selected]);
 
   function handleSelect(conversationId, partnerId) {
-    setSelected({ conversationId: String(conversationId), partnerId });
+    setSelected({ conversationId, partnerId });
   }
 
   if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
