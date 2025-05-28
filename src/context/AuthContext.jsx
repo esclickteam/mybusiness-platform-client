@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api";
+import API from "../api"; // הפניה לאובייקט ה-API שלך
 
 export const AuthContext = createContext();
 
@@ -12,6 +12,32 @@ export function AuthProvider({ children }) {
   const [successMessage, setSuccessMessage] = useState(null);
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
+
+  // פונקציה לחידוש הטוקן
+  const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
+      console.warn("אין Refresh Token, יש להתחבר מחדש");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await API.post("/auth/refresh-token", { refreshToken });
+
+      if (response.data.accessToken) {
+        // עדכון ה־Access Token החדש
+        localStorage.setItem("token", response.data.accessToken);
+        API.defaults.headers['Authorization'] = `Bearer ${response.data.accessToken}`;
+      } else {
+        console.error("Failed to refresh access token.");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Error refreshing access token:", error);
+      navigate("/login");
+    }
+  };
 
   // 1. On mount: fetch current user if token exists
   useEffect(() => {
@@ -65,9 +91,9 @@ export function AuthProvider({ children }) {
       }
 
       // שמירת הטוקן ב־localStorage
-      const token = response.data.token || response.data.accessToken; // ודא שזה השם הנכון בשרת שלך
+      const token = response.data.token || response.data.accessToken;
       if (token) {
-        localStorage.setItem("token", token);  // שמור את הטוקן ב־localStorage
+        localStorage.setItem("token", token);  // שמור את ה־Access Token ב־localStorage
         API.defaults.headers['Authorization'] = `Bearer ${token}`; // הגדר את הטוקן עבור כל בקשה עתידית
       } else {
         console.warn("No token received from login response");
@@ -107,11 +133,16 @@ export function AuthProvider({ children }) {
 
       return data;
     } catch (e) {
-      setError(
-        e.response?.status === 401
-          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסה שוב"
-      );
+      if (e.response?.status === 401) {
+        // נתקבלה שגיאה 401 – ננסה לחדש את ה־Access Token
+        await refreshAccessToken();
+      } else {
+        setError(
+          e.response?.status === 401
+            ? "❌ אימייל/שם משתמש או סיסמה שגויים"
+            : "❌ שגיאה בשרת, נסה שוב"
+        );
+      }
       throw e;
     } finally {
       setLoading(false);
@@ -122,36 +153,36 @@ export function AuthProvider({ children }) {
     login(username, password, { skipRedirect: true });
 
   const logout = async () => {
-  setLoading(true);
-  try {
-    const refreshToken = localStorage.getItem("refreshToken");
+    setLoading(true);
+    try {
+      const refreshToken = localStorage.getItem("refreshToken");
 
-    if (refreshToken) {
-      await API.post("/auth/logout", { refreshToken });  // שלח את ה-refreshToken בעת ההתנתקות
-    } else {
-      console.warn("No refresh token found during logout");
+      if (refreshToken) {
+        await API.post("/auth/logout", { refreshToken });  // שלח את ה-refreshToken בעת ההתנתקות
+      } else {
+        console.warn("No refresh token found during logout");
+      }
+
+      setSuccessMessage("✅ נותקת בהצלחה");
+
+      // הסרת הטוקנים מ־localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+
+      // ניקוי ה־Authorization header
+      delete API.defaults.headers['Authorization'];
+
+      // אם יש גם businessDetails, מחוק אותו
+      localStorage.removeItem("businessDetails");
+
+    } catch (e) {
+      console.warn("Logout failed:", e);
+    } finally {
+      setUser(null);
+      setLoading(false);
+      navigate("/", { replace: true });
     }
-
-    setSuccessMessage("✅ נותקת בהצלחה");
-
-    // הסרת הטוקנים מ־localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-
-    // ניקוי ה־Authorization header
-    delete API.defaults.headers['Authorization'];
-
-    // אם יש גם businessDetails, מחוק אותו
-    localStorage.removeItem("businessDetails");
-
-  } catch (e) {
-    console.warn("Logout failed:", e);
-  } finally {
-    setUser(null);
-    setLoading(false);
-    navigate("/", { replace: true });
-  }
-};
+  };
 
   // clear success message after 4s
   useEffect(() => {
