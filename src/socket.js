@@ -1,6 +1,6 @@
 // src/socket.js
 import { io } from "socket.io-client";
-import { getAccessToken, getBusinessId } from "./authHelpers"; // Helpers you create to read from your auth context or localStorage
+import { getAccessToken, getBusinessId } from "./utils/authHelpers"; // Helpers you create to read from your auth context or localStorage
 
 const socketUrl = import.meta.env.VITE_SOCKET_URL;
 
