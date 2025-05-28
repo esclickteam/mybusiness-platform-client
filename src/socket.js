@@ -15,6 +15,7 @@ export function createSocket() {
   }
 
   // יצירת החיבור לסוקט
+  console.log("🔗 Creating socket connection...");
   const socket = io(SOCKET_URL, {
     path: "/socket.io",
     transports: ["websocket"],
@@ -30,15 +31,17 @@ export function createSocket() {
 
   // חיבור מחדש אם התוקן תקף
   socket.on("connect", () => {
-    console.log("Connected to WebSocket server:", socket.id);
+    console.log("✅ Connected to WebSocket server:", socket.id);
   });
 
   socket.on("disconnect", () => {
-    console.log("Disconnected from WebSocket server");
+    console.log("🔴 Disconnected from WebSocket server");
   });
 
   // טיפול במקרה של expired token
   socket.on("tokenExpired", async () => {
+    console.log("🚨 Token expired, attempting to refresh...");
+
     try {
       console.log("🔄 Refreshing token...");
 
@@ -49,12 +52,13 @@ export function createSocket() {
       });
 
       if (!response.ok) {
+        console.error('Failed to refresh token: HTTP error', response.status);
         throw new Error('Failed to refresh token');
       }
 
       const data = await response.json();
       if (data.accessToken) {
-        // עדכון ה־accessToken החדש
+        console.log('✅ New accessToken received:', data.accessToken);
         socket.auth.token = data.accessToken;
 
         // הפסק את החיבור הקודם והתחבר מחדש עם ה־accessToken החדש
@@ -69,10 +73,20 @@ export function createSocket() {
       }
     } catch (error) {
       console.error("Error refreshing token:", error);
-      // הפניית המשתמש להתחברות מחדש אם הייתה שגיאה ברענון
       alert("An error occurred while refreshing the token. Please try again.");
       window.location.href = "/login";
     }
+  });
+
+  // טיפול בשגיאות חיבור
+  socket.on("connect_error", (err) => {
+    console.error('Socket connection error:', err.message);
+    alert('Connection failed: ' + err.message);
+  });
+
+  socket.on("connect_failed", () => {
+    console.error('Socket connection failed');
+    alert('Failed to connect to server. Please try again.');
   });
 
   return socket;
