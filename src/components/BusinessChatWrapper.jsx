@@ -1,69 +1,89 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import ConversationsList from './ConversationsList';
-import ChatPage from './ChatPage';
-import './ConversationsList.css';
-import socket from '../socket';
+// src/components/BusinessChatWrapper.jsx
+import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import ConversationsList from "./ConversationsList";
+import ChatPage from "./ChatPage";
+import "./ConversationsList.css";
+import createSocket from "../socket";
 
 export default function BusinessChatWrapper() {
   const { businessId: routeBusinessId } = useParams();
   const { accessToken, user } = useAuth();
   const businessId = user?.businessId || routeBusinessId;
 
-  const [convos, setConvos] = useState([]);
+  const [convos, setConvos]     = useState([]);
   const [selected, setSelected] = useState(null);
-  const hasJoinedRef = useRef(false);
+  const socketRef               = useRef(null);
+  const hasJoinedRef            = useRef(false);
 
   useEffect(() => {
     if (!businessId || !accessToken) return;
+    if (socketRef.current) return; // כבר אתחלנו סוקט
 
-    // Configure and connect socket
-    socket.auth = { token: accessToken, role: 'business', businessId };
-    socket.connect();
+    // צור וסנכרן סוקט
+    const sock = createSocket();
+    socketRef.current = sock;
+    sock.auth = { token: accessToken, role: "business", businessId };
+    sock.connect();
 
-    // Fetch conversations
-    socket.emit('getConversations', { businessId }, ({ ok, conversations = [], error }) => {
+    // קבל שיחות
+    sock.emit("getConversations", { businessId }, ({ ok, conversations = [], error }) => {
       if (ok) {
         setConvos(conversations);
         if (!selected && conversations.length > 0) {
           const first = conversations[0];
-          const convoId = first._id || first.conversationId || first.id;
+          const convoId   = first._id || first.conversationId || first.id;
           const partnerId = (first.participants || []).find(pid => pid !== businessId) || first.customer?._id || null;
           setSelected({ conversationId: convoId, partnerId });
         }
       } else {
-        console.error('Error loading conversations:', error);
+        console.error("Error loading conversations:", error);
       }
     });
 
+    // ניקוי בסגירה
     return () => {
-      socket.disconnect();
+      sock.disconnect();
+      socketRef.current = null;
       setConvos([]);
       setSelected(null);
     };
-  }, [businessId, accessToken]);
+  }, [businessId, accessToken, selected]);
 
   const handleSelect = (conversationId) => {
+    const sock = socketRef.current;
+    if (!sock) return;
+
     const convo = convos.find(
-      c => c._id === conversationId || c.conversationId === conversationId || c.id === conversationId
+      c =>
+        c._id === conversationId ||
+        c.conversationId === conversationId ||
+        c.id === conversationId
     );
-    if (!convo) return setSelected(null);
-    const partnerId = (convo.participants || []).find(pid => pid !== businessId) || convo.customer?._id || null;
+    if (!convo) {
+      setSelected(null);
+      return;
+    }
+
+    const partnerId =
+      (convo.participants || []).find(pid => pid !== businessId) ||
+      convo.customer?._id ||
+      null;
     setSelected({ conversationId, partnerId });
 
-    // Join selected conversation
+    // יציאה ממועדון קודם והצטרפות למועדון חדש
     if (hasJoinedRef.current) {
-      socket.emit('leaveConversation', selected.conversationId);
+      sock.emit("leaveConversation", selected.conversationId);
     }
-    socket.emit('joinConversation', conversationId, ack => {
-      if (!ack.ok) console.error('joinConversation failed:', ack.error);
+    sock.emit("joinConversation", conversationId, ack => {
+      if (!ack.ok) console.error("joinConversation failed:", ack.error);
     });
     hasJoinedRef.current = true;
   };
 
   return (
-    <div className="business-chat-wrapper" style={{ display: 'flex', height: '100%' }}>
+    <div className="business-chat-wrapper" style={{ display: "flex", height: "100%" }}>
       <ConversationsList
         conversations={convos}
         businessId={businessId}
@@ -76,11 +96,19 @@ export default function BusinessChatWrapper() {
           isBusiness={true}
           userId={businessId}
           partnerId={selected.partnerId}
-          conversationId={selected.conversationId}
-          socket={socket}
+          initialConversationId={selected.conversationId}
+          socket={socketRef.current}
         />
       ) : (
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b5b5b5' }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#b5b5b5",
+          }}
+        >
           בחר שיחה כדי לראות הודעות
         </div>
       )}

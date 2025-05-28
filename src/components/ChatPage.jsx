@@ -1,16 +1,12 @@
- // src/components/ChatPage.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import ChatComponent from './ChatComponent';
-import ConversationsList from './ConversationsList';
-import './ChatPage.css';
-import io from 'socket.io-client';
+// src/components/ChatPage.jsx
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
+import ChatComponent from "./ChatComponent";
+import ConversationsList from "./ConversationsList";
+import "./ChatPage.css";
+import createSocket from "../socket"; // השתמשנו בפונקציה שלך מ־src/socket.js
 
-export default function ChatPage({
-  isBusiness,
-  userId,
-  initialPartnerId
-}) {
+export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
   const { state } = useLocation();
   const initialConversationId = state?.conversationId || null;
 
@@ -20,66 +16,61 @@ export default function ChatPage({
       ? { conversationId: initialConversationId, partnerId: initialPartnerId }
       : null
   );
-  const [error, setError] = useState('');
-  const socketRef = useRef();
+  const [error, setError] = useState("");
+  const socketRef = useRef(null);
 
   useEffect(() => {
     if (!userId) return;
+    if (socketRef.current) return; // כבר אתחול
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    socketRef.current = io(socketUrl, {
-      auth: { userId, role: isBusiness ? 'business' : 'client' },
-      transports: ["websocket"],
-    });
+    const sock = createSocket();
+    socketRef.current = sock;
+    sock.connect();
 
     // 1. fetch initial conversations
-    socketRef.current.emit(
-      "getConversations",
-      { userId },           // ← כאן השתמשנו ב־userId
-      (res) => {
-        if (res.ok) {
-          const convs = Array.isArray(res.conversations) ? res.conversations : [];
-          setConversations(convs);
-
-          // בחר ברירת מחדל אם אין שיחה נבחרת
-          if (!selected && convs.length > 0) {
-            const first = convs[0];
-            const convoId = first._id || first.conversationId;
-            const partnerId = (first.participants || []).find(pid => pid !== userId)
-              || first.customer?._id
-              || null;
-            setSelected({ conversationId: convoId, partnerId });
-          }
-        } else {
-          setError('לא ניתן לטעון שיחות: ' + (res.error || 'שגיאה'));
+    sock.emit("getConversations", { userId }, (res) => {
+      if (res.ok) {
+        const convs = Array.isArray(res.conversations) ? res.conversations : [];
+        setConversations(convs);
+        if (!selected && convs.length > 0) {
+          const first = convs[0];
+          const convoId = first._id || first.conversationId;
+          const partnerId =
+            (first.participants || []).find((pid) => pid !== userId) ||
+            first.customer?._id ||
+            null;
+          setSelected({ conversationId: convoId, partnerId });
         }
+      } else {
+        setError("לא ניתן לטעון שיחות: " + (res.error || "שגיאה"));
       }
-    );
+    });
 
-    // 2. התקנת מאזין להודעות נכנסות
-    socketRef.current.on("newMessage", (message) => {
-      // עדכון רשימת השיחות: הוספת ההודעה לשיחה המתאימה
-      setConversations(prev =>
-        prev.map(conv =>
-          (conv._id === message.conversationId || conv.conversationId === message.conversationId)
-            ? { ...conv, messages: [...(conv.messages||[]), message] }
+    // 2. listener for new messages
+    const handleNew = (message) => {
+      setConversations((prev) =>
+        prev.map((conv) =>
+          (conv._id === message.conversationId ||
+            conv.conversationId === message.conversationId)
+            ? { ...conv, messages: [...(conv.messages || []), message] }
             : conv
         )
       );
-      // אם זו השיחה הנבחרת – עדכון בתצוגה
       if (selected?.conversationId === message.conversationId) {
-        setSelected(prev => ({
+        setSelected((prev) => ({
           ...prev,
-          // שומר את כל הפרטים הקודמים + הוספת ההודעה החדשה
-          messages: [...(prev.messages||[]), message]
+          messages: [...(prev.messages || []), message],
         }));
       }
-    });
+    };
+    sock.on("newMessage", handleNew);
 
     return () => {
-      socketRef.current.disconnect();
+      sock.off("newMessage", handleNew);
+      sock.disconnect();
+      socketRef.current = null;
     };
-  // שימו לב: לא מוסיפים את `selected` ל־deps כדי שלא נרוץ את האפקט שוב בלי צורך
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isBusiness]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
@@ -106,7 +97,6 @@ export default function ChatPage({
             partnerId={selected.partnerId}
             initialConversationId={selected.conversationId}
             socket={socketRef.current}
-            // העבר גם את ההודעות הקיימות אם ברצונך
             existingMessages={selected.messages}
           />
         ) : (
