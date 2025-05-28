@@ -1,6 +1,6 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import API, {
   setAccessToken as setAPIAccessToken,
   setRefreshToken as setAPIRefreshToken,
@@ -10,6 +10,8 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   const [user, setUser] = useState(null);
   const [accessToken, _setAccessToken] = useState(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,6 @@ export function AuthProvider({ children }) {
       }
       return newAT;
     } catch (e) {
-      // על כשל – לנקות כל הנתונים
       setUser(null);
       setAccessToken(null);
       localStorage.removeItem("refreshToken");
@@ -189,8 +190,11 @@ export function AuthProvider({ children }) {
     return () => clearTimeout(t);
   }, [successMessage]);
 
-  // ** early return כדי למנוע render אינסופי **
+  // early return כדי למנוע render אינסופי ותיקון ל-login/register
   if (loading || !initialized) {
+    if (pathname === "/login" || pathname === "/register") {
+      return <>{children}</>;
+    }
     return <div>טוען…</div>;
   }
 
