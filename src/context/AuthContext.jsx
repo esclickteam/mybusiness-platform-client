@@ -1,6 +1,5 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import API, {
   setAccessToken as setAPIAccessToken,
   setRefreshToken as setAPIRefreshToken,
@@ -9,25 +8,19 @@ import API, {
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-
   const [user, setUser] = useState(null);
   const [accessToken, _setAccessToken] = useState(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
   const initRan = useRef(false);
 
-  const setAccessToken = (token) => {
+  const setAccessToken = token => {
     _setAccessToken(token);
     setAPIAccessToken(token);
-    if (token) localStorage.setItem("accessToken", token);
-    else localStorage.removeItem("accessToken");
+    token ? localStorage.setItem("accessToken", token) : localStorage.removeItem("accessToken");
   };
 
-  const saveBusinessDetails = (data) => {
+  const saveBusinessDetails = data => {
     if (data.business) {
       localStorage.setItem("businessDetails", JSON.stringify(data.business));
     } else if (data.businessId) {
@@ -38,43 +31,35 @@ export function AuthProvider({ children }) {
   };
 
   async function refreshToken() {
-    try {
-      const rToken = localStorage.getItem("refreshToken");
-      if (!rToken) throw new Error("No refresh token");
-      const res = await API.post("/auth/refresh-token", { refreshToken: rToken });
-      const newAT = res.data.accessToken || res.data.token;
-      const newRT = res.data.refreshToken;
-      setAccessToken(newAT);
-      if (newRT) {
-        localStorage.setItem("refreshToken", newRT);
-        setAPIRefreshToken(newRT);
-      }
-      return newAT;
-    } catch (e) {
-      setUser(null);
-      setAccessToken(null);
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("businessDetails");
-      throw e;
+    const rToken = localStorage.getItem("refreshToken");
+    if (!rToken) throw new Error("No refresh token");
+    const res = await API.post("/auth/refresh-token", { refreshToken: rToken });
+    const newAT = res.data.accessToken || res.data.token;
+    const newRT = res.data.refreshToken;
+    setAccessToken(newAT);
+    if (newRT) {
+      localStorage.setItem("refreshToken", newRT);
+      setAPIRefreshToken(newRT);
     }
+    return newAT;
   }
 
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
 
-    const initialize = async () => {
+    (async () => {
       setLoading(true);
       try {
         const storedAT = localStorage.getItem("accessToken");
         const storedRT = localStorage.getItem("refreshToken");
-        if (storedAT) {
-          setAccessToken(storedAT);
-        }
+
+        if (storedAT) setAccessToken(storedAT);
         if (storedRT) {
           setAPIRefreshToken(storedRT);
           await refreshToken();
         }
+
         const { data } = await API.get("/auth/me");
         setUser({
           userId:           data.userId,
@@ -93,56 +78,41 @@ export function AuthProvider({ children }) {
         setLoading(false);
         setInitialized(true);
       }
-    };
-
-    initialize();
+    })();
   }, []);
 
-  const login = async (identifier, password, options = { skipRedirect: false }) => {
+  const login = async (identifier, password) => {
     setLoading(true);
-    setError(null);
-    const clean = identifier.trim();
-    const isEmail = clean.includes("@");
     try {
+      const clean = identifier.trim();
+      const isEmail = clean.includes("@");
       const endpoint = isEmail ? "/auth/login" : "/auth/staff-login";
-      const payload  = isEmail
+      const payload = isEmail
         ? { email: clean.toLowerCase(), password }
         : { username: clean, password };
+
       const response = await API.post(endpoint, payload);
       const newAT = response.data.accessToken || response.data.token;
       const newRT = response.data.refreshToken;
+
       setAccessToken(newAT);
       if (newRT) {
         localStorage.setItem("refreshToken", newRT);
         setAPIRefreshToken(newRT);
       }
+
       const u = response.data.user;
-      setUser({
+      const userData = {
         userId:           u.userId,
         name:             u.name,
         email:            u.email,
         role:             u.role,
         subscriptionPlan: u.subscriptionPlan,
         businessId:       u.businessId || null,
-      });
+      };
+      setUser(userData);
       saveBusinessDetails(u);
-      if (!options.skipRedirect) {
-        let path = "/";
-        switch (u.role) {
-          case "business": path = `/business/${u.businessId}/dashboard`; break;
-          case "customer": path = "/client/dashboard";                   break;
-          case "worker":   path = "/staff/dashboard";                    break;
-          case "manager":  path = "/manager/dashboard";                  break;
-          case "admin":    path = "/admin/dashboard";                    break;
-        }
-        navigate(path, { replace: true });
-      }
-      return u;
-    } catch (e) {
-      setError(e.response?.status === 401
-        ? "❌ אימייל/סיסמה לא נכונים"
-        : "❌ שגיאה בשרת, נסה שוב");
-      throw e;
+      return userData;
     } finally {
       setLoading(false);
     }
@@ -157,37 +127,14 @@ export function AuthProvider({ children }) {
     setAccessToken(null);
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("businessDetails");
-    navigate("/", { replace: true });
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (!successMessage) return;
-    const t = setTimeout(() => setSuccessMessage(null), 4000);
-    return () => clearTimeout(t);
-  }, [successMessage]);
-
-  const contextValue = {
-    user,
-    accessToken,
-    loading,
-    initialized,
-    error,
-    login,
-    logout,
-    refreshToken,
-    successMessage,
-    setSuccessMessage,
-  };
-
-  // always wrap children in Provider, but decide what to render inside
   return (
-    <AuthContext.Provider value={contextValue}>
-      {loading || !initialized
-        ? (pathname === "/login" || pathname === "/register"
-            ? children
-            : <div>טוען…</div>)
-        : children}
+    <AuthContext.Provider
+      value={{ user, accessToken, loading, initialized, login, logout, refreshToken }}
+    >
+      {children}
     </AuthContext.Provider>
   );
 }
