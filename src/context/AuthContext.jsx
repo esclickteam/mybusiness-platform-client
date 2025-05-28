@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
+import jwt from "jsonwebtoken";
 
 export const AuthContext = createContext();
 
@@ -14,12 +15,11 @@ export function AuthProvider({ children }) {
   const initRan = useRef(false);
 
   const applyAccessToken = (token) => {
+    console.log("Applying token to Axios:", token); // לוג
     if (token) {
       API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      console.log("הוזן טוקן חדש ל-axios:", token);
     } else {
       delete API.defaults.headers.common["Authorization"];
-      console.log("הוסר טוקן מ-axios");
     }
   };
 
@@ -33,12 +33,12 @@ export function AuthProvider({ children }) {
       try {
         // טען את ה- accessToken
         const token = localStorage.getItem("token");
-        console.log("נשלף טוקן מ-localStorage:", token);
+        console.log("Loaded token from localStorage:", token); // לוג
         if (token) applyAccessToken(token);
 
         // קבל פרטי משתמש
         const { data } = await API.get("/auth/me");
-        console.log("פרטי משתמש התקבלו:", data);
+        console.log("User details received:", data);
 
         setUser({
           userId: data.userId,
@@ -51,7 +51,7 @@ export function AuthProvider({ children }) {
 
         // שמור את פרטי העסק אם קיימים
         if (data.businessId) {
-          console.log("שומר את פרטי העסק ב-localStorage:", data.businessId);
+          console.log("Saving business details to localStorage:", data.businessId);
           localStorage.setItem(
             "businessDetails",
             JSON.stringify({ businessId: data.businessId, _id: data.businessId })
@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
           localStorage.removeItem("businessDetails");
         }
       } catch (err) {
-        console.error("שגיאה בהתחול:", err);
+        console.error("Error during initialization:", err);
         setUser(null);
         localStorage.removeItem("businessDetails");
         applyAccessToken(null);
@@ -78,24 +78,24 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("refreshToken");
 
-    console.log("בודק אם יש צורך לרענן את הטוקן");
+    console.log("Checking if token needs refreshing");
 
     if (token && isTokenExpired(token)) {
-      console.log("הטוקן פג תוקף, מנסה לרענן");
+      console.log("Token expired, trying to refresh");
 
       try {
         const response = await API.post("/refresh-token", { refreshToken });
         const { accessToken } = response.data;
 
         if (accessToken) {
-          console.log("טוקן חדש התקבל:", accessToken);
+          console.log("New token received:", accessToken);
           localStorage.setItem("token", accessToken);
           applyAccessToken(accessToken);
         } else {
-          console.error("לא ניתן לרענן את הטוקן");
+          console.error("Failed to refresh token");
         }
       } catch (err) {
-        console.error("שגיאה ברענון הטוקן:", err);
+        console.error("Error refreshing token:", err);
       }
     }
   };
@@ -127,7 +127,7 @@ export function AuthProvider({ children }) {
 
       const { token, refreshToken } = response.data;
       if (token) {
-        console.log("שומר טוקן ב-localStorage:", token);
+        console.log("Saving token to localStorage:", token); // לוג
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         applyAccessToken(token);
@@ -135,7 +135,7 @@ export function AuthProvider({ children }) {
 
       // קבל מחדש פרטי משתמש
       const { data } = await API.get("/auth/me");
-      console.log("פרטי משתמש התקבלו לאחר התחברות:", data);
+      console.log("User details received after login:", data);
 
       setUser({
         userId: data.userId,
@@ -147,7 +147,7 @@ export function AuthProvider({ children }) {
       });
 
       if (data.businessId) {
-        console.log("שומר את פרטי העסק ב-localStorage:", data.businessId);
+        console.log("Saving business details to localStorage:", data.businessId);
         localStorage.setItem(
           "businessDetails",
           JSON.stringify({ businessId: data.businessId, _id: data.businessId })
@@ -201,7 +201,7 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
-      console.log("מבצע logout, מנקה את ה-localStorage");
+      console.log("Logging out, clearing localStorage");
       localStorage.removeItem("token");
       localStorage.removeItem("businessDetails");
       applyAccessToken(null);
