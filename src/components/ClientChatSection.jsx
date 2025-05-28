@@ -5,136 +5,78 @@ import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
-import API, { setAccessToken } from "../api";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
-  const { user, initialized, refreshToken } = useAuth();
-  const userId = user?.id || user?.userId;
+  const { user, initialized } = useAuth();
+  const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
-  const [businessName, setBusinessName]     = useState("");
-  const [loading, setLoading]               = useState(true);
-  const [error, setError]                   = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // הגדרת טוקן ל־API
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) setAccessToken(token);
-  }, []);
-
-  // Initialize socket (רק פעם אחת)
-  useEffect(() => {
-    if (!initialized || !userId) return;
-    if (socketRef.current) return; // כבר אתחלנו
-
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    const token     = localStorage.getItem("accessToken");
-
-    const socket = io(socketUrl, {
-      path: "/socket.io",
-      transports: ["polling", "websocket"],
-      auth: { token, role: "client" },
-      withCredentials: true,
-    });
-    socketRef.current = socket;
-
-    socket.on("connect_error", (err) => {
-      setError("שגיאת socket: " + err.message);
-      setLoading(false);
-    });
-
-    return () => {
-      socket.disconnect();
-      socketRef.current = null;
-    };
-  }, [initialized, userId]);
-
-  // Start or get existing conversation via REST
+  // 1️⃣ Initialize socket once when dependencies are ready
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
 
-    (async () => {
-      setLoading(true);
-      setError("");
-      try {
-        // רענון טוקן במידת הצורך
-        await refreshToken();
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    const token = localStorage.getItem("token");
 
-        // חפש שיחה קיימת
-        const res = await API.get("/conversations", { params: { userId } });
-        const conv = res.data.find(c => String(c.partnerId) === String(businessId));
+    socketRef.current = io(socketUrl, {
+      path: "/socket.io",
+      transports: ["polling", "websocket"],
+      auth: { token, role: "chat" },
+      withCredentials: true,
+    });
 
-        if (conv) {
-          setConversationId(conv.conversationId);
-          setBusinessName(conv.businessName || "");
-        } else {
-          // אם לא נמצאה — צור חדשה
-          const post = await API.post("/conversations", { otherId: businessId });
-          setConversationId(post.data.conversationId);
+    return () => {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    };
+  }, [initialized, userId, businessId]);
 
-          // טען שם העסק מהשרת
-          const getRes = await API.get("/conversations", { params: { userId } });
-          const newConv = getRes.data.find(c => c.conversationId === post.data.conversationId);
-          setBusinessName(newConv?.businessName || "");
-        }
-      } catch (e) {
-        console.error("Error init client conversation:", e);
-        if (e.response) {
-          setError(`שגיאה מהשרת: ${e.response.status} - ${e.response.data?.message || e.response.statusText}`);
-        } else {
-          setError("שגיאה: " + (e.message || "לא ידוע"));
-        }
-      } finally {
+  // 2️⃣ Start or get conversation once
+  useEffect(() => {
+    if (!socketRef.current || !businessId) return;
+
+    setLoading(true);
+    socketRef.current.emit(
+      "startConversation",
+      { otherUserId: businessId },
+      (res) => {
+        if (res.ok) setConversationId(res.conversationId);
+        else setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
         setLoading(false);
       }
-    })();
-  }, [initialized, userId, businessId, refreshToken]);
+    );
+  }, [businessId]);
 
-  // Load business name via socket
+  // 3️⃣ After conversationId is ready, load business name
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket || !conversationId) return;
+    if (!socketRef.current || !conversationId) return;
 
-    socket.emit("getConversations", { userId }, (res) => {
-      if (res.ok) {
-        const conv = res.conversations.find(c =>
-          [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
-        );
-        setBusinessName(conv?.businessName || "");
-      } else {
-        setError("שגיאה בטעינת שם העסק");
+    socketRef.current.emit(
+      "getConversations",
+      { userId },
+      (res) => {
+        if (res.ok) {
+          const conv = res.conversations.find((c) =>
+            [c.conversationId, c._id, c.id]
+              .map(String)
+              .includes(String(conversationId))
+          );
+          setBusinessName(conv?.businessName || "");
+        } else {
+          setError("שגיאה בטעינת שם העסק");
+        }
       }
-    });
+    );
   }, [conversationId, userId]);
 
-  // REST fallback: אם עדיין אין שיחה, נסה שוב
-  useEffect(() => {
-    if (!initialized || !userId || conversationId) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    API.get("/conversations", { params: { userId } })
-      .then(res => {
-        const conv = res.data.find(c =>
-          [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
-        );
-        if (conv) {
-          setConversationId(conv.conversationId);
-          setBusinessName(conv.businessName || "");
-        }
-      })
-      .catch(e => {
-        console.error("REST fallback failed:", e);
-        setError("שגיאה בטעינת שיחות");
-      })
-      .finally(() => setLoading(false));
-  }, [initialized, userId, conversationId]);
-
   if (loading) return <div className={styles.loading}>טוען…</div>;
-  if (error)   return <div className={styles.error}>{error}</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
@@ -154,9 +96,7 @@ export default function ClientChatSection() {
               userId={userId}
             />
           ) : (
-            <div className={styles.emptyMessage}>
-              לא הצלחנו לפתוח שיחה…
-            </div>
+            <div className={styles.emptyMessage}>לא הצלחנו לפתוח שיחה…</div>
           )}
         </section>
       </div>
