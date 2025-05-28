@@ -1,4 +1,3 @@
-// src/utils/authHelpers.js
 import jwtDecode from "jwt-decode";
 
 /**
@@ -20,6 +19,14 @@ export function isTokenExpired(token) {
 export function getAccessToken() {
   // כעת אנחנו שומרים את הטוקן תחת 'token'
   return localStorage.getItem("token");
+}
+
+/**
+ * מביא את ה־refreshToken מה־localStorage
+ */
+export function getRefreshToken() {
+  // כעת אנחנו שומרים את ה־refreshToken תחת 'refreshToken'
+  return localStorage.getItem("refreshToken");
 }
 
 /**
