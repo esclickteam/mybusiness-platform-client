@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
-import jwt from "jsonwebtoken";
 
 export const AuthContext = createContext();
 
@@ -158,25 +157,25 @@ export function AuthProvider({ children }) {
       }
 
       // ניתוב לפי תפקיד
-      let path = "/";
-      switch (data.role) {
-        case "business":
-          path = `/business/${data.businessId}/dashboard`;
-          break;
-        case "customer":
-          path = "/client/dashboard";
-          break;
-        case "worker":
-          path = "/staff/dashboard";
-          break;
-        case "manager":
-          path = "/manager/dashboard";
-          break;
-        case "admin":
-          path = "/admin/dashboard";
-          break;
-      }
       if (!options.skipRedirect) {
+        let path = "/";
+        switch (data.role) {
+          case "business":
+            path = `/business/${data.businessId}/dashboard`;
+            break;
+          case "customer":
+            path = "/client/dashboard";
+            break;
+          case "worker":
+            path = "/staff/dashboard";
+            break;
+          case "manager":
+            path = "/manager/dashboard";
+            break;
+          case "admin":
+            path = "/admin/dashboard";
+            break;
+        }
         navigate(path, { replace: true });
       }
 
