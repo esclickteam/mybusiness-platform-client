@@ -1,6 +1,10 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API, { setAccessToken as setAPIAccessToken, setRefreshToken as setAPIRefreshToken } from "../api";
+import API, {
+  setAccessToken as setAPIAccessToken,
+  setRefreshToken as setAPIRefreshToken,
+} from "../api";
 
 export const AuthContext = createContext();
 
@@ -18,6 +22,8 @@ export function AuthProvider({ children }) {
   const setAccessToken = (token) => {
     _setAccessToken(token);
     setAPIAccessToken(token);
+    if (token) localStorage.setItem("accessToken", token);
+    else localStorage.removeItem("accessToken");
   };
 
   // שמירת פרטי העסק בלוקל סטורג'
@@ -63,7 +69,6 @@ export function AuthProvider({ children }) {
     initRan.current = true;
 
     const initialize = async () => {
-      debugger; // עצור כאן לבדיקה בדפדפן
       setLoading(true);
       try {
         const storedAT = localStorage.getItem("accessToken");
@@ -73,9 +78,6 @@ export function AuthProvider({ children }) {
         }
         if (storedRT) {
           setAPIRefreshToken(storedRT);
-        }
-
-        if (storedRT) {
           await refreshToken();
         }
 
@@ -89,8 +91,8 @@ export function AuthProvider({ children }) {
           businessId:       data.businessId || null,
         });
         saveBusinessDetails(data);
-      } catch (error) {
-        console.error("AuthContext: initialization error", error);
+      } catch (e) {
+        console.error("AuthContext: initialization error", e);
         setUser(null);
         setAccessToken(null);
         localStorage.removeItem("businessDetails");
@@ -142,10 +144,10 @@ export function AuthProvider({ children }) {
         let path = "/";
         switch (u.role) {
           case "business": path = `/business/${u.businessId}/dashboard`; break;
-          case "customer": path = "/client/dashboard";            break;
-          case "worker":   path = "/staff/dashboard";             break;
-          case "manager":  path = "/manager/dashboard";           break;
-          case "admin":    path = "/admin/dashboard";             break;
+          case "customer": path = "/client/dashboard";                   break;
+          case "worker":   path = "/staff/dashboard";                    break;
+          case "manager":  path = "/manager/dashboard";                  break;
+          case "admin":    path = "/admin/dashboard";                    break;
         }
         navigate(path, { replace: true });
       }
@@ -186,6 +188,11 @@ export function AuthProvider({ children }) {
     const t = setTimeout(() => setSuccessMessage(null), 4000);
     return () => clearTimeout(t);
   }, [successMessage]);
+
+  // ** early return כדי למנוע render אינסופי **
+  if (loading || !initialized) {
+    return <div>טוען…</div>;
+  }
 
   return (
     <AuthContext.Provider
