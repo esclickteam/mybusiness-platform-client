@@ -122,20 +122,28 @@ export function AuthProvider({ children }) {
     login(username, password, { skipRedirect: true });
 
   const logout = async () => {
-    setLoading(true);
-    try {
-      await API.post("/auth/logout");
-      setSuccessMessage("✅ נותקת בהצלחה");
-      localStorage.removeItem("token"); // הסרת הטוקן מ־localStorage
-      delete API.defaults.headers['Authorization']; // ניקוי ה־Authorization header
-    } catch (e) {
-      console.warn("Logout failed:", e);
-    } finally {
-      setUser(null);
-      setLoading(false);
-      navigate("/", { replace: true });
-    }
-  };
+  setLoading(true);
+  try {
+    await API.post("/auth/logout");
+    setSuccessMessage("✅ נותקת בהצלחה");
+
+    // הסרת הטוקן מ־localStorage
+    localStorage.removeItem("token");
+
+    // ניקוי ה־Authorization header
+    delete API.defaults.headers['Authorization'];
+
+    // הסרת הטוקן מהקוקי
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/"; // נקה קוקי אם יש
+
+  } catch (e) {
+    console.warn("Logout failed:", e);
+  } finally {
+    setUser(null);
+    setLoading(false);
+    navigate("/", { replace: true });
+  }
+};
 
   // clear success message after 4s
   useEffect(() => {
