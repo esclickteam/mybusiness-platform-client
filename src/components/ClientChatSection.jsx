@@ -8,6 +8,8 @@ import { createSocket } from "../socket";
 import API, { setAccessToken } from "../api";
 import { ensureValidToken } from "../utils/authHelpers";
 
+
+
 export default function ClientChatSection() {
   const { businessId: routeBusinessId } = useParams();
   const { accessToken, initialized, refreshToken } = useAuth();
