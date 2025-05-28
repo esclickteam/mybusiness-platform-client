@@ -4,9 +4,9 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [
-    react(),            // פלאגין React
+    react(),
   ],
-  base: '/',            // הגדרת הבסיס ליישום
+  base: '/',
   resolve: {
     alias: {
       '@api':         path.resolve(__dirname, 'src/api.js'),
@@ -20,11 +20,11 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    exclude: ['framer-motion'],               // חריגים מתהליך האופטימיזציה
-    include: ['chart.js', 'react-chartjs-2']  // כלול במפורש
+    exclude: ['framer-motion'],
+    include: ['chart.js', 'react-chartjs-2', 'jwt-decode'],  // הוסף כאן jwt-decode
   },
   server: {
-    port: 3000,   // פורט ה־Dev Server
+    port: 3000,
     proxy: {
       '/api': {
         target: 'https://api.esclick.co.il',
@@ -34,17 +34,15 @@ export default defineConfig({
       }
     },
     watch: {
-      // התעלמות מתיקיית .history (מונע HMR כשקבצים שם משתנים)
       ignored: ['**/.history/**']
     }
   },
   build: {
     rollupOptions: {
-      input: path.resolve(__dirname, 'index.html')  // קובץ ה־HTML הראשי
+      input: path.resolve(__dirname, 'index.html')
     }
   },
   define: {
-    // הגדרת NODE_ENV לשימוש בקוד שלך
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
   }
 });
