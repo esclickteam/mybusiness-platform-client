@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import createSocket from "../socket";
 
 export default function BusinessConversationsList({ onSelectConversation }) {
-  const { user, initialized, refreshToken } = useAuth();
+  const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
   const [conversations, setConversations] = useState([]);
@@ -14,36 +14,27 @@ export default function BusinessConversationsList({ onSelectConversation }) {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    (async () => {
-      // ensure token refreshed before connecting
-      try {
-        await refreshToken();
-      } catch {
-        console.error("Failed to refresh token");
-      }
+    const sock = createSocket();
+    socketRef.current = sock;
+    sock.connect();
 
-      const sock = createSocket();
-      socketRef.current = sock;
-      sock.connect();
-
-      sock.emit(
-        "getConversations",
-        { userId: businessId },
-        (res) => {
-          if (res.ok) {
-            setConversations(res.conversations);
-          } else {
-            console.error("Error loading conversations:", res.error);
-          }
-          setLoading(false);
+    sock.emit(
+      "getConversations",
+      { userId: businessId },
+      (res) => {
+        if (res.ok) {
+          setConversations(res.conversations);
+        } else {
+          console.error("Error loading conversations:", res.error);
         }
-      );
+        setLoading(false);
+      }
+    );
 
-      return () => {
-        sock.disconnect();
-      };
-    })();
-  }, [initialized, businessId, refreshToken]);
+    return () => {
+      sock.disconnect();
+    };
+  }, [initialized, businessId]);
 
   if (loading) return <p>טוען שיחות...</p>;
   if (conversations.length === 0) return <p>אין שיחות פעילות</p>;
@@ -65,3 +56,4 @@ export default function BusinessConversationsList({ onSelectConversation }) {
     </ul>
   );
 }
+

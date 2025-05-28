@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
-import { ensureValidToken, getBusinessId } from "../../../utils/authHelpers";
+import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
 import LineChart from "../../../components/dashboard/LineChart";
@@ -38,11 +38,8 @@ const DashboardAlert = ({ text, type = "info" }) => (
   <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
 );
 
-const SOCKET_URL =
-  import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
-
 const DashboardPage = () => {
-  const { user, accessToken, refreshToken, initialized } = useAuth();
+  const { user, initialized } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
 
@@ -66,71 +63,53 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // Initial stats fetch
+  // Fetch initial stats
   useEffect(() => {
     if (!businessId) return;
-    const fetchStats = async () => {
-      setLoading(true);
-      try {
-        const res = await API.get(`/business/${businessId}/stats`, {
-          withCredentials: true,
-        });
-        setStats(res.data);
-      } catch (err) {
+    setLoading(true);
+    API.get(`/business/${businessId}/stats`)
+      .then(res => setStats(res.data))
+      .catch(err => {
         console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
+      })
+      .finally(() => setLoading(false));
   }, [businessId]);
 
   // Real-time socket connection
   useEffect(() => {
     if (!initialized || !businessId) return;
-    let sock;
 
-    (async () => {
-      try {
-        const token = await ensureValidToken(refreshToken);
-        sock = createSocket();
-        sock.auth = {
-          token,
-          role: "business-dashboard",
-          businessId,
-        };
-        sock.connect();
-        socketRef.current = sock;
+    const sock = createSocket({
+      auth: { role: "business-dashboard", businessId },
+    });
+    sock.connect();
+    socketRef.current = sock;
 
-        sock.on("connect", () => {
-          console.log("Dashboard socket connected:", sock.id);
-        });
+    sock.on("connect", () => {
+      console.log("Dashboard socket connected:", sock.id);
+    });
 
-        sock.on("dashboardUpdate", (newStats) => {
-          console.log("Dashboard update received:", newStats);
-          setStats(newStats);
-        });
+    sock.on("dashboardUpdate", newStats => {
+      console.log("Dashboard update received:", newStats);
+      setStats(newStats);
+    });
 
-        sock.on("disconnect", (reason) => {
-          console.log("Dashboard socket disconnected, reason:", reason);
-        });
+    sock.on("disconnect", reason => {
+      console.log("Dashboard socket disconnected, reason:", reason);
+    });
 
-        sock.on("connect_error", (err) => {
-          console.error("Socket connection error:", err);
-        });
-      } catch (e) {
-        console.error("Socket init failed:", e);
-      }
-    })();
+    sock.on("connect_error", err => {
+      console.error("Socket connection error:", err);
+    });
 
     return () => {
       console.log("Disconnecting dashboard socket");
-      sock?.disconnect();
+      sock.disconnect();
     };
-  }, [initialized, businessId, refreshToken]);
+  }, [initialized, businessId]);
 
-  const handleQuickAction = (action) => {
+  const handleQuickAction = action => {
     let msg = null;
     if (action === "meeting") msg = "מעבר להוספת פגישה חדשה (דמו)";
     if (action === "message") msg = "מעבר לשליחת הודעה (דמו)";
@@ -148,7 +127,6 @@ const DashboardPage = () => {
   const appointments = Array.isArray(stats.appointments)
     ? stats.appointments
     : [];
-
   const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (

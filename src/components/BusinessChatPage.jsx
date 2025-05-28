@@ -8,7 +8,7 @@ import createSocket from "../socket";
 import API from "../api";
 
 export default function BusinessChatPage() {
-  const { user, initialized, refreshToken } = useAuth();
+  const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
   const [convos, setConvos]     = useState([]);
@@ -24,13 +24,6 @@ export default function BusinessChatPage() {
     if (!initialized || !businessId) return;
 
     (async () => {
-      try {
-        await refreshToken();
-      } catch {
-        setError("❌ טוקן לא תקף ולא ניתן לרענן");
-        setLoading(false);
-        return;
-      }
 
       const sock = createSocket();
       socketRef.current = sock;

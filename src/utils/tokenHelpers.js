@@ -1,20 +1,22 @@
+// src/utils/tokenHelpers.js
 import API from "../api";
 
+/**
+ * פונקציה לרענון ה־access token
+ */
 export async function refreshToken() {
   try {
-    const refreshToken = localStorage.getItem("refreshToken"); // שלוף את ה-refreshToken
-    if (!refreshToken) throw new Error("No refresh token stored");
+    const token = localStorage.getItem("token"); // שלוף את ה־access token
+    if (!token) throw new Error("No access token stored");
 
-    const res = await API.post("/auth/refresh-token", { refreshToken });  // שלח ב-body
+    // שלח את ה־access token לשרת כדי לקבל טוקן חדש
+    const res = await API.post("/auth/refresh-token", { token });
+
     const newAccessToken = res.data.accessToken || res.data.token;
     if (!newAccessToken) throw new Error("No token in refresh response");
 
-    localStorage.setItem("accessToken", newAccessToken);
-
-    // שמור גם את ה-refreshToken החדש אם קיים (לעיתים שרת מחזיר טוקן רענון חדש)
-    if (res.data.refreshToken) {
-      localStorage.setItem("refreshToken", res.data.refreshToken);
-    }
+    // שמור את ה־access token החדש
+    localStorage.setItem("token", newAccessToken);
 
     return newAccessToken;
   } catch (err) {

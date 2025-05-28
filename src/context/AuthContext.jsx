@@ -30,6 +30,11 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       try {
+        // טען access token ושמור ב-axios
+        const token = localStorage.getItem("token");
+        if (token) applyAccessToken(token);
+
+        // קבל פרטי משתמש
         const { data } = await API.get("/auth/me");
         setUser({
           userId: data.userId,
@@ -49,8 +54,10 @@ export function AuthProvider({ children }) {
           localStorage.removeItem("businessDetails");
         }
       } catch {
+        // במידה וה־/auth/me נכשל
         setUser(null);
         localStorage.removeItem("businessDetails");
+        applyAccessToken(null);
       } finally {
         setLoading(false);
         setInitialized(true);
@@ -60,29 +67,27 @@ export function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  // הפונקציה ל־login
+  // פונקציית login
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
+
     const clean = identifier.trim();
     const isEmail = clean.includes("@");
 
     try {
+      // שלח בקשת login
       const response = isEmail
         ? await API.post("/auth/login", { email: clean.toLowerCase(), password })
         : await API.post("/auth/staff-login", { username: clean, password });
-      const { token, refreshToken } = response.data;
 
-      // שומרים טוקנים ומעדכנים header
+      const { token } = response.data;
       if (token) {
         localStorage.setItem("token", token);
         applyAccessToken(token);
       }
-      if (refreshToken) {
-        localStorage.setItem("refreshToken", refreshToken);
-      }
 
-      // משאירים את ה-cookie ל־HttpOnly
+      // קבל מחדש פרטי משתמש
       const { data } = await API.get("/auth/me");
       setUser({
         userId: data.userId,
@@ -102,6 +107,7 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("businessDetails");
       }
 
+      // ניתוב לפי תפקיד
       if (!options.skipRedirect) {
         let path = "/";
         switch (data.role) {
@@ -140,13 +146,13 @@ export function AuthProvider({ children }) {
   const staffLogin = (username, password) =>
     login(username, password, { skipRedirect: true });
 
+  // פונקציית logout
   const logout = async () => {
     setLoading(true);
     try {
       await API.post("/auth/logout");
       setSuccessMessage("✅ נותקת בהצלחה");
       localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
       localStorage.removeItem("businessDetails");
       applyAccessToken(null);
     } catch (err) {
@@ -158,12 +164,11 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ניהול תצוגת הודעת הצלחה
+  // ניהול הודעת הצלחה
   useEffect(() => {
-    if (successMessage) {
-      const t = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(t);
-    }
+    if (!successMessage) return;
+    const timer = setTimeout(() => setSuccessMessage(null), 4000);
+    return () => clearTimeout(timer);
   }, [successMessage]);
 
   return (

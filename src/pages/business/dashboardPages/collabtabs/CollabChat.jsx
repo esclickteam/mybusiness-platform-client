@@ -1,49 +1,37 @@
+// src/pages/business/dashboardPages/collabtabs/CollabChat.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import API from "../../../../api";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { isTokenExpired } from "../../../../utils/authHelpers";
-import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
 export default function CollabChat({
-  token: initialToken,
   myBusinessId,
   myBusinessName,
   onClose,
 }) {
-  const { refreshToken } = useAuth();
   const socketRef = useRef(null);
   const selectedConversationRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
-  const [token, setToken] = useState(initialToken);
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const messagesEndRef = useRef(null);
 
-  useEffect(() => {
-    selectedConversationRef.current = selectedConversation;
-  }, [selectedConversation]);
-
-  useEffect(() => {
-    console.log("Input value changed:", JSON.stringify(input));
-  }, [input]);
-
-  const fetchConversations = async () => {
+  // Fetch conversations from API
+  const fetchConversations = async (token) => {
     try {
-      console.log("Fetching conversations...");
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Fetched conversations:", res.data.conversations);
-      setConversations(res.data.conversations || []);
-      if (!selectedConversation && res.data.conversations?.length > 0) {
-        setSelectedConversation(res.data.conversations[0]);
+      const convs = res.data.conversations || [];
+      setConversations(convs);
+      if (!selectedConversation && convs.length > 0) {
+        setSelectedConversation(convs[0]);
       }
     } catch (err) {
       console.error("Failed fetching conversations:", err);
@@ -51,105 +39,90 @@ export default function CollabChat({
     }
   };
 
+  // Initialize socket & load conversations
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (!token || !myBusinessId) return;
-    let isMounted = true;
 
-    async function connectSocket() {
-      let validToken = token;
-      if (isTokenExpired(validToken)) {
-        try {
-          validToken = await refreshToken();
-          if (isMounted) setToken(validToken);
-        } catch (err) {
-          console.error("Cannot refresh token, please login again");
-          return;
-        }
-      }
+    const sock = io(SOCKET_URL, {
+      path: "/socket.io",
+      auth: {
+        token,
+        role: "business",
+        businessId: myBusinessId,
+        businessName: myBusinessName,
+      },
+    });
+    socketRef.current = sock;
 
-      socketRef.current = io(SOCKET_URL, {
-        path: "/socket.io",
-        auth: {
-          token: validToken,
-          role: "business",
-          businessId: myBusinessId,
-          businessName: myBusinessName,
-        },
-      });
+    sock.on("connect", () => {
+      console.log("Socket connected with id:", sock.id);
+      fetchConversations(token);
+    });
 
-      socketRef.current.on("connect", () => {
-        console.log("Socket connected with id:", socketRef.current.id);
-      });
+    sock.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
+    });
 
-      socketRef.current.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
-        if (err.message === "jwt expired") {
-          socketRef.current.disconnect();
-        }
-      });
-
-      fetchConversations();
-    }
-
-    connectSocket();
     return () => {
-      isMounted = false;
-      socketRef.current?.disconnect();
+      sock.disconnect();
     };
-  }, [token, myBusinessId, myBusinessName]);
+  }, [myBusinessId, myBusinessName]);
 
+  // Listen for incoming messages
   useEffect(() => {
     if (!socketRef.current) return;
+
     const handler = (msg) => {
-      const normalizedMsg = {
+      const normalized = {
         ...msg,
         fromBusinessId: msg.fromBusinessId || msg.from,
         toBusinessId: msg.toBusinessId || msg.to,
       };
-      if (normalizedMsg.conversationId === selectedConversationRef.current?._id) {
-        setMessages((prev) => {
-          if (prev.some((m) => m._id === normalizedMsg._id)) return prev;
-          return [...prev, normalizedMsg];
-        });
+      // update message list
+      if (normalized.conversationId === selectedConversationRef.current?._id) {
+        setMessages((prev) =>
+          prev.some((m) => m._id === normalized._id) ? prev : [...prev, normalized]
+        );
       }
-      setConversations((prevConvs) =>
-        prevConvs.map((conv) =>
-          conv._id === normalizedMsg.conversationId
-            ? {
-                ...conv,
-                messages: [...(conv.messages || []), normalizedMsg],
-              }
+      // update conversation preview
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === normalized.conversationId
+            ? { ...conv, messages: [...(conv.messages || []), normalized] }
             : conv
         )
       );
     };
 
     socketRef.current.on("newMessage", handler);
-    return () => socketRef.current.off("newMessage", handler);
+    return () => {
+      socketRef.current.off("newMessage", handler);
+    };
   }, []);
 
+  // Join/leave conversations and fetch history
   useEffect(() => {
-    if (!socketRef.current || !selectedConversation) {
+    const sock = socketRef.current;
+    if (!sock || !selectedConversation) {
       setMessages([]);
       return;
     }
 
-    const prevConvId = selectedConversationRef.current?._id;
-    if (prevConvId && prevConvId !== selectedConversation._id) {
-      socketRef.current.emit("leaveConversation", prevConvId, (res) => {
-        if (!res.ok) console.warn("Failed to leave:", res.error);
-      });
+    const prevId = selectedConversationRef.current?._id;
+    if (prevId && prevId !== selectedConversation._id) {
+      sock.emit("leaveConversation", prevId);
     }
 
-    socketRef.current.emit("joinConversation", selectedConversation._id, (res) => {
-      if (!res.ok) console.error("Join failed:", res.error);
-    });
+    sock.emit("joinConversation", selectedConversation._id);
 
-    async function fetchMsgs() {
+    (async () => {
       try {
-        const res = await API.get(`/business-chat/${selectedConversation._id}/messages`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const token = localStorage.getItem("token");
+        const res = await API.get(
+          `/business-chat/${selectedConversation._id}/messages`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
           fromBusinessId: msg.fromBusinessId || msg.from,
@@ -160,32 +133,32 @@ export default function CollabChat({
         console.error("Fetch messages failed:", err);
         setMessages([]);
       }
-    }
+    })();
 
-    fetchMsgs();
     selectedConversationRef.current = selectedConversation;
-  }, [selectedConversation, token]);
+  }, [selectedConversation]);
 
+  // Auto-scroll on new message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = async () => {
+  // Send message
+  const sendMessage = () => {
     if (!input.trim() || !selectedConversation || !socketRef.current) return;
-    const otherBusinessId =
-      selectedConversation.participantsInfo?.find((b) => b._id.toString() !== myBusinessId.toString())?._id ||
-      selectedConversation.participants.find((id) => id.toString() !== myBusinessId.toString());
 
-    if (!otherBusinessId) return;
+    const otherId =
+      selectedConversation.participantsInfo?.find((b) => b._id !== myBusinessId)?._id ||
+      selectedConversation.participants.find((id) => id !== myBusinessId);
 
     const payload = {
       conversationId: selectedConversation._id,
       from: myBusinessId,
-      to: otherBusinessId,
+      to: otherId,
       text: input.trim(),
     };
 
-    const optimisticMsg = {
+    const optimistic = {
       ...payload,
       timestamp: new Date().toISOString(),
       _id: "pending-" + Math.random().toString(36).substr(2, 9),
@@ -193,36 +166,42 @@ export default function CollabChat({
       toBusinessId: payload.to,
     };
 
-    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessages((prev) => [...prev, optimistic]);
     setInput("");
 
     socketRef.current.emit("sendMessage", payload, (ack) => {
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
-        setMessages((prev) => prev.filter((m) => m._id !== optimisticMsg._id));
+        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
       } else if (ack.message?._id) {
-        const realMsg = {
+        const real = {
           ...ack.message,
           fromBusinessId: ack.message.fromBusinessId || ack.message.from,
           toBusinessId: ack.message.toBusinessId || ack.message.to,
         };
-        setMessages((prev) => [...prev.filter((m) => m._id !== optimisticMsg._id), realMsg]);
+        setMessages((prev) => [
+          ...prev.filter((m) => m._id !== optimistic._id),
+          real,
+        ]);
       }
     });
 
-    try {
-      await API.post(`/business-chat/${selectedConversation._id}/message`, { text: input.trim() }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch (err) {
+    // also post to REST for persistence
+    API.post(
+      `/business-chat/${selectedConversation._id}/message`,
+      { text: optimistic.text },
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+    ).catch((err) => {
       console.error("שליחת הודעה ל־API נכשלה", err);
-    }
+    });
   };
 
+  // Helper to get partner info
   const getPartnerBusiness = (conv) => {
-    const idx = conv?.participants?.findIndex((id) => id.toString() !== myBusinessId.toString());
-    return conv?.participantsInfo?.[idx] || { businessName: "עסק" };
+    const idx = conv.participants.findIndex((id) => id !== myBusinessId);
+    return conv.participantsInfo?.[idx] || { businessName: "עסק" };
   };
+
   return (
     <Box
       sx={{
@@ -263,9 +242,7 @@ export default function CollabChat({
         )}
         {conversations.map((conv) => {
           const partner = getPartnerBusiness(conv);
-          const lastMsg = conv.messages?.length
-            ? conv.messages[conv.messages.length - 1].text
-            : "";
+          const lastMsg = conv.messages?.slice(-1)[0]?.text || "";
           return (
             <Box
               key={conv._id}
@@ -317,18 +294,19 @@ export default function CollabChat({
                   fontSize: 17,
                 }}
               >
-                שיחה עם {getPartnerBusiness(selectedConversation).businessName}
+                שיחה עם{" "}
+                {getPartnerBusiness(selectedConversation).businessName}
               </Box>
               {messages.map((msg, i) => (
                 <Box
                   key={msg._id || i}
                   sx={{
                     background:
-                      msg.fromBusinessId?.toString() === myBusinessId.toString()
+                      msg.fromBusinessId === myBusinessId
                         ? "#e6ddff"
                         : "#fff",
                     alignSelf:
-                      msg.fromBusinessId?.toString() === myBusinessId.toString()
+                      msg.fromBusinessId === myBusinessId
                         ? "flex-end"
                         : "flex-start",
                     p: 1.2,
@@ -383,9 +361,7 @@ export default function CollabChat({
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  if (input.trim()) {
-                    sendMessage();
-                  }
+                  sendMessage();
                 }
               }}
             />

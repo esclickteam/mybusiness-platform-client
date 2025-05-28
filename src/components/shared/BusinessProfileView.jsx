@@ -1,12 +1,12 @@
+// src/components/BusinessProfileView.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import { SocketContext } from "../../context/socketContext"; // ייבוא הקונטקסט של סוקט
+import { SocketContext } from "../../context/socketContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
-import { isTokenExpired } from "../../utils/authHelpers";
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
@@ -24,7 +24,7 @@ const TABS = [
 
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
-  const { user, refreshToken } = useAuth();
+  const { user } = useAuth();
   const socket = useContext(SocketContext);
   const bizId = paramId || user?.businessId;
 
@@ -38,41 +38,38 @@ export default function BusinessProfileView() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
-
-  // count של צפיות בפרופיל
   const [profileViewsCount, setProfileViewsCount] = useState(0);
 
+  // טען פרטי העסק ושעות העבודה
   useEffect(() => {
     if (!bizId) {
       setError("Invalid business ID");
       setLoading(false);
       return;
     }
+
+    setLoading(true);
     (async () => {
       try {
-        setLoading(true);
-        let token = localStorage.getItem("accessToken");
-        if (isTokenExpired(token)) {
-          token = await refreshToken();
-        }
-        const resBiz = await API.get(`/business/${bizId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // קריאה ל־API לתוכן העסק
+        const resBiz = await API.get(`/business/${bizId}`);
         const biz = resBiz.data.business || resBiz.data;
         setData(biz);
         setFaqs(biz.faqs || []);
         setServices(biz.services || []);
 
+        // קריאה לשעות עבודה
         const resWH = await API.get("/appointments/get-work-hours", {
           params: { businessId: bizId },
         });
         let sched = {};
-        if (Array.isArray(resWH.data.workHours)) {
-          resWH.data.workHours.forEach((item) => {
+        const wh = resWH.data.workHours;
+        if (Array.isArray(wh)) {
+          wh.forEach(item => {
             sched[Number(item.day)] = item;
           });
-        } else if (resWH.data.workHours && typeof resWH.data.workHours === "object") {
-          sched = resWH.data.workHours;
+        } else if (wh && typeof wh === "object") {
+          sched = wh;
         }
         setSchedule(sched);
       } catch (err) {
@@ -84,20 +81,18 @@ export default function BusinessProfileView() {
     })();
   }, [bizId]);
 
-  // שליחת צפייה והאזנה לעדכון ה-count
+  // שליחת וצפייה בספריית הצפיות
   useEffect(() => {
     if (!socket || !bizId || !user?.userId) return;
 
-    // מאזין לעדכון count
-    const countHandler = (newCount) => {
+    const countHandler = newCount => {
       console.log("Received profileViewCount:", newCount);
       setProfileViewsCount(newCount);
     };
     socket.on("profileViewCount", countHandler);
 
-    // פונקציית שליחה
     const sendProfileView = () => {
-      console.log("Emitting profileView event with:", { businessId: bizId, viewerId: user.userId });
+      console.log("Emitting profileView:", { businessId: bizId, viewerId: user.userId });
       socket.emit("profileView", { businessId: bizId, viewerId: user.userId });
     };
     const connectHandler = () => {
@@ -117,10 +112,9 @@ export default function BusinessProfileView() {
     };
   }, [socket, bizId, user?.userId]);
 
-
   if (loading) return <div className="loading">טוען…</div>;
-  if (error) return <div className="error">{error}</div>;
-  if (!data) return <div className="error">העסק לא נמצא</div>;
+  if (error)   return <div className="error">{error}</div>;
+  if (!data)  return <div className="error">העסק לא נמצא</div>;
 
   const {
     businessName,
@@ -139,13 +133,14 @@ export default function BusinessProfileView() {
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
-  const handleReviewSubmit = async (formData) => {
+  const handleReviewSubmit = async formData => {
     setIsSubmitting(true);
     try {
       await API.post(`/business/${bizId}/reviews`, formData);
       setShowReviewModal(false);
       const res = await API.get(`/business/${bizId}`);
-      setData(res.data.business || res.data);
+      const biz = res.data.business || res.data;
+      setData(biz);
     } catch {
       alert("שגיאה בשליחת ביקורת");
     } finally {
@@ -169,26 +164,10 @@ export default function BusinessProfileView() {
           )}
           <h1 className="business-name">{businessName}</h1>
           <div className="about-phone">
-            {category && (
-              <p>
-                <strong>🏷️ קטגוריה:</strong> {category}
-              </p>
-            )}
-            {description && (
-              <p>
-                <strong>📝 תיאור:</strong> {description}
-              </p>
-            )}
-            {phone && (
-              <p>
-                <strong>📞 טלפון:</strong> {phone}
-              </p>
-            )}
-            {city && (
-              <p>
-                <strong>🏙️ עיר:</strong> {city}
-              </p>
-            )}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
@@ -197,7 +176,7 @@ export default function BusinessProfileView() {
           <hr className="profile-divider" />
 
           <div className="profile-tabs">
-            {TABS.map((tab) => (
+            {TABS.map(tab => (
               <button
                 key={tab}
                 className={`tab ${tab === currentTab ? "active" : ""}`}
@@ -238,7 +217,7 @@ export default function BusinessProfileView() {
                 )}
                 {showReviewModal && (
                   <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
-                    <div className="#modal-inner" onClick={(e) => e.stopPropagation()}>
+                    <div className="#modal-inner" onClick={e => e.stopPropagation()}>
                       <ReviewForm
                         businessId={bizId}
                         onSubmit={handleReviewSubmit}
@@ -273,7 +252,7 @@ export default function BusinessProfileView() {
             )}
             {currentTab === "הודעות מלקוחות" && (
               <div style={{ textAlign: "center", margin: "36px 0" }}>
-                {user && user.role === "customer" && (
+                {user?.role === "customer" && (
                   <Link to={`/business/${bizId}/messages`} className="chat-link-btn">
                     💬 שלח הודעה לעסק
                   </Link>
@@ -287,7 +266,7 @@ export default function BusinessProfileView() {
             )}
             {currentTab === "יומן" && (
               <div className="booking-tab">
-                <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
+                <ServicesSelector services={services} onSelect={svc => setSelectedService(svc)} />
                 {!selectedService ? (
                   <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
                 ) : (

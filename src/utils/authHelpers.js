@@ -1,5 +1,9 @@
+// src/utils/authHelpers.js
 import jwtDecode from "jwt-decode";
 
+/**
+ * בודק האם ה־JWT פג תוקף
+ */
 export function isTokenExpired(token) {
   if (!token) return true;
   try {
@@ -10,12 +14,17 @@ export function isTokenExpired(token) {
   }
 }
 
-// מביא את ה־accessToken מהlocalStorage
+/**
+ * מביא את ה־accessToken מה־localStorage
+ */
 export function getAccessToken() {
-  return localStorage.getItem("accessToken");
+  // כעת אנחנו שומרים את הטוקן תחת 'token'
+  return localStorage.getItem("token");
 }
 
-// מביא את ה־businessId מהlocalStorage
+/**
+ * מביא את ה־businessId מה־localStorage
+ */
 export function getBusinessId() {
   try {
     const biz = JSON.parse(localStorage.getItem("businessDetails") || "{}");
@@ -25,18 +34,10 @@ export function getBusinessId() {
   }
 }
 
-// מוודא טוקן תקף או מרענן אותו
-// refreshTokenFunc זה פונקציה שצריך להעביר מבחוץ
-export async function ensureValidToken(refreshTokenFunc) {
-  let token = getAccessToken();
-  if (isTokenExpired(token)) {
-    if (!refreshTokenFunc) throw new Error("refreshToken function is required");
-    try {
-      token = await refreshTokenFunc();
-      localStorage.setItem("accessToken", token);
-    } catch (e) {
-      throw new Error("Cannot refresh token");
-    }
-  }
-  return token;
+/**
+ * מחזיר את ה־accessToken הנוכחי.
+ * אין יותר רענון אוטומטי כאן — ה־Axios interceptor מטפל ברענון.
+ */
+export function ensureValidToken() {
+  return getAccessToken();
 }
