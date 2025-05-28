@@ -1,177 +1,158 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import API, {
-  setAccessToken as setAPIAccessToken,
-  setRefreshToken as setAPIRefreshToken,
-} from "../api";
+import { useNavigate } from "react-router-dom";
+import API from "../api";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, _setUser] = useState(null);
-  const [accessToken, _setAccessToken] = useState(localStorage.getItem("accessToken"));
-  const [loading, _setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [initialized, setInitialized] = useState(false);
-  const [authFailed, setAuthFailed] = useState(false);
   const initRan = useRef(false);
 
-  const userRef = useRef();
-  const loadingRef = useRef();
-
-  const setUser = (value) => {
-    if (userRef.current?.userId !== value?.userId) {
-      console.log("setUser called with", value);
-      userRef.current = value;
-      _setUser(value);
-    }
-  };
-
-  const setLoading = (value) => {
-    if (loadingRef.current !== value) {
-      console.log("setLoading called with", value);
-      loadingRef.current = value;
-      _setLoading(value);
-    }
-  };
-
-  const setAccessToken = (token) => {
-    _setAccessToken(token);
-    setAPIAccessToken(token);
-    token ? localStorage.setItem("accessToken", token) : localStorage.removeItem("accessToken");
-  };
-
-  const saveBusinessDetails = (data) => {
-    if (data.business) {
-      localStorage.setItem("businessDetails", JSON.stringify(data.business));
-    } else if (data.businessId) {
-      localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-    } else {
-      localStorage.removeItem("businessDetails");
-    }
-  };
-
-  async function refreshToken() {
-    const rToken = localStorage.getItem("refreshToken");
-    if (!rToken) throw new Error("No refresh token");
-    const res = await API.post("/auth/refresh-token", { refreshToken: rToken });
-    const newAT = res.data.accessToken || res.data.token;
-    const newRT = res.data.refreshToken;
-    setAccessToken(newAT);
-    if (newRT) {
-      localStorage.setItem("refreshToken", newRT);
-      setAPIRefreshToken(newRT);
-    }
-    return newAT;
-  }
-
+  // 1. On mount: fetch current user if token exists
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
 
-    (async () => {
+    const initialize = async () => {
       setLoading(true);
       try {
-        const storedAT = localStorage.getItem("accessToken");
-        const storedRT = localStorage.getItem("refreshToken");
-
-        if (storedAT) setAccessToken(storedAT);
-        if (storedRT) setAPIRefreshToken(storedRT);
-
-        if (storedRT) {
-          try {
-            await refreshToken();
-          } catch (err) {
-            console.error("שגיאת רענון טוקן:", err);
-            setUser(null);
-            setAccessToken(null);
-          }
-        }
-
-        try {
-          const { data } = await API.get("/auth/me");
-          setUser({
-            userId: data.userId,
-            name: data.name,
-            email: data.email,
-            role: data.role,
-            subscriptionPlan: data.subscriptionPlan,
-            businessId: data.businessId || null,
-          });
-          saveBusinessDetails(data);
-        } catch (err) {
-          console.error("שגיאת הבאת משתמש:", err);
-          setUser(null);
-          setAccessToken(null);
-          localStorage.removeItem("businessDetails");
-          setAuthFailed(true);
-        }
-      } catch (err) {
-        console.error("שגיאה כללית ב-AuthContext:", err);
+        const { data } = await API.get("/auth/me");
+        setUser({
+          userId:           data.userId,
+          name:             data.name,
+          email:            data.email,
+          role:             data.role,
+          subscriptionPlan: data.subscriptionPlan,
+          businessId:       data.businessId || null,
+        });
+      } catch {
         setUser(null);
-        setAccessToken(null);
-        localStorage.removeItem("businessDetails");
-        setAuthFailed(true);
       } finally {
         setLoading(false);
         setInitialized(true);
       }
-    })();
+    };
+    initialize();
   }, []);
 
-  const login = async (identifier, password) => {
+  /**
+   * generic login (handles both customer/business by email and staff by username)
+   */
+  const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
+    setError(null);
+
+    const clean = identifier.trim();
+    const isEmail = clean.includes("@");
+
     try {
-      const clean = identifier.trim();
-      const isEmail = clean.includes("@");
-      const endpoint = isEmail ? "/auth/login" : "/auth/staff-login";
-      const payload = isEmail
-        ? { email: clean.toLowerCase(), password }
-        : { username: clean, password };
-
-      const response = await API.post(endpoint, payload);
-      const newAT = response.data.accessToken || response.data.token;
-      const newRT = response.data.refreshToken;
-
-      setAccessToken(newAT);
-      if (newRT) {
-        localStorage.setItem("refreshToken", newRT);
-        setAPIRefreshToken(newRT);
+      let response;
+      if (isEmail) {
+        response = await API.post("/auth/login", { email: clean.toLowerCase(), password });
+      } else {
+        response = await API.post("/auth/staff-login", { username: clean, password });
       }
 
-      const u = response.data.user;
-      const userData = {
-        userId: u.userId,
-        name: u.name,
-        email: u.email,
-        role: u.role,
-        subscriptionPlan: u.subscriptionPlan,
-        businessId: u.businessId || null,
-      };
-      setUser(userData);
-      saveBusinessDetails(u);
-      setAuthFailed(false);
-      return userData;
+      // שמירת הטוקן ב-localStorage
+      const token = response.data.token || response.data.accessToken; // ודא שזה השם הנכון בשרת שלך
+      if (token) {
+        localStorage.setItem("token", token);
+      } else {
+        console.warn("No token received from login response");
+      }
+
+      const { data } = await API.get("/auth/me");
+      setUser({
+        userId:           data.userId,
+        name:             data.name,
+        email:            data.email,
+        role:             data.role,
+        subscriptionPlan: data.subscriptionPlan,
+        businessId:       data.businessId || null,
+      });
+
+      if (!options.skipRedirect && data) {
+        let path = "/";
+        switch (data.role) {
+          case "business":
+            path = `/business/${data.businessId}/dashboard`;
+            break;
+          case "customer":
+            path = "/client/dashboard";
+            break;
+          case "worker":
+            path = "/staff/dashboard";
+            break;
+          case "manager":
+            path = "/manager/dashboard";
+            break;
+          case "admin":
+            path = "/admin/dashboard";
+            break;
+        }
+        navigate(path, { replace: true });
+      }
+
+      return data;
+    } catch (e) {
+      setError(
+        e.response?.status === 401
+          ? "❌ אימייל/שם משתמש או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסה שוב"
+      );
+      throw e;
     } finally {
       setLoading(false);
     }
   };
 
+  const staffLogin = (username, password) =>
+    login(username, password, { skipRedirect: true });
+
   const logout = async () => {
     setLoading(true);
     try {
       await API.post("/auth/logout");
-    } catch {}
-    setUser(null);
-    setAccessToken(null);
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("businessDetails");
-    setLoading(false);
+      setSuccessMessage("✅ נותקת בהצלחה");
+      localStorage.removeItem("token"); // הסרת הטוקן בלוגאאוט
+    } catch (e) {
+      console.warn("Logout failed:", e);
+    } finally {
+      setUser(null);
+      setLoading(false);
+      navigate("/", { replace: true });
+    }
   };
+
+  // clear success message after 4s
+  useEffect(() => {
+    if (successMessage) {
+      const t = setTimeout(() => setSuccessMessage(null), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [successMessage]);
 
   return (
     <AuthContext.Provider
-      value={{ user, accessToken, loading, initialized, authFailed, login, logout, refreshToken }}
+      value={{
+        user,
+        loading,
+        initialized,
+        error,
+        login,
+        staffLogin,
+        logout,
+      }}
     >
+      {successMessage && (
+        <div className="global-success-toast">{successMessage}</div>
+      )}
       {children}
     </AuthContext.Provider>
   );
