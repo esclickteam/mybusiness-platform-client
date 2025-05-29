@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { v4 as uuidv4 } from "uuid"; // <-- הוסף את זה
+import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
 import { Buffer } from "buffer";
-import API from "../api"; // <-- ייבוא Axios עם הגדרות הטוקן
+import API from "../api";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
@@ -112,26 +112,25 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket || !conversationId) return;
 
     const handleNewMessage = (msg) => {
-  setMessages((prev) => {
-    const exists = prev.some(
-      (m) =>
-        (m._id && msg._id && m._id === msg._id) ||
-        (m.tempId && msg.tempId && m.tempId === msg.tempId)
-    );
-    return exists ? prev : [...prev, msg];
-  });
-};
+      setMessages((prev) => {
+        const exists = prev.some(
+          (m) =>
+            (m._id && msg._id && m._id === msg._id) ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        );
+        return exists ? prev : [...prev, msg];
+      });
+    };
 
-socket.on("newMessage", handleNewMessage);
-socket.on("connect_error", (err) => setError(err.message));
+    socket.on("newMessage", handleNewMessage);
+    socket.on("connect_error", (err) => setError(err.message));
 
-socket.emit("joinConversation", conversationId);
+    socket.emit("joinConversation", conversationId);
 
-return () => {
-  socket.off("newMessage", handleNewMessage);
-  socket.emit("leaveConversation", conversationId);
-};
-
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.emit("leaveConversation", conversationId);
+    };
   }, [socket, conversationId]);
 
   useEffect(() => {
@@ -147,31 +146,30 @@ return () => {
   };
 
   const sendMessage = () => {
-  if (!input.trim() || sending || !socket) return;
-  if (!socket.connected) {
-    setError("Socket אינו מחובר, נסה להתחבר מחדש");
-    return;
-  }
-  setSending(true);
-  setError("");
-
-  const tempId = uuidv4();
-
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
-    (ack) => {
-      console.log("sendMessage ack:", ack);
-      setSending(false);
-      if (ack?.ok) {
-        setInput("");
-      } else {
-        setError("שגיאה בשליחת ההודעה");
-      }
+    if (!input.trim() || sending || !socket) return;
+    if (!socket.connected) {
+      setError("Socket אינו מחובר, נסה להתחבר מחדש");
+      return;
     }
-  );
-};
+    setSending(true);
+    setError("");
 
+    const tempId = uuidv4();
+
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
+      (ack) => {
+        console.log("sendMessage ack:", ack);
+        setSending(false);
+        if (ack?.ok) {
+          setInput("");
+        } else {
+          setError("שגיאה בשליחת ההודעה");
+        }
+      }
+    );
+  };
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
@@ -211,126 +209,118 @@ return () => {
   };
 
   const handleSendRecording = async () => {
-  if (!recordedBlob || !socket) return;
-  setSending(true);
-  try {
-    const arrayBuffer = await recordedBlob.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    if (!recordedBlob || !socket) return;
+    setSending(true);
+    try {
+      const arrayBuffer = await recordedBlob.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-    socket.emit(
-      "sendMessage",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        role: "client",
-        file: { name: `voice.webm`, type: recordedBlob.type, duration: timer },
-        blob: buffer,           // <-- שמים את ה-buffer בתוך האובייקט
-      },
-      (ack) => {
-        setSending(false);
-        setRecordedBlob(null);
-        setTimer(0);
-        if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
-      }
-    );
-  } catch (e) {
-    setSending(false);
-    setError("שגיאה בהכנת הקובץ למשלוח");
-  }
-};
-
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          file: { name: `voice.webm`, type: recordedBlob.type, duration: timer },
+          blob: buffer,
+        },
+        (ack) => {
+          setSending(false);
+          setRecordedBlob(null);
+          setTimer(0);
+          if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
+        }
+      );
+    } catch (e) {
+      setSending(false);
+      setError("שגיאה בהכנת הקובץ למשלוח");
+    }
+  };
 
   const handleFileChange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file || !socket) return;
-  setSending(true);
+    const file = e.target.files?.[0];
+    if (!file || !socket) return;
+    setSending(true);
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    socket.emit(
-      "sendMessage",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        role: "client",
-        image: reader.result, // data:image/...;base64,...
-      },
-      (ack) => {
-        setSending(false);
-        if (!ack.ok) setError("שגיאה בשליחת הקובץ");
-      }
-    );
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          image: reader.result, // data:image/...;base64,...
+        },
+        (ack) => {
+          setSending(false);
+          if (!ack.ok) setError("שגיאה בשליחת הקובץ");
+        }
+      );
+    };
+    reader.onerror = () => {
+      setSending(false);
+      setError("שגיאה בהמרת הקובץ");
+    };
+
+    reader.readAsDataURL(file);
+    e.target.value = null;
   };
-  reader.onerror = () => {
-    setSending(false);
-    setError("שגיאה בהמרת הקובץ");
-  };
-
-  reader.readAsDataURL(file);
-  e.target.value = null;
-};
-
 
   const handleAttach = () => fileInputRef.current?.click();
 
   return (
-  <div className="chat-container client">
-    <div className="message-list" ref={messageListRef}>
-      {loading && <div className="loading">טוען...</div>}
-      {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-      {messages.map((m, i) => (
-        <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
-          {m.image ? (
-            <img
-              src={m.image}
-              alt={m.fileName || "image"}
-              style={{ maxWidth: 200, borderRadius: 8 }}
-            />
-          ) : m.fileUrl || m.file?.data ? (
-            m.fileType && m.fileType.startsWith("audio") ? (
-              <WhatsAppAudioPlayer
-                src={m.fileUrl || m.file.data}
-                userAvatar={m.userAvatar}
-                duration={m.fileDuration}
-              />
-            ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
-              <img
-                src={m.fileUrl || m.file.data}
-                alt={m.fileName || "image"}
-                style={{ maxWidth: 200, borderRadius: 8 }}
-              />
+    <div className="chat-container client">
+      <div className="message-list" ref={messageListRef}>
+        {loading && <div className="loading">טוען...</div>}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {messages.map((m, i) => (
+          <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
+            {m.fileUrl ? (
+              m.fileType && m.fileType.startsWith("audio") ? (
+                <WhatsAppAudioPlayer
+                  src={m.fileUrl}
+                  userAvatar={m.userAvatar}
+                  duration={m.fileDuration}
+                />
+              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
+                <img
+                  src={m.fileUrl}
+                  alt={m.fileName || "image"}
+                  style={{ maxWidth: 200, borderRadius: 8 }}
+                />
+              ) : (
+                <a
+                  href={m.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
+                  {m.fileName || "קובץ להורדה"}
+                </a>
+              )
             ) : (
-              <a
-                href={m.fileUrl || m.file?.data}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-              >
-                {m.fileName || "קובץ להורדה"}
-              </a>
-            )
-          ) : (
-            <div className="text">{m.text}</div>
-          )}
-          <div className="meta">
-            <span className="time">
-              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </span>
-            {m.fileDuration && (
-              <span className="audio-length">
-                {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-                {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-              </span>
+              <div className="text">{m.text}</div>
             )}
+            <div className="meta">
+              <span className="time">
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+              {m.fileDuration && (
+                <span className="audio-length">
+                  {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                  {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
 
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
