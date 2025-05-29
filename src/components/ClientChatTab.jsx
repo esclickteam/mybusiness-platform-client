@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid"; // <-- הוסף את זה
 import "./ClientChatTab.css";
-import { Buffer } from "buffer";
 import API from "../api"; // <-- ייבוא Axios עם הגדרות הטוקן
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
@@ -231,88 +230,96 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     }
   };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !socket) return;
-    setSending(true);
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      socket.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          to: businessId,
-          role: "client",
-          file: { name: file.name, type: file.type },
-        },
-        buffer,
-        (ack) => {
-          setSending(false);
-          if (!ack.ok) setError("שגיאה בשליחת הקובץ");
-        }
-      );
-    } catch (e) {
-      setSending(false);
-      setError("שגיאה בהכנת הקובץ למשלוח");
-    }
-    e.target.value = null;
+  const handleFileChange = (e) => {
+  const file = e.target.files?.[0];
+  if (!file || !socket) return;
+  setSending(true);
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    socket.emit(
+      "sendMessage",
+      {
+        conversationId,
+        from: userId,
+        to: businessId,
+        role: "client",
+        image: reader.result, // data:image/...;base64,...
+      },
+      (ack) => {
+        setSending(false);
+        if (!ack.ok) setError("שגיאה בשליחת הקובץ");
+      }
+    );
   };
+  reader.onerror = () => {
+    setSending(false);
+    setError("שגיאה בהמרת הקובץ");
+  };
+
+  reader.readAsDataURL(file);
+  e.target.value = null;
+};
+
 
   const handleAttach = () => fileInputRef.current?.click();
 
   return (
-    <div className="chat-container client">
-      <div className="message-list" ref={messageListRef}>
-        {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m, i) => (
-          <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
-            {(m.fileUrl || m.file?.data) ? (
-              m.fileType && m.fileType.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl || m.file.data}
-                  userAvatar={m.userAvatar}
-                  duration={m.fileDuration}
-                />
-              ) : (m.fileType && m.fileType.startsWith("image")) ||
-                /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
-                <img
-                  src={m.fileUrl || m.file.data}
-                  alt={m.fileName || "image"}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
-              ) : (
-                <a href={m.fileUrl || m.file?.data} target="_blank" rel="noopener noreferrer" download>
-                  {m.fileName || "קובץ להורדה"}
-                </a>
-              )
+  <div className="chat-container client">
+    <div className="message-list" ref={messageListRef}>
+      {loading && <div className="loading">טוען...</div>}
+      {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+      {messages.map((m, i) => (
+        <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
+          {m.image ? (
+            <img
+              src={m.image}
+              alt={m.fileName || "image"}
+              style={{ maxWidth: 200, borderRadius: 8 }}
+            />
+          ) : m.fileUrl || m.file?.data ? (
+            m.fileType && m.fileType.startsWith("audio") ? (
+              <WhatsAppAudioPlayer
+                src={m.fileUrl || m.file.data}
+                userAvatar={m.userAvatar}
+                duration={m.fileDuration}
+              />
+            ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
+              <img
+                src={m.fileUrl || m.file.data}
+                alt={m.fileName || "image"}
+                style={{ maxWidth: 200, borderRadius: 8 }}
+              />
             ) : (
-              <div className="text">{m.text}</div>
-            )}
-            <div className="meta">
-              <span className="time">
-                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+              <a
+                href={m.fileUrl || m.file?.data}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+              >
+                {m.fileName || "קובץ להורדה"}
+              </a>
+            )
+          ) : (
+            <div className="text">{m.text}</div>
+          )}
+          <div className="meta">
+            <span className="time">
+              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+            {m.fileDuration && (
+              <span className="audio-length">
+                {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
               </span>
-              {m.fileDuration && (
-                <span className="audio-length">
-                  {Math.floor(m.fileDuration / 60)
-                    .toString()
-                    .padStart(2, "0")}
-                  :
-                  {Math.floor(m.fileDuration % 60)
-                    .toString()
-                    .padStart(2, "0")}
-                </span>
-              )}
-            </div>
+            )}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+    </div>
 
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
