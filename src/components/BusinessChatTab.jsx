@@ -187,15 +187,18 @@ export default function BusinessChatTab({
 
   // טיפוס בהקלדה
   const handleInput = (e) => {
-    setInput(e.target.value);
-    socket?.emit("typing", { conversationId, from: businessId });
-  };
+  setInput(e.target.value);
+  console.log("Input changed:", e.target.value);
+  socket?.emit("typing", { conversationId, from: businessId });
+};
+
 
   // שליחת הודעת טקסט אופטימיסטית עם uuid
   const sendMessage = () => {
   const text = input.trim();
+  console.log("Sending message:", text);
   if (!text || !socket) {
-    console.log("No text or socket connection");
+    console.warn("No text or socket connection, aborting sendMessage");
     return;
   }
 
