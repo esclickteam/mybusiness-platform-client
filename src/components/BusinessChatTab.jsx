@@ -421,7 +421,7 @@ export default function BusinessChatTab({
             </div>
           ) : (
             <div
-              key={m._id || i}
+              key={m._id}
               className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
             >
               {m.fileUrl ? (
