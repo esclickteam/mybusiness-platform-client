@@ -6,10 +6,10 @@ import jwtDecode from "jwt-decode";
 export function isTokenExpired(token) {
   if (!token) return true;
   try {
-    const { exp } = jwtDecode(token);
-    return Date.now() >= exp * 1000;
+    const { exp } = jwtDecode(token);  // Decode את הטוקן כדי לקרוא את זמן התפוגה
+    return Date.now() >= exp * 1000;  // אם התאריך הנוכחי אחרי התאריך של exp, הטוקן פג תוקף
   } catch {
-    return true;
+    return true;  // אם קרתה שגיאה בהפענוח, נחזיר true (כמו טוקן פג תוקף)
   }
 }
 
