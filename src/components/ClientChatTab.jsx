@@ -101,7 +101,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טען היסטוריה
+  // Load history
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
@@ -109,16 +109,17 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     API.get("/conversations/history", { params: { conversationId } })
       .then((res) => {
         setMessages(res.data);
-        setLoading(false);
       })
       .catch(() => {
         setMessages([]);
         setError("שגיאה בטעינת היסטוריית ההודעות");
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [conversationId]);
 
-  // מאזין ל־socket
+  // Socket listeners
   useEffect(() => {
     if (!socket || !conversationId) return;
     const handleNewMessage = (msg) => {
@@ -135,7 +136,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     };
   }, [socket, conversationId]);
 
-  // גלילה לתחתית
+  // Auto-scroll
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
@@ -148,7 +149,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // sendMessage מאוחד
+  // Unified sendMessage
   const sendMessage = () => {
     const file = fileInputRef.current?.files?.[0] ?? null;
     if ((!input.trim() && !file) || sending || !socket) return;
@@ -207,8 +208,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     }
   };
 
-  // פונקציות הקלטה ושליחה איתן לא השתנו
-
+  // Audio recording handlers
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
 
@@ -283,9 +283,14 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {!loading && messages.length === 0 && (
+          <div className="empty">עדיין אין הודעות</div>
+        )}
         {messages.map((m, i) => (
-          <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
+          <div
+            key={m._id || i}
+            className={`message${m.role === "client" ? " mine" : " theirs"}`}
+          >
             {m.fileUrl ? (
               m.fileType && m.fileType.startsWith("audio") ? (
                 <WhatsAppAudioPlayer
@@ -300,7 +305,12 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
                   style={{ maxWidth: 200, borderRadius: 8 }}
                 />
               ) : (
-                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                <a
+                  href={m.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
                   {m.fileName || "קובץ להורדה"}
                 </a>
               )
@@ -332,7 +342,11 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           <div className="audio-preview-row">
             {recording ? (
               <>
-                <button className="recordBtn recording" onClick={handleRecordStop} type="button">
+                <button
+                  className="recordBtn recording"
+                  onClick={handleRecordStop}
+                  type="button"
+                >
                   ⏹️
                 </button>
                 <span className="preview-timer">
@@ -353,13 +367,21 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
               </>
             ) : (
               <>
-                <audio src={URL.createObjectURL(recordedBlob)} controls style={{ height: 30 }} />
+                <audio
+                  src={URL.createObjectURL(recordedBlob)}
+                  controls
+                  style={{ height: 30 }}
+                />
                 <div>
                   משך הקלטה:{" "}
                   {String(Math.floor(timer / 60)).padStart(2, "0")}:
                   {String(timer % 60).padStart(2, "0")}
                 </div>
-                <button className="send-btn" onClick={handleSendRecording} disabled={sending}>
+                <button
+                  className="send-btn"
+                  onClick={handleSendRecording}
+                  disabled={sending}
+                >
                   שלח
                 </button>
               </>
@@ -391,7 +413,12 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
               ◀
             </button>
             <div className="inputBar-right">
-              <button className="attachBtn" onClick={handleAttach} disabled={sending} type="button">
+              <button
+                className="attachBtn"
+                onClick={handleAttach}
+                disabled={sending}
+                type="button"
+              >
                 📎
               </button>
               <button
@@ -405,8 +432,9 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
               <input
                 type="file"
                 ref={fileInputRef}
-                className="fileInput"
+                accept="image/*"
                 style={{ display: "none" }}
+                onChange={() => sendMessage()}
               />
             </div>
           </>
