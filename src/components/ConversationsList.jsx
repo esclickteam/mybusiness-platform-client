@@ -1,3 +1,4 @@
+// src/components/ConversationsList.jsx
 import React from "react";
 import styles from "./ConversationsList.module.css";
 
@@ -43,14 +44,6 @@ export default function ConversationsList({
           const displayName = isBusiness
             ? conv.customerName || conv.partnerName || partnerId
             : conv.businessName || conv.partnerName || partnerId;
-
-          // הוספת לוג לזיהוי תצוגה
-          console.log("Conversation display:", {
-            convoId,
-            displayName,
-            partnerId,
-            isActive: convoId === selectedConversationId,
-          });
 
           const isActive = convoId === selectedConversationId;
 
