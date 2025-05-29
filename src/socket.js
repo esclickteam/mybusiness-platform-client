@@ -1,11 +1,14 @@
 // src/utils/createSocket.js
 import { io } from "socket.io-client";
-import { getValidAccessToken, getBusinessId } from "./authHelpers";
+import { getValidAccessToken, getBusinessId } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export async function createSocket() {
+  // קבלת AccessToken תקין ומזהה העסק
   const token = await getValidAccessToken();
+
+  // ודא ש-businessId הוא מחרוזת פשוטה
   const rawBusinessId = getBusinessId();
   const businessId =
     typeof rawBusinessId === "string"
@@ -27,7 +30,7 @@ export async function createSocket() {
 
   const socket = io(SOCKET_URL, {
     path: "/socket.io",
-    transports: ["polling", "websocket"],
+    transports: ["polling", "websocket"],  // ← updated to include polling as fallback
     auth: {
       token,
       role: "business",
@@ -35,6 +38,9 @@ export async function createSocket() {
     },
     autoConnect: false,
   });
+
+  // כאן מחברים את הסוקט מיד לאחר יצירתו
+  socket.connect();
 
   socket.on("connect", () => {
     console.log("✅ Connected to WebSocket server. Socket ID:", socket.id);
@@ -74,8 +80,6 @@ export async function createSocket() {
     console.error("❌ Socket connection failed");
     alert("Failed to connect to server. Please try again.");
   });
-
-  socket.connect();
 
   return socket;
 }
