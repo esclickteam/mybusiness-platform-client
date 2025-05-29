@@ -30,7 +30,7 @@ export async function createSocket() {
   const socket = io(SOCKET_URL, {
     path: "/socket.io",
     transports: ["websocket"],
-    withCredentials: true,
+    // withCredentials: true, // אפשר להסיר אם אין צורך בקוקיז
     auth: {
       token,
       role: "business",
@@ -38,6 +38,9 @@ export async function createSocket() {
     },
     autoConnect: false,
   });
+
+  // כאן מחברים את הסוקט מיד לאחר יצירתו
+  socket.connect();
 
   socket.on("connect", () => {
     console.log("✅ Connected to WebSocket server. Socket ID:", socket.id);
