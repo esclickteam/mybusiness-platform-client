@@ -73,6 +73,16 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
+// Helper to convert Blob to base64 string
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 export default function ClientChatTab({ socket, conversationId, businessId, userId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -203,16 +213,20 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     setSending(true);
     setError("");
     try {
-      const arrayBuffer = await recordedBlob.arrayBuffer();
+      const base64Data = await blobToBase64(recordedBlob);
       socket.emit(
-        "sendAudio",
+        "sendMessage",
         {
           conversationId,
           from: userId,
           to: businessId,
-          buffer: arrayBuffer,
-          fileType: recordedBlob.type,
-          duration: timer,
+          role: "client",
+          file: {
+            name: `voice.webm`,
+            type: recordedBlob.type,
+            duration: timer,
+            data: base64Data,
+          },
         },
         (ack) => {
           setSending(false);
@@ -235,16 +249,18 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
     const reader = new FileReader();
     reader.onload = () => {
-      const arrayBuffer = reader.result;
       socket.emit(
-        "sendFile",
+        "sendMessage",
         {
           conversationId,
           from: userId,
           to: businessId,
-          buffer: arrayBuffer,
-          fileType: file.type,
-          fileName: file.name,
+          role: "client",
+          file: {
+            name: file.name,
+            type: file.type,
+            data: reader.result,
+          },
         },
         (ack) => {
           setSending(false);
@@ -257,7 +273,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       setError("שגיאה בהמרת הקובץ");
     };
 
-    reader.readAsArrayBuffer(file);
+    reader.readAsDataURL(file);
     e.target.value = null;
   };
 
@@ -410,7 +426,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
                 onChange={handleFileChange}
                 disabled={sending}
                 style={{ display: "none" }}
-                accept="image/*,audio/*,video/*"
               />
             </div>
           </>
