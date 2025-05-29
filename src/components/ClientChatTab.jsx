@@ -286,22 +286,22 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
           <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
-            {m.file?.data ? (
-              m.file.type && m.file.type.startsWith("audio") ? (
+            {m.fileUrl ? (
+              m.fileType && m.fileType.startsWith("audio") ? (
                 <WhatsAppAudioPlayer
-                  src={m.file.data}
+                  src={m.fileUrl}
                   userAvatar={m.userAvatar}
-                  duration={m.file.duration}
+                  duration={m.fileDuration}
                 />
-              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.file.type || "") ? (
+              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileType || '') ? (
                 <img
-                  src={m.file.data}
-                  alt={m.file.name || "image"}
+                  src={m.fileUrl}
+                  alt={m.fileName || "image"}
                   style={{ maxWidth: 200, borderRadius: 8 }}
                 />
               ) : (
-                <a href={m.file.data} target="_blank" rel="noopener noreferrer" download>
-                  {m.file.name || "קובץ להורדה"}
+                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                  {m.fileName || "קובץ להורדה"}
                 </a>
               )
             ) : m.text ? (
@@ -314,10 +314,10 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
                   minute: "2-digit",
                 })}
               </span>
-              {m.file?.duration && (
+              {m.fileDuration && (
                 <span className="audio-length">
-                  {String(Math.floor(m.file.duration / 60)).padStart(2, "0")}:
-                  {String(Math.floor(m.file.duration % 60)).padStart(2, "0")}
+                  {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                  {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
                 </span>
               )}
             </div>
