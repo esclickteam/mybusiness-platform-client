@@ -1,4 +1,3 @@
-// src/components/BusinessConversationsList.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import createSocket from "../socket";
@@ -14,25 +13,37 @@ export default function BusinessConversationsList({ onSelectConversation }) {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    const sock = createSocket();
-    socketRef.current = sock;
-    sock.connect();
+    async function setupSocket() {
+      const sock = await createSocket();
+      if (!sock) return; // אין טוקן תקין, כנראה הפניית login כבר התבצעה
 
-    sock.emit(
-      "getConversations",
-      { userId: businessId },
-      (res) => {
-        if (res.ok) {
-          setConversations(res.conversations);
-        } else {
-          console.error("Error loading conversations:", res.error);
+      sock.connect();
+      socketRef.current = sock;
+
+      sock.emit(
+        "getConversations",
+        { userId: businessId },
+        (res) => {
+          if (res.ok) {
+            setConversations(res.conversations);
+          } else {
+            console.error("Error loading conversations:", res.error);
+          }
+          setLoading(false);
         }
+      );
+
+      sock.on("connect_error", (err) => {
+        console.error("Socket connect error:", err.message);
         setLoading(false);
-      }
-    );
+      });
+    }
+
+    setupSocket();
 
     return () => {
-      sock.disconnect();
+      socketRef.current?.disconnect();
+      socketRef.current = null;
     };
   }, [initialized, businessId]);
 
@@ -56,4 +67,3 @@ export default function BusinessConversationsList({ onSelectConversation }) {
     </ul>
   );
 }
-

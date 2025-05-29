@@ -1,4 +1,3 @@
-// src/components/ChatComponent.jsx
 import React, { useState, useEffect, useRef } from "react";
 import BusinessChatTab from "./BusinessChatTab";
 import ClientChatTab from "./ClientChatTab";
@@ -24,49 +23,55 @@ export default function ChatComponent({
     if (!userId) return;
     if (socketRef.current) return; // כבר אתחלנו
 
-    const sock = createSocket();
-    socketRef.current = sock;
-    sock.connect();
+    async function setupSocket() {
+      const sock = await createSocket();
+      if (!sock) return; // אין טוקן תקין, כבר הפניית login
 
-    // טעינת שיחות עבור עסק
-    if (isBusiness) {
-      setLoadingConvs(true);
-      sock.emit("getConversations", { userId }, (res) => {
-        setLoadingConvs(false);
-        if (res.ok) {
-          const convs = Array.isArray(res.conversations) ? res.conversations : [];
-          setConversations(convs);
-          if (!conversationId && convs.length > 0) {
-            const first = convs[0];
-            const convoId = first._id ?? first.conversationId;
-            const custId =
-              first.customer?._id ??
-              first.participants.find((pid) => pid !== userId) ??
-              null;
-            setConversationId(convoId);
-            setCurrentCustomerId(custId);
-          }
-        } else {
-          console.error("Error loading conversations:", res.error);
-        }
-      });
-    } else {
-      // פתיחת שיחה עבור לקוח
-      if (!conversationId && partnerId) {
-        setLoadingInit(true);
-        sock.emit("startConversation", { otherUserId: partnerId }, (res) => {
-          setLoadingInit(false);
+      sock.connect();
+      socketRef.current = sock;
+
+      // טעינת שיחות עבור עסק
+      if (isBusiness) {
+        setLoadingConvs(true);
+        sock.emit("getConversations", { userId }, (res) => {
+          setLoadingConvs(false);
           if (res.ok) {
-            setConversationId(res.conversationId);
+            const convs = Array.isArray(res.conversations) ? res.conversations : [];
+            setConversations(convs);
+            if (!conversationId && convs.length > 0) {
+              const first = convs[0];
+              const convoId = first._id ?? first.conversationId;
+              const custId =
+                first.customer?._id ??
+                first.participants.find((pid) => pid !== userId) ??
+                null;
+              setConversationId(convoId);
+              setCurrentCustomerId(custId);
+            }
           } else {
-            console.error("Failed to start conversation:", res.error);
+            console.error("Error loading conversations:", res.error);
           }
         });
+      } else {
+        // פתיחת שיחה עבור לקוח
+        if (!conversationId && partnerId) {
+          setLoadingInit(true);
+          sock.emit("startConversation", { otherUserId: partnerId }, (res) => {
+            setLoadingInit(false);
+            if (res.ok) {
+              setConversationId(res.conversationId);
+            } else {
+              console.error("Failed to start conversation:", res.error);
+            }
+          });
+        }
       }
     }
 
+    setupSocket();
+
     return () => {
-      sock.disconnect();
+      socketRef.current?.disconnect();
       socketRef.current = null;
     };
   }, [userId, isBusiness, partnerId, conversationId]);

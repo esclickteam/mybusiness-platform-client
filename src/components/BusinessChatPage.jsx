@@ -21,25 +21,25 @@ export default function BusinessChatPage() {
 
   // 1. אתחול והתחברות לסוקט ברגע שהמשתמש מאותחל
   useEffect(() => {
-    if (!initialized || !businessId) return;
+  if (!initialized || !businessId) return;
 
-    (async () => {
+  (async () => {
+    const sock = await createSocket();  // המתנה ליצירת socket תקין
+    if (!sock) return;                   // אם לא קיבלנו socket (למשל אין טוקן תקין)
+    socketRef.current = sock;
+    sock.connect();
 
-      const sock = createSocket();
-      socketRef.current = sock;
-      sock.connect();
+    sock.on("connect_error", err => {
+      setError("Socket error: " + err.message);
+      setLoading(false);
+    });
+  })();
 
-      sock.on("connect_error", err => {
-        setError("Socket error: " + err.message);
-        setLoading(false);
-      });
-    })();
+  return () => {
+    socketRef.current?.disconnect();
+  };
+}, [initialized, businessId]);
 
-    return () => {
-      socketRef.current?.disconnect();
-    };
-// בתלותות: רק רכיבים שמשתנים באמת כשהעמוד נטען
-  }, [initialized, businessId]);
 
   // 2. אחרי חיבור הסוקט – שליפת רשימת השיחות (פעם אחת בלבד)
   useEffect(() => {

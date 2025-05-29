@@ -19,11 +19,18 @@ export default function CollabPartnersChat() {
 
   // Initialize socket once
   useEffect(() => {
-    const sock = createSocket();
-    socketRef.current = sock;
-    sock.connect();
+    async function setupSocket() {
+      const sock = await createSocket();
+      if (!sock) return;  // כנראה אין טוקן תקין, הפניית login כבר התבצעה
+
+      sock.connect();
+      socketRef.current = sock;
+    }
+    setupSocket();
+
     return () => {
-      sock.disconnect();
+      socketRef.current?.disconnect();
+      socketRef.current = null;
     };
   }, []);
 

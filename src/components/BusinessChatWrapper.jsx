@@ -1,4 +1,3 @@
-// src/components/BusinessChatWrapper.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -12,39 +11,53 @@ export default function BusinessChatWrapper() {
   const { accessToken, user } = useAuth();
   const businessId = user?.businessId || routeBusinessId;
 
-  const [convos, setConvos]     = useState([]);
+  const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
-  const socketRef               = useRef(null);
-  const hasJoinedRef            = useRef(false);
+  const socketRef = useRef(null);
+  const hasJoinedRef = useRef(false);
 
   useEffect(() => {
     if (!businessId || !accessToken) return;
     if (socketRef.current) return; // כבר אתחלנו סוקט
 
-    // צור וסנכרן סוקט
-    const sock = createSocket();
-    socketRef.current = sock;
-    sock.auth = { token: accessToken, role: "business", businessId };
-    sock.connect();
+    async function setupSocket() {
+      const sock = await createSocket();
+      if (!sock) return; // כנראה אין טוקן תקין, כבר הופנית ל-login
 
-    // קבל שיחות
-    sock.emit("getConversations", { businessId }, ({ ok, conversations = [], error }) => {
-      if (ok) {
-        setConvos(conversations);
-        if (!selected && conversations.length > 0) {
-          const first = conversations[0];
-          const convoId   = first._id || first.conversationId || first.id;
-          const partnerId = (first.participants || []).find(pid => pid !== businessId) || first.customer?._id || null;
-          setSelected({ conversationId: convoId, partnerId });
+      sock.connect();
+      socketRef.current = sock;
+
+      sock.emit(
+        "getConversations",
+        { businessId },
+        ({ ok, conversations = [], error }) => {
+          if (ok) {
+            setConvos(conversations);
+            if (!selected && conversations.length > 0) {
+              const first = conversations[0];
+              const convoId = first._id || first.conversationId || first.id;
+              const partnerId =
+                (first.participants || []).find((pid) => pid !== businessId) ||
+                first.customer?._id ||
+                null;
+              setSelected({ conversationId: convoId, partnerId });
+            }
+          } else {
+            console.error("Error loading conversations:", error);
+          }
         }
-      } else {
-        console.error("Error loading conversations:", error);
-      }
-    });
+      );
 
-    // ניקוי בסגירה
+      sock.on("connect_error", (err) => {
+        console.error("Socket connect error:", err.message);
+        // אפשר להציג הודעת שגיאה למשתמש
+      });
+    }
+
+    setupSocket();
+
     return () => {
-      sock.disconnect();
+      socketRef.current?.disconnect();
       socketRef.current = null;
       setConvos([]);
       setSelected(null);
@@ -56,7 +69,7 @@ export default function BusinessChatWrapper() {
     if (!sock) return;
 
     const convo = convos.find(
-      c =>
+      (c) =>
         c._id === conversationId ||
         c.conversationId === conversationId ||
         c.id === conversationId
@@ -67,23 +80,26 @@ export default function BusinessChatWrapper() {
     }
 
     const partnerId =
-      (convo.participants || []).find(pid => pid !== businessId) ||
+      (convo.participants || []).find((pid) => pid !== businessId) ||
       convo.customer?._id ||
       null;
     setSelected({ conversationId, partnerId });
 
-    // יציאה ממועדון קודם והצטרפות למועדון חדש
+    // יציאה מהמועדון הקודם והצטרפות למועדון החדש
     if (hasJoinedRef.current) {
       sock.emit("leaveConversation", selected.conversationId);
     }
-    sock.emit("joinConversation", conversationId, ack => {
+    sock.emit("joinConversation", conversationId, (ack) => {
       if (!ack.ok) console.error("joinConversation failed:", ack.error);
     });
     hasJoinedRef.current = true;
   };
 
   return (
-    <div className="business-chat-wrapper" style={{ display: "flex", height: "100%" }}>
+    <div
+      className="business-chat-wrapper"
+      style={{ display: "flex", height: "100%" }}
+    >
       <ConversationsList
         conversations={convos}
         businessId={businessId}

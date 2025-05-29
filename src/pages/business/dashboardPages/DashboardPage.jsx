@@ -1,4 +1,3 @@
-// src/pages/business/dashboardPages/DashboardPage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
@@ -80,32 +79,39 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    const sock = createSocket({
-      auth: { role: "business-dashboard", businessId },
-    });
-    sock.connect();
-    socketRef.current = sock;
+    async function setupSocket() {
+      const sock = await createSocket();
+      if (!sock) return; // אין טוקן תקין, כנראה הפניית login כבר התבצעה
 
-    sock.on("connect", () => {
-      console.log("Dashboard socket connected:", sock.id);
-    });
+      sock.connect();
+      socketRef.current = sock;
 
-    sock.on("dashboardUpdate", newStats => {
-      console.log("Dashboard update received:", newStats);
-      setStats(newStats);
-    });
+      sock.on("connect", () => {
+        console.log("Dashboard socket connected:", sock.id);
+      });
 
-    sock.on("disconnect", reason => {
-      console.log("Dashboard socket disconnected, reason:", reason);
-    });
+      sock.on("dashboardUpdate", newStats => {
+        console.log("Dashboard update received:", newStats);
+        setStats(newStats);
+      });
 
-    sock.on("connect_error", err => {
-      console.error("Socket connection error:", err);
-    });
+      sock.on("disconnect", reason => {
+        console.log("Dashboard socket disconnected, reason:", reason);
+      });
+
+      sock.on("connect_error", err => {
+        console.error("Socket connection error:", err);
+      });
+    }
+
+    setupSocket();
 
     return () => {
-      console.log("Disconnecting dashboard socket");
-      sock.disconnect();
+      if (socketRef.current) {
+        console.log("Disconnecting dashboard socket");
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [initialized, businessId]);
 

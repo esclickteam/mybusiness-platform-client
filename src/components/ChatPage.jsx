@@ -1,4 +1,3 @@
-// src/components/ChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ChatComponent from "./ChatComponent";
@@ -23,54 +22,68 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
     if (!userId) return;
     if (socketRef.current) return; // כבר אתחול
 
-    const sock = createSocket();
-    socketRef.current = sock;
-    sock.connect();
+    async function setupSocket() {
+      const sock = await createSocket();
+      if (!sock) return; // אין טוקן תקין, כנראה הפניית login כבר התבצעה
 
-    // 1. fetch initial conversations
-    sock.emit("getConversations", { userId }, (res) => {
-      if (res.ok) {
-        const convs = Array.isArray(res.conversations) ? res.conversations : [];
-        setConversations(convs);
-        if (!selected && convs.length > 0) {
-          const first = convs[0];
-          const convoId = first._id || first.conversationId;
-          const partnerId =
-            (first.participants || []).find((pid) => pid !== userId) ||
-            first.customer?._id ||
-            null;
-          setSelected({ conversationId: convoId, partnerId });
+      sock.connect();
+      socketRef.current = sock;
+
+      // 1. fetch initial conversations
+      sock.emit("getConversations", { userId }, (res) => {
+        if (res.ok) {
+          const convs = Array.isArray(res.conversations) ? res.conversations : [];
+          setConversations(convs);
+          if (!selected && convs.length > 0) {
+            const first = convs[0];
+            const convoId = first._id || first.conversationId;
+            const partnerId =
+              (first.participants || []).find((pid) => pid !== userId) ||
+              first.customer?._id ||
+              null;
+            setSelected({ conversationId: convoId, partnerId });
+          }
+        } else {
+          setError("לא ניתן לטעון שיחות: " + (res.error || "שגיאה"));
         }
-      } else {
-        setError("לא ניתן לטעון שיחות: " + (res.error || "שגיאה"));
-      }
-    });
+      });
 
-    // 2. listener for new messages
-    const handleNew = (message) => {
-      setConversations((prev) =>
-        prev.map((conv) =>
-          (conv._id === message.conversationId ||
-            conv.conversationId === message.conversationId)
-            ? { ...conv, messages: [...(conv.messages || []), message] }
-            : conv
-        )
-      );
-      if (selected?.conversationId === message.conversationId) {
-        setSelected((prev) => ({
-          ...prev,
-          messages: [...(prev.messages || []), message],
-        }));
-      }
-    };
-    sock.on("newMessage", handleNew);
+      // 2. listener for new messages
+      const handleNew = (message) => {
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv._id === message.conversationId ||
+            conv.conversationId === message.conversationId
+              ? { ...conv, messages: [...(conv.messages || []), message] }
+              : conv
+          )
+        );
+        if (selected?.conversationId === message.conversationId) {
+          setSelected((prev) => ({
+            ...prev,
+            messages: [...(prev.messages || []), message],
+          }));
+        }
+      };
+      sock.on("newMessage", handleNew);
+
+      // שמירת ההאזנה לניקוי בעת unmount
+      return () => {
+        sock.off("newMessage", handleNew);
+        sock.disconnect();
+        socketRef.current = null;
+      };
+    }
+
+    const cleanupPromise = setupSocket();
 
     return () => {
-      sock.off("newMessage", handleNew);
-      sock.disconnect();
-      socketRef.current = null;
+      cleanupPromise.then((cleanup) => {
+        if (cleanup) cleanup();
+      });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isBusiness]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
