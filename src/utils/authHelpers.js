@@ -61,3 +61,15 @@ export async function getValidAccessToken() {
   }
   return token;
 }
+
+// הוספתי את הפונקציה הזו להחזרת תפקיד המשתמש
+export function getUserRole() {
+  const token = getAccessToken();
+  if (!token) return null;
+  try {
+    const decoded = jwtDecode(token);
+    return decoded.role || null;
+  } catch {
+    return null;
+  }
+}

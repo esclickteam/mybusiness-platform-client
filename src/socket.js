@@ -1,45 +1,53 @@
 // src/utils/createSocket.js
 import { io } from "socket.io-client";
-import { getValidAccessToken, getBusinessId } from "./utils/authHelpers";
+import { getValidAccessToken, getBusinessId, getUserRole } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export async function createSocket() {
-  // קבלת AccessToken תקין ומזהה העסק
+  // קבלת AccessToken תקין
   const token = await getValidAccessToken();
 
-  // ודא ש-businessId הוא מחרוזת פשוטה
-  const rawBusinessId = getBusinessId();
-  const businessId =
-    typeof rawBusinessId === "string"
-      ? rawBusinessId
-      : rawBusinessId?._id?.toString() || rawBusinessId?.toString();
+  // קבלת תפקיד המשתמש
+  const role = getUserRole(); // דוגמא: "business", "customer", "chat", "client" וכו'
 
-  console.log("🔍 Checking authentication data...");
-  console.log("Token:", token);
-  console.log("BusinessId:", businessId);
+  // רק במידה והתפקיד דורש מזהה עסק - קבלת מזהה העסק
+  let businessId = null;
+  if (role === "business" || role === "business-dashboard") {
+    const rawBusinessId = getBusinessId();
+    businessId =
+      typeof rawBusinessId === "string"
+        ? rawBusinessId
+        : rawBusinessId?._id?.toString() || rawBusinessId?.toString();
+  }
 
-  if (!token || !businessId) {
-    console.error("❌ Missing token or businessId");
+  // בדיקות תקינות נתונים לפני יצירת החיבור
+  if (!token || (["business", "business-dashboard"].includes(role) && !businessId)) {
+    console.error("❌ Missing token or businessId for role", role);
     alert("Missing required authentication data. Please log in again.");
     window.location.href = "/login";
     return null;
   }
 
+  console.log("🔍 Checking authentication data...");
+  console.log("Token:", token);
+  console.log("Role:", role);
+  console.log("BusinessId:", businessId);
+
   console.log("🔗 Creating socket connection to:", SOCKET_URL);
 
   const socket = io(SOCKET_URL, {
     path: "/socket.io",
-    transports: ["polling", "websocket"],  // ← updated to include polling as fallback
+    transports: ["polling", "websocket"],  // כולל fallback ל-polling
     auth: {
       token,
-      role: "business",
+      role,
       businessId,
     },
     autoConnect: false,
   });
 
-  // כאן מחברים את הסוקט מיד לאחר יצירתו
+  // מחברים את הסוקט מיד לאחר יצירתו
   socket.connect();
 
   socket.on("connect", () => {
