@@ -1,4 +1,3 @@
-// src/components/BusinessChatPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
@@ -31,10 +30,19 @@ export default function BusinessChatPage() {
 
     (async () => {
       const sock = await createSocket();
-      if (!sock) return;
+      if (!sock) {
+        setError("Socket connection failed");
+        return;
+      }
       socketRef.current = sock;
       sock.connect();
-      sock.on("connect_error", err => setError("Socket error: " + err.message));
+
+      sock.on("connect_error", (err) => {
+        setError("Socket error: " + err.message);
+        console.log("Socket connection failed:", err);
+      });
+
+      console.log("Socket connected:", sock.id); // Log successful connection
     })();
 
     return () => {
@@ -53,7 +61,7 @@ export default function BusinessChatPage() {
         if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
-          const partnerId = first.partnerId || first.participants.find(p => p !== businessId);
+          const partnerId = first.partnerId || first.participants.find((p) => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
       })
@@ -68,18 +76,22 @@ export default function BusinessChatPage() {
     const sock = socketRef.current;
     if (!sock) return;
 
-    const handler = msg => {
-      // update sidebar order
-      setConvos(prev => {
-        const idx = prev.findIndex(c => String(c._id || c.conversationId) === msg.conversationId);
+    const handler = (msg) => {
+      // Log the incoming message
+      console.log("New message received:", msg);
+
+      // Update sidebar order
+      setConvos((prev) => {
+        const idx = prev.findIndex((c) => String(c._id || c.conversationId) === msg.conversationId);
         if (idx === -1) return prev;
         const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
-      // update history for currently open conversation
+
+      // Update history for currently open conversation
       const sel = selectedRef.current;
       if (msg.conversationId === sel?.conversationId) {
-        setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
+        setMessages((prev) => (prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]));
       }
     };
 
@@ -101,12 +113,12 @@ export default function BusinessChatPage() {
     }
 
     // Join current conversation room
-    sock.emit("joinConversation", selected.conversationId, ack => {
+    sock.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
 
     // Load message history
-    sock.emit("getHistory", { conversationId: selected.conversationId }, res => {
+    sock.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
       } else {
@@ -130,32 +142,34 @@ export default function BusinessChatPage() {
   return (
     <div className={styles.chatContainer}>
       <aside className={styles.sidebarInner}>
-        {loading
-          ? <p className={styles.loading}>טוען שיחות…</p>
-          : <ConversationsList
-              conversations={convos}
-              businessId={businessId}
-              selectedConversationId={selected?.conversationId}
-              onSelect={handleSelect}
-              isBusiness
-            />
-        }
+        {loading ? (
+          <p className={styles.loading}>טוען שיחות…</p>
+        ) : (
+          <ConversationsList
+            conversations={convos}
+            businessId={businessId}
+            selectedConversationId={selected?.conversationId}
+            onSelect={handleSelect}
+            isBusiness
+          />
+        )}
         {error && <p className={styles.error}>{error}</p>}
       </aside>
 
       <section className={styles.chatArea}>
-        {selected
-          ? <BusinessChatTab
-              conversationId={selected.conversationId}
-              businessId={businessId}
-              customerId={selected.partnerId}
-              businessName={user?.businessName || user?.name}
-              socket={socketRef.current}
-              messages={messages}
-              setMessages={setMessages}
-            />
-          : <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
-        }
+        {selected ? (
+          <BusinessChatTab
+            conversationId={selected.conversationId}
+            businessId={businessId}
+            customerId={selected.partnerId}
+            businessName={user?.businessName || user?.name}
+            socket={socketRef.current}
+            messages={messages}
+            setMessages={setMessages}
+          />
+        ) : (
+          <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+        )}
       </section>
     </div>
   );
