@@ -5,6 +5,7 @@ import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import createSocket from "../socket";
+import API from "../api";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
@@ -13,12 +14,12 @@ export default function BusinessChatPage() {
   const [convos, setConvos]     = useState([]);
   const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading]   = useState(true);
+  const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState("");
   const socketRef               = useRef(null);
   const hasJoinedRef            = useRef(false);
 
-  // 1. Initialize and connect socket
+  // 1. Initialize & connect socket
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -28,10 +29,7 @@ export default function BusinessChatPage() {
       socketRef.current = sock;
       sock.connect();
 
-      sock.on("connect_error", err => {
-        setError("Socket error: " + err.message);
-        setLoading(false);
-      });
+      sock.on("connect_error", err => setError("Socket error: " + err.message));
     })();
 
     return () => {
@@ -40,57 +38,41 @@ export default function BusinessChatPage() {
     };
   }, [initialized, businessId]);
 
-  // 2. Load conversations on socket connect
+  // 2. Load conversations via REST
   useEffect(() => {
-    const sock = socketRef.current;
-    if (!sock) return;
-
-    const onConnect = () => {
-      sock.emit(
-        "getConversations",
-        { businessId },
-        ({ ok, conversations, error: errMsg }) => {
-          if (ok) {
-            setConvos(conversations);
-            if (conversations.length > 0) {
-              const first = conversations[0];
-              const convoId = first._id || first.conversationId;
-              const partnerId = first.partnerId || first.participants.find(p => p !== businessId);
-              setSelected({ conversationId: convoId, partnerId });
-            }
-          } else {
-            setError("לא ניתן לטעון שיחות: " + errMsg);
-          }
-          setLoading(false);
+    if (!initialized || !businessId) return;
+    setLoading(true);
+    API.get("/conversations", { params: { businessId } })
+      .then(({ data }) => {
+        setConvos(data);
+        if (data.length) {
+          const first = data[0];
+          const convoId = first.conversationId || first._id;
+          const partnerId = first.partnerId || first.participants.find(p => p !== businessId);
+          setSelected({ conversationId: convoId, partnerId });
         }
-      );
-    };
+      })
+      .catch(err => {
+        console.error("Load conversations error:", err);
+        setError("שגיאה בטעינת שיחות");
+      })
+      .finally(() => setLoading(false));
+  }, [initialized, businessId]);
 
-    sock.once("connect", onConnect);
-    return () => sock.off("connect", onConnect);
-  }, [businessId]);
-
-  // 3. Listen for incoming Socket messages
+  // 3. Listen for new messages and update sidebar order
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const handler = msg => {
-      // update sidebar order
       setConvos(prev => {
         const idx = prev.findIndex(c => String(c._id || c.conversationId) === msg.conversationId);
         if (idx === -1) return prev;
-        const updated = {
-          ...prev[idx],
-          updatedAt: msg.timestamp || new Date().toISOString()
-        };
+        const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
-      // append to history if open
       if (msg.conversationId === selected?.conversationId) {
-        setMessages(prev =>
-          prev.some(m => m._id === msg._id) ? prev : [...prev, msg]
-        );
+        setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
       }
     };
 
@@ -98,7 +80,7 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, [selected]);
 
-  // 4. Join or leave rooms on selection change
+  // 4. Join/leave conversation rooms
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock?.connected || !selected?.conversationId) return;
@@ -112,10 +94,10 @@ export default function BusinessChatPage() {
     hasJoinedRef.current = true;
   }, [selected]);
 
+  // Handle selection change
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
     setMessages([]);
-    setLoading(true);
   };
 
   if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
@@ -123,34 +105,34 @@ export default function BusinessChatPage() {
   return (
     <div className={styles.chatContainer}>
       <aside className={styles.sidebarInner}>
-        {loading
-          ? <p className={styles.loading}>טוען שיחות…</p>
-          : <ConversationsList
-              conversations={convos}
-              businessId={businessId}
-              selectedConversationId={selected?.conversationId}
-              onSelect={handleSelect}
-              isBusiness
-            />
-        }
+        {loading ? (
+          <p className={styles.loading}>טוען שיחות…</p>
+        ) : (
+          <ConversationsList
+            conversations={convos}
+            businessId={businessId}
+            selectedConversationId={selected?.conversationId}
+            onSelect={handleSelect}
+            isBusiness
+          />
+        )}
         {error && <p className={styles.error}>{error}</p>}
       </aside>
 
       <section className={styles.chatArea}>
-        {selected
-          ? <BusinessChatTab
-              conversationId={selected.conversationId}
-              businessId={businessId}
-              customerId={selected.partnerId}
-              businessName={user?.businessName || user?.name}
-              socket={socketRef.current}
-              messages={messages}
-              setMessages={setMessages}
-            />
-          : <div className={styles.emptyMessage}>
-              בחר שיחה כדי לראות הודעות
-            </div>
-        }
+        {selected ? (
+          <BusinessChatTab
+            conversationId={selected.conversationId}
+            businessId={businessId}
+            customerId={selected.partnerId}
+            businessName={user?.businessName || user?.name}
+            socket={socketRef.current}
+            messages={messages}
+            setMessages={setMessages}
+          />
+        ) : (
+          <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+        )}
       </section>
     </div>
   );
