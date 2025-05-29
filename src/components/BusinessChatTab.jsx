@@ -418,12 +418,25 @@ export default function BusinessChatTab({
 
         {messages.map((m, i) =>
   m.system ? (
-    <div key={m._id || m.timestamp || `system-${i}`} className="system-message">
-      {m.text}
-    </div>
-  ) : (
-    <div
-      key={m._id + (m.sending ? "-sending" : "")}
+  <div
+    key={
+      m._id
+        ? m._id.toString()
+        : m.timestamp
+        ? m.timestamp.toString()
+        : `system-${i}`
+    }
+    className="system-message"
+  >
+    {m.text}
+  </div>
+) : (
+  <div
+    key={
+      m._id
+        ? m._id.toString() + (m.sending ? "-sending" : "")
+        : `msg-${i}`
+    }
               className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
             >
               {m.fileUrl ? (
