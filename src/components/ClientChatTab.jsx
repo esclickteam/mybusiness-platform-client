@@ -138,20 +138,20 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   };
 
   const sendMessage = () => {
-  if (!input.trim() || sending || !socket) return;
-  setSending(true);
-  setError("");
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: userId, to: businessId, role: "client", text: input.trim() },
-    (ack) => {
-      setSending(false);
-      if (ack.ok) setInput("");
-      else setError("שגיאה בשליחת ההודעה");
-    }
-  );
-};
-
+    if (!input.trim() || sending || !socket) return;
+    setSending(true);
+    setError("");
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: userId, to: businessId, role: "client", text: input.trim() },
+      null,
+      (ack) => {
+        setSending(false);
+        if (ack.ok) setInput("");
+        else setError("שגיאה בשליחת ההודעה");
+      }
+    );
+  };
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
@@ -191,64 +191,62 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   };
 
   const handleSendRecording = async () => {
-  if (!recordedBlob || !socket) return;
-  setSending(true);
-  try {
-    const arrayBuffer = await recordedBlob.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    socket.emit(
-      "sendAudio",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        fileType: recordedBlob.type,
-        duration: timer,
-      },
-      buffer,
-      (ack) => {
-        setSending(false);
-        setRecordedBlob(null);
-        setTimer(0);
-        if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
-      }
-    );
-  } catch (e) {
-    setSending(false);
-    setError("שגיאה בהכנת הקובץ למשלוח");
-  }
-};
-
+    if (!recordedBlob || !socket) return;
+    setSending(true);
+    try {
+      const arrayBuffer = await recordedBlob.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          file: { name: `voice.webm`, type: recordedBlob.type, duration: timer },
+        },
+        buffer,
+        (ack) => {
+          setSending(false);
+          setRecordedBlob(null);
+          setTimer(0);
+          if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
+        }
+      );
+    } catch (e) {
+      setSending(false);
+      setError("שגיאה בהכנת הקובץ למשלוח");
+    }
+  };
 
   const handleFileChange = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file || !socket) return;
-  setSending(true);
-  try {
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    socket.emit(
-      "sendFile",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        fileType: file.type,
-        fileName: file.name,
-      },
-      buffer,
-      (ack) => {
-        setSending(false);
-        if (!ack.ok) setError("שגיאה בשליחת הקובץ");
-      }
-    );
-  } catch (e) {
-    setSending(false);
-    setError("שגיאה בהכנת הקובץ למשלוח");
-  }
-  e.target.value = null;
-};
-
+    const file = e.target.files?.[0];
+    if (!file || !socket) return;
+    setSending(true);
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          file: { name: file.name, type: file.type },
+        },
+        buffer,
+        (ack) => {
+          setSending(false);
+          if (!ack.ok) setError("שגיאה בשליחת הקובץ");
+        }
+      );
+    } catch (e) {
+      setSending(false);
+      setError("שגיאה בהכנת הקובץ למשלוח");
+    }
+    e.target.value = null;
+  };
 
   const handleAttach = () => fileInputRef.current?.click();
 
