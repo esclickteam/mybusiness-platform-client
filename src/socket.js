@@ -4,9 +4,9 @@ import { getAccessToken, getRefreshToken, getBusinessId, ensureValidToken } from
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";  // עדכון משתנה סביבה
 
 export function createSocket() {
-  // קבלת הטוקנים ומזהה העסק
+  // קבלת הטוקן, ה-refreshToken ומזהה העסק
   const token = ensureValidToken();  // אם הטוקן פג תוקף, נשלח את ה-refreshToken
-  const refreshToken = getRefreshToken();
+  const refreshToken = getRefreshToken();  // טוקן רענון
   const businessId = getBusinessId();
 
   // אם אחד מהערכים חסר או אם הטוקן פג תוקף, נבצע התחברות מחדש
