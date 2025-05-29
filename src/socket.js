@@ -1,3 +1,4 @@
+// src/utils/createSocket.js
 import { io } from "socket.io-client";
 import { getValidAccessToken, getBusinessId } from "./utils/authHelpers";
 
@@ -29,8 +30,7 @@ export async function createSocket() {
 
   const socket = io(SOCKET_URL, {
     path: "/socket.io",
-    transports: ["websocket"],
-    // withCredentials: true, // אפשר להסיר אם אין צורך בקוקיז
+    transports: ["polling", "websocket"],  // ← updated to include polling as fallback
     auth: {
       token,
       role: "business",
