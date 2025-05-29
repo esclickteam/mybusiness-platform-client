@@ -220,22 +220,23 @@ export default function BusinessChatTab({
   setSending(true);
 
   const tempId = uuidv4();
-  const optimisticMsg = {
-    _id: tempId,
-    conversationId,
-    from: businessId,
-    to: customerId,
-    text,
-    timestamp: new Date().toISOString(),
-    sending: true,
-  };
+const optimisticMsg = {
+  _id: tempId,
+  conversationId,
+  from: businessId,
+  to: customerId,
+  text,
+  timestamp: new Date().toISOString(),
+  sending: true,
+  tempId, // הוסף גם כאן (לא חובה, אבל שיהיה אחיד)
+};
 
-  setMessages((prev) => [...prev, optimisticMsg]);
-  setInput("");
+setMessages((prev) => [...prev, optimisticMsg]);
+setInput("");
 
   socket.emit(
     "sendMessage",
-    { conversationId, from: businessId, to: customerId, text },
+    { conversationId, from: businessId, to: customerId, text, tempId },
     (ack) => {
       console.log("Acknowledgment received:", ack);
       setSending(false);
@@ -264,56 +265,58 @@ export default function BusinessChatTab({
 
   // שליחת קובץ עם שליחה אופטימיסטית
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file || !socket) return;
+  const file = e.target.files[0];
+  if (!file || !socket) return;
 
-    const tempId = uuidv4();
-    const optimisticMsg = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: URL.createObjectURL(file),
-      fileName: file.name,
-      fileType: file.type,
-      timestamp: new Date().toISOString(),
-      sending: true,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit(
-        "sendFile",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          fileType: file.type,
-          buffer: reader.result,
-          fileName: file.name,
-        },
-        (ack) => {
-          if (ack.ok) {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m._id === tempId ? { ...m, sending: false } : m
-              )
-            );
-          } else {
-            console.error("sendFile error:", ack.error);
-            setMessages((prev) =>
-              prev.map((m) =>
-                m._id === tempId ? { ...m, sending: false, failed: true } : m
-              )
-            );
-          }
-        }
-      );
-    };
-    reader.readAsArrayBuffer(file);
+  const tempId = uuidv4();
+  const optimisticMsg = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    fileUrl: URL.createObjectURL(file),
+    fileName: file.name,
+    fileType: file.type,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId, // 👈
   };
+
+  setMessages((prev) => [...prev, optimisticMsg]);
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    socket.emit(
+      "sendFile",
+      {
+        conversationId,
+        from: businessId,
+        to: customerId,
+        fileType: file.type,
+        buffer: reader.result,
+        fileName: file.name,
+        tempId, // 👈 שלח גם לשרת!
+      },
+      (ack) => {
+        if (ack.ok) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...ack.message, sending: false } : m
+            )
+          );
+        } else {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...m, sending: false, failed: true } : m
+            )
+          );
+        }
+      }
+    );
+  };
+  reader.readAsArrayBuffer(file);
+};
+
 
   // קבלת פורמט מועדף להקלטה
   const getSupportedMimeType = () => {
@@ -363,57 +366,59 @@ export default function BusinessChatTab({
 
   // שליחת הקלטה עם שליחה אופטימיסטית
   const handleSendRecording = () => {
-    if (!recordedBlob || !socket) return;
+  if (!recordedBlob || !socket) return;
 
-    const tempId = uuidv4();
-    const optimisticMsg = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: URL.createObjectURL(recordedBlob),
-      fileName: `audio.${recordedBlob.type.split("/")[1]}`,
-      fileType: recordedBlob.type,
-      fileDuration: timer,
-      timestamp: new Date().toISOString(),
-      sending: true,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setRecordedBlob(null);
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit(
-        "sendAudio",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          buffer: reader.result,
-          fileType: recordedBlob.type,
-          duration: timer,
-        },
-        (ack) => {
-          if (ack.ok) {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m._id === tempId ? { ...m, sending: false } : m
-              )
-            );
-          } else {
-            console.error("sendAudio error:", ack.error);
-            setMessages((prev) =>
-              prev.map((m) =>
-                m._id === tempId ? { ...m, sending: false, failed: true } : m
-              )
-            );
-          }
-        }
-      );
-    };
-    reader.readAsArrayBuffer(recordedBlob);
+  const tempId = uuidv4();
+  const optimisticMsg = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    fileUrl: URL.createObjectURL(recordedBlob),
+    fileName: `audio.${recordedBlob.type.split("/")[1]}`,
+    fileType: recordedBlob.type,
+    fileDuration: timer,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId, // 👈
   };
+
+  setMessages((prev) => [...prev, optimisticMsg]);
+  setRecordedBlob(null);
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    socket.emit(
+      "sendAudio",
+      {
+        conversationId,
+        from: businessId,
+        to: customerId,
+        buffer: reader.result,
+        fileType: recordedBlob.type,
+        duration: timer,
+        tempId, // 👈 שלח גם לשרת!
+      },
+      (ack) => {
+        if (ack.ok) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...ack.message, sending: false } : m
+            )
+          );
+        } else {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...m, sending: false, failed: true } : m
+            )
+          );
+        }
+      }
+    );
+  };
+  reader.readAsArrayBuffer(recordedBlob);
+};
+
 
   return (
     <div className="chat-container business">
