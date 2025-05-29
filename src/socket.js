@@ -1,15 +1,15 @@
 import { io } from "socket.io-client";
-import { getAccessToken, getRefreshToken, getBusinessId } from "./utils/authHelpers";
+import { getAccessToken, getRefreshToken, getBusinessId, ensureValidToken } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";  // עדכון משתנה סביבה
 
 export function createSocket() {
   // קבלת הטוקנים ומזהה העסק
-  const token = getAccessToken();
-  const refreshToken = getRefreshToken();  // קבל את ה־refreshToken
+  const token = ensureValidToken();  // אם הטוקן פג תוקף, נשלח את ה-refreshToken
+  const refreshToken = getRefreshToken();
   const businessId = getBusinessId();
 
-  // בדוק אם אחד מהערכים חסר
+  // אם אחד מהערכים חסר או אם הטוקן פג תוקף, נבצע התחברות מחדש
   if (!token || !refreshToken || !businessId) {
     console.error("Missing token, refreshToken, or businessId");
     alert("Missing required authentication data. Please log in again.");
@@ -19,6 +19,7 @@ export function createSocket() {
 
   // יצירת החיבור לסוקט
   console.log("🔗 Creating socket connection...");
+
   const socket = io(SOCKET_URL, {
     path: "/socket.io",
     transports: ["websocket"],
@@ -45,13 +46,19 @@ export function createSocket() {
   socket.on("tokenExpired", async () => {
     console.log("🚨 Token expired, attempting to refresh...");
 
-    try {
-      console.log("🔄 Refreshing token...");
+    const newRefreshToken = getRefreshToken();  // קבלת ה־refreshToken ממקום מאובטח
 
+    if (!newRefreshToken) {
+      alert("Session expired. Please log in again.");
+      window.location.href = "/login"; // הפניית התחברות מחדש
+      return;
+    }
+
+    try {
       const response = await fetch(`${SOCKET_URL}/auth/refresh-token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),  // שליחת ה-refreshToken
+        body: JSON.stringify({ refreshToken: newRefreshToken }),  // שליחת ה-refreshToken
       });
 
       if (!response.ok) {
@@ -71,14 +78,13 @@ export function createSocket() {
         console.log("✅ Access token refreshed and reconnected");
       } else {
         console.error("Failed to refresh token: No access token returned");
-        // הפניית המשתמש להתחברות מחדש אם רענון הטוקן נכשל
         alert("Session expired. Please log in again.");
-        window.location.href = "/login";
+        window.location.href = "/login";  // הפניית התחברות מחדש
       }
     } catch (error) {
       console.error("Error refreshing token:", error);
       alert("An error occurred while refreshing the token. Please try again.");
-      window.location.href = "/login";
+      window.location.href = "/login";  // הפניית התחברות מחדש
     }
   });
 

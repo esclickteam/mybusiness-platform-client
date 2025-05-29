@@ -1,8 +1,7 @@
-// src/utils/tokenHelpers.js
-import API from "../api";
+import jwtDecode from "jwt-decode";
 
 /**
- * בודק אם הטוקן פג תוקף
+ * בודק אם ה־JWT פג תוקף
  */
 export function isTokenExpired(token) {
   if (!token) return true;
@@ -18,7 +17,14 @@ export function isTokenExpired(token) {
  * מביא את ה־accessToken מה־localStorage
  */
 export function getAccessToken() {
-  return localStorage.getItem("token"); // רק הטוקן החדש נשמר ב־localStorage
+  return localStorage.getItem("token");
+}
+
+/**
+ * מביא את ה־refreshToken מה־localStorage
+ */
+export function getRefreshToken() {
+  return localStorage.getItem("refreshToken");
 }
 
 /**
@@ -34,8 +40,16 @@ export function getBusinessId() {
 }
 
 /**
- * לא מבצע רענון אוטומטי יותר.
+ * מבצע בדיקה אם הטוקן בתוקף, אם לא — מחזיר את ה-refreshToken.
  */
 export function ensureValidToken() {
-  return getAccessToken(); // מחזיר את ה־accessToken בלבד
+  const token = getAccessToken();
+  if (isTokenExpired(token)) {
+    const refreshToken = getRefreshToken();
+    if (refreshToken) {
+      return refreshToken;
+    }
+    return null;
+  }
+  return token;
 }

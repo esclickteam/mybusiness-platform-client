@@ -1,7 +1,7 @@
 import jwtDecode from "jwt-decode";
 
 /**
- * בודק האם ה־JWT פג תוקף
+ * בודק אם ה־JWT פג תוקף
  */
 export function isTokenExpired(token) {
   if (!token) return true;
@@ -17,7 +17,6 @@ export function isTokenExpired(token) {
  * מביא את ה־accessToken מה־localStorage
  */
 export function getAccessToken() {
-  // כעת אנחנו שומרים את הטוקן תחת 'token'
   return localStorage.getItem("token");
 }
 
@@ -25,7 +24,6 @@ export function getAccessToken() {
  * מביא את ה־refreshToken מה־localStorage
  */
 export function getRefreshToken() {
-  // כעת אנחנו שומרים את ה־refreshToken תחת 'refreshToken'
   return localStorage.getItem("refreshToken");
 }
 
@@ -42,9 +40,17 @@ export function getBusinessId() {
 }
 
 /**
- * מחזיר את ה־accessToken הנוכחי.
- * אין יותר רענון אוטומטי כאן — ה־Axios interceptor מטפל ברענון.
+ * מחזיר את ה־accessToken הנוכחי אם הוא תקין, או את ה־refreshToken אם לא.
+ * זה מחזיר את ה־refreshToken אם ה־accessToken פג תוקף.
  */
 export function ensureValidToken() {
-  return getAccessToken();
+  const token = getAccessToken();
+  if (isTokenExpired(token)) {
+    const refreshToken = getRefreshToken();
+    if (refreshToken) {
+      return refreshToken;  // אם הטוקן פג תוקף, תחזיר את ה-refreshToken
+    }
+    return null;  // אם לא נמצא טוקן תקף, תחזיר null
+  }
+  return token;  // אם הטוקן תקין, תחזיר את ה-accessToken
 }
