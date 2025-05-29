@@ -10,7 +10,7 @@ const BASE_URL = isProd
 const API = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     Accept: "application/json",
   },
