@@ -142,12 +142,17 @@ export default function BusinessChatTab({
   });
 
   const handleNew = (msg) => {
-    if (msg.conversationId === conversationId) {
-      setMessages((prev) =>
-        prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
-      );
-    }
-  };
+  if (msg.conversationId === conversationId) {
+    setMessages((prev) => {
+      // אם כבר קיימת הודעה עם אותו _id, לא נוסיף שנית
+      if (prev.some((m) => m._id === msg._id)) {
+        return prev;
+      }
+      return [...prev, msg];
+    });
+  }
+};
+
 
   const handleTyping = ({ from }) => {
     if (from === customerId) {
