@@ -9,18 +9,24 @@ const BASE_URL = isProd
 // יצירת instance של Axios
 const API = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,        // שולח את ה־HttpOnly cookie אוטומטית אם קיים
-  timeout: 5000,                // timeout לאחר 5 שניות
+  withCredentials: true,
+  timeout: 5000,
   headers: {
     Accept: "application/json",
   },
 });
 
-// הגדרת טוקן קיים מראש
-const token = localStorage.getItem("token");
-if (token) {
-  API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-}
+// הגדרת טוקן קיים מראש (כדאי לאפשר גם במידול כעת, לא רק בהתחלה)
+const setAuthToken = (token) => {
+  if (token) {
+    API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete API.defaults.headers.common["Authorization"];
+  }
+};
+
+// הגדר טוקן קיים (אם יש)
+setAuthToken(localStorage.getItem("token"));
 
 // interceptor לבקשות שמוודא Authorization header מעודכן
 API.interceptors.request.use(
@@ -28,6 +34,8 @@ API.interceptors.request.use(
     const token = localStorage.getItem("token");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
+    } else {
+      delete config.headers["Authorization"];
     }
     if (config.data && !(config.data instanceof FormData)) {
       config.headers["Content-Type"] = "application/json";
@@ -54,30 +62,25 @@ API.interceptors.response.use(
       return Promise.reject(new Error("שגיאת רשת"));
     }
 
-    // במקרה של 401 (לא עבור /auth/me) – נסה רענון טוקן
+    // טיפול ב־401 (למעט בקשת auth/me) – ניסיון רענון טוקן
     if (response.status === 401 && !config.url.endsWith("/auth/me")) {
       try {
         const refreshToken = localStorage.getItem("refreshToken");
         if (refreshToken) {
           const refreshResponse = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken });
           if (refreshResponse.data.accessToken) {
-            // עדכון הטוקן החדש ב־localStorage
             localStorage.setItem("token", refreshResponse.data.accessToken);
-            // עדכון ה־Axios
-            API.defaults.headers.common["Authorization"] = `Bearer ${refreshResponse.data.accessToken}`;
+            setAuthToken(refreshResponse.data.accessToken);
             config.headers["Authorization"] = `Bearer ${refreshResponse.data.accessToken}`;
-            // נסה שנית את הבקשה המקורית
             return API(config);
           }
         }
       } catch (err) {
         console.error("Error refreshing token:", err);
-        // ניווט ללוגין אם לא הצלחנו לחדש את הטוקן
         window.location.replace("/login");
       }
     }
 
-    // טיפול בשגיאות אחרות והצגת הודעות מתאימות
     const contentType = response.headers["content-type"] || "";
     let message;
     if (!contentType.includes("application/json")) {
