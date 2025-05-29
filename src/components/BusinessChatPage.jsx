@@ -18,6 +18,12 @@ export default function BusinessChatPage() {
   const [error, setError]       = useState("");
   const socketRef               = useRef(null);
   const hasJoinedRef            = useRef(false);
+  const selectedRef             = useRef(selected);
+
+  // Keep latest selected in ref
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
 
   // 1. Initialize & connect socket
   useEffect(() => {
@@ -28,7 +34,6 @@ export default function BusinessChatPage() {
       if (!sock) return;
       socketRef.current = sock;
       sock.connect();
-
       sock.on("connect_error", err => setError("Socket error: " + err.message));
     })();
 
@@ -59,28 +64,31 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // 3. Listen for new messages and update sidebar order
+  // 3. Listen for new messages only once and update sidebar + history
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const handler = msg => {
+      // update sidebar order
       setConvos(prev => {
         const idx = prev.findIndex(c => String(c._id || c.conversationId) === msg.conversationId);
         if (idx === -1) return prev;
         const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
-      if (msg.conversationId === selected?.conversationId) {
+      // update history for currently open conversation
+      const sel = selectedRef.current;
+      if (msg.conversationId === sel?.conversationId) {
         setMessages(prev => prev.some(m => m._id === msg._id) ? prev : [...prev, msg]);
       }
     };
 
     sock.on("newMessage", handler);
     return () => sock.off("newMessage", handler);
-  }, [selected]);
+  }, []);
 
-  // 4. Join/leave conversation rooms
+  // 4. Join/leave rooms on selection change
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock?.connected || !selected?.conversationId) return;
