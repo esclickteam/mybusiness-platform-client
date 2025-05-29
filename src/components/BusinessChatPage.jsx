@@ -20,7 +20,7 @@ export default function BusinessChatPage() {
   const hasJoinedRef            = useRef(false);
   const selectedRef             = useRef(selected);
 
-  // Keep latest selected in ref
+  // keep latest selected in ref
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
@@ -50,21 +50,20 @@ export default function BusinessChatPage() {
     API.get("/conversations", { params: { businessId } })
       .then(({ data }) => {
         setConvos(data);
-        if (data.length) {
+        if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
           const partnerId = first.partnerId || first.participants.find(p => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
       })
-      .catch(err => {
-        console.error("Load conversations error:", err);
+      .catch(() => {
         setError("שגיאה בטעינת שיחות");
       })
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // 3. Listen for new messages only once and update sidebar + history
+  // 3. Listen once for incoming messages
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
@@ -102,45 +101,45 @@ export default function BusinessChatPage() {
     hasJoinedRef.current = true;
   }, [selected]);
 
-  // Handle selection change
+  // 5. Handle selection change
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
     setMessages([]);
   };
 
-  if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
+  if (!initialized) {
+    return <p className={styles.loading}>טוען מידע…</p>;
+  }
 
   return (
     <div className={styles.chatContainer}>
       <aside className={styles.sidebarInner}>
-        {loading ? (
-          <p className={styles.loading}>טוען שיחות…</p>
-        ) : (
-          <ConversationsList
-            conversations={convos}
-            businessId={businessId}
-            selectedConversationId={selected?.conversationId}
-            onSelect={handleSelect}
-            isBusiness
-          />
-        )}
+        {loading
+          ? <p className={styles.loading}>טוען שיחות…</p>
+          : <ConversationsList
+              conversations={convos}
+              businessId={businessId}
+              selectedConversationId={selected?.conversationId}
+              onSelect={handleSelect}
+              isBusiness
+            />
+        }
         {error && <p className={styles.error}>{error}</p>}
       </aside>
 
       <section className={styles.chatArea}>
-        {selected ? (
-          <BusinessChatTab
-            conversationId={selected.conversationId}
-            businessId={businessId}
-            customerId={selected.partnerId}
-            businessName={user?.businessName || user?.name}
-            socket={socketRef.current}
-            messages={messages}
-            setMessages={setMessages}
-          />
-        ) : (
-          <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
-        )}
+        {selected
+          ? <BusinessChatTab
+              conversationId={selected.conversationId}
+              businessId={businessId}
+              customerId={selected.partnerId}
+              businessName={user?.businessName || user?.name}
+              socket={socketRef.current}
+              messages={messages}
+              setMessages={setMessages}
+            />
+          : <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
+        }
       </section>
     </div>
   );
