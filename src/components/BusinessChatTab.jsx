@@ -200,6 +200,8 @@ export default function BusinessChatTab({
 
   // שליחת הודעת טקסט אופטימיסטית עם uuid
   const sendMessage = () => {
+  if (sending) return; // חסימת שליחה כפולה
+
   const text = input.trim();
   console.log("Sending message:", text);
   if (!text || !socket) {
@@ -415,13 +417,13 @@ export default function BusinessChatTab({
         )}
 
         {messages.map((m, i) =>
-          m.system ? (
-            <div key={i} className="system-message">
-              {m.text}
-            </div>
-          ) : (
-            <div
-              key={m._id}
+  m.system ? (
+    <div key={m._id || m.timestamp || i} className="system-message">
+      {m.text}
+    </div>
+  ) : (
+    <div
+      key={m._id}
               className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
             >
               {m.fileUrl ? (
