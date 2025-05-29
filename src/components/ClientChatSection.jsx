@@ -24,16 +24,25 @@ export default function ClientChatSection() {
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
 
+    console.log("Creating socket with:", { token, businessId });
+
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       transports: ["polling", "websocket"],
-      auth: { token, role: "chat" },
+      auth: { token, role: "chat", businessId },
       withCredentials: true,
     });
 
+    socketRef.current.on("connect_error", (err) => {
+      console.error("Socket connect_error:", err.message);
+      setError("שגיאה בחיבור לסוקט: " + err.message);
+    });
+
     return () => {
-      socketRef.current.disconnect();
-      socketRef.current = null;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [initialized, userId, businessId]);
 
