@@ -11,16 +11,16 @@ export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
-  const [convos, setConvos]     = useState([]);
+  const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
-  const socketRef               = useRef(null);
-  const hasJoinedRef            = useRef(false);
-  const selectedRef             = useRef(selected);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const socketRef = useRef(null);
+  const prevSelectedRef = useRef(null);
+  const selectedRef = useRef(selected);
 
-  // keep latest selected in ref
+  // Keep latest selected in ref for message handler
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
@@ -39,7 +39,7 @@ export default function BusinessChatPage() {
 
     return () => {
       socketRef.current?.disconnect();
-      hasJoinedRef.current = false;
+      prevSelectedRef.current = null;
     };
   }, [initialized, businessId]);
 
@@ -63,7 +63,7 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // 3. Listen once for incoming messages
+  // 3. Listen for incoming messages
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
@@ -87,24 +87,40 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, []);
 
-  // 4. Join/leave rooms on selection change
+  // 4. Join/leave rooms & load messages on selection change
   useEffect(() => {
     const sock = socketRef.current;
-    if (!sock?.connected || !selected?.conversationId) return;
-
-    if (hasJoinedRef.current) {
-      sock.emit("leaveConversation", selected.conversationId);
+    if (!sock || !sock.connected || !selected?.conversationId) {
+      setMessages([]);
+      return;
     }
+
+    // Leave previous conversation room if changed
+    if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
+      sock.emit("leaveConversation", prevSelectedRef.current);
+    }
+
+    // Join current conversation room
     sock.emit("joinConversation", selected.conversationId, ack => {
       if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
-    hasJoinedRef.current = true;
+
+    // Load message history
+    sock.emit("getHistory", { conversationId: selected.conversationId }, res => {
+      if (res.ok) {
+        setMessages(res.messages || []);
+      } else {
+        setMessages([]);
+        setError("שגיאה בטעינת ההודעות");
+      }
+    });
+
+    prevSelectedRef.current = selected.conversationId;
   }, [selected]);
 
-  // 5. Handle selection change
+  // 5. Handle selection change from conversation list
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
-    setMessages([]);
   };
 
   if (!initialized) {
