@@ -15,11 +15,11 @@ export default function ConversationsList({
   // מסננים כפילויות לפי partnerId
   const uniqueConvs = conversations.filter((conv, idx, arr) => {
     const parts = Array.isArray(conv.participants) ? conv.participants : [];
-    const partnerId = parts.find(p => p !== businessId) || conv.partnerId || "";
+    const partnerId = parts.find((p) => p !== businessId) || conv.partnerId || "";
     return (
-      arr.findIndex(c => {
+      arr.findIndex((c) => {
         const cParts = Array.isArray(c.participants) ? c.participants : [];
-        const pid = cParts.find(p => p !== businessId) || c.partnerId || "";
+        const pid = cParts.find((p) => p !== businessId) || c.partnerId || "";
         return pid === partnerId;
       }) === idx
     );
@@ -33,12 +33,24 @@ export default function ConversationsList({
         </div>
         {uniqueConvs.map((conv, idx) => {
           const parts = Array.isArray(conv.participants) ? conv.participants : [];
-          const partnerId = parts.find(p => p !== businessId) || conv.partnerId || "";
-          const convoId = conv.conversationId || conv._id || conv.id || `conv-${idx}`;
+          const partnerId = parts.find((p) => p !== businessId) || conv.partnerId || "";
+          const convoId =
+            conv.conversationId ||
+            (conv._id ? conv._id.toString() : "") ||
+            conv.id ||
+            `conv-${idx}`;
 
           const displayName = isBusiness
             ? conv.customerName || conv.partnerName || partnerId
             : conv.businessName || conv.partnerName || partnerId;
+
+          // הוספת לוג לזיהוי תצוגה
+          console.log("Conversation display:", {
+            convoId,
+            displayName,
+            partnerId,
+            isActive: convoId === selectedConversationId,
+          });
 
           const isActive = convoId === selectedConversationId;
 
