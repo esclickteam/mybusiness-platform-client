@@ -144,7 +144,13 @@ export default function BusinessChatTab({
   const handleNew = (msg) => {
   if (msg.conversationId === conversationId) {
     setMessages((prev) => {
-      // אם כבר קיימת הודעה עם אותו _id, לא נוסיף שנית
+      // אם tempId תואם – החלף הודעה אופטימית בזו של השרת
+      if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
+        return prev.map((m) =>
+          m._id === msg.tempId ? { ...msg, sending: false } : m
+        );
+      }
+      // אם כבר יש הודעה עם אותו _id – אל תוסיף
       if (prev.some((m) => m._id === msg._id)) {
         return prev;
       }
@@ -152,6 +158,7 @@ export default function BusinessChatTab({
     });
   }
 };
+
 
 
   const handleTyping = ({ from }) => {
