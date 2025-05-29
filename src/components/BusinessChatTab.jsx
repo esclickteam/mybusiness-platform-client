@@ -131,19 +131,13 @@ export default function BusinessChatTab({
     });
 
     const handleNew = (msg) => {
-  console.log("Received newMessage event:", msg);
-  if (msg.conversationId === conversationId) {
-    setMessages((prev) =>
-      prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
-    );
-  }
-};
-
-socket.on("newMessage", handleNew);
-
-console.log("Sending message:", { conversationId, from: businessId, to: customerId, text });
-
-
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) =>
+          prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
+        );
+      }
+    };
+    socket.on("newMessage", handleNew);
 
     const handleTyping = ({ from }) => {
       if (from === customerId) {
