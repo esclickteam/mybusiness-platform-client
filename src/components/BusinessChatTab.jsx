@@ -420,12 +420,10 @@ export default function BusinessChatTab({
   m.system ? (
   <div
     key={
-      m.clientId
-        ? `system-${m.clientId}`  // ייחודי לאופטימיות
-        : m._id
-        ? `system-${m._id.toString()}`
+      m._id
+        ? m._id.toString()
         : m.timestamp
-        ? `system-${m.timestamp.toString()}`
+        ? m.timestamp.toString()
         : `system-${i}`
     }
     className="system-message"
@@ -435,12 +433,8 @@ export default function BusinessChatTab({
 ) : (
   <div
     key={
-      m.clientId
-        ? m.clientId  // עבור אופטימיות - תמיד ייחודי
-        : m._id
-        ? m._id.toString()
-        : m.timestamp
-        ? `msg-${m.timestamp.toString()}`
+      m._id
+        ? m._id.toString() + (m.sending ? "-sending" : "")
         : `msg-${i}`
     }
               className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
