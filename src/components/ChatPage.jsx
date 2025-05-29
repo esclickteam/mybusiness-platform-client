@@ -33,6 +33,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
 
       // טעינת שיחות ראשונית
       sock.emit("getConversations", { userId }, (res) => {
+        console.log("getConversations response:", res);
         if (!isMounted) return;
         if (res.ok) {
           const convs = Array.isArray(res.conversations) ? res.conversations : [];
@@ -40,10 +41,8 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
           if (!selected && convs.length > 0) {
             const first = convs[0];
             const convoId = first._id || first.conversationId;
-            const partnerId =
-              (first.participants || []).find((pid) => pid !== userId) ||
-              first.customer?._id ||
-              null;
+            // תיקון: מחפשים partnerId רק בתוך participants
+            const partnerId = (first.participants || []).find((pid) => pid !== userId) || null;
             setSelected({ conversationId: convoId, partnerId });
           }
         } else {

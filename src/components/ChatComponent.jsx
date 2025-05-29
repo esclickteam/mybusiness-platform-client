@@ -26,14 +26,12 @@ export default function ChatComponent({
       const sock = await createSocket();
       if (!sock) return; // אין טוקן תקין, כבר הפניית login
 
-      // הוסר קריאה כפולה ל-connect אם היא כבר בתוך createSocket
-      // sock.connect();
-
       socketRef.current = sock;
 
       if (isBusiness) {
         setLoadingConvs(true);
         sock.emit("getConversations", { userId }, (res) => {
+          console.log("getConversations response:", res);  
           setLoadingConvs(false);
           if (res.ok) {
             const convs = Array.isArray(res.conversations) ? res.conversations : [];
@@ -41,10 +39,9 @@ export default function ChatComponent({
             if (!conversationId && convs.length > 0) {
               const first = convs[0];
               const convoId = first._id ?? first.conversationId;
+              // כאן התיקון: מחפשים custId במשתתפים בלבד, כי אין customer._id
               const custId =
-                first.customer?._id ??
-                first.participants.find((pid) => pid !== userId) ??
-                null;
+                first.participants.find((pid) => pid !== userId) ?? null;
               setConversationId(convoId);
               setCurrentCustomerId(custId);
             }
@@ -81,8 +78,8 @@ export default function ChatComponent({
         (c) => (c._id ?? c.conversationId) === conversationId
       );
       if (conv) {
-        const custId =
-          conv.customer?._id ?? conv.participants.find((pid) => pid !== userId);
+        // תיקון דומה גם כאן
+        const custId = conv.participants.find((pid) => pid !== userId) ?? null;
         setCurrentCustomerId(custId);
       }
     }
