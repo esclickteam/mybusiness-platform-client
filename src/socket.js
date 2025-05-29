@@ -6,7 +6,13 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il
 export async function createSocket() {
   // קבלת AccessToken תקין ומזהה העסק
   const token = await getValidAccessToken();
-  const businessId = getBusinessId();
+
+  // ודא ש-businessId הוא מחרוזת פשוטה
+  const rawBusinessId = getBusinessId();
+  const businessId =
+    typeof rawBusinessId === "string"
+      ? rawBusinessId
+      : rawBusinessId?._id?.toString() || rawBusinessId?.toString();
 
   console.log("🔍 Checking authentication data...");
   console.log("Token:", token);
