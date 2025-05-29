@@ -1,10 +1,10 @@
 import { io } from "socket.io-client";
-import { getAccessToken, getRefreshToken, getBusinessId, ensureValidToken } from "./utils/authHelpers";
+import { ensureValidToken, getRefreshToken, getBusinessId } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";  // עדכון משתנה סביבה
 
 export function createSocket() {
-  // קבלת הטוקן, ה-refreshToken ומזהה העסק
+  // קבלת הטוקן ומזהה העסק
   const token = ensureValidToken();  // אם הטוקן פג תוקף, נשלח את ה-refreshToken
   const refreshToken = getRefreshToken();  // טוקן רענון
   const businessId = getBusinessId();
@@ -33,7 +33,7 @@ export function createSocket() {
     autoConnect: false,  // לא להתחבר אוטומטית
   });
 
-  // חיבור מחדש אם התוקן תקף
+  // חיבור מחדש אם הטוקן תקף
   socket.on("connect", () => {
     console.log("✅ Connected to WebSocket server:", socket.id);
   });
