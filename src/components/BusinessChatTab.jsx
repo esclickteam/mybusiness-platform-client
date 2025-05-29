@@ -175,46 +175,66 @@ export default function BusinessChatTab({
 
   // שליחת הודעת טקסט אופטימיסטית עם uuid
   const sendMessage = () => {
-    const text = input.trim();
-    if (!text || !socket) return;
-    setSending(true);
+  const text = input.trim();
+  if (!text) {
+    console.warn("Cannot send empty message");
+    return;
+  }
+  if (!socket) {
+    console.error("Socket is undefined");
+    return;
+  }
+  if (!socket.connected) {
+    console.error("Socket is not connected");
+    return;
+  }
 
-    const tempId = uuidv4();
-    const optimisticMsg = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      text,
-      timestamp: new Date().toISOString(),
-      sending: true,
-    };
+  console.log("Sending message:", {
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+  });
 
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setInput("");
+  setSending(true);
 
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: businessId, to: customerId, text },
-      (ack) => {
-        setSending(false);
-        if (ack.ok) {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m._id === tempId ? { ...ack.message, sending: false } : m
-            )
-          );
-        } else {
-          console.error("sendMessage error:", ack.error);
-          setMessages((prev) =>
-            prev.map((m) =>
-              m._id === tempId ? { ...m, sending: false, failed: true } : m
-            )
-          );
-        }
-      }
-    );
+  const tempId = uuidv4();
+  const optimisticMsg = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+    timestamp: new Date().toISOString(),
+    sending: true,
   };
+
+  setMessages((prev) => [...prev, optimisticMsg]);
+  setInput("");
+
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: businessId, to: customerId, text },
+    (ack) => {
+      setSending(false);
+      if (ack.ok) {
+        console.log("Message sent successfully. Ack received:", ack);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m._id === tempId ? { ...ack.message, sending: false } : m
+          )
+        );
+      } else {
+        console.error("sendMessage error from server:", ack.error);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m._id === tempId ? { ...m, sending: false, failed: true } : m
+          )
+        );
+      }
+    }
+  );
+};
 
   // פתיחת בחירת קובץ
   const handleAttach = () => fileInputRef.current.click();
