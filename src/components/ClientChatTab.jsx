@@ -152,7 +152,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   socket.emit(
     "sendMessage",
     { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
-    null,
     (ack) => {
       console.log("sendMessage ack:", ack);
       setSending(false);
