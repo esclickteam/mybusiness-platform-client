@@ -24,7 +24,7 @@ export default function BusinessChatPage() {
     if (!initialized || !businessId) return;
 
     (async () => {
-      const sock = await createSocket();  // המתנה ליצירת socket תקין
+      const sock = await createSocket();  // המתנה ליצירת socket תקין עם טוקן
       if (!sock) return;                   // אם לא קיבלנו socket (למשל אין טוקן תקין)
       socketRef.current = sock;
       sock.connect();
@@ -40,7 +40,6 @@ export default function BusinessChatPage() {
     };
   }, [initialized, businessId]);
 
-
   // 2. אחרי חיבור הסוקט – שליפת רשימת השיחות (פעם אחת בלבד)
   useEffect(() => {
     const sock = socketRef.current;
@@ -55,7 +54,7 @@ export default function BusinessChatPage() {
             setConvos(conversations);
             if (conversations.length > 0) {
               const first = conversations[0];
-              const convoId   = first._id || first.conversationId;
+              const convoId = first._id || first.conversationId;
               const partnerId = first.partnerId || first.participants.find(p => p !== businessId);
               setSelected({ conversationId: convoId, partnerId });
             }
@@ -113,15 +112,20 @@ export default function BusinessChatPage() {
     hasJoinedRef.current = true;
   }, [selected]);
 
-  // 5. טעינת היסטוריית ההודעות דרך HTTP (fallback)
+  // 5. טעינת היסטוריית ההודעות דרך HTTP (fallback) עם טוקן Authorization
   useEffect(() => {
     if (!selected?.conversationId) {
       setMessages([]);
       return;
     }
     setLoading(true);
+
+    const token = localStorage.getItem("token");
     API.get("/conversations/history", {
-      params: { conversationId: selected.conversationId }
+      params: { conversationId: selected.conversationId },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then(res => setMessages(res.data))
       .catch(e => {
