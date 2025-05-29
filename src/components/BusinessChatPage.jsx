@@ -5,7 +5,6 @@ import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import createSocket from "../socket";
-import API from "../api";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
@@ -19,13 +18,13 @@ export default function BusinessChatPage() {
   const socketRef               = useRef(null);
   const hasJoinedRef            = useRef(false);
 
-  // 1. אתחול והתחברות לסוקט ברגע שהמשתמש מאותחל
+  // 1. Initialize and connect socket
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     (async () => {
-      const sock = await createSocket();  // המתנה ליצירת socket תקין עם טוקן
-      if (!sock) return;                   // אם לא קיבלנו socket (למשל אין טוקן תקין)
+      const sock = await createSocket();
+      if (!sock) return;
       socketRef.current = sock;
       sock.connect();
 
@@ -37,10 +36,11 @@ export default function BusinessChatPage() {
 
     return () => {
       socketRef.current?.disconnect();
+      hasJoinedRef.current = false;
     };
   }, [initialized, businessId]);
 
-  // 2. אחרי חיבור הסוקט – שליפת רשימת השיחות (פעם אחת בלבד)
+  // 2. Load conversations on socket connect
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
@@ -70,15 +70,15 @@ export default function BusinessChatPage() {
     return () => sock.off("connect", onConnect);
   }, [businessId]);
 
-  // 3. האזנה להודעות חדשות
+  // 3. Listen for incoming Socket messages
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const handler = msg => {
-      // עדכון sidebar
+      // update sidebar order
       setConvos(prev => {
-        const idx = prev.findIndex(c => String(c._id) === msg.conversationId);
+        const idx = prev.findIndex(c => String(c._id || c.conversationId) === msg.conversationId);
         if (idx === -1) return prev;
         const updated = {
           ...prev[idx],
@@ -86,7 +86,7 @@ export default function BusinessChatPage() {
         };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
-      // עדכון היסטוריית ההודעות אם זו השיחה הנבחרת
+      // append to history if open
       if (msg.conversationId === selected?.conversationId) {
         setMessages(prev =>
           prev.some(m => m._id === msg._id) ? prev : [...prev, msg]
@@ -98,7 +98,7 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, [selected]);
 
-  // 4. הצטרפות לחדר השיחה ונטישתו
+  // 4. Join or leave rooms on selection change
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock?.connected || !selected?.conversationId) return;
@@ -112,32 +112,10 @@ export default function BusinessChatPage() {
     hasJoinedRef.current = true;
   }, [selected]);
 
-  // 5. טעינת היסטוריית ההודעות דרך HTTP (fallback) עם טוקן Authorization
-  useEffect(() => {
-    if (!selected?.conversationId) {
-      setMessages([]);
-      return;
-    }
-    setLoading(true);
-
-    const token = localStorage.getItem("token");
-    API.get("/conversations/history", {
-      params: { conversationId: selected.conversationId },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => setMessages(res.data))
-      .catch(e => {
-        console.error("Load history error:", e);
-        setError("שגיאה בטעינת היסטוריה");
-        setMessages([]);
-      })
-      .finally(() => setLoading(false));
-  }, [selected]);
-
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
+    setMessages([]);
+    setLoading(true);
   };
 
   if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
@@ -146,7 +124,7 @@ export default function BusinessChatPage() {
     <div className={styles.chatContainer}>
       <aside className={styles.sidebarInner}>
         {loading
-          ? <p className={styles.loading}>טוען…</p>
+          ? <p className={styles.loading}>טוען שיחות…</p>
           : <ConversationsList
               conversations={convos}
               businessId={businessId}
