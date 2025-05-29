@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { v4 as uuidv4 } from "uuid"; // <-- הוסף את זה
 import "./ClientChatTab.css";
 import { Buffer } from "buffer";
 import API from "../api"; // <-- ייבוא Axios עם הגדרות הטוקן
@@ -138,20 +139,31 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   };
 
   const sendMessage = () => {
-    if (!input.trim() || sending || !socket) return;
-    setSending(true);
-    setError("");
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: userId, to: businessId, role: "client", text: input.trim() },
-      null,
-      (ack) => {
-        setSending(false);
-        if (ack.ok) setInput("");
-        else setError("שגיאה בשליחת ההודעה");
+  if (!input.trim() || sending || !socket) return;
+  if (!socket.connected) {
+    setError("Socket אינו מחובר, נסה להתחבר מחדש");
+    return;
+  }
+  setSending(true);
+  setError("");
+
+  const tempId = uuidv4();
+
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
+    null,
+    (ack) => {
+      setSending(false);
+      if (ack?.ok) {
+        setInput("");
+      } else {
+        setError("שגיאה בשליחת ההודעה");
       }
-    );
-  };
+    }
+  );
+};
+
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
