@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import BusinessChatTab from "./BusinessChatTab";
 import ClientChatTab from "./ClientChatTab";
-import createSocket from "../socket"; // השתמשנו בפונקציה שאתה מייצא מקובץ socket.js
+import createSocket from "../socket"; // הפונקציה מהקובץ socket.js
 
 export default function ChatComponent({
   userId,
@@ -10,7 +10,7 @@ export default function ChatComponent({
   customerId: customerIdProp,
   isBusiness,
 }) {
-  const [conversationId, setConversationId] = useState(initialConversationId);
+  const [conversationId, setConversationId] = useState(initialConversationId || null);
   const [conversations, setConversations] = useState([]);
   const [loadingConvs, setLoadingConvs] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
@@ -18,7 +18,6 @@ export default function ChatComponent({
 
   const socketRef = useRef(null);
 
-  // 1. אתחול הסוקט (פעם אחת בלבד) וטעינת שיחות/פתיחת שיחה
   useEffect(() => {
     if (!userId) return;
     if (socketRef.current) return; // כבר אתחלנו
@@ -27,10 +26,11 @@ export default function ChatComponent({
       const sock = await createSocket();
       if (!sock) return; // אין טוקן תקין, כבר הפניית login
 
-      sock.connect();
+      // הוסר קריאה כפולה ל-connect אם היא כבר בתוך createSocket
+      // sock.connect();
+
       socketRef.current = sock;
 
-      // טעינת שיחות עבור עסק
       if (isBusiness) {
         setLoadingConvs(true);
         sock.emit("getConversations", { userId }, (res) => {
@@ -53,7 +53,6 @@ export default function ChatComponent({
           }
         });
       } else {
-        // פתיחת שיחה עבור לקוח
         if (!conversationId && partnerId) {
           setLoadingInit(true);
           sock.emit("startConversation", { otherUserId: partnerId }, (res) => {
@@ -76,7 +75,6 @@ export default function ChatComponent({
     };
   }, [userId, isBusiness, partnerId, conversationId]);
 
-  // 2. עדכון currentCustomerId כשרשות שיחה משתנה
   useEffect(() => {
     if (isBusiness && conversationId && conversations.length) {
       const conv = conversations.find(

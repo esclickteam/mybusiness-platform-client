@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import ChatComponent from "./ChatComponent";
 import ConversationsList from "./ConversationsList";
 import "./ChatPage.css";
-import createSocket from "../socket"; // השתמשנו בפונקציה שלך מ־src/socket.js
+import createSocket from "../socket";
 
 export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
   const { state } = useLocation();
@@ -20,17 +20,20 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
 
   useEffect(() => {
     if (!userId) return;
-    if (socketRef.current) return; // כבר אתחול
+    if (socketRef.current) return; // כבר אתחלנו
+
+    let isMounted = true;
 
     async function setupSocket() {
       const sock = await createSocket();
-      if (!sock) return; // אין טוקן תקין, כנראה הפניית login כבר התבצעה
+      if (!sock) return; // טוקן לא תקין, כנראה הפניה ל-login
 
       sock.connect();
       socketRef.current = sock;
 
-      // 1. fetch initial conversations
+      // טעינת שיחות ראשונית
       sock.emit("getConversations", { userId }, (res) => {
+        if (!isMounted) return;
         if (res.ok) {
           const convs = Array.isArray(res.conversations) ? res.conversations : [];
           setConversations(convs);
@@ -48,7 +51,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
         }
       });
 
-      // 2. listener for new messages
+      // מאזין להודעות חדשות
       const handleNew = (message) => {
         setConversations((prev) =>
           prev.map((conv) =>
@@ -67,8 +70,8 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
       };
       sock.on("newMessage", handleNew);
 
-      // שמירת ההאזנה לניקוי בעת unmount
       return () => {
+        isMounted = false;
         sock.off("newMessage", handleNew);
         sock.disconnect();
         socketRef.current = null;
@@ -82,7 +85,6 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
         if (cleanup) cleanup();
       });
     };
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isBusiness]);
 
