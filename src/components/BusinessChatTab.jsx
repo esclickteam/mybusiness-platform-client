@@ -103,72 +103,62 @@ export default function BusinessChatTab({
 
   // טעינת היסטוריה והאזנה לסוקט
   useEffect(() => {
-  if (!conversationId || !socket) return;
+    if (!conversationId || !socket) return;
 
-  setMessages([]);
-  setLoading(true);
+    setMessages([]);
+    setLoading(true);
 
-  // 1. הצטרפות לחדר
-  socket.emit(
-    "joinConversation",
-    conversationId,
-    ({ ok, error }) => {
-      if (!ok) {
-        console.error("joinConversation failed:", error);
-        setLoading(false);
-        return;
-      }
+    socket.emit("joinConversation", conversationId, (res) => {
+      const history = Array.isArray(res.messages) ? res.messages : [];
+      setMessages(history);
+      setLoading(false);
 
-      // 2. בקשת היסטוריית הודעות דרך אירוע socket
-      socket.emit(
-        "getHistory",
-        { conversationId },
-        ({ ok: got, messages: history, error: histErr }) => {
-          if (got) {
-            setMessages(history);
-          } else {
-            console.error("getHistory failed:", histErr);
+      if (!history.length) {
+        fetch(`/api/conversations/history?conversationId=${conversationId}`, {
+          credentials: "include",
+        })
+          .then((r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+          })
+          .then((data) => setMessages(Array.isArray(data) ? data : []))
+          .catch((err) => {
+            console.error("Fetch history failed:", err);
             setMessages([]);
-          }
-          setLoading(false);
-        }
-      );
-    }
-  );
+          })
+          .finally(() => setLoading(false));
+      }
+    });
 
-  // 3. מאזינים להודעות חדשות
-  const handleNew = (msg) => {
-    if (msg.conversationId === conversationId) {
-      setMessages((prev) =>
-        prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
-      );
-    }
-  };
-  socket.on("newMessage", handleNew);
+    const handleNew = (msg) => {
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) =>
+          prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
+        );
+      }
+    };
+    socket.on("newMessage", handleNew);
 
-  // 4. מאזינים לאירוע הקלדה
-  const handleTyping = ({ from }) => {
-    if (from === customerId) {
-      setIsTyping(true);
+    const handleTyping = ({ from }) => {
+      if (from === customerId) {
+        setIsTyping(true);
+        clearTimeout(typingTimeout.current);
+        typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
+      }
+    };
+    socket.on("typing", handleTyping);
+
+    return () => {
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
       clearTimeout(typingTimeout.current);
-      typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
-    }
-  };
-  socket.on("typing", handleTyping);
-
-  // Cleanup
-  return () => {
-    socket.off("newMessage", handleNew);
-    socket.off("typing", handleTyping);
-    clearTimeout(typingTimeout.current);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-      mediaStreamRef.current = null;
-    }
-  };
-}, [socket, conversationId, customerId, setMessages]);
-
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+      }
+    };
+  }, [socket, conversationId, customerId, setMessages]);
 
   // גלילה אוטומטית
   useEffect(() => {
