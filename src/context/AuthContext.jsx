@@ -50,8 +50,13 @@ export function AuthProvider({ children }) {
       if (token) {
         try {
           API.defaults.headers['Authorization'] = `Bearer ${token}`; // קביעת הטוקן כ־Authorization header
-
           const { data } = await API.get("/auth/me");
+
+          // שמירת פרטי העסק ב-localStorage (אם קיימים)
+          if (data.businessId) {
+            localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+          }
+
           setUser({
             userId:           data.userId,
             name:             data.name,
@@ -101,6 +106,12 @@ export function AuthProvider({ children }) {
       }
 
       const { data } = await API.get("/auth/me");
+
+      // שמירת פרטי העסק ב-localStorage (אם קיימים)
+      if (data.businessId) {
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+      }
+
       setUser({
         userId:           data.userId,
         name:             data.name,
@@ -173,7 +184,7 @@ export function AuthProvider({ children }) {
       // ניקוי ה־Authorization header
       delete API.defaults.headers['Authorization'];
 
-      // אם יש גם businessDetails, מחוק אותו
+      // אם יש גם businessDetails, מחק אותו
       localStorage.removeItem("businessDetails");
 
     } catch (e) {
