@@ -22,7 +22,7 @@ const TABS = [
   "יומן",
 ];
 
-export default function BusinessProfileView() {
+export default function  BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
   const bizId = paramId || user?.businessId;
