@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { Suspense, lazy, useState } from "react";
 import {
   Routes,
@@ -23,87 +24,96 @@ import { useOnceLogger } from "./utils/useOnceLogger";
 import { DashboardSocketProvider } from "./context/DashboardSocketContext";
 
 // כל הייבוא הדינמי כפי שהיה
-const HomePage            = lazy(() => import("./pages/Home"));
-const About               = lazy(() => import("./pages/About"));
-const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy       = lazy(() => import("./pages/PrivacyPolicy"));
-const HowItWorks          = lazy(() => import("./pages/HowItWorks"));
-const Plans               = lazy(() => import("./pages/business/Plans"));
-const Checkout            = lazy(() => import("./pages/Checkout"));
-const FAQ                 = lazy(() => import("./pages/FAQ"));
-const Accessibility       = lazy(() => import("./pages/Accessibility"));
-const Terms               = lazy(() => import("./pages/Terms"));
-const Contact             = lazy(() => import("./pages/Contact"));
-const BusinessSupport     = lazy(() => import("./pages/BusinessSupport"));
-const BusinessOverview    = lazy(() => import("./pages/business/Business"));
-const BusinessesList      = lazy(() => import("./pages/BusinessesList"));
-const QuickJobsBoard      = lazy(() => import("./pages/QuickJobsBoard"));
-const QuickJobForm        = lazy(() => import("./pages/QuickJobForm"));
-const Login               = lazy(() => import("./pages/Login"));
-const Register            = lazy(() => import("./pages/Register"));
-const ResetPassword       = lazy(() => import("./pages/ResetPassword"));
-const ChangePassword      = lazy(() => import("./pages/ChangePassword"));
-const StaffLogin          = lazy(() => import("./pages/StaffLogin"));
-const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
-const BookingPage         = lazy(() => import("./pages/BookingPage"));
-const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
-const MessagesPage        = lazy(() => import("./pages/client/MessagesPage"));
-const OrdersPage          = lazy(() => import("./pages/client/OrdersPage"));
-const FavoritesPage       = lazy(() => import("./pages/client/FavoritesPage"));
-const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks             = lazy(() => import("./pages/staff/MyTasks"));
-const MySales             = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard    = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard      = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs           = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans          = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings       = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
-const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
+const HomePage             = lazy(() => import("./pages/Home"));
+const About                = lazy(() => import("./pages/About"));
+const SearchBusinesses     = lazy(() => import("./pages/SearchBusinesses"));
+const PrivacyPolicy        = lazy(() => import("./pages/PrivacyPolicy"));
+const HowItWorks           = lazy(() => import("./pages/HowItWorks"));
+const Plans                = lazy(() => import("./pages/business/Plans"));
+const Checkout             = lazy(() => import("./pages/Checkout"));
+const FAQ                  = lazy(() => import("./pages/FAQ"));
+const Accessibility        = lazy(() => import("./pages/Accessibility"));
+const Terms                = lazy(() => import("./pages/Terms"));
+const Contact              = lazy(() => import("./pages/Contact"));
+const BusinessSupport      = lazy(() => import("./pages/BusinessSupport"));
+const BusinessOverview     = lazy(() => import("./pages/business/Business"));
+const BusinessesList       = lazy(() => import("./pages/BusinessesList"));
+const QuickJobsBoard       = lazy(() => import("./pages/QuickJobsBoard"));
+const QuickJobForm         = lazy(() => import("./pages/QuickJobForm"));
+const Login                = lazy(() => import("./pages/Login"));
+const Register             = lazy(() => import("./pages/Register"));
+const ResetPassword        = lazy(() => import("./pages/ResetPassword"));
+const ChangePassword       = lazy(() => import("./pages/ChangePassword"));
+const StaffLogin           = lazy(() => import("./pages/StaffLogin"));
+const BusinessProfileView  = lazy(() => import("./components/shared/BusinessProfileView"));
+const BookingPage          = lazy(() => import("./pages/BookingPage"));
+const ClientDashboard      = lazy(() => import("./pages/client/ClientDashboard"));
+const MessagesPage         = lazy(() => import("./pages/client/MessagesPage"));
+const OrdersPage           = lazy(() => import("./pages/client/OrdersPage"));
+const FavoritesPage        = lazy(() => import("./pages/client/FavoritesPage"));
+const StaffDashboard       = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession          = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile         = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks              = lazy(() => import("./pages/staff/MyTasks"));
+const MySales              = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard     = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard       = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs            = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans           = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings        = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers           = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent      = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles          = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage      = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const BusinessProfilePage  = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
-const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
+const Collab               = lazy(() => import("./pages/business/dashboardPages/Collab"));
 
+// סקריפט שמגלגל העמוד ל־(0,0) בכל שינוי כתובת
 function ScrollToTop() {
   const { pathname } = useLocation();
   React.useEffect(() => window.scrollTo(0, 0), [pathname]);
   return null;
 }
 
-// עוטף את BusinessProfileView ב־DashboardSocketProvider
+// עוטף את BusinessProfileView (למקרה שתרצו גם שם Socket, אך לרוב לא צריך)
 function BusinessProfileViewWrapper() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { businessId: paramId } = useParams();
   const bizId = paramId || user?.businessId;
   const token = user?.token;
 
-  // אם אין bizId או token, אפשר להציג הודעת טעינה קצרה
-  if (!bizId || !token) {
-    return <div className="loading">⏳ טוען פרופיל…</div>;
+  // אם עדיין במחולל useAuth - הציגו טעינה
+  if (loading) {
+    return <div className="loading">⏳ טוען משתמש…</div>;
   }
 
-  return (
-    <DashboardSocketProvider token={token} businessId={bizId}>
-      <BusinessProfileView />
-    </DashboardSocketProvider>
-  );
+  // במידה ואין הרשאות (role לא "business" או ח״ב לא תקין)
+  if (!user || user.role !== "business" || !bizId || !token) {
+    return <div className="error-text">אין לך הרשאה לצפות בפרופיל העסק.</div>;
+  }
+
+  // כאן אין צורך ב־Socket אלא רק בצפייה בפרופיל
+  return <BusinessProfileView />;
 }
 
 // עוטף את כל BusinessDashboardRoutes ב־DashboardSocketProvider
 function BusinessDashboardWrapper() {
-  const { user } = useAuth();
-  const { businessId } = useParams();
+  const { user, loading } = useAuth();
+  const { businessId } = useParams(); // מזהה העסק מהכתובת
   const token = user?.token;
 
-  // אם אין bizId או token, נחזיר טעינה
-  if (!businessId || !token) {
-    return <div className="loading">⏳ טוען דשבורד…</div>;
+  // 1. אם עדיין useAuth בטעינה → נטען משתמש
+  if (loading) {
+    return <div className="loading">⏳ טוען משתמש…</div>;
   }
 
+  // 2. אם אין user תקין או role לא עסק או businessId/token חסר → שגיאה
+  if (!user || user.role !== "business" || !businessId || !token) {
+    return <div className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</div>;
+  }
+
+  // 3. כשהכל תקין, עטפו את התוכן ב־DashboardSocketProvider
   return (
     <DashboardSocketProvider token={token} businessId={businessId}>
       <BusinessDashboardRoutes />
@@ -129,6 +139,7 @@ export default function App() {
     setFreeText("");
   };
 
+  // אם עדיין useAuth בטעינה, נחכה לפני שרנדר כל דבר
   if (loading) return <div>טוען משתמש…</div>;
 
   return (
@@ -160,7 +171,12 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/staff-login" element={<StaffLogin />} />
-            <Route path="/business/:businessId" element={<BusinessProfileViewWrapper />} />
+            
+            {/* Business Profile (לצפייה בפרופיל, ללא Socket) */}
+            <Route
+              path="/business/:businessId"
+              element={<BusinessProfileViewWrapper />}
+            />
             <Route path="/book/:businessId" element={<BookingPage />} />
 
             <Route
@@ -352,7 +368,8 @@ export default function App() {
   );
 }
 
-// ------ 여기 아래는 ה־wrappers שלך עבור BusinessChatListWrapper ו־BusinessChatWrapper ------
+// ------ כאן ה־wrappers עבור BusinessChatListWrapper ו־BusinessChatWrapper ------
+
 export function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
@@ -364,7 +381,7 @@ export function BusinessChatListWrapper() {
 
   React.useEffect(() => {
     API.get("/messages/conversations", { withCredentials: true })
-      .then(res => setConvos(res.data))
+      .then((res) => setConvos(res.data))
       .catch(console.error);
   }, [businessId]);
 
