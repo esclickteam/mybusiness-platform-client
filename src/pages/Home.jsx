@@ -114,30 +114,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Live Updates Summary */}
-      <section className="trending-box">
-        <h4>📈 מה קורה עכשיו בעסקליק?</h4>
-        <SSESummary updates={updates} />
-        <div style={{ marginTop: '1rem' }}>
-          <button className="see-more-button" onClick={() => setShowAllUpdates(prev => !prev)}>
-            ← {showAllUpdates ? 'סגור עדכונים' : 'ראו את כל העדכונים'}
-          </button>
-        </div>
-        {showAllUpdates && (
-          <ul className="updates-list">
-            {updates.map((u, i) => (
-              <li key={i}>
-                <div className="update-content">
-                  <span className="icon">{renderIcon(u.type)}</span>
-                  <p className="title">{u.message}</p>
-                  <p className="time">{new Date(u.timestamp).toLocaleTimeString("he-IL")}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
       {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">

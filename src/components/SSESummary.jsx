@@ -1,38 +1,47 @@
+// src/components/SSESummary.jsx
 import React from 'react';
-import { MdPersonAdd, MdStorefront, MdRateReview } from 'react-icons/md';
+import { MdPersonAdd, MdStorefront, MdRateReview, MdInfo } from 'react-icons/md';
 import './SSESummary.css';
 
-export default function SSESummary({ updates = [] }) {
-  if (!updates.length) {
-    return (
-      <div className="sse-summary-empty">
-        אין עדכונים חדשים
-      </div>
-    );
-  }
+export default function SSESummary({ updates }) {
+  // Debug: log incoming updates and types
+  console.log('SSESummary updates:', updates);
+  updates.forEach(u => console.log('  type:', u.type, 'message:', u.message || u.title));
 
-  // ניקח את העדכון האחרון כדי להציג את המספרים העדכניים
-  const latest = updates[0];
+  // סופרים אירועים לפי סוג מדויק עם סינון כפילויות
+  const seen = new Set();
+  const countByType = updates.reduce((acc, u) => {
+    const key = u.message || u.title || u._id || '';
+    if (seen.has(key)) return acc;
+    seen.add(key);
+
+    const type = (u.type || '').toLowerCase();
+
+    let mappedType;
+    switch (type) {
+      case 'new_customer':
+        mappedType = 'client';
+        break;
+      case 'new_business':
+        mappedType = 'business';
+        break;
+      case 'new_review':
+        mappedType = 'review';
+        break;
+      default:
+        mappedType = 'info';
+        console.warn('לא נמצא מיפוי ל-type:', type);
+        break;
+    }
+
+    acc[mappedType] = (acc[mappedType] || 0) + 1;
+    return acc;
+  }, {});
 
   const cards = [
-    {
-      type: 'client',
-      label: 'לקוחות חדשים',
-      icon: <MdPersonAdd />,
-      count: latest.open_leads_count ?? 0,
-    },
-    {
-      type: 'business',
-      label: 'עסקים חדשים',
-      icon: <MdStorefront />,
-      count: latest.orders_count ?? 0,
-    },
-    {
-      type: 'review',
-      label: 'ביקורות חדשות',
-      icon: <MdRateReview />,
-      count: latest.reviews_count ?? 0,
-    },
+    { type: 'client',   label: 'לקוחות חדשים', icon: <MdPersonAdd /> },
+    { type: 'business', label: 'עסקים חדשים',   icon: <MdStorefront /> },
+    { type: 'review',   label: 'ביקורות חדשות', icon: <MdRateReview /> },
   ];
 
   return (
@@ -41,7 +50,7 @@ export default function SSESummary({ updates = [] }) {
         <div key={c.type} className="sse-card">
           <div className="sse-icon">{c.icon}</div>
           <div className="sse-info">
-            <div className="sse-count">{c.count}</div>
+            <div className="sse-count">{countByType[c.type] || 0}</div>
             <div className="sse-label">{c.label}</div>
           </div>
         </div>
