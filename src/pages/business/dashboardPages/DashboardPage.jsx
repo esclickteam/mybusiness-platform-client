@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
-
-// במקום לייבא ישירות useDashboardSocket, נייבא את ה־Provider ו־hook החדש:
-import {
-  DashboardSocketProvider,
-  useDashboardStats,
-} from "../../../context/DashboardSocketContext";
+import { createSocket } from "../../../socket";
+import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
 import LineChart from "../../../components/dashboard/LineChart";
@@ -41,15 +37,11 @@ const DashboardAlert = ({ text, type = "info" }) => (
   <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
 );
 
-////////////////////////////////////////////////////////////////////////////////
-// הקומפוננטה הפנימית (השימוש ב־useDashboardStats)
-////////////////////////////////////////////////////////////////////////////////
-const DashboardPageContent = () => {
+const DashboardPage = () => {
   const { user, initialized } = useAuth();
-  const businessId = user?.businessId; // ההנחה היא שה־businessId נמצא ב־user
-  const token = user?.token;
+  const businessId = getBusinessId();
+  const socketRef = useRef(null);
 
-  // סטייט ל־stats הראשוניים (מה־API) ולטעינה/שגיאות
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -70,100 +62,80 @@ const DashboardPageContent = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // השימוש ב־hook החדש שמביא את העדכונים מה־socket (באמצעות ה־Provider)
-  const socketStats = useDashboardStats();
+  if (!initialized) {
+    return <p className="loading-text">⏳ טוען נתונים…</p>;
+  }
+  if (user?.role !== "business" || !businessId) {
+    return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
+  }
 
-  // קריאת נתונים ראשונית – משיכה ראשונית של ה־profile וה־stats
   useEffect(() => {
     if (!businessId) return;
-
     setLoading(true);
-    setError(null);
-
-    API.get(`/business/${businessId}/profile`)
-      .then((res) => {
-        const biz = res.data;
-        setStats((prev) => ({
-          ...prev,
-          views_count: biz.views_count,
-          businessName: biz.businessName || prev.businessName,
-        }));
-        return API.get(`/business/${businessId}/stats`);
-      })
-      .then((res) => {
-        const s = res.data.stats;
-        setStats((prev) => ({
-          ...prev,
-          requests_count: s.requests_count ?? prev.requests_count,
-          orders_count: s.orders_count ?? prev.orders_count,
-          reviews_count: s.reviews_count ?? prev.reviews_count,
-          messages_count: s.messages_count ?? prev.messages_count,
-          appointments_count: s.appointments_count ?? prev.appointments_count,
-          todaysAppointments: s.todaysAppointments ?? prev.todaysAppointments,
-          income_distribution: s.income_distribution ?? prev.income_distribution,
-          monthly_comparison: s.monthly_comparison ?? prev.monthly_comparison,
-          recent_activity: s.recent_activity ?? prev.recent_activity,
-          appointments: s.appointments ?? prev.appointments,
-          leads:
-            s.open_leads_count !== undefined
-              ? s.open_leads_count
-              : prev.leads,
-        }));
-      })
-      .catch((err) => {
-        console.error("❌ Error fetching profile or stats:", err);
+    API.get(`/business/${businessId}/stats`)
+      .then(res => setStats(res.data))
+      .catch(err => {
+        console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, [businessId]);
 
-  // עדכון סטטיסטיקות בזמן אמת מתוך socket (אם קיבלנו socketStats)
   useEffect(() => {
-    if (!socketStats) return;
+    if (!initialized || !businessId) return;
 
-    setStats((prev) => ({
-      ...prev,
-      views_count: socketStats.views_count ?? prev.views_count,
-      requests_count: socketStats.requests_count ?? prev.requests_count,
-      orders_count: socketStats.orders_count ?? prev.orders_count,
-      reviews_count: socketStats.reviews_count ?? prev.reviews_count,
-      messages_count: socketStats.messages_count ?? prev.messages_count,
-      appointments_count: socketStats.appointments_count ?? prev.appointments_count,
-      leads: socketStats.open_leads_count ?? prev.leads,
-    }));
-  }, [socketStats]);
+    async function setupSocket() {
+      // העבר role מפורש כ business-dashboard ליצירת החיבור
+      const sock = await createSocket({
+        role: "business-dashboard",
+        businessId,
+      });
+      if (!sock) return;
 
-  const handleQuickAction = (action) => {
-    let msg = null;
-    if (action === "meeting") msg = "מעבר להוספת פגישה חדשה (דמו)";
-    if (action === "message") msg = "מעבר לשליחת הודעה (דמו)";
-    setAlert(msg);
-    setTimeout(() => setAlert(null), 2500);
-  };
+      socketRef.current = sock;
 
-  if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
-  if (user?.role !== "business" || !businessId)
-    return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
+      sock.on("connect", () => {
+        console.log("Dashboard socket connected:", sock.id);
+      });
+
+      sock.on("dashboardUpdate", newStats => {
+        console.log("Dashboard update received:", newStats);
+        setStats(newStats);
+      });
+
+      sock.on("disconnect", reason => {
+        console.log("Dashboard socket disconnected, reason:", reason);
+      });
+
+      sock.on("connect_error", err => {
+        console.error("Socket connection error:", err);
+      });
+    }
+
+    setupSocket();
+
+    return () => {
+      if (socketRef.current) {
+        console.log("Disconnecting dashboard socket");
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, [initialized, businessId]);
+
+
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
-  const todaysAppointments = Array.isArray(stats.todaysAppointments)
-    ? stats.todaysAppointments
-    : [];
-  const appointments = Array.isArray(stats.appointments)
-    ? stats.appointments
-    : [];
+  const todaysAppointments = Array.isArray(stats.todaysAppointments) ? stats.todaysAppointments : [];
+  const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
         📊 דשבורד העסק
-        <span className="greeting">
-          {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
-        </span>
+        <span className="greeting">{user?.businessName ? ` | שלום, ${user.businessName}!` : ""}</span>
       </h2>
 
       <QuickActions onAction={handleQuickAction} />
@@ -220,9 +192,7 @@ const DashboardPageContent = () => {
           }}
           options={{ responsive: true }}
         />
-        {stats.income_distribution && (
-          <PieChart data={stats.income_distribution} />
-        )}
+        {stats.income_distribution && <PieChart data={stats.income_distribution} />}
       </div>
 
       <div>
@@ -236,9 +206,7 @@ const DashboardPageContent = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {appointments.length > 0 && (
-          <AppointmentsList appointments={appointments} />
-        )}
+        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
       </div>
 
       <div>
@@ -248,38 +216,11 @@ const DashboardPageContent = () => {
 
       {appointments.length > 0 && (
         <div>
-          <CalendarView
-            appointments={appointments}
-            onDateClick={setSelectedDate}
-          />
-          <DailyAgenda
-            date={selectedDate}
-            appointments={appointments}
-            businessName={stats.businessName}
-          />
+          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
+          <DailyAgenda date={selectedDate} appointments={appointments} businessName={stats.businessName} />
         </div>
       )}
     </div>
-  );
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// הקומפוננטה הראשית של הדף – עטיפה ב־DashboardSocketProvider
-////////////////////////////////////////////////////////////////////////////////
-const DashboardPage = () => {
-  const { user } = useAuth();
-  const businessId = user?.businessId;
-  const token = user?.token;
-
-  // אם אין token או businessId – אין טעם לעטוף, פשוט נחזיר הודעת המתנה
-  if (!businessId || !token) {
-    return <p className="loading-text">⏳ טוען נתונים…</p>;
-  }
-
-  return (
-    <DashboardSocketProvider token={token} businessId={businessId}>
-      <DashboardPageContent />
-    </DashboardSocketProvider>
   );
 };
 
