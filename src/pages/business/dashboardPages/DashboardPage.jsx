@@ -17,7 +17,6 @@ import WeeklySummary from "../../../components/dashboard/WeeklySummary"; // נש
 import AppointmentsList from "../../../components/dashboard/AppointmentsList";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
-import BusinessComparison from "../../../components/dashboard/BusinessComparison";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
 
 import "../../../styles/dashboard.css";
