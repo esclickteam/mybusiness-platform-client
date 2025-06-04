@@ -4,12 +4,12 @@ const WeeklySummary = ({ stats }) => {
   if (!stats) return null;
 
   // נתונים נוכחיים
-  const currentRequests = stats.requests_count || 0;
+  const currentMessages = stats.messages_count || 0;
   const currentViews = stats.views_count || 0;
   const currentReviews = stats.reviews_count || 0;
 
   // נתוני שבוע שעבר (אם קיימים)
-  const lastRequests = stats.requests_last_week || 0;
+  const lastMessages = stats.messages_last_week || 0;
   const lastViews = stats.views_last_week || 0;
   const lastReviews = stats.reviews_last_week || 0;
 
@@ -27,8 +27,8 @@ const WeeklySummary = ({ stats }) => {
       <div style={{ display: "flex", justifyContent: "space-around", gap: 16, textAlign: "center" }}>
         <div style={{ backgroundColor: "#D6E8FF", padding: 20, borderRadius: 12, flex: 1 }}>
           <div style={{ fontSize: 14, marginBottom: 8 }}>💬 הודעות מלקוחות</div>
-          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentRequests}</div>
-          <div style={{ fontSize: 12, color: "#555" }}>{getChange(currentRequests, lastRequests)}</div>
+          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentMessages}</div>
+          <div style={{ fontSize: 12, color: "#555" }}>{getChange(currentMessages, lastMessages)}</div>
         </div>
 
         <div style={{ backgroundColor: "#FFF7CC", padding: 20, borderRadius: 12, flex: 1 }}>
