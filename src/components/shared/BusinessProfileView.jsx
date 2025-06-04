@@ -5,7 +5,8 @@ import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
-import useDashboardSocket from "../../hooks/useDashboardSocket";  // הוסף את ה-hook שלך
+// במקום useDashboardSocket – נייבא את ה־hook מתוך הקונטקסט
+import { useDashboardStats } from "../context/DashboardSocketContext";
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
@@ -99,14 +100,15 @@ export default function BusinessProfileView() {
       });
   }, [bizId]);
 
-  // שימוש בהוק לניהול Socket.IO והאזנה לעדכוני דשבורד
-  const stats = useDashboardSocket({ token, businessId: bizId });
+  // במקום useDashboardSocket, ניגש כעת ל-stats מתוך Context
+  const socketStats = useDashboardStats();
 
+  // עדכון סטטיסטיקות בזמן אמת מתוך socket (בעיקר views_count)
   useEffect(() => {
-    if (stats?.views_count !== undefined) {
-      setProfileViewsCount(stats.views_count);
+    if (socketStats?.views_count !== undefined && bizId) {
+      setProfileViewsCount(socketStats.views_count);
     }
-  }, [stats]);
+  }, [socketStats, bizId]);
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
@@ -160,10 +162,26 @@ export default function BusinessProfileView() {
           )}
           <h1 className="business-name">{businessName}</h1>
           <div className="about-phone">
-            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
-            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
+            {category && (
+              <p>
+                <strong>🏷️ קטגוריה:</strong> {category}
+              </p>
+            )}
+            {description && (
+              <p>
+                <strong>📝 תיאור:</strong> {description}
+              </p>
+            )}
+            {phone && (
+              <p>
+                <strong>📞 טלפון:</strong> {phone}
+              </p>
+            )}
+            {city && (
+              <p>
+                <strong>🏙️ עיר:</strong> {city}
+              </p>
+            )}
           </div>
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>

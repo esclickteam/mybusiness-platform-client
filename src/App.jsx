@@ -19,7 +19,10 @@ import { SSEProvider } from "./context/SSEContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 
-// ---- כל הייבוא הדינמי כפי שהיה ----
+// נוסיף כאן את הייבוא של ה־DashboardSocketProvider:
+import { DashboardSocketProvider } from "./context/DashboardSocketContext";
+
+// כל הייבוא הדינמי כפי שהיה
 const HomePage            = lazy(() => import("./pages/Home"));
 const About               = lazy(() => import("./pages/About"));
 const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
@@ -71,6 +74,43 @@ function ScrollToTop() {
   return null;
 }
 
+// עוטף את BusinessProfileView ב־DashboardSocketProvider
+function BusinessProfileViewWrapper() {
+  const { user } = useAuth();
+  const { businessId: paramId } = useParams();
+  const bizId = paramId || user?.businessId;
+  const token = user?.token;
+
+  // אם אין bizId או token, אפשר להציג הודעת טעינה קצרה
+  if (!bizId || !token) {
+    return <div className="loading">⏳ טוען פרופיל…</div>;
+  }
+
+  return (
+    <DashboardSocketProvider token={token} businessId={bizId}>
+      <BusinessProfileView />
+    </DashboardSocketProvider>
+  );
+}
+
+// עוטף את כל BusinessDashboardRoutes ב־DashboardSocketProvider
+function BusinessDashboardWrapper() {
+  const { user } = useAuth();
+  const { businessId } = useParams();
+  const token = user?.token;
+
+  // אם אין bizId או token, נחזיר טעינה
+  if (!businessId || !token) {
+    return <div className="loading">⏳ טוען דשבורד…</div>;
+  }
+
+  return (
+    <DashboardSocketProvider token={token} businessId={businessId}>
+      <BusinessDashboardRoutes />
+    </DashboardSocketProvider>
+  );
+}
+
 export default function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -120,7 +160,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/staff-login" element={<StaffLogin />} />
-            <Route path="/business/:businessId" element={<BusinessProfileView />} />
+            <Route path="/business/:businessId" element={<BusinessProfileViewWrapper />} />
             <Route path="/book/:businessId" element={<BookingPage />} />
 
             <Route
@@ -159,7 +199,7 @@ export default function App() {
               path="/business/:businessId/dashboard/*"
               element={
                 <ProtectedRoute roles={["business"]}>
-                  <BusinessDashboardRoutes />
+                  <BusinessDashboardWrapper />
                 </ProtectedRoute>
               }
             />
@@ -312,7 +352,7 @@ export default function App() {
   );
 }
 
-// ------ כאן נשארים ה־wrappers שלך (BusinessChatListWrapper, BusinessChatWrapper) כפי שהם ------
+// ------ 여기 아래는 ה־wrappers שלך עבור BusinessChatListWrapper ו־BusinessChatWrapper ------
 export function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
@@ -328,7 +368,7 @@ export function BusinessChatListWrapper() {
       .catch(console.error);
   }, [businessId]);
 
-  const handleSelect = conv => {
+  const handleSelect = (conv) => {
     navigate(
       `/business/${businessId}/chat/${conv.customer._id}`,
       { state: { conversationId: conv.conversationId } }

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
-import useDashboardSocket from "../../../hooks/useDashboardSocket";
+
+// במקום לייבא ישירות useDashboardSocket, נייבא את ה־Provider ו־hook החדש:
+import {
+  DashboardSocketProvider,
+  useDashboardStats,
+} from "../../../context/DashboardSocketContext";
 
 import DashboardCards from "../../../components/DashboardCards";
 import LineChart from "../../../components/dashboard/LineChart";
@@ -36,11 +41,15 @@ const DashboardAlert = ({ text, type = "info" }) => (
   <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
 );
 
-const DashboardPage = () => {
+////////////////////////////////////////////////////////////////////////////////
+// הקומפוננטה הפנימית (השימוש ב־useDashboardStats)
+////////////////////////////////////////////////////////////////////////////////
+const DashboardPageContent = () => {
   const { user, initialized } = useAuth();
-  const businessId = user?.businessId; // הנחה ש-businessId נמצא ב-user
+  const businessId = user?.businessId; // ההנחה היא שה־businessId נמצא ב־user
   const token = user?.token;
 
+  // סטייט ל־stats הראשוניים (מה־API) ולטעינה/שגיאות
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -61,10 +70,10 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // החיבור ל-socket דרך ההוק שלך
-  const socketStats = useDashboardSocket({ token, businessId });
+  // השימוש ב־hook החדש שמביא את העדכונים מה־socket (באמצעות ה־Provider)
+  const socketStats = useDashboardStats();
 
-  // קריאת נתונים ראשונית – מעלה views_count ומביא סטטיסטיקות נוספות
+  // קריאת נתונים ראשונית – משיכה ראשונית של ה־profile וה־stats
   useEffect(() => {
     if (!businessId) return;
 
@@ -95,7 +104,10 @@ const DashboardPage = () => {
           monthly_comparison: s.monthly_comparison ?? prev.monthly_comparison,
           recent_activity: s.recent_activity ?? prev.recent_activity,
           appointments: s.appointments ?? prev.appointments,
-          leads: s.open_leads_count !== undefined ? prev.leads : prev.leads,
+          leads:
+            s.open_leads_count !== undefined
+              ? s.open_leads_count
+              : prev.leads,
         }));
       })
       .catch((err) => {
@@ -107,7 +119,7 @@ const DashboardPage = () => {
       });
   }, [businessId]);
 
-  // עדכון סטטיסטיקות בזמן אמת מה-socket (משולב עם הנתונים הראשוניים)
+  // עדכון סטטיסטיקות בזמן אמת מתוך socket (אם קיבלנו socketStats)
   useEffect(() => {
     if (!socketStats) return;
 
@@ -140,7 +152,9 @@ const DashboardPage = () => {
   const todaysAppointments = Array.isArray(stats.todaysAppointments)
     ? stats.todaysAppointments
     : [];
-  const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
+  const appointments = Array.isArray(stats.appointments)
+    ? stats.appointments
+    : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
@@ -206,7 +220,9 @@ const DashboardPage = () => {
           }}
           options={{ responsive: true }}
         />
-        {stats.income_distribution && <PieChart data={stats.income_distribution} />}
+        {stats.income_distribution && (
+          <PieChart data={stats.income_distribution} />
+        )}
       </div>
 
       <div>
@@ -217,8 +233,12 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        {stats.recent_activity && <RecentActivityTable activities={stats.recent_activity} />}
-        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
+        {stats.recent_activity && (
+          <RecentActivityTable activities={stats.recent_activity} />
+        )}
+        {appointments.length > 0 && (
+          <AppointmentsList appointments={appointments} />
+        )}
       </div>
 
       <div>
@@ -228,11 +248,38 @@ const DashboardPage = () => {
 
       {appointments.length > 0 && (
         <div>
-          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
-          <DailyAgenda date={selectedDate} appointments={appointments} businessName={stats.businessName} />
+          <CalendarView
+            appointments={appointments}
+            onDateClick={setSelectedDate}
+          />
+          <DailyAgenda
+            date={selectedDate}
+            appointments={appointments}
+            businessName={stats.businessName}
+          />
         </div>
       )}
     </div>
+  );
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// הקומפוננטה הראשית של הדף – עטיפה ב־DashboardSocketProvider
+////////////////////////////////////////////////////////////////////////////////
+const DashboardPage = () => {
+  const { user } = useAuth();
+  const businessId = user?.businessId;
+  const token = user?.token;
+
+  // אם אין token או businessId – אין טעם לעטוף, פשוט נחזיר הודעת המתנה
+  if (!businessId || !token) {
+    return <p className="loading-text">⏳ טוען נתונים…</p>;
+  }
+
+  return (
+    <DashboardSocketProvider token={token} businessId={businessId}>
+      <DashboardPageContent />
+    </DashboardSocketProvider>
   );
 };
 

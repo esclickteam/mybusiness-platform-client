@@ -1,23 +1,15 @@
 import React from "react";
 import DashboardCards from "./DashboardCards";
-import useDashboardSocket from "../hooks/useDashboardSocket";  // הוק לניהול Socket.IO
+// במקום useDashboardSocket – נייבא את ה־hook מתוך הקונטקסט
+import { useDashboardStats } from "../context/DashboardSocketContext";
 
-export default function DashboardLive({ businessId }) {
-  // הנחה שקיים token דרך ה-hook useAuth או שניתן להעביר כפרופס
-  // כאן אציין שימוש דמיוני ב-token, התאמה לפי הצורך:
-  // לדוגמה:
-  // const { user } = useAuth();
-  // const token = user?.token;
-  // אם אין, אפשר להעביר token כפרופס או לאפס
+export default function DashboardLive() {
+  // בהנחה שה־Provider ממילא כבר הוזן במקום גבוה יותר
+  // ואין צורך לקבל token או להקים socket כאן
+  const stats = useDashboardStats();
 
-  const token = null; // עדכן לפי ההקשר שלך
-
-  const stats = useDashboardSocket({ token, businessId });
-
-  // אם תרצה, אפשר להוסיף כאן בדיקה שסטטיסטיקות לא ריקות לפני הצגה
-  // למשל: if (!stats) return <div>Loading...</div>;
-
-  return <DashboardCards stats={stats || {
+  // אם stats עדיין לא הגיע (null/undefined), אפשר להציג ערכים ברירת-מחדל
+  const safeStats = stats || {
     views_count: 0,
     requests_count: 0,
     orders_count: 0,
@@ -25,5 +17,7 @@ export default function DashboardLive({ businessId }) {
     messages_count: 0,
     appointments_count: 0,
     open_leads_count: 0,
-  }} />;
+  };
+
+  return <DashboardCards stats={safeStats} />;
 }
