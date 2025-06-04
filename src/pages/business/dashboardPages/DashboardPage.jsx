@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
-import { createSocket } from "../../../socket";
-import { getBusinessId } from "../../../utils/authHelpers";
+import useDashboardSocket from "../../../hooks/useDashboardSocket";
 
 import DashboardCards from "../../../components/DashboardCards";
 import LineChart from "../../../components/dashboard/LineChart";
@@ -39,8 +38,8 @@ const DashboardAlert = ({ text, type = "info" }) => (
 
 const DashboardPage = () => {
   const { user, initialized } = useAuth();
-  const businessId = getBusinessId();
-  const socketRef = useRef(null);
+  const businessId = user?.businessId; // הנחה ש-businessId נמצא ב-user
+  const token = user?.token;
 
   const [stats, setStats] = useState({
     views_count: 0,
@@ -62,56 +61,44 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  if (!initialized) {
-    return <p className="loading-text">⏳ טוען נתונים…</p>;
-  }
-  if (user?.role !== "business" || !businessId) {
-    return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  }
+  // החיבור ל-socket דרך ההוק שלך
+  const socketStats = useDashboardSocket({ token, businessId });
 
-  // ברגע שהעמוד נטען, נבצע קודם קריאה ל־"profile" כדי לעלות views_count,
-  // ואחר כך נבצע קריאה ל־"stats" כדי להביא את שאר השדות.
+  // קריאת נתונים ראשונית – מעלה views_count ומביא סטטיסטיקות נוספות
   useEffect(() => {
     if (!businessId) return;
 
     setLoading(true);
     setError(null);
 
-    // 1) קריאה ל־/business/:id/profile – מעלה את views_count ומחזירה את כל אובייקט ה-Business המעודכן.
     API.get(`/business/${businessId}/profile`)
-      .then(res => {
-        // res.data = האובייקט המלא של העסק לאחר $inc על views_count
+      .then((res) => {
         const biz = res.data;
-        setStats(prev => ({
+        setStats((prev) => ({
           ...prev,
           views_count: biz.views_count,
-          businessName: biz.businessName || prev.businessName
+          businessName: biz.businessName || prev.businessName,
         }));
-        // 2) לאחר שהצלחנו לעלות views_count, נבצע קריאה ל־stats כדי למשוך את שאר השדות
         return API.get(`/business/${businessId}/stats`);
       })
-      .then(res => {
-        // res.data.stats = אובייקט שמכיל את כל המפתחות: orders_count, requests_count, וכו'
+      .then((res) => {
         const s = res.data.stats;
-        setStats(prev => ({
+        setStats((prev) => ({
           ...prev,
-          requests_count:       s.requests_count       ?? prev.requests_count,
-          orders_count:         s.orders_count         ?? prev.orders_count,
-          reviews_count:        s.reviews_count        ?? prev.reviews_count,
-          messages_count:       s.messages_count       ?? prev.messages_count,
-          appointments_count:   s.appointments_count   ?? prev.appointments_count,
-          // אם יש שדות נוספים ב-stats (כמו todaysAppointments וכו'), נוסיף גם אותם כאן
-          todaysAppointments:   s.todaysAppointments   ?? prev.todaysAppointments,
-          income_distribution:  s.income_distribution  ?? prev.income_distribution,
-          monthly_comparison:   s.monthly_comparison   ?? prev.monthly_comparison,
-          recent_activity:      s.recent_activity      ?? prev.recent_activity,
-          appointments:         s.appointments         ?? prev.appointments,
-          leads:                s.open_leads_count !== undefined 
-                                ? prev.leads // אם השדה open_leads_count קיים, אפשר לשמור אותו בנפרד
-                                : prev.leads
+          requests_count: s.requests_count ?? prev.requests_count,
+          orders_count: s.orders_count ?? prev.orders_count,
+          reviews_count: s.reviews_count ?? prev.reviews_count,
+          messages_count: s.messages_count ?? prev.messages_count,
+          appointments_count: s.appointments_count ?? prev.appointments_count,
+          todaysAppointments: s.todaysAppointments ?? prev.todaysAppointments,
+          income_distribution: s.income_distribution ?? prev.income_distribution,
+          monthly_comparison: s.monthly_comparison ?? prev.monthly_comparison,
+          recent_activity: s.recent_activity ?? prev.recent_activity,
+          appointments: s.appointments ?? prev.appointments,
+          leads: s.open_leads_count !== undefined ? prev.leads : prev.leads,
         }));
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("❌ Error fetching profile or stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
       })
@@ -120,60 +107,23 @@ const DashboardPage = () => {
       });
   }, [businessId]);
 
-  // התחברות ל־Socket.IO כדי לקבל עדכונים בזמן אמת
+  // עדכון סטטיסטיקות בזמן אמת מה-socket (משולב עם הנתונים הראשוניים)
   useEffect(() => {
-    if (!initialized || !businessId) return;
+    if (!socketStats) return;
 
-    async function setupSocket() {
-      // יוצרים חיבור socket עם role + businessId
-      const sock = await createSocket({
-        role: "business-dashboard",
-        businessId,
-      });
-      if (!sock) return;
+    setStats((prev) => ({
+      ...prev,
+      views_count: socketStats.views_count ?? prev.views_count,
+      requests_count: socketStats.requests_count ?? prev.requests_count,
+      orders_count: socketStats.orders_count ?? prev.orders_count,
+      reviews_count: socketStats.reviews_count ?? prev.reviews_count,
+      messages_count: socketStats.messages_count ?? prev.messages_count,
+      appointments_count: socketStats.appointments_count ?? prev.appointments_count,
+      leads: socketStats.open_leads_count ?? prev.leads,
+    }));
+  }, [socketStats]);
 
-      socketRef.current = sock;
-
-      sock.on("connect", () => {
-        console.log("Dashboard socket connected:", sock.id);
-      });
-
-      sock.on("dashboardUpdate", newStats => {
-        console.log("Dashboard update received:", newStats);
-        // newStats מכיל את כל השדות ש־getBusinessStats מחזירה:
-        setStats(prev => ({
-          ...prev,
-          views_count:       newStats.views_count,
-          requests_count:    newStats.requests_count,
-          orders_count:      newStats.orders_count,
-          reviews_count:     newStats.reviews_count,
-          messages_count:    newStats.messages_count,
-          appointments_count: newStats.appointments_count,
-          leads:             newStats.open_leads_count ?? prev.leads,
-        }));
-      });
-
-      sock.on("disconnect", reason => {
-        console.log("Dashboard socket disconnected, reason:", reason);
-      });
-
-      sock.on("connect_error", err => {
-        console.error("Socket connection error:", err);
-      });
-    }
-
-    setupSocket();
-
-    return () => {
-      if (socketRef.current) {
-        console.log("Disconnecting dashboard socket");
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [initialized, businessId]);
-
-  const handleQuickAction = action => {
+  const handleQuickAction = (action) => {
     let msg = null;
     if (action === "meeting") msg = "מעבר להוספת פגישה חדשה (דמו)";
     if (action === "message") msg = "מעבר לשליחת הודעה (דמו)";
@@ -181,15 +131,16 @@ const DashboardPage = () => {
     setTimeout(() => setAlert(null), 2500);
   };
 
+  if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (user?.role !== "business" || !businessId)
+    return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
   const todaysAppointments = Array.isArray(stats.todaysAppointments)
     ? stats.todaysAppointments
     : [];
-  const appointments = Array.isArray(stats.appointments)
-    ? stats.appointments
-    : [];
+  const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
@@ -224,11 +175,11 @@ const DashboardPage = () => {
 
       <DashboardCards
         stats={{
-          views_count:       stats.views_count,
-          requests_count:    stats.requests_count,
-          orders_count:      stats.orders_count,
-          reviews_count:     stats.reviews_count,
-          messages_count:    stats.messages_count,
+          views_count: stats.views_count,
+          requests_count: stats.requests_count,
+          orders_count: stats.orders_count,
+          reviews_count: stats.reviews_count,
+          messages_count: stats.messages_count,
           appointments_count: stats.appointments_count,
         }}
       />
@@ -255,9 +206,7 @@ const DashboardPage = () => {
           }}
           options={{ responsive: true }}
         />
-        {stats.income_distribution && (
-          <PieChart data={stats.income_distribution} />
-        )}
+        {stats.income_distribution && <PieChart data={stats.income_distribution} />}
       </div>
 
       <div>
@@ -268,12 +217,8 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        {stats.recent_activity && (
-          <RecentActivityTable activities={stats.recent_activity} />
-        )}
-        {appointments.length > 0 && (
-          <AppointmentsList appointments={appointments} />
-        )}
+        {stats.recent_activity && <RecentActivityTable activities={stats.recent_activity} />}
+        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
       </div>
 
       <div>
@@ -283,15 +228,8 @@ const DashboardPage = () => {
 
       {appointments.length > 0 && (
         <div>
-          <CalendarView
-            appointments={appointments}
-            onDateClick={setSelectedDate}
-          />
-          <DailyAgenda
-            date={selectedDate}
-            appointments={appointments}
-            businessName={stats.businessName}
-          />
+          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
+          <DailyAgenda date={selectedDate} appointments={appointments} businessName={stats.businessName} />
         </div>
       )}
     </div>

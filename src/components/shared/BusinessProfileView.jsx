@@ -1,12 +1,11 @@
-// src/components/BusinessProfileView.jsx
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import { SocketContext } from "../../context/socketContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
+import useDashboardSocket from "../../hooks/useDashboardSocket";  // הוסף את ה-hook שלך
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
@@ -25,8 +24,8 @@ const TABS = [
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
-  const socket = useContext(SocketContext);
   const bizId = paramId || user?.businessId;
+  const token = user?.token;
 
   const [data, setData] = useState(null);
   const [faqs, setFaqs] = useState([]);
@@ -43,7 +42,7 @@ export default function BusinessProfileView() {
   // דגל כדי למנוע קריאה כפולה של ה-useEffect בשל React.StrictMode
   const hasIncrementedRef = useRef(false);
 
-  // טען פרטי העסק ושעות העבודה
+  // הטען פרטי העסק ושעות עבודה
   useEffect(() => {
     if (!bizId) {
       setError("Invalid business ID");
@@ -54,14 +53,12 @@ export default function BusinessProfileView() {
     setLoading(true);
     (async () => {
       try {
-        // קריאה ל־API לתוכן העסק (אין כאן ספירת צפיות)
         const resBiz = await API.get(`/business/${bizId}`);
         const biz = resBiz.data.business || resBiz.data;
         setData(biz);
         setFaqs(biz.faqs || []);
         setServices(biz.services || []);
 
-        // קריאה לשעות עבודה
         const resWH = await API.get("/appointments/get-work-hours", {
           params: { businessId: bizId },
         });
@@ -84,17 +81,14 @@ export default function BusinessProfileView() {
     })();
   }, [bizId]);
 
-  // חישוב צפיות באמצעות HTTP GET (מעלה views_count בשרת)
+  // ספירת צפיות בפרופיל - קריאה ראשונית שמעלה את הספירה בשרת
   useEffect(() => {
     if (!bizId) return;
-
-    // אם כבר ביצענו אינקרמנט (hasIncrementedRef.current = true), נמנענו מפעולה נוספת
     if (hasIncrementedRef.current) return;
     hasIncrementedRef.current = true;
 
     API.get(`/business/${bizId}/profile`)
       .then((res) => {
-        // res.data הוא אובייקט העסק המעודכן אחרי $inc
         const biz = res.data;
         if (biz.views_count !== undefined) {
           setProfileViewsCount(biz.views_count);
@@ -105,35 +99,14 @@ export default function BusinessProfileView() {
       });
   }, [bizId]);
 
-  // שמיעת עדכוני Dashboard מ־Socket.IO (למשל, views_count בזמן אמת)
+  // שימוש בהוק לניהול Socket.IO והאזנה לעדכוני דשבורד
+  const stats = useDashboardSocket({ token, businessId: bizId });
+
   useEffect(() => {
-    if (!socket || !bizId) {
-      console.log("[Client] Socket or bizId missing:", { socket, bizId });
-      return;
+    if (stats?.views_count !== undefined) {
+      setProfileViewsCount(stats.views_count);
     }
-
-    const dashboardUpdateHandler = (stats) => {
-      console.log("[Client] Received dashboardUpdate:", stats);
-      if (stats.views_count !== undefined) {
-        console.log("[Client] Received views_count:", stats.views_count);
-        setProfileViewsCount(stats.views_count);
-      }
-      // אם אתם רוצים גם עוד שדות, הוסיפו כאן:
-      // setOtherCount(stats.some_other_count);
-    };
-
-    socket.on("dashboardUpdate", dashboardUpdateHandler);
-
-    // אופציונלי: להדפיס כל אירוע שהתקבל (debug)
-    socket.onAny((event, ...args) => {
-      console.log(`[Client] Received event: ${event}`, args);
-    });
-
-    return () => {
-      socket.off("dashboardUpdate", dashboardUpdateHandler);
-      socket.offAny();
-    };
-  }, [socket, bizId]);
+  }, [stats]);
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
