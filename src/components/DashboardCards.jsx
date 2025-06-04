@@ -1,4 +1,3 @@
-// src/components/DashboardCards.jsx
 import React from "react";
 import "../styles/dashboard.css";
 
@@ -9,18 +8,6 @@ const DashboardCards = ({ stats }) => {
       value: stats.views_count,
       icon: "👁️",
       bgColor: "#f0ebff",
-    },
-    {
-      label: "בקשות שירות",
-      value: stats.requests_count,
-      icon: "📩",
-      bgColor: "#ffeef0",
-    },
-    {
-      label: "הזמנות שבוצעו",
-      value: stats.orders_count,
-      icon: "🛒",
-      bgColor: "#e0f8ec",
     },
     {
       label: "ביקורות חיוביות",
@@ -34,19 +21,6 @@ const DashboardCards = ({ stats }) => {
       icon: "💬",
       bgColor: "#e6f7ff",
     },
-    {
-      label: "פגישות עתידיות",
-      value: stats.appointments_count,
-      icon: "📅",
-      bgColor: "#fcefe3",
-    },
-    // אם יש צורך בלידים:
-    // {
-    //   label: "לידים פתוחים",
-    //   value: stats.open_leads_count,
-    //   icon: "💼",
-    //   bgColor: "#e8f5e9",
-    // },
   ];
 
   return (
