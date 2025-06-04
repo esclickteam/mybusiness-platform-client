@@ -101,7 +101,8 @@ const DashboardPage = () => {
 
       sock.on("dashboardUpdate", newStats => {
         console.log("Dashboard update received:", newStats);
-        setStats(newStats);
+        // כאן יוצרים אובייקט חדש כדי לוודא React יתרנדר
+        setStats({ ...newStats });
       });
 
       sock.on("disconnect", reason => {
@@ -131,7 +132,6 @@ const DashboardPage = () => {
   const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
-  // הוספת פונקציית הטיפול ב-QuickActions עם ניווט
   const handleQuickAction = (action) => {
     switch (action) {
       case "meeting":
