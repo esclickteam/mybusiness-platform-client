@@ -13,7 +13,7 @@ import RecentActivityTable from "../../../components/dashboard/RecentActivityTab
 import BarChart from "../../../components/dashboard/BarChart";
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
-import WeeklySummary from "../../../components/dashboard/WeeklySummary"; // נשאר
+import WeeklySummary from "../../../components/dashboard/WeeklySummary";
 import AppointmentsList from "../../../components/dashboard/AppointmentsList";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
@@ -191,7 +191,6 @@ const DashboardPage = () => {
       />
 
       <Insights stats={stats} />
-      <BusinessComparison stats={stats} />
       <NextActions stats={stats} />
 
       <div>
@@ -230,7 +229,7 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        <WeeklySummary stats={stats} /> {/* נשאר */}
+        <WeeklySummary stats={stats} />
       </div>
 
       {appointments.length > 0 && (
