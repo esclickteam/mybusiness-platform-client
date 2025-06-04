@@ -1,11 +1,12 @@
 // src/utils/createSocket.js
 import { io } from "socket.io-client";
-import { getValidAccessToken, getBusinessId, getUserRole } from "./utils/authHelpers";
+import { getValidAccessToken, getRefreshToken, getBusinessId, getUserRole } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export async function createSocket() {
   const token = await getValidAccessToken();
+  const refreshToken = getRefreshToken();  // הוספת שליפת ה-refreshToken
   const role = getUserRole(); // למשל: "business", "customer", "chat", "client" וכו'
 
   console.log("createSocket() - detected role:", role);
@@ -40,8 +41,8 @@ export async function createSocket() {
   // לוג קצר (אופציונלי)
   console.log("🔗 Connecting socket:", { SOCKET_URL, role, businessId: businessId || "(none)" });
 
-  // בניית פרטי הזדהות לדינמיות
-  const auth = { token, role };
+  // בניית פרטי הזדהות לדינמיות כולל ה-refreshToken
+  const auth = { token, refreshToken, role };
   if (businessId) auth.businessId = businessId;
 
   const socket = io(SOCKET_URL, {
