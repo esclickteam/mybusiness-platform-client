@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
@@ -41,6 +42,7 @@ const DashboardPage = () => {
   const { user, initialized } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
+  const navigate = useNavigate();
 
   const [stats, setStats] = useState({
     views_count: 0,
@@ -85,7 +87,6 @@ const DashboardPage = () => {
     if (!initialized || !businessId) return;
 
     async function setupSocket() {
-      // העבר role מפורש כ business-dashboard ליצירת החיבור
       const sock = await createSocket({
         role: "business-dashboard",
         businessId,
@@ -123,13 +124,26 @@ const DashboardPage = () => {
     };
   }, [initialized, businessId]);
 
-
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
   const todaysAppointments = Array.isArray(stats.todaysAppointments) ? stats.todaysAppointments : [];
   const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
+
+  // הוספת פונקציית הטיפול ב-QuickActions עם ניווט
+  const handleQuickAction = (action) => {
+    switch (action) {
+      case "meeting":
+        navigate(`/business/${businessId}/dashboard/appointments/new`);
+        break;
+      case "message":
+        navigate(`/business/${businessId}/dashboard/messages/new`);
+        break;
+      default:
+        console.warn("Unknown quick action:", action);
+    }
+  };
 
   return (
     <div className="dashboard-container">
