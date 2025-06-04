@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const moment = require("moment"); // אל תשכח להתקין: npm install moment
 const router = express.Router();
 const Business = require("../models/Business");
 const Appointment = require("../models/Appointment");
@@ -17,72 +18,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// יצירת עסק
-router.post("/create", authenticateToken, async (req, res) => {
-  try {
-    const { business_name, owner, subscription_plan, services } = req.body;
-
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "❌ אין הרשאה ליצור עסק" });
-    }
-
-    const permissions = {
-      can_receive_requests: subscription_plan !== "free",
-      can_use_chat: subscription_plan !== "free",
-      can_view_analytics: subscription_plan !== "free",
-      can_use_store: ["professional", "vip"].includes(subscription_plan),
-      can_use_calendar: ["professional", "vip"].includes(subscription_plan),
-      can_provide_home_service: ["professional", "vip"].includes(subscription_plan),
-      can_collaborate: subscription_plan === "vip",
-    };
-
-    const newBusiness = new Business({
-      business_name,
-      owner,
-      subscription_plan,
-      permissions,
-      services: services || {},
-      views_count: 0,
-      requests_count: 0,
-      appointments_count: 0,
-    });
-
-    await newBusiness.save();
-    res.status(201).json({ message: "✅ עסק נוצר בהצלחה!", business: newBusiness });
-  } catch (error) {
-    res.status(500).json({ message: "❌ שגיאה ביצירת עסק", error: error.message });
-  }
-});
-
-// עדכון חבילה
-router.put("/update-plan/:id", authenticateToken, async (req, res) => {
-  try {
-    const { subscription_plan } = req.body;
-    const business = await Business.findById(req.params.id);
-
-    if (!business) {
-      return res.status(404).json({ message: "❌ עסק לא נמצא" });
-    }
-
-    business.subscription_plan = subscription_plan;
-    business.permissions = {
-      can_receive_requests: subscription_plan !== "free",
-      can_use_chat: subscription_plan !== "free",
-      can_view_analytics: subscription_plan !== "free",
-      can_use_store: ["professional", "vip"].includes(subscription_plan),
-      can_use_calendar: ["professional", "vip"].includes(subscription_plan),
-      can_provide_home_service: ["professional", "vip"].includes(subscription_plan),
-      can_collaborate: subscription_plan === "vip",
-    };
-
-    await business.save();
-    res.json({ message: "✅ חבילה עודכנה בהצלחה!", business });
-  } catch (error) {
-    res.status(500).json({ message: "❌ שגיאה בעדכון חבילה", error: error.message });
-  }
-});
-
-// סטטיסטיקות לדשבורד
+// סטטיסטיקות לדשבורד כולל נתוני שבוע
 router.get("/stats/:id", authenticateToken, async (req, res) => {
   try {
     const business = await Business.findById(req.params.id);
@@ -104,11 +40,33 @@ router.get("/stats/:id", authenticateToken, async (req, res) => {
       }
     }
 
-    // נתוני שבוע קודם
+    // נתוני שבוע קודם - ניתן להחליף בנתונים אמיתיים אם יש
     const ordersLastWeek = business.orders_last_week || 3;
     const viewsLastWeek = business.views_last_week || 60;
     const requestsLastWeek = business.requests_last_week || 10;
     const reviewsLastWeek = business.reviews_last_week || 1;
+
+    // חישוב נתוני השבוע האחרון (7 ימים, החל מראשון)
+    const startOfWeek = moment().startOf('week');
+    const weekly_labels = [];
+    const weekly_views = [];
+    const weekly_requests = [];
+    const weekly_orders = [];
+
+    for (let i = 0; i < 7; i++) {
+      const day = moment(startOfWeek).add(i, 'days');
+      weekly_labels.push(day.format('dd')); // לדוגמה: 'א׳', 'ב׳' וכו'
+
+      // ספירת פגישות באותו היום
+      const appointmentsOnDay = appointments.filter(appt =>
+        appt.date && moment(appt.date).isSame(day, 'day')
+      );
+      weekly_orders.push(appointmentsOnDay.length);
+
+      // כאן ניתן להוסיף לוגיקה אמיתית לפי הנתונים שלך
+      weekly_views.push(0);
+      weekly_requests.push(0);
+    }
 
     res.json({
       views_count: business.views_count || 0,
@@ -123,6 +81,10 @@ router.get("/stats/:id", authenticateToken, async (req, res) => {
       leads,
       businessType: business.businessType || "כללי",
       average_orders_in_field: averageOrders,
+      weekly_labels,
+      weekly_views,
+      weekly_requests,
+      weekly_orders,
     });
   } catch (error) {
     res.status(500).json({ message: "❌ שגיאה בקבלת נתונים", error: error.message });
