@@ -101,17 +101,20 @@ function BusinessDashboardWrapper() {
   const { user, token, loading } = useAuth();
   const { businessId } = useParams();
 
-  // 1. אם useAuth עדיין בטעינה → נטען משתמש
   if (loading) {
     return <div className="loading">⏳ טוען משתמש…</div>;
   }
 
-  // 2. אם אין user תקין, role לא "business", או אין businessId/token → שגיאה
+  // אם אין user, role לא "business", businessId או token חסר — שגיאה
   if (!user || user.role !== "business" || !businessId || !token) {
     return <div className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</div>;
   }
 
-  // 3. אם הכל תקין, עטפו את הרכיב ב־DashboardSocketProvider כדי להתחבר ל־Socket.IO
+  // אם businessId ב-URL שונה מזה של המשתמש — הפנה לכתובת עם businessId הנכון
+  if (businessId !== user.businessId) {
+    return <Navigate to={`/business/${user.businessId}/dashboard`} replace />;
+  }
+
   return (
     <DashboardSocketProvider token={token} businessId={businessId}>
       <BusinessDashboardRoutes />
