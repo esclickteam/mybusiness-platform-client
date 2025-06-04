@@ -6,7 +6,7 @@ import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 // במקום useDashboardSocket – נייבא את ה־hook מתוך הקונטקסט
-import { useDashboardStats } from "../context/DashboardSocketContext";
+import { useDashboardStats } from "../../context/DashboardSocketContext";
 
 // עיצובים
 import "react-calendar/dist/Calendar.css";
