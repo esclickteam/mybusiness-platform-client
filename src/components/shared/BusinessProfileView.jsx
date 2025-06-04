@@ -108,13 +108,14 @@ export default function BusinessProfileView() {
     sendProfileView();
   };
 
+  // אם כבר מחובר - שלח מיד, אחרת תן לאזנה להסתיים ואז שלח
   if (socket.connected) {
     sendProfileView();
   } else {
     socket.once("connect", connectHandler);
   }
 
-  // מאזינים כלליים ל-log של כל אירוע שמגיע מהשרת (debug)
+  // מאזין לכל אירוע לקבלת לוגים (debug)
   socket.onAny((event, ...args) => {
     console.log(`[Client] Received event: ${event}`, args);
   });
@@ -125,6 +126,7 @@ export default function BusinessProfileView() {
     socket.offAny();
   };
 }, [socket, bizId, user?.userId]);
+
 
 
 
