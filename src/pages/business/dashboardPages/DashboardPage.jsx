@@ -6,11 +6,11 @@ import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
-// import LineChart from "../../../components/dashboard/LineChart"; // הוסר
+// שימו לב: כאן ייבאנו את הקומפוננטה שבנינו לשם BarChart
+import BarChart from "../../../components/dashboard/BarChart";
 import PieChart from "../../../components/dashboard/PieChart";
 import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart";
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
-import BarChart from "../../../components/dashboard/BarChart";
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
 import WeeklySummary from "../../../components/dashboard/WeeklySummary";
@@ -69,6 +69,7 @@ const DashboardPage = () => {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   }
 
+  // קריאה ראשונית ל-API כדי להביא את הסטטיסטיקות
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
@@ -81,6 +82,7 @@ const DashboardPage = () => {
       .finally(() => setLoading(false));
   }, [businessId]);
 
+  // הקמת WebSocket כדי לקבל עדכונים בזמן אמת
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -134,11 +136,15 @@ const DashboardPage = () => {
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
-  const todaysAppointments = Array.isArray(stats.todaysAppointments) ? stats.todaysAppointments : [];
-  const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
+  const todaysAppointments = Array.isArray(stats.todaysAppointments)
+    ? stats.todaysAppointments
+    : [];
+  const appointments = Array.isArray(stats.appointments)
+    ? stats.appointments
+    : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
-  const handleQuickAction = (action) => {
+  const handleQuickAction = action => {
     switch (action) {
       case "meeting":
         navigate(`/business/${businessId}/dashboard/appointments/new`);
@@ -151,11 +157,37 @@ const DashboardPage = () => {
     }
   };
 
+  // הכנת הנתונים עבור גרף העמודות (BarChart)
+  // כאן בונים מערך של 3 אובייקטים: "פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"
+  // כאשר בכל אובייקט יש name (לציר X), וערכים ל־customers, requests, orders.
+  const barChartData = [
+    {
+      name: "פגישות עתידיות",
+      customers: stats.appointments_count, // משתמשים במספר הפגישות לצורך "לקוחות"
+      requests: 0,
+      orders: 0,
+    },
+    {
+      name: "פניות חדשות",
+      customers: 0,
+      requests: stats.requests_count, // מציגים את מספר הבקשות
+      orders: 0,
+    },
+    {
+      name: "הודעות מלקוחות",
+      customers: 0,
+      requests: 0,
+      orders: stats.messages_count, // מציגים את מספר ההודעות
+    },
+  ];
+
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
         📊 דשבורד העסק
-        <span className="greeting">{user?.businessName ? ` | שלום, ${user.businessName}!` : ""}</span>
+        <span className="greeting">
+          {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
+        </span>
       </h2>
 
       <QuickActions onAction={handleQuickAction} />
@@ -194,24 +226,11 @@ const DashboardPage = () => {
       <NextActions stats={stats} />
 
       <div>
-        <BarChart
-          data={{
-            labels: ["פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"],
-            datasets: [
-              {
-                label: "פעילות העסק",
-                data: [
-                  stats.appointments_count,
-                  stats.requests_count,
-                  stats.messages_count,
-                ],
-                borderRadius: 8,
-              },
-            ],
-          }}
-          options={{ responsive: true }}
-        />
-        {stats.income_distribution && <PieChart data={stats.income_distribution} />}
+        {/* כעת שולחים ל־BarChart את המערך barChartData שיצרנו */}
+        <BarChart data={barChartData} />
+        {stats.income_distribution && (
+          <PieChart data={stats.income_distribution} />
+        )}
       </div>
 
       <div>
@@ -225,7 +244,9 @@ const DashboardPage = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
+        {appointments.length > 0 && (
+          <AppointmentsList appointments={appointments} />
+        )}
       </div>
 
       <div>
@@ -234,8 +255,15 @@ const DashboardPage = () => {
 
       {appointments.length > 0 && (
         <div>
-          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
-          <DailyAgenda date={selectedDate} appointments={appointments} businessName={stats.businessName} />
+          <CalendarView
+            appointments={appointments}
+            onDateClick={setSelectedDate}
+          />
+          <DailyAgenda
+            date={selectedDate}
+            appointments={appointments}
+            businessName={stats.businessName}
+          />
         </div>
       )}
     </div>
