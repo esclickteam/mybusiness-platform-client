@@ -69,23 +69,63 @@ const DashboardPage = () => {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   }
 
+  // ברגע שהעמוד נטען, נבצע קודם קריאה ל־"profile" כדי לעלות views_count,
+  // ואחר כך נבצע קריאה ל־"stats" כדי להביא את שאר השדות.
   useEffect(() => {
     if (!businessId) return;
+
     setLoading(true);
-    API.get(`/business/${businessId}/stats`)
-      .then(res => setStats(res.data))
+    setError(null);
+
+    // 1) קריאה ל־/business/:id/profile – מעלה את views_count ומחזירה את כל אובייקט ה-Business המעודכן.
+    API.get(`/business/${businessId}/profile`)
+      .then(res => {
+        // res.data = האובייקט המלא של העסק לאחר $inc על views_count
+        const biz = res.data;
+        setStats(prev => ({
+          ...prev,
+          views_count: biz.views_count,
+          businessName: biz.businessName || prev.businessName
+        }));
+        // 2) לאחר שהצלחנו לעלות views_count, נבצע קריאה ל־stats כדי למשוך את שאר השדות
+        return API.get(`/business/${businessId}/stats`);
+      })
+      .then(res => {
+        // res.data.stats = אובייקט שמכיל את כל המפתחות: orders_count, requests_count, וכו'
+        const s = res.data.stats;
+        setStats(prev => ({
+          ...prev,
+          requests_count:       s.requests_count       ?? prev.requests_count,
+          orders_count:         s.orders_count         ?? prev.orders_count,
+          reviews_count:        s.reviews_count        ?? prev.reviews_count,
+          messages_count:       s.messages_count       ?? prev.messages_count,
+          appointments_count:   s.appointments_count   ?? prev.appointments_count,
+          // אם יש שדות נוספים ב-stats (כמו todaysAppointments וכו'), נוסיף גם אותם כאן
+          todaysAppointments:   s.todaysAppointments   ?? prev.todaysAppointments,
+          income_distribution:  s.income_distribution  ?? prev.income_distribution,
+          monthly_comparison:   s.monthly_comparison   ?? prev.monthly_comparison,
+          recent_activity:      s.recent_activity      ?? prev.recent_activity,
+          appointments:         s.appointments         ?? prev.appointments,
+          leads:                s.open_leads_count !== undefined 
+                                ? prev.leads // אם השדה open_leads_count קיים, אפשר לשמור אותו בנפרד
+                                : prev.leads
+        }));
+      })
       .catch(err => {
-        console.error("❌ Error fetching stats:", err);
+        console.error("❌ Error fetching profile or stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+      });
   }, [businessId]);
 
+  // התחברות ל־Socket.IO כדי לקבל עדכונים בזמן אמת
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     async function setupSocket() {
-      // העבר role מפורש כ business-dashboard ליצירת החיבור
+      // יוצרים חיבור socket עם role + businessId
       const sock = await createSocket({
         role: "business-dashboard",
         businessId,
@@ -100,7 +140,17 @@ const DashboardPage = () => {
 
       sock.on("dashboardUpdate", newStats => {
         console.log("Dashboard update received:", newStats);
-        setStats(newStats);
+        // newStats מכיל את כל השדות ש־getBusinessStats מחזירה:
+        setStats(prev => ({
+          ...prev,
+          views_count:       newStats.views_count,
+          requests_count:    newStats.requests_count,
+          orders_count:      newStats.orders_count,
+          reviews_count:     newStats.reviews_count,
+          messages_count:    newStats.messages_count,
+          appointments_count: newStats.appointments_count,
+          leads:             newStats.open_leads_count ?? prev.leads,
+        }));
       });
 
       sock.on("disconnect", reason => {
@@ -134,15 +184,21 @@ const DashboardPage = () => {
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
-  const todaysAppointments = Array.isArray(stats.todaysAppointments) ? stats.todaysAppointments : [];
-  const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
+  const todaysAppointments = Array.isArray(stats.todaysAppointments)
+    ? stats.todaysAppointments
+    : [];
+  const appointments = Array.isArray(stats.appointments)
+    ? stats.appointments
+    : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
         📊 דשבורד העסק
-        <span className="greeting">{user?.businessName ? ` | שלום, ${user.businessName}!` : ""}</span>
+        <span className="greeting">
+          {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
+        </span>
       </h2>
 
       <QuickActions onAction={handleQuickAction} />
@@ -168,11 +224,11 @@ const DashboardPage = () => {
 
       <DashboardCards
         stats={{
-          views_count: stats.views_count,
-          requests_count: stats.requests_count,
-          orders_count: stats.orders_count,
-          reviews_count: stats.reviews_count,
-          messages_count: stats.messages_count,
+          views_count:       stats.views_count,
+          requests_count:    stats.requests_count,
+          orders_count:      stats.orders_count,
+          reviews_count:     stats.reviews_count,
+          messages_count:    stats.messages_count,
           appointments_count: stats.appointments_count,
         }}
       />
@@ -199,7 +255,9 @@ const DashboardPage = () => {
           }}
           options={{ responsive: true }}
         />
-        {stats.income_distribution && <PieChart data={stats.income_distribution} />}
+        {stats.income_distribution && (
+          <PieChart data={stats.income_distribution} />
+        )}
       </div>
 
       <div>
@@ -213,7 +271,9 @@ const DashboardPage = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
+        {appointments.length > 0 && (
+          <AppointmentsList appointments={appointments} />
+        )}
       </div>
 
       <div>
@@ -223,8 +283,15 @@ const DashboardPage = () => {
 
       {appointments.length > 0 && (
         <div>
-          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
-          <DailyAgenda date={selectedDate} appointments={appointments} businessName={stats.businessName} />
+          <CalendarView
+            appointments={appointments}
+            onDateClick={setSelectedDate}
+          />
+          <DailyAgenda
+            date={selectedDate}
+            appointments={appointments}
+            businessName={stats.businessName}
+          />
         </div>
       )}
     </div>
