@@ -7,7 +7,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  CartesianGrid
+  CartesianGrid,
 } from "recharts";
 
 const LineChartComponent = ({ stats }) => {
@@ -31,18 +31,39 @@ const LineChartComponent = ({ stats }) => {
   const data = isTestUser ? dummyData : realData;
 
   return (
-    <div className="chart-container" style={{ marginTop: "30px" }}>
+    <div className="chart-container" style={{ marginTop: 30 }}>
       <h3 style={{ textAlign: "center" }}>📈 פעילות בשבוע האחרון</h3>
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <LineChart
+          data={data}
+          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="views" stroke="#6a5acd" strokeWidth={2} />
-          <Line type="monotone" dataKey="requests" stroke="#ffa07a" strokeWidth={2} />
-          <Line type="monotone" dataKey="orders" stroke="#90ee90" strokeWidth={2} />
+          <Line
+            type="monotone"
+            dataKey="views"
+            stroke="#6a5acd"
+            strokeWidth={2}
+            name="צפיות"
+          />
+          <Line
+            type="monotone"
+            dataKey="requests"
+            stroke="#ffa07a"
+            strokeWidth={2}
+            name="פניות"
+          />
+          <Line
+            type="monotone"
+            dataKey="orders"
+            stroke="#90ee90"
+            strokeWidth={2}
+            name="הזמנות"
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
