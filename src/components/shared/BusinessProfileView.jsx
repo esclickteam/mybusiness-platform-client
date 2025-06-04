@@ -1,5 +1,5 @@
 // src/components/BusinessProfileView.jsx
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -40,6 +40,9 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState(null);
   const [profileViewsCount, setProfileViewsCount] = useState(0);
 
+  // דגל כדי למנוע קריאה כפולה של ה-useEffect בשל React.StrictMode
+  const hasIncrementedRef = useRef(false);
+
   // טען פרטי העסק ושעות העבודה
   useEffect(() => {
     if (!bizId) {
@@ -51,7 +54,7 @@ export default function BusinessProfileView() {
     setLoading(true);
     (async () => {
       try {
-        // קריאה ל־API לתוכן העסק
+        // קריאה ל־API לתוכן העסק (אין כאן ספירת צפיות)
         const resBiz = await API.get(`/business/${bizId}`);
         const biz = resBiz.data.business || resBiz.data;
         setData(biz);
@@ -85,6 +88,10 @@ export default function BusinessProfileView() {
   useEffect(() => {
     if (!bizId) return;
 
+    // אם כבר ביצענו אינקרמנט (hasIncrementedRef.current = true), נמנענו מפעולה נוספת
+    if (hasIncrementedRef.current) return;
+    hasIncrementedRef.current = true;
+
     API.get(`/business/${bizId}/profile`)
       .then((res) => {
         // res.data הוא אובייקט העסק המעודכן אחרי $inc
@@ -111,12 +118,13 @@ export default function BusinessProfileView() {
         console.log("[Client] Received views_count:", stats.views_count);
         setProfileViewsCount(stats.views_count);
       }
-      // אם יש שדות נוספים ב־stats שאתם רוצים לעדכן, ניתן לעשות זאת כאן
+      // אם אתם רוצים גם עוד שדות, הוסיפו כאן:
+      // setOtherCount(stats.some_other_count);
     };
 
     socket.on("dashboardUpdate", dashboardUpdateHandler);
 
-    // אופציונלי: למטרת debug – הדפסת כל אירוע שהתקבל
+    // אופציונלי: להדפיס כל אירוע שהתקבל (debug)
     socket.onAny((event, ...args) => {
       console.log(`[Client] Received event: ${event}`, args);
     });
@@ -189,7 +197,7 @@ export default function BusinessProfileView() {
             <span className="count">({reviews.length} ביקורות)</span>
           </div>
 
-          {/* הוספת קטיגוריה להצגת מונה הצפיות */}
+          {/* הצגת מספר צפיות בפרופיל */}
           <div className="views-counter">
             <span>צפיות בפרופיל:</span>{" "}
             <span className="views-count-number">{profileViewsCount}</span>
