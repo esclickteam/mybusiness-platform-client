@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -9,6 +9,9 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { io } from "socket.io-client";
+
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 const LineChartComponent = ({ stats }) => {
   if (
@@ -74,4 +77,39 @@ const LineChartComponent = ({ stats }) => {
   );
 };
 
-export default LineChartComponent;
+const DashboardRealTime = ({ businessId, token, refreshToken }) => {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    const socket = io(SOCKET_URL, {
+      path: "/socket.io",
+      auth: { token, refreshToken, role: "business-dashboard", businessId },
+      transports: ["websocket"],
+    });
+
+    socket.on("connect", () => {
+      console.log("WebSocket connected");
+    });
+
+    socket.on("dashboardUpdate", (newStats) => {
+      console.log("Received dashboardUpdate:", newStats);
+      setStats(newStats);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("WebSocket disconnected");
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Connection error:", err.message);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [businessId, token, refreshToken]);
+
+  return <LineChartComponent stats={stats} />;
+};
+
+export default DashboardRealTime;
