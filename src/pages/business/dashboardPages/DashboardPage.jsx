@@ -100,10 +100,14 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", newStats => {
-        console.log("Dashboard update received:", newStats);
-        // כאן יוצרים אובייקט חדש כדי לוודא React יתרנדר
-        setStats({ ...newStats });
-      });
+  console.log("Dashboard update received:", newStats);
+  // בדיקה בסיסית למבנה הנתונים
+  if (newStats && typeof newStats === 'object' && 'views_count' in newStats) {
+    setStats({ ...newStats });
+  } else {
+    console.warn("Ignoring invalid dashboard update:", newStats);
+  }
+});
 
       sock.on("disconnect", reason => {
         console.log("Dashboard socket disconnected, reason:", reason);
