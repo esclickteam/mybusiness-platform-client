@@ -83,34 +83,44 @@ export default function BusinessProfileView() {
 
   // שליחת וצפייה בספריית הצפיות
   useEffect(() => {
-    if (!socket || !bizId || !user?.userId) return;
+  if (!socket || !bizId || !user?.userId) return;
 
-    const countHandler = newCount => {
-      console.log("Received profileViewCount:", newCount);
-      setProfileViewsCount(newCount);
-    };
-    socket.on("profileViewCount", countHandler);
-
-    const sendProfileView = () => {
-      console.log("Emitting profileView:", { businessId: bizId, viewerId: user.userId });
-      socket.emit("profileView", { businessId: bizId, viewerId: user.userId });
-    };
-    const connectHandler = () => {
-      console.log("Socket connected, sending profileView");
-      sendProfileView();
-    };
-
-    if (socket.connected) {
-      sendProfileView();
-    } else {
-      socket.once("connect", connectHandler);
+  // מאזין לעדכוני הדשבורד הכוללים צפיות בפרופיל
+  const dashboardUpdateHandler = (stats) => {
+    if (stats.views_count !== undefined) {
+      console.log("Received dashboardUpdate with views_count:", stats.views_count);
+      setProfileViewsCount(stats.views_count);
     }
+  };
 
-    return () => {
-      socket.off("profileViewCount", countHandler);
-      socket.off("connect", connectHandler);
-    };
-  }, [socket, bizId, user?.userId]);
+  socket.on("dashboardUpdate", dashboardUpdateHandler);
+
+  // פונקציה ששולחת אירוע צפייה בפרופיל לשרת
+  const sendProfileView = () => {
+    console.log("Emitting profileView:", { businessId: bizId, viewerId: user.userId });
+    socket.emit("profileView", { businessId: bizId, viewerId: user.userId });
+  };
+
+  // כשמתחברים לסוקט, שולחים את האירוע
+  const connectHandler = () => {
+    console.log("Socket connected, sending profileView");
+    sendProfileView();
+  };
+
+  if (socket.connected) {
+    sendProfileView();
+  } else {
+    socket.once("connect", connectHandler);
+  }
+
+  // ניקוי מאזינים בעת פירוק הקומפוננטה / שינוי התלויות
+  return () => {
+    socket.off("dashboardUpdate", dashboardUpdateHandler);
+    socket.off("connect", connectHandler);
+  };
+}, [socket, bizId, user?.userId]);
+
+
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error)   return <div className="error">{error}</div>;
