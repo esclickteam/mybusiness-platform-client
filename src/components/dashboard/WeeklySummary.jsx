@@ -1,19 +1,16 @@
-// src/components/dashboard/WeeklySummary.js
 import React from "react";
 
 const WeeklySummary = ({ stats }) => {
   if (!stats) return null;
 
   // נתונים נוכחיים
-  const currentOrders = stats.orders_count || 0;
-  const currentViews = stats.views_count || 0;
   const currentRequests = stats.requests_count || 0;
+  const currentViews = stats.views_count || 0;
   const currentReviews = stats.reviews_count || 0;
 
   // נתוני שבוע שעבר (אם קיימים)
-  const lastOrders = stats.orders_last_week || 0;
-  const lastViews = stats.views_last_week || 0;
   const lastRequests = stats.requests_last_week || 0;
+  const lastViews = stats.views_last_week || 0;
   const lastReviews = stats.reviews_last_week || 0;
 
   // חישוב שינוי באחוזים
@@ -25,14 +22,27 @@ const WeeklySummary = ({ stats }) => {
   };
 
   return (
-    <div className="graph-box">
-      <h4>סיכום שבועי חכם 📅</h4>
-      <ul style={{ listStyle: "none", padding: 0, textAlign: "right" }}>
-        <li>✅ הזמנות: {currentOrders} ({getChange(currentOrders, lastOrders)})</li>
-        <li>📩 פניות: {currentRequests} ({getChange(currentRequests, lastRequests)})</li>
-        <li>👀 צפיות בפרופיל: {currentViews} ({getChange(currentViews, lastViews)})</li>
-        <li>⭐ ביקורות חדשות: {currentReviews} ({getChange(currentReviews, lastReviews)})</li>
-      </ul>
+    <div>
+      <h4 style={{ textAlign: "center", marginBottom: 16 }}>סיכום שבועי חכם 📅</h4>
+      <div style={{ display: "flex", justifyContent: "space-around", gap: 16, textAlign: "center" }}>
+        <div style={{ backgroundColor: "#D6E8FF", padding: 20, borderRadius: 12, flex: 1 }}>
+          <div style={{ fontSize: 14, marginBottom: 8 }}>💬 הודעות מלקוחות</div>
+          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentRequests}</div>
+          <div style={{ fontSize: 12, color: "#555" }}>{getChange(currentRequests, lastRequests)}</div>
+        </div>
+
+        <div style={{ backgroundColor: "#FFF7CC", padding: 20, borderRadius: 12, flex: 1 }}>
+          <div style={{ fontSize: 14, marginBottom: 8 }}>⭐ ביקורות חיוביות</div>
+          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentReviews}</div>
+          <div style={{ fontSize: 12, color: "#555" }}>{getChange(currentReviews, lastReviews)}</div>
+        </div>
+
+        <div style={{ backgroundColor: "#E6E0FF", padding: 20, borderRadius: 12, flex: 1 }}>
+          <div style={{ fontSize: 14, marginBottom: 8 }}>👀 צפיות בפרופיל</div>
+          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentViews}</div>
+          <div style={{ fontSize: 12, color: "#555" }}>{getChange(currentViews, lastViews)}</div>
+        </div>
+      </div>
     </div>
   );
 };
