@@ -188,11 +188,6 @@ export default function   BusinessProfileView() {
             <span className="count">({reviews.length} ביקורות)</span>
           </div>
 
-          {/* הצגת מספר צפיות בפרופיל */}
-          <div className="views-counter">
-            <span>צפיות בפרופיל:</span>{" "}
-            <span className="views-count-number">{profileViewsCount}</span>
-          </div>
 
           <hr className="profile-divider" />
 
