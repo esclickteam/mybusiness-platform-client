@@ -28,27 +28,29 @@ export function SSEProvider({ children, businessId, withHistory = false }) {
 
       es.addEventListener("statsUpdate", (e) => {
         try {
+          console.log("📨 [SSE] raw event data:", e.data);
           const ev = JSON.parse(e.data);
+          console.log("📊 [SSE] parsed event:", ev);
+
           setUpdates((prev) => {
-            // הימנעות משכפול עדכון עם אותו טיימסטמפ והודעה
             if (
               prev.length > 0 &&
               prev[0].timestamp === ev.timestamp &&
               prev[0].message === ev.message
             ) {
+              console.log("⚠️ Duplicate event, skipping update");
               return prev;
             }
             return [ev, ...prev].slice(0, 20);
           });
         } catch (err) {
-          console.error("Invalid SSE data:", err);
+          console.error("❌ Error parsing SSE data:", err, "Raw data:", e.data);
         }
       });
 
       es.onerror = (err) => {
         console.error("❌ [SSE] error", err);
         es.close();
-        // ניסיון חיבור מחדש אחרי 5 שניות
         setTimeout(() => {
           startStream();
         }, 5000);
@@ -58,7 +60,10 @@ export function SSEProvider({ children, businessId, withHistory = false }) {
     if (withHistory) {
       fetch(historyUrl, { credentials: "include" })
         .then((res) => (res.ok ? res.json() : []))
-        .then((data) => setUpdates(data))
+        .then((data) => {
+          console.log("📭 Loaded history data:", data);
+          setUpdates(data);
+        })
         .catch((err) => console.warn("📭 No history loaded:", err))
         .finally(() => startStream());
     } else {
