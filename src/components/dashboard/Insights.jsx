@@ -1,4 +1,3 @@
-// src/components/dashboard/Insights.js
 import React from "react";
 
 const Insights = ({ stats }) => {
@@ -8,44 +7,44 @@ const Insights = ({ stats }) => {
   const currentOrders = stats?.orders_count || 0;
   const lastWeekOrders = stats?.orders_last_week || 0;
   const orderDiff = currentOrders - lastWeekOrders;
-  const orderPercent = lastWeekOrders
-    ? Math.round((orderDiff / lastWeekOrders) * 100)
-    : 100;
+  const orderPercent =
+    lastWeekOrders > 0 ? Math.round((orderDiff / lastWeekOrders) * 100) : currentOrders > 0 ? 100 : 0;
 
   const viewsThisWeek = stats?.views_count || 0;
   const viewsLastWeek = stats?.views_last_week || 0;
   const viewsDiff = viewsThisWeek - viewsLastWeek;
-  const viewsPercent = viewsLastWeek
-    ? Math.round((viewsDiff / viewsLastWeek) * 100)
-    : 100;
+  const viewsPercent =
+    viewsLastWeek > 0 ? Math.round((viewsDiff / viewsLastWeek) * 100) : viewsThisWeek > 0 ? 100 : 0;
 
   const upcoming = stats?.upcoming_appointments || 0;
+  const progressPercent = goal > 0 ? Math.round((currentOrders / goal) * 100) : 0;
 
   return (
-    <div className="insights-container">
-      <div className="insight">
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div>
         📈 שינוי בצפיות:{" "}
-        {viewsDiff >= 0
+        {viewsDiff === 0
+          ? "אין שינוי"
+          : viewsDiff > 0
           ? `עלייה של ${viewsPercent}%`
           : `ירידה של ${Math.abs(viewsPercent)}%`}
       </div>
 
-      <div className="insight">
+      <div>
         📦 שינוי בהזמנות:{" "}
-        {orderDiff >= 0
+        {orderDiff === 0
+          ? "אין שינוי"
+          : orderDiff > 0
           ? `עלייה של ${orderPercent}%`
           : `ירידה של ${Math.abs(orderPercent)}%`}
       </div>
 
-      <div className="insight">
-        🎯 התקדמות ליעד: {currentOrders}/{goal} הזמנות (
-        {Math.round((currentOrders / goal) * 100)}%)
+      <div>
+        🎯 התקדמות ליעד: {currentOrders}/{goal} הזמנות ({progressPercent}%)
       </div>
 
-      <div className="insight">
-        📆 {upcoming > 0
-          ? `יש ${upcoming} פגישות מתוכננות`
-          : "אין פגישות מתוכננות השבוע"}
+      <div>
+        📆 {upcoming > 0 ? `יש ${upcoming} פגישות מתוכננות` : "אין פגישות מתוכננות השבוע"}
       </div>
     </div>
   );
