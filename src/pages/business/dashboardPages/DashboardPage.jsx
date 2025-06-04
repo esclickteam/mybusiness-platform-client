@@ -86,6 +86,12 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
+    // מונע יצירת חיבור socket כפול
+    if (socketRef.current) {
+      console.log("Socket already exists, skipping creation.");
+      return;
+    }
+
     async function setupSocket() {
       const sock = await createSocket({
         role: "business-dashboard",
@@ -100,14 +106,13 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", newStats => {
-  console.log("Dashboard update received:", newStats);
-  // בדיקה בסיסית למבנה הנתונים
-  if (newStats && typeof newStats === 'object' && 'views_count' in newStats) {
-    setStats({ ...newStats });
-  } else {
-    console.warn("Ignoring invalid dashboard update:", newStats);
-  }
-});
+        console.log("Dashboard update received:", newStats);
+        if (newStats && typeof newStats === 'object' && 'views_count' in newStats) {
+          setStats({ ...newStats });
+        } else {
+          console.warn("Ignoring invalid dashboard update:", newStats);
+        }
+      });
 
       sock.on("disconnect", reason => {
         console.log("Dashboard socket disconnected, reason:", reason);
