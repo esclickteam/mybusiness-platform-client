@@ -1,12 +1,15 @@
-// src/components/SSESummary.jsx
 import React from 'react';
-import { MdPersonAdd, MdStorefront, MdRateReview, MdInfo } from 'react-icons/md';
+import { MdPersonAdd, MdStorefront, MdRateReview } from 'react-icons/md';
 import './SSESummary.css';
 
-export default function SSESummary({ updates }) {
-  // Debug: log incoming updates and types
-  console.log('SSESummary updates:', updates);
-  updates.forEach(u => console.log('  type:', u.type, 'message:', u.message || u.title));
+export default function SSESummary({ updates = [] }) {
+  if (!updates.length) {
+    return (
+      <div className="sse-summary-empty">
+        אין עדכונים חדשים
+      </div>
+    );
+  }
 
   // סופרים אירועים לפי סוג מדויק עם סינון כפילויות
   const seen = new Set();

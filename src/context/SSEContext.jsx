@@ -1,7 +1,5 @@
-// src/context/SSEContext.jsx
 import React, { createContext, useState, useEffect } from "react";
 
-// יצירת הקונטקסט לשימוש בכל הקומפוננטות
 export const SSEContext = createContext({ updates: [] });
 
 export function SSEProvider({ children, businessId, withHistory = false }) {
@@ -13,23 +11,26 @@ export function SSEProvider({ children, businessId, withHistory = false }) {
       return;
     }
 
-    const baseUrl    = import.meta.env.VITE_SSE_URL || "/api/updates";
-    const streamUrl  = `${baseUrl}/stream/${businessId}`;
+    const baseUrl = import.meta.env.VITE_SSE_URL || "/api/updates";
+    const token = localStorage.getItem("token");
+
+    const streamUrl = token
+      ? `${baseUrl}/stream/${businessId}?token=${encodeURIComponent(token)}`
+      : `${baseUrl}/stream/${businessId}`;
+
     const historyUrl = `${baseUrl}/history`;
 
     let es;
 
-    // פונקציה שמתחילה את חיבור ה־SSE
     const startStream = () => {
       console.log("🔌 [SSE] connecting to", streamUrl);
       es = new EventSource(streamUrl, { withCredentials: true });
 
-      // מאזין לעדכוני סטטיסטיקה
       es.addEventListener("statsUpdate", (e) => {
         try {
           const ev = JSON.parse(e.data);
           setUpdates((prev) => {
-            // הימנעות משכפול
+            // הימנעות משכפול עדכון עם אותו טיימסטמפ והודעה
             if (
               prev.length > 0 &&
               prev[0].timestamp === ev.timestamp &&
@@ -37,21 +38,23 @@ export function SSEProvider({ children, businessId, withHistory = false }) {
             ) {
               return prev;
             }
-            return [ev, ...prev].slice(0, 20); // מגביל ל־20 אחרונים
+            return [ev, ...prev].slice(0, 20);
           });
         } catch (err) {
           console.error("Invalid SSE data:", err);
         }
       });
 
-      // טיפול בשגיאות SSE
       es.onerror = (err) => {
         console.error("❌ [SSE] error", err);
         es.close();
+        // ניסיון חיבור מחדש אחרי 5 שניות
+        setTimeout(() => {
+          startStream();
+        }, 5000);
       };
     };
 
-    // שלב ראשון: היסטוריה אם נדרש
     if (withHistory) {
       fetch(historyUrl, { credentials: "include" })
         .then((res) => (res.ok ? res.json() : []))
@@ -62,7 +65,6 @@ export function SSEProvider({ children, businessId, withHistory = false }) {
       startStream();
     }
 
-    // ניקוי בעת סגירה
     return () => {
       es?.close();
       console.log("🔴 [SSE] connection closed");
