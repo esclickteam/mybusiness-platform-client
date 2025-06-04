@@ -6,7 +6,6 @@ import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
-// שימו לב: כאן ייבאנו את הקומפוננטה שבנינו לשם BarChart
 import BarChart from "../../../components/dashboard/BarChart";
 import PieChart from "../../../components/dashboard/PieChart";
 import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart";
@@ -69,12 +68,14 @@ const DashboardPage = () => {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   }
 
-  // קריאה ראשונית ל-API כדי להביא את הסטטיסטיקות
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
     API.get(`/business/${businessId}/stats`)
-      .then(res => setStats(res.data))
+      .then(res => {
+        console.log("API stats:", res.data);
+        setStats(res.data);
+      })
       .catch(err => {
         console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
@@ -82,14 +83,9 @@ const DashboardPage = () => {
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  // הקמת WebSocket כדי לקבל עדכונים בזמן אמת
   useEffect(() => {
     if (!initialized || !businessId) return;
-
-    if (socketRef.current) {
-      console.log("Socket already exists, skipping creation.");
-      return;
-    }
+    if (socketRef.current) return;
 
     async function setupSocket() {
       const sock = await createSocket({
@@ -126,7 +122,6 @@ const DashboardPage = () => {
 
     return () => {
       if (socketRef.current) {
-        console.log("Disconnecting dashboard socket");
         socketRef.current.disconnect();
         socketRef.current = null;
       }
@@ -157,29 +152,39 @@ const DashboardPage = () => {
     }
   };
 
-  // הכנת הנתונים עבור גרף העמודות (BarChart)
-  // כאן בונים מערך של 3 אובייקטים: "פגישות עתידיות", "פניות חדשות", "הודעות מלקוחות"
-  // כאשר בכל אובייקט יש name (לציר X), וערכים ל־customers, requests, orders.
   const barChartData = [
     {
       name: "פגישות עתידיות",
-      customers: stats.appointments_count, // משתמשים במספר הפגישות לצורך "לקוחות"
+      customers: stats.appointments_count,
       requests: 0,
       orders: 0,
     },
     {
       name: "פניות חדשות",
       customers: 0,
-      requests: stats.requests_count, // מציגים את מספר הבקשות
+      requests: stats.requests_count,
       orders: 0,
     },
     {
       name: "הודעות מלקוחות",
       customers: 0,
       requests: 0,
-      orders: stats.messages_count, // מציגים את מספר ההודעות
+      orders: stats.messages_count,
     },
   ];
+
+  // דוגמת נתוני דמה למקרה שאין נתוני הכנסות
+  const dummyIncomeData = {
+    "לקוחות חדשים": 10,
+    "פניות חדשות": 5,
+    "פגישות": 3,
+    "הודעות": 7,
+  };
+
+  // בחר נתוני הכנסות אמיתיים אם קיימים, אחרת דמה
+  const incomeData = stats.income_distribution && Object.keys(stats.income_distribution).length > 0
+    ? stats.income_distribution
+    : dummyIncomeData;
 
   return (
     <div className="dashboard-container">
@@ -226,15 +231,11 @@ const DashboardPage = () => {
       <NextActions stats={stats} />
 
       <div>
-        {/* כעת שולחים ל־BarChart את המערך barChartData שיצרנו */}
         <BarChart data={barChartData} />
-        {stats.income_distribution && (
-          <PieChart data={stats.income_distribution} />
-        )}
+        <PieChart data={incomeData} />
       </div>
 
       <div>
-        {/* <LineChart stats={stats} /> הוסר */}
         {stats.monthly_comparison && (
           <MonthlyComparisonChart data={stats.monthly_comparison} />
         )}
