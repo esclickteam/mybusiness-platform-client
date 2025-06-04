@@ -6,7 +6,7 @@ import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
-import DashboardRealTime from "../../../components/dashboard/DashboardRealTime"; // כאן הייבוא החדש
+import LineChart from "../../../components/dashboard/LineChart";
 import PieChart from "../../../components/dashboard/PieChart";
 import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart";
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
@@ -81,6 +81,56 @@ const DashboardPage = () => {
       })
       .finally(() => setLoading(false));
   }, [businessId]);
+
+  useEffect(() => {
+    if (!initialized || !businessId) return;
+
+    if (socketRef.current) {
+      console.log("Socket already exists, skipping creation.");
+      return;
+    }
+
+    async function setupSocket() {
+      const sock = await createSocket({
+        role: "business-dashboard",
+        businessId,
+      });
+      if (!sock) return;
+
+      socketRef.current = sock;
+
+      sock.on("connect", () => {
+        console.log("Dashboard socket connected:", sock.id);
+      });
+
+      sock.on("dashboardUpdate", newStats => {
+        console.log("Dashboard update received:", newStats);
+        if (newStats && typeof newStats === "object" && "views_count" in newStats) {
+          setStats({ ...newStats });
+        } else {
+          console.warn("Ignoring invalid dashboard update:", newStats);
+        }
+      });
+
+      sock.on("disconnect", reason => {
+        console.log("Dashboard socket disconnected, reason:", reason);
+      });
+
+      sock.on("connect_error", err => {
+        console.error("Socket connection error:", err);
+      });
+    }
+
+    setupSocket();
+
+    return () => {
+      if (socketRef.current) {
+        console.log("Disconnecting dashboard socket");
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, [initialized, businessId]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
@@ -167,13 +217,7 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        {/* כאן החלפנו את LineChart ב-DashboardRealTime */}
-        <DashboardRealTime
-          businessId={businessId}
-          token={user?.token}
-          refreshToken={user?.refreshToken}
-        />
-
+        <LineChart stats={stats} />
         {stats.monthly_comparison && (
           <MonthlyComparisonChart data={stats.monthly_comparison} />
         )}
@@ -188,6 +232,7 @@ const DashboardPage = () => {
 
       <div>
         <WeeklySummary stats={stats} />
+        {/* OpenLeadsTable הוסר */}
       </div>
 
       {appointments.length > 0 && (
