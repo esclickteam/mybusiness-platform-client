@@ -1,4 +1,3 @@
-// src/context/SocketContext.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
@@ -14,8 +13,11 @@ export function SocketProvider({ children }) {
 
     const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
     const token = localStorage.getItem("token");
-    const businessId = localStorage.getItem("businessId"); // קח את ה-businessId מ-localStorage
-    
+
+    // קריאה נכונה לפרטי העסק מתוך localStorage
+    const businessDetailsStr = localStorage.getItem("businessDetails");
+    const businessId = businessDetailsStr ? JSON.parse(businessDetailsStr)._id : null;
+
     if (!token || !businessId) return; // ודא ש-businessId ו-token קיימים
 
     const sock = io(SOCKET_URL, {
