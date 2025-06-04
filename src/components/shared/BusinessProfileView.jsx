@@ -83,27 +83,28 @@ export default function BusinessProfileView() {
 
   // שליחת וצפייה בספריית הצפיות
   useEffect(() => {
-  if (!socket || !bizId || !user?.userId) return;
+  if (!socket || !bizId || !user?.userId) {
+    console.log("[Client] Socket or bizId or userId missing:", { socket, bizId, userId: user?.userId });
+    return;
+  }
 
-  // מאזין לעדכוני הדשבורד הכוללים צפיות בפרופיל
   const dashboardUpdateHandler = (stats) => {
+    console.log("[Client] Received dashboardUpdate:", stats);
     if (stats.views_count !== undefined) {
-      console.log("Received dashboardUpdate with views_count:", stats.views_count);
+      console.log("[Client] Received views_count:", stats.views_count);
       setProfileViewsCount(stats.views_count);
     }
   };
 
   socket.on("dashboardUpdate", dashboardUpdateHandler);
 
-  // פונקציה ששולחת אירוע צפייה בפרופיל לשרת
   const sendProfileView = () => {
-    console.log("Emitting profileView:", { businessId: bizId, viewerId: user.userId });
+    console.log("[Client] Emitting profileView event", { businessId: bizId, viewerId: user.userId });
     socket.emit("profileView", { businessId: bizId, viewerId: user.userId });
   };
 
-  // כשמתחברים לסוקט, שולחים את האירוע
   const connectHandler = () => {
-    console.log("Socket connected, sending profileView");
+    console.log("[Client] Socket connected, sending profileView");
     sendProfileView();
   };
 
@@ -113,12 +114,18 @@ export default function BusinessProfileView() {
     socket.once("connect", connectHandler);
   }
 
-  // ניקוי מאזינים בעת פירוק הקומפוננטה / שינוי התלויות
+  // מאזינים כלליים ל-log של כל אירוע שמגיע מהשרת (debug)
+  socket.onAny((event, ...args) => {
+    console.log(`[Client] Received event: ${event}`, args);
+  });
+
   return () => {
     socket.off("dashboardUpdate", dashboardUpdateHandler);
     socket.off("connect", connectHandler);
+    socket.offAny();
   };
 }, [socket, bizId, user?.userId]);
+
 
 
 
