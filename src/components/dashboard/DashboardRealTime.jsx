@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
-import LineChartComponent from "./LineChartComponent";
+import LineChart from "./LineChart";  // שנה כאן לנתיב ולשם הנכון של הקומפוננטה שלך
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
@@ -15,7 +15,6 @@ const DashboardRealTime = ({ businessId, token, refreshToken }) => {
     }
 
     if (socketRef.current) {
-      // אם כבר קיים חיבור, ננתק קודם
       socketRef.current.disconnect();
     }
 
@@ -60,7 +59,7 @@ const DashboardRealTime = ({ businessId, token, refreshToken }) => {
     };
   }, [businessId, token, refreshToken]);
 
-  return <LineChartComponent stats={stats} />;
+  return <LineChart stats={stats} />;
 };
 
 export default DashboardRealTime;
