@@ -5,15 +5,13 @@ import { getValidAccessToken, getBusinessId, getUserRole } from "./utils/authHel
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export async function createSocket() {
-  // קבלת AccessToken תקין
   const token = await getValidAccessToken();
+  const role = getUserRole(); // למשל: "business", "customer", "chat", "client" וכו'
 
-  // קבלת תפקיד המשתמש
-  const role = getUserRole(); // דוגמא: "business", "customer", "chat", "client" וכו'
-
-  // רק במידה והתפקיד דורש מזהה עסק - קבלת מזהה העסק
+  // שליפת businessId רק אם צריך
   let businessId = null;
-  if (role === "business" || role === "business-dashboard") {
+  const rolesNeedingBusinessId = ["business", "business-dashboard"];
+  if (rolesNeedingBusinessId.includes(role)) {
     const rawBusinessId = getBusinessId();
     businessId =
       typeof rawBusinessId === "string"
@@ -21,33 +19,34 @@ export async function createSocket() {
         : rawBusinessId?._id?.toString() || rawBusinessId?.toString();
   }
 
-  // בדיקות תקינות נתונים לפני יצירת החיבור
-  if (!token || (["business", "business-dashboard"].includes(role) && !businessId)) {
-    console.error("❌ Missing token or businessId for role", role);
-    alert("Missing required authentication data. Please log in again.");
+  // בדיקת תקינות נתונים לפי סוג משתמש
+  if (!token) {
+    console.error("❌ Missing token for role", role);
+    alert("Missing authentication token. Please log in again.");
+    window.location.href = "/login";
+    return null;
+  }
+  if (rolesNeedingBusinessId.includes(role) && !businessId) {
+    console.error("❌ Missing businessId for role", role);
+    alert("Missing business ID. Please log in again.");
     window.location.href = "/login";
     return null;
   }
 
-  console.log("🔍 Checking authentication data...");
-  console.log("Token:", token);
-  console.log("Role:", role);
-  console.log("BusinessId:", businessId);
+  // לוג קצר (אופציונלי)
+  console.log("🔗 Connecting socket:", { SOCKET_URL, role, businessId: businessId || "(none)" });
 
-  console.log("🔗 Creating socket connection to:", SOCKET_URL);
+  // בניית פרטי הזדהות לדינמיות
+  const auth = { token, role };
+  if (businessId) auth.businessId = businessId;
 
   const socket = io(SOCKET_URL, {
     path: "/socket.io",
-    transports: ["polling", "websocket"],  // כולל fallback ל-polling
-    auth: {
-      token,
-      role,
-      businessId,
-    },
+    transports: ["polling", "websocket"],
+    auth,
     autoConnect: false,
   });
 
-  // מחברים את הסוקט מיד לאחר יצירתו
   socket.connect();
 
   socket.on("connect", () => {
@@ -59,24 +58,17 @@ export async function createSocket() {
   });
 
   socket.on("tokenExpired", async () => {
-    console.log("🚨 Token expired event received. Attempting to refresh token...");
-
+    console.log("🚨 Token expired. Refreshing...");
     const newToken = await getValidAccessToken();
-
     if (!newToken) {
       alert("Session expired. Please log in again.");
       window.location.href = "/login";
       return;
     }
-
-    console.log("✅ New access token received");
     localStorage.setItem("token", newToken);
     socket.auth.token = newToken;
-
-    console.log("🔄 Disconnecting and reconnecting socket with new token...");
     socket.disconnect();
     socket.connect();
-    console.log("✅ Reconnected with refreshed access token");
   });
 
   socket.on("connect_error", (err) => {
