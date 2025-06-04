@@ -6,14 +6,14 @@ import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
-import LineChart from "../../../components/dashboard/LineChart";
+// import LineChart from "../../../components/dashboard/LineChart"; // הוסר
 import PieChart from "../../../components/dashboard/PieChart";
 import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart";
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
 import BarChart from "../../../components/dashboard/BarChart";
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
-import WeeklySummary from "../../../components/dashboard/WeeklySummary";
+import WeeklySummary from "../../../components/dashboard/WeeklySummary"; // נשאר
 import AppointmentsList from "../../../components/dashboard/AppointmentsList";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
@@ -217,7 +217,7 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        <LineChart stats={stats} />
+        {/* <LineChart stats={stats} /> הוסר */}
         {stats.monthly_comparison && (
           <MonthlyComparisonChart data={stats.monthly_comparison} />
         )}
@@ -231,8 +231,7 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        <WeeklySummary stats={stats} />
-        {/* OpenLeadsTable הוסר */}
+        <WeeklySummary stats={stats} /> {/* נשאר */}
       </div>
 
       {appointments.length > 0 && (
