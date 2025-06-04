@@ -16,7 +16,8 @@ export function SocketProvider({ children }) {
 
     // קריאה נכונה לפרטי העסק מתוך localStorage
     const businessDetailsStr = localStorage.getItem("businessDetails");
-    const businessId = businessDetailsStr ? JSON.parse(businessDetailsStr)._id : null;
+    const businessId = businessDetailsStr ? JSON.parse(businessDetailsStr).id : null;
+
 
     if (!token || !businessId) return; // ודא ש-businessId ו-token קיימים
 
