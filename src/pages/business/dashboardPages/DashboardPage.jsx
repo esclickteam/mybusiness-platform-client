@@ -14,7 +14,6 @@ import BarChart from "../../../components/dashboard/BarChart";
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
 import WeeklySummary from "../../../components/dashboard/WeeklySummary";
-import OpenLeadsTable from "../../../components/dashboard/OpenLeadsTable";
 import AppointmentsList from "../../../components/dashboard/AppointmentsList";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
