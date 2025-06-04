@@ -20,7 +20,7 @@ import { SSEProvider } from "./context/SSEContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 
-// נוסיף כאן את הייבוא של ה־DashboardSocketProvider:
+// ייבוא של ה־DashboardSocketProvider מה־Context שיצרנו
 import { DashboardSocketProvider } from "./context/DashboardSocketContext";
 
 // כל הייבוא הדינמי כפי שהיה
@@ -69,51 +69,49 @@ const BusinessProfilePage  = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 const Collab               = lazy(() => import("./pages/business/dashboardPages/Collab"));
 
-// סקריפט שמגלגל העמוד ל־(0,0) בכל שינוי כתובת
+// ScrollToTop ‒ גלילת העמוד למעלה בכל שינוי כתובת
 function ScrollToTop() {
   const { pathname } = useLocation();
   React.useEffect(() => window.scrollTo(0, 0), [pathname]);
   return null;
 }
 
-// עוטף את BusinessProfileView (למקרה שתרצו גם שם Socket, אך לרוב לא צריך)
+// Wrapper עבור BusinessProfileView (כדי לבדוק הרשאות וטעינת משתמש)
 function BusinessProfileViewWrapper() {
-  const { user, loading } = useAuth();
+  const { user, token, loading } = useAuth();
   const { businessId: paramId } = useParams();
   const bizId = paramId || user?.businessId;
-  const token = user?.token;
 
-  // אם עדיין במחולל useAuth - הציגו טעינה
+  // 1. אם useAuth עדיין בטעינה → מציג טעינה
   if (loading) {
     return <div className="loading">⏳ טוען משתמש…</div>;
   }
 
-  // במידה ואין הרשאות (role לא "business" או ח״ב לא תקין)
+  // 2. אם אין user תקין או role לא "business" או bizId/token חסר → שגיאה
   if (!user || user.role !== "business" || !bizId || !token) {
     return <div className="error-text">אין לך הרשאה לצפות בפרופיל העסק.</div>;
   }
 
-  // כאן אין צורך ב־Socket אלא רק בצפייה בפרופיל
+  // 3. אם הכל תקין, מציג את BusinessProfileView (ללא Socket במקרה הזה)
   return <BusinessProfileView />;
 }
 
-// עוטף את כל BusinessDashboardRoutes ב־DashboardSocketProvider
+// Wrapper עבור Business Dashboard (עוטף ב‐DashboardSocketProvider)
 function BusinessDashboardWrapper() {
-  const { user, loading } = useAuth();
-  const { businessId } = useParams(); // מזהה העסק מהכתובת
-  const token = user?.token;
+  const { user, token, loading } = useAuth();
+  const { businessId } = useParams();
 
-  // 1. אם עדיין useAuth בטעינה → נטען משתמש
+  // 1. אם useAuth עדיין בטעינה → נטען משתמש
   if (loading) {
     return <div className="loading">⏳ טוען משתמש…</div>;
   }
 
-  // 2. אם אין user תקין או role לא עסק או businessId/token חסר → שגיאה
+  // 2. אם אין user תקין, role לא "business", או אין businessId/token → שגיאה
   if (!user || user.role !== "business" || !businessId || !token) {
     return <div className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</div>;
   }
 
-  // 3. כשהכל תקין, עטפו את התוכן ב־DashboardSocketProvider
+  // 3. אם הכל תקין, עטפו את הרכיב ב־DashboardSocketProvider כדי להתחבר ל־Socket.IO
   return (
     <DashboardSocketProvider token={token} businessId={businessId}>
       <BusinessDashboardRoutes />
@@ -128,7 +126,7 @@ export default function App() {
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
 
-  // חיפוש וסינון
+  // חיפוש וסינון 
   const [searchMode, setSearchMode] = useState("category");
   const [searchCategory, setSearchCategory] = useState("");
   const [freeText, setFreeText] = useState("");
@@ -139,7 +137,7 @@ export default function App() {
     setFreeText("");
   };
 
-  // אם עדיין useAuth בטעינה, נחכה לפני שרנדר כל דבר
+  // אם useAuth עדיין בטעינה, הציגו מסך טעינה כללי
   if (loading) return <div>טוען משתמש…</div>;
 
   return (
@@ -171,8 +169,8 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/staff-login" element={<StaffLogin />} />
-            
-            {/* Business Profile (לצפייה בפרופיל, ללא Socket) */}
+
+            {/* Business Profile ‒ ללא Socket */}
             <Route
               path="/business/:businessId"
               element={<BusinessProfileViewWrapper />}
@@ -200,7 +198,7 @@ export default function App() {
               }
             />
 
-            {/* Client chat outside dashboard */}
+            {/* Client chat מחוץ לדשבורד */}
             <Route
               path="/business/:businessId/messages"
               element={
@@ -210,7 +208,7 @@ export default function App() {
               }
             />
 
-            {/* Business dashboard */}
+            {/* Business Dashboard ‒ עטוף ב־DashboardSocketProvider */}
             <Route
               path="/business/:businessId/dashboard/*"
               element={
@@ -220,7 +218,7 @@ export default function App() {
               }
             />
 
-            {/* Business chat (list + detail) */}
+            {/* Business Chat (List + Detail) */}
             <Route
               path="/business/:businessId/chat/*"
               element={
@@ -230,7 +228,7 @@ export default function App() {
               }
             />
 
-            {/* Client dashboard */}
+            {/* Client Dashboard */}
             <Route
               path="/client/dashboard/*"
               element={
@@ -368,7 +366,7 @@ export default function App() {
   );
 }
 
-// ------ כאן ה־wrappers עבור BusinessChatListWrapper ו־BusinessChatWrapper ------
+// ------ הנה ה־wrappers עבור BusinessChatListWrapper ו־BusinessChatWrapper ------
 
 export function BusinessChatListWrapper() {
   const { businessId } = useParams();
