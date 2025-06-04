@@ -11,40 +11,28 @@ export default function SSESummary({ updates = [] }) {
     );
   }
 
-  // סופרים אירועים לפי סוג מדויק עם סינון כפילויות
-  const seen = new Set();
-  const countByType = updates.reduce((acc, u) => {
-    const key = u.message || u.title || u._id || '';
-    if (seen.has(key)) return acc;
-    seen.add(key);
-
-    const type = (u.type || '').toLowerCase();
-
-    let mappedType;
-    switch (type) {
-      case 'new_customer':
-        mappedType = 'client';
-        break;
-      case 'new_business':
-        mappedType = 'business';
-        break;
-      case 'new_review':
-        mappedType = 'review';
-        break;
-      default:
-        mappedType = 'info';
-        console.warn('לא נמצא מיפוי ל-type:', type);
-        break;
-    }
-
-    acc[mappedType] = (acc[mappedType] || 0) + 1;
-    return acc;
-  }, {});
+  // ניקח את העדכון האחרון כדי להציג את המספרים העדכניים
+  const latest = updates[0];
 
   const cards = [
-    { type: 'client',   label: 'לקוחות חדשים', icon: <MdPersonAdd /> },
-    { type: 'business', label: 'עסקים חדשים',   icon: <MdStorefront /> },
-    { type: 'review',   label: 'ביקורות חדשות', icon: <MdRateReview /> },
+    {
+      type: 'client',
+      label: 'לקוחות חדשים',
+      icon: <MdPersonAdd />,
+      count: latest.open_leads_count ?? 0,
+    },
+    {
+      type: 'business',
+      label: 'עסקים חדשים',
+      icon: <MdStorefront />,
+      count: latest.orders_count ?? 0,
+    },
+    {
+      type: 'review',
+      label: 'ביקורות חדשות',
+      icon: <MdRateReview />,
+      count: latest.reviews_count ?? 0,
+    },
   ];
 
   return (
@@ -53,7 +41,7 @@ export default function SSESummary({ updates = [] }) {
         <div key={c.type} className="sse-card">
           <div className="sse-icon">{c.icon}</div>
           <div className="sse-info">
-            <div className="sse-count">{countByType[c.type] || 0}</div>
+            <div className="sse-count">{c.count}</div>
             <div className="sse-label">{c.label}</div>
           </div>
         </div>
