@@ -19,9 +19,14 @@ const Insights = ({ stats }) => {
   const upcoming = stats?.upcoming_appointments || 0;
   const progressPercent = goal > 0 ? Math.round((currentOrders / goal) * 100) : 0;
 
+  const changeColor = (diff) => {
+    if (diff === 0) return "gray";
+    return diff > 0 ? "green" : "red";
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      <div>
+    <div style={{ display: "flex", flexDirection: "column", gap: "15px", fontSize: "1.1rem" }}>
+      <div title="שינוי בצפיות לעומת שבוע שעבר" style={{ color: changeColor(viewsDiff) }}>
         📈 שינוי בצפיות:{" "}
         {viewsDiff === 0
           ? "אין שינוי"
@@ -30,7 +35,7 @@ const Insights = ({ stats }) => {
           : `ירידה של ${Math.abs(viewsPercent)}%`}
       </div>
 
-      <div>
+      <div title="שינוי בהזמנות לעומת שבוע שעבר" style={{ color: changeColor(orderDiff) }}>
         📦 שינוי בהזמנות:{" "}
         {orderDiff === 0
           ? "אין שינוי"

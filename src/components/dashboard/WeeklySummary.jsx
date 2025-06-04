@@ -15,11 +15,17 @@ const WeeklySummary = ({ stats }) => {
 
   // חישוב שינוי באחוזים
   const getChange = (current, last) => {
-    if (!last) return current > 0 ? "+100%" : "0%";
+    if (!last) return current > 0 ? { text: "+100%", color: "green", arrow: "▲" } : { text: "0%", color: "gray", arrow: "" };
     const diff = current - last;
     const percent = Math.round((diff / last) * 100);
-    return (percent >= 0 ? "+" : "") + percent + "%";
+    if (percent > 0) return { text: `+${percent}%`, color: "green", arrow: "▲" };
+    if (percent < 0) return { text: `${percent}%`, color: "red", arrow: "▼" };
+    return { text: "0%", color: "gray", arrow: "" };
   };
+
+  const messagesChange = getChange(currentMessages, lastMessages);
+  const reviewsChange = getChange(currentReviews, lastReviews);
+  const viewsChange = getChange(currentViews, lastViews);
 
   return (
     <div>
@@ -28,19 +34,25 @@ const WeeklySummary = ({ stats }) => {
         <div style={{ backgroundColor: "#D6E8FF", padding: 20, borderRadius: 12, flex: 1 }}>
           <div style={{ fontSize: 14, marginBottom: 8 }}>💬 הודעות מלקוחות</div>
           <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentMessages}</div>
-          <div style={{ fontSize: 12, color: "#555" }}>{getChange(currentMessages, lastMessages)}</div>
+          <div style={{ fontSize: 12, color: messagesChange.color }}>
+            {messagesChange.arrow} {messagesChange.text}
+          </div>
         </div>
 
         <div style={{ backgroundColor: "#FFF7CC", padding: 20, borderRadius: 12, flex: 1 }}>
           <div style={{ fontSize: 14, marginBottom: 8 }}>⭐ ביקורות חיוביות</div>
           <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentReviews}</div>
-          <div style={{ fontSize: 12, color: "#555" }}>{getChange(currentReviews, lastReviews)}</div>
+          <div style={{ fontSize: 12, color: reviewsChange.color }}>
+            {reviewsChange.arrow} {reviewsChange.text}
+          </div>
         </div>
 
         <div style={{ backgroundColor: "#E6E0FF", padding: 20, borderRadius: 12, flex: 1 }}>
           <div style={{ fontSize: 14, marginBottom: 8 }}>👀 צפיות בפרופיל</div>
           <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentViews}</div>
-          <div style={{ fontSize: 12, color: "#555" }}>{getChange(currentViews, lastViews)}</div>
+          <div style={{ fontSize: 12, color: viewsChange.color }}>
+            {viewsChange.arrow} {viewsChange.text}
+          </div>
         </div>
       </div>
     </div>
