@@ -11,24 +11,28 @@ import {
 } from "recharts";
 
 const LineChartComponent = ({ stats }) => {
-  const isTestUser = stats?.mock === true;
+  if (
+    !stats ||
+    !Array.isArray(stats.weekly_labels) ||
+    !Array.isArray(stats.weekly_views) ||
+    !Array.isArray(stats.weekly_requests) ||
+    !Array.isArray(stats.weekly_orders) ||
+    stats.weekly_labels.length === 0
+  ) {
+    return (
+      <div style={{ textAlign: "center", marginTop: 30 }}>
+        <h3>📈 פעילות בשבוע האחרון</h3>
+        <p>אין נתונים להצגה</p>
+      </div>
+    );
+  }
 
-  const dummyLabels = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
-  const dummyData = dummyLabels.map((label, index) => ({
+  const data = stats.weekly_labels.map((label, index) => ({
     name: label,
-    views: [20, 40, 35, 60, 50, 70, 88][index],
-    requests: [5, 6, 8, 7, 9, 10, 14][index],
-    orders: [1, 2, 4, 5, 3, 5, 6][index],
+    views: stats.weekly_views[index] || 0,
+    requests: stats.weekly_requests[index] || 0,
+    orders: stats.weekly_orders[index] || 0,
   }));
-
-  const realData = (stats?.weekly_labels || []).map((label, index) => ({
-    name: label,
-    views: stats?.weekly_views?.[index] || 0,
-    requests: stats?.weekly_requests?.[index] || 0,
-    orders: stats?.weekly_orders?.[index] || 0,
-  }));
-
-  const data = isTestUser ? dummyData : realData;
 
   return (
     <div className="chart-container" style={{ marginTop: 30 }}>
