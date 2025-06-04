@@ -1,4 +1,3 @@
-// src/components/DashboardLive.jsx
 import React, { useEffect, useState, useContext } from "react";
 import DashboardCards from "./DashboardCards";
 import { SocketContext } from "../context/socketContext";
@@ -21,19 +20,19 @@ export default function DashboardLive({ businessId }) {
       return;
     }
 
-    // Handler לעדכונים בזמן אמת
     const statsHandler = (newStats) => {
+      console.log("Received dashboardUpdate:", newStats);
       setStats((prev) => ({ ...prev, ...newStats }));
     };
 
-    // הירשם לאירוע העדכון
-    socket.on("dashboardStatsUpdate", statsHandler);
+    // מאזין לעדכוני דשבורד בזמן אמת
+    socket.on("dashboardUpdate", statsHandler);
 
-    // בקש את המצב ההתחלתי
+    // בקשת נתונים התחלתית
     socket.emit("getDashboardStats", { businessId });
 
     return () => {
-      socket.off("dashboardStatsUpdate", statsHandler);
+      socket.off("dashboardUpdate", statsHandler);
     };
   }, [businessId, socket]);
 
