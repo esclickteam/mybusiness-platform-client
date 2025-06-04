@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { Suspense, lazy, useState } from "react";
 import {
   Routes,
@@ -20,106 +19,56 @@ import { SSEProvider } from "./context/SSEContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 
-// ייבוא של ה־DashboardSocketProvider מה־Context שיצרנו
-import { DashboardSocketProvider } from "./context/DashboardSocketContext";
-
-// כל הייבוא הדינמי כפי שהיה
-const HomePage             = lazy(() => import("./pages/Home"));
-const About                = lazy(() => import("./pages/About"));
-const SearchBusinesses     = lazy(() => import("./pages/SearchBusinesses"));
-const PrivacyPolicy        = lazy(() => import("./pages/PrivacyPolicy"));
-const HowItWorks           = lazy(() => import("./pages/HowItWorks"));
-const Plans                = lazy(() => import("./pages/business/Plans"));
-const Checkout             = lazy(() => import("./pages/Checkout"));
-const FAQ                  = lazy(() => import("./pages/FAQ"));
-const Accessibility        = lazy(() => import("./pages/Accessibility"));
-const Terms                = lazy(() => import("./pages/Terms"));
-const Contact              = lazy(() => import("./pages/Contact"));
-const BusinessSupport      = lazy(() => import("./pages/BusinessSupport"));
-const BusinessOverview     = lazy(() => import("./pages/business/Business"));
-const BusinessesList       = lazy(() => import("./pages/BusinessesList"));
-const QuickJobsBoard       = lazy(() => import("./pages/QuickJobsBoard"));
-const QuickJobForm         = lazy(() => import("./pages/QuickJobForm"));
-const Login                = lazy(() => import("./pages/Login"));
-const Register             = lazy(() => import("./pages/Register"));
-const ResetPassword        = lazy(() => import("./pages/ResetPassword"));
-const ChangePassword       = lazy(() => import("./pages/ChangePassword"));
-const StaffLogin           = lazy(() => import("./pages/StaffLogin"));
-const BusinessProfileView  = lazy(() => import("./components/shared/BusinessProfileView"));
-const BookingPage          = lazy(() => import("./pages/BookingPage"));
-const ClientDashboard      = lazy(() => import("./pages/client/ClientDashboard"));
-const MessagesPage         = lazy(() => import("./pages/client/MessagesPage"));
-const OrdersPage           = lazy(() => import("./pages/client/OrdersPage"));
-const FavoritesPage        = lazy(() => import("./pages/client/FavoritesPage"));
-const StaffDashboard       = lazy(() => import("./pages/staff/StaffDashboard"));
-const WorkSession          = lazy(() => import("./pages/staff/WorkSession"));
-const PhoneProfile         = lazy(() => import("./pages/staff/PhoneProfile"));
-const MyTasks              = lazy(() => import("./pages/staff/MyTasks"));
-const MySales              = lazy(() => import("./pages/staff/MySales"));
-const ManagerDashboard     = lazy(() => import("./pages/manager/ManagerDashboard"));
-const AdminDashboard       = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminLogs            = lazy(() => import("./pages/admin/AdminLogs"));
-const AdminPlans           = lazy(() => import("./pages/admin/AdminPlans"));
-const AdminSettings        = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminUsers           = lazy(() => import("./pages/admin/AdminUsers"));
-const EditSiteContent      = lazy(() => import("./pages/admin/EditSiteContent"));
-const ManageRoles          = lazy(() => import("./pages/admin/ManageRoles"));
-const AdminPayoutPage      = lazy(() => import("./pages/admin/AdminPayoutPage"));
-const BusinessProfilePage  = lazy(() => import("./pages/BusinessProfilePage"));
+// ---- כל הייבוא הדינמי כפי שהיה ----
+const HomePage            = lazy(() => import("./pages/Home"));
+const About               = lazy(() => import("./pages/About"));
+const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
+const PrivacyPolicy       = lazy(() => import("./pages/PrivacyPolicy"));
+const HowItWorks          = lazy(() => import("./pages/HowItWorks"));
+const Plans               = lazy(() => import("./pages/business/Plans"));
+const Checkout            = lazy(() => import("./pages/Checkout"));
+const FAQ                 = lazy(() => import("./pages/FAQ"));
+const Accessibility       = lazy(() => import("./pages/Accessibility"));
+const Terms               = lazy(() => import("./pages/Terms"));
+const Contact             = lazy(() => import("./pages/Contact"));
+const BusinessSupport     = lazy(() => import("./pages/BusinessSupport"));
+const BusinessOverview    = lazy(() => import("./pages/business/Business"));
+const BusinessesList      = lazy(() => import("./pages/BusinessesList"));
+const QuickJobsBoard      = lazy(() => import("./pages/QuickJobsBoard"));
+const QuickJobForm        = lazy(() => import("./pages/QuickJobForm"));
+const Login               = lazy(() => import("./pages/Login"));
+const Register            = lazy(() => import("./pages/Register"));
+const ResetPassword       = lazy(() => import("./pages/ResetPassword"));
+const ChangePassword      = lazy(() => import("./pages/ChangePassword"));
+const StaffLogin          = lazy(() => import("./pages/StaffLogin"));
+const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
+const BookingPage         = lazy(() => import("./pages/BookingPage"));
+const ClientDashboard     = lazy(() => import("./pages/client/ClientDashboard"));
+const MessagesPage        = lazy(() => import("./pages/client/MessagesPage"));
+const OrdersPage          = lazy(() => import("./pages/client/OrdersPage"));
+const FavoritesPage       = lazy(() => import("./pages/client/FavoritesPage"));
+const StaffDashboard      = lazy(() => import("./pages/staff/StaffDashboard"));
+const WorkSession         = lazy(() => import("./pages/staff/WorkSession"));
+const PhoneProfile        = lazy(() => import("./pages/staff/PhoneProfile"));
+const MyTasks             = lazy(() => import("./pages/staff/MyTasks"));
+const MySales             = lazy(() => import("./pages/staff/MySales"));
+const ManagerDashboard    = lazy(() => import("./pages/manager/ManagerDashboard"));
+const AdminDashboard      = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminLogs           = lazy(() => import("./pages/admin/AdminLogs"));
+const AdminPlans          = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminSettings       = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
+const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
+const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
+const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
-const Collab               = lazy(() => import("./pages/business/dashboardPages/Collab"));
+const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
 
-// ScrollToTop ‒ גלילת העמוד למעלה בכל שינוי כתובת
 function ScrollToTop() {
   const { pathname } = useLocation();
   React.useEffect(() => window.scrollTo(0, 0), [pathname]);
   return null;
-}
-
-// Wrapper עבור BusinessProfileView (כדי לבדוק הרשאות וטעינת משתמש)
-function BusinessProfileViewWrapper() {
-  const { user, token, loading } = useAuth();
-  const { businessId: paramId } = useParams();
-  const bizId = paramId || user?.businessId;
-
-  // 1. אם useAuth עדיין בטעינה → מציג טעינה
-  if (loading) {
-    return <div className="loading">⏳ טוען משתמש…</div>;
-  }
-
-  // 2. אם אין user תקין או role לא "business" או bizId/token חסר → שגיאה
-  if (!user || user.role !== "business" || !bizId || !token) {
-    return <div className="error-text">אין לך הרשאה לצפות בפרופיל העסק.</div>;
-  }
-
-  // 3. אם הכל תקין, מציג את BusinessProfileView (ללא Socket במקרה הזה)
-  return <BusinessProfileView />;
-}
-
-// Wrapper עבור Business Dashboard (עוטף ב‐DashboardSocketProvider)
-function BusinessDashboardWrapper() {
-  const { user, token, loading } = useAuth();
-  const { businessId } = useParams();
-
-  if (loading) {
-    return <div className="loading">⏳ טוען משתמש…</div>;
-  }
-
-  // אם אין user, role לא "business", businessId או token חסר — שגיאה
-  if (!user || user.role !== "business" || !businessId || !token) {
-    return <div className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</div>;
-  }
-
-  // אם businessId ב-URL שונה מזה של המשתמש — הפנה לכתובת עם businessId הנכון
-  if (businessId !== user.businessId) {
-    return <Navigate to={`/business/${user.businessId}/dashboard`} replace />;
-  }
-
-  return (
-    <DashboardSocketProvider token={token} businessId={businessId}>
-      <BusinessDashboardRoutes />
-    </DashboardSocketProvider>
-  );
 }
 
 export default function App() {
@@ -129,7 +78,7 @@ export default function App() {
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
 
-  // חיפוש וסינון 
+  // חיפוש וסינון
   const [searchMode, setSearchMode] = useState("category");
   const [searchCategory, setSearchCategory] = useState("");
   const [freeText, setFreeText] = useState("");
@@ -140,7 +89,6 @@ export default function App() {
     setFreeText("");
   };
 
-  // אם useAuth עדיין בטעינה, הציגו מסך טעינה כללי
   if (loading) return <div>טוען משתמש…</div>;
 
   return (
@@ -172,12 +120,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/staff-login" element={<StaffLogin />} />
-
-            {/* Business Profile ‒ ללא Socket */}
-            <Route
-              path="/business/:businessId"
-              element={<BusinessProfileViewWrapper />}
-            />
+            <Route path="/business/:businessId" element={<BusinessProfileView />} />
             <Route path="/book/:businessId" element={<BookingPage />} />
 
             <Route
@@ -201,7 +144,7 @@ export default function App() {
               }
             />
 
-            {/* Client chat מחוץ לדשבורד */}
+            {/* Client chat outside dashboard */}
             <Route
               path="/business/:businessId/messages"
               element={
@@ -211,17 +154,17 @@ export default function App() {
               }
             />
 
-            {/* Business Dashboard ‒ עטוף ב־DashboardSocketProvider */}
+            {/* Business dashboard */}
             <Route
               path="/business/:businessId/dashboard/*"
               element={
                 <ProtectedRoute roles={["business"]}>
-                  <BusinessDashboardWrapper />
+                  <BusinessDashboardRoutes />
                 </ProtectedRoute>
               }
             />
 
-            {/* Business Chat (List + Detail) */}
+            {/* Business chat (list + detail) */}
             <Route
               path="/business/:businessId/chat/*"
               element={
@@ -231,7 +174,7 @@ export default function App() {
               }
             />
 
-            {/* Client Dashboard */}
+            {/* Client dashboard */}
             <Route
               path="/client/dashboard/*"
               element={
@@ -369,8 +312,7 @@ export default function App() {
   );
 }
 
-// ------ הנה ה־wrappers עבור BusinessChatListWrapper ו־BusinessChatWrapper ------
-
+// ------ כאן נשארים ה־wrappers שלך (BusinessChatListWrapper, BusinessChatWrapper) כפי שהם ------
 export function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
@@ -382,11 +324,11 @@ export function BusinessChatListWrapper() {
 
   React.useEffect(() => {
     API.get("/messages/conversations", { withCredentials: true })
-      .then((res) => setConvos(res.data))
+      .then(res => setConvos(res.data))
       .catch(console.error);
   }, [businessId]);
 
-  const handleSelect = (conv) => {
+  const handleSelect = conv => {
     navigate(
       `/business/${businessId}/chat/${conv.customer._id}`,
       { state: { conversationId: conv.conversationId } }
