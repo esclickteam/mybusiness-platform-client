@@ -85,7 +85,6 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    // מונע יצירת חיבור socket כפול
     if (socketRef.current) {
       console.log("Socket already exists, skipping creation.");
       return;
@@ -106,7 +105,7 @@ const DashboardPage = () => {
 
       sock.on("dashboardUpdate", newStats => {
         console.log("Dashboard update received:", newStats);
-        if (newStats && typeof newStats === 'object' && 'views_count' in newStats) {
+        if (newStats && typeof newStats === "object" && "views_count" in newStats) {
           setStats({ ...newStats });
         } else {
           console.warn("Ignoring invalid dashboard update:", newStats);
@@ -233,7 +232,7 @@ const DashboardPage = () => {
 
       <div>
         <WeeklySummary stats={stats} />
-        <OpenLeadsTable leads={stats.leads} />
+        {/* OpenLeadsTable הוסר */}
       </div>
 
       {appointments.length > 0 && (
