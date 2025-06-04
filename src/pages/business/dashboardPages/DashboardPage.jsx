@@ -62,6 +62,14 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
+  // בדיקת הרשאות – רק בעלי עסק עם businessId יכולים להמשיך
+  if (!initialized) {
+    return <p className="loading-text">⏳ טוען נתונים…</p>;
+  }
+  if (user?.role !== "business" || !businessId) {
+    return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
+  }
+
   // Fetch initial stats
   useEffect(() => {
     if (!businessId) return;
@@ -123,7 +131,7 @@ const DashboardPage = () => {
     setTimeout(() => setAlert(null), 2500);
   };
 
-  if (!initialized || loading)
+  if (loading)
     return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
