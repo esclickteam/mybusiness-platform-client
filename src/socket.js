@@ -8,6 +8,8 @@ export async function createSocket() {
   const token = await getValidAccessToken();
   const role = getUserRole(); // למשל: "business", "customer", "chat", "client" וכו'
 
+  console.log("createSocket() - detected role:", role);
+
   // שליפת businessId רק אם צריך
   let businessId = null;
   const rolesNeedingBusinessId = ["business", "business-dashboard"];
@@ -18,6 +20,8 @@ export async function createSocket() {
         ? rawBusinessId
         : rawBusinessId?._id?.toString() || rawBusinessId?.toString();
   }
+
+  console.log("createSocket() - businessId:", businessId);
 
   // בדיקת תקינות נתונים לפי סוג משתמש
   if (!token) {

@@ -62,7 +62,6 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // בדיקת הרשאות – רק בעלי עסק עם businessId יכולים להמשיך
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
   }
@@ -70,7 +69,6 @@ const DashboardPage = () => {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   }
 
-  // Fetch initial stats
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
@@ -83,15 +81,17 @@ const DashboardPage = () => {
       .finally(() => setLoading(false));
   }, [businessId]);
 
-  // Real-time socket connection
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     async function setupSocket() {
-      const sock = await createSocket();
-      if (!sock) return; // אין טוקן תקין, כנראה הפניית login כבר התבצעה
+      // העבר role מפורש כ business-dashboard ליצירת החיבור
+      const sock = await createSocket({
+        role: "business-dashboard",
+        businessId,
+      });
+      if (!sock) return;
 
-      sock.connect();
       socketRef.current = sock;
 
       sock.on("connect", () => {
@@ -131,25 +131,18 @@ const DashboardPage = () => {
     setTimeout(() => setAlert(null), 2500);
   };
 
-  if (loading)
-    return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
 
-  const todaysAppointments = Array.isArray(stats.todaysAppointments)
-    ? stats.todaysAppointments
-    : [];
-  const appointments = Array.isArray(stats.appointments)
-    ? stats.appointments
-    : [];
+  const todaysAppointments = Array.isArray(stats.todaysAppointments) ? stats.todaysAppointments : [];
+  const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
         📊 דשבורד העסק
-        <span className="greeting">
-          {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
-        </span>
+        <span className="greeting">{user?.businessName ? ` | שלום, ${user.businessName}!` : ""}</span>
       </h2>
 
       <QuickActions onAction={handleQuickAction} />
@@ -206,9 +199,7 @@ const DashboardPage = () => {
           }}
           options={{ responsive: true }}
         />
-        {stats.income_distribution && (
-          <PieChart data={stats.income_distribution} />
-        )}
+        {stats.income_distribution && <PieChart data={stats.income_distribution} />}
       </div>
 
       <div>
@@ -222,9 +213,7 @@ const DashboardPage = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {appointments.length > 0 && (
-          <AppointmentsList appointments={appointments} />
-        )}
+        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
       </div>
 
       <div>
@@ -234,15 +223,8 @@ const DashboardPage = () => {
 
       {appointments.length > 0 && (
         <div>
-          <CalendarView
-            appointments={appointments}
-            onDateClick={setSelectedDate}
-          />
-          <DailyAgenda
-            date={selectedDate}
-            appointments={appointments}
-            businessName={stats.businessName}
-          />
+          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
+          <DailyAgenda date={selectedDate} appointments={appointments} businessName={stats.businessName} />
         </div>
       )}
     </div>
