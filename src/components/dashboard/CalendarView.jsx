@@ -10,6 +10,12 @@ const CalendarView = ({ appointments, onDateClick }) => {
     );
   }
 
+  // קבלת השנה והחודש הנוכחיים
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+
+  // מיון הפגישות לפי תאריך (מחרוזת YYYY-MM-DD)
   const byDay = {};
   appointments.forEach(appt => {
     const date = new Date(appt.date).toISOString().split("T")[0];
@@ -17,15 +23,16 @@ const CalendarView = ({ appointments, onDateClick }) => {
     byDay[date].push(appt);
   });
 
+  // יצירת מערך של 31 ימים עם הפגישות ליום
   const daysInMonth = Array.from({ length: 31 }, (_, i) => {
     const day = i + 1;
-    const dateStr = `2025-04-${day.toString().padStart(2, "0")}`;
+    const dateStr = `${year}-${month}-${day.toString().padStart(2, "0")}`;
     return { day, dateStr, events: byDay[dateStr] || [] };
   });
 
   return (
     <div className="graph-box">
-      <h4>📆 יומן חודשי (אפריל)</h4>
+      <h4>📆 יומן חודשי ({year}/{month})</h4>
       <div className="calendar-grid">
         {daysInMonth.map(({ day, dateStr, events }) => (
           <div
