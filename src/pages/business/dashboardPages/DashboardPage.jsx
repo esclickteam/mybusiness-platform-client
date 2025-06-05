@@ -295,18 +295,18 @@ const DashboardPage = () => {
 
       {/* לוח שנה ולו"ז יומי תמיד מופיעים */}
       <div className="calendar-row">
-        <div className="day-agenda-box">
-          <DailyAgenda
-            date={selectedDate}
-            appointments={appointments}
-            businessName={stats.businessName}
-          />
-        </div>
-        <div className="calendar-grid-box">
-          <CalendarView
-            appointments={appointments}
-            onDateClick={setSelectedDate}
-            selectedDate={selectedDate}
+  <div className="day-agenda-box">
+    <DailyAgenda
+      date={selectedDate}
+      appointments={appointments}
+      businessName={stats.businessName}
+    />
+  </div>
+  <div className="calendar-grid-box">
+    <CalendarView
+      appointments={appointments}
+      onDateClick={setSelectedDate}
+      selectedDate={selectedDate}
           />
         </div>
       </div>
