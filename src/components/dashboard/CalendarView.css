@@ -84,13 +84,13 @@
 
 .calendar-day {
   background: #fff;
-  border-radius: 8px;
-  padding: 8px 0; /* הקטנתי padding */
+  border-radius: 10px;
+  padding: 10px 0;
   text-align: center;
-  font-weight: 700;
-  font-size: 0.85rem; /* הקטנתי פונט */
+  font-weight: 600;
+  font-size: 0.9rem;
   color: #333;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
   cursor: pointer;
   transition: background 0.3s ease, box-shadow 0.3s ease;
   aspect-ratio: 1 / 1;
