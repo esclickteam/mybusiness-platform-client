@@ -302,7 +302,7 @@ const DashboardPage = () => {
       businessName={stats.businessName}
     />
   </div>
-  <div className="calendar-grid-box">
+   <div className="calendar-container">
     <CalendarView
       appointments={appointments}
       onDateClick={setSelectedDate}
