@@ -10,6 +10,7 @@ export default function MessagesPage() {
   useEffect(() => {
     async function fetchConversations() {
       try {
+        // שים לב שהנתיב הוא '/api/conversations' בשרת - לכן כאן צריך להיות '/conversations'
         const res = await API.get("/conversations", { withCredentials: true });
         setConversations(res.data);
       } catch (error) {
@@ -32,7 +33,7 @@ export default function MessagesPage() {
           <li
             key={conv.conversationId}
             onClick={() =>
-              navigate(`/business/${conv.businessId}/messages/${conv.conversationId}`)
+              navigate(`/business/${conv.participants.find(p => p !== conv.businessId)}/messages/${conv.conversationId}`)
             }
             style={{
               cursor: "pointer",
@@ -42,6 +43,7 @@ export default function MessagesPage() {
               borderRadius: "6px",
               backgroundColor: "#f9f9f9",
             }}
+            title={`לחץ כדי לפתוח את הצ'אט עם ${conv.businessName || "העסק"}`}
           >
             <strong>{conv.businessName || "עסק"}</strong>
             <p style={{ margin: "4px 0" }}>{conv.lastMessage?.text || "אין הודעות"}</p>
