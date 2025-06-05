@@ -39,6 +39,8 @@ export default function   BusinessProfileView() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [profileViewsCount, setProfileViewsCount] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+
 
   // דגל כדי למנוע קריאה כפולה של ה-useEffect בשל React.StrictMode
   const hasIncrementedRef = useRef(false);
@@ -60,6 +62,13 @@ export default function   BusinessProfileView() {
         setFaqs(biz.faqs || []);
         setServices(biz.services || []);
 
+        // בדיקה אם העסק במועדפים של המשתמש
+        if (user) {
+          const favRes = await API.get("/users/me", { withCredentials: true });
+          const favList = favRes.data.favorites || [];
+          setIsFavorite(favList.includes(bizId));
+        }
+
         const resWH = await API.get("/appointments/get-work-hours", {
           params: { businessId: bizId },
         });
@@ -80,9 +89,8 @@ export default function   BusinessProfileView() {
         setLoading(false);
       }
     })();
-  }, [bizId]);
+  }, [bizId, user]);
 
-  // ספירת צפיות בפרופיל - קריאה ראשונית שמעלה את הספירה בשרת
   useEffect(() => {
     if (!bizId) return;
     if (hasIncrementedRef.current) return;
@@ -100,15 +108,32 @@ export default function   BusinessProfileView() {
       });
   }, [bizId]);
 
-  // במקום useDashboardSocket, ניגש כעת ל-stats מתוך Context
   const socketStats = useDashboardStats();
 
-  // עדכון סטטיסטיקות בזמן אמת מתוך socket (בעיקר views_count)
   useEffect(() => {
     if (socketStats?.views_count !== undefined && bizId) {
       setProfileViewsCount(socketStats.views_count);
     }
   }, [socketStats, bizId]);
+
+  const toggleFavorite = async () => {
+    if (!user) {
+      alert("אנא התחבר כדי לנהל מועדפים");
+      return;
+    }
+    try {
+      if (isFavorite) {
+        await API.delete(`/users/favorites/${bizId}`, { withCredentials: true });
+        setIsFavorite(false);
+      } else {
+        await API.post(`/users/favorites/${bizId}`, null, { withCredentials: true });
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      alert("אירעה שגיאה, נסה שוב");
+    }
+  };
 
   if (loading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">{error}</div>;
@@ -160,7 +185,26 @@ export default function   BusinessProfileView() {
               <img className="profile-logo" src={logoUrl} alt="לוגו העסק" />
             </div>
           )}
-          <h1 className="business-name">{businessName}</h1>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <h1 className="business-name">{businessName}</h1>
+            {/* כפתור מועדפים */}
+            <button
+              onClick={toggleFavorite}
+              className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
+              aria-label={isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "1.5rem",
+                color: isFavorite ? "red" : "gray",
+              }}
+            >
+              {isFavorite ? "❤️" : "🤍"}
+            </button>
+          </div>
+
           <div className="about-phone">
             {category && (
               <p>
