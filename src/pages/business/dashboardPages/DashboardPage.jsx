@@ -33,29 +33,53 @@ const DashboardAlert = ({ text, type = "info" }) => (
   <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
 );
 
+const LOCAL_STORAGE_KEY = "dashboardStats";
+
 const DashboardPage = () => {
   const { user, initialized } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
   const navigate = useNavigate();
 
-  const [stats, setStats] = useState({
-    views_count: 0,
-    requests_count: 0,
-    orders_count: 0,
-    reviews_count: 0,
-    messages_count: 0,
-    appointments_count: 0,
-    todaysAppointments: [],
-    income_distribution: null,
-    monthly_comparison: null,
-    recent_activity: null,
-    appointments: [],
-    leads: [],
-    businessName: "",
+  const [stats, setStats] = useState(() => {
+    // טוען מהlocalStorage בתחילת הרינדור
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : {
+        views_count: 0,
+        requests_count: 0,
+        orders_count: 0,
+        reviews_count: 0,
+        messages_count: 0,
+        appointments_count: 0,
+        todaysAppointments: [],
+        income_distribution: null,
+        monthly_comparison: null,
+        recent_activity: null,
+        appointments: [],
+        leads: [],
+        businessName: "",
+      };
+    } catch {
+      return {
+        views_count: 0,
+        requests_count: 0,
+        orders_count: 0,
+        reviews_count: 0,
+        messages_count: 0,
+        appointments_count: 0,
+        todaysAppointments: [],
+        income_distribution: null,
+        monthly_comparison: null,
+        recent_activity: null,
+        appointments: [],
+        leads: [],
+        businessName: "",
+      };
+    }
   });
   const [selectedDate, setSelectedDate] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!stats || Object.keys(stats).length === 0);
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
@@ -65,6 +89,15 @@ const DashboardPage = () => {
   if (user?.role !== "business" || !businessId) {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   }
+
+  // שמירת stats ב-localStorage בכל פעם שמשתנה
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stats));
+    } catch (e) {
+      console.warn("Failed to save dashboard stats to localStorage", e);
+    }
+  }, [stats]);
 
   // API data fetch
   useEffect(() => {
