@@ -20,7 +20,7 @@ import "../../../styles/dashboard.css";
 
 const QuickActions = ({ onAction }) => (
   <div className="quick-actions-row">
-    <button className="quick-action-btn" onClick={() => onAction("meeting")}>
+    <button className="quick-action-btn" onClick={() =>  onAction("meeting")}>
       + פגישה חדשה
     </button>
     <button className="quick-action-btn" onClick={() => onAction("message")}>
