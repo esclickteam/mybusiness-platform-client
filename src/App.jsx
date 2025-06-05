@@ -184,7 +184,6 @@ export default function App() {
               }
             >
               <Route index element={<Navigate to="search" replace />} />
-              <Route path="search" element={<SearchBusinesses />} />
               <Route path="messages" element={<MessagesPage />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
