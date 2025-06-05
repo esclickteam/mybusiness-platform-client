@@ -1,17 +1,14 @@
-// src/utils/createSocket.js
 import { io } from "socket.io-client";
 import { getValidAccessToken, getBusinessId, getUserRole } from "./utils/authHelpers";
-
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export async function createSocket() {
   const token = await getValidAccessToken();
-  const role = getUserRole(); // למשל: "business", "customer", "chat", "client" וכו'
+  const role = getUserRole();
 
   console.log("createSocket() - detected role:", role);
 
-  // שליפת businessId רק אם צריך
   let businessId = null;
   const rolesNeedingBusinessId = ["business", "business-dashboard"];
   if (rolesNeedingBusinessId.includes(role)) {
@@ -24,7 +21,6 @@ export async function createSocket() {
 
   console.log("createSocket() - businessId:", businessId);
 
-  // בדיקת תקינות נתונים לפי סוג משתמש
   if (!token) {
     console.error("❌ Missing token for role", role);
     alert("Missing authentication token. Please log in again.");
@@ -38,10 +34,8 @@ export async function createSocket() {
     return null;
   }
 
-  // לוג קצר (אופציונלי)
   console.log("🔗 Connecting socket:", { SOCKET_URL, role, businessId: businessId || "(none)" });
 
-  // בניית פרטי הזדהות לדינמיות (ללא refreshToken)
   const auth = { token, role };
   if (businessId) auth.businessId = businessId;
 
@@ -70,6 +64,7 @@ export async function createSocket() {
       window.location.href = "/login";
       return;
     }
+    console.log("🔄 New token received, reconnecting socket");
     localStorage.setItem("token", newToken);
     socket.auth.token = newToken;
     socket.disconnect();
