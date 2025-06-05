@@ -454,6 +454,7 @@
 
 .calendar-grid-box {
   flex: 1 1 600px;
+  max-width: 650px;
   background: #fffaf1;
   border-radius: 12px;
   padding: 20px;
@@ -462,6 +463,7 @@
 
 .day-agenda-box {
   flex: 1 1 300px;
+  max-width: 350px;
   background: #fdf5df;
   border-radius: 12px;
   padding: 20px;
@@ -597,3 +599,4 @@
   margin-right: 7px;
   color: #a090c7;
 }
+
