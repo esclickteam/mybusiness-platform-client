@@ -398,16 +398,6 @@
   max-width: 48%;
 }
 
-/* קלנדר במרכז */
-.calendar-container {
-  width: 100%;
-  max-width: 900px;
-  margin: 40px auto 0;
-  background: #fffaf1;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
 
 /* תאי קלנדר */
 .calendar-grid {
