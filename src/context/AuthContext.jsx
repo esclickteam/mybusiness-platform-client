@@ -170,7 +170,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     setLoading(true);
     try {
-      await API.post("/auth/logout", null, { credentials: "include" }); // שולח את ה-refreshToken מה-cookie
+      await API.post("/auth/logout", null);
       setUser(null);
       localStorage.removeItem("token");
       localStorage.removeItem("businessDetails");
