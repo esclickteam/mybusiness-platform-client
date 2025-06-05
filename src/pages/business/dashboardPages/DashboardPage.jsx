@@ -20,7 +20,7 @@ import "../../../styles/dashboard.css";
 
 const QuickActions = ({ onAction }) => (
   <div className="quick-actions-row">
-    <button className="quick-action-btn" onClick={() =>  onAction("meeting")}>
+    <button className="quick-action-btn" onClick={() => onAction("meeting")}>
       + פגישה חדשה
     </button>
     <button className="quick-action-btn" onClick={() => onAction("message")}>
@@ -35,7 +35,6 @@ const DashboardAlert = ({ text, type = "info" }) => (
 
 const LOCAL_STORAGE_KEY = "dashboardStats";
 
-// פונקציית עזר למיזוג סטטיסטיקות - מתעלמת מסטטיסטיקות ריקות
 function mergeStats(oldStats, newStats) {
   const isEmpty = Object.values(newStats).every(
     (val) => val === 0 || val === null || val === undefined
@@ -115,10 +114,8 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
-    console.log("Fetching stats from API for businessId:", businessId);
     API.get(`/business/${businessId}/stats`)
       .then((res) => {
-        console.log("API stats response:", res.data);
         const data = res.data || {};
         const safeData = {
           views_count: data.views_count ?? 0,
@@ -145,7 +142,6 @@ const DashboardPage = () => {
       })
       .finally(() => {
         setLoading(false);
-        console.log("Finished loading API stats");
       });
   }, [businessId]);
 
@@ -154,7 +150,6 @@ const DashboardPage = () => {
     if (socketRef.current) return;
 
     async function setupSocket() {
-      console.log("Setting up socket for businessId:", businessId);
       const sock = await createSocket({
         role: "business-dashboard",
         businessId,
@@ -171,7 +166,6 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", (newStats) => {
-        console.log("Dashboard update received:", newStats);
         if (newStats && typeof newStats === "object") {
           const cleanedStats = {};
           for (const key in newStats) {
@@ -190,12 +184,8 @@ const DashboardPage = () => {
             } catch (e) {
               console.warn("Failed to save dashboard stats to localStorage", e);
             }
-            console.log("Merged stats:", merged);
             return merged;
           });
-          console.log("Updated stats state with new dashboard data");
-        } else {
-          console.warn("Ignoring invalid dashboard update:", newStats);
         }
       });
 
@@ -212,7 +202,6 @@ const DashboardPage = () => {
 
     return () => {
       if (socketRef.current) {
-        console.log("Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
       }
@@ -226,7 +215,6 @@ const DashboardPage = () => {
     ? stats.todaysAppointments
     : [];
   const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
-  const hasTodayMeetings = todaysAppointments.length > 0;
 
   const handleQuickAction = (action) => {
     switch (action) {
@@ -273,12 +261,6 @@ const DashboardPage = () => {
 
       <QuickActions onAction={handleQuickAction} />
       {alert && <DashboardAlert text={alert} type="info" />}
-      {hasTodayMeetings && (
-        <DashboardAlert
-          text={`📅 יש לך ${todaysAppointments.length} פגישות היום!`}
-          type="warning"
-        />
-      )}
 
       <DashboardNav
         refs={{
@@ -302,28 +284,31 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        {stats.recent_activity && (
-          <RecentActivityTable activities={stats.recent_activity} />
-        )}
-        {appointments.length > 0 && (
-          <AppointmentsList appointments={appointments} />
-        )}
+        {stats.recent_activity && <RecentActivityTable activities={stats.recent_activity} />}
+        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
       </div>
 
       <div>
         <WeeklySummary stats={stats} />
       </div>
 
-      {appointments.length > 0 && (
-        <div>
-          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
+      {/* לוח שנה ולו"ז יומי תמיד מופיעים */}
+      <div style={{ display: "flex", gap: "30px", marginTop: "40px", flexWrap: "wrap" }}>
+        <div style={{ flex: "1 1 600px" }}>
+          <CalendarView
+            appointments={appointments}
+            onDateClick={setSelectedDate}
+            selectedDate={selectedDate}
+          />
+        </div>
+        <div style={{ flex: "1 1 300px" }}>
           <DailyAgenda
             date={selectedDate}
             appointments={appointments}
             businessName={stats.businessName}
           />
         </div>
-      )}
+      </div>
     </div>
   );
 };
