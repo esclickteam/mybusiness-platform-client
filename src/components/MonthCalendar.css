@@ -1,13 +1,14 @@
 .calendar-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 720px; /* הרחבה ליותר מקום */
   margin: auto;
   font-family: 'Alef', sans-serif;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  background: #f8f7ff;    /* <--- צבע רקע חדש, מאוד עדין */
-  /* אפשר גם: background: #fff; */
+  background: #f8f7ff;
+  padding: 16px; /* הוספת ריווח פנימי */
+  box-sizing: border-box;
 }
 
 /* כותרת חודש ושנה */
@@ -63,15 +64,21 @@
 .calendar-dates {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  gap: 8px; /* רווח בין התאים */
+  padding: 10px 0;
 }
 .date-cell {
-  border-bottom: 1px solid #eee;
-  border-right: 1px solid #eee;
-  min-height: 80px;
+  border-radius: 12px;
+  background: #fff; /* רקע לבן לנראות נקייה */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1); /* צל עדין */
+  min-height: 90px; /* הגדלת הגובה */
   position: relative;
-  background: #fffbe6;
   transition: background 0.2s, box-shadow 0.2s;
   cursor: default;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 8px;
 }
 .date-cell:nth-child(7n) { /* ביטול גבול ימני לשבת */
   border-right: none;
@@ -87,8 +94,8 @@
 }
 .date-cell.clickable:hover,
 .date-cell.clickable:focus {
-  background: #f1e9ff;
-  box-shadow: 0 2px 10px 0 #e6dcff55;
+  background: #ece8ff;
+  box-shadow: 0 3px 10px rgba(126, 91, 239, 0.4);
 }
 
 /* תאריך נבחר */
@@ -96,7 +103,7 @@
 .date-cell.selected.clickable {
   background: linear-gradient(135deg, #7e5bef 70%, #c8b6ff 120%);
   color: #fff;
-  box-shadow: 0 2px 12px 0 #7e5bef22;
+  box-shadow: 0 3px 12px #7e5bef77;
 }
 .date-cell.selected .date-number {
   color: #fff;
@@ -104,12 +111,11 @@
 
 /* המספר עצמו */
 .date-number {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: #333;
+  user-select: none;
+  position: relative;
   z-index: 2;
 }
 
@@ -117,9 +123,10 @@
 @media (max-width: 480px) {
   .calendar-container {
     max-width: 100%;
+    padding: 10px;
   }
   .date-cell {
-    min-height: 60px;
+    min-height: 70px;
   }
   .date-number {
     font-size: 1rem;
