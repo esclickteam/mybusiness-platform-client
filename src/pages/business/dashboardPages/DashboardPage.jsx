@@ -126,7 +126,7 @@ const DashboardPage = () => {
 
       sock.on("dashboardUpdate", newStats => {
         console.log("Dashboard update received:", newStats);
-        if (newStats && typeof newStats === "object" && "views_count" in newStats) {
+        if (newStats && typeof newStats === "object") {
           const cleanedStats = {};
           for (const key in newStats) {
             if (newStats[key] !== undefined) {
@@ -135,6 +135,8 @@ const DashboardPage = () => {
           }
           setStats(prevStats => {
             const merged = { ...prevStats, ...cleanedStats };
+            const isEqual = Object.keys(merged).every(key => merged[key] === prevStats[key]);
+            if (isEqual) return prevStats;
             console.log("Merged stats:", merged);
             return merged;
           });
@@ -239,7 +241,6 @@ const DashboardPage = () => {
         }}
       />
 
-      {/* העברת ה-state stats ישירות ל-DashboardCards */}
       <DashboardCards stats={stats} />
 
       <Insights stats={stats} />
