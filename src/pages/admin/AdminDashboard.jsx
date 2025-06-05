@@ -12,7 +12,7 @@ function AdminDashboard() {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalBusinesses: 0,
-    totalPlans: 0,
+    totalClients: 0,      // <-- כאן שיניתי מ-totalPlans ל-totalClients
     totalSales: 0,
     activeManagers: 0,
     blockedUsers: 0,
@@ -72,7 +72,7 @@ function AdminDashboard() {
           🏢 עסקים רשומים: <strong>{stats.totalBusinesses}</strong>
         </div>
         <div className="summary-card">
-          📦 חבילות פעילות: <strong>{stats.totalPlans}</strong>
+          👥 לקוחות רשומים: <strong>{stats.totalClients}</strong>  {/* <-- כאן העדכון */}
         </div>
         <div className="summary-card">
           💰 סה"כ מכירות: <strong>{stats.totalSales} ₪</strong>
