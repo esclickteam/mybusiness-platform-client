@@ -1,6 +1,7 @@
 // src/utils/createSocket.js
 import { io } from "socket.io-client";
-import { getValidAccessToken, getBusinessId, getUserRole } from "./authHelpers";
+import { getValidAccessToken, getBusinessId, getUserRole } from "./utils/authHelpers";
+
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
