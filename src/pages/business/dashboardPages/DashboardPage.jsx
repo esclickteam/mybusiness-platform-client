@@ -74,7 +74,23 @@ const DashboardPage = () => {
     API.get(`/business/${businessId}/stats`)
       .then(res => {
         console.log("API stats response:", res.data);
-        setStats(res.data);
+        const data = res.data || {};
+        const safeData = {
+          views_count: data.views_count ?? 0,
+          requests_count: data.requests_count ?? 0,
+          orders_count: data.orders_count ?? 0,
+          reviews_count: data.reviews_count ?? 0,
+          messages_count: data.messages_count ?? 0,
+          appointments_count: data.appointments_count ?? 0,
+          todaysAppointments: Array.isArray(data.todaysAppointments) ? data.todaysAppointments : [],
+          monthly_comparison: data.monthly_comparison ?? null,
+          recent_activity: data.recent_activity ?? null,
+          appointments: Array.isArray(data.appointments) ? data.appointments : [],
+          leads: Array.isArray(data.leads) ? data.leads : [],
+          businessName: data.businessName ?? "",
+          income_distribution: data.income_distribution ?? null,
+        };
+        setStats(safeData);
       })
       .catch(err => {
         console.error("❌ Error fetching stats:", err);
@@ -111,7 +127,14 @@ const DashboardPage = () => {
       sock.on("dashboardUpdate", newStats => {
         console.log("Dashboard update received:", newStats);
         if (newStats && typeof newStats === "object" && "views_count" in newStats) {
-          setStats(prevStats => ({ ...prevStats, ...newStats }));
+          // סינון ערכים undefined
+          const cleanedStats = {};
+          for (const key in newStats) {
+            if (newStats[key] !== undefined) {
+              cleanedStats[key] = newStats[key];
+            }
+          }
+          setStats(prevStats => ({ ...prevStats, ...cleanedStats }));
           console.log("Updated stats state with new dashboard data");
         } else {
           console.warn("Ignoring invalid dashboard update:", newStats);
