@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api"; // הנח שיש לך API מוגדר
-import "./MessagesPage.css"; // אם יש עיצוב רלוונטי
 
 export default function MessagesPage() {
   const [conversations, setConversations] = useState([]);
