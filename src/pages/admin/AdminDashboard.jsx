@@ -1,26 +1,55 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 import { useAuth } from "../../context/AuthContext";
+import { io } from "socket.io-client";
 
 function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const socketRef = useRef(null);
+
+  // סטייט דינמי לעדכון הסטטיסטיקות
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalBusinesses: 0,
+    totalPlans: 0,
+    totalSales: 0,
+    activeManagers: 0,
+    blockedUsers: 0,
+  });
 
   useEffect(() => {
     if (user && user.role !== "admin") {
       navigate("/");
     }
-  }, [user]);
+  }, [user, navigate]);
 
-  const stats = {
-    totalUsers: 980,
-    totalBusinesses: 245,
-    totalPlans: 8,
-    totalSales: 58920,
-    activeManagers: 6,
-    blockedUsers: 17,
-  };
+  useEffect(() => {
+    // מחבר לשרת Socket.IO
+    socketRef.current = io("https://api.esclick.co.il");
+
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to admin socket with id:", socketRef.current.id);
+    });
+
+    // מאזין לעדכוני דשבורד מהשרת
+    socketRef.current.on("adminDashboardUpdate", (newStats) => {
+      console.log("Received admin dashboard update:", newStats);
+      setStats(newStats);
+    });
+
+    socketRef.current.on("disconnect", () => {
+      console.log("Disconnected from admin socket");
+    });
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+  }, []);
 
   return (
     <div className="admin-dashboard">
