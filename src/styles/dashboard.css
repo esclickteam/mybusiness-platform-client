@@ -454,20 +454,20 @@
 .day-agenda-box {
   flex: 0 0 350px;
   max-width: 350px;
-  background: #fdf5df;
+  background: transparent; /* או פשוט תסיר את השורה הזו */
   border-radius: 12px;
   padding: 20px;
   box-shadow: var(--box-shadow);
   order: 1;
   display: flex;
-  flex-direction: column;  /* חשוב לזרימת תוכן אנכית */
-  height: 500px;           /* גובה קבוע תואם ללוח שנה */
+  flex-direction: column;
+  height: 500px;
   overflow-y: auto;
   font-style: italic;
   font-size: 1rem;
   color: #5a5a5a;
-  /* הסר justify-content ו align-items */
 }
+
 
 .calendar-grid-box {
   flex: 1 1 auto; /* תופס את שאר המקום */
