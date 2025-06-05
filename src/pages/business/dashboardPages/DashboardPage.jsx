@@ -7,7 +7,6 @@ import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
 import BarChart from "../../../components/dashboard/BarChart";
-// import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart"; // הוסר
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
@@ -102,7 +101,8 @@ const DashboardPage = () => {
       sock.on("dashboardUpdate", newStats => {
         console.log("Dashboard update received:", newStats);
         if (newStats && typeof newStats === "object" && "views_count" in newStats) {
-          setStats({ ...newStats });
+          setStats(prevStats => ({ ...prevStats, ...newStats }));
+
         } else {
           console.warn("Ignoring invalid dashboard update:", newStats);
         }
