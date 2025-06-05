@@ -12,13 +12,18 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     async function fetchFavorites() {
-      if (!user) {
+      if (!user || !user.token) {
         setError("אנא התחבר כדי לראות את המועדפים שלך.");
         setLoading(false);
         return;
       }
       try {
-        const res = await API.get("/users/me", { withCredentials: true });
+        const res = await API.get("/users/me", {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+
         const favIds = res.data.favorites || [];
         if (favIds.length === 0) {
           setFavorites([]);
