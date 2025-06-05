@@ -42,24 +42,25 @@ const DashboardPage = () => {
   const navigate = useNavigate();
 
   const [stats, setStats] = useState(() => {
-    // טוען מהlocalStorage בתחילת הרינדור
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : {
-        views_count: 0,
-        requests_count: 0,
-        orders_count: 0,
-        reviews_count: 0,
-        messages_count: 0,
-        appointments_count: 0,
-        todaysAppointments: [],
-        income_distribution: null,
-        monthly_comparison: null,
-        recent_activity: null,
-        appointments: [],
-        leads: [],
-        businessName: "",
-      };
+      return saved
+        ? JSON.parse(saved)
+        : {
+            views_count: 0,
+            requests_count: 0,
+            orders_count: 0,
+            reviews_count: 0,
+            messages_count: 0,
+            appointments_count: 0,
+            todaysAppointments: [],
+            income_distribution: null,
+            monthly_comparison: null,
+            recent_activity: null,
+            appointments: [],
+            leads: [],
+            businessName: "",
+          };
     } catch {
       return {
         views_count: 0,
@@ -90,7 +91,6 @@ const DashboardPage = () => {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   }
 
-  // שמירת stats ב-localStorage בכל פעם שמשתנה
   useEffect(() => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stats));
@@ -99,13 +99,12 @@ const DashboardPage = () => {
     }
   }, [stats]);
 
-  // API data fetch
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
     console.log("Fetching stats from API for businessId:", businessId);
     API.get(`/business/${businessId}/stats`)
-      .then(res => {
+      .then((res) => {
         console.log("API stats response:", res.data);
         const data = res.data || {};
         const safeData = {
@@ -115,7 +114,9 @@ const DashboardPage = () => {
           reviews_count: data.reviews_count ?? 0,
           messages_count: data.messages_count ?? 0,
           appointments_count: data.appointments_count ?? 0,
-          todaysAppointments: Array.isArray(data.todaysAppointments) ? data.todaysAppointments : [],
+          todaysAppointments: Array.isArray(data.todaysAppointments)
+            ? data.todaysAppointments
+            : [],
           monthly_comparison: data.monthly_comparison ?? null,
           recent_activity: data.recent_activity ?? null,
           appointments: Array.isArray(data.appointments) ? data.appointments : [],
@@ -125,7 +126,7 @@ const DashboardPage = () => {
         };
         setStats(safeData);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
       })
@@ -135,7 +136,6 @@ const DashboardPage = () => {
       });
   }, [businessId]);
 
-  // Socket connection and updates
   useEffect(() => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
@@ -157,7 +157,7 @@ const DashboardPage = () => {
         console.log("Dashboard socket connected with ID:", sock.id);
       });
 
-      sock.on("dashboardUpdate", newStats => {
+      sock.on("dashboardUpdate", (newStats) => {
         console.log("Dashboard update received:", newStats);
         if (newStats && typeof newStats === "object") {
           const cleanedStats = {};
@@ -166,10 +166,20 @@ const DashboardPage = () => {
               cleanedStats[key] = newStats[key];
             }
           }
-          setStats(prevStats => {
+          setStats((prevStats) => {
             const merged = { ...prevStats, ...cleanedStats };
-            const isEqual = Object.keys(merged).every(key => merged[key] === prevStats[key]);
+            const isEqual = Object.keys(merged).every(
+              (key) => merged[key] === prevStats[key]
+            );
             if (isEqual) return prevStats;
+            try {
+              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+            } catch (e) {
+              console.warn(
+                "Failed to save dashboard stats to localStorage",
+                e
+              );
+            }
             console.log("Merged stats:", merged);
             return merged;
           });
@@ -179,11 +189,11 @@ const DashboardPage = () => {
         }
       });
 
-      sock.on("disconnect", reason => {
+      sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected, reason:", reason);
       });
 
-      sock.on("connect_error", err => {
+      sock.on("connect_error", (err) => {
         console.error("Socket connection error:", err);
       });
     }
@@ -205,12 +215,10 @@ const DashboardPage = () => {
   const todaysAppointments = Array.isArray(stats.todaysAppointments)
     ? stats.todaysAppointments
     : [];
-  const appointments = Array.isArray(stats.appointments)
-    ? stats.appointments
-    : [];
+  const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
   const hasTodayMeetings = todaysAppointments.length > 0;
 
-  const handleQuickAction = action => {
+  const handleQuickAction = (action) => {
     switch (action) {
       case "meeting":
         navigate(`/business/${businessId}/dashboard/appointments/new`);
@@ -287,7 +295,9 @@ const DashboardPage = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
+        {appointments.length > 0 && (
+          <AppointmentsList appointments={appointments} />
+        )}
       </div>
 
       <div>
