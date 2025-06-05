@@ -444,24 +444,30 @@
 }
 .calendar-row {
   display: flex;
-  align-items: center; /* שורה אחת, מיושר אנכית */
   gap: 30px;
   direction: rtl;
-  padding: 20px;
+  justify-content: flex-start; /* להתחיל מהקצה השמאלי */
+  align-items: center; /* יישור אנכי באותו קו */
+  padding: 20px; /* לפי הצורך */
+  height: 100%; /* או גובה מתאים */
 }
 
 .day-agenda-box {
-  flex: 1 1 300px;
+  flex: 0 0 300px; /* רוחב קבוע */
   max-width: 350px;
   background: #fdf5df;
   border-radius: 12px;
   padding: 20px;
   box-shadow: var(--box-shadow);
   order: 1;
+  display: flex;
+  justify-content: center; /* יישור תוכן פנימי במידת הצורך */
+  align-items: center;
+  height: fit-content;
 }
 
 .calendar-grid-box {
-  flex: 1 1 600px;
+  flex: 1 1 auto; /* תופס את שאר המקום */
   max-width: 650px;
   background: #fffaf1;
   border-radius: 12px;
