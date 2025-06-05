@@ -453,7 +453,7 @@
 }
 
 .day-agenda-box {
-  flex: 0 0 300px; /* רוחב קבוע */
+  flex: 0 0 300px;
   max-width: 350px;
   background: #fdf5df;
   border-radius: 12px;
@@ -461,9 +461,12 @@
   box-shadow: var(--box-shadow);
   order: 1;
   display: flex;
-  justify-content: center; /* יישור תוכן פנימי במידת הצורך */
+  justify-content: center; /* מרכז טקסט בתוך הקופסה */
   align-items: center;
-  height: fit-content;
+  height: 100%; /* ימלא את הגובה של הקונטיינר */
+  font-style: italic;
+  font-size: 1rem;
+  color: #5a5a5a;
 }
 
 .calendar-grid-box {
