@@ -127,14 +127,17 @@ const DashboardPage = () => {
       sock.on("dashboardUpdate", newStats => {
         console.log("Dashboard update received:", newStats);
         if (newStats && typeof newStats === "object" && "views_count" in newStats) {
-          // סינון ערכים undefined
           const cleanedStats = {};
           for (const key in newStats) {
             if (newStats[key] !== undefined) {
               cleanedStats[key] = newStats[key];
             }
           }
-          setStats(prevStats => ({ ...prevStats, ...cleanedStats }));
+          setStats(prevStats => {
+            const merged = { ...prevStats, ...cleanedStats };
+            console.log("Merged stats:", merged);
+            return merged;
+          });
           console.log("Updated stats state with new dashboard data");
         } else {
           console.warn("Ignoring invalid dashboard update:", newStats);
@@ -236,16 +239,8 @@ const DashboardPage = () => {
         }}
       />
 
-      <DashboardCards
-        stats={{
-          views_count: stats.views_count,
-          requests_count: stats.requests_count,
-          orders_count: stats.orders_count,
-          reviews_count: stats.reviews_count,
-          messages_count: stats.messages_count,
-          appointments_count: stats.appointments_count,
-        }}
-      />
+      {/* העברת ה-state stats ישירות ל-DashboardCards */}
+      <DashboardCards stats={stats} />
 
       <Insights stats={stats} />
       <NextActions stats={stats} />
