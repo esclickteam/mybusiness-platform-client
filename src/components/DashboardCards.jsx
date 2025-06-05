@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../styles/dashboard.css";
 
 const DashboardCards = ({ stats }) => {
+  useEffect(() => {
+    console.log("DashboardCards received stats:", stats);
+  }, [stats]);
+
   const cards = [
     {
       label: "צפיות בפרופיל",
