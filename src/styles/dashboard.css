@@ -350,15 +350,7 @@
   max-width: 48%;
 }
 
-/* 📅 קלנדר – במרכז ורוחב מלא */
-.calendar-container {
-  width: 100%;
-  background: #fff6ea;
-  border-radius: 14px;
-  padding: 20px;
-  margin-top: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
+
 
 /* רשת לוח שנה */
 .calendar-grid {
