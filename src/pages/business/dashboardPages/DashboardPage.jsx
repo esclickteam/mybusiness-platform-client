@@ -262,7 +262,7 @@ const DashboardPage = () => {
     },
   ];
 
-  return (
+   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
         📊 דשבורד העסק
@@ -314,16 +314,15 @@ const DashboardPage = () => {
         <WeeklySummary stats={stats} />
       </div>
 
-      {appointments.length > 0 && (
-        <div>
-          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
-          <DailyAgenda
-            date={selectedDate}
-            appointments={appointments}
-            businessName={stats.businessName}
-          />
-        </div>
-      )}
+      {/* **הסרת התנאי - הלוח תמיד מוצג!** */}
+      <div>
+        <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
+        <DailyAgenda
+          date={selectedDate}
+          appointments={appointments}
+          businessName={stats.businessName}
+        />
+      </div>
     </div>
   );
 };
