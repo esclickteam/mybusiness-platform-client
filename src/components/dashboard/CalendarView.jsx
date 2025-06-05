@@ -1,11 +1,10 @@
 import React, { useState } from "react";
+import "./CalendarView.css"; // ודא שאתה מייבא את קובץ ה-CSS
 
 const CalendarView = ({ appointments, onDateClick }) => {
-  // מצב פנימי של חודש ושנה שמוצגים
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth()); // 0-11
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
-  // פונקציות ניווט
   const goToPreviousMonth = () => {
     setCurrentMonth((prev) => {
       if (prev === 0) {
@@ -26,13 +25,9 @@ const CalendarView = ({ appointments, onDateClick }) => {
     });
   };
 
-  // מספר ימים בחודש
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  // היום בשבוע שבו מתחיל החודש (0 = ראשון, 6 = שבת)
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
-  // מיון הפגישות לפי תאריך (YYYY-MM-DD)
   const byDay = {};
   (appointments || []).forEach((appt) => {
     const date = new Date(appt.date).toISOString().split("T")[0];
@@ -40,11 +35,9 @@ const CalendarView = ({ appointments, onDateClick }) => {
     byDay[date].push(appt);
   });
 
-  // יצירת מערך תאים שיכלול גם רווחים לפני תחילת החודש
   const totalCells = daysInMonth + firstDayOfWeek;
   const calendarCells = Array.from({ length: totalCells }, (_, i) => {
     if (i < firstDayOfWeek) {
-      // תאים ריקים לפני תחילת החודש
       return { day: null, dateStr: null, events: [] };
     } else {
       const day = i - firstDayOfWeek + 1;
@@ -62,27 +55,11 @@ const CalendarView = ({ appointments, onDateClick }) => {
         {(currentMonth + 1).toString().padStart(2, "0")})
       </h4>
 
-      {/* הטקסט בצד שמאל */}
-      <div
-        style={{
-          textAlign: "left",
-          marginBottom: "10px",
-          fontStyle: "italic",
-          color: "#333",
-        }}
-      >
+      <div className="date-picker-text">
         בחר תאריך כדי לראות לוח"ז
       </div>
 
-      {/* ניווט חודשים */}
-      <div
-        style={{
-          marginBottom: "10px",
-          display: "flex",
-          justifyContent: "center",
-          gap: "12px",
-        }}
-      >
+      <div className="month-navigation">
         <button onClick={goToPreviousMonth}>← חודש קודם</button>
         <button onClick={goToNextMonth}>חודש הבא →</button>
       </div>
