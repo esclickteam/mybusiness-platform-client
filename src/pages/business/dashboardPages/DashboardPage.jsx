@@ -102,7 +102,6 @@ const DashboardPage = () => {
         console.log("Dashboard update received:", newStats);
         if (newStats && typeof newStats === "object" && "views_count" in newStats) {
           setStats(prevStats => ({ ...prevStats, ...newStats }));
-
         } else {
           console.warn("Ignoring invalid dashboard update:", newStats);
         }
@@ -224,9 +223,7 @@ const DashboardPage = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {appointments.length > 0 && (
-          <AppointmentsList appointments={appointments} />
-        )}
+        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
       </div>
 
       <div>
@@ -235,10 +232,7 @@ const DashboardPage = () => {
 
       {appointments.length > 0 && (
         <div>
-          <CalendarView
-            appointments={appointments}
-            onDateClick={setSelectedDate}
-          />
+          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
           <DailyAgenda
             date={selectedDate}
             appointments={appointments}
