@@ -1,17 +1,23 @@
-// src/utils/createSocket.js
 import { io } from "socket.io-client";
-import { getValidAccessToken, getRefreshToken, getBusinessId, getUserRole } from "./utils/authHelpers";
+import {
+  getValidAccessToken,
+  getRefreshToken,
+  getBusinessId,
+  getUserRole,
+} from "./authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export async function createSocket() {
   const token = await getValidAccessToken();
-  const refreshToken = getRefreshToken();  // הוספת שליפת ה-refreshToken
-  const role = getUserRole(); // למשל: "business", "customer", "chat", "client" וכו'
+  const refreshToken = getRefreshToken();
+  const role = getUserRole();
 
   console.log("createSocket() - detected role:", role);
+  console.log("createSocket() - token:", token);
+  console.log("createSocket() - refreshToken:", refreshToken);
+  console.log("createSocket() - businessId:", getBusinessId());
 
-  // שליפת businessId רק אם צריך
   let businessId = null;
   const rolesNeedingBusinessId = ["business", "business-dashboard"];
   if (rolesNeedingBusinessId.includes(role)) {
@@ -22,15 +28,13 @@ export async function createSocket() {
         : rawBusinessId?._id?.toString() || rawBusinessId?.toString();
   }
 
-  console.log("createSocket() - businessId:", businessId);
-
-  // בדיקת תקינות נתונים לפי סוג משתמש
   if (!token) {
     console.error("❌ Missing token for role", role);
     alert("Missing authentication token. Please log in again.");
     window.location.href = "/login";
     return null;
   }
+
   if (rolesNeedingBusinessId.includes(role) && !businessId) {
     console.error("❌ Missing businessId for role", role);
     alert("Missing business ID. Please log in again.");
@@ -38,12 +42,10 @@ export async function createSocket() {
     return null;
   }
 
-  // לוג קצר (אופציונלי)
-  console.log("🔗 Connecting socket:", { SOCKET_URL, role, businessId: businessId || "(none)" });
-
-  // בניית פרטי הזדהות לדינמיות כולל ה-refreshToken
   const auth = { token, refreshToken, role };
   if (businessId) auth.businessId = businessId;
+
+  console.log("🔗 Connecting socket with auth:", auth);
 
   const socket = io(SOCKET_URL, {
     path: "/socket.io",

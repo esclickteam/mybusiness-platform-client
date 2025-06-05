@@ -27,10 +27,6 @@ export function getBusinessId() {
   }
 }
 
-/**
- * מחזיר AccessToken תקין. אם פג תוקף – מנסה לרענן.
- * במקרה של כישלון מחזיר null.
- */
 export async function getValidAccessToken() {
   let token = getAccessToken();
 
@@ -62,19 +58,15 @@ export async function getValidAccessToken() {
   return token;
 }
 
-// הפונקציה להחזרת תפקיד המשתמש עם בדיקת URL לדשבורד
 export function getUserRole() {
   const token = getAccessToken();
   if (!token) return null;
   try {
     const decoded = jwtDecode(token);
     let role = decoded.role || null;
-
-    // אם התפקיד הוא business וב־URL יש dashboard, מחזירים business-dashboard
     if (role === "business" && window.location.pathname.includes("/dashboard")) {
       return "business-dashboard";
     }
-
     return role;
   } catch {
     return null;
