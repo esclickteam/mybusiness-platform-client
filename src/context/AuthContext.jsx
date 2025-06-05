@@ -168,21 +168,22 @@ export function AuthProvider({ children }) {
 
   // התנתקות
   const logout = async () => {
-    setLoading(true);
-    try {
-      await API.post("/auth/logout", null);
-      setUser(null);
-      localStorage.removeItem("token");
-      localStorage.removeItem("businessDetails");
-      delete API.defaults.headers['Authorization'];
-      setSuccessMessage("✅ נותקת בהצלחה");
-      navigate("/", { replace: true });
-    } catch (e) {
-      console.warn("Logout failed:", e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    await API.post("/auth/logout", {}); // שליחת גוף ריק במקום null
+
+    setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("businessDetails");
+    delete API.defaults.headers['Authorization'];
+    setSuccessMessage("✅ נותקת בהצלחה");
+    navigate("/", { replace: true });
+  } catch (e) {
+    console.warn("Logout failed:", e.response?.data || e.message || e);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // ניקוי הודעות הצלחה
   useEffect(() => {
