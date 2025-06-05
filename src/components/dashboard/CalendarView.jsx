@@ -56,13 +56,33 @@ const CalendarView = ({ appointments, onDateClick }) => {
   });
 
   return (
-    <div className="graph-box">
+    <div className="graph-box" style={{ direction: "rtl" }}>
       <h4>
         📆 יומן חודשי ({currentYear}/
         {(currentMonth + 1).toString().padStart(2, "0")})
       </h4>
+
+      {/* הטקסט בצד שמאל */}
+      <div
+        style={{
+          textAlign: "left",
+          marginBottom: "10px",
+          fontStyle: "italic",
+          color: "#333",
+        }}
+      >
+        בחר תאריך כדי לראות לוח"ז
+      </div>
+
       {/* ניווט חודשים */}
-      <div style={{ marginBottom: "10px", display: "flex", justifyContent: "center", gap: "12px" }}>
+      <div
+        style={{
+          marginBottom: "10px",
+          display: "flex",
+          justifyContent: "center",
+          gap: "12px",
+        }}
+      >
         <button onClick={goToPreviousMonth}>← חודש קודם</button>
         <button onClick={goToNextMonth}>חודש הבא →</button>
       </div>
@@ -73,7 +93,10 @@ const CalendarView = ({ appointments, onDateClick }) => {
             key={idx}
             className="calendar-day"
             onClick={() => day && onDateClick && onDateClick(dateStr)}
-            style={{ cursor: day ? "pointer" : "default", backgroundColor: day ? undefined : "#f0f0f0" }}
+            style={{
+              cursor: day ? "pointer" : "default",
+              backgroundColor: day ? undefined : "#f0f0f0",
+            }}
             title={day ? "לחצי כדי לראות לו״ז יומי" : ""}
           >
             {day ? (
