@@ -25,14 +25,16 @@ function AdminDashboard() {
   }, [user, navigate]);
 
   useEffect(() => {
-    if (!user || !user.token) return;
+    if (!user) return;
 
-    // התחברות ל-Socket.IO עם auth מתאים לתפקיד admin
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
     socketRef.current = io("https://api.esclick.co.il", {
       path: "/socket.io",
       auth: {
-        token: user.token,   // Access token JWT
-        role: "admin",       // תפקיד אדמין
+        token,      // כאן הטוקן מ־localStorage
+        role: "admin",
       },
       transports: ["websocket", "polling"],
     });
@@ -41,7 +43,6 @@ function AdminDashboard() {
       console.log("Connected to socket with id:", socketRef.current.id);
     });
 
-    // מאזין לאירוע 'adminDashboardUpdate' שמגיע מהשרת
     socketRef.current.on("adminDashboardUpdate", (newStats) => {
       console.log("Received admin dashboard update:", newStats);
       setStats(newStats);

@@ -41,41 +41,42 @@ export function AuthProvider({ children }) {
 
   // 1. On mount: fetch current user if token exists
   useEffect(() => {
-    if (initRan.current) return;
-    initRan.current = true;
+  if (initRan.current) return;
+  initRan.current = true;
 
-    const initialize = async () => {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          API.defaults.headers['Authorization'] = `Bearer ${token}`; // קביעת הטוקן כ־Authorization header
-          const { data } = await API.get("/auth/me");
+  const initialize = async () => {
+    setLoading(true);
+    const token = localStorage.getItem("token"); // שליפת הטוקן מהלוקאלסטורג'
+    if (token) {
+      try {
+        API.defaults.headers['Authorization'] = `Bearer ${token}`; // הגדרת טוקן ל־Authorization header
+        const { data } = await API.get("/auth/me");
 
-          // שמירת פרטי העסק ב-localStorage (אם קיימים)
-          if (data.businessId) {
-            localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-          }
-
-          setUser({
-            userId:           data.userId,
-            name:             data.name,
-            email:            data.email,
-            role:             data.role,
-            subscriptionPlan: data.subscriptionPlan,
-            businessId:       data.businessId || null,
-          });
-        } catch {
-          setUser(null);
+        if (data.businessId) {
+          localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
         }
-      } else {
+
+        setUser({
+          userId:           data.userId,
+          name:             data.name,
+          email:            data.email,
+          role:             data.role,
+          subscriptionPlan: data.subscriptionPlan,
+          businessId:       data.businessId || null,
+          token,  // <-- כאן ה-token מהלוקאלסטורג'
+        });
+      } catch {
         setUser(null);
       }
-      setLoading(false);
-      setInitialized(true);
-    };
-    initialize();
-  }, []);
+    } else {
+      setUser(null);
+    }
+    setLoading(false);
+    setInitialized(true);
+  };
+  initialize();
+}, []);
+
 
   /**
    * generic login (handles both customer/business by email and staff by username)
