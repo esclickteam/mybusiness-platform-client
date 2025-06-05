@@ -452,7 +452,7 @@
 }
 
 .day-agenda-box {
-  flex: 0 0 300px;
+  flex: 0 0 350px;       /* רוחב קבוע */
   max-width: 350px;
   background: #fdf5df;
   border-radius: 12px;
@@ -460,12 +460,12 @@
   box-shadow: var(--box-shadow);
   order: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: auto; /* הסר height: 100%; */
-  font-style: italic;
+  flex-direction: column; /* חשוב כשיש תוכן רב */
   font-size: 1rem;
   color: #5a5a5a;
+  height: 500px;          /* גובה קבוע שווה ללוח השנה */
+  overflow-y: auto;       /* גלילה אם התוכן גדול */
+  /* הסר justify-content ו align-items כי אלו מקבלים זרימה טבעית */
 }
 
 .calendar-grid-box {
