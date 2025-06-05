@@ -1,12 +1,14 @@
 .calendar-container {
-  background: #f7f7fc;
-  border-radius: 12px;
-  padding: 20px;
-  max-width: 600px;
-  margin: 20px auto;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 0.05);
-  font-family: Arial, sans-serif;
-  user-select: none;
+  width: 100%;
+  max-width: 720px; /* הרחבה ליותר מקום */
+  margin: auto;
+  font-family: 'Alef', sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8f7ff;
+  padding: 16px; /* הוספת ריווח פנימי */
+  box-sizing: border-box;
 }
 
 .calendar-header {
