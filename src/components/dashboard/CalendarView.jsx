@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import "./CalendarView.css"; // ודא שאתה מייבא את קובץ ה-CSS
+import "./CalendarView.css";
+
+const weekDays = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
 const CalendarView = ({ appointments, onDateClick }) => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -48,20 +50,41 @@ const CalendarView = ({ appointments, onDateClick }) => {
     }
   });
 
-  return (
-    <div className="graph-box" style={{ direction: "rtl" }}>
-      <h4>
-        📆 יומן חודשי ({currentYear}/
-        {(currentMonth + 1).toString().padStart(2, "0")})
-      </h4>
+  const monthNames = [
+    "ינואר",
+    "פברואר",
+    "מרץ",
+    "אפריל",
+    "מאי",
+    "יוני",
+    "יולי",
+    "אוגוסט",
+    "ספטמבר",
+    "אוקטובר",
+    "נובמבר",
+    "דצמבר",
+  ];
 
-      <div className="date-picker-text">
-        בחר תאריך כדי לראות לוח"ז
+  return (
+    <div className="calendar-container" style={{ direction: "rtl" }}>
+      <div className="calendar-header">
+        <h3>{monthNames[currentMonth]}</h3>
+        <span>{currentYear}</span>
       </div>
 
       <div className="month-navigation">
         <button onClick={goToPreviousMonth}>← חודש קודם</button>
         <button onClick={goToNextMonth}>חודש הבא →</button>
+      </div>
+
+      <div className="date-picker-text">בחר תאריך כדי לראות לוח"ז</div>
+
+      <div className="calendar-weekdays">
+        {weekDays.map((dayName) => (
+          <div key={dayName} className="weekday">
+            {dayName}
+          </div>
+        ))}
       </div>
 
       <div className="calendar-grid">
@@ -70,11 +93,11 @@ const CalendarView = ({ appointments, onDateClick }) => {
             key={idx}
             className="calendar-day"
             onClick={() => day && onDateClick && onDateClick(dateStr)}
+            title={day ? "לחצי כדי לראות לו״ז יומי" : ""}
             style={{
               cursor: day ? "pointer" : "default",
               backgroundColor: day ? undefined : "#f0f0f0",
             }}
-            title={day ? "לחצי כדי לראות לו״ז יומי" : ""}
           >
             {day ? (
               <>
