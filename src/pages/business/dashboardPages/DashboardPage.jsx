@@ -66,42 +66,53 @@ const DashboardPage = () => {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   }
 
+  // API data fetch
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
+    console.log("Fetching stats from API for businessId:", businessId);
     API.get(`/business/${businessId}/stats`)
       .then(res => {
-        console.log("API stats:", res.data);
+        console.log("API stats response:", res.data);
         setStats(res.data);
       })
       .catch(err => {
         console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        console.log("Finished loading API stats");
+      });
   }, [businessId]);
 
+  // Socket connection and updates
   useEffect(() => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
 
     async function setupSocket() {
+      console.log("Setting up socket for businessId:", businessId);
       const sock = await createSocket({
         role: "business-dashboard",
         businessId,
       });
-      if (!sock) return;
+      if (!sock) {
+        console.warn("Failed to create socket");
+        return;
+      }
 
       socketRef.current = sock;
 
       sock.on("connect", () => {
-        console.log("Dashboard socket connected:", sock.id);
+        console.log("Dashboard socket connected with ID:", sock.id);
       });
 
       sock.on("dashboardUpdate", newStats => {
         console.log("Dashboard update received:", newStats);
         if (newStats && typeof newStats === "object" && "views_count" in newStats) {
           setStats(prevStats => ({ ...prevStats, ...newStats }));
+          console.log("Updated stats state with new dashboard data");
         } else {
           console.warn("Ignoring invalid dashboard update:", newStats);
         }
@@ -120,6 +131,7 @@ const DashboardPage = () => {
 
     return () => {
       if (socketRef.current) {
+        console.log("Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
       }
