@@ -301,28 +301,29 @@ const DashboardPage = () => {
         <BarChart data={barChartData} />
       </div>
 
-     <div>
-  {stats.recent_activity && (
-    <RecentActivityTable activities={stats.recent_activity} />
-  )}
-  {appointments.length > 0 && (
-    <AppointmentsList appointments={appointments} />
-  )}
-</div>
+      <div>
+        {stats.recent_activity && (
+          <RecentActivityTable activities={stats.recent_activity} />
+        )}
+        {appointments.length > 0 && (
+          <AppointmentsList appointments={appointments} />
+        )}
+      </div>
 
-<div>
-  <WeeklySummary stats={stats} />
-</div>
+      <div>
+        <WeeklySummary stats={stats} />
+      </div>
 
-<div>
-  <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
-  <DailyAgenda
-    date={selectedDate}
-    appointments={appointments}
-    businessName={stats.businessName}
-  />
-</div>
-
+      {appointments.length > 0 && (
+        <div>
+          <CalendarView appointments={appointments} onDateClick={setSelectedDate} />
+          <DailyAgenda
+            date={selectedDate}
+            appointments={appointments}
+            businessName={stats.businessName}
+          />
+        </div>
+      )}
     </div>
   );
 };
