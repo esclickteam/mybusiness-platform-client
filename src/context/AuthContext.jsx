@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api"; // הפניה לאובייקט ה-API שלך
+import API from "../api"; // אובייקט axios או fetch מותאם מראש
 
 export const AuthContext = createContext();
 
@@ -13,74 +13,81 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
-  // פונקציה לחידוש הטוקן
+  // חידוש Access Token
   const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (!refreshToken) {
-      console.warn("אין Refresh Token, יש להתחבר מחדש");
-      navigate("/login");
-      return;
-    }
-
     try {
-      const response = await API.post("/auth/refresh-token", { refreshToken });
-
+      // לא שולחים body - ה-refreshToken בעוגיה HttpOnly נשלח אוטומטית
+      const response = await API.post("/auth/refresh-token", null, { credentials: "include" });
       if (response.data.accessToken) {
-        // עדכון ה־Access Token החדש
         localStorage.setItem("token", response.data.accessToken);
         API.defaults.headers['Authorization'] = `Bearer ${response.data.accessToken}`;
-      } else {
-        console.error("Failed to refresh access token.");
-        navigate("/login");
+        return true;
       }
-    } catch (error) {
-      console.error("Error refreshing access token:", error);
-      navigate("/login");
+    } catch (err) {
+      console.error("Failed to refresh token:", err);
     }
+    return false;
   };
 
-  // 1. On mount: fetch current user if token exists
+  // אתחול מצב משתמש במעמד טעינת האפליקציה
   useEffect(() => {
-  if (initRan.current) return;
-  initRan.current = true;
+    if (initRan.current) return;
+    initRan.current = true;
 
-  const initialize = async () => {
-    setLoading(true);
-    const token = localStorage.getItem("token"); // שליפת הטוקן מהלוקאלסטורג'
-    if (token) {
-      try {
-        API.defaults.headers['Authorization'] = `Bearer ${token}`; // הגדרת טוקן ל־Authorization header
-        const { data } = await API.get("/auth/me");
+    const initialize = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          API.defaults.headers['Authorization'] = `Bearer ${token}`;
+          const { data } = await API.get("/auth/me", { credentials: "include" });
 
-        if (data.businessId) {
-          localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+          if (data.businessId) {
+            localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+          }
+
+          setUser({
+            userId: data.userId,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            subscriptionPlan: data.subscriptionPlan,
+            businessId: data.businessId || null,
+          });
+        } catch {
+          // אם השגת טוקן לא תקין - נסה לרענן
+          const refreshed = await refreshAccessToken();
+          if (refreshed) {
+            try {
+              const { data } = await API.get("/auth/me", { credentials: "include" });
+              setUser({
+                userId: data.userId,
+                name: data.name,
+                email: data.email,
+                role: data.role,
+                subscriptionPlan: data.subscriptionPlan,
+                businessId: data.businessId || null,
+              });
+            } catch {
+              setUser(null);
+              localStorage.removeItem("token");
+            }
+          } else {
+            setUser(null);
+            localStorage.removeItem("token");
+          }
         }
-
-        setUser({
-          userId:           data.userId,
-          name:             data.name,
-          email:            data.email,
-          role:             data.role,
-          subscriptionPlan: data.subscriptionPlan,
-          businessId:       data.businessId || null,
-          token,  // <-- כאן ה-token מהלוקאלסטורג'
-        });
-      } catch {
+      } else {
         setUser(null);
       }
-    } else {
-      setUser(null);
-    }
-    setLoading(false);
-    setInitialized(true);
-  };
-  initialize();
-}, []);
+      setLoading(false);
+      setInitialized(true);
+    };
 
+    initialize();
+  }, []);
 
-  /**
-   * generic login (handles both customer/business by email and staff by username)
-   */
+  // התחברות
   const login = async (identifier, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -91,35 +98,33 @@ export function AuthProvider({ children }) {
     try {
       let response;
       if (isEmail) {
-        response = await API.post("/auth/login", { email: clean.toLowerCase(), password });
+        response = await API.post("/auth/login", { email: clean.toLowerCase(), password }, { credentials: "include" });
       } else {
-        response = await API.post("/auth/staff-login", { username: clean, password });
+        response = await API.post("/auth/staff-login", { username: clean, password }, { credentials: "include" });
       }
 
-      // שמירת הטוקן ב־localStorage
-      const { accessToken, refreshToken } = response.data;  // החזרת שני הטוקנים
-      if (accessToken && refreshToken) {
-        localStorage.setItem("token", accessToken);  // שמור את ה־Access Token
-        localStorage.setItem("refreshToken", refreshToken);  // שמור את ה־Refresh Token
-        API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;  // הגדר את הטוקן עבור כל בקשה עתידית
+      // שמירת ה-Access Token בלבד ב-localStorage
+      const { accessToken } = response.data;
+      if (accessToken) {
+        localStorage.setItem("token", accessToken);
+        API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
       } else {
-        console.warn("No tokens received from login response");
+        throw new Error("No access token received");
       }
 
-      const { data } = await API.get("/auth/me");
+      const { data } = await API.get("/auth/me", { credentials: "include" });
 
-      // שמירת פרטי העסק ב-localStorage (אם קיימים)
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
       }
 
       setUser({
-        userId:           data.userId,
-        name:             data.name,
-        email:            data.email,
-        role:             data.role,
+        userId: data.userId,
+        name: data.name,
+        email: data.email,
+        role: data.role,
         subscriptionPlan: data.subscriptionPlan,
-        businessId:       data.businessId || null,
+        businessId: data.businessId || null,
       });
 
       if (!options.skipRedirect && data) {
@@ -147,14 +152,13 @@ export function AuthProvider({ children }) {
       return data;
     } catch (e) {
       if (e.response?.status === 401) {
-        // נתקבלה שגיאה 401 – ננסה לחדש את ה־Access Token
-        await refreshAccessToken();
+        const refreshed = await refreshAccessToken();
+        if (!refreshed) {
+          setError("❌ אימייל/שם משתמש או סיסמה שגויים");
+          navigate("/login");
+        }
       } else {
-        setError(
-          e.response?.status === 401
-            ? "❌ אימייל/שם משתמש או סיסמה שגויים"
-            : "❌ שגיאה בשרת, נסה שוב"
-        );
+        setError("❌ שגיאה בשרת, נסה שוב");
       }
       throw e;
     } finally {
@@ -162,42 +166,25 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const staffLogin = (username, password) =>
-    login(username, password, { skipRedirect: true });
-
+  // התנתקות
   const logout = async () => {
     setLoading(true);
     try {
-      const refreshToken = localStorage.getItem("refreshToken");
-
-      if (refreshToken) {
-        await API.post("/auth/logout", { refreshToken });  // שלח את ה-refreshToken בעת ההתנתקות
-      } else {
-        console.warn("No refresh token found during logout");
-      }
-
-      setSuccessMessage("✅ נותקת בהצלחה");
-
-      // הסרת הטוקנים מ־localStorage
+      await API.post("/auth/logout", null, { credentials: "include" }); // שולח את ה-refreshToken מה-cookie
+      setUser(null);
       localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-
-      // ניקוי ה־Authorization header
-      delete API.defaults.headers['Authorization'];
-
-      // אם יש גם businessDetails, מחק אותו
       localStorage.removeItem("businessDetails");
-
+      delete API.defaults.headers['Authorization'];
+      setSuccessMessage("✅ נותקת בהצלחה");
+      navigate("/", { replace: true });
     } catch (e) {
       console.warn("Logout failed:", e);
     } finally {
-      setUser(null);
       setLoading(false);
-      navigate("/", { replace: true });
     }
   };
 
-  // clear success message after 4s
+  // ניקוי הודעות הצלחה
   useEffect(() => {
     if (successMessage) {
       const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -213,13 +200,11 @@ export function AuthProvider({ children }) {
         initialized,
         error,
         login,
-        staffLogin,
         logout,
+        refreshAccessToken,
       }}
     >
-      {successMessage && (
-        <div className="global-success-toast">{successMessage}</div>
-      )}
+      {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
   );

@@ -14,10 +14,7 @@ export function getAccessToken() {
   return localStorage.getItem("token");
 }
 
-export function getRefreshToken() {
-  return localStorage.getItem("refreshToken");
-}
-
+// מחזירה מזהה עסק מ-localStorage (אם קיים)
 export function getBusinessId() {
   try {
     const biz = JSON.parse(localStorage.getItem("businessDetails") || "{}");
@@ -31,15 +28,10 @@ export async function getValidAccessToken() {
   let token = getAccessToken();
 
   if (!token || isTokenExpired(token)) {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      return null;
-    }
     try {
       const response = await fetch(`/refresh-token`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
+        credentials: "include", // שולח את עוגיית ה-refreshToken אוטומטית
       });
       if (!response.ok) {
         return null;
