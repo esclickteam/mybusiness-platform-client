@@ -9,7 +9,7 @@ const BASE_URL = isProd
 // יצירת instance של Axios
 const API = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
+  withCredentials: true, // חשוב לשלוח עוגיות אוטומטית
   timeout: 10000,
   headers: {
     Accept: "application/json",
@@ -65,15 +65,13 @@ API.interceptors.response.use(
     // טיפול ב־401 (למעט בקשת auth/me) – ניסיון רענון טוקן
     if (response.status === 401 && !config.url.endsWith("/auth/me")) {
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (refreshToken) {
-          const refreshResponse = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken });
-          if (refreshResponse.data.accessToken) {
-            localStorage.setItem("token", refreshResponse.data.accessToken);
-            setAuthToken(refreshResponse.data.accessToken);
-            config.headers["Authorization"] = `Bearer ${refreshResponse.data.accessToken}`;
-            return API(config);
-          }
+        // ** כאן לא שולחים את ה-refreshToken ב-body **
+        const refreshResponse = await axios.post(`${BASE_URL}/auth/refresh-token`, null, { withCredentials: true });
+        if (refreshResponse.data.accessToken) {
+          localStorage.setItem("token", refreshResponse.data.accessToken);
+          setAuthToken(refreshResponse.data.accessToken);
+          config.headers["Authorization"] = `Bearer ${refreshResponse.data.accessToken}`;
+          return API(config);
         }
       } catch (err) {
         console.error("Error refreshing token:", err);

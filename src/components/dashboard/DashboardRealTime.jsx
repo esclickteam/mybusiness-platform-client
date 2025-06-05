@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
-import LineChart from "./LineChart";  // שנה כאן לנתיב ולשם הנכון של הקומפוננטה שלך
+import LineChart from "./LineChart";  // שנה לנתיב שלך
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-const DashboardRealTime = ({ businessId, token, refreshToken }) => {
+const DashboardRealTime = ({ businessId, token }) => { // הסר את refreshToken מפרופס
   const [stats, setStats] = useState(null);
   const socketRef = useRef(null);
 
@@ -20,7 +20,7 @@ const DashboardRealTime = ({ businessId, token, refreshToken }) => {
 
     const socket = io(SOCKET_URL, {
       path: "/socket.io",
-      auth: { token, refreshToken, role: "business-dashboard", businessId },
+      auth: { token, role: "business-dashboard", businessId }, // ללא refreshToken
       transports: ["websocket"],
     });
 
@@ -57,7 +57,7 @@ const DashboardRealTime = ({ businessId, token, refreshToken }) => {
         socketRef.current = null;
       }
     };
-  }, [businessId, token, refreshToken]);
+  }, [businessId, token]); // הסר refreshToken מהתלות
 
   return <LineChart stats={stats} />;
 };
