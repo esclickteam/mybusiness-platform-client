@@ -1,6 +1,6 @@
 // src/pages/client/ClientDashboard.jsx
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Link, Outlet } from "react-router-dom";
 import "./ClientDashboard.css";
 import { useAuth } from "../../context/AuthContext";
 
@@ -13,15 +13,12 @@ export default function ClientDashboard() {
       <p className="client-dashboard-subtitle">מה תרצה לעשות היום?</p>
 
       <div className="client-tabs">
-        <NavLink
-          to="search"
-          className={({ isActive }) =>
-            `client-tab-button ${isActive ? "active" : ""}`
-          }
-        >
+        {/* החלפתי NavLink ל-Link עם נתיב חיצוני */}
+        <Link to="/search" className="client-tab-button">
           🔎 חיפוש עסקים
-        </NavLink>
+        </Link>
 
+        {/* שאר הטאבים נשארים כמו שהם */}
         <NavLink
           to="orders"
           className={({ isActive }) =>
