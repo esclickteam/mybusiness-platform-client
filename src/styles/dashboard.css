@@ -448,22 +448,22 @@
   gap: 30px;
   justify-content: center;
   align-items: flex-start;
-  direction: rtl; /* חשוב לשמור על כיוון RTL */
-}
-
-.calendar-grid-box {
-  flex: 1 1 600px;
-  max-width: 650px;
-  background: #fffaf1;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: var(--box-shadow);
+  direction: rtl; /* חשוב לשמור על כיוון קריאה מימין לשמאל */
 }
 
 .day-agenda-box {
   flex: 1 1 300px;
   max-width: 350px;
   background: #fdf5df;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--box-shadow);
+}
+
+.calendar-grid-box {
+  flex: 1 1 600px;
+  max-width: 650px;
+  background: #fffaf1;
   border-radius: 12px;
   padding: 20px;
   box-shadow: var(--box-shadow);
