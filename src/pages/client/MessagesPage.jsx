@@ -10,7 +10,7 @@ export default function MessagesPage() {
   useEffect(() => {
     async function fetchConversations() {
       try {
-        const res = await API.get("/messages/conversations", { withCredentials: true });
+        const res = await API.get("/conversations", { withCredentials: true });
         setConversations(res.data);
       } catch (error) {
         console.error("Failed to fetch conversations:", error);
