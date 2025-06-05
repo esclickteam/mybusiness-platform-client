@@ -444,11 +444,10 @@
 }
 .calendar-row {
   display: flex;
-  flex-wrap: nowrap; /* כדי לשמור על שני הרכיבים בשורה אחת */
+  align-items: center; /* שורה אחת, מיושר אנכית */
   gap: 30px;
-  justify-content: space-between; /* פיזור בין שני הרכיבים */
-  align-items: flex-start;
-  direction: rtl; /* שפה מימין לשמאל */
+  direction: rtl;
+  padding: 20px;
 }
 
 .day-agenda-box {
@@ -458,7 +457,7 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: var(--box-shadow);
-  order: 1; /* לו"ז יהיה אחרי הלוח (ימין) אבל בגלל rtl יופיע שמאלה */
+  order: 1;
 }
 
 .calendar-grid-box {
@@ -468,7 +467,7 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: var(--box-shadow);
-  order: 0; /* לוח שנה ראשון - ימני */
+  order: 0;
 }
 .agenda-list {
   display: flex;
