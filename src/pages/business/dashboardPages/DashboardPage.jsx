@@ -7,7 +7,7 @@ import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
 import BarChart from "../../../components/dashboard/BarChart";
-import PieChart from "../../../components/dashboard/PieChart";
+// import PieChart from "../../../components/dashboard/PieChart"; // הוסר
 import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart";
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
 import Insights from "../../../components/dashboard/Insights";
@@ -179,18 +179,6 @@ const DashboardPage = () => {
     },
   ];
 
-  const dummyIncomeData = {
-    "לקוחות חדשים": 10,
-    "פניות חדשות": 5,
-    "פגישות": 3,
-    "הודעות": 7,
-  };
-
-  const incomeData =
-    stats.income_distribution && Object.keys(stats.income_distribution).length > 0
-      ? stats.income_distribution
-      : dummyIncomeData;
-
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
@@ -237,7 +225,7 @@ const DashboardPage = () => {
 
       <div>
         <BarChart data={barChartData} />
-        <PieChart data={incomeData} />
+        {/* PieChart הוסר */}
       </div>
 
       <div>
