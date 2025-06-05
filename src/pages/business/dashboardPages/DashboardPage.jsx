@@ -75,6 +75,12 @@ const DashboardPage = () => {
       .then(res => {
         console.log("API stats:", res.data);
         setStats(res.data);
+
+        if (!res.data.monthly_comparison) {
+          console.warn("Warning: monthly_comparison is missing or empty!");
+        } else {
+          console.log("monthly_comparison data:", res.data.monthly_comparison);
+        }
       })
       .catch(err => {
         console.error("❌ Error fetching stats:", err);
@@ -173,7 +179,6 @@ const DashboardPage = () => {
     },
   ];
 
-  // דוגמת נתוני דמה למקרה שאין נתוני הכנסות
   const dummyIncomeData = {
     "לקוחות חדשים": 10,
     "פניות חדשות": 5,
@@ -181,10 +186,10 @@ const DashboardPage = () => {
     "הודעות": 7,
   };
 
-  // בחר נתוני הכנסות אמיתיים אם קיימים, אחרת דמה
-  const incomeData = stats.income_distribution && Object.keys(stats.income_distribution).length > 0
-    ? stats.income_distribution
-    : dummyIncomeData;
+  const incomeData =
+    stats.income_distribution && Object.keys(stats.income_distribution).length > 0
+      ? stats.income_distribution
+      : dummyIncomeData;
 
   return (
     <div className="dashboard-container">
@@ -236,8 +241,12 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        {stats.monthly_comparison && (
+        {stats.monthly_comparison ? (
           <MonthlyComparisonChart data={stats.monthly_comparison} />
+        ) : (
+          <p style={{ textAlign: "center", color: "gray" }}>
+            אין נתוני השוואת הכנסות חודשית להצגה
+          </p>
         )}
       </div>
 
