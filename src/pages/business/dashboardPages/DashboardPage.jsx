@@ -293,24 +293,25 @@ const DashboardPage = () => {
       </div>
 
       {/* לוח שנה ולו"ז יומי תמיד מופיעים */}
-      <div style={{ display: "flex", gap: "30px", marginTop: "40px", flexWrap: "wrap" }}>
-        <div style={{ flex: "1 1 600px" }}>
-          <CalendarView
-            appointments={appointments}
-            onDateClick={setSelectedDate}
-            selectedDate={selectedDate}
-          />
-        </div>
-        <div style={{ flex: "1 1 300px" }}>
-          <DailyAgenda
-            date={selectedDate}
-            appointments={appointments}
-            businessName={stats.businessName}
-          />
-        </div>
-      </div>
-    </div>
-  );
+      <div style={{ display: "flex", gap: "30px", marginTop: "40px", flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start" }}>
+  <div style={{ flex: "1 1 300px", maxWidth: "350px" }}>
+    <DailyAgenda
+      date={selectedDate}
+      appointments={appointments}
+      businessName={stats.businessName}
+    />
+  </div>
+  <div style={{ flex: "1 1 600px", maxWidth: "650px" }}>
+    <CalendarView
+      appointments={appointments}
+      onDateClick={setSelectedDate}
+      selectedDate={selectedDate}
+    />
+  </div>
+</div>
+</div>
+);
 };
+
 
 export default DashboardPage;
