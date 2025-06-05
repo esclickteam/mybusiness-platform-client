@@ -397,7 +397,7 @@
 /* קופסאות תחתונות אחידות */
 .graph-box,
 .appointments-box {
-  background-color: #fffaf1;
+  background-color: #f8f7ff;
   padding: 16px;
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
