@@ -449,7 +449,6 @@
   justify-content: flex-start; /* להתחיל מהקצה השמאלי */
   align-items: center; /* יישור אנכי באותו קו */
   padding: 20px; /* לפי הצורך */
-  height: 100%; /* או גובה מתאים */
 }
 
 .day-agenda-box {
@@ -461,9 +460,9 @@
   box-shadow: var(--box-shadow);
   order: 1;
   display: flex;
-  justify-content: center; /* מרכז טקסט בתוך הקופסה */
+  justify-content: center;
   align-items: center;
-  height: 100%; /* ימלא את הגובה של הקונטיינר */
+  height: auto; /* הסר height: 100%; */
   font-style: italic;
   font-size: 1rem;
   color: #5a5a5a;
