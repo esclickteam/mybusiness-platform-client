@@ -91,6 +91,7 @@ const DashboardPage = () => {
       };
     }
   });
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(!stats || Object.keys(stats).length === 0);
   const [error, setError] = useState(null);
@@ -293,25 +294,24 @@ const DashboardPage = () => {
       </div>
 
       {/* לוח שנה ולו"ז יומי תמיד מופיעים */}
-      <div style={{ display: "flex", gap: "30px", marginTop: "40px", flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start" }}>
-  <div style={{ flex: "1 1 300px", maxWidth: "350px" }}>
-    <DailyAgenda
-      date={selectedDate}
-      appointments={appointments}
-      businessName={stats.businessName}
-    />
-  </div>
-  <div style={{ flex: "1 1 600px", maxWidth: "650px" }}>
-    <CalendarView
-      appointments={appointments}
-      onDateClick={setSelectedDate}
-      selectedDate={selectedDate}
-    />
-  </div>
-</div>
-</div>
-);
+      <div className="calendar-row">
+        <div className="day-agenda-box">
+          <DailyAgenda
+            date={selectedDate}
+            appointments={appointments}
+            businessName={stats.businessName}
+          />
+        </div>
+        <div className="calendar-grid-box">
+          <CalendarView
+            appointments={appointments}
+            onDateClick={setSelectedDate}
+            selectedDate={selectedDate}
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
-
 
 export default DashboardPage;
