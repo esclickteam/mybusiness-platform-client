@@ -7,8 +7,7 @@ import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
 import BarChart from "../../../components/dashboard/BarChart";
-// import PieChart from "../../../components/dashboard/PieChart"; // הוסר
-import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart";
+// import MonthlyComparisonChart from "../../../components/dashboard/MonthlyComparisonChart"; // הוסר
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
@@ -75,12 +74,6 @@ const DashboardPage = () => {
       .then(res => {
         console.log("API stats:", res.data);
         setStats(res.data);
-
-        if (!res.data.monthly_comparison) {
-          console.warn("Warning: monthly_comparison is missing or empty!");
-        } else {
-          console.log("monthly_comparison data:", res.data.monthly_comparison);
-        }
       })
       .catch(err => {
         console.error("❌ Error fetching stats:", err);
@@ -225,17 +218,6 @@ const DashboardPage = () => {
 
       <div>
         <BarChart data={barChartData} />
-        {/* PieChart הוסר */}
-      </div>
-
-      <div>
-        {stats.monthly_comparison ? (
-          <MonthlyComparisonChart data={stats.monthly_comparison} />
-        ) : (
-          <p style={{ textAlign: "center", color: "gray" }}>
-            אין נתוני השוואת הכנסות חודשית להצגה
-          </p>
-        )}
       </div>
 
       <div>
