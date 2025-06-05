@@ -35,6 +35,19 @@ const DashboardAlert = ({ text, type = "info" }) => (
 
 const LOCAL_STORAGE_KEY = "dashboardStats";
 
+// פונקציית עזר למיזוג סטטיסטיקות - מתעלמת מסטטיסטיקות ריקות
+function mergeStats(oldStats, newStats) {
+  const isEmpty = Object.values(newStats).every(
+    (val) => val === 0 || val === null || val === undefined
+  );
+
+  if (isEmpty) {
+    return oldStats;
+  }
+
+  return { ...oldStats, ...newStats };
+}
+
 const DashboardPage = () => {
   const { user, initialized } = useAuth();
   const businessId = getBusinessId();
@@ -167,7 +180,7 @@ const DashboardPage = () => {
             }
           }
           setStats((prevStats) => {
-            const merged = { ...prevStats, ...cleanedStats };
+            const merged = mergeStats(prevStats, cleanedStats);
             const isEqual = Object.keys(merged).every(
               (key) => merged[key] === prevStats[key]
             );
@@ -175,10 +188,7 @@ const DashboardPage = () => {
             try {
               localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
             } catch (e) {
-              console.warn(
-                "Failed to save dashboard stats to localStorage",
-                e
-              );
+              console.warn("Failed to save dashboard stats to localStorage", e);
             }
             console.log("Merged stats:", merged);
             return merged;
