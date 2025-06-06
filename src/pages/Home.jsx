@@ -12,7 +12,6 @@ export default function Home() {
   const navigate = useNavigate();
   const [category, setCategory] = useState("");
   const [city, setCity]         = useState("");
-  const { updates }             = useContext(SSEContext);
   const [showAllUpdates, setShowAllUpdates] = useState(false);
 
   const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
