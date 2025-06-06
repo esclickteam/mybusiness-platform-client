@@ -404,10 +404,11 @@
 }
 .calendar-row {
   display: flex;
+  flex-direction: column; /* מעלה למטה במקום שורה */
   gap: 30px;
   direction: rtl;
-  justify-content: flex-start; /* להתחיל מהקצה השמאלי */
-  align-items: center; /* יישור אנכי באותו קו */
+  justify-content: flex-start; /* מתחיל מהקצה העליון */
+  align-items: center; /* יישור אנכי במרכז */
   padding: 20px; /* לפי הצורך */
 }
 
