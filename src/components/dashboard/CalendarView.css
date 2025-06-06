@@ -1,24 +1,24 @@
 .calendar-container {
   width: 100%;
-  max-width: 480px;
+  max-width: 360px; /* הקטנתי רוחב מקסימלי */
   margin: 20px auto;
   font-family: 'Alef', sans-serif;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
   background: #f8f7ff;
-  padding: 10px;
+  padding: 8px; /* הקטנתי padding */
   box-sizing: border-box;
 }
 
 .calendar-header {
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* הקטנתי מרווח */
 }
 
 .calendar-header h3 {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1rem; /* הקטנתי גודל כותרת */
   margin: 0;
 }
 
@@ -26,26 +26,26 @@
   display: block;
   font-weight: 400;
   color: #666;
-  font-size: 0.8rem;
-  margin-top: 4px;
+  font-size: 0.7rem; /* הקטנתי גודל */
+  margin-top: 3px;
 }
 
 .month-navigation {
-  margin-bottom: 14px;
+  margin-bottom: 10px; /* הקטנתי */
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: 6px; /* הקטנתי רווח */
 }
 
 .month-navigation button {
   background-color: #6a5acd;
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 4px 8px; /* הקטנתי padding */
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 10px; /* הקטנתי גודל */
   transition: background-color 0.2s ease;
 }
 
@@ -55,54 +55,53 @@
 
 .date-picker-text {
   text-align: left;
-  margin-bottom: 12px;
+  margin-bottom: 10px; /* הקטנתי */
   font-style: italic;
   color: #333;
   padding-left: 6px;
-  font-size: 0.85rem;
+  font-size: 0.75rem; /* הקטנתי */
 }
 
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 12px;
+  margin-bottom: 10px; /* הקטנתי */
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.7rem; /* הקטנתי */
   color: #444;
   text-align: center;
 }
 
 .weekday {
-  padding: 6px 0;
+  padding: 4px 0; /* הקטנתי */
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 4px; /* הקטנתי gap */
 }
 
 .calendar-day {
   background: #fff;
   border-radius: 10px;
-  padding: 8px 10px; /* הרחבתי קצת את הפדינג */
+  padding: 6px 8px; /* הקטנתי padding */
   text-align: right;
   font-weight: 600;
-  font-size: 0.85rem; /* הורדתי טיפה את הגופן */
+  font-size: 0.75rem; /* הקטנתי גופן */
   color: #333;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
   cursor: pointer;
   transition: background 0.3s ease, box-shadow 0.3s ease;
-  min-height: 140px; /* הגדלתי את הגובה המינימלי */
+  min-height: 120px; /* הקטנתי גובה מינימלי */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  overflow-y: auto; /* גלילה אנכית */
-  word-break: break-word; /* שובר מילים ארוכות */
-  aspect-ratio: auto; /* הסרתי יחס קבוע כדי לאפשר גובה משתנה */
+  overflow-y: auto;
+  word-break: break-word;
+  aspect-ratio: auto;
 }
-
 
 .calendar-day:hover {
   background: #e4e1f8;
@@ -110,21 +109,22 @@
 }
 
 .day-number {
-  font-size: 1.1rem;
+  font-size: 1rem; /* הקטנתי */
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 4px; /* הקטנתי */
   width: 100%;
   text-align: center;
 }
 
 .event-item {
-  font-size: 0.75rem;
-  margin: 4px 0;
+  font-size: 0.6em; /* הקטנתי */
+  margin-top: 2px;
   color: #555;
-  line-height: 1.3;
-  width: 100%;
-  white-space: normal;
-  overflow-wrap: break-word;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .empty-day {
