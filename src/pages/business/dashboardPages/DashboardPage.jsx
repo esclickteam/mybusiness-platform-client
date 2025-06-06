@@ -190,6 +190,22 @@ const DashboardPage = () => {
         }
       });
 
+      // ** הוספת מאזין לעדכוני פגישות **
+      sock.on('appointmentUpdated', (newAppointment) => {
+        if (newAppointment.businessId === businessId) {
+          setStats(prevStats => {
+            const appointments = Array.isArray(prevStats.appointments) ? [...prevStats.appointments] : [];
+            const index = appointments.findIndex(a => a._id === newAppointment._id);
+            if (index !== -1) {
+              appointments[index] = newAppointment; // עדכון פגישה קיימת
+            } else {
+              appointments.push(newAppointment); // הוספת פגישה חדשה
+            }
+            return { ...prevStats, appointments };
+          });
+        }
+      });
+
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected, reason:", reason);
       });
@@ -293,7 +309,6 @@ const DashboardPage = () => {
         <WeeklySummary stats={stats} />
       </div>
 
-      {/* לוח שנה ולו"ז יומי תמיד מופיעים */}
       <div className="calendar-row">
         <div className="day-agenda-box">
           <DailyAgenda
