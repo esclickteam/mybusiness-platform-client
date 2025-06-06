@@ -15,7 +15,6 @@ import BusinessChatPage from "./components/BusinessChatPage";
 import ConversationsList from "./components/ConversationsList";
 import ChatPage from "./components/ChatPage";
 import { useAuth } from "./context/AuthContext";
-import { SSEProvider } from "./context/SSEContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 
