@@ -72,7 +72,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
           {dayAppointments.map((a, i) => {
             const time = a.time || "";
 
-            const clientName = a.client?.name || a.client || "לא ידוע";
+            const clientName = a.clientName || 'לא ידוע';
             const serviceName = a.serviceName || "לא ידוע";
 
 
