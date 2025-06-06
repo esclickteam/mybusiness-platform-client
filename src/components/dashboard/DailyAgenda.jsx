@@ -73,7 +73,8 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
             const time = a.time || "";
 
             const clientName = a.client?.name || a.client || "לא ידוע";
-            const serviceName = a.serviceId?.title || a.service?.name || a.service || "לא ידוע";
+            const serviceName = a.serviceName || "לא ידוע";
+
 
             return (
               <div key={i} className="agenda-item">
