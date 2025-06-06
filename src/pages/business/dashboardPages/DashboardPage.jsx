@@ -11,7 +11,7 @@ import RecentActivityTable from "../../../components/dashboard/RecentActivityTab
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
 import WeeklySummary from "../../../components/dashboard/WeeklySummary";
-import AppointmentsList from "../../../components/dashboard/AppointmentsList";
+// import AppointmentsList removed
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
@@ -147,97 +147,101 @@ const DashboardPage = () => {
   }, [businessId]);
 
   useEffect(() => {
-  if (!initialized || !businessId) return;
-  if (socketRef.current) return;
+    if (!initialized || !businessId) return;
+    if (socketRef.current) return;
 
-  async function setupSocket() {
-    const sock = await createSocket({
-      role: "business-dashboard",
-      businessId,
-    });
-    if (!sock) {
-      console.warn("Failed to create socket");
-      return;
-    }
+    async function setupSocket() {
+      const sock = await createSocket({
+        role: "business-dashboard",
+        businessId,
+      });
+      if (!sock) {
+        console.warn("Failed to create socket");
+        return;
+      }
 
-    socketRef.current = sock;
+      socketRef.current = sock;
 
-    sock.on("connect", () => {
-      console.log("Dashboard socket connected with ID:", sock.id);
-    });
+      sock.on("connect", () => {
+        console.log("Dashboard socket connected with ID:", sock.id);
+      });
 
-    sock.on("dashboardUpdate", (newStats) => {
-      if (newStats && typeof newStats === "object") {
-        const cleanedStats = {};
-        for (const key in newStats) {
-          if (newStats[key] !== undefined) {
-            cleanedStats[key] = newStats[key];
+      sock.on("dashboardUpdate", (newStats) => {
+        if (newStats && typeof newStats === "object") {
+          const cleanedStats = {};
+          for (const key in newStats) {
+            if (newStats[key] !== undefined) {
+              cleanedStats[key] = newStats[key];
+            }
           }
+          setStats((prevStats) => {
+            const merged = mergeStats(prevStats, cleanedStats);
+            const isEqual = Object.keys(merged).every(
+              (key) => merged[key] === prevStats[key]
+            );
+            if (isEqual) return prevStats;
+            try {
+              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+            } catch (e) {
+              console.warn("Failed to save dashboard stats to localStorage", e);
+            }
+            return merged;
+          });
         }
-        setStats((prevStats) => {
-          const merged = mergeStats(prevStats, cleanedStats);
-          const isEqual = Object.keys(merged).every(
-            (key) => merged[key] === prevStats[key]
-          );
-          if (isEqual) return prevStats;
-          try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-          } catch (e) {
-            console.warn("Failed to save dashboard stats to localStorage", e);
-          }
-          return merged;
-        });
-      }
-    });
+      });
 
-    // מאזינים לאירוע new_appointment מהשרת
-    sock.on('appointmentUpdated', (newAppointment) => {
-  console.log("🚀 appointmentUpdated event received:", newAppointment);
+      // מאזינים לאירוע new_appointment מהשרת
+      sock.on("appointmentUpdated", (newAppointment) => {
+        console.log("🚀 appointmentUpdated event received:", newAppointment);
 
-  const newBizId = newAppointment.business?.toString();
-  const currentBizId = businessId.toString();
+        const newBizId = newAppointment.business?.toString();
+        const currentBizId = businessId.toString();
 
-  console.log(`Comparing newAppointment.business: ${newBizId} with businessId: ${currentBizId}`);
+        console.log(
+          `Comparing newAppointment.business: ${newBizId} with businessId: ${currentBizId}`
+        );
 
-  if (newBizId === currentBizId) {
-    setStats(prevStats => {
-      const appointments = Array.isArray(prevStats.appointments) ? [...prevStats.appointments] : [];
-      const index = appointments.findIndex(a => a._id === newAppointment._id);
+        if (newBizId === currentBizId) {
+          setStats((prevStats) => {
+            const appointments = Array.isArray(prevStats.appointments)
+              ? [...prevStats.appointments]
+              : [];
+            const index = appointments.findIndex(
+              (a) => a._id === newAppointment._id
+            );
 
-      if (index !== -1) {
-        console.log("Updating existing appointment in state");
-        appointments[index] = newAppointment;
-      } else {
-        console.log("Adding new appointment to state");
-        appointments.push(newAppointment);
-      }
-      return { ...prevStats, appointments };
-    });
-  } else {
-    console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
-  }
-});
+            if (index !== -1) {
+              console.log("Updating existing appointment in state");
+              appointments[index] = newAppointment;
+            } else {
+              console.log("Adding new appointment to state");
+              appointments.push(newAppointment);
+            }
+            return { ...prevStats, appointments };
+          });
+        } else {
+          console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
+        }
+      });
 
+      sock.on("disconnect", (reason) => {
+        console.log("Dashboard socket disconnected, reason:", reason);
+      });
 
-    sock.on("disconnect", (reason) => {
-      console.log("Dashboard socket disconnected, reason:", reason);
-    });
-
-    sock.on("connect_error", (err) => {
-      console.error("Socket connection error:", err);
-    });
-  }
-
-  setupSocket();
-
-  return () => {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
+      sock.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
+      });
     }
-  };
-}, [initialized, businessId]);
 
+    setupSocket();
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, [initialized, businessId]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
@@ -315,8 +319,10 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        {stats.recent_activity && <RecentActivityTable activities={stats.recent_activity} />}
-        {appointments.length > 0 && <AppointmentsList appointments={appointments} />}
+        {stats.recent_activity && (
+          <RecentActivityTable activities={stats.recent_activity} />
+        )}
+        {/* AppointmentsList removed */}
       </div>
 
       <div>
