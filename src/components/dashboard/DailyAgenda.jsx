@@ -23,7 +23,12 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
 
     return appointments
       .filter((a) => a.date && a.date.startsWith(selectedDate))
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
+      .sort((a, b) => {
+        // השוואת זמן לפי שדה time
+        const timeA = a.time || "00:00";
+        const timeB = b.time || "00:00";
+        return timeA.localeCompare(timeB);
+      });
   }, [appointments, selectedDate]);
 
   const sendWhatsAppReminder = (clientName, time, service) => {
@@ -50,21 +55,23 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       ) : (
         <div className="agenda-list">
           {dayAppointments.map((a, i) => {
-            const time = new Date(a.date).toLocaleTimeString("he-IL", {
-              hour: "2-digit",
-              minute: "2-digit",
-            });
+            // יצירת מחרוזת זמן להצגה מתוך שדה time
+            const time = a.time || "";
+
+            // שימוש בשמות אם קיימים, אחרת מציגים מזהים
+            const clientName = a.client?.name || a.client || "לא ידוע";
+            const serviceName = a.service?.name || a.service || "לא ידוע";
 
             return (
               <div key={i} className="agenda-item">
                 <div className="agenda-time">🕒 {time}</div>
-                <div className="agenda-service">💼 שירות: {a.service}</div>
-                <div className="agenda-client">👤 לקוח: {a.client}</div>
+                <div className="agenda-service">💼 שירות: {serviceName}</div>
+                <div className="agenda-client">👤 לקוח: {clientName}</div>
                 <div className="agenda-actions">
                   <button
                     className="agenda-btn"
                     onClick={() =>
-                      sendWhatsAppReminder(a.client, time, a.service)
+                      sendWhatsAppReminder(clientName, time, serviceName)
                     }
                   >
                     שלח תזכורת
