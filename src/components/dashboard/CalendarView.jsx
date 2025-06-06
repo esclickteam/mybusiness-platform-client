@@ -69,22 +69,20 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
   ];
 
   return (
-    <>
-      <div className="calendar-header" style={{ direction: "rtl" }}>
+    <div className="calendar-container" style={{ direction: "rtl" }}>
+      <div className="calendar-header">
         <h3>{monthNames[currentMonth]}</h3>
         <span>{currentYear}</span>
       </div>
 
-      <div className="month-navigation" style={{ direction: "rtl" }}>
+      <div className="month-navigation">
         <button onClick={goToPreviousMonth}>← חודש קודם</button>
         <button onClick={goToNextMonth}>חודש הבא →</button>
       </div>
 
-      <div className="date-picker-text" style={{ direction: "rtl" }}>
-        בחר תאריך כדי לראות לוח"ז
-      </div>
+      <div className="date-picker-text">בחר תאריך כדי לראות לוח"ז</div>
 
-      <div className="calendar-weekdays" style={{ direction: "rtl" }}>
+      <div className="calendar-weekdays">
         {weekDays.map((dayName) => (
           <div key={dayName} className="weekday">
             {dayName}
@@ -92,7 +90,7 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
         ))}
       </div>
 
-      <div className="calendar-grid" style={{ direction: "rtl" }}>
+      <div className="calendar-grid">
         {calendarCells.map(({ day, dateStr, events }, idx) => (
           <div
             key={idx}
@@ -133,7 +131,7 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 
