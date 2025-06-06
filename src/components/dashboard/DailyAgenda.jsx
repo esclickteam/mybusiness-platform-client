@@ -1,13 +1,30 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) => {
-  if (!date) return <p style={{ fontStyle: "italic", textAlign: "center" }}>בחר/י תאריך כדי לראות לו״ז</p>;
+  if (!date)
+    return (
+      <p style={{ fontStyle: "italic", textAlign: "center" }}>
+        בחר/י תאריך כדי לראות לו״ז
+      </p>
+    );
 
-  const selectedDate = new Date(date).toISOString().split("T")[0];
+  // פורמט תאריך בתבנית "YYYY-MM-DD" להשוואה
+  const selectedDate = useMemo(() => {
+    try {
+      return new Date(date).toISOString().split("T")[0];
+    } catch {
+      return null;
+    }
+  }, [date]);
 
-  const dayAppointments = appointments
-    .filter((a) => a.date.startsWith(selectedDate))
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  // סינון ומיון הפגישות ליום שנבחר
+  const dayAppointments = useMemo(() => {
+    if (!selectedDate) return [];
+
+    return appointments
+      .filter((a) => a.date && a.date.startsWith(selectedDate))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+  }, [appointments, selectedDate]);
 
   const sendWhatsAppReminder = (clientName, time, service) => {
     const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך היום בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
@@ -27,13 +44,15 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       </h4>
 
       {dayAppointments.length === 0 ? (
-        <p style={{ textAlign: "center", color: "#888" }}>אין פגישות בתאריך זה.</p>
+        <p style={{ textAlign: "center", color: "#888" }}>
+          אין פגישות בתאריך זה.
+        </p>
       ) : (
         <div className="agenda-list">
           {dayAppointments.map((a, i) => {
             const time = new Date(a.date).toLocaleTimeString("he-IL", {
-              hour: '2-digit',
-              minute: '2-digit'
+              hour: "2-digit",
+              minute: "2-digit",
             });
 
             return (
@@ -42,11 +61,18 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
                 <div className="agenda-service">💼 שירות: {a.service}</div>
                 <div className="agenda-client">👤 לקוח: {a.client}</div>
                 <div className="agenda-actions">
-                  <button className="agenda-btn"
-                    onClick={() => sendWhatsAppReminder(a.client, time, a.service)}>
+                  <button
+                    className="agenda-btn"
+                    onClick={() =>
+                      sendWhatsAppReminder(a.client, time, a.service)
+                    }
+                  >
                     שלח תזכורת
                   </button>
-                  <button className="agenda-btn outline" onClick={() => editAppointment(a)}>
+                  <button
+                    className="agenda-btn outline"
+                    onClick={() => editAppointment(a)}
+                  >
                     ערוך פגישה
                   </button>
                 </div>

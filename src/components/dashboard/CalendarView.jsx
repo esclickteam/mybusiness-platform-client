@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CalendarView.css";
 
 const weekDays = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
 const CalendarView = ({ appointments, onDateClick }) => {
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const today = new Date();
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
 
   const goToPreviousMonth = () => {
     setCurrentMonth((prev) => {
@@ -27,11 +28,14 @@ const CalendarView = ({ appointments, onDateClick }) => {
     });
   };
 
+  // חישוב מספר ימים בחודש וביום בשבוע של היום הראשון
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
+  // מיון וסידור הפגישות לפי תאריך (מחרוזת YYYY-MM-DD)
   const byDay = {};
   (appointments || []).forEach((appt) => {
+    if (!appt.date) return;
     const date = new Date(appt.date).toISOString().split("T")[0];
     if (!byDay[date]) byDay[date] = [];
     byDay[date].push(appt);
