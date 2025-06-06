@@ -193,21 +193,31 @@ const DashboardPage = () => {
       // ** הוספת מאזין לעדכוני פגישות **
       sock.on('appointmentUpdated', (newAppointment) => {
   console.log("🚀 appointmentUpdated event received:", newAppointment);
-  if (newAppointment.businessId === businessId) {
+
+  const newBizId = newAppointment.businessId?.toString();
+  const currentBizId = businessId.toString();
+
+  console.log(`Comparing newAppointment.businessId: ${newBizId} with businessId: ${currentBizId}`);
+
+  if (newBizId === currentBizId) {
     setStats(prevStats => {
       const appointments = Array.isArray(prevStats.appointments) ? [...prevStats.appointments] : [];
       const index = appointments.findIndex(a => a._id === newAppointment._id);
+
       if (index !== -1) {
+        console.log("Updating existing appointment in state");
         appointments[index] = newAppointment;
       } else {
+        console.log("Adding new appointment to state");
         appointments.push(newAppointment);
       }
       return { ...prevStats, appointments };
     });
   } else {
-    console.log("appointmentUpdated: businessId mismatch", newAppointment.businessId, businessId);
+    console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
   }
 });
+
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected, reason:", reason);
