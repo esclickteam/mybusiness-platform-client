@@ -69,68 +69,66 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
   ];
 
   return (
-    <div className="calendar-wrapper" style={{ overflowX: "auto", width: "100%" }}>
-      <div className="calendar-container" style={{ direction: "rtl", minWidth: "360px" }}>
-        <div className="calendar-header">
-          <h3>{monthNames[currentMonth]}</h3>
-          <span>{currentYear}</span>
-        </div>
+    <div className="calendar-container" style={{ direction: "rtl" }}>
+      <div className="calendar-header">
+        <h3>{monthNames[currentMonth]}</h3>
+        <span>{currentYear}</span>
+      </div>
 
-        <div className="month-navigation">
-          <button onClick={goToPreviousMonth}>← חודש קודם</button>
-          <button onClick={goToNextMonth}>חודש הבא →</button>
-        </div>
+      <div className="month-navigation">
+        <button onClick={goToPreviousMonth}>← חודש קודם</button>
+        <button onClick={goToNextMonth}>חודש הבא →</button>
+      </div>
 
-        <div className="date-picker-text">בחר תאריך כדי לראות לוח"ז</div>
+      <div className="date-picker-text">בחר תאריך כדי לראות לוח"ז</div>
 
-        <div className="calendar-weekdays">
-          {weekDays.map((dayName) => (
-            <div key={dayName} className="weekday">
-              {dayName}
-            </div>
-          ))}
-        </div>
+      <div className="calendar-weekdays">
+        {weekDays.map((dayName) => (
+          <div key={dayName} className="weekday">
+            {dayName}
+          </div>
+        ))}
+      </div>
 
-        <div className="calendar-grid">
-          {calendarCells.map(({ day, dateStr, events }, idx) => (
-            <div
-              key={idx}
-              className="calendar-day"
-              onClick={() => day && onDateClick && onDateClick(dateStr)}
-              title={day ? "לחצי כדי לראות לו״ז יומי" : ""}
-              style={{
-                cursor: day ? "pointer" : "default",
-                backgroundColor: day ? undefined : "#f0f0f0",
-              }}
-            >
-              {day ? (
-                <>
-                  <div className="day-number">{day}</div>
-                  {events.map((e, i) => {
-                    const clientName =
-                      typeof e.client === "object" && e.client?.name
-                        ? e.client.name
-                        : e.client || "לא ידוע";
+      <div className="calendar-grid">
+        {calendarCells.map(({ day, dateStr, events }, idx) => (
+          <div
+            key={idx}
+            className="calendar-day"
+            onClick={() => day && onDateClick && onDateClick(dateStr)}
+            title={day ? "לחצי כדי לראות לו״ז יומי" : ""}
+            style={{
+              cursor: day ? "pointer" : "default",
+              backgroundColor: day ? undefined : "#f0f0f0",
+            }}
+          >
+            {day ? (
+              <>
+                <div className="day-number">{day}</div>
+                {events.map((e, i) => {
+                  const clientName =
+                    typeof e.client === "object" && e.client?.name
+                      ? e.client.name
+                      : e.client || "לא ידוע";
 
-                    return (
-                      <div key={i} className="event-item">
-                        🕒{" "}
-                        {new Date(e.date).toLocaleTimeString("he-IL", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                        <br />
-                        👤 {clientName}
-                      </div>
-                    );
-                  })}
-                </>
-              ) : (
-                <div className="empty-day" />
-              )}
-            </div>
-          ))}
-        </div>
+                  return (
+                    <div key={i} className="event-item">
+                      🕒{" "}
+                      {new Date(e.date).toLocaleTimeString("he-IL", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                      <br />
+                      👤 {clientName}
+                    </div>
+                  );
+                })}
+              </>
+            ) : (
+              <div className="empty-day" />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

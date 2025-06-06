@@ -149,15 +149,12 @@
   .calendar-weekdays {
     font-size: 0.75rem;
   }
-
-  /* גלילה אופקית למנוע דחיסות */
   .calendar-grid {
     display: flex;
     gap: 6px;
     overflow-x: auto;
     padding-bottom: 10px;
   }
-
   .calendar-day {
     flex: 0 0 120px;
     font-size: 0.85rem;
