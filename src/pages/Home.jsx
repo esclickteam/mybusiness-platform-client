@@ -5,10 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES    from "../data/cities";
-import { SSEContext } from "../context/SSEContext";
 
 // ייבוא רכיב הסיכום שיצרנו
-import SSESummary from "../components/SSESummary";
 
 export default function Home() {
   const navigate = useNavigate();
