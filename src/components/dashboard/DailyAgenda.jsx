@@ -55,12 +55,12 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       ) : (
         <div className="agenda-list">
           {dayAppointments.map((a, i) => {
-            // יצירת מחרוזת זמן להצגה מתוך שדה time
             const time = a.time || "";
 
             // שימוש בשמות אם קיימים, אחרת מציגים מזהים
             const clientName = a.client?.name || a.client || "לא ידוע";
-            const serviceName = a.service?.name || a.service || "לא ידוע";
+            // כאן העדכון העיקרי:
+            const serviceName = a.serviceId?.title || a.service?.name || a.service || "לא ידוע";
 
             return (
               <div key={i} className="agenda-item">
