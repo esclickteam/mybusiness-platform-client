@@ -81,6 +81,7 @@ const DashboardPage = () => {
             appointments: [],
             leads: [],
             businessName: "",
+            services: [], // חשוב להוסיף שירותים פה
           };
     } catch {
       return {
@@ -97,6 +98,7 @@ const DashboardPage = () => {
         appointments: [],
         leads: [],
         businessName: "",
+        services: [],
       };
     }
   });
@@ -149,7 +151,7 @@ const DashboardPage = () => {
           leads: Array.isArray(data.leads) ? data.leads : [],
           businessName: data.businessName ?? "",
           income_distribution: data.income_distribution ?? null,
-          services: data.services ?? [], // אם תרצה להשתמש בשירותים בצד לקוח
+          services: data.services ?? [], // שימו לב להוספת services פה
         };
         setStats(safeData);
       })
@@ -206,7 +208,6 @@ const DashboardPage = () => {
         }
       });
 
-      // מאזינים לאירוע appointmentUpdated מהשרת
       sock.on("appointmentUpdated", (newAppointment) => {
         console.log("🚀 appointmentUpdated event received:", newAppointment);
 
