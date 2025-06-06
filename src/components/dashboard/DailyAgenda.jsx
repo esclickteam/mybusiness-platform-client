@@ -11,24 +11,39 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
   // פורמט תאריך בתבנית "YYYY-MM-DD" להשוואה
   const selectedDate = useMemo(() => {
     try {
-      return new Date(date).toISOString().split("T")[0];
+      const d = new Date(date);
+      const isoDate = d.toISOString().split("T")[0];
+      console.log("Selected date (YYYY-MM-DD):", isoDate);
+      return isoDate;
     } catch {
       return null;
     }
   }, [date]);
 
-  // סינון ומיון הפגישות ליום שנבחר
+  // סינון ומיון הפגישות ליום שנבחר - עם לוגים
   const dayAppointments = useMemo(() => {
     if (!selectedDate) return [];
 
-    return appointments
-      .filter((a) => a.date && a.date.startsWith(selectedDate))
-      .sort((a, b) => {
-        // השוואת זמן לפי שדה time
-        const timeA = a.time || "00:00";
-        const timeB = b.time || "00:00";
-        return timeA.localeCompare(timeB);
-      });
+    console.log("Appointments dates received:", appointments.map(a => a.date));
+
+    const filtered = appointments.filter((a) => {
+      if (!a.date) return false;
+      const apptDate = new Date(a.date).toISOString().split("T")[0];
+      const match = apptDate === selectedDate;
+      if (match) {
+        console.log("Matching appointment:", a);
+      }
+      return match;
+    });
+
+    const sorted = filtered.sort((a, b) => {
+      const timeA = a.time || "00:00";
+      const timeB = b.time || "00:00";
+      return timeA.localeCompare(timeB);
+    });
+
+    console.log("Filtered & sorted appointments:", sorted);
+    return sorted;
   }, [appointments, selectedDate]);
 
   const sendWhatsAppReminder = (clientName, time, service) => {
@@ -57,9 +72,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
           {dayAppointments.map((a, i) => {
             const time = a.time || "";
 
-            // שימוש בשמות אם קיימים, אחרת מציגים מזהים
             const clientName = a.client?.name || a.client || "לא ידוע";
-            // כאן העדכון העיקרי:
             const serviceName = a.serviceId?.title || a.service?.name || a.service || "לא ידוע";
 
             return (
