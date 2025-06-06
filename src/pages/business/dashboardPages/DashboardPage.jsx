@@ -147,57 +147,57 @@ const DashboardPage = () => {
   }, [businessId]);
 
   useEffect(() => {
-    if (!initialized || !businessId) return;
-    if (socketRef.current) return;
+  if (!initialized || !businessId) return;
+  if (socketRef.current) return;
 
-    async function setupSocket() {
-      const sock = await createSocket({
-        role: "business-dashboard",
-        businessId,
-      });
-      if (!sock) {
-        console.warn("Failed to create socket");
-        return;
-      }
+  async function setupSocket() {
+    const sock = await createSocket({
+      role: "business-dashboard",
+      businessId,
+    });
+    if (!sock) {
+      console.warn("Failed to create socket");
+      return;
+    }
 
-      socketRef.current = sock;
+    socketRef.current = sock;
 
-      sock.on("connect", () => {
-        console.log("Dashboard socket connected with ID:", sock.id);
-      });
+    sock.on("connect", () => {
+      console.log("Dashboard socket connected with ID:", sock.id);
+    });
 
-      sock.on("dashboardUpdate", (newStats) => {
-        if (newStats && typeof newStats === "object") {
-          const cleanedStats = {};
-          for (const key in newStats) {
-            if (newStats[key] !== undefined) {
-              cleanedStats[key] = newStats[key];
-            }
+    sock.on("dashboardUpdate", (newStats) => {
+      if (newStats && typeof newStats === "object") {
+        const cleanedStats = {};
+        for (const key in newStats) {
+          if (newStats[key] !== undefined) {
+            cleanedStats[key] = newStats[key];
           }
-          setStats((prevStats) => {
-            const merged = mergeStats(prevStats, cleanedStats);
-            const isEqual = Object.keys(merged).every(
-              (key) => merged[key] === prevStats[key]
-            );
-            if (isEqual) return prevStats;
-            try {
-              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-            } catch (e) {
-              console.warn("Failed to save dashboard stats to localStorage", e);
-            }
-            return merged;
-          });
         }
-      });
+        setStats((prevStats) => {
+          const merged = mergeStats(prevStats, cleanedStats);
+          const isEqual = Object.keys(merged).every(
+            (key) => merged[key] === prevStats[key]
+          );
+          if (isEqual) return prevStats;
+          try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+          } catch (e) {
+            console.warn("Failed to save dashboard stats to localStorage", e);
+          }
+          return merged;
+        });
+      }
+    });
 
-      // ** הוספת מאזין לעדכוני פגישות **
-      sock.on('appointmentUpdated', (newAppointment) => {
+    // מאזינים לאירוע new_appointment מהשרת
+    sock.on('appointmentUpdated', (newAppointment) => {
   console.log("🚀 appointmentUpdated event received:", newAppointment);
 
-  const newBizId = newAppointment.businessId?.toString();
+  const newBizId = newAppointment.business?.toString();
   const currentBizId = businessId.toString();
 
-  console.log(`Comparing newAppointment.businessId: ${newBizId} with businessId: ${currentBizId}`);
+  console.log(`Comparing newAppointment.business: ${newBizId} with businessId: ${currentBizId}`);
 
   if (newBizId === currentBizId) {
     setStats(prevStats => {
@@ -219,24 +219,25 @@ const DashboardPage = () => {
 });
 
 
-      sock.on("disconnect", (reason) => {
-        console.log("Dashboard socket disconnected, reason:", reason);
-      });
+    sock.on("disconnect", (reason) => {
+      console.log("Dashboard socket disconnected, reason:", reason);
+    });
 
-      sock.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
-      });
+    sock.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
+    });
+  }
+
+  setupSocket();
+
+  return () => {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
     }
+  };
+}, [initialized, businessId]);
 
-    setupSocket();
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [initialized, businessId]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
