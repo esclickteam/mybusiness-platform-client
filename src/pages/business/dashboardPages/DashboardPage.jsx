@@ -11,7 +11,6 @@ import RecentActivityTable from "../../../components/dashboard/RecentActivityTab
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
 import WeeklySummary from "../../../components/dashboard/WeeklySummary";
-// import AppointmentsList removed
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
@@ -39,12 +38,22 @@ function mergeStats(oldStats, newStats) {
   const isEmpty = Object.values(newStats).every(
     (val) => val === 0 || val === null || val === undefined
   );
-
   if (isEmpty) {
     return oldStats;
   }
-
   return { ...oldStats, ...newStats };
+}
+
+// פונקציה להוספת שמות לקוח ושירות לפגישה
+function enrichAppointment(appt, business) {
+  const service = business.services?.find(
+    (s) => s._id.toString() === appt.serviceId.toString()
+  );
+  return {
+    ...appt,
+    clientName: appt.client?.name || "לא ידוע",
+    serviceName: service ? service.name : "לא ידוע",
+  };
 }
 
 const DashboardPage = () => {
@@ -118,6 +127,12 @@ const DashboardPage = () => {
     API.get(`/business/${businessId}/stats`)
       .then((res) => {
         const data = res.data || {};
+
+        // מעשירים את הפגישות עם שמות לקוח ושירות
+        const enrichedAppointments = Array.isArray(data.appointments)
+          ? data.appointments.map((appt) => enrichAppointment(appt, data))
+          : [];
+
         const safeData = {
           views_count: data.views_count ?? 0,
           requests_count: data.requests_count ?? 0,
@@ -130,10 +145,11 @@ const DashboardPage = () => {
             : [],
           monthly_comparison: data.monthly_comparison ?? null,
           recent_activity: data.recent_activity ?? null,
-          appointments: Array.isArray(data.appointments) ? data.appointments : [],
+          appointments: enrichedAppointments,
           leads: Array.isArray(data.leads) ? data.leads : [],
           businessName: data.businessName ?? "",
           income_distribution: data.income_distribution ?? null,
+          services: data.services ?? [], // אם תרצה להשתמש בשירותים בצד לקוח
         };
         setStats(safeData);
       })
@@ -190,32 +206,28 @@ const DashboardPage = () => {
         }
       });
 
-      // מאזינים לאירוע new_appointment מהשרת
+      // מאזינים לאירוע appointmentUpdated מהשרת
       sock.on("appointmentUpdated", (newAppointment) => {
         console.log("🚀 appointmentUpdated event received:", newAppointment);
 
         const newBizId = newAppointment.business?.toString();
         const currentBizId = businessId.toString();
 
-        console.log(
-          `Comparing newAppointment.business: ${newBizId} with businessId: ${currentBizId}`
-        );
-
         if (newBizId === currentBizId) {
           setStats((prevStats) => {
             const appointments = Array.isArray(prevStats.appointments)
               ? [...prevStats.appointments]
               : [];
-            const index = appointments.findIndex(
-              (a) => a._id === newAppointment._id
-            );
+
+            // מעשירים את הפגישה החדשה עם שמות לקוח ושירות
+            const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
+
+            const index = appointments.findIndex((a) => a._id === newAppointment._id);
 
             if (index !== -1) {
-              console.log("Updating existing appointment in state");
-              appointments[index] = newAppointment;
+              appointments[index] = enrichedNewAppointment;
             } else {
-              console.log("Adding new appointment to state");
-              appointments.push(newAppointment);
+              appointments.push(enrichedNewAppointment);
             }
             return { ...prevStats, appointments };
           });
@@ -322,7 +334,6 @@ const DashboardPage = () => {
         {stats.recent_activity && (
           <RecentActivityTable activities={stats.recent_activity} />
         )}
-        {/* AppointmentsList removed */}
       </div>
 
       <div>
