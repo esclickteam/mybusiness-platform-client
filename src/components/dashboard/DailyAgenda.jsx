@@ -11,10 +11,10 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
   // פורמט תאריך בתבנית "YYYY-MM-DD" להשוואה
   const selectedDate = useMemo(() => {
     try {
+      // אם זה כבר ISO (YYYY-MM-DD), תחזיר אותו כפי שהוא
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
       const d = new Date(date);
-      const isoDate = d.toISOString().split("T")[0];
-      console.log("Selected date (YYYY-MM-DD):", isoDate);
-      return isoDate;
+      return d.toISOString().split("T")[0];
     } catch {
       return null;
     }
@@ -24,16 +24,10 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
   const dayAppointments = useMemo(() => {
     if (!selectedDate) return [];
 
-    console.log("Appointments dates received:", appointments.map(a => a.date));
-
     const filtered = appointments.filter((a) => {
       if (!a.date) return false;
       const apptDate = new Date(a.date).toISOString().split("T")[0];
-      const match = apptDate === selectedDate;
-      if (match) {
-        console.log("Matching appointment:", a);
-      }
-      return match;
+      return apptDate === selectedDate;
     });
 
     const sorted = filtered.sort((a, b) => {
@@ -42,7 +36,6 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       return timeA.localeCompare(timeB);
     });
 
-    console.log("Filtered & sorted appointments:", sorted);
     return sorted;
   }, [appointments, selectedDate]);
 
@@ -69,21 +62,20 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
         </p>
       ) : (
         <div className="agenda-list">
-          {dayAppointments.map((a, i) => {
+          {dayAppointments.map((a) => {
             const time = a.time || "";
-
-            const clientName = a.clientName || 'לא ידוע';
+            const clientName = a.clientName || "לא ידוע";
             const serviceName = a.serviceName || "לא ידוע";
 
-
             return (
-              <div key={i} className="agenda-item">
+              <div key={a._id} className="agenda-item">
                 <div className="agenda-time">🕒 {time}</div>
                 <div className="agenda-service">💼 שירות: {serviceName}</div>
                 <div className="agenda-client">👤 לקוח: {clientName}</div>
                 <div className="agenda-actions">
                   <button
                     className="agenda-btn"
+                    aria-label={`שלח תזכורת בוואטסאפ ללקוח ${clientName} בשעה ${time}`}
                     onClick={() =>
                       sendWhatsAppReminder(clientName, time, serviceName)
                     }
@@ -92,6 +84,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
                   </button>
                   <button
                     className="agenda-btn outline"
+                    aria-label={`ערוך פגישה עם ${clientName} בשעה ${time}`}
                     onClick={() => editAppointment(a)}
                   >
                     ערוך פגישה
