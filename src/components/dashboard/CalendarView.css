@@ -99,7 +99,6 @@
   justify-content: flex-start;
   overflow-y: auto;
   word-break: break-word;
-  aspect-ratio: auto;
 }
 
 .calendar-day .event-item {
