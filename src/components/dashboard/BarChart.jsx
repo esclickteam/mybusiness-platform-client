@@ -48,17 +48,20 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
         {title}
       </h4>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={dataProp} margin={{ top: 30, right: 40, left: 20, bottom: 60 }}>
+        <BarChart
+          data={dataProp}
+          margin={{ top: 30, right: 40, left: 20, bottom: 80 }} // הגדלתי את המרווח התחתון
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
             dataKey="name"
-            tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
+            tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }} // הקטנתי קצת את הפונט
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
             interval={0} // מציג את כל התוויות
-            angle={-45} // סיבוב תוויות ב-45 מעלות
-            textAnchor="end" // יישור הטקסט לפי הסיבוב
-            height={60} // נותן מקום לתוויות הסיבוב
+            angle={-60} // סיבוב בזווית של 60 מעלות
+            textAnchor="end" // מיישר את הטקסט לפי הסיבוב
+            height={80} // נותן מספיק מקום לתוויות הסיבוב
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
