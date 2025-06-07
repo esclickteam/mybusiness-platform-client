@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api"; // axios instance
+import API from "../api"; // axios instance עם withCredentials:true כברירת מחדל
 import { io } from "socket.io-client";
 
 export const AuthContext = createContext();
@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
   // חידוש Access Token
   const refreshAccessToken = async () => {
     try {
-      const response = await API.post("/auth/refresh-token", null, { credentials: "include" });
+      const response = await API.post("/auth/refresh-token", null, { withCredentials: true });
       if (response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         API.defaults.headers['Authorization'] = `Bearer ${response.data.accessToken}`;
@@ -56,7 +56,6 @@ export function AuthProvider({ children }) {
       console.log("🔴 Socket.IO disconnected, reason:", reason);
     });
 
-    // טיפול ב-tokenExpired: רענון והתחברות מחדש
     ws.current.on("tokenExpired", async () => {
       console.log("🚨 Socket token expired, refreshing...");
       const newToken = await refreshAccessToken();
@@ -100,7 +99,7 @@ export function AuthProvider({ children }) {
         API.defaults.headers['Authorization'] = `Bearer ${token}`;
 
         try {
-          const { data } = await API.get("/auth/me", { credentials: "include" });
+          const { data } = await API.get("/auth/me", { withCredentials: true });
           if (data.businessId) {
             localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
           }
@@ -117,7 +116,7 @@ export function AuthProvider({ children }) {
           const newToken = await refreshAccessToken();
           if (newToken) {
             try {
-              const { data } = await API.get("/auth/me", { credentials: "include" });
+              const { data } = await API.get("/auth/me", { withCredentials: true });
               setUser({
                 userId: data.userId,
                 name: data.name,
@@ -171,7 +170,7 @@ export function AuthProvider({ children }) {
     setError(null);
 
     try {
-      const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { credentials: "include" });
+      const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
       const { accessToken } = response.data;
 
       if (!accessToken) throw new Error("No access token received");
@@ -179,7 +178,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("token", accessToken);
       API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
-      const { data } = await API.get("/auth/me", { credentials: "include" });
+      const { data } = await API.get("/auth/me", { withCredentials: true });
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
       }
@@ -238,7 +237,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     setLoading(true);
     try {
-      await API.post("/auth/logout", {});
+      await API.post("/auth/logout", {}, { withCredentials: true });
       setUser(null);
       localStorage.removeItem("token");
       localStorage.removeItem("businessDetails");
