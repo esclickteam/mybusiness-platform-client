@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+import React from "react";
+import { useMediaQuery } from "react-responsive";
 import "./BarChartComponent.css";
 import {
   BarChart,
@@ -11,7 +12,7 @@ import {
   Legend,
 } from "recharts";
 
-const data = [
+const defaultData = [
   { name: "ינואר", customers: 10 },
   { name: "פברואר", customers: 15 },
   { name: "מרץ", customers: 7 },
@@ -27,43 +28,57 @@ const data = [
 ];
 
 const BarChartComponent = ({
-  dataProp = data,
+  dataProp = defaultData,
   title = "לקוחות שהזמינו פגישות לפי חודשים 📊",
 }) => {
-  const wrapperRef = useRef(null);
+  // נזהה אם המסך צר מ-768px
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   return (
-    <div className="graph-box" ref={wrapperRef}>
-      <h4>{title}</h4>
-      <ResponsiveContainer width="100%" height={550}>
+    <div className="graph-box">
+      <h4 className="graph-title">{title}</h4>
+      <ResponsiveContainer
+        width="100%"
+        aspect={isMobile ? 1.2 : 2} // יחס רוחב:גובה גמיש
+      >
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 20, left: 20, bottom: 160 }} // הגדלתי את התחתון
-          barCategoryGap="60%"
-          barGap={12}
-          barSize={20}
+          margin={{
+            top: 30,
+            right: 20,
+            left: 20,
+            bottom: isMobile ? 60 : 100, // פחות מרווח תחתון בנייד
+          }}
+          barCategoryGap={isMobile ? "30%" : "50%"}
+          barGap={isMobile ? 8 : 12}
+          barSize={isMobile ? 12 : 20}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
-            type="category"
             dataKey="name"
             interval={0}
-            scale="band"
-            height={140} // הגדלתי את הגובה של הציר
-            tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 700 }}
+            tick={{
+              fill: "#4b0082",
+              fontSize: isMobile ? 10 : 14,
+              fontWeight: 700,
+            }}
+            tickMargin={isMobile ? 8 : 16}
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
-            angle={0}
             textAnchor="middle"
           />
           <YAxis
-            tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
+            tick={{
+              fill: "#4b0082",
+              fontSize: isMobile ? 10 : 14,
+              fontWeight: 600,
+            }}
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
           />
           <Tooltip
             cursor={false}
-            wrapperStyle={{ fontSize: 14 }}
+            wrapperStyle={{ fontSize: isMobile ? 12 : 14 }}
             contentStyle={{
               backgroundColor: "#fafafa",
               borderRadius: 8,
@@ -74,9 +89,10 @@ const BarChartComponent = ({
             verticalAlign="top"
             align="center"
             wrapperStyle={{
-              marginBottom: 12,
+              marginBottom: isMobile ? 8 : 12,
               fontWeight: "600",
               color: "#4b0082",
+              fontSize: isMobile ? 12 : 14,
             }}
           />
           <Bar
