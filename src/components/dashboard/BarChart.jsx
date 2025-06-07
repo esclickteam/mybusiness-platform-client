@@ -24,14 +24,13 @@ const BarChartComponent = ({
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // מתחברים לסוקט עם auth
     const socket = io(SOCKET_URL, {
       path: '/socket.io',
       transports: ['websocket', 'polling'],
       auth: { token, businessId },
     });
 
-    // בקשת נתונים ראשונית
+    // 1. בקשת נתונים ראשונית
     socket.on("connect", () => {
       socket.emit("getAppointments", null, (res) => {
         if (res.ok) {
@@ -42,13 +41,10 @@ const BarChartComponent = ({
       });
     });
 
-    // מאזינים לעדכונים מלאים
-    socket.on("allAppointmentsUpdated", ({ ok, appointments }) => {
-      if (ok) {
-        setData(formatMonthlyData(appointments));
-      } else {
-        console.error("Error in allAppointmentsUpdated:", appointments);
-      }
+    // 2. מאזינים לעדכון מלא של כל הפגישות (מערך פגישות)
+    socket.on("allAppointmentsUpdated", (appointments) => {
+      // appointments כאן הוא כבר מערך פגישות, לא אובייקט עם ok
+      setData(formatMonthlyData(appointments));
     });
 
     return () => {
