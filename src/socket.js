@@ -40,7 +40,6 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     transports: ["polling", "websocket"],
     auth,
     autoConnect: false,
-    // אפשר להוסיף אפשרויות לניהול חיבורים מחדש, למשל:
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
@@ -57,10 +56,8 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   socket.on("disconnect", (reason) => {
     console.log("🔴 Disconnected from WebSocket server. Reason:", reason);
     if (reason === "io client disconnect") {
-      // בד"כ זה כשקרית disconnect במודע, לא מנסה להתחבר מחדש
       console.log("Socket manually disconnected.");
     } else {
-      // נסיון חיבור מחדש אוטומטי
       console.log("Trying to reconnect...");
     }
   });
@@ -80,10 +77,6 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
   socket.on("tokenExpired", async () => {
     console.log("🚨 Token expired. Refreshing...");
-    if (!getValidAccessToken) {
-      console.error("No getValidAccessToken function provided");
-      return;
-    }
     const newToken = await getValidAccessToken();
     if (!newToken) {
       alert("Session expired. Please log in again.");
@@ -94,7 +87,6 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
     socket.auth.token = newToken;
 
-    // שולח אירוע אימות חדש לשרת במקום לנתק ולחבר מחדש
     socket.emit("authenticate", { token: newToken }, (ack) => {
       if (ack && ack.ok) {
         console.log("✅ Socket re-authenticated successfully");
