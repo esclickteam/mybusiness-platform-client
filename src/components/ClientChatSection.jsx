@@ -7,7 +7,7 @@ import createSocket from "../socket";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
-  const { user, initialized, refreshAccessToken } = useAuth(); // שים לב כאן להחליף ל-refreshAccessToken
+  const { user, initialized, refreshAccessToken } = useAuth();
   const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
@@ -21,15 +21,21 @@ export default function ClientChatSection() {
 
     async function setupSocket() {
       try {
-        const token = await refreshAccessToken(); // כאן קורא ל-refreshAccessToken במקום getValidAccessToken
+        const token = await refreshAccessToken();
         if (!token) {
           setError("אין טוקן תקין, אנא התחבר מחדש");
           return;
         }
 
-        const sock = await createSocket(token, refreshAccessToken, () => {
+        // כאן מחברים את הסוקט ומחזירים את האובייקט
+        const sock = await createSocket(refreshAccessToken, () => {
           window.location.href = "/login";
         });
+        if (!sock) {
+          setError("חיבור לסוקט נכשל");
+          return;
+        }
+
         socketRef.current = sock;
 
         sock.on("connect_error", (err) => {
@@ -37,8 +43,7 @@ export default function ClientChatSection() {
           setError("שגיאה בחיבור לסוקט: " + err.message);
         });
 
-        // אין צורך לקרוא connect() אם createSocket כבר מחבר את הסוקט
-        // sock.connect();
+        // לא צריך לקרוא sock.connect() כי createSocket כבר עושה זאת
       } catch (e) {
         setError("שגיאה בהתחברות לסוקט");
         console.error(e);
@@ -53,7 +58,7 @@ export default function ClientChatSection() {
         socketRef.current = null;
       }
     };
-  }, [initialized, userId, businessId, refreshAccessToken]); // ופה גם להוסיף ל-deps
+  }, [initialized, userId, businessId, refreshAccessToken]);
 
   useEffect(() => {
     if (!socketRef.current || !socketRef.current.connected || !businessId) return;
