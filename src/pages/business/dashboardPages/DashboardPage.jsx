@@ -219,37 +219,48 @@ const DashboardPage = () => {
       });
 
       sock.on("appointmentUpdated", (newAppointment) => {
-        console.log("🚀 appointmentUpdated event received:", newAppointment);
+  console.log("🚀 appointmentUpdated event received:", newAppointment);
 
-        const newBizId = newAppointment.business?.toString();
-        const currentBizId = businessId.toString();
+  const newBizId = newAppointment.business?.toString();
+  const currentBizId = businessId.toString();
 
-        if (newBizId === currentBizId) {
-          setStats((prevStats) => {
-            const appointments = Array.isArray(prevStats.appointments)
-              ? [...prevStats.appointments]
-              : [];
+  if (newBizId === currentBizId) {
+    setStats((prevStats) => {
+      const appointments = Array.isArray(prevStats.appointments)
+        ? [...prevStats.appointments]
+        : [];
 
-            const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
+      const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
 
-            const index = appointments.findIndex((a) => a._id === newAppointment._id);
+      const index = appointments.findIndex((a) => a._id === newAppointment._id);
 
-            if (index !== -1) {
-              appointments[index] = enrichedNewAppointment;
-            } else {
-              appointments.push(enrichedNewAppointment);
-            }
+      if (index !== -1) {
+        appointments[index] = enrichedNewAppointment;
+      } else {
+        appointments.push(enrichedNewAppointment);
+      }
 
-            return {
-              ...prevStats,
-              appointments,
-              appointments_count: appointments.length,
-            };
-          });
-        } else {
-          console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
-        }
-      });
+      return {
+        ...prevStats,
+        appointments,
+        appointments_count: appointments.length,
+      };
+    });
+
+    // כאן הכפנו רענון של selectedDate אם הפגישה שייכת לתאריך שנבחר
+    if (newAppointment.date) {
+      const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
+      if (apptDate === selectedDate) {
+        setSelectedDate(null);
+        setTimeout(() => setSelectedDate(apptDate), 10);
+      }
+    }
+
+  } else {
+    console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
+  }
+});
+
 
       // חשוב: משתמש ב־prevStats כדי לקבל את המצב העדכני
       sock.on("allAppointmentsUpdated", (allAppointments) => {
