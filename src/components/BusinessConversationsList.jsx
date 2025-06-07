@@ -18,13 +18,8 @@ export default function BusinessConversationsList({ onSelectConversation }) {
       setLoading(true);
       setError("");
 
-      const token = await getValidAccessToken();
-      if (!token) {
-        logout();
-        return;
-      }
-
-      const sock = await createSocket(token, getValidAccessToken, logout, businessId);
+      // לא שולחים token, שולחים את הפונקציה שמחזירה טוקן תקין
+      const sock = await createSocket(getValidAccessToken, logout, businessId);
 
       if (!sock) return; // כנראה הפניית login כבר התבצעה
 

@@ -182,7 +182,8 @@ const DashboardPage = () => {
         logout();
         return;
       }
-      const sock = await createSocket(token, refreshAccessToken, logout, businessId);
+      const sock = await createSocket(refreshAccessToken, logout, businessId);
+
 
       if (!sock) {
         console.warn("Failed to create socket");

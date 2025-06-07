@@ -31,7 +31,8 @@ export default function BusinessChatWrapper() {
         return;
       }
 
-      const sock = await createSocket(token, getValidAccessToken, logout, businessId);
+      // כאן שולחים את הפונקציה getValidAccessToken, לא את הטוקן עצמו!
+      const sock = await createSocket(getValidAccessToken, logout, businessId);
       if (!sock) return;
 
       if (!sock.connected) sock.connect();
@@ -106,7 +107,6 @@ export default function BusinessChatWrapper() {
       convo.customer?._id ||
       null;
 
-    // צא מהחדר הישן לפני כניסה לחדר החדש
     if (hasJoinedRef.current && selectedRef.current?.conversationId) {
       sock.emit("leaveConversation", selectedRef.current.conversationId, (ack) => {
         if (!ack || !ack.ok) {
@@ -115,7 +115,6 @@ export default function BusinessChatWrapper() {
       });
     }
 
-    // הצטרף לחדר החדש
     sock.emit("joinConversation", conversationId, (ack) => {
       if (!ack || !ack.ok) {
         console.error("Failed to join conversation:", ack?.error);

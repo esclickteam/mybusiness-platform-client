@@ -21,13 +21,7 @@ export default function CollabPartnersChat() {
 
   useEffect(() => {
     async function setupSocket() {
-      const token = await getValidAccessToken();
-      if (!token) {
-        logout();
-        return;
-      }
-      const sock = await createSocket(token, getValidAccessToken, logout, user?.businessId);
-
+      const sock = await createSocket(getValidAccessToken, logout, user?.businessId);
       if (!sock) return;
 
       sock.connect();
@@ -39,7 +33,7 @@ export default function CollabPartnersChat() {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [getValidAccessToken, logout]);
+  }, [getValidAccessToken, logout, user?.businessId]);
 
   const startChat = useCallback(async (partnerId) => {
     if (!socketRef.current) return;
@@ -94,7 +88,6 @@ export default function CollabPartnersChat() {
       text: input.trim(),
     };
     socketRef.current.emit("sendMessage", msg, (ack) => {
-      // בדיקה שהack הוא אובייקט תקין לפני השימוש
       if (typeof ack !== "object" || ack === null) {
         console.warn("Invalid sendMessage ack:", ack);
         return;

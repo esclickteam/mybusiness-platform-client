@@ -28,14 +28,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
     let isMounted = true;
 
     async function setupSocket() {
-      const token = await getValidAccessToken();
-      if (!token) {
-        logout();
-        return;
-      }
-
-      const sock = await createSocket(token, getValidAccessToken, logout, userId || businessId);
-
+      const sock = await createSocket(getValidAccessToken, logout, userId);
       if (!sock) return;
 
       if (!sock.connected) sock.connect();
