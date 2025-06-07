@@ -32,7 +32,8 @@ export default function ChatComponent({
         return;
       }
 
-      const sock = await createSocket(getValidAccessToken, logout);
+      const sock = await createSocket(getValidAccessToken, logout, businessId || userId);
+
       if (!sock) return;
 
       socketRef.current = sock;

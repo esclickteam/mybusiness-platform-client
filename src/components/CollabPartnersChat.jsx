@@ -26,7 +26,8 @@ export default function CollabPartnersChat() {
         logout();
         return;
       }
-      const sock = await createSocket(token, getValidAccessToken, logout);
+      const sock = await createSocket(token, getValidAccessToken, logout, user?.businessId);
+
       if (!sock) return;
 
       sock.connect();

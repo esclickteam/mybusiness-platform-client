@@ -34,7 +34,8 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
         return;
       }
 
-      const sock = await createSocket(token, getValidAccessToken, logout);
+      const sock = await createSocket(token, getValidAccessToken, logout, userId || businessId);
+
       if (!sock) return;
 
       if (!sock.connected) sock.connect();

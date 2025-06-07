@@ -24,7 +24,8 @@ export default function BusinessConversationsList({ onSelectConversation }) {
         return;
       }
 
-      const sock = await createSocket(token, getValidAccessToken, logout);
+      const sock = await createSocket(token, getValidAccessToken, logout, businessId);
+
       if (!sock) return; // כנראה הפניית login כבר התבצעה
 
       sock.connect();

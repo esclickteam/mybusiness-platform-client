@@ -31,7 +31,7 @@ export default function BusinessChatWrapper() {
         return;
       }
 
-      const sock = await createSocket(token, getValidAccessToken, logout);
+      const sock = await createSocket(token, getValidAccessToken, logout, businessId);
       if (!sock) return;
 
       if (!sock.connected) sock.connect();
