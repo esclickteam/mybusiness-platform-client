@@ -40,6 +40,12 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     transports: ["polling", "websocket"],
     auth,
     autoConnect: false,
+    // אפשר להוסיף אפשרויות לניהול חיבורים מחדש, למשל:
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    randomizationFactor: 0.5,
   });
 
   socket.connect();
@@ -50,6 +56,26 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
   socket.on("disconnect", (reason) => {
     console.log("🔴 Disconnected from WebSocket server. Reason:", reason);
+    if (reason === "io client disconnect") {
+      // בד"כ זה כשקרית disconnect במודע, לא מנסה להתחבר מחדש
+      console.log("Socket manually disconnected.");
+    } else {
+      // נסיון חיבור מחדש אוטומטי
+      console.log("Trying to reconnect...");
+    }
+  });
+
+  socket.on("reconnect_attempt", (attempt) => {
+    console.log("🔄 Reconnect attempt:", attempt);
+  });
+
+  socket.on("reconnect_error", (error) => {
+    console.error("❌ Reconnect error:", error);
+  });
+
+  socket.on("reconnect_failed", () => {
+    console.error("❌ Reconnect failed");
+    alert("Failed to reconnect to server.");
   });
 
   socket.on("tokenExpired", async () => {
@@ -64,10 +90,20 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
       if (onLogout) onLogout();
       return;
     }
-    console.log("🔄 New token received, reconnecting socket");
+    console.log("🔄 New token received, updating socket auth");
+
     socket.auth.token = newToken;
-    socket.disconnect();
-    socket.connect();
+
+    // שולח אירוע אימות חדש לשרת במקום לנתק ולחבר מחדש
+    socket.emit("authenticate", { token: newToken }, (ack) => {
+      if (ack && ack.ok) {
+        console.log("✅ Socket re-authenticated successfully");
+      } else {
+        console.warn("⚠ Socket re-authentication failed, disconnecting");
+        socket.disconnect();
+        if (onLogout) onLogout();
+      }
+    });
   });
 
   socket.on("connect_error", (err) => {
