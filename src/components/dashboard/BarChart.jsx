@@ -47,10 +47,10 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
       >
         {title}
       </h4>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}> {/* הגדלתי את הגובה */}
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 40, left: 20, bottom: 80 }}
+          margin={{ top: 30, right: 40, left: 20, bottom: 60 }} // מספיק מקום לתוויות אופקיות
           barCategoryGap="20%" // מרווח בין העמודות
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -60,9 +60,9 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
             interval={0}
-            angle={-45}
-            textAnchor="end"
-            height={60}
+            angle={0} // בלי סיבוב
+            textAnchor="middle" // תוויות מתחת לעמודה במרכז
+            height={40} // גובה מתאים לטקסט אופקי
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
