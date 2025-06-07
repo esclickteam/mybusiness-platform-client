@@ -138,8 +138,8 @@ const DashboardPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = res.data || {};
-        const enrichedAppointments = Array.isArray(data.appointments)
-          ? data.appointments.map((appt) => enrichAppointment(appt, data))
+        const enrichedAppointments = Array.isArray(data.schedule)
+          ? data.schedule.map((appt) => enrichAppointment(appt, data))
           : [];
 
         const safeData = {
@@ -148,7 +148,7 @@ const DashboardPage = () => {
           orders_count: data.orders_count ?? 0,
           reviews_count: data.reviews_count ?? 0,
           messages_count: data.messages_count ?? 0,
-          appointments_count: data.appointments_count ?? 0,
+          appointments_count: Array.isArray(data.schedule) ? data.schedule.length : 0,
           todaysAppointments: Array.isArray(data.todaysAppointments)
             ? data.todaysAppointments
             : [],
@@ -243,7 +243,7 @@ const DashboardPage = () => {
             return {
               ...prevStats,
               appointments,
-              appointments_count: appointments.length, // עדכון ספירת הפגישות בזמן אמת
+              appointments_count: appointments.length,
             };
           });
         } else {
