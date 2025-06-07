@@ -9,11 +9,14 @@
   max-width: 700px;
   margin: 0 auto;
 
-  /* גובה קבוע לדסקטופ */
-  height: 400px;
+  /* ביטול גובה קשיח – שיאפשר גמישות */
+  height: auto;
 
-  /* הוספתי קצת רווח פנימי תחתון כדי שהתוויות המסובבות לא ייחתכו */
+  /* מקום לתוויות מסובבות */
   padding-bottom: 3.5rem;
+
+  /* גלילה אופקית במובייל אם צריך */
+  overflow-x: auto;
 }
 
 .graph-title {
@@ -25,24 +28,27 @@
   font-size: 1.2rem;
 }
 
-/* מבטיח שה-ResponsiveContainer של Recharts יתפוס את כל הגובה */
+/* גורם ל-ResponsiveContainer לתפוס את מלוא המרחב הזמין */
 .graph-box .recharts-responsive-container {
   width: 100% !important;
   height: 100% !important;
+  min-width: 500px; /* מבטיח שתהיה גלילה אם צפוף */
 }
 
 /* התאמות למסכים קטנים */
 @media (max-width: 768px) {
   .graph-box {
-    padding: 0.5rem 0.5rem 2.5rem 0.5rem; /* שמרתי על רווח תחתון */
+    padding: 0.5rem 0.5rem 2.5rem 0.5rem;
     max-width: 100%;
-    /* גובה נמוך יותר לנייד */
-    height: 250px;
   }
 
   .graph-title {
     font-size: 1rem;
     margin-top: 8px;
     margin-bottom: 8px;
+  }
+
+  .graph-box .recharts-responsive-container {
+    min-width: 600px; /* מונע חיתוך של תוויות */
   }
 }

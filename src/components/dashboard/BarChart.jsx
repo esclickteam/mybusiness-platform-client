@@ -51,17 +51,16 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
       <p style={{ textAlign: "center", fontSize: "0.85rem", color: "#666" }}>
         סה"כ פגישות שנקבעו לפי חודש לאורך השנה
       </p>
-      <ResponsiveContainer width="100%" aspect={isMobile ? 1.6 : 2.5}>
-        <BarChart
-          data={data}
-          layout={isMobile ? "vertical" : "horizontal"}
-          margin={{ top: 20, right: 20, left: 20, bottom: 40 }}
-          barCategoryGap="50%"
-          barGap={8}
-          barSize={20}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          {!isMobile ? (
+      <div className="graph-scroll">
+        <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
+          <BarChart
+            data={data}
+            layout="horizontal"
+            margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
+            barCategoryGap="40%"
+            barSize={20}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
             <XAxis
               dataKey="name"
               interval={0}
@@ -69,65 +68,51 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
                 fill: "#4b0082",
                 fontSize: 12,
                 fontWeight: 700,
-                angle: -45,
-                textAnchor: "end",
+                angle: isMobile ? -45 : 0,
+                textAnchor: isMobile ? "end" : "middle",
               }}
-              tickMargin={20}
+              height={isMobile ? 60 : 40}
+              tickMargin={12}
               axisLine={{ stroke: "#4b0082" }}
               tickLine={false}
             />
-          ) : (
-            <XAxis type="number" hide />
-          )}
-
-          {!isMobile ? (
             <YAxis
               tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
               axisLine={{ stroke: "#4b0082" }}
               tickLine={false}
             />
-          ) : (
-            <YAxis
-              type="category"
-              dataKey="name"
-              tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
-              axisLine={{ stroke: "#4b0082" }}
-              tickLine={false}
-              width={50}
-            />
-          )}
-
-          <Tooltip
-            cursor={false}
-            wrapperStyle={{ fontSize: 12 }}
-            contentStyle={{
-              backgroundColor: "#fafafa",
-              borderRadius: 8,
-              borderColor: "#ddd",
-            }}
-            labelFormatter={(value) => `חודש: ${value}`}
-            formatter={(value) => [`${value} לקוחות`, '']}
-          />
-          {showLegend && (
-            <Legend
-              verticalAlign="top"
-              align="center"
-              wrapperStyle={{
-                marginBottom: 12,
-                fontWeight: 600,
-                color: "#4b0082",
-                fontSize: 12,
+            <Tooltip
+              cursor={false}
+              wrapperStyle={{ fontSize: 12 }}
+              contentStyle={{
+                backgroundColor: "#fafafa",
+                borderRadius: 8,
+                borderColor: "#ddd",
               }}
+              labelFormatter={(value) => `חודש: ${value}`}
+              formatter={(value) => [`${value} לקוחות`, '']}
             />
-          )}
-          <Bar
-            dataKey="customers"
-            name="לקוחות"
-            fill="#6a5acd"
-            radius={[5, 5, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+            {showLegend && (
+              <Legend
+                verticalAlign="top"
+                align="center"
+                wrapperStyle={{
+                  marginBottom: 12,
+                  fontWeight: 600,
+                  color: "#4b0082",
+                  fontSize: 12,
+                }}
+              />
+            )}
+            <Bar
+              dataKey="customers"
+              name="לקוחות"
+              fill="#6a5acd"
+              radius={[5, 5, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
