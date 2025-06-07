@@ -125,8 +125,17 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
-    API.get(`/business/${businessId}/stats`)
-      .then((res) => {
+
+    async function fetchStats() {
+      try {
+        const token = await refreshAccessToken();
+        if (!token) {
+          logout();
+          return;
+        }
+        const res = await API.get(`/business/${businessId}/stats`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const data = res.data || {};
         const enrichedAppointments = Array.isArray(data.appointments)
           ? data.appointments.map((appt) => enrichAppointment(appt, data))
@@ -151,22 +160,26 @@ const DashboardPage = () => {
           services: data.services ?? [],
         };
         setStats(safeData);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
-  }, [businessId]);
+      }
+    }
+    fetchStats();
+  }, [businessId, refreshAccessToken, logout]);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
 
     async function setupSocket() {
-      const token = localStorage.getItem("token");
+      const token = await refreshAccessToken();
+      if (!token) {
+        logout();
+        return;
+      }
       const sock = await createSocket(token, refreshAccessToken, logout);
       if (!sock) {
         console.warn("Failed to create socket");
