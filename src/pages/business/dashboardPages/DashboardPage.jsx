@@ -57,7 +57,7 @@ function enrichAppointment(appt, business) {
 }
 
 const DashboardPage = () => {
-  const { user, initialized } = useAuth();
+  const { user, initialized, getValidAccessToken, logout } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
   const navigate = useNavigate();
@@ -169,10 +169,15 @@ const DashboardPage = () => {
     if (socketRef.current) return;
 
     async function setupSocket() {
-      const sock = await createSocket({
-        role: "business-dashboard",
-        businessId,
-      });
+      // קבלת טוקן תקין
+      const token = await getValidAccessToken();
+      if (!token) {
+        console.warn("No valid token available for socket connection");
+        logout();
+        return;
+      }
+
+      const sock = await createSocket(token, getValidAccessToken, logout);
       if (!sock) {
         console.warn("Failed to create socket");
         return;
@@ -220,7 +225,6 @@ const DashboardPage = () => {
               ? [...prevStats.appointments]
               : [];
 
-            // מעשירים את הפגישה החדשה עם שמות לקוח ושירות
             const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
 
             const index = appointments.findIndex((a) => a._id === newAppointment._id);
@@ -254,7 +258,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, getValidAccessToken, logout]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
