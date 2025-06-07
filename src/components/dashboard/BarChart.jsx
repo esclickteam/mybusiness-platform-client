@@ -39,8 +39,8 @@ const BarChartComponent = ({
         <BarChart
           data={dataProp}
           margin={{ top: 30, right: 20, left: 20, bottom: 140 }}
-          barCategoryGap="20%"
-          barGap={5}
+          barCategoryGap="50%"
+          barGap={10}
           barSize={20}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
