@@ -36,18 +36,19 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
         <BarChart
           data={dataProp}
           margin={{ top: 30, right: 40, left: 20, bottom: 80 }}
-          barCategoryGap="40%" // ריווח גדול יותר בין העמודות
+          barCategoryGap="40%"  // ריווח גדול יותר בין העמודות
+          barSize={40}          // רוחב עמודה מוגדל
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
             dataKey="name"
-            tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 700 }}
+            tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 700 }}
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
             interval={0}
-            angle={0}           // זווית 0 מעלות - טקסט ישר
-            textAnchor="middle" // טקסט במרכז התווית
-            height={60}
+            angle={0}             // טקסט ישר, ללא זווית
+            textAnchor="middle"   // טקסט במרכז התווית
+            height={80}           // גובה מותאם לטקסט
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
