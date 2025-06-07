@@ -36,7 +36,7 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
         <BarChart
           data={dataProp}
           margin={{ top: 30, right: 40, left: 20, bottom: 80 }}
-          barCategoryGap="30%"
+          barCategoryGap="40%" // ריווח גדול יותר בין העמודות
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
@@ -45,8 +45,8 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
             interval={0}
-            angle={30}           
-            textAnchor="start"   
+            angle={0}           // זווית 0 מעלות - טקסט ישר
+            textAnchor="middle" // טקסט במרכז התווית
             height={60}
           />
           <YAxis
