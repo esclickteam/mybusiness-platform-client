@@ -39,8 +39,8 @@ export function AuthProvider({ children }) {
     return refreshingTokenPromise.current;
   };
 
-  // יצירת חיבור Socket.IO עם הטוקן כולל queue ברענון
-  const createSocketConnection = (token) => {
+  // יצירת חיבור Socket.IO עם הטוקן, role ו-businessId
+  const createSocketConnection = (token, user) => {
     if (ws.current) {
       ws.current.disconnect();
       ws.current = null;
@@ -53,7 +53,11 @@ export function AuthProvider({ children }) {
     ws.current = io("https://api.esclick.co.il", {
       path: "/socket.io",
       transports: ["websocket"],
-      auth: { token },
+      auth: {
+        token,
+        role: user?.role,
+        businessId: user?.businessId || user?.business?._id,
+      },
     });
 
     ws.current.on("connect", () => {
@@ -91,7 +95,7 @@ export function AuthProvider({ children }) {
         try {
           const newToken = await refreshAccessToken();
           if (newToken) {
-            createSocketConnection(newToken);
+            createSocketConnection(newToken, user);
           } else {
             setUser(null);
             localStorage.removeItem("token");
@@ -130,6 +134,7 @@ export function AuthProvider({ children }) {
             subscriptionPlan: data.subscriptionPlan,
             businessId: data.businessId || null,
           });
+          createSocketConnection(token, data);
         } catch {
           const newToken = await refreshAccessToken();
           if (newToken) {
@@ -144,6 +149,7 @@ export function AuthProvider({ children }) {
                 businessId: data.businessId || null,
               });
               token = newToken;
+              createSocketConnection(token, data);
             } catch {
               setUser(null);
               localStorage.removeItem("token");
@@ -158,13 +164,6 @@ export function AuthProvider({ children }) {
       } else {
         setUser(null);
         token = null;
-      }
-
-      if (token) {
-        createSocketConnection(token);
-      } else if (ws.current) {
-        ws.current.disconnect();
-        ws.current = null;
       }
 
       setLoading(false);
@@ -207,7 +206,7 @@ export function AuthProvider({ children }) {
         businessId: data.businessId || null,
       });
 
-      createSocketConnection(accessToken);
+      createSocketConnection(accessToken, data);
 
       if (!options.skipRedirect && data) {
         let path = "/";
