@@ -49,15 +49,27 @@ const Insights = ({ stats }) => {
           borderRadius: "5px",
           color: upcoming > 0 ? "green" : "red",
           fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
         }}
       >
-        📆 {upcoming > 0 ? `יש ${upcoming} פגישות מתוכננות` : "אין פגישות מתוכננות השבוע"}
-        {!upcoming && (
-          <div style={{ marginTop: "5px", fontWeight: "normal", fontSize: "0.9rem", color: "#555" }}>
-            מומלץ לתזמן פגישות לשיפור הפעילות
-          </div>
-        )}
+        📆 {upcoming > 0 ? `יש ${upcoming} פגישות מתוכננות השבוע` : "אין פגישות מתוכננות השבוע"}
       </div>
+
+      {!upcoming && (
+        <div
+          style={{
+            marginTop: "5px",
+            fontWeight: "normal",
+            fontSize: "0.9rem",
+            color: "#555",
+            paddingLeft: "5px",
+          }}
+        >
+          מומלץ לתזמן פגישות לשיפור הפעילות
+        </div>
+      )}
     </div>
   );
 };

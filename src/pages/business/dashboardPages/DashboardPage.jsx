@@ -146,8 +146,8 @@ const DashboardPage = () => {
         console.log("📊 API fetched stats:", data);
 
         const enrichedAppointments = Array.isArray(data.appointments)
-  ? data.appointments.map((appt) => enrichAppointment(appt, data))
-  : [];
+          ? data.appointments.map((appt) => enrichAppointment(appt, data))
+          : [];
 
         const safeData = {
           views_count: data.views_count ?? 0,
@@ -368,6 +368,19 @@ const DashboardPage = () => {
     },
   ];
 
+  // חישוב פגישות בשבוע הקרוב
+  const getUpcomingAppointmentsCount = (appointments) => {
+    const now = new Date();
+    const endOfWeek = new Date();
+    endOfWeek.setDate(now.getDate() + 7);
+    return appointments.filter((appt) => {
+      const apptDate = new Date(appt.date);
+      return apptDate >= now && apptDate <= endOfWeek;
+    }).length;
+  };
+
+  const upcomingAppointmentsCount = getUpcomingAppointmentsCount(appointments);
+
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
@@ -394,7 +407,8 @@ const DashboardPage = () => {
 
       <DashboardCards stats={stats} />
 
-      <Insights stats={stats} />
+      <Insights stats={{ ...stats, upcoming_appointments: upcomingAppointmentsCount }} />
+
       <NextActions stats={stats} />
 
       <div>
