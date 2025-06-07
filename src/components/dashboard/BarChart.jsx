@@ -27,7 +27,15 @@ const data = [
 
 const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
   return (
-    <div className="graph-box" style={{ padding: '1rem', background: '#fff', borderRadius: 12, boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+    <div
+      className="graph-box"
+      style={{
+        padding: "1rem",
+        background: "#fff",
+        borderRadius: 12,
+        boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
+      }}
+    >
       <h4
         style={{
           textAlign: "center",
@@ -40,10 +48,7 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
         {title}
       </h4>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={dataProp}
-          margin={{ top: 30, right: 40, left: 20, bottom: 20 }}
-        >
+        <BarChart data={dataProp} margin={{ top: 30, right: 40, left: 20, bottom: 60 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
             dataKey="name"
@@ -51,6 +56,9 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
             interval={0} // מציג את כל התוויות
+            angle={-45} // סיבוב תוויות ב-45 מעלות
+            textAnchor="end" // יישור הטקסט לפי הסיבוב
+            height={60} // נותן מקום לתוויות הסיבוב
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
@@ -64,7 +72,7 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
           <Legend
             verticalAlign="top"
             align="center"
-            wrapperStyle={{ marginBottom: 12, fontWeight: '600', color: "#4b0082" }}
+            wrapperStyle={{ marginBottom: 12, fontWeight: "600", color: "#4b0082" }}
           />
           <Bar dataKey="customers" name="לקוחות" fill="#6a5acd" radius={[5, 5, 0, 0]} />
         </BarChart>
