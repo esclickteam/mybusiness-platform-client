@@ -1,4 +1,5 @@
 import React from "react";
+import "./BarChartComponent.css";
 import {
   BarChart,
   Bar,
@@ -27,26 +28,8 @@ const data = [
 
 const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
   return (
-    <div
-      className="graph-box"
-      style={{
-        padding: "1rem",
-        background: "#fff",
-        borderRadius: 12,
-        boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-      }}
-    >
-      <h4
-        style={{
-          textAlign: "center",
-          marginBottom: 12,
-          marginTop: 10,
-          color: "#4b0082",
-          fontWeight: "700",
-        }}
-      >
-        {title}
-      </h4>
+    <div className="graph-box">
+      <h4>{title}</h4>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={dataProp}

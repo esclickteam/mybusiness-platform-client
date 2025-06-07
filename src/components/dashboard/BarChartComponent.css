@@ -1,0 +1,14 @@
+.graph-box {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.graph-box h4 {
+  text-align: center;
+  margin-bottom: 12px;
+  margin-top: 10px;
+  color: #4b0082;
+  font-weight: 700;
+}
