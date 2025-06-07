@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import ChatComponent from "../../../../../components/ChatComponent";
 import styles from "./ChatSection.module.css";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 
 export default function ChatSection({ isBusiness = false }) {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
@@ -26,64 +26,79 @@ export default function ChatSection({ isBusiness = false }) {
   // טען לקוחות
   useEffect(() => {
     if (!initialized || !businessId) return;
-    setIsLoading(true);
+
+    const fetchClients = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch("/business/clients", { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to fetch clients");
+        const data = await res.json();
+        setClients(data);
+      } catch (err) {
+        console.error("שגיאה בטעינת לקוחות", err);
+        setError("לא ניתן לטעון לקוחות");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchClients();
   }, [initialized, businessId]);
 
-  const fetchClients = async () => {
-    try {
-      const res = await fetch("/business/clients", { credentials: "include" });
-      const data = await res.json();
-      setClients(data);
-    } catch (err) {
-      console.error("שגיאה בטעינת לקוחות", err);
-      setError("לא ניתן לטעון לקוחות");
-    }
-    setIsLoading(false);
-  };
-
-  // התחבר ל-socket וטעינת שיחות
+  // התחבר לסוקט ונהל אירועים
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     async function setupSocket() {
-      const accessToken = await refreshAccessToken();
-      if (!accessToken) {
-        logout();
-        return;
-      }
-
-      socketRef.current = io(SOCKET_URL, {
-        auth: { token: accessToken, role: "business", userId: businessId },
-        transports: ["websocket"],
-      });
-
-      socketRef.current.on("connect", () => {
-        console.log("🔌 Connected to dashboard socket:", socketRef.current.id);
-        fetchConversations();
-      });
-
-      socketRef.current.on("connect_error", (err) => {
-        console.error("❌ Dashboard socket connection error:", err.message);
-        setError("שגיאה בחיבור לסוקט: " + err.message);
-      });
-
-      socketRef.current.on("tokenExpired", async () => {
-        console.log("🚨 Token expired, refreshing...");
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
+      try {
+        const accessToken = await refreshAccessToken();
+        if (!accessToken) {
           logout();
           return;
         }
-        socketRef.current.auth.token = newToken;
-        socketRef.current.disconnect();
-        socketRef.current.connect();
-      });
 
-      socketRef.current.on("disconnect", (reason) => {
-        console.warn("🔌 Disconnected dashboard socket:", reason);
-        // ניתן להוסיף לוגיקה לחיבור מחדש במידת הצורך
-      });
+        socketRef.current = io(SOCKET_URL, {
+          auth: {
+            token: accessToken,
+            role: "business",
+            businessId,
+          },
+          transports: ["websocket"],
+          autoConnect: false,
+        });
+
+        socketRef.current.connect();
+
+        socketRef.current.on("connect", () => {
+          console.log("🔌 Connected to dashboard socket:", socketRef.current.id);
+          fetchConversations();
+        });
+
+        socketRef.current.on("connect_error", (err) => {
+          console.error("❌ Dashboard socket connection error:", err.message);
+          setError("שגיאה בחיבור לסוקט: " + err.message);
+        });
+
+        socketRef.current.on("tokenExpired", async () => {
+          console.log("🚨 Token expired, refreshing...");
+          const newToken = await refreshAccessToken();
+          if (!newToken) {
+            logout();
+            return;
+          }
+          socketRef.current.auth.token = newToken;
+          socketRef.current.disconnect();
+          socketRef.current.connect();
+        });
+
+        socketRef.current.on("disconnect", (reason) => {
+          console.warn("🔌 Disconnected dashboard socket:", reason);
+          // כאן אפשר להוסיף לוגיקה לחיבור מחדש אוטומטי אם רוצים
+        });
+      } catch (e) {
+        console.error("Error setting up socket:", e);
+        setError("שגיאה בהתחברות לסוקט");
+      }
     }
 
     setupSocket();
@@ -96,12 +111,12 @@ export default function ChatSection({ isBusiness = false }) {
     };
   }, [initialized, businessId, refreshAccessToken, logout]);
 
+  // בקשת שיחות
   const fetchConversations = () => {
     if (!socketRef.current) return;
     setIsLoading(true);
     setError("");
-    // חשוב: ודא ששלח את userId הנכון — כאן user.id אם קיים, אחרת businessId
-    const userIdToSend = user?.id || businessId;
+    const userIdToSend = user?.userId || businessId;
     socketRef.current.emit("getConversations", { userId: userIdToSend }, (res) => {
       if (res.ok) {
         const convs = Array.isArray(res.conversations) ? res.conversations : [];
@@ -113,7 +128,7 @@ export default function ChatSection({ isBusiness = false }) {
     });
   };
 
-  // התחלת שיחה חדשה דרך socket
+  // התחלת שיחה חדשה
   const startNewConversation = () => {
     if (!newPartnerId || !socketRef.current) return;
     setIsLoading(true);
@@ -133,6 +148,7 @@ export default function ChatSection({ isBusiness = false }) {
     });
   };
 
+  // בחירת שיחה מהרשימה
   const handleSelect = ({ conversationId, partnerId, customerId }) => {
     setSelected({ conversationId, partnerId, customerId });
   };
@@ -149,7 +165,7 @@ export default function ChatSection({ isBusiness = false }) {
       <main className={styles.chatMain}>
         {selected.conversationId ? (
           <ChatComponent
-            userId={user.id}
+            userId={user.userId || user.id}
             partnerId={selected.partnerId}
             customerId={selected.customerId}
             initialConversationId={selected.conversationId}
@@ -180,17 +196,20 @@ export default function ChatSection({ isBusiness = false }) {
             התחל שיחה
           </button>
         </div>
+
         {isLoading && <div className={styles.spinner}>טעינה…</div>}
         {error && <div className={styles.errorBanner}>{error}</div>}
         {!isLoading && conversations.length === 0 && (
           <div className={styles.noConversations}>אין שיחות קיימות</div>
         )}
+
         <ul className={styles.convoList}>
           {conversations.map((conv) => {
-            const isUserBus = isBusiness || user.id === conv.business._id;
-            const partnerId = isUserBus ? conv.customer._id : conv.business._id;
-            const partnerName = isUserBus ? conv.customer.name : conv.business.businessName;
+            const isUserBusiness = isBusiness || user?.userId === conv.business._id;
+            const partnerId = isUserBusiness ? conv.customer._id : conv.business._id;
+            const partnerName = isUserBusiness ? conv.customer.name : conv.business.businessName;
             const customerId = conv.customer?._id;
+
             return (
               <li
                 key={conv.conversationId}
