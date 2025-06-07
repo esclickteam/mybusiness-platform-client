@@ -35,7 +35,7 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 40, left: 20, bottom: 80 }}
+          margin={{ top: 30, right: 40, left: 20, bottom: 120 }}
           barCategoryGap="40%"  // ריווח גדול יותר בין העמודות
           barSize={40}          // רוחב עמודה מוגדל
         >
@@ -48,7 +48,7 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
             interval={0}
             angle={0}             // טקסט ישר, ללא זווית
             textAnchor="middle"   // טקסט במרכז התווית
-            height={80}           // גובה מותאם לטקסט
+            height={100}           // גובה מותאם לטקסט
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
