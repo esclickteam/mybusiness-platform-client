@@ -3,9 +3,9 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  direction: rtl; /* כיוון מימין לשמאל לטקסט ואלמנטים */
 }
 
-/* סגנון לכותרת */
 .graph-box h4 {
   text-align: center;
   margin-bottom: 12px;
@@ -14,7 +14,6 @@
   font-weight: 700;
 }
 
-/* ביטול מגבלות רוחב וגובה מ-recharts-wrapper */
 .recharts-wrapper {
   max-width: none !important;
   max-height: none !important;
