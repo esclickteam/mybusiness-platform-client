@@ -45,8 +45,8 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
             interval={0}
-            angle={-30}
-            textAnchor="end"
+            angle={30}           
+            textAnchor="start"   
             height={60}
           />
           <YAxis
