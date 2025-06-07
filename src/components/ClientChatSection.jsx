@@ -8,7 +8,7 @@ import createSocket from "../socket";
 export default function ClientChatSection() {
   const { businessId } = useParams();
   const { user, initialized, refreshAccessToken } = useAuth();
-  const userId = user?.userId || null;
+  const userId = user?.userId || user?.id || null; // בדיקה ל-userId או id
 
   const [conversationId, setConversationId] = useState(null);
   const [businessName, setBusinessName] = useState("");
@@ -27,7 +27,7 @@ export default function ClientChatSection() {
           return;
         }
 
-        // כאן מחברים את הסוקט ומחזירים את האובייקט
+        // מחברים את הסוקט עם הפונקציה לחידוש טוקן וטיפול ביציאה
         const sock = await createSocket(refreshAccessToken, () => {
           window.location.href = "/login";
         });
@@ -41,6 +41,11 @@ export default function ClientChatSection() {
         sock.on("connect_error", (err) => {
           console.error("Socket connect_error:", err.message);
           setError("שגיאה בחיבור לסוקט: " + err.message);
+        });
+
+        sock.on("disconnect", (reason) => {
+          console.warn("Socket disconnected:", reason);
+          // אפשר פה להוסיף ניסיון חיבור מחדש אם רוצים
         });
 
         // לא צריך לקרוא sock.connect() כי createSocket כבר עושה זאת
@@ -61,31 +66,47 @@ export default function ClientChatSection() {
   }, [initialized, userId, businessId, refreshAccessToken]);
 
   useEffect(() => {
-    if (!socketRef.current || !socketRef.current.connected || !businessId) return;
+    const sock = socketRef.current;
+    if (!sock || !businessId) return;
 
-    setLoading(true);
-    setError("");
+    const tryEmit = () => {
+      setLoading(true);
+      setError("");
 
-    socketRef.current.emit("startConversation", { otherUserId: businessId }, (res) => {
-      if (!res || typeof res !== "object") {
-        setError("תגובה לא תקינה משרת השיחה");
+      sock.emit("startConversation", { otherUserId: businessId }, (res) => {
+        console.log("startConversation response:", res);
+        if (!res || typeof res !== "object") {
+          setError("תגובה לא תקינה משרת השיחה");
+          setLoading(false);
+          return;
+        }
+        if (res.ok) {
+          setConversationId(res.conversationId);
+          setError("");
+        } else {
+          setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
+        }
         setLoading(false);
-        return;
-      }
-      if (res.ok) {
-        setConversationId(res.conversationId);
-        setError("");
-      } else {
-        setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
-      }
-      setLoading(false);
-    });
+      });
+    };
+
+    if (sock.connected) {
+      tryEmit();
+    } else {
+      sock.once("connect", tryEmit);
+    }
+
+    return () => {
+      sock.off("connect", tryEmit);
+    };
   }, [businessId]);
 
   useEffect(() => {
-    if (!socketRef.current || !conversationId) return;
+    const sock = socketRef.current;
+    if (!sock || !conversationId || !userId) return;
 
-    socketRef.current.emit("getConversations", { userId }, (res) => {
+    sock.emit("getConversations", { userId }, (res) => {
+      console.log("getConversations response:", res);
       if (!res || typeof res !== "object") {
         setError("תגובה לא תקינה משרת השיחות");
         return;
@@ -109,9 +130,7 @@ export default function ClientChatSection() {
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
-          <div className={styles.convItemActive}>
-            {businessName || businessId}
-          </div>
+          <div className={styles.convItemActive}>{businessName || businessId}</div>
         </aside>
         <section className={styles.chatArea}>
           {conversationId ? (
