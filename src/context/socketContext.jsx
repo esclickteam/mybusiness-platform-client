@@ -5,60 +5,83 @@ import { useAuth } from "./AuthContext";
 export const SocketContext = createContext(null);
 
 export function SocketProvider({ children }) {
-  const { user } = useAuth();
+  const { user, getValidAccessToken, logout } = useAuth();
   const [socket, setSocket] = useState(null);
   const socketRef = useRef(null);
 
   useEffect(() => {
     if (!user) return;
 
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
-    const token = localStorage.getItem("token");
+    const setupSocket = async () => {
+      const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
+      const token = await getValidAccessToken();
 
-    let businessId = null;
-    if (user.role === "business") {
-      const businessDetailsStr = localStorage.getItem("businessDetails");
-      if (businessDetailsStr) {
-        const details = JSON.parse(businessDetailsStr);
-        businessId = details.id || details._id || null;
+      if (!token) {
+        logout();
+        return;
       }
-    }
 
-    if (!token) return;
-    if (user.role === "business" && !businessId) return;
+      let businessId = null;
+      if (user.role === "business") {
+        const businessDetailsStr = localStorage.getItem("businessDetails");
+        if (businessDetailsStr) {
+          const details = JSON.parse(businessDetailsStr);
+          businessId = details.id || details._id || null;
+        }
+        if (!businessId) {
+          logout();
+          return;
+        }
+      }
 
-    // אם כבר יש חיבור - אל תיצור חדש
-    if (socketRef.current) {
-      console.log("Socket connection already exists, skipping creation.");
-      setSocket(socketRef.current);
-      return;
-    }
+      if (socketRef.current) {
+        console.log("Socket connection already exists, skipping creation.");
+        setSocket(socketRef.current);
+        return;
+      }
 
-    const auth = {
-      token,
-      role: user.role || "client",
-      ...(businessId ? { businessId } : {}),
+      const auth = {
+        token,
+        role: user.role || "client",
+        ...(businessId ? { businessId } : {}),
+      };
+
+      const sock = io(SOCKET_URL, {
+        path: "/socket.io",
+        transports: ["websocket"],
+        withCredentials: true,
+        auth,
+      });
+
+      sock.on("connect", () => {
+        console.log("🔌 Socket connected:", sock.id);
+      });
+
+      sock.on("disconnect", (reason) => {
+        console.log("🔌 Socket disconnected:", reason);
+      });
+
+      sock.on("tokenExpired", async () => {
+        console.log("🚨 Socket token expired, refreshing...");
+        const newToken = await getValidAccessToken();
+        if (!newToken) {
+          logout();
+          return;
+        }
+        sock.auth.token = newToken;
+        sock.disconnect();
+        sock.connect();
+      });
+
+      sock.on("connect_error", (err) => {
+        console.error("❌ Socket connect error:", err.message);
+      });
+
+      socketRef.current = sock;
+      setSocket(sock);
     };
 
-    const sock = io(SOCKET_URL, {
-      path: "/socket.io",
-      transports: ["websocket"],
-      withCredentials: true,
-      auth,
-    });
-
-    sock.on("connect", () => {
-      console.log("🔌 Socket connected:", sock.id);
-    });
-    sock.on("disconnect", (reason) => {
-      console.log("🔌 Socket disconnected:", reason);
-    });
-    sock.on("connect_error", (err) => {
-      console.error("❌ Socket connect error:", err.message);
-    });
-
-    socketRef.current = sock;
-    setSocket(sock);
+    setupSocket();
 
     return () => {
       if (socketRef.current) {
@@ -68,7 +91,7 @@ export function SocketProvider({ children }) {
         console.log("🔌 Socket disconnected and cleaned up.");
       }
     };
-  }, [user]);
+  }, [user, getValidAccessToken, logout]);
 
   return (
     <SocketContext.Provider value={socket}>

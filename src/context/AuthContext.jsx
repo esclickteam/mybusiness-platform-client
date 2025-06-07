@@ -56,6 +56,22 @@ export function AuthProvider({ children }) {
       console.log("🔴 Socket.IO disconnected, reason:", reason);
     });
 
+    // טיפול ב-tokenExpired: רענון והתחברות מחדש
+    ws.current.on("tokenExpired", async () => {
+      console.log("🚨 Socket token expired, refreshing...");
+      const newToken = await refreshAccessToken();
+      if (newToken) {
+        console.log("🔄 Got new token, reconnecting socket");
+        ws.current.auth.token = newToken;
+        ws.current.disconnect();
+        ws.current.connect();
+      } else {
+        setUser(null);
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
+    });
+
     ws.current.on("connect_error", async (err) => {
       console.error("Socket.IO connect error:", err.message);
       if (err.message === "jwt expired") {

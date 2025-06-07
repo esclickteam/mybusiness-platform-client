@@ -1,56 +1,65 @@
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
-// דומיין ברירת מחדל במידה ואין משתנה סביבה
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";  // הדומיין שלך כאן
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-export default function useDashboardSocket({ token, businessId }) {
+export default function useDashboardSocket({ token, businessId, getValidAccessToken, logout }) {
   const [stats, setStats] = useState(null);
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // אם אין לנו token או businessId, לא נבצע את החיבור
     if (!token || !businessId) return;
 
     console.log("🔗 Creating socket connection...");
 
-    // יצירת החיבור לסוקט
     socketRef.current = io(SOCKET_URL, {
       path: "/socket.io",
       auth: {
-        token,  // שלח את ה-token
-        role: "business-dashboard",  // תפקיד המשתמש
-        businessId,  // שלח את ה-businessId
+        token,
+        role: "business-dashboard",
+        businessId,
       },
-      transports: ["websocket"],  // השתמש ב-websocket עבור החיבור
+      transports: ["websocket"],
     });
 
-    // מאזין לעדכונים מהדשבורד
     socketRef.current.on("dashboardUpdate", (newStats) => {
       console.log("📡 dashboardUpdate received:", newStats);
-      setStats(prevStats => 
+      setStats(prevStats =>
         prevStats ? { ...prevStats, ...newStats } : newStats
       );
     });
 
-    // טיפול בהתחברות מוצלחת
     socketRef.current.on("connect", () => {
       console.log("🔌 Connected to dashboard socket:", socketRef.current.id);
     });
 
-    // טיפול בשגיאות התחברות
+    socketRef.current.on("tokenExpired", async () => {
+      console.log("🚨 Token expired. Refreshing...");
+      if (!getValidAccessToken) {
+        console.error("No getValidAccessToken provided");
+        return;
+      }
+      const newToken = await getValidAccessToken();
+      if (!newToken) {
+        if (logout) logout();
+        return;
+      }
+      socketRef.current.auth.token = newToken;
+      socketRef.current.disconnect();
+      socketRef.current.connect();
+    });
+
     socketRef.current.on("connect_error", (err) => {
       console.error("❌ Dashboard socket connection error:", err.message);
     });
 
-    // ניתוק הסוקט כאשר הקומפוננטה מפסיקה לפעול (cleanup)
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
         console.log("🔌 Disconnected dashboard socket");
       }
     };
-  }, [token, businessId]);  // רק אם ה-token או ה-businessId משתנים
+  }, [token, businessId, getValidAccessToken, logout]);
 
-  return stats;  // מחזיר את הסטטיסטיקות מהדשבורד
+  return stats;
 }

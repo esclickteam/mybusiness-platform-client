@@ -1,12 +1,13 @@
-// src/context/DashboardSocketContext.jsx
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import { useAuth } from "./AuthContext"; // הנחה: הקונטקסט נמצא באותו מיקום
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 const DashboardSocketContext = createContext(null);
 
-export function DashboardSocketProvider({ token, businessId, children }) {
-  // אתחול סטטיסטיקות עם ערכי ברירת מחדל
+export function DashboardSocketProvider({ businessId, children }) {
+  const { getValidAccessToken, logout } = useAuth();
+
   const [stats, setStats] = useState({
     views_count: 0,
     requests_count: 0,
@@ -20,49 +21,73 @@ export function DashboardSocketProvider({ token, businessId, children }) {
   const hasInitRef = useRef(false);
 
   useEffect(() => {
-    if (!token || !businessId) return;
+    if (!businessId) return;
     if (hasInitRef.current) return; // מונע התחברות חוזרת
     hasInitRef.current = true;
 
-    console.log("🔗 [SocketProvider] אתחול חיבור Socket.IO...");
-    socketRef.current = io(SOCKET_URL, {
-      path: "/socket.io",
-      auth: { token, role: "business-dashboard", businessId },
-      transports: ["websocket"],
-    });
+    let isMounted = true;
 
-    const handleUpdate = (newStats) => {
-      console.log("🔄 [SocketProvider] עדכון סטטיסטיקות:", newStats);
-      // סינון ערכים undefined לפני העדכון
-      const cleanedStats = {};
-      for (const key in newStats) {
-        if (newStats[key] !== undefined) {
-          cleanedStats[key] = newStats[key];
-        }
+    async function initSocket() {
+      const token = await getValidAccessToken();
+      if (!token) {
+        logout();
+        return;
       }
-      setStats(prev => ({ ...prev, ...cleanedStats }));
-    };
 
-    socketRef.current.on("dashboardUpdate", handleUpdate);
+      socketRef.current = io(SOCKET_URL, {
+        path: "/socket.io",
+        auth: { token, role: "business-dashboard", businessId },
+        transports: ["websocket"],
+      });
 
-    socketRef.current.on("connect", () => {
-      console.log("🔌 [SocketProvider] מחובר עם ID:", socketRef.current.id);
-    });
+      const handleUpdate = (newStats) => {
+        if (!isMounted) return;
+        console.log("🔄 [SocketProvider] עדכון סטטיסטיקות:", newStats);
+        const cleanedStats = {};
+        for (const key in newStats) {
+          if (newStats[key] !== undefined) {
+            cleanedStats[key] = newStats[key];
+          }
+        }
+        setStats(prev => ({ ...prev, ...cleanedStats }));
+      };
 
-    socketRef.current.on("connect_error", err => {
-      console.error("❌ [SocketProvider] שגיאת חיבור:", err.message);
-    });
+      socketRef.current.on("dashboardUpdate", handleUpdate);
+
+      socketRef.current.on("connect", () => {
+        console.log("🔌 [SocketProvider] מחובר עם ID:", socketRef.current.id);
+      });
+
+      socketRef.current.on("connect_error", (err) => {
+        console.error("❌ [SocketProvider] שגיאת חיבור:", err.message);
+      });
+
+      socketRef.current.on("tokenExpired", async () => {
+        console.log("🚨 [SocketProvider] טוקן פג תוקף, מרענן...");
+        const newToken = await getValidAccessToken();
+        if (!newToken) {
+          logout();
+          return;
+        }
+        socketRef.current.auth.token = newToken;
+        socketRef.current.disconnect();
+        socketRef.current.connect();
+      });
+    }
+
+    initSocket();
 
     return () => {
+      isMounted = false;
       if (socketRef.current) {
-        socketRef.current.off("dashboardUpdate", handleUpdate);
+        socketRef.current.off("dashboardUpdate");
         socketRef.current.disconnect();
         console.log("🔌 [SocketProvider] ניתוק ה־socket");
         socketRef.current = null;
       }
-      // לא מאפסים את hasInitRef כדי למנוע התחברות חוזרת לא רצויה
+      // שים לב: לא מאפסים את hasInitRef כדי למנוע התחברות חוזרת לא רצויה
     };
-  }, [token, businessId]);
+  }, [businessId, getValidAccessToken, logout]);
 
   return (
     <DashboardSocketContext.Provider value={stats}>

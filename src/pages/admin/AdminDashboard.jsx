@@ -5,14 +5,14 @@ import { useAuth } from "../../context/AuthContext";
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
-  const { user } = useAuth();
+  const { user, getValidAccessToken, logout } = useAuth();
   const navigate = useNavigate();
   const socketRef = useRef(null);
 
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalBusinesses: 0,
-    totalClients: 0,      // <-- כאן שיניתי מ-totalPlans ל-totalClients
+    totalClients: 0,
     totalSales: 0,
     activeManagers: 0,
     blockedUsers: 0,
@@ -27,37 +27,64 @@ function AdminDashboard() {
   useEffect(() => {
     if (!user) return;
 
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    let isMounted = true;
 
-    socketRef.current = io("https://api.esclick.co.il", {
-      path: "/socket.io",
-      auth: {
-        token,      // כאן הטוקן מ־localStorage
-        role: "admin",
-      },
-      transports: ["websocket", "polling"],
-    });
+    async function setupSocket() {
+      const token = await getValidAccessToken();
+      if (!token) {
+        logout();
+        return;
+      }
 
-    socketRef.current.on("connect", () => {
-      console.log("Connected to socket with id:", socketRef.current.id);
-    });
+      socketRef.current = io("https://api.esclick.co.il", {
+        path: "/socket.io",
+        auth: {
+          token,
+          role: "admin",
+        },
+        transports: ["websocket", "polling"],
+      });
 
-    socketRef.current.on("adminDashboardUpdate", (newStats) => {
-      console.log("Received admin dashboard update:", newStats);
-      setStats(newStats);
-    });
+      socketRef.current.on("connect", () => {
+        console.log("Connected to socket with id:", socketRef.current.id);
+      });
 
-    socketRef.current.on("disconnect", () => {
-      console.log("Disconnected from socket");
-    });
+      socketRef.current.on("adminDashboardUpdate", (newStats) => {
+        if (!isMounted) return;
+        console.log("Received admin dashboard update:", newStats);
+        setStats(newStats);
+      });
+
+      socketRef.current.on("disconnect", () => {
+        console.log("Disconnected from socket");
+      });
+
+      socketRef.current.on("tokenExpired", async () => {
+        console.log("Token expired, refreshing...");
+        const newToken = await getValidAccessToken();
+        if (!newToken) {
+          logout();
+          return;
+        }
+        socketRef.current.auth.token = newToken;
+        socketRef.current.disconnect();
+        socketRef.current.connect();
+      });
+
+      socketRef.current.on("connect_error", (err) => {
+        console.error("Socket connection error:", err.message);
+      });
+    }
+
+    setupSocket();
 
     return () => {
+      isMounted = false;
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
     };
-  }, [user]);
+  }, [user, getValidAccessToken, logout]);
 
   return (
     <div className="admin-dashboard">
@@ -72,7 +99,7 @@ function AdminDashboard() {
           🏢 עסקים רשומים: <strong>{stats.totalBusinesses}</strong>
         </div>
         <div className="summary-card">
-          👥 לקוחות רשומים: <strong>{stats.totalClients}</strong>  {/* <-- כאן העדכון */}
+          👥 לקוחות רשומים: <strong>{stats.totalClients}</strong>
         </div>
         <div className="summary-card">
           💰 סה"כ מכירות: <strong>{stats.totalSales} ₪</strong>

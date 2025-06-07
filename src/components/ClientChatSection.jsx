@@ -1,14 +1,13 @@
-// src/components/ClientChatSection.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
-import { io } from "socket.io-client";
+import createSocket from "../socket"; // הנח שיצאת את הפונקציה createSocket לפי הדוגמא שלנו
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
-  const { user, initialized } = useAuth();
+  const { user, initialized, getValidAccessToken } = useAuth();
   const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
@@ -21,22 +20,30 @@ export default function ClientChatSection() {
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    const token = localStorage.getItem("token");
+    async function setupSocket() {
+      try {
+        const token = await getValidAccessToken();
+        if (!token) {
+          setError("אין טוקן תקין, אנא התחבר מחדש");
+          return;
+        }
 
-    console.log("Creating socket with:", { token, businessId });
+        socketRef.current = await createSocket(token, getValidAccessToken, () => {
+          // טיפול ביציאה מהמערכת במקרה שהטוקן לא תקין
+          window.location.href = "/login";
+        });
 
-    socketRef.current = io(socketUrl, {
-      path: "/socket.io",
-      transports: ["polling", "websocket"],
-      auth: { token, role: "chat", businessId },
-      withCredentials: true,
-    });
+        socketRef.current.on("connect_error", (err) => {
+          console.error("Socket connect_error:", err.message);
+          setError("שגיאה בחיבור לסוקט: " + err.message);
+        });
+      } catch (e) {
+        setError("שגיאה בהתחברות לסוקט");
+        console.error(e);
+      }
+    }
 
-    socketRef.current.on("connect_error", (err) => {
-      console.error("Socket connect_error:", err.message);
-      setError("שגיאה בחיבור לסוקט: " + err.message);
-    });
+    setupSocket();
 
     return () => {
       if (socketRef.current) {
@@ -44,7 +51,7 @@ export default function ClientChatSection() {
         socketRef.current = null;
       }
     };
-  }, [initialized, userId, businessId]);
+  }, [initialized, userId, businessId, getValidAccessToken]);
 
   // 2️⃣ Start or get conversation once
   useEffect(() => {

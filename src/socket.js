@@ -1,10 +1,14 @@
 import { io } from "socket.io-client";
-import { getValidAccessToken, getBusinessId, getUserRole } from "./utils/authHelpers";
+import { getBusinessId, getUserRole } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-export async function createSocket() {
-  const token = await getValidAccessToken();
+/**
+ * @param {string} token - Access Token תקין
+ * @param {function} getValidAccessToken - פונקציה להחזרת טוקן תקין (רענון במידת הצורך)
+ * @param {function} onLogout - פונקציה לטיפול ביציאה (למשל הפניה ל-login)
+ */
+export async function createSocket(token, getValidAccessToken, onLogout) {
   const role = getUserRole();
 
   console.log("createSocket() - detected role:", role);
@@ -24,13 +28,13 @@ export async function createSocket() {
   if (!token) {
     console.error("❌ Missing token for role", role);
     alert("Missing authentication token. Please log in again.");
-    window.location.href = "/login";
+    if (onLogout) onLogout();
     return null;
   }
   if (rolesNeedingBusinessId.includes(role) && !businessId) {
     console.error("❌ Missing businessId for role", role);
     alert("Missing business ID. Please log in again.");
-    window.location.href = "/login";
+    if (onLogout) onLogout();
     return null;
   }
 
@@ -58,14 +62,17 @@ export async function createSocket() {
 
   socket.on("tokenExpired", async () => {
     console.log("🚨 Token expired. Refreshing...");
+    if (!getValidAccessToken) {
+      console.error("No getValidAccessToken function provided");
+      return;
+    }
     const newToken = await getValidAccessToken();
     if (!newToken) {
       alert("Session expired. Please log in again.");
-      window.location.href = "/login";
+      if (onLogout) onLogout();
       return;
     }
     console.log("🔄 New token received, reconnecting socket");
-    localStorage.setItem("token", newToken);
     socket.auth.token = newToken;
     socket.disconnect();
     socket.connect();

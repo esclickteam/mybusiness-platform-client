@@ -5,7 +5,7 @@ import styles from "./ChatSection.module.css";
 import io from "socket.io-client";
 
 export default function ChatSection({ isBusiness = false }) {
-  const { user, initialized } = useAuth();
+  const { user, initialized, getValidAccessToken, logout } = useAuth();
 
   const [clients, setClients] = useState([]);
   const [newPartnerId, setNewPartnerId] = useState("");
@@ -21,8 +21,7 @@ export default function ChatSection({ isBusiness = false }) {
   const businessId = user?.businessId;
   const socketRef = useRef();
 
-  // הגדרת URL אחיד
-  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il"; // דומיין ברירת מחדל אם משתנה הסביבה לא מוגדר
+  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
   // טען לקוחות
   useEffect(() => {
@@ -47,34 +46,50 @@ export default function ChatSection({ isBusiness = false }) {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
+    async function setupSocket() {
+      const accessToken = await getValidAccessToken();
+      if (!accessToken) {
+        logout();
+        return;
+      }
 
-    if (!accessToken || !refreshToken) {
-      console.error("Missing accessToken or refreshToken");
-      return;
+      socketRef.current = io(SOCKET_URL, {
+        auth: { token: accessToken, role: "business", userId: businessId },
+        transports: ["websocket"],
+      });
+
+      socketRef.current.on("connect", () => {
+        console.log("🔌 Connected to dashboard socket:", socketRef.current.id);
+      });
+
+      socketRef.current.on("connect_error", (err) => {
+        console.error("❌ Dashboard socket connection error:", err.message);
+      });
+
+      socketRef.current.on("tokenExpired", async () => {
+        console.log("🚨 Token expired, refreshing...");
+        const newToken = await getValidAccessToken();
+        if (!newToken) {
+          logout();
+          return;
+        }
+        socketRef.current.auth.token = newToken;
+        socketRef.current.disconnect();
+        socketRef.current.connect();
+      });
+
+      fetchConversations();
     }
 
-    socketRef.current = io(SOCKET_URL, {
-      auth: { token: accessToken, refreshToken, role: "business", userId: businessId },
-      transports: ["websocket"],
-    });
-
-    socketRef.current.on("connect", () => {
-      console.log("🔌 Connected to dashboard socket:", socketRef.current.id);
-    });
-
-    socketRef.current.on("connect_error", (err) => {
-      console.error("❌ Dashboard socket connection error:", err.message);
-    });
-
-    fetchConversations();
+    setupSocket();
 
     return () => {
-      socketRef.current.disconnect();
-      console.log("🔌 Disconnected dashboard socket");
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        console.log("🔌 Disconnected dashboard socket");
+      }
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, getValidAccessToken, logout]);
 
   const fetchConversations = () => {
     if (!socketRef.current) return;
