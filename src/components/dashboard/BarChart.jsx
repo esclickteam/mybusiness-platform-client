@@ -1,6 +1,7 @@
 // src/components/BarChartComponent.jsx
 
 import React from "react";
+import "./BarChartComponent.css";  // ייבוא הקובץ CSS
 import {
   BarChart,
   Bar,
