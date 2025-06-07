@@ -1,13 +1,14 @@
 import { io } from "socket.io-client";
-import { getBusinessId, getUserRole } from "./utils/authHelpers";
+import { getUserRole } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 /**
  * @param {function} getValidAccessToken - פונקציה להחזרת טוקן תקין (רענון במידת הצורך)
  * @param {function} onLogout - פונקציה לטיפול ביציאה (למשל הפניה ל-login)
+ * @param {string|null} businessId - מזהה העסק (אם רלוונטי)
  */
-export async function createSocket(getValidAccessToken, onLogout) {
+export async function createSocket(getValidAccessToken, onLogout, businessId = null) {
   const token = await getValidAccessToken();
 
   if (!token) {
@@ -19,19 +20,9 @@ export async function createSocket(getValidAccessToken, onLogout) {
   const role = getUserRole();
 
   console.log("createSocket() - detected role:", role);
+  console.log("createSocket() - received businessId:", businessId);
 
-  let businessId = null;
   const rolesNeedingBusinessId = ["business", "business-dashboard"];
-  if (rolesNeedingBusinessId.includes(role)) {
-    const rawBusinessId = getBusinessId();
-    businessId =
-      typeof rawBusinessId === "string"
-        ? rawBusinessId
-        : rawBusinessId?._id?.toString() || rawBusinessId?.toString();
-  }
-
-  console.log("createSocket() - businessId:", businessId);
-
   if (rolesNeedingBusinessId.includes(role) && !businessId) {
     console.error("❌ Missing businessId for role", role);
     alert("Missing business ID. Please log in again.");

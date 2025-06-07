@@ -8,7 +8,7 @@ import createSocket from "../socket";
 export default function ClientChatSection() {
   const { businessId } = useParams();
   const { user, initialized, refreshAccessToken } = useAuth();
-  const userId = user?.userId || user?.id || null; // בדיקה ל-userId או id
+  const userId = user?.userId || user?.id || null;
 
   const [conversationId, setConversationId] = useState(null);
   const [businessName, setBusinessName] = useState("");
@@ -27,10 +27,11 @@ export default function ClientChatSection() {
           return;
         }
 
-        // מחברים את הסוקט עם הפונקציה לחידוש טוקן וטיפול ביציאה
+        // מעבירים את businessId כפרמטר ל-createSocket
         const sock = await createSocket(refreshAccessToken, () => {
           window.location.href = "/login";
-        });
+        }, businessId);
+        
         if (!sock) {
           setError("חיבור לסוקט נכשל");
           return;
@@ -45,10 +46,8 @@ export default function ClientChatSection() {
 
         sock.on("disconnect", (reason) => {
           console.warn("Socket disconnected:", reason);
-          // אפשר פה להוסיף ניסיון חיבור מחדש אם רוצים
+          // אפשר להוסיף פה לוגיקה לניסיון חיבור מחדש
         });
-
-        // לא צריך לקרוא sock.connect() כי createSocket כבר עושה זאת
       } catch (e) {
         setError("שגיאה בהתחברות לסוקט");
         console.error(e);
