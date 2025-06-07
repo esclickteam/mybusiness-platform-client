@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-export default function useDashboardSocket({ token, businessId, getValidAccessToken, logout }) {
+export default function useDashboardSocket({ token, businessId, refreshAccessToken, logout }) {
   const [stats, setStats] = useState(null);
   const socketRef = useRef(null);
 
@@ -35,11 +35,11 @@ export default function useDashboardSocket({ token, businessId, getValidAccessTo
 
     socketRef.current.on("tokenExpired", async () => {
       console.log("🚨 Token expired. Refreshing...");
-      if (!getValidAccessToken) {
-        console.error("No getValidAccessToken provided");
+      if (!refreshAccessToken) {
+        console.error("No refreshAccessToken function provided");
         return;
       }
-      const newToken = await getValidAccessToken();
+      const newToken = await refreshAccessToken();
       if (!newToken) {
         if (logout) logout();
         return;
@@ -59,7 +59,7 @@ export default function useDashboardSocket({ token, businessId, getValidAccessTo
         console.log("🔌 Disconnected dashboard socket");
       }
     };
-  }, [token, businessId, getValidAccessToken, logout]);
+  }, [token, businessId, refreshAccessToken, logout]);
 
   return stats;
 }

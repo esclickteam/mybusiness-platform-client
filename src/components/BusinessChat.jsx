@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useAuth } from "../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
@@ -11,9 +12,10 @@ export default function BusinessChat({
   myBusinessId,
   myBusinessName,
   otherBusinessId,
-  getValidAccessToken,
+  getValidAccessToken, // אופציונלי, אם מועבר
   onLogout,
 }) {
+  const { refreshAccessToken, logout } = useAuth();
   const [socket, setSocket] = useState(null);
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -86,11 +88,14 @@ export default function BusinessChat({
 
     s.on("tokenExpired", async () => {
       console.log("🚨 Token expired, refreshing...");
-      if (!getValidAccessToken) {
-        console.error("No getValidAccessToken function provided");
+      // בודק אם יש getValidAccessToken בפרופס, אחרת משתמש ב-refreshAccessToken מהקונטקסט
+      const refreshFn = getValidAccessToken || refreshAccessToken;
+      if (!refreshFn) {
+        console.error("No refresh token function available");
+        if (onLogout) onLogout();
         return;
       }
-      const newToken = await getValidAccessToken();
+      const newToken = await refreshFn();
       if (!newToken) {
         if (onLogout) onLogout();
         return;
@@ -110,7 +115,7 @@ export default function BusinessChat({
       console.log("🛑 Disconnecting socket");
       s.disconnect();
     };
-  }, [token, role, myBusinessId, myBusinessName, getValidAccessToken, onLogout]);
+  }, [token, role, myBusinessId, myBusinessName, getValidAccessToken, refreshAccessToken, onLogout]);
 
   useEffect(() => {
     if (!socket || !conversationId) return;

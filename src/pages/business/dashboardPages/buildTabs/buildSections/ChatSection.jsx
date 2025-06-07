@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../../../../../context/AuthContext";
 import ChatComponent from "../../../../../components/ChatComponent";
 import styles from "./ChatSection.module.css";
 import io from "socket.io-client";
 
 export default function ChatSection({ isBusiness = false }) {
-  const { user, initialized, getValidAccessToken, logout } = useAuth();
+  const { user, initialized, refreshAccessToken, logout } = useAuth();
 
   const [clients, setClients] = useState([]);
   const [newPartnerId, setNewPartnerId] = useState("");
@@ -47,7 +47,7 @@ export default function ChatSection({ isBusiness = false }) {
     if (!initialized || !businessId) return;
 
     async function setupSocket() {
-      const accessToken = await getValidAccessToken();
+      const accessToken = await refreshAccessToken();
       if (!accessToken) {
         logout();
         return;
@@ -68,7 +68,7 @@ export default function ChatSection({ isBusiness = false }) {
 
       socketRef.current.on("tokenExpired", async () => {
         console.log("🚨 Token expired, refreshing...");
-        const newToken = await getValidAccessToken();
+        const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
           return;
@@ -89,7 +89,7 @@ export default function ChatSection({ isBusiness = false }) {
         console.log("🔌 Disconnected dashboard socket");
       }
     };
-  }, [initialized, businessId, getValidAccessToken, logout]);
+  }, [initialized, businessId, refreshAccessToken, logout]);
 
   const fetchConversations = () => {
     if (!socketRef.current) return;

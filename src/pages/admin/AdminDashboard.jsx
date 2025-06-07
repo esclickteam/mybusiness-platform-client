@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
-  const { user, getValidAccessToken, logout } = useAuth();
+  const { user, refreshAccessToken, logout } = useAuth();
   const navigate = useNavigate();
   const socketRef = useRef(null);
 
@@ -30,7 +30,7 @@ function AdminDashboard() {
     let isMounted = true;
 
     async function setupSocket() {
-      const token = await getValidAccessToken();
+      const token = await refreshAccessToken();
       if (!token) {
         logout();
         return;
@@ -61,7 +61,7 @@ function AdminDashboard() {
 
       socketRef.current.on("tokenExpired", async () => {
         console.log("Token expired, refreshing...");
-        const newToken = await getValidAccessToken();
+        const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
           return;
@@ -84,7 +84,7 @@ function AdminDashboard() {
         socketRef.current.disconnect();
       }
     };
-  }, [user, getValidAccessToken, logout]);
+  }, [user, refreshAccessToken, logout]);
 
   return (
     <div className="admin-dashboard">

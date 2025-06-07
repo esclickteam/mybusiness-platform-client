@@ -4,17 +4,16 @@ import API from "../../../../api";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useAuth } from "../../../../../context/AuthContext";
 
 const SOCKET_URL = "https://api.esclick.co.il"; // כתובת השרת שלך
 
-export default function CollabChat({
-  myBusinessId,
-  myBusinessName,
-  onClose,
-}) {
+export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketRef = useRef(null);
   const selectedConversationRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  const { refreshAccessToken, logout } = useAuth();
 
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -42,34 +41,52 @@ export default function CollabChat({
 
   // אתחול חיבור לסוקט וטעינת שיחות
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token || !myBusinessId) return;
+    async function setupSocket() {
+      const token = await refreshAccessToken();
+      if (!token || !myBusinessId) return;
 
-    const sock = io(SOCKET_URL, {
-      path: "/socket.io",
-      auth: {
-        token,
-        role: "business", // תפקיד של עסק
-        businessId: myBusinessId,
-        businessName: myBusinessName,
-      },
-    });
+      const sock = io(SOCKET_URL, {
+        path: "/socket.io",
+        auth: {
+          token,
+          role: "business", // תפקיד של עסק
+          businessId: myBusinessId,
+          businessName: myBusinessName,
+        },
+      });
 
-    socketRef.current = sock;
+      socketRef.current = sock;
 
-    sock.on("connect", () => {
-      console.log("Socket connected with id:", sock.id);
-      fetchConversations(token);
-    });
+      sock.on("connect", () => {
+        console.log("Socket connected with id:", sock.id);
+        fetchConversations(token);
+      });
 
-    sock.on("connect_error", (err) => {
-      console.error("Socket connection error:", err);
-    });
+      sock.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
+      });
+
+      sock.on("tokenExpired", async () => {
+        console.log("Token expired, refreshing...");
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+          logout();
+          return;
+        }
+        sock.auth.token = newToken;
+        sock.disconnect();
+        sock.connect();
+      });
+    }
+
+    setupSocket();
 
     return () => {
-      sock.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
-  }, [myBusinessId, myBusinessName]);
+  }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
   // הקשבה להודעות חדשות
   useEffect(() => {
@@ -82,14 +99,12 @@ export default function CollabChat({
         toBusinessId: msg.toBusinessId || msg.to,
       };
 
-      // עדכון הודעות בשיחה הנבחרת
       if (normalized.conversationId === selectedConversationRef.current?._id) {
         setMessages((prev) =>
           prev.some((m) => m._id === normalized._id) ? prev : [...prev, normalized]
         );
       }
 
-      // עדכון תצוגת שיחה
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === normalized.conversationId
@@ -123,7 +138,7 @@ export default function CollabChat({
 
     (async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = await refreshAccessToken();
         const res = await API.get(
           `/business-chat/${selectedConversation._id}/messages`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -141,7 +156,7 @@ export default function CollabChat({
     })();
 
     selectedConversationRef.current = selectedConversation;
-  }, [selectedConversation]);
+  }, [selectedConversation, refreshAccessToken]);
 
   // גלילה אוטומטית על הודעה חדשה
   useEffect(() => {
