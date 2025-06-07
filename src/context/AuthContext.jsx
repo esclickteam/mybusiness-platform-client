@@ -5,19 +5,6 @@ import { io } from "socket.io-client";
 
 export const AuthContext = createContext();
 
-function isTokenExpired(token) {
-  if (!token) return true;
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const exp = payload.exp;
-    if (!exp) return true;
-    const now = Math.floor(Date.now() / 1000);
-    return exp < now + 30; // 30 שניות מרווח ביטחון
-  } catch {
-    return true;
-  }
-}
-
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -30,22 +17,17 @@ export function AuthProvider({ children }) {
   const ws = useRef(null);
   const refreshingTokenPromise = useRef(null);
 
-  // רענון טוקן עם queue למניעת קריאות מקבילות
+  // queue לרענון טוקן
   const refreshAccessToken = async () => {
-    if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
-
+    if (refreshingTokenPromise.current) {
+      return refreshingTokenPromise.current;
+    }
     refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then(response => {
         const newToken = response.data.accessToken;
         if (newToken) {
           localStorage.setItem("token", newToken);
           API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
-
-          if (ws.current) {
-            ws.current.auth.token = newToken;
-            ws.current.disconnect();
-            ws.current.connect();
-          }
         }
         refreshingTokenPromise.current = null;
         return newToken;
@@ -54,41 +36,10 @@ export function AuthProvider({ children }) {
         refreshingTokenPromise.current = null;
         throw err;
       });
-
     return refreshingTokenPromise.current;
   };
 
-  // interceptor של axios לטיפול אוטומטי ברפרש טוקן לפני כל בקשה
-  useEffect(() => {
-    const interceptor = API.interceptors.request.use(async (config) => {
-      let token = localStorage.getItem("token");
-
-      if (isTokenExpired(token)) {
-        try {
-          token = await refreshAccessToken();
-        } catch (err) {
-          // אם לא מצליח לרענן - logout
-          setUser(null);
-          localStorage.removeItem("token");
-          navigate("/login");
-          throw err;
-        }
-      }
-
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      return config;
-    }, (error) => {
-      return Promise.reject(error);
-    });
-
-    return () => {
-      API.interceptors.request.eject(interceptor);
-    };
-  }, []);
-
+  // יצירת חיבור Socket.IO עם הטוקן, role ו-businessId
   const createSocketConnection = (token, user) => {
     if (ws.current) {
       ws.current.disconnect();
