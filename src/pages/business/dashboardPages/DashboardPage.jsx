@@ -123,7 +123,6 @@ const DashboardPage = () => {
     }
   }, [stats]);
 
-  // לוג שמדפיס את הסטטיסטיקות בכל עדכון סטייט
   useEffect(() => {
     console.log("🔄 stats state updated:", stats);
   }, [stats]);
@@ -202,6 +201,30 @@ const DashboardPage = () => {
         console.log("Dashboard socket connected with ID:", sock.id);
       });
 
+      // טיפול ב tokenExpired - רענון טוקן אוטומטי
+      sock.on("tokenExpired", async () => {
+        console.log("🚨 Token expired event received");
+        const newToken = await refreshAccessToken();
+
+        if (!newToken) {
+          alert("Session expired. Please log in again.");
+          logout();
+          return;
+        }
+
+        sock.auth.token = newToken;
+
+        sock.emit("authenticate", { token: newToken }, (ack) => {
+          if (ack && ack.ok) {
+            console.log("✅ Socket re-authenticated successfully");
+          } else {
+            console.warn("⚠ Socket re-authentication failed");
+            alert("Session expired. Please log in again.");
+            logout();
+          }
+        });
+      });
+
       sock.on("dashboardUpdate", (newStats) => {
         if (newStats && typeof newStats === "object") {
           const cleanedStats = {};
@@ -255,7 +278,6 @@ const DashboardPage = () => {
             };
           });
 
-          // רענון selectedDate אם הפגישה היא באותו תאריך שנבחר
           if (newAppointment.date) {
             const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
             if (apptDate === selectedDate) {
