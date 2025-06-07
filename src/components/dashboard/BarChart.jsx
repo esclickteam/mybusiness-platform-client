@@ -11,20 +11,7 @@ import {
   Legend,
 } from "recharts";
 
-const defaultData = [
-  { name: "ינואר", customers: 10 },
-  { name: "פברואר", customers: 15 },
-  { name: "מרץ", customers: 7 },
-  { name: "אפריל", customers: 20 },
-  { name: "מאי", customers: 0 },
-  { name: "יוני", customers: 5 },
-  { name: "יולי", customers: 0 },
-  { name: "אוגוסט", customers: 12 },
-  { name: "ספטמבר", customers: 8 },
-  { name: "אוקטובר", customers: 6 },
-  { name: "נובמבר", customers: 10 },
-  { name: "דצמבר", customers: 4 },
-];
+const defaultData = [ /* … הנתונים שלך … */ ];
 
 const BarChartComponent = ({
   dataProp = defaultData,
@@ -33,41 +20,45 @@ const BarChartComponent = ({
   return (
     <div className="graph-box">
       <h4 className="graph-title">{title}</h4>
-      {/* height="100%" – הגובה ייקבע על-ידי .graph-box */}
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 20, left: 20, bottom: 100 }}
-          barCategoryGap="50%"
-          barGap={12}
-          barSize={20}
+          margin={{
+            top: 30,
+            right: 10,
+            left: 10,
+            bottom: 120,    // מקום גדול יותר לתוויות סובבות
+          }}
+          barCategoryGap="30%"
+          barGap={4}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
             dataKey="name"
             interval={0}
-            tick={{
-              fill: "#4b0082",
-              fontSize: 14,
-              fontWeight: 700,
+            angle={-45}               // סיבוב 45° נגד כיוון השעון
+            textAnchor="end"          // מיישר את הקצה התחתון של הטקסט
+            tick={{ 
+              fill: "#4b0082", 
+              fontSize: 10,           // גופן קטן יותר במובייל
+              fontWeight: 600 
             }}
-            tickMargin={16}
-            axisLine={{ stroke: "#4b0082" }}
+            tickMargin={8}
+            axisLine={false}
             tickLine={false}
-            textAnchor="middle"
           />
           <YAxis
             tick={{
               fill: "#4b0082",
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: 600,
             }}
-            axisLine={{ stroke: "#4b0082" }}
+            axisLine={false}
             tickLine={false}
           />
           <Tooltip
             cursor={false}
-            wrapperStyle={{ fontSize: 14 }}
+            wrapperStyle={{ fontSize: 12 }}
             contentStyle={{
               backgroundColor: "#fafafa",
               borderRadius: 8,
@@ -78,17 +69,18 @@ const BarChartComponent = ({
             verticalAlign="top"
             align="center"
             wrapperStyle={{
-              marginBottom: 12,
-              fontWeight: "600",
+              marginBottom: 8,
+              fontWeight: 600,
               color: "#4b0082",
-              fontSize: 14,
+              fontSize: 12,
             }}
           />
           <Bar
             dataKey="customers"
             name="לקוחות"
             fill="#6a5acd"
-            radius={[5, 5, 0, 0]}
+            radius={[4, 4, 0, 0]}
+            barSize={16}
           />
         </BarChart>
       </ResponsiveContainer>

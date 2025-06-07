@@ -4,42 +4,35 @@
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   direction: rtl;
-
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
 
-  /* גובה קבוע לדסקטופ */
-  height: 400px;
+  /* גובה קטן יותר כדי לא לתפוס יותר מדי בנייד */
+  height: 300px;
 }
 
 .graph-title {
   text-align: center;
-  margin-top: 10px;
-  margin-bottom: 12px;
+  margin: 8px 0;
   color: #4b0082;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
-/* מבטיח שה-ResponsiveContainer של Recharts יתפוס את כל הגובה */
+/* מבטיח שה ResponsiveContainer ימלא את הגובה */
 .graph-box .recharts-responsive-container {
   width: 100% !important;
   height: 100% !important;
 }
 
-/* התאמות למסכים קטנים */
-@media (max-width: 768px) {
+/* אם תרצה – אפשר להוריד עוד גופן ונפח ברים מתחת ל-500px */
+@media (max-width: 500px) {
   .graph-box {
+    height: 260px;
     padding: 0.5rem;
-    max-width: 100%;
-    /* גובה נמוך יותר לנייד */
-    height: 250px;
   }
-
   .graph-title {
-    font-size: 1rem;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    font-size: 0.9rem;
   }
 }
