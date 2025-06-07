@@ -5,10 +5,12 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   direction: rtl;
 
-  /* תפוס את כל הרוחב של האב, אך לא יותר מ-700px, ומרכז */
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
+
+  /* הוספת גמישות רוחבית */
+  box-sizing: border-box;
 }
 
 .graph-box h4 {
@@ -19,4 +21,15 @@
   font-weight: 700;
 }
 
-/* NOTE: הסלקטור .recharts-wrapper הוסר */
+/* הוספת מדיה קוורי לרספונסיביות טובה יותר */
+@media (max-width: 480px) {
+  .graph-box {
+    padding: 0.5rem;
+    max-width: 100%;
+  }
+
+  .graph-box h4 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+}
