@@ -12,13 +12,12 @@ export default function ClientChatSection() {
 
   const [conversationId, setConversationId] = useState(null);
   const [businessName, setBusinessName] = useState("");
-  const [messages, setMessages] = useState([]);   // <-- הוסף סטייט להודעות
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const socketRef = useRef(null);
   const prevConversationIdRef = useRef(null);
 
-  // חיבור לסוקט עם טיפול ברענון טוקן
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
 
@@ -65,7 +64,6 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId, businessId, refreshAccessToken, logout]);
 
-  // פתיחת שיחה חדשה או קבלת שיחה קיימת
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !businessId) return;
@@ -97,7 +95,6 @@ export default function ClientChatSection() {
     };
   }, [businessId]);
 
-  // טעינת שם העסק לפי השיחה
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId || !userId) return;
@@ -124,7 +121,6 @@ export default function ClientChatSection() {
     });
   }, [conversationId, userId]);
 
-  // הצטרפות ל-room של השיחה, טעינת היסטוריה ומאזין להודעות חדשות
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId) return;
@@ -141,9 +137,10 @@ export default function ClientChatSection() {
       setError("");
     });
 
-    // בקש היסטוריית הודעות ועדכן סטייט
+    // טעינת ההיסטוריה והצבת ההודעות בסטייט כאן
     sock.emit("getHistory", { conversationId }, (res) => {
       if (res.ok) {
+        console.log("History messages loaded:", res.messages);
         setMessages(res.messages || []);
       } else {
         setError("שגיאה בטעינת ההודעות");
@@ -153,7 +150,6 @@ export default function ClientChatSection() {
 
     prevConversationIdRef.current = conversationId;
 
-    // מאזין להודעות חדשות ומוסיף אותן לסטייט
     const handleNewMessage = (msg) => {
       setMessages((prev) => {
         const exists = prev.some(
@@ -164,6 +160,7 @@ export default function ClientChatSection() {
         return [...prev, msg];
       });
     };
+
     sock.on("newMessage", handleNewMessage);
 
     return () => {
@@ -189,8 +186,8 @@ export default function ClientChatSection() {
               conversationId={conversationId}
               businessId={businessId}
               userId={userId}
-              messages={messages}         // <-- העבר הודעות
-              setMessages={setMessages}   // <-- העבר setter
+              messages={messages}
+              setMessages={setMessages}
             />
           ) : (
             <div className={styles.emptyMessage}>לא הצלחנו לפתוח שיחה…</div>

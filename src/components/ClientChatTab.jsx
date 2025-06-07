@@ -83,7 +83,6 @@ export default function ClientChatTab({
 }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
@@ -97,26 +96,6 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טעינת ההיסטוריה - אפשר להסיר אם כבר נטען ב-ClientChatSection
-  useEffect(() => {
-    if (!socket || !conversationId) return;
-
-    setLoading(true);
-    setError("");
-
-    socket.emit("getHistory", { conversationId }, (res) => {
-      if (res.ok) {
-        setMessages(res.messages || []);
-        setLoading(false);
-      } else {
-        setMessages([]);
-        setError("שגיאה בטעינת היסטוריית ההודעות: " + (res.error || ""));
-        setLoading(false);
-      }
-    });
-  }, [socket, conversationId, setMessages]);
-
-  // מאזין להודעות חדשות
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -142,7 +121,6 @@ export default function ClientChatTab({
     };
   }, [socket, conversationId, setMessages]);
 
-  // גלילה אוטומטית למטה כשהודעות מתעדכנות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
@@ -290,8 +268,7 @@ export default function ClientChatTab({
   return (
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef}>
-        {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
           <div
             key={m._id || m.tempId || i}
