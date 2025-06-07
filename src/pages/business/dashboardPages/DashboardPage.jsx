@@ -251,19 +251,21 @@ const DashboardPage = () => {
         }
       });
 
-      // הוספת האזנה לאירוע allAppointmentsUpdated לעדכון כל הפגישות כולל העתידיות
+      // חשוב: משתמש ב־prevStats כדי לקבל את המצב העדכני
       sock.on("allAppointmentsUpdated", (allAppointments) => {
         console.log("allAppointmentsUpdated event received:", allAppointments);
 
-        const enrichedAppointments = Array.isArray(allAppointments)
-          ? allAppointments.map((appt) => enrichAppointment(appt, stats))
-          : [];
+        setStats((prevStats) => {
+          const enrichedAppointments = Array.isArray(allAppointments)
+            ? allAppointments.map((appt) => enrichAppointment(appt, prevStats))
+            : [];
 
-        setStats((prevStats) => ({
-          ...prevStats,
-          appointments: enrichedAppointments,
-          appointments_count: enrichedAppointments.length,
-        }));
+          return {
+            ...prevStats,
+            appointments: enrichedAppointments,
+            appointments_count: enrichedAppointments.length,
+          };
+        });
       });
 
       sock.on("disconnect", (reason) => {
