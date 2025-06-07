@@ -123,6 +123,11 @@ const DashboardPage = () => {
     }
   }, [stats]);
 
+  // לוג שמדפיס את הסטטיסטיקות בכל עדכון סטייט
+  useEffect(() => {
+    console.log("🔄 stats state updated:", stats);
+  }, [stats]);
+
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
@@ -138,6 +143,9 @@ const DashboardPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = res.data || {};
+
+        console.log("📊 API fetched stats:", data);
+
         const enrichedAppointments = Array.isArray(data.schedule)
           ? data.schedule.map((appt) => enrichAppointment(appt, data))
           : [];
@@ -219,50 +227,47 @@ const DashboardPage = () => {
       });
 
       sock.on("appointmentUpdated", (newAppointment) => {
-  console.log("🚀 appointmentUpdated event received:", newAppointment);
+        console.log("🚀 appointmentUpdated event received:", newAppointment);
 
-  const newBizId = newAppointment.business?.toString();
-  const currentBizId = businessId.toString();
+        const newBizId = newAppointment.business?.toString();
+        const currentBizId = businessId.toString();
 
-  if (newBizId === currentBizId) {
-    setStats((prevStats) => {
-      const appointments = Array.isArray(prevStats.appointments)
-        ? [...prevStats.appointments]
-        : [];
+        if (newBizId === currentBizId) {
+          setStats((prevStats) => {
+            const appointments = Array.isArray(prevStats.appointments)
+              ? [...prevStats.appointments]
+              : [];
 
-      const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
+            const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
 
-      const index = appointments.findIndex((a) => a._id === newAppointment._id);
+            const index = appointments.findIndex((a) => a._id === newAppointment._id);
 
-      if (index !== -1) {
-        appointments[index] = enrichedNewAppointment;
-      } else {
-        appointments.push(enrichedNewAppointment);
-      }
+            if (index !== -1) {
+              appointments[index] = enrichedNewAppointment;
+            } else {
+              appointments.push(enrichedNewAppointment);
+            }
 
-      return {
-        ...prevStats,
-        appointments,
-        appointments_count: appointments.length,
-      };
-    });
+            return {
+              ...prevStats,
+              appointments,
+              appointments_count: appointments.length,
+            };
+          });
 
-    // כאן הכפנו רענון של selectedDate אם הפגישה שייכת לתאריך שנבחר
-    if (newAppointment.date) {
-      const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
-      if (apptDate === selectedDate) {
-        setSelectedDate(null);
-        setTimeout(() => setSelectedDate(apptDate), 10);
-      }
-    }
+          // רענון selectedDate אם הפגישה היא באותו תאריך שנבחר
+          if (newAppointment.date) {
+            const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
+            if (apptDate === selectedDate) {
+              setSelectedDate(null);
+              setTimeout(() => setSelectedDate(apptDate), 10);
+            }
+          }
+        } else {
+          console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
+        }
+      });
 
-  } else {
-    console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
-  }
-});
-
-
-      // חשוב: משתמש ב־prevStats כדי לקבל את המצב העדכני
       sock.on("allAppointmentsUpdated", (allAppointments) => {
         console.log("allAppointmentsUpdated event received:", allAppointments);
 
@@ -296,7 +301,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken]);
+  }, [initialized, businessId, logout, refreshAccessToken, selectedDate]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
