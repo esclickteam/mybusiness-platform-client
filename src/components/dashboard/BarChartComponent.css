@@ -5,24 +5,27 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   direction: rtl;
 
-  /* תפוס את כל הרוחב של האב, אך לא יותר מ-700px, ומרכז */
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
 
-  /* יחס רוחב:גובה עבור הרספונסיביות */
-  aspect-ratio: 2 / 1;
-  
-  /* מבטיח גובה מינימלי גם כש-GIF בטעינה */
-  min-height: 200px;
+  /* גובה קבוע לדסקטופ */
+  height: 400px;
 }
 
-.graph-box h4 {
+.graph-title {
   text-align: center;
   margin-top: 10px;
   margin-bottom: 12px;
   color: #4b0082;
   font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* מבטיח שה-ResponsiveContainer של Recharts יתפוס את כל הגובה */
+.graph-box .recharts-responsive-container {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 /* התאמות למסכים קטנים */
@@ -30,15 +33,11 @@
   .graph-box {
     padding: 0.5rem;
     max-width: 100%;
-
-    /* יחס צפוף יותר לנייד */
-    aspect-ratio: 1.2 / 1;
-    
-    /* גובה מינימלי מותאם */
-    min-height: 180px;
+    /* גובה נמוך יותר לנייד */
+    height: 250px;
   }
 
-  .graph-box h4 {
+  .graph-title {
     font-size: 1rem;
     margin-top: 8px;
     margin-bottom: 8px;
