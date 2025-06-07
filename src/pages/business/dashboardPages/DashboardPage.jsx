@@ -251,6 +251,21 @@ const DashboardPage = () => {
         }
       });
 
+      // הוספת האזנה לאירוע allAppointmentsUpdated לעדכון כל הפגישות כולל העתידיות
+      sock.on("allAppointmentsUpdated", (allAppointments) => {
+        console.log("allAppointmentsUpdated event received:", allAppointments);
+
+        const enrichedAppointments = Array.isArray(allAppointments)
+          ? allAppointments.map((appt) => enrichAppointment(appt, stats))
+          : [];
+
+        setStats((prevStats) => ({
+          ...prevStats,
+          appointments: enrichedAppointments,
+          appointments_count: enrichedAppointments.length,
+        }));
+      });
+
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected, reason:", reason);
       });
