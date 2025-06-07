@@ -6,7 +6,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il
 const DashboardSocketContext = createContext(null);
 
 export function DashboardSocketProvider({ businessId, children }) {
-  const { getValidAccessToken, logout } = useAuth();
+  const { refreshAccessToken, logout } = useAuth();
 
   const [stats, setStats] = useState({
     views_count: 0,
@@ -28,7 +28,7 @@ export function DashboardSocketProvider({ businessId, children }) {
     let isMounted = true;
 
     async function initSocket() {
-      const token = await getValidAccessToken();
+      const token = await refreshAccessToken();
       if (!token) {
         logout();
         return;
@@ -64,7 +64,7 @@ export function DashboardSocketProvider({ businessId, children }) {
 
       socketRef.current.on("tokenExpired", async () => {
         console.log("🚨 [SocketProvider] טוקן פג תוקף, מרענן...");
-        const newToken = await getValidAccessToken();
+        const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
           return;
@@ -87,7 +87,7 @@ export function DashboardSocketProvider({ businessId, children }) {
       }
       // שים לב: לא מאפסים את hasInitRef כדי למנוע התחברות חוזרת לא רצויה
     };
-  }, [businessId, getValidAccessToken, logout]);
+  }, [businessId, refreshAccessToken, logout]);
 
   return (
     <DashboardSocketContext.Provider value={stats}>

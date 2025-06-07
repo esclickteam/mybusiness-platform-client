@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 export const SocketContext = createContext(null);
 
 export function SocketProvider({ children }) {
-  const { user, getValidAccessToken, logout } = useAuth();
+  const { user, refreshAccessToken, logout } = useAuth();
   const [socket, setSocket] = useState(null);
   const socketRef = useRef(null);
 
@@ -14,7 +14,7 @@ export function SocketProvider({ children }) {
 
     const setupSocket = async () => {
       const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
-      const token = await getValidAccessToken();
+      const token = await refreshAccessToken();
 
       if (!token) {
         logout();
@@ -63,7 +63,7 @@ export function SocketProvider({ children }) {
 
       sock.on("tokenExpired", async () => {
         console.log("🚨 Socket token expired, refreshing...");
-        const newToken = await getValidAccessToken();
+        const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
           return;
@@ -91,7 +91,7 @@ export function SocketProvider({ children }) {
         console.log("🔌 Socket disconnected and cleaned up.");
       }
     };
-  }, [user, getValidAccessToken, logout]);
+  }, [user, refreshAccessToken, logout]);
 
   return (
     <SocketContext.Provider value={socket}>
