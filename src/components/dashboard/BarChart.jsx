@@ -68,8 +68,8 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
                 fill: "#4b0082",
                 fontSize: 12,
                 fontWeight: 700,
-                angle: isMobile ? -45 : 0,
-                textAnchor: isMobile ? "end" : "middle",
+                angle: isMobile ? 0 : -45, 
+                  textAnchor: isMobile ? "middle" : "end",
               }}
               height={isMobile ? 60 : 40}
               tickMargin={12}
