@@ -44,7 +44,6 @@ function mergeStats(oldStats, newStats) {
   return { ...oldStats, ...newStats };
 }
 
-// פונקציה להוספת שמות לקוח ושירות לפגישה
 function enrichAppointment(appt, business) {
   const service = business.services?.find(
     (s) => s._id.toString() === appt.serviceId.toString()
@@ -57,7 +56,7 @@ function enrichAppointment(appt, business) {
 }
 
 const DashboardPage = () => {
-  const { user, initialized, getValidAccessToken, logout } = useAuth();
+  const { user, initialized, logout, refreshAccessToken } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
   const navigate = useNavigate();
@@ -81,7 +80,7 @@ const DashboardPage = () => {
             appointments: [],
             leads: [],
             businessName: "",
-            services: [], // חשוב להוסיף שירותים פה
+            services: [],
           };
     } catch {
       return {
@@ -129,8 +128,6 @@ const DashboardPage = () => {
     API.get(`/business/${businessId}/stats`)
       .then((res) => {
         const data = res.data || {};
-
-        // מעשירים את הפגישות עם שמות לקוח ושירות
         const enrichedAppointments = Array.isArray(data.appointments)
           ? data.appointments.map((appt) => enrichAppointment(appt, data))
           : [];
@@ -151,7 +148,7 @@ const DashboardPage = () => {
           leads: Array.isArray(data.leads) ? data.leads : [],
           businessName: data.businessName ?? "",
           income_distribution: data.income_distribution ?? null,
-          services: data.services ?? [], // שימו לב להוספת services פה
+          services: data.services ?? [],
         };
         setStats(safeData);
       })
@@ -169,15 +166,8 @@ const DashboardPage = () => {
     if (socketRef.current) return;
 
     async function setupSocket() {
-      // קבלת טוקן תקין
-      const token = await getValidAccessToken();
-      if (!token) {
-        console.warn("No valid token available for socket connection");
-        logout();
-        return;
-      }
-
-      const sock = await createSocket(token, getValidAccessToken, logout);
+      const token = localStorage.getItem("token");
+      const sock = await createSocket(token, refreshAccessToken, logout);
       if (!sock) {
         console.warn("Failed to create socket");
         return;
@@ -258,7 +248,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, getValidAccessToken, logout]);
+  }, [initialized, businessId, logout, refreshAccessToken]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
