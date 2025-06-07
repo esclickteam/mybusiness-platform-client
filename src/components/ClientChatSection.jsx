@@ -37,7 +37,8 @@ export default function ClientChatSection() {
           setError("שגיאה בחיבור לסוקט: " + err.message);
         });
 
-        sock.connect();
+        // אל תקרא connect() אם createSocket כבר מחבר את הסוקט
+        // sock.connect();
       } catch (e) {
         setError("שגיאה בהתחברות לסוקט");
         console.error(e);
