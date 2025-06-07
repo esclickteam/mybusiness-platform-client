@@ -10,7 +10,7 @@ import {
   Legend,
 } from "recharts";
 
-const BarChartComponent = ({ data, title = "לקוחות / בקשות / הזמנות 📊" }) => {
+const BarChartComponent = ({ data, title = "לקוחות שהזמינו שירות לפי חודשים 📊" }) => {
   return (
     <div className="graph-box" style={{ padding: '1rem', background: '#fff', borderRadius: 12, boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
       <h4
@@ -50,9 +50,8 @@ const BarChartComponent = ({ data, title = "לקוחות / בקשות / הזמנ
             align="center"
             wrapperStyle={{ marginBottom: 12, fontWeight: '600', color: "#4b0082" }}
           />
+          {/* עמודה אחת בלבד ללקוחות */}
           <Bar dataKey="customers" name="לקוחות" fill="#6a5acd" radius={[5, 5, 0, 0]} />
-          <Bar dataKey="requests" name="בקשות" fill="#ffa07a" radius={[5, 5, 0, 0]} />
-          <Bar dataKey="orders" name="הזמנות" fill="#90ee90" radius={[5, 5, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

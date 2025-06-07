@@ -6,7 +6,7 @@ import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
-import BarChart from "../../../components/dashboard/BarChart";
+import BarChartComponent from "../../../components/dashboard/BarChart"; // שים לב לייבוא עם השם הנכון
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
@@ -53,6 +53,31 @@ function enrichAppointment(appt, business) {
     clientName: appt.client?.name || "לא ידוע",
     serviceName: service ? service.name : "לא ידוע",
   };
+}
+
+// פונקציה לחישוב לקוחות ייחודיים לפי חודשים מתוך פגישות
+function getMonthlyUniqueCustomersFromAppointments(appointments) {
+  const monthlyData = {};
+
+  appointments.forEach(appt => {
+    if (!appt.date || !appt.client) return;
+
+    const date = new Date(appt.date);
+    const month = date.toLocaleString("he-IL", { month: "long" });
+    const year = date.getFullYear();
+    const key = `${month} ${year}`;
+
+    if (!monthlyData[key]) {
+      monthlyData[key] = new Set();
+    }
+    // מניח ש-appt.client הוא מזהה (ObjectId) - מחרים למחרוזת
+    monthlyData[key].add(appt.client.toString());
+  });
+
+  return Object.entries(monthlyData).map(([monthYear, clientsSet]) => ({
+    name: monthYear,
+    customers: clientsSet.size,
+  }));
 }
 
 const DashboardPage = () => {
@@ -347,6 +372,23 @@ const DashboardPage = () => {
     }
   };
 
+  // חישוב פגישות בשבוע הקרוב
+  const getUpcomingAppointmentsCount = (appointments) => {
+    const now = new Date();
+    const endOfWeek = new Date();
+    endOfWeek.setDate(now.getDate() + 7);
+    return appointments.filter((appt) => {
+      const apptDate = new Date(appt.date);
+      return apptDate >= now && apptDate <= endOfWeek;
+    }).length;
+  };
+
+  // חישוב התפלגות לקוחות חודשית לפי פגישות
+  const monthlyCustomerData = getMonthlyUniqueCustomersFromAppointments(appointments);
+
+  // חישוב פגישות מתוכננות בשבוע הקרוב
+  const upcomingAppointmentsCount = getUpcomingAppointmentsCount(appointments);
+
   const barChartData = [
     {
       name: "פגישות עתידיות",
@@ -367,19 +409,6 @@ const DashboardPage = () => {
       orders: stats.messages_count,
     },
   ];
-
-  // חישוב פגישות בשבוע הקרוב
-  const getUpcomingAppointmentsCount = (appointments) => {
-    const now = new Date();
-    const endOfWeek = new Date();
-    endOfWeek.setDate(now.getDate() + 7);
-    return appointments.filter((appt) => {
-      const apptDate = new Date(appt.date);
-      return apptDate >= now && apptDate <= endOfWeek;
-    }).length;
-  };
-
-  const upcomingAppointmentsCount = getUpcomingAppointmentsCount(appointments);
 
   return (
     <div className="dashboard-container">
@@ -412,7 +441,7 @@ const DashboardPage = () => {
       <NextActions stats={stats} />
 
       <div>
-        <BarChart data={barChartData} />
+        <BarChartComponent data={monthlyCustomerData} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
       </div>
 
       <div>
