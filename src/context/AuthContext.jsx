@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api"; // אובייקט axios או fetch מותאם מראש
+import API from "../api"; // axios instance
+import { io } from "socket.io-client";
 
 export const AuthContext = createContext();
 
@@ -13,6 +14,8 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const initRan = useRef(false);
 
+  const ws = useRef(null);
+
   // חידוש Access Token
   const refreshAccessToken = async () => {
     try {
@@ -20,30 +23,71 @@ export function AuthProvider({ children }) {
       if (response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         API.defaults.headers['Authorization'] = `Bearer ${response.data.accessToken}`;
-        return true;
+        return response.data.accessToken;
       }
     } catch (err) {
       console.error("Failed to refresh token:", err);
     }
-    return false;
+    return null;
   };
 
+  // יצירת חיבור Socket.IO עם הטוקן
+  const createSocketConnection = (token) => {
+    if (ws.current) {
+      ws.current.disconnect();
+      ws.current = null;
+    }
+    if (!token) {
+      console.warn("No token available for Socket.IO connection");
+      return;
+    }
+
+    ws.current = io("https://api.esclick.co.il", {
+      path: "/socket.io",
+      transports: ["websocket"],
+      auth: { token },
+    });
+
+    ws.current.on("connect", () => {
+      console.log("✅ Socket.IO connected, socket id:", ws.current.id);
+    });
+
+    ws.current.on("disconnect", (reason) => {
+      console.log("🔴 Socket.IO disconnected, reason:", reason);
+    });
+
+    ws.current.on("connect_error", async (err) => {
+      console.error("Socket.IO connect error:", err.message);
+      if (err.message === "jwt expired") {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          createSocketConnection(newToken);
+        } else {
+          setUser(null);
+          localStorage.removeItem("token");
+          navigate("/login");
+        }
+      }
+    });
+  };
+
+  // אתחול האימות והרענון
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
 
     const initialize = async () => {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          API.defaults.headers['Authorization'] = `Bearer ${token}`;
-          const { data } = await API.get("/auth/me", { credentials: "include" });
+      let token = localStorage.getItem("token");
 
+      if (token) {
+        API.defaults.headers['Authorization'] = `Bearer ${token}`;
+
+        try {
+          const { data } = await API.get("/auth/me", { credentials: "include" });
           if (data.businessId) {
             localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
           }
-
           setUser({
             userId: data.userId,
             name: data.name,
@@ -53,8 +97,9 @@ export function AuthProvider({ children }) {
             businessId: data.businessId || null,
           });
         } catch {
-          const refreshed = await refreshAccessToken();
-          if (refreshed) {
+          // נסה לרענן טוקן במקרה של שגיאה (jwt expired)
+          const newToken = await refreshAccessToken();
+          if (newToken) {
             try {
               const { data } = await API.get("/auth/me", { credentials: "include" });
               setUser({
@@ -65,23 +110,43 @@ export function AuthProvider({ children }) {
                 subscriptionPlan: data.subscriptionPlan,
                 businessId: data.businessId || null,
               });
+              token = newToken;
             } catch {
               setUser(null);
               localStorage.removeItem("token");
+              token = null;
             }
           } else {
             setUser(null);
             localStorage.removeItem("token");
+            token = null;
           }
         }
       } else {
         setUser(null);
+        token = null;
       }
+
+      if (token) {
+        createSocketConnection(token);
+      } else {
+        if (ws.current) {
+          ws.current.disconnect();
+          ws.current = null;
+        }
+      }
+
       setLoading(false);
       setInitialized(true);
     };
 
     initialize();
+
+    return () => {
+      if (ws.current) {
+        ws.current.disconnect();
+      }
+    };
   }, []);
 
   // התחברות רגילה (email+password)
@@ -92,15 +157,13 @@ export function AuthProvider({ children }) {
     try {
       const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { credentials: "include" });
       const { accessToken } = response.data;
-      if (accessToken) {
-        localStorage.setItem("token", accessToken);
-        API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
-      } else {
-        throw new Error("No access token received");
-      }
+
+      if (!accessToken) throw new Error("No access token received");
+
+      localStorage.setItem("token", accessToken);
+      API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
       const { data } = await API.get("/auth/me", { credentials: "include" });
-
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
       }
@@ -113,6 +176,8 @@ export function AuthProvider({ children }) {
         subscriptionPlan: data.subscriptionPlan,
         businessId: data.businessId || null,
       });
+
+      createSocketConnection(accessToken);
 
       if (!options.skipRedirect && data) {
         let path = "/";
@@ -139,54 +204,11 @@ export function AuthProvider({ children }) {
       return data;
     } catch (e) {
       if (e.response?.status === 401) {
-        const refreshed = await refreshAccessToken();
-        if (!refreshed) {
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
           setError("❌ אימייל או סיסמה שגויים");
           navigate("/login");
         }
-      } else {
-        setError("❌ שגיאה בשרת, נסה שוב");
-      }
-      throw e;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // התחברות עובדים (staff)
-  const staffLogin = async (username, password) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await API.post("/auth/staff-login", { username: username.trim(), password }, { credentials: "include" });
-      const { accessToken } = response.data;
-      if (accessToken) {
-        localStorage.setItem("token", accessToken);
-        API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
-      } else {
-        throw new Error("No access token received");
-      }
-
-      const { data } = await API.get("/auth/me", { credentials: "include" });
-
-      if (data.businessId) {
-        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-      }
-
-      setUser({
-        userId: data.userId,
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        subscriptionPlan: data.subscriptionPlan,
-        businessId: data.businessId || null,
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response?.status === 401) {
-        setError("❌ שם משתמש או סיסמה שגויים");
       } else {
         setError("❌ שגיאה בשרת, נסה שוב");
       }
@@ -205,6 +227,12 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("token");
       localStorage.removeItem("businessDetails");
       delete API.defaults.headers['Authorization'];
+
+      if (ws.current) {
+        ws.current.disconnect();
+        ws.current = null;
+      }
+
       setSuccessMessage("✅ נותקת בהצלחה");
       navigate("/", { replace: true });
     } catch (e) {
@@ -229,8 +257,7 @@ export function AuthProvider({ children }) {
         loading,
         initialized,
         error,
-        login,        // ← כניסה רגילה
-        staffLogin,   // ← כניסת עובדים
+        login,
         logout,
         refreshAccessToken,
       }}
