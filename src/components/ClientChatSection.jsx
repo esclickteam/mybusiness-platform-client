@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
-import { useAuth } from "../context/AuthContext";
 import createSocket from "../socket";
+import API from "../api";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
@@ -95,16 +96,16 @@ export default function ClientChatSection() {
     };
   }, [businessId]);
 
+  // 1. שלוף את השיחות דרך API
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId || !userId) return;
 
     setLoading(true);
 
-    sock.emit("getConversations", { userId }, (res) => {
-      setLoading(false);
-      if (res?.ok && Array.isArray(res.conversations)) {
-        const conv = res.conversations.find((c) =>
+    API.get("/conversations", { params: { userId } }) // <- כאן קריאת API לשיחות
+      .then((response) => {
+        const conv = response.data.find((c) =>
           [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
         );
         if (conv) {
@@ -114,13 +115,15 @@ export default function ClientChatSection() {
           setBusinessName("");
           setError("לא נמצאה שיחה מתאימה");
         }
-      } else {
+      })
+      .catch(() => {
         setBusinessName("");
         setError("שגיאה בטעינת שם העסק");
-      }
-    });
+      })
+      .finally(() => setLoading(false));
   }, [conversationId, userId]);
 
+  // 2. הצטרף לשיחה וטעון את ההיסטוריה
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId) return;
