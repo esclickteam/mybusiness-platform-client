@@ -27,11 +27,10 @@ export default function ClientChatSection() {
           return;
         }
 
-        // מעבירים את businessId כפרמטר ל-createSocket
         const sock = await createSocket(refreshAccessToken, () => {
           window.location.href = "/login";
         }, businessId);
-        
+
         if (!sock) {
           setError("חיבור לסוקט נכשל");
           return;
@@ -46,7 +45,7 @@ export default function ClientChatSection() {
 
         sock.on("disconnect", (reason) => {
           console.warn("Socket disconnected:", reason);
-          // אפשר להוסיף פה לוגיקה לניסיון חיבור מחדש
+          // אפשר להוסיף לוגיקה לניסיון חיבור מחדש
         });
       } catch (e) {
         setError("שגיאה בהתחברות לסוקט");
@@ -80,6 +79,7 @@ export default function ClientChatSection() {
           return;
         }
         if (res.ok) {
+          console.log("Conversation ID set:", res.conversationId);
           setConversationId(res.conversationId);
           setError("");
         } else {
@@ -114,6 +114,7 @@ export default function ClientChatSection() {
         const conv = res.conversations.find((c) =>
           [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
         );
+        console.log("Found conversation businessName:", conv?.businessName);
         setBusinessName(conv?.businessName || "");
       } else {
         setError("שגיאה בטעינת שם העסק");

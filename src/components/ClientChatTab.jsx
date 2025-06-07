@@ -96,8 +96,10 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   if (!socket || !conversationId) return;
   setLoading(true);
   setError("");
+  console.log("Calling getHistory for conversationId:", conversationId);
 
   socket.emit("getHistory", { conversationId }, (res) => {
+    console.log("getHistory response:", res);
     if (res.ok) {
       setMessages(res.messages || []);
       setLoading(false);
@@ -108,6 +110,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     }
   });
 }, [socket, conversationId]);
+
 
 
   useEffect(() => {
