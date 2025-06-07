@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 const DashboardRealTime = ({ businessId }) => {
-  const { getValidAccessToken, logout } = useAuth();
+  const { refreshAccessToken, logout } = useAuth();
   const [stats, setStats] = useState(null);
   const socketRef = useRef(null);
 
@@ -19,7 +19,7 @@ const DashboardRealTime = ({ businessId }) => {
     let isMounted = true;
 
     async function setupSocket() {
-      const token = await getValidAccessToken();
+      const token = await refreshAccessToken();
       if (!token) {
         console.warn("No valid token, logging out");
         logout();
@@ -64,7 +64,7 @@ const DashboardRealTime = ({ businessId }) => {
 
       socket.on("tokenExpired", async () => {
         console.log("Token expired, refreshing token...");
-        const newToken = await getValidAccessToken();
+        const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
           return;
@@ -88,7 +88,7 @@ const DashboardRealTime = ({ businessId }) => {
         socketRef.current = null;
       }
     };
-  }, [businessId, getValidAccessToken, logout]);
+  }, [businessId, refreshAccessToken, logout]);
 
   return <LineChart stats={stats} />;
 };
