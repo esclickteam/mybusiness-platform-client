@@ -38,9 +38,9 @@ const BarChartComponent = ({
       <ResponsiveContainer width="100%" height={550}>
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 20, left: 20, bottom: 140 }}
-          barCategoryGap="60%"  // הגדלתי את המרווח בין הקטגוריות
-          barGap={12}            // הגדלתי את המרווח בין העמודות
+          margin={{ top: 30, right: 20, left: 20, bottom: 160 }} // הגדלתי את התחתון
+          barCategoryGap="60%"
+          barGap={12}
           barSize={20}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -49,13 +49,12 @@ const BarChartComponent = ({
             dataKey="name"
             interval={0}
             scale="band"
-            height={120}
+            height={140} // הגדלתי את הגובה של הציר
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 700 }}
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
             angle={0}
             textAnchor="middle"
-            minTickGap={15}   // מוודא רווח מינימלי בין התוויות
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
