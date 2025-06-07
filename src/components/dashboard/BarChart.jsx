@@ -39,8 +39,8 @@ const BarChartComponent = ({
         <BarChart
           data={dataProp}
           margin={{ top: 30, right: 20, left: 20, bottom: 140 }}
-          barCategoryGap="20%"
-          barGap={5}
+          barCategoryGap={80}
+          barGap={8}
           barSize={20}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -48,7 +48,6 @@ const BarChartComponent = ({
             type="category"
             dataKey="name"
             interval={0}
-            scale="band"
             height={120}
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 700 }}
             axisLine={{ stroke: "#4b0082" }}
