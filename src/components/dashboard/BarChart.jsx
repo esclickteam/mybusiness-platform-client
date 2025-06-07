@@ -11,17 +11,34 @@ import {
   Legend,
 } from "recharts";
 
+// מפה להמרת שמות חודשים מלאים לקצרים
+const monthMap = {
+  ינואר: "ינו",
+  פברואר: "פבר",
+  מרץ: "מרץ",
+  אפריל: "אפר",
+  מאי: "מאי",
+  יוני: "יוני",
+  יולי: "יולי",
+  אוגוסט: "אוג",
+  ספטמבר: "ספט",
+  אוקטובר: "אוק",
+  נובמבר: "נוב",
+  דצמבר: "דצמ",
+};
+
 function formatMonthlyData(appointments) {
   const counts = {
-    ינואר: 0, פברואר: 0, מרץ: 0, אפריל: 0,
-    מאי: 0, יוני: 0, יולי: 0, אוגוסט: 0,
-    ספטמבר: 0, אוקטובר: 0, נובמבר: 0, דצמבר: 0,
+    ינו: 0, פבר: 0, מרץ: 0, אפר: 0,
+    מאי: 0, יוני: 0, יולי: 0, אוג: 0,
+    ספט: 0, אוק: 0, נוב: 0, דצמ: 0,
   };
 
   appointments.forEach(appt => {
     if (!appt.date) return;
-    const month = new Date(appt.date).toLocaleString("he-IL", { month: "long" });
-    if (counts[month] !== undefined) counts[month]++;
+    const fullMonth = new Date(appt.date).toLocaleString("he-IL", { month: "long" });
+    const shortMonth = monthMap[fullMonth];
+    if (counts[shortMonth] !== undefined) counts[shortMonth]++;
   });
 
   return Object.entries(counts).map(([name, customers]) => ({ name, customers }));
@@ -40,7 +57,7 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
-          margin={{ top: 30, right: 20, left: 20, bottom: 120 }}
+          margin={{ top: 30, right: 20, left: 20, bottom: 40 }}
           barCategoryGap="50%"
           barGap={8}
           barSize={20}
@@ -53,10 +70,10 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               fill: "#4b0082",
               fontSize: 12,
               fontWeight: 700,
-              angle: -45,
-              textAnchor: "end",
+              angle: 0,          // ללא סיבוב
+              textAnchor: "middle",  // טקסט מרכזי מתחת לתווית
             }}
-            tickMargin={16}
+            tickMargin={12}  // רווח מתאים מתחת לתוויות
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
           />
