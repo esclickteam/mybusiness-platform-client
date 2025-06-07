@@ -37,7 +37,8 @@ export default function BusinessChatPage() {
         return;
       }
 
-      const sock = createSocket(token, refreshAccessToken, logout);
+          const sock = await createSocket(refreshAccessToken, logout); // <-- הוספת await כאן
+
 
       if (!sock) {
         setError("Socket connection failed");
