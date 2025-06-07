@@ -16,7 +16,7 @@ import {
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-// פונקציה חיצונית כדי שנוכל להשתמש בה גם לאתחול
+// פונקציה חיצונית לשימוש לאתחול ולעדכונים
 function formatMonthlyData(appointments) {
   const counts = {
     ינואר: 0, פברואר: 0, מרץ: 0, אפריל: 0,
@@ -39,7 +39,7 @@ const BarChartComponent = ({
   businessId,
   title = "לקוחות שהזמינו פגישות לפי חודשים 📊",
 }) => {
-  // אתחול עם כל החודשים והערך 0
+  // אתחול עם כל החודשים
   const [data, setData] = useState(() => formatMonthlyData([]));
 
   useEffect(() => {
@@ -49,20 +49,29 @@ const BarChartComponent = ({
       auth: { token, businessId },
     });
 
-    // 1. בקשת נתונים ראשונית
+    // 1. קריאה ראשונית
     socket.on("connect", () => {
       socket.emit("getAppointments", null, (res) => {
-        if (res.ok) {
-          setData(formatMonthlyData(res.appointments));
-        } else {
-          console.error("Error fetching initial appointments:", res.error);
-        }
+        if (res.ok) setData(formatMonthlyData(res.appointments));
+        else console.error("Error fetching initial appointments:", res.error);
       });
     });
 
     // 2. עדכון מלא
     socket.on("allAppointmentsUpdated", (appointments) => {
       setData(formatMonthlyData(appointments));
+    });
+
+    // 3. עדכון בזמן אמת לפגישה חדשה
+    socket.on("appointmentUpdated", (newAppt) => {
+      setData(prev => {
+        const next = prev.map(item => ({ ...item }));
+        const m = new Date(newAppt.date)
+          .toLocaleString("he-IL", { month: "long" });
+        const idx = next.findIndex(o => o.name === m);
+        if (idx !== -1) next[idx].customers += 1;
+        return next;
+      });
     });
 
     return () => {
