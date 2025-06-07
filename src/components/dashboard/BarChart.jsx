@@ -33,8 +33,7 @@ const BarChartComponent = ({
   return (
     <div className="graph-box">
       <h4 className="graph-title">{title}</h4>
-      {/* height="100%" – הגובה ייקבע על-ידי .graph-box */}
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" aspect={2}>
         <BarChart
           data={dataProp}
           margin={{ top: 30, right: 20, left: 20, bottom: 100 }}
