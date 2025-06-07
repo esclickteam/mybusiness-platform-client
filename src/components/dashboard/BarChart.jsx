@@ -1,5 +1,6 @@
-import React from "react";
-import "./BarChartComponent.css";  // ייבוא הקובץ CSS
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
+import "./BarChartComponent.css";
 import {
   BarChart,
   Bar,
@@ -11,17 +12,69 @@ import {
   Legend,
 } from "recharts";
 
-const BarChartComponent = ({
-  data = [],
-  title = "לקוחות שהזמינו פגישות לפי חודשים 📊",
-}) => {
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
+
+function formatMonthlyData(appointments) {
+  const counts = {
+    ינואר: 0, פברואר: 0, מרץ: 0, אפריל: 0,
+    מאי: 0, יוני: 0, יולי: 0, אוגוסט: 0,
+    ספטמבר: 0, אוקטובר: 0, נובמבר: 0, דצמבר: 0,
+  };
+
+  appointments.forEach(appt => {
+    const month = new Date(appt.date).toLocaleString("he-IL", { month: "long" });
+    if (counts[month] !== undefined) counts[month]++;
+  });
+
+  return Object.entries(counts)
+    .map(([name, customers]) => ({ name, customers }));
+}
+
+const BarChartComponent = ({ token, businessId, title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
+  const [appointments, setAppointments] = useState([]);
+  const [data, setData] = useState(() => formatMonthlyData([]));
+
+  useEffect(() => {
+    const socket = io(SOCKET_URL, {
+      path: "/socket.io",
+      transports: ["websocket", "polling"],
+      auth: { token, businessId },
+    });
+
+    socket.on("connect", () => {
+      socket.emit("getAppointments", null, (res) => {
+        if (res.ok) {
+          setAppointments(res.appointments);
+        } else {
+          console.error("Error fetching initial appointments:", res.error);
+        }
+      });
+    });
+
+    socket.on("allAppointmentsUpdated", (appointments) => {
+      setAppointments(appointments);
+    });
+
+    socket.on("appointmentUpdated", (newAppt) => {
+      setAppointments(prev => [...prev, newAppt]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [token, businessId]);
+
+  useEffect(() => {
+    setData(formatMonthlyData(appointments));
+  }, [appointments]);
+
   return (
     <div className="graph-box">
       <h4 className="graph-title">{title}</h4>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
-          margin={{ top: 30, right: 20, left: 20, bottom: 120 }} // מעט יותר מקום לתוויות מסובבות
+          margin={{ top: 30, right: 20, left: 20, bottom: 120 }}
           barCategoryGap="50%"
           barGap={8}
           barSize={20}
@@ -34,8 +87,8 @@ const BarChartComponent = ({
               fill: "#4b0082",
               fontSize: 12,
               fontWeight: 700,
-              angle: -45,        // סיבוב בזווית של 45 מעלות
-              textAnchor: "end", // יישור הטקסט לסוף התווית
+              angle: -45,
+              textAnchor: "end",
             }}
             tickMargin={16}
             axisLine={{ stroke: "#4b0082" }}
