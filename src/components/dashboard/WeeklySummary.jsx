@@ -7,11 +7,13 @@ const WeeklySummary = ({ stats }) => {
   const currentMessages = stats.messages_count || 0;
   const currentViews = stats.views_count || 0;
   const currentReviews = stats.reviews_count || 0;
+  const currentAppointments = stats.appointments_count || 0; // פגישות נוכחיות
 
   // נתוני שבוע שעבר (אם קיימים)
   const lastMessages = stats.messages_last_week || 0;
   const lastViews = stats.views_last_week || 0;
   const lastReviews = stats.reviews_last_week || 0;
+  const lastAppointments = stats.appointments_last_week || 0; // פגישות שבוע שעבר
 
   // חישוב שינוי באחוזים
   const getChange = (current, last) => {
@@ -26,6 +28,7 @@ const WeeklySummary = ({ stats }) => {
   const messagesChange = getChange(currentMessages, lastMessages);
   const reviewsChange = getChange(currentReviews, lastReviews);
   const viewsChange = getChange(currentViews, lastViews);
+  const appointmentsChange = getChange(currentAppointments, lastAppointments);
 
   return (
     <div>
@@ -52,6 +55,14 @@ const WeeklySummary = ({ stats }) => {
           <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentViews}</div>
           <div style={{ fontSize: 12, color: viewsChange.color }}>
             {viewsChange.arrow} {viewsChange.text}
+          </div>
+        </div>
+
+        <div style={{ backgroundColor: "#F9F0F7", padding: 20, borderRadius: 12, flex: 1 }}>
+          <div style={{ fontSize: 14, marginBottom: 8 }}>📅 פגישות</div>
+          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentAppointments}</div>
+          <div style={{ fontSize: 12, color: appointmentsChange.color }}>
+            {appointmentsChange.arrow} {appointmentsChange.text}
           </div>
         </div>
       </div>

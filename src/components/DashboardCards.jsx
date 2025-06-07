@@ -26,6 +26,12 @@ const DashboardCards = ({ stats = {} }) => {
       icon: "💬",
       bgColor: "#e6f7ff",
     },
+    {
+      label: "פגישות",
+      value: stats.appointments_count ?? 0,
+      icon: "📅",
+      bgColor: "#f9f0f7",
+    },
   ];
 
   return (
@@ -34,11 +40,11 @@ const DashboardCards = ({ stats = {} }) => {
         <div
           key={index}
           className="dashboard-card"
-          style={{ backgroundColor: card.bgColor, border: "1px solid red" }} // להדגשה וויזואלית
+          style={{ backgroundColor: card.bgColor, border: "1px solid red" }}
         >
           <div className="card-icon">{card.icon}</div>
           <div className="card-title">{card.label}</div>
-          <div className="card-value">{JSON.stringify(card.value)}</div> {/* להציג גם אם 0 */}
+          <div className="card-value">{JSON.stringify(card.value)}</div>
         </div>
       ))}
     </div>
