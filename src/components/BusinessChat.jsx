@@ -37,10 +37,18 @@ export default function BusinessChat({
     console.log("▶️ initConversation to", otherBusinessId);
 
     socket.emit("startConversation", { otherBusinessId }, (res) => {
+      if (typeof res !== "object" || res === null) {
+        console.warn("Invalid startConversation response:", res);
+        return;
+      }
       console.log("↩️ startConversation response:", res);
       if (!res.ok) return console.error(res.error);
 
       socket.emit("joinConversation", res.conversationId, (ack) => {
+        if (typeof ack !== "object" || ack === null) {
+          console.warn("Invalid joinConversation ack:", ack);
+          return;
+        }
         console.log("↩️ joinConversation ack:", ack);
         if (!ack.ok) {
           console.error("Failed to join conversation:", ack.error);
@@ -49,6 +57,10 @@ export default function BusinessChat({
         setConversationId(res.conversationId);
 
         socket.emit("getHistory", { conversationId: res.conversationId }, (h) => {
+          if (typeof h !== "object" || h === null) {
+            console.warn("Invalid getHistory response:", h);
+            return;
+          }
           console.log("↩️ getHistory:", h);
           if (h.ok) setMessages(h.messages);
         });
@@ -88,7 +100,6 @@ export default function BusinessChat({
 
     s.on("tokenExpired", async () => {
       console.log("🚨 Token expired, refreshing...");
-      // בודק אם יש getValidAccessToken בפרופס, אחרת משתמש ב-refreshAccessToken מהקונטקסט
       const refreshFn = getValidAccessToken || refreshAccessToken;
       if (!refreshFn) {
         console.error("No refresh token function available");
@@ -150,6 +161,10 @@ export default function BusinessChat({
     console.log("🚀 Emitting sendMessage:", payload);
 
     socket.emit("sendMessage", payload, (ack) => {
+      if (typeof ack !== "object" || ack === null) {
+        console.warn("Invalid sendMessage ack:", ack);
+        return;
+      }
       console.log("↩️ sendMessage ack:", ack);
       if (ack.ok) {
         setMessages((prev) => [...prev, ack.message]);

@@ -93,6 +93,12 @@ export default function CollabPartnersChat() {
       text: input.trim(),
     };
     socketRef.current.emit("sendMessage", msg, (ack) => {
+      // בדיקה שהack הוא אובייקט תקין לפני השימוש
+      if (typeof ack !== "object" || ack === null) {
+        console.warn("Invalid sendMessage ack:", ack);
+        return;
+      }
+
       if (ack.ok) {
         setMessages(prev => [...prev, ack.message]);
         setInput("");
