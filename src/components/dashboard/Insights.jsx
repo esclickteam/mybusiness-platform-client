@@ -16,19 +16,47 @@ const Insights = ({ stats }) => {
     return diff > 0 ? "green" : "red";
   };
 
+  const changeIcon = (diff) => {
+    if (diff === 0) return "➖";
+    return diff > 0 ? "⬆️" : "⬇️";
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "15px", fontSize: "1.1rem" }}>
-      <div title="שינוי בצפיות לעומת שבוע שעבר" style={{ color: changeColor(viewsDiff) }}>
-        📈 שינוי בצפיות:{" "}
+      <div
+        title="שינוי בצפיות לעומת שבוע שעבר"
+        style={{
+          color: changeColor(viewsDiff),
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+          gap: "5px",
+        }}
+      >
+        {changeIcon(viewsDiff)} שינוי בצפיות:{" "}
         {viewsDiff === 0
           ? "אין שינוי"
           : viewsDiff > 0
           ? `עלייה של ${viewsPercent}%`
-          : `ירידה של ${Math.abs(viewsPercent)}%`}
+          : `ירידה של ${Math.abs(viewsPercent)}%`}{" "}
+        ({viewsThisWeek} צפיות השבוע, {viewsLastWeek} צפיות בשבוע שעבר)
       </div>
 
-      <div>
+      <div
+        style={{
+          backgroundColor: upcoming > 0 ? "#d4edda" : "#f8d7da",
+          padding: "10px",
+          borderRadius: "5px",
+          color: upcoming > 0 ? "green" : "red",
+          fontWeight: "bold",
+        }}
+      >
         📆 {upcoming > 0 ? `יש ${upcoming} פגישות מתוכננות` : "אין פגישות מתוכננות השבוע"}
+        {!upcoming && (
+          <div style={{ marginTop: "5px", fontWeight: "normal", fontSize: "0.9rem", color: "#555" }}>
+            מומלץ לתזמן פגישות לשיפור הפעילות
+          </div>
+        )}
       </div>
     </div>
   );
