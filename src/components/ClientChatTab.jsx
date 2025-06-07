@@ -93,20 +93,22 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const mediaStreamRef = useRef(null);
 
   useEffect(() => {
-    if (!conversationId) return;
-    setLoading(true);
-    setError("");
-    API.get("/conversations/history", { params: { conversationId } })
-      .then((res) => {
-        setMessages(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setMessages([]);
-        setError("שגיאה בטעינת היסטוריית ההודעות");
-        setLoading(false);
-      });
-  }, [conversationId]);
+  if (!socket || !conversationId) return;
+  setLoading(true);
+  setError("");
+
+  socket.emit("getHistory", { conversationId }, (res) => {
+    if (res.ok) {
+      setMessages(res.messages || []);
+      setLoading(false);
+    } else {
+      setMessages([]);
+      setError("שגיאה בטעינת היסטוריית ההודעות: " + (res.error || ""));
+      setLoading(false);
+    }
+  });
+}, [socket, conversationId]);
+
 
   useEffect(() => {
     if (!socket || !conversationId) return;
