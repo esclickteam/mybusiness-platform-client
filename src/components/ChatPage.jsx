@@ -37,11 +37,16 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
       const sock = await createSocket(token, getValidAccessToken, logout);
       if (!sock) return;
 
-      sock.connect();
+      if (!sock.connected) sock.connect();
+
       socketRef.current = sock;
 
       sock.emit("getConversations", { userId }, (res) => {
         if (!isMounted) return;
+        if (!res || typeof res !== "object") {
+          setError("תגובה לא תקינה משרת השיחות");
+          return;
+        }
         if (res.ok) {
           const convs = Array.isArray(res.conversations) ? res.conversations : [];
           setConversations(convs);
@@ -57,6 +62,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
       });
 
       const handleNew = (message) => {
+        if (!isMounted) return;
         setConversations((prev) =>
           prev.map((conv) =>
             conv._id === message.conversationId ||

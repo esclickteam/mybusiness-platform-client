@@ -37,7 +37,7 @@ export default function ClientChatSection() {
           setError("שגיאה בחיבור לסוקט: " + err.message);
         });
 
-        // אל תקרא connect() אם createSocket כבר מחבר את הסוקט
+        // אין צורך לקרוא connect() אם createSocket כבר מחבר את הסוקט
         // sock.connect();
       } catch (e) {
         setError("שגיאה בהתחברות לסוקט");
@@ -62,6 +62,11 @@ export default function ClientChatSection() {
     setError("");
 
     socketRef.current.emit("startConversation", { otherUserId: businessId }, (res) => {
+      if (!res || typeof res !== "object") {
+        setError("תגובה לא תקינה משרת השיחה");
+        setLoading(false);
+        return;
+      }
       if (res.ok) {
         setConversationId(res.conversationId);
         setError("");
@@ -76,6 +81,10 @@ export default function ClientChatSection() {
     if (!socketRef.current || !conversationId) return;
 
     socketRef.current.emit("getConversations", { userId }, (res) => {
+      if (!res || typeof res !== "object") {
+        setError("תגובה לא תקינה משרת השיחות");
+        return;
+      }
       if (res.ok) {
         const conv = res.conversations.find((c) =>
           [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))

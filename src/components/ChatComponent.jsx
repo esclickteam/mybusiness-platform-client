@@ -35,6 +35,8 @@ export default function ChatComponent({
       const sock = await createSocket(token, getValidAccessToken, logout);
       if (!sock) return;
 
+      if (!sock.connected) sock.connect();
+
       socketRef.current = sock;
 
       if (isBusiness) {
@@ -42,6 +44,10 @@ export default function ChatComponent({
         sock.emit("getConversations", { userId }, (res) => {
           setLoadingConvs(false);
           console.log("getConversations response:", res);
+          if (!res || typeof res !== "object") {
+            console.error("Invalid response from getConversations:", res);
+            return;
+          }
           if (res.ok) {
             const convs = Array.isArray(res.conversations) ? res.conversations : [];
             setConversations(convs);
@@ -61,6 +67,10 @@ export default function ChatComponent({
           setLoadingInit(true);
           sock.emit("startConversation", { otherUserId: partnerId }, (res) => {
             setLoadingInit(false);
+            if (!res || typeof res !== "object") {
+              console.error("Invalid response from startConversation:", res);
+              return;
+            }
             if (res.ok) {
               setConversationId(res.conversationId);
             } else {

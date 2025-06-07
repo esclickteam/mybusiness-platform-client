@@ -34,13 +34,19 @@ export default function BusinessChatWrapper() {
       const sock = await createSocket(token, getValidAccessToken, logout);
       if (!sock) return;
 
-      sock.connect();
+      if (!sock.connected) sock.connect();
+
       socketRef.current = sock;
 
       sock.emit(
         "getConversations",
         { businessId },
-        ({ ok, conversations = [], error }) => {
+        (res) => {
+          if (!res || typeof res !== "object") {
+            console.error("Invalid response from getConversations:", res);
+            return;
+          }
+          const { ok, conversations = [], error } = res;
           if (ok) {
             setConvos(conversations);
             if (!selected && conversations.length > 0) {
@@ -51,7 +57,7 @@ export default function BusinessChatWrapper() {
                 first.customer?._id ||
                 null;
               setSelected({ conversationId: convoId, partnerId });
-              hasJoinedRef.current = false; // לא הצטרף עדיין
+              hasJoinedRef.current = false;
             }
           } else {
             console.error("Error loading conversations:", error);
@@ -67,17 +73,22 @@ export default function BusinessChatWrapper() {
     setupSocket();
 
     return () => {
-      socketRef.current?.disconnect();
-      socketRef.current = null;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
       setConvos([]);
       setSelected(null);
       hasJoinedRef.current = false;
     };
-  }, [businessId, getValidAccessToken, logout]);
+  }, [businessId, getValidAccessToken, logout, selected]);
 
   const handleSelect = (conversationId) => {
     const sock = socketRef.current;
-    if (!sock) return;
+    if (!sock || !sock.connected) {
+      console.warn("Socket not connected, cannot emit joinConversation");
+      return;
+    }
 
     const convo = convos.find(
       (c) =>
@@ -97,12 +108,18 @@ export default function BusinessChatWrapper() {
 
     // צא מהחדר הישן לפני כניסה לחדר החדש
     if (hasJoinedRef.current && selectedRef.current?.conversationId) {
-      sock.emit("leaveConversation", selectedRef.current.conversationId);
+      sock.emit("leaveConversation", selectedRef.current.conversationId, (ack) => {
+        if (!ack || !ack.ok) {
+          console.error("Failed to leave conversation:", ack?.error);
+        }
+      });
     }
 
     // הצטרף לחדר החדש
     sock.emit("joinConversation", conversationId, (ack) => {
-      if (!ack.ok) console.error("joinConversation failed:", ack.error);
+      if (!ack || !ack.ok) {
+        console.error("Failed to join conversation:", ack?.error);
+      }
     });
 
     hasJoinedRef.current = true;
