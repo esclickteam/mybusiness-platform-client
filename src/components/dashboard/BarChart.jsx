@@ -32,12 +32,12 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
   return (
     <div className="graph-box" ref={wrapperRef}>
       <h4>{title}</h4>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={450}>
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 40, left: 20, bottom: 120 }}
-          barCategoryGap="40%"  // ריווח גדול יותר בין העמודות
-          barSize={40}          // רוחב עמודה מוגדל
+          margin={{ top: 30, right: 40, left: 20, bottom: 80 }}
+          barCategoryGap="40%"
+          barSize={40}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
@@ -46,9 +46,9 @@ const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינ
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
             interval={0}
-            angle={0}             // טקסט ישר, ללא זווית
-            textAnchor="middle"   // טקסט במרכז התווית
-            height={100}           // גובה מותאם לטקסט
+            angle={0}
+            textAnchor="middle"
+            height={80}
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
