@@ -57,6 +57,8 @@ function enrichAppointment(appt, business) {
 
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
+  console.log('refreshAccessToken:', refreshAccessToken, 'is function:', typeof refreshAccessToken === 'function');
+
   const businessId = getBusinessId();
   const socketRef = useRef(null);
   const navigate = useNavigate();
