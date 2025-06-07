@@ -35,10 +35,10 @@ const BarChartComponent = ({
   return (
     <div className="graph-box" ref={wrapperRef}>
       <h4>{title}</h4>
-      <ResponsiveContainer width="100%" height={450}>
+      <ResponsiveContainer width="100%" height={500}>
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 20, left: 20, bottom: 80 }}  
+          margin={{ top: 30, right: 20, left: 20, bottom: 120 }}  
           barCategoryGap={80}   
           barGap={8}            
           barSize={20}          
@@ -48,12 +48,12 @@ const BarChartComponent = ({
             type="category"
             dataKey="name"
             interval={0}
-            height={60}           // מספיק גובה לתוויות
+            height={100}         
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 700 }}
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
-            angle={0}             // אופקי
-            textAnchor="middle"   // תווית באמצע הבר
+            angle={0}            
+            textAnchor="middle"  
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
