@@ -23,29 +23,37 @@ export default function ClientChatSection() {
     if (!initialized || !userId || !businessId) return;
 
     (async () => {
+      console.log("Refreshing access token...");
       const token = await refreshAccessToken();
       if (!token) {
         setError("אין טוקן תקין, אנא התחבר מחדש");
         logout();
+        console.error("No valid token, user logged out.");
         return;
       }
 
+      console.log("Creating socket connection...");
       const sock = await createSocket(refreshAccessToken, logout, businessId);
       if (!sock) {
         setError("חיבור לסוקט נכשל");
+        console.error("Socket connection failed.");
         return;
       }
 
       socketRef.current = sock;
+      console.log("Socket connected:", sock.id);
 
       sock.on("connect_error", (err) => {
         setError("שגיאה בחיבור לסוקט: " + err.message);
+        console.error("WebSocket connection error:", err);
       });
 
       sock.on("tokenExpired", async () => {
+        console.log("Token expired, refreshing...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
+          console.error("Token expired and could not be refreshed, user logged out.");
           return;
         }
         sock.auth.token = newToken;
@@ -72,14 +80,17 @@ export default function ClientChatSection() {
     const tryEmit = () => {
       setLoading(true);
       setError("");
+      console.log("Attempting to start conversation with businessId:", businessId);
 
       sock.emit("startConversation", { otherUserId: businessId }, (res) => {
         if (res?.ok) {
           setConversationId(res.conversationId);
           setError("");
+          console.log("Conversation started successfully, ID:", res.conversationId);
         } else {
           setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
           setConversationId(null);
+          console.error("Failed to start conversation:", res.error || "Unknown error");
         }
         setLoading(false);
       });
@@ -96,48 +107,54 @@ export default function ClientChatSection() {
     };
   }, [businessId]);
 
-  // 1. שלוף את השיחות דרך API
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId || !userId) return;
 
     setLoading(true);
+    console.log("Fetching conversation details for conversationId:", conversationId);
 
-    API.get("/conversations", { params: { userId } }) // <- כאן קריאת API לשיחות
+    API.get("/conversations", { params: { userId } })
       .then((response) => {
+        console.log("Conversations loaded:", response.data); // לוג תגובה
         const conv = response.data.find((c) =>
           [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
         );
         if (conv) {
           setBusinessName(conv.businessName || "");
           setError("");
+          console.log("Business name found:", conv.businessName);
         } else {
           setBusinessName("");
           setError("לא נמצאה שיחה מתאימה");
+          console.error("Conversation not found for conversationId:", conversationId);
         }
       })
-      .catch(() => {
+      .catch((err) => {
         setBusinessName("");
         setError("שגיאה בטעינת שם העסק");
+        console.error("Error fetching conversation details:", err);
       })
       .finally(() => setLoading(false));
   }, [conversationId, userId]);
 
-  // 2. הצטרף לשיחה וטעון את ההיסטוריה
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId) return;
 
     if (prevConversationIdRef.current && prevConversationIdRef.current !== conversationId) {
       sock.emit("leaveConversation", prevConversationIdRef.current);
+      console.log("Left previous conversation:", prevConversationIdRef.current);
     }
 
     sock.emit("joinConversation", conversationId, (ack) => {
       if (!ack.ok) {
         setError("לא ניתן להצטרף לשיחה");
+        console.error("Failed to join conversation:", ack.error);
         return;
       }
       setError("");
+      console.log("Joined conversation:", conversationId);
     });
 
     // טעינת ההיסטוריה והצבת ההודעות בסטייט כאן
@@ -148,12 +165,14 @@ export default function ClientChatSection() {
       } else {
         setError("שגיאה בטעינת ההודעות");
         setMessages([]);
+        console.error("Failed to load message history:", res.error);
       }
     });
 
     prevConversationIdRef.current = conversationId;
 
     const handleNewMessage = (msg) => {
+      console.log("New message received:", msg);
       setMessages((prev) => {
         const exists = prev.some(
           (m) => (m._id && msg._id && m._id === msg._id) ||
