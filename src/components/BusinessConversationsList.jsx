@@ -3,39 +3,47 @@ import { useAuth } from "../context/AuthContext";
 import createSocket from "../socket";
 
 export default function BusinessConversationsList({ onSelectConversation }) {
-  const { user, initialized } = useAuth();
+  const { user, initialized, getValidAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const socketRef = useRef(null);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     async function setupSocket() {
-      const sock = await createSocket();
-      if (!sock) return; // אין טוקן תקין, כנראה הפניית login כבר התבצעה
+      setLoading(true);
+      setError("");
+
+      const token = await getValidAccessToken();
+      if (!token) {
+        logout();
+        return;
+      }
+
+      const sock = await createSocket(token, getValidAccessToken, logout);
+      if (!sock) return; // כנראה הפניית login כבר התבצעה
 
       sock.connect();
       socketRef.current = sock;
 
-      sock.emit(
-        "getConversations",
-        { userId: businessId },
-        (res) => {
-          if (res.ok) {
-            setConversations(res.conversations);
-          } else {
-            console.error("Error loading conversations:", res.error);
-          }
-          setLoading(false);
+      sock.emit("getConversations", { userId: businessId }, (res) => {
+        if (res.ok) {
+          setConversations(res.conversations || []);
+        } else {
+          setError("שגיאה בטעינת שיחות: " + (res.error || ""));
+          console.error("Error loading conversations:", res.error);
         }
-      );
+        setLoading(false);
+      });
 
       sock.on("connect_error", (err) => {
-        console.error("Socket connect error:", err.message);
+        setError("שגיאה בחיבור לסוקט: " + err.message);
         setLoading(false);
+        console.error("Socket connect error:", err.message);
       });
     }
 
@@ -45,9 +53,10 @@ export default function BusinessConversationsList({ onSelectConversation }) {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, getValidAccessToken, logout]);
 
   if (loading) return <p>טוען שיחות...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (conversations.length === 0) return <p>אין שיחות פעילות</p>;
 
   return (
@@ -59,9 +68,10 @@ export default function BusinessConversationsList({ onSelectConversation }) {
           style={{ cursor: "pointer", padding: "8px 0" }}
         >
           שיחה עם:{" "}
-          {conv.participants
-            .filter((p) => p !== businessId)
-            .join(", ")}
+          {(Array.isArray(conv.participants)
+            ? conv.participants.filter((p) => p !== businessId)
+            : []
+          ).join(", ")}
         </li>
       ))}
     </ul>

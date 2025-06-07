@@ -1,12 +1,9 @@
-// src/components/BusinessChat.jsx
-
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";  // השתמש במשתנה סביבה
-
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export default function BusinessChat({
   token,
@@ -14,6 +11,8 @@ export default function BusinessChat({
   myBusinessId,
   myBusinessName,
   otherBusinessId,
+  getValidAccessToken,
+  onLogout,
 }) {
   const [socket, setSocket] = useState(null);
   const [conversationId, setConversationId] = useState(null);
@@ -21,40 +20,32 @@ export default function BusinessChat({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // Ref לשמירת הערך הקודם של otherBusinessId
   const previousOtherBusinessId = useRef(null);
 
-  // גלילת המסך לתחתית בהודעות
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // לוג לשינוי conversationId
   useEffect(() => {
     console.log("🆕 conversationId updated:", conversationId);
   }, [conversationId]);
 
-  // אתחול או טעינת שיחה
   const initConversation = useCallback(() => {
     if (!socket || !otherBusinessId) return;
     console.log("▶️ initConversation to", otherBusinessId);
 
     socket.emit("startConversation", { otherBusinessId }, (res) => {
-
       console.log("↩️ startConversation response:", res);
       if (!res.ok) return console.error(res.error);
 
-      // הצטרפות לחדר השיחה עם ה-conversationId שקיבלנו
       socket.emit("joinConversation", res.conversationId, (ack) => {
         console.log("↩️ joinConversation ack:", ack);
         if (!ack.ok) {
           console.error("Failed to join conversation:", ack.error);
           return;
         }
-        // רק אחרי הצטרפות מוצלחת מעדכנים את conversationId
         setConversationId(res.conversationId);
 
-        // מבקשים היסטוריית הודעות לאחר הצטרפות
         socket.emit("getHistory", { conversationId: res.conversationId }, (h) => {
           console.log("↩️ getHistory:", h);
           if (h.ok) setMessages(h.messages);
@@ -63,7 +54,6 @@ export default function BusinessChat({
     });
   }, [socket, otherBusinessId]);
 
-  // UseEffect שמאזין לשינוי socket ו-otherBusinessId ומפעיל initConversation רק אם otherBusinessId שונה
   useEffect(() => {
     if (!socket || !socket.connected || !otherBusinessId) return;
 
@@ -73,7 +63,6 @@ export default function BusinessChat({
     }
   }, [socket, otherBusinessId, initConversation]);
 
-  // הקמת חיבור Socket.IO — רץ פעם אחת בלבד
   useEffect(() => {
     if (!token || !role || !myBusinessId) {
       console.warn("🚫 missing token/role/myBusinessId — skipping socket connect");
@@ -84,25 +73,45 @@ export default function BusinessChat({
     const s = io(SOCKET_URL, {
       path: "/socket.io",
       auth: { token, role, businessId: myBusinessId, businessName: myBusinessName },
+      transports: ["websocket"],
     });
 
     s.on("connect", () => {
       console.log("✅ Socket connected:", s.id);
-      // לא מפעילים initConversation כאן יותר, מפעילים ב-useEffect לעיל
     });
 
     s.on("disconnect", (reason) => {
       console.log("❌ Socket disconnected:", reason);
     });
 
+    s.on("tokenExpired", async () => {
+      console.log("🚨 Token expired, refreshing...");
+      if (!getValidAccessToken) {
+        console.error("No getValidAccessToken function provided");
+        return;
+      }
+      const newToken = await getValidAccessToken();
+      if (!newToken) {
+        if (onLogout) onLogout();
+        return;
+      }
+      s.auth.token = newToken;
+      s.disconnect();
+      s.connect();
+    });
+
+    s.on("connect_error", (err) => {
+      console.error("❌ Socket connect error:", err.message);
+    });
+
     setSocket(s);
+
     return () => {
       console.log("🛑 Disconnecting socket");
       s.disconnect();
     };
-  }, [token, role, myBusinessId, myBusinessName]);
+  }, [token, role, myBusinessId, myBusinessName, getValidAccessToken, onLogout]);
 
-  // מאזין להודעות חדשות, רק אם יש conversationId
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -120,7 +129,6 @@ export default function BusinessChat({
     };
   }, [socket, conversationId]);
 
-  // שליחת הודעה
   const sendMessage = () => {
     console.log("▶️ sendMessage()", { conversationId, text: input });
     if (!input.trim() || !socket || !conversationId) {
@@ -148,7 +156,6 @@ export default function BusinessChat({
     });
   };
 
-  // UI
   return (
     <div style={{ maxWidth: 600, margin: "auto", display: "flex", flexDirection: "column" }}>
       <h3>צ'אט עסקי</h3>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import ChatComponent from "./ChatComponent";
 import ConversationsList from "./ConversationsList";
 import "./ChatPage.css";
@@ -7,6 +8,8 @@ import createSocket from "../socket";
 
 export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
   const { state } = useLocation();
+  const { getValidAccessToken, logout } = useAuth();
+
   const initialConversationId = state?.conversationId || null;
 
   const [conversations, setConversations] = useState([]);
@@ -20,20 +23,24 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
 
   useEffect(() => {
     if (!userId) return;
-    if (socketRef.current) return; // כבר אתחלנו
+    if (socketRef.current) return;
 
     let isMounted = true;
 
     async function setupSocket() {
-      const sock = await createSocket();
-      if (!sock) return; // טוקן לא תקין, כנראה הפניה ל-login
+      const token = await getValidAccessToken();
+      if (!token) {
+        logout();
+        return;
+      }
+
+      const sock = await createSocket(token, getValidAccessToken, logout);
+      if (!sock) return;
 
       sock.connect();
       socketRef.current = sock;
 
-      // טעינת שיחות ראשונית
       sock.emit("getConversations", { userId }, (res) => {
-        console.log("getConversations response:", res);
         if (!isMounted) return;
         if (res.ok) {
           const convs = Array.isArray(res.conversations) ? res.conversations : [];
@@ -41,7 +48,6 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
           if (!selected && convs.length > 0) {
             const first = convs[0];
             const convoId = first._id || first.conversationId;
-            // תיקון: מחפשים partnerId רק בתוך participants
             const partnerId = (first.participants || []).find((pid) => pid !== userId) || null;
             setSelected({ conversationId: convoId, partnerId });
           }
@@ -50,7 +56,6 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
         }
       });
 
-      // מאזין להודעות חדשות
       const handleNew = (message) => {
         setConversations((prev) =>
           prev.map((conv) =>
@@ -67,6 +72,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
           }));
         }
       };
+
       sock.on("newMessage", handleNew);
 
       return () => {
@@ -84,8 +90,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
         if (cleanup) cleanup();
       });
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, isBusiness]);
+  }, [userId, isBusiness, getValidAccessToken, logout, selected]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
     setSelected({ conversationId, partnerId });

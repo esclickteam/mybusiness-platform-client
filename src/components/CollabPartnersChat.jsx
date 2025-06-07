@@ -1,27 +1,33 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import API from "../api";
+import { useAuth } from "../context/AuthContext";
 import { createSocket } from "../socket";
 
 export default function CollabPartnersChat() {
+  const { getValidAccessToken, logout, user } = useAuth();
   const [partners, setPartners] = useState([]);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
-  // Load collaborators
   useEffect(() => {
     API.get("/my/collab-partners")
       .then(res => setPartners(res.data.partners || []))
       .catch(console.error);
   }, []);
 
-  // Initialize socket once
   useEffect(() => {
     async function setupSocket() {
-      const sock = await createSocket();
-      if (!sock) return;  // כנראה אין טוקן תקין, הפניית login כבר התבצעה
+      const token = await getValidAccessToken();
+      if (!token) {
+        logout();
+        return;
+      }
+      const sock = await createSocket(token, getValidAccessToken, logout);
+      if (!sock) return;
 
       sock.connect();
       socketRef.current = sock;
@@ -32,9 +38,8 @@ export default function CollabPartnersChat() {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, []);
+  }, [getValidAccessToken, logout]);
 
-  // Start or fetch existing conversation
   const startChat = useCallback(async (partnerId) => {
     if (!socketRef.current) return;
     try {
@@ -49,10 +54,10 @@ export default function CollabPartnersChat() {
       setMessages(historyRes.data.messages || []);
     } catch (e) {
       console.error(e);
+      alert("שגיאה בפתיחת השיחה, נסה שוב");
     }
   }, []);
 
-  // Listen for new messages on active conversation
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId) return;
@@ -68,12 +73,22 @@ export default function CollabPartnersChat() {
     };
   }, [conversationId]);
 
-  // Send message
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const sendMessage = () => {
     if (!input.trim() || !socketRef.current || !conversationId) return;
+
+    const fromBusinessId = user?.businessId || user?.business?._id || null;
+    if (!fromBusinessId) {
+      alert("משהו השתבש, אנא התחבר מחדש");
+      return;
+    }
+
     const msg = {
       conversationId,
-      from: localStorage.getItem("businessId"),
+      from: fromBusinessId,
       to: selectedPartner,
       text: input.trim(),
     };
@@ -81,6 +96,8 @@ export default function CollabPartnersChat() {
       if (ack.ok) {
         setMessages(prev => [...prev, ack.message]);
         setInput("");
+      } else {
+        alert("שליחת ההודעה נכשלה: " + (ack.error || "שגיאה לא ידועה"));
       }
     });
   };
@@ -101,20 +118,37 @@ export default function CollabPartnersChat() {
           <h3>
             צ'אט עם {partners.find(p => p._id === selectedPartner)?.businessName || selectedPartner}
           </h3>
-          <div style={{ border: "1px solid #ccc", height: 300, overflowY: "auto", padding: 8, marginBottom: 8 }}>
+          <div
+            style={{
+              border: "1px solid #ccc",
+              height: 300,
+              overflowY: "auto",
+              padding: 8,
+              marginBottom: 8,
+            }}
+          >
             {messages.map((m, i) => (
               <div key={i}>
-                <b>{m.from === localStorage.getItem("businessId") ? "אני" : "הם"}:</b> {m.text}
+                <b>{m.from === (user?.businessId || user?.business?._id) ? "אני" : "הם"}:</b> {m.text}
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="הקלד הודעה..."
             style={{ marginRight: 8 }}
+            onKeyDown={e => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
           />
-          <button onClick={sendMessage}>שלח</button>
+          <button onClick={sendMessage} disabled={!input.trim()}>
+            שלח
+          </button>
         </div>
       )}
     </div>

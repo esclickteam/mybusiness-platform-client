@@ -8,21 +8,31 @@ import createSocket from "../socket";
 
 export default function BusinessChatWrapper() {
   const { businessId: routeBusinessId } = useParams();
-  const { accessToken, user } = useAuth();
+  const { user, getValidAccessToken, logout } = useAuth();
   const businessId = user?.businessId || routeBusinessId;
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
   const socketRef = useRef(null);
   const hasJoinedRef = useRef(false);
+  const selectedRef = useRef(selected);
 
   useEffect(() => {
-    if (!businessId || !accessToken) return;
-    if (socketRef.current) return; // כבר אתחלנו סוקט
+    selectedRef.current = selected;
+  }, [selected]);
+
+  useEffect(() => {
+    if (!businessId) return;
 
     async function setupSocket() {
-      const sock = await createSocket();
-      if (!sock) return; // כנראה אין טוקן תקין, כבר הופנית ל-login
+      const token = await getValidAccessToken();
+      if (!token) {
+        logout();
+        return;
+      }
+
+      const sock = await createSocket(token, getValidAccessToken, logout);
+      if (!sock) return;
 
       sock.connect();
       socketRef.current = sock;
@@ -41,6 +51,7 @@ export default function BusinessChatWrapper() {
                 first.customer?._id ||
                 null;
               setSelected({ conversationId: convoId, partnerId });
+              hasJoinedRef.current = false; // לא הצטרף עדיין
             }
           } else {
             console.error("Error loading conversations:", error);
@@ -50,7 +61,6 @@ export default function BusinessChatWrapper() {
 
       sock.on("connect_error", (err) => {
         console.error("Socket connect error:", err.message);
-        // אפשר להציג הודעת שגיאה למשתמש
       });
     }
 
@@ -61,8 +71,9 @@ export default function BusinessChatWrapper() {
       socketRef.current = null;
       setConvos([]);
       setSelected(null);
+      hasJoinedRef.current = false;
     };
-  }, [businessId, accessToken, selected]);
+  }, [businessId, getValidAccessToken, logout]);
 
   const handleSelect = (conversationId) => {
     const sock = socketRef.current;
@@ -83,16 +94,19 @@ export default function BusinessChatWrapper() {
       (convo.participants || []).find((pid) => pid !== businessId) ||
       convo.customer?._id ||
       null;
-    setSelected({ conversationId, partnerId });
 
-    // יציאה מהמועדון הקודם והצטרפות למועדון החדש
-    if (hasJoinedRef.current) {
-      sock.emit("leaveConversation", selected.conversationId);
+    // צא מהחדר הישן לפני כניסה לחדר החדש
+    if (hasJoinedRef.current && selectedRef.current?.conversationId) {
+      sock.emit("leaveConversation", selectedRef.current.conversationId);
     }
+
+    // הצטרף לחדר החדש
     sock.emit("joinConversation", conversationId, (ack) => {
       if (!ack.ok) console.error("joinConversation failed:", ack.error);
     });
+
     hasJoinedRef.current = true;
+    setSelected({ conversationId, partnerId });
   };
 
   return (

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
-import createSocket from "../socket"; // הנח שיצאת את הפונקציה createSocket לפי הדוגמא שלנו
+import createSocket from "../socket";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
@@ -16,7 +16,6 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // 1️⃣ Initialize socket once when dependencies are ready
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
 
@@ -28,15 +27,17 @@ export default function ClientChatSection() {
           return;
         }
 
-        socketRef.current = await createSocket(token, getValidAccessToken, () => {
-          // טיפול ביציאה מהמערכת במקרה שהטוקן לא תקין
+        const sock = await createSocket(token, getValidAccessToken, () => {
           window.location.href = "/login";
         });
+        socketRef.current = sock;
 
-        socketRef.current.on("connect_error", (err) => {
+        sock.on("connect_error", (err) => {
           console.error("Socket connect_error:", err.message);
           setError("שגיאה בחיבור לסוקט: " + err.message);
         });
+
+        sock.connect();
       } catch (e) {
         setError("שגיאה בהתחברות לסוקט");
         console.error(e);
@@ -53,42 +54,36 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId, businessId, getValidAccessToken]);
 
-  // 2️⃣ Start or get conversation once
   useEffect(() => {
-    if (!socketRef.current || !businessId) return;
+    if (!socketRef.current || !socketRef.current.connected || !businessId) return;
 
     setLoading(true);
-    socketRef.current.emit(
-      "startConversation",
-      { otherUserId: businessId },
-      (res) => {
-        if (res.ok) setConversationId(res.conversationId);
-        else setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
-        setLoading(false);
+    setError("");
+
+    socketRef.current.emit("startConversation", { otherUserId: businessId }, (res) => {
+      if (res.ok) {
+        setConversationId(res.conversationId);
+        setError("");
+      } else {
+        setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
       }
-    );
+      setLoading(false);
+    });
   }, [businessId]);
 
-  // 3️⃣ After conversationId is ready, load business name
   useEffect(() => {
     if (!socketRef.current || !conversationId) return;
 
-    socketRef.current.emit(
-      "getConversations",
-      { userId },
-      (res) => {
-        if (res.ok) {
-          const conv = res.conversations.find((c) =>
-            [c.conversationId, c._id, c.id]
-              .map(String)
-              .includes(String(conversationId))
-          );
-          setBusinessName(conv?.businessName || "");
-        } else {
-          setError("שגיאה בטעינת שם העסק");
-        }
+    socketRef.current.emit("getConversations", { userId }, (res) => {
+      if (res.ok) {
+        const conv = res.conversations.find((c) =>
+          [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
+        );
+        setBusinessName(conv?.businessName || "");
+      } else {
+        setError("שגיאה בטעינת שם העסק");
       }
-    );
+    });
   }, [conversationId, userId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;

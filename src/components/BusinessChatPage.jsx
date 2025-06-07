@@ -7,7 +7,7 @@ import createSocket from "../socket";
 import API from "../api";
 
 export default function BusinessChatPage() {
-  const { user, initialized } = useAuth();
+  const { user, initialized, getValidAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
   const [convos, setConvos] = useState([]);
@@ -29,27 +29,46 @@ export default function BusinessChatPage() {
     if (!initialized || !businessId) return;
 
     (async () => {
-      const sock = await createSocket();
+      // בקש טוקן תקין (כולל רענון)
+      const token = await getValidAccessToken();
+      if (!token) {
+        setError("Session expired, please login again");
+        logout();
+        return;
+      }
+
+      const sock = await createSocket(token, getValidAccessToken, logout);
       if (!sock) {
         setError("Socket connection failed");
         return;
       }
       socketRef.current = sock;
-      sock.connect();
 
       sock.on("connect_error", (err) => {
         setError("Socket error: " + err.message);
         console.log("Socket connection failed:", err);
       });
 
-      console.log("Socket connected:", sock.id); // Log successful connection
+      sock.on("tokenExpired", async () => {
+        console.log("Token expired - refreshing...");
+        const newToken = await getValidAccessToken();
+        if (!newToken) {
+          logout();
+          return;
+        }
+        sock.auth.token = newToken;
+        sock.disconnect();
+        sock.connect();
+      });
+
+      console.log("Socket connected:", sock.id);
     })();
 
     return () => {
       socketRef.current?.disconnect();
       prevSelectedRef.current = null;
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, getValidAccessToken, logout]);
 
   // 2. Load conversations via REST
   useEffect(() => {
@@ -61,7 +80,8 @@ export default function BusinessChatPage() {
         if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
-          const partnerId = first.partnerId || first.participants.find((p) => p !== businessId);
+          const partnerId =
+            first.partnerId || first.participants.find((p) => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
       })
@@ -77,21 +97,25 @@ export default function BusinessChatPage() {
     if (!sock) return;
 
     const handler = (msg) => {
-      // Log the incoming message
       console.log("New message received:", msg);
 
-      // Update sidebar order
       setConvos((prev) => {
-        const idx = prev.findIndex((c) => String(c._id || c.conversationId) === msg.conversationId);
+        const idx = prev.findIndex(
+          (c) => String(c._id || c.conversationId) === msg.conversationId
+        );
         if (idx === -1) return prev;
-        const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
+        const updated = {
+          ...prev[idx],
+          updatedAt: msg.timestamp || new Date().toISOString(),
+        };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
 
-      // Update history for currently open conversation
       const sel = selectedRef.current;
       if (msg.conversationId === sel?.conversationId) {
-        setMessages((prev) => (prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]));
+        setMessages((prev) =>
+          prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
+        );
       }
     };
 
@@ -107,17 +131,14 @@ export default function BusinessChatPage() {
       return;
     }
 
-    // Leave previous conversation room if changed
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
       sock.emit("leaveConversation", prevSelectedRef.current);
     }
 
-    // Join current conversation room
     sock.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
 
-    // Load message history
     sock.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
