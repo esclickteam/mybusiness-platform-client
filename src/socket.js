@@ -4,11 +4,18 @@ import { getBusinessId, getUserRole } from "./utils/authHelpers";
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 /**
- * @param {string} token - Access Token תקין
  * @param {function} getValidAccessToken - פונקציה להחזרת טוקן תקין (רענון במידת הצורך)
  * @param {function} onLogout - פונקציה לטיפול ביציאה (למשל הפניה ל-login)
  */
-export async function createSocket(token, getValidAccessToken, onLogout) {
+export async function createSocket(getValidAccessToken, onLogout) {
+  const token = await getValidAccessToken();
+
+  if (!token) {
+    alert("Session expired. Please log in again.");
+    if (onLogout) onLogout();
+    return null;
+  }
+
   const role = getUserRole();
 
   console.log("createSocket() - detected role:", role);
@@ -25,12 +32,6 @@ export async function createSocket(token, getValidAccessToken, onLogout) {
 
   console.log("createSocket() - businessId:", businessId);
 
-  if (!token) {
-    console.error("❌ Missing token for role", role);
-    alert("Missing authentication token. Please log in again.");
-    if (onLogout) onLogout();
-    return null;
-  }
   if (rolesNeedingBusinessId.includes(role) && !businessId) {
     console.error("❌ Missing businessId for role", role);
     alert("Missing business ID. Please log in again.");
