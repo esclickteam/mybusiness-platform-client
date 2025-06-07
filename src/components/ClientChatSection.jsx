@@ -7,7 +7,7 @@ import createSocket from "../socket";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
-  const { user, initialized, refreshAccessToken } = useAuth();
+  const { user, initialized, refreshAccessToken, logout } = useAuth();
   const userId = user?.userId || user?.id || null;
 
   const [conversationId, setConversationId] = useState(null);
@@ -15,54 +15,57 @@ export default function ClientChatSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const socketRef = useRef(null);
+  const prevConversationIdRef = useRef(null);
 
+  // חיבור לסוקט עם טיפול ברענון טוקן
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
 
-    async function setupSocket() {
-      try {
-        const token = await refreshAccessToken();
-        if (!token) {
-          setError("אין טוקן תקין, אנא התחבר מחדש");
-          return;
-        }
-
-        const sock = await createSocket(refreshAccessToken, () => {
-          window.location.href = "/login";
-        }, businessId);
-
-        if (!sock) {
-          setError("חיבור לסוקט נכשל");
-          return;
-        }
-
-        socketRef.current = sock;
-
-        sock.on("connect_error", (err) => {
-          console.error("Socket connect_error:", err.message);
-          setError("שגיאה בחיבור לסוקט: " + err.message);
-        });
-
-        sock.on("disconnect", (reason) => {
-          console.warn("Socket disconnected:", reason);
-          // אפשר להוסיף לוגיקה לניסיון חיבור מחדש
-        });
-      } catch (e) {
-        setError("שגיאה בהתחברות לסוקט");
-        console.error(e);
+    (async () => {
+      const token = await refreshAccessToken();
+      if (!token) {
+        setError("אין טוקן תקין, אנא התחבר מחדש");
+        logout();
+        return;
       }
-    }
 
-    setupSocket();
+      const sock = await createSocket(refreshAccessToken, logout, businessId);
+      if (!sock) {
+        setError("חיבור לסוקט נכשל");
+        return;
+      }
+
+      socketRef.current = sock;
+
+      sock.on("connect_error", (err) => {
+        setError("שגיאה בחיבור לסוקט: " + err.message);
+      });
+
+      sock.on("tokenExpired", async () => {
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+          logout();
+          return;
+        }
+        sock.auth.token = newToken;
+        sock.disconnect();
+        sock.connect();
+      });
+
+      sock.on("disconnect", (reason) => {
+        console.warn("Socket disconnected:", reason);
+        // אפשר להוסיף לוגיקה לניסיון חיבור מחדש אם תרצה
+      });
+    })();
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      socketRef.current?.disconnect();
+      socketRef.current = null;
+      prevConversationIdRef.current = null;
     };
-  }, [initialized, userId, businessId, refreshAccessToken]);
+  }, [initialized, userId, businessId, refreshAccessToken, logout]);
 
+  // פתיחת שיחה חדשה או קבלת שיחה קיימת
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !businessId) return;
@@ -70,16 +73,14 @@ export default function ClientChatSection() {
     const tryEmit = () => {
       setLoading(true);
       setError("");
-      console.log("מנסה לפתוח שיחה עם businessId:", businessId);
 
       sock.emit("startConversation", { otherUserId: businessId }, (res) => {
-        console.log("startConversation response:", res);
         if (res?.ok) {
-          console.log("שיחה נפתחה עם ID:", res.conversationId);
           setConversationId(res.conversationId);
           setError("");
         } else {
           setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
+          setConversationId(null);
         }
         setLoading(false);
       });
@@ -96,37 +97,76 @@ export default function ClientChatSection() {
     };
   }, [businessId]);
 
+  // טעינת שם העסק לפי השיחה
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !conversationId || !userId) return;
 
     setLoading(true);
-    console.log("מזמין את רשימת השיחות עבור userId:", userId);
 
     sock.emit("getConversations", { userId }, (res) => {
-      console.log("getConversations response:", res);
       setLoading(false);
-      if (!res || typeof res !== "object") {
-        setError("תגובה לא תקינה משרת השיחות");
-        return;
-      }
-      if (res.ok) {
+      if (res?.ok && Array.isArray(res.conversations)) {
         const conv = res.conversations.find((c) =>
           [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
         );
-        if (!conv) {
-          setError("לא נמצאה שיחה מתאימה");
-          setBusinessName("");
-        } else {
+        if (conv) {
           setBusinessName(conv.businessName || "");
           setError("");
+        } else {
+          setBusinessName("");
+          setError("לא נמצאה שיחה מתאימה");
         }
       } else {
-        setError("שגיאה בטעינת שם העסק");
         setBusinessName("");
+        setError("שגיאה בטעינת שם העסק");
       }
     });
   }, [conversationId, userId]);
+
+  // הצטרפות ל-room של השיחה וטעינת ההיסטוריה + מאזין להודעות חדשות
+  useEffect(() => {
+    const sock = socketRef.current;
+    if (!sock || !conversationId) return;
+
+    // נטש room קודם במידת הצורך
+    if (prevConversationIdRef.current && prevConversationIdRef.current !== conversationId) {
+      sock.emit("leaveConversation", prevConversationIdRef.current);
+    }
+
+    sock.emit("joinConversation", conversationId, (ack) => {
+      if (!ack.ok) {
+        setError("לא ניתן להצטרף לשיחה");
+        return;
+      }
+      setError("");
+    });
+
+    // בקש היסטוריית הודעות
+    sock.emit("getHistory", { conversationId }, (res) => {
+      if (res.ok) {
+        // עדכן הודעות ברכיב הילד (ClientChatTab) דרך state
+      } else {
+        setError("שגיאה בטעינת ההודעות");
+      }
+    });
+
+    prevConversationIdRef.current = conversationId;
+
+    // מאזין להודעות חדשות בזמן אמת
+    const handleNewMessage = (msg) => {
+      // העבר את ההודעה לרכיב הילד או עדכן state מתאים
+      // לדוגמה, תוכל לאחסן הודעות ב-state כאן או ב-ClientChatTab
+      // ניתן להשתמש ב-context או props להמשך
+      console.log("הודעה חדשה:", msg);
+    };
+    sock.on("newMessage", handleNewMessage);
+
+    return () => {
+      sock.emit("leaveConversation", conversationId);
+      sock.off("newMessage", handleNewMessage);
+    };
+  }, [conversationId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
