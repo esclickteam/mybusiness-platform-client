@@ -35,25 +35,25 @@ const BarChartComponent = ({
   return (
     <div className="graph-box" ref={wrapperRef}>
       <h4>{title}</h4>
-      <ResponsiveContainer width="100%" height={500}>
+      <ResponsiveContainer width="100%" height={450}>
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 20, left: 20, bottom: 100 }}  // יותר מקום לתוויות
-          barCategoryGap={80}   // 80px ריווח בין כל עמודה
-          barGap={8}            // 8px ריווח נוסף
-          barSize={20}          // עובי כל עמודה 20px
+          margin={{ top: 30, right: 20, left: 20, bottom: 80 }}  
+          barCategoryGap={80}   
+          barGap={8}            
+          barSize={20}          
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
             type="category"
             dataKey="name"
             interval={0}
-            height={100}         // גובה מספיק לתוויות סיבוביות
+            height={60}           // מספיק גובה לתוויות
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 700 }}
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
-            angle={-45}          // סיבוב תוויות ב-45 מעלות
-            textAnchor="end"     // יישור לקצה התווית
+            angle={0}             // אופקי
+            textAnchor="middle"   // תווית באמצע הבר
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
