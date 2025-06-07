@@ -1,5 +1,3 @@
-// src/components/BarChartComponent.jsx
-
 import React from "react";
 import "./BarChartComponent.css";  // ייבוא הקובץ CSS
 import {
@@ -23,7 +21,7 @@ const BarChartComponent = ({
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
-          margin={{ top: 30, right: 20, left: 20, bottom: 100 }}
+          margin={{ top: 30, right: 20, left: 20, bottom: 120 }} // מעט יותר מקום לתוויות מסובבות
           barCategoryGap="50%"
           barGap={8}
           barSize={20}
@@ -32,11 +30,16 @@ const BarChartComponent = ({
           <XAxis
             dataKey="name"
             interval={0}
-            tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 700 }}
+            tick={{
+              fill: "#4b0082",
+              fontSize: 12,
+              fontWeight: 700,
+              angle: -45,        // סיבוב בזווית של 45 מעלות
+              textAnchor: "end", // יישור הטקסט לסוף התווית
+            }}
             tickMargin={16}
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
-            textAnchor="middle"
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
