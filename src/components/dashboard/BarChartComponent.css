@@ -36,26 +36,13 @@
   .graph-box {
     padding: 0.5rem 0.5rem 2.5rem 0.5rem; /* שמרתי על רווח תחתון */
     max-width: 100%;
-    height: 280px; /* מעט יותר גובה לנראות טובה יותר */
-
-    /* מאפשר גלילה אופקית לגרף */
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* להבטיח שלגרף תהיה רוחב מינימלי, כדי לא לכווץ יותר מדי */
-  .graph-box .recharts-wrapper {
-    min-width: 600px;
+    /* גובה נמוך יותר לנייד */
+    height: 250px;
   }
 
   .graph-title {
     font-size: 1rem;
     margin-top: 8px;
     margin-bottom: 8px;
-  }
-
-  /* הקטנת גודל פונטים של תוויות הציר */
-  .recharts-cartesian-axis-tick-value {
-    font-size: 10px !important;
   }
 }
