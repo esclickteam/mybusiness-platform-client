@@ -7,7 +7,7 @@ import createSocket from "../socket";
 import API from "../api";
 
 export default function BusinessChatPage() {
-  const { user, initialized, getValidAccessToken, logout } = useAuth();
+  const { user, initialized, refreshAccessToken, logout } = useAuth(); // <-- כאן השינוי
   const businessId = user?.businessId || user?.business?._id;
 
   const [convos, setConvos] = useState([]);
@@ -30,14 +30,14 @@ export default function BusinessChatPage() {
 
     (async () => {
       // בקש טוקן תקין (כולל רענון)
-      const token = await getValidAccessToken();
+      const token = await refreshAccessToken(); // <-- כאן השינוי
       if (!token) {
         setError("Session expired, please login again");
         logout();
         return;
       }
 
-      const sock = await createSocket(token, getValidAccessToken, logout);
+      const sock = await createSocket(token, refreshAccessToken, logout); // <-- כאן השינוי
       if (!sock) {
         setError("Socket connection failed");
         return;
@@ -51,7 +51,7 @@ export default function BusinessChatPage() {
 
       sock.on("tokenExpired", async () => {
         console.log("Token expired - refreshing...");
-        const newToken = await getValidAccessToken();
+        const newToken = await refreshAccessToken(); // <-- כאן השינוי
         if (!newToken) {
           logout();
           return;
@@ -68,7 +68,7 @@ export default function BusinessChatPage() {
       socketRef.current?.disconnect();
       prevSelectedRef.current = null;
     };
-  }, [initialized, businessId, getValidAccessToken, logout]);
+  }, [initialized, businessId, refreshAccessToken, logout]);
 
   // 2. Load conversations via REST
   useEffect(() => {
