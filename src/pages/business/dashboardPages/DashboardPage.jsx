@@ -57,7 +57,6 @@ function enrichAppointment(appt, business) {
 
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
-  console.log('refreshAccessToken:', refreshAccessToken, 'is function:', typeof refreshAccessToken === 'function');
 
   const businessId = getBusinessId();
   const socketRef = useRef(null);
@@ -184,7 +183,6 @@ const DashboardPage = () => {
       }
       const sock = await createSocket(refreshAccessToken, logout, businessId);
 
-
       if (!sock) {
         console.warn("Failed to create socket");
         return;
@@ -241,7 +239,12 @@ const DashboardPage = () => {
             } else {
               appointments.push(enrichedNewAppointment);
             }
-            return { ...prevStats, appointments };
+
+            return {
+              ...prevStats,
+              appointments,
+              appointments_count: appointments.length, // עדכון ספירת הפגישות בזמן אמת
+            };
           });
         } else {
           console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
