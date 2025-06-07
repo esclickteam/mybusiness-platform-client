@@ -12,7 +12,7 @@ export default function ChatSection({ isBusiness = false }) {
   const [selected, setSelected] = useState({
     conversationId: null,
     partnerId: null,
-    customerId: null
+    customerId: null,
   });
   const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,10 +60,12 @@ export default function ChatSection({ isBusiness = false }) {
 
       socketRef.current.on("connect", () => {
         console.log("🔌 Connected to dashboard socket:", socketRef.current.id);
+        fetchConversations();
       });
 
       socketRef.current.on("connect_error", (err) => {
         console.error("❌ Dashboard socket connection error:", err.message);
+        setError("שגיאה בחיבור לסוקט: " + err.message);
       });
 
       socketRef.current.on("tokenExpired", async () => {
@@ -78,7 +80,10 @@ export default function ChatSection({ isBusiness = false }) {
         socketRef.current.connect();
       });
 
-      fetchConversations();
+      socketRef.current.on("disconnect", (reason) => {
+        console.warn("🔌 Disconnected dashboard socket:", reason);
+        // ניתן להוסיף לוגיקה לחיבור מחדש במידת הצורך
+      });
     }
 
     setupSocket();
@@ -95,7 +100,9 @@ export default function ChatSection({ isBusiness = false }) {
     if (!socketRef.current) return;
     setIsLoading(true);
     setError("");
-    socketRef.current.emit("getConversations", { userId: businessId }, (res) => {
+    // חשוב: ודא ששלח את userId הנכון — כאן user.id אם קיים, אחרת businessId
+    const userIdToSend = user?.id || businessId;
+    socketRef.current.emit("getConversations", { userId: userIdToSend }, (res) => {
       if (res.ok) {
         const convs = Array.isArray(res.conversations) ? res.conversations : [];
         setConversations(convs);
@@ -117,7 +124,7 @@ export default function ChatSection({ isBusiness = false }) {
         setSelected({
           conversationId: res.conversationId,
           partnerId: newPartnerId,
-          customerId: newPartnerId
+          customerId: newPartnerId,
         });
       } else {
         setError("לא ניתן לפתוח שיחה");
@@ -150,9 +157,7 @@ export default function ChatSection({ isBusiness = false }) {
             socket={socketRef.current}
           />
         ) : (
-          <div className={styles.chatPlaceholder}>
-            בחר שיחה מהרשימה או התחל חדשה
-          </div>
+          <div className={styles.chatPlaceholder}>בחר שיחה מהרשימה או התחל חדשה</div>
         )}
       </main>
 
@@ -161,20 +166,17 @@ export default function ChatSection({ isBusiness = false }) {
         <div className={styles.newConversation}>
           <select
             value={newPartnerId}
-            onChange={e => setNewPartnerId(e.target.value)}
+            onChange={(e) => setNewPartnerId(e.target.value)}
             disabled={isLoading}
           >
             <option value="">בחר לקוח...</option>
-            {clients.map(c => (
+            {clients.map((c) => (
               <option key={c._id} value={c._id}>
                 {c.name}
               </option>
             ))}
           </select>
-          <button
-            onClick={startNewConversation}
-            disabled={!newPartnerId || isLoading}
-          >
+          <button onClick={startNewConversation} disabled={!newPartnerId || isLoading}>
             התחל שיחה
           </button>
         </div>
@@ -184,12 +186,10 @@ export default function ChatSection({ isBusiness = false }) {
           <div className={styles.noConversations}>אין שיחות קיימות</div>
         )}
         <ul className={styles.convoList}>
-          {conversations.map(conv => {
+          {conversations.map((conv) => {
             const isUserBus = isBusiness || user.id === conv.business._id;
             const partnerId = isUserBus ? conv.customer._id : conv.business._id;
-            const partnerName = isUserBus
-              ? conv.customer.name
-              : conv.business.businessName;
+            const partnerName = isUserBus ? conv.customer.name : conv.business.businessName;
             const customerId = conv.customer?._id;
             return (
               <li
@@ -201,7 +201,7 @@ export default function ChatSection({ isBusiness = false }) {
                   handleSelect({
                     conversationId: conv.conversationId,
                     partnerId,
-                    customerId
+                    customerId,
                   })
                 }
               >

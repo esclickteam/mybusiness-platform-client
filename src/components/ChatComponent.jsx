@@ -32,18 +32,17 @@ export default function ChatComponent({
         return;
       }
 
-      const sock = await createSocket(token, getValidAccessToken, logout);
+      const sock = await createSocket(getValidAccessToken, logout);
       if (!sock) return;
 
-      if (!sock.connected) sock.connect();
-
       socketRef.current = sock;
+
+      if (!sock.connected) sock.connect();
 
       if (isBusiness) {
         setLoadingConvs(true);
         sock.emit("getConversations", { userId }, (res) => {
           setLoadingConvs(false);
-          console.log("getConversations response:", res);
           if (!res || typeof res !== "object") {
             console.error("Invalid response from getConversations:", res);
             return;
@@ -87,7 +86,8 @@ export default function ChatComponent({
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [userId, isBusiness, partnerId, conversationId, getValidAccessToken, logout]);
+    // הוצאתי conversationId מה-deps כדי למנוע לולאות אינסופיות
+  }, [userId, isBusiness, partnerId, getValidAccessToken, logout]);
 
   useEffect(() => {
     if (isBusiness && conversationId && conversations.length) {
