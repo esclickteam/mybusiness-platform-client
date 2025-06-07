@@ -3,6 +3,12 @@ import "./CalendarView.css";
 
 const weekDays = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
+const getDateTime = (dateStr, timeStr) => {
+  if (!dateStr) return null;
+  if (!timeStr) timeStr = "00:00";
+  return new Date(`${dateStr}T${timeStr}:00`);
+};
+
 const CalendarView = ({ appointments = [], onDateClick }) => {
   const today = new Date();
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -111,13 +117,17 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
                       ? e.client.name
                       : e.client || "לא ידוע";
 
+                  const fullDate = getDateTime(e.date, e.time);
+
                   return (
                     <div key={i} className="event-item">
                       🕒{" "}
-                      {new Date(e.date).toLocaleTimeString("he-IL", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {fullDate
+                        ? fullDate.toLocaleTimeString("he-IL", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "לא ידוע"}
                       <br />
                       👤 {clientName}
                     </div>
