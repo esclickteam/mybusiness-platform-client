@@ -15,23 +15,31 @@ export function AuthProvider({ children }) {
   const initRan = useRef(false);
 
   const ws = useRef(null);
+  const refreshingTokenPromise = useRef(null);
 
-  // חידוש Access Token
+  // queue לרענון טוקן
   const refreshAccessToken = async () => {
-    try {
-      const response = await API.post("/auth/refresh-token", null, { withCredentials: true });
-      if (response.data.accessToken) {
-        localStorage.setItem("token", response.data.accessToken);
-        API.defaults.headers['Authorization'] = `Bearer ${response.data.accessToken}`;
-        return response.data.accessToken;
-      }
-    } catch (err) {
-      console.error("Failed to refresh token:", err);
+    if (refreshingTokenPromise.current) {
+      return refreshingTokenPromise.current;
     }
-    return null;
+    refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
+      .then(response => {
+        const newToken = response.data.accessToken;
+        if (newToken) {
+          localStorage.setItem("token", newToken);
+          API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+        }
+        refreshingTokenPromise.current = null;
+        return newToken;
+      })
+      .catch(err => {
+        refreshingTokenPromise.current = null;
+        throw err;
+      });
+    return refreshingTokenPromise.current;
   };
 
-  // יצירת חיבור Socket.IO עם הטוקן
+  // יצירת חיבור Socket.IO עם הטוקן כולל queue ברענון
   const createSocketConnection = (token) => {
     if (ws.current) {
       ws.current.disconnect();
@@ -58,13 +66,19 @@ export function AuthProvider({ children }) {
 
     ws.current.on("tokenExpired", async () => {
       console.log("🚨 Socket token expired, refreshing...");
-      const newToken = await refreshAccessToken();
-      if (newToken) {
-        console.log("🔄 Got new token, reconnecting socket");
-        ws.current.auth.token = newToken;
-        ws.current.disconnect();
-        ws.current.connect();
-      } else {
+      try {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          console.log("🔄 Got new token, reconnecting socket");
+          ws.current.auth.token = newToken;
+          ws.current.disconnect();
+          ws.current.connect();
+        } else {
+          setUser(null);
+          localStorage.removeItem("token");
+          navigate("/login");
+        }
+      } catch {
         setUser(null);
         localStorage.removeItem("token");
         navigate("/login");
@@ -74,10 +88,16 @@ export function AuthProvider({ children }) {
     ws.current.on("connect_error", async (err) => {
       console.error("Socket.IO connect error:", err.message);
       if (err.message === "jwt expired") {
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          createSocketConnection(newToken);
-        } else {
+        try {
+          const newToken = await refreshAccessToken();
+          if (newToken) {
+            createSocketConnection(newToken);
+          } else {
+            setUser(null);
+            localStorage.removeItem("token");
+            navigate("/login");
+          }
+        } catch {
           setUser(null);
           localStorage.removeItem("token");
           navigate("/login");
@@ -86,7 +106,6 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // אתחול האימות והרענון
   useEffect(() => {
     if (initRan.current) return;
     initRan.current = true;
@@ -112,7 +131,6 @@ export function AuthProvider({ children }) {
             businessId: data.businessId || null,
           });
         } catch {
-          // נסה לרענן טוקן במקרה של שגיאה (jwt expired)
           const newToken = await refreshAccessToken();
           if (newToken) {
             try {
@@ -144,11 +162,9 @@ export function AuthProvider({ children }) {
 
       if (token) {
         createSocketConnection(token);
-      } else {
-        if (ws.current) {
-          ws.current.disconnect();
-          ws.current = null;
-        }
+      } else if (ws.current) {
+        ws.current.disconnect();
+        ws.current = null;
       }
 
       setLoading(false);
@@ -164,7 +180,6 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // התחברות רגילה (email+password)
   const login = async (email, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -233,7 +248,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // התנתקות
   const logout = async () => {
     setLoading(true);
     try {
@@ -257,7 +271,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ניקוי הודעות הצלחה
   useEffect(() => {
     if (successMessage) {
       const t = setTimeout(() => setSuccessMessage(null), 4000);
