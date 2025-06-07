@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./BarChartComponent.css";
 import {
   BarChart,
@@ -27,8 +27,23 @@ const data = [
 ];
 
 const BarChartComponent = ({ dataProp = data, title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    if (wrapperRef.current) {
+      // מחפש את האלמנט עם המחלקה recharts-wrapper שבתוכו משנה סגנונות
+      const rechartsWrapper = wrapperRef.current.querySelector(".recharts-wrapper");
+      if (rechartsWrapper) {
+        rechartsWrapper.style.maxWidth = "none";
+        rechartsWrapper.style.maxHeight = "none";
+        rechartsWrapper.style.width = "100%";
+        rechartsWrapper.style.height = "100%";
+      }
+    }
+  }, []);
+
   return (
-    <div className="graph-box">
+    <div className="graph-box" ref={wrapperRef}>
       <h4>{title}</h4>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
