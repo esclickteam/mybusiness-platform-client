@@ -39,8 +39,8 @@ const BarChartComponent = ({
         <BarChart
           data={dataProp}
           margin={{ top: 30, right: 20, left: 20, bottom: 140 }}
-          barCategoryGap="50%"
-          barGap={10}
+          barCategoryGap="60%"  // הגדלתי את המרווח בין הקטגוריות
+          barGap={12}            // הגדלתי את המרווח בין העמודות
           barSize={20}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -55,6 +55,7 @@ const BarChartComponent = ({
             tickLine={false}
             angle={0}
             textAnchor="middle"
+            minTickGap={15}   // מוודא רווח מינימלי בין התוויות
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
