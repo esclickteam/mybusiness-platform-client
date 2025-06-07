@@ -472,7 +472,7 @@ const DashboardPage = () => {
       <NextActions stats={stats} />
 
       <div>
-        <BarChartComponent data={monthlyCustomerData} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
+        <BarChartComponent appointments={stats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
       </div>
 
       <div>

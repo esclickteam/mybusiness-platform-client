@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
+import React, { useEffect, useState } from "react";
 import "./BarChartComponent.css";
 import {
   BarChart,
@@ -12,8 +11,6 @@ import {
   Legend,
 } from "recharts";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
-
 function formatMonthlyData(appointments) {
   const counts = {
     ינואר: 0, פברואר: 0, מרץ: 0, אפריל: 0,
@@ -22,47 +19,16 @@ function formatMonthlyData(appointments) {
   };
 
   appointments.forEach(appt => {
+    if (!appt.date) return;
     const month = new Date(appt.date).toLocaleString("he-IL", { month: "long" });
     if (counts[month] !== undefined) counts[month]++;
   });
 
-  return Object.entries(counts)
-    .map(([name, customers]) => ({ name, customers }));
+  return Object.entries(counts).map(([name, customers]) => ({ name, customers }));
 }
 
-const BarChartComponent = ({ token, businessId, title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
-  const [appointments, setAppointments] = useState([]);
+const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
   const [data, setData] = useState(() => formatMonthlyData([]));
-
-  useEffect(() => {
-    const socket = io(SOCKET_URL, {
-      path: "/socket.io",
-      transports: ["websocket", "polling"],
-      auth: { token, businessId },
-    });
-
-    socket.on("connect", () => {
-      socket.emit("getAppointments", null, (res) => {
-        if (res.ok) {
-          setAppointments(res.appointments);
-        } else {
-          console.error("Error fetching initial appointments:", res.error);
-        }
-      });
-    });
-
-    socket.on("allAppointmentsUpdated", (appointments) => {
-      setAppointments(appointments);
-    });
-
-    socket.on("appointmentUpdated", (newAppt) => {
-      setAppointments(prev => [...prev, newAppt]);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [token, businessId]);
 
   useEffect(() => {
     setData(formatMonthlyData(appointments));
