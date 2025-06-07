@@ -1,3 +1,5 @@
+// src/components/BarChartComponent.jsx
+
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import "./BarChartComponent.css";
@@ -12,8 +14,7 @@ import {
   Legend,
 } from "recharts";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL; 
-// למשל: http://localhost:3001 או הכתובת של ה־server ב־Vercel/AWS
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 const BarChartComponent = ({
   token,          // טוקן JWT לתקשורת מאובטחת
@@ -23,21 +24,17 @@ const BarChartComponent = ({
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // 1. מתחברים לסוקט
+    // מתחברים לסוקט עם auth
     const socket = io(SOCKET_URL, {
       path: '/socket.io',
       transports: ['websocket', 'polling'],
-      auth: {
-        token,
-        businessId,
-      },
+      auth: { token, businessId },
     });
 
-    // 2. עם התחברות – מבקשים את כל הפגישות הנוכחיות
+    // בקשת נתונים ראשונית
     socket.on("connect", () => {
       socket.emit("getAppointments", null, (res) => {
         if (res.ok) {
-          // ממירים לרשימת חודשים
           setData(formatMonthlyData(res.appointments));
         } else {
           console.error("Error fetching initial appointments:", res.error);
@@ -45,7 +42,7 @@ const BarChartComponent = ({
       });
     });
 
-    // 3. מאזינים לאירוע שבו נוצרה פגישה חדשה
+    // מאזינים לעדכונים מלאים
     socket.on("allAppointmentsUpdated", ({ ok, appointments }) => {
       if (ok) {
         setData(formatMonthlyData(appointments));
@@ -54,26 +51,27 @@ const BarChartComponent = ({
       }
     });
 
-    // 4. ניקוי כשמורידים את הקומפוננטה
     return () => {
       socket.disconnect();
     };
   }, [token, businessId]);
 
-  // פונקציה המסכמת לפי חודש
+  // מסכמים פגישות לפי חודש
   function formatMonthlyData(appointments) {
-    // יוצרים מילון חודש=>מספר פגישות
     const counts = {
-      "ינואר":0, "פברואר":0, "מרץ":0, "אפריל":0,
-      "מאי":0, "יוני":0, "יולי":0, "אוגוסט":0,
-      "ספטמבר":0, "אוקטובר":0, "נובמבר":0, "דצמבר":0,
+      ינואר: 0, פברואר: 0, מרץ: 0, אפריל: 0,
+      מאי: 0, יוני: 0, יולי: 0, אוגוסט: 0,
+      ספטמבר: 0, אוקטובר: 0, נובמבר: 0, דצמבר: 0,
     };
+
     appointments.forEach(appt => {
-      const month = new Date(appt.date).toLocaleString("he-IL", { month: "long" });
+      const month = new Date(appt.date)
+        .toLocaleString("he-IL", { month: "long" });
       if (counts[month] !== undefined) counts[month]++;
     });
-    // מחזירים מערך ממויין לפי סדר חודשים
-    return Object.entries(counts).map(([name, customers]) => ({ name, customers }));
+
+    return Object.entries(counts)
+      .map(([name, customers]) => ({ name, customers }));
   }
 
   return (
