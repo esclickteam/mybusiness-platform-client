@@ -16,12 +16,31 @@ import {
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
+// פונקציה חיצונית כדי שנוכל להשתמש בה גם לאתחול
+function formatMonthlyData(appointments) {
+  const counts = {
+    ינואר: 0, פברואר: 0, מרץ: 0, אפריל: 0,
+    מאי: 0, יוני: 0, יולי: 0, אוגוסט: 0,
+    ספטמבר: 0, אוקטובר: 0, נובמבר: 0, דצמבר: 0,
+  };
+
+  appointments.forEach(appt => {
+    const month = new Date(appt.date)
+      .toLocaleString("he-IL", { month: "long" });
+    if (counts[month] !== undefined) counts[month]++;
+  });
+
+  return Object.entries(counts)
+    .map(([name, customers]) => ({ name, customers }));
+}
+
 const BarChartComponent = ({
-  token,          // טוקן JWT לתקשורת מאובטחת
-  businessId,     // ה-businessId שעליו רוצים לקבל עדכונים
+  token,
+  businessId,
   title = "לקוחות שהזמינו פגישות לפי חודשים 📊",
 }) => {
-  const [data, setData] = useState([]);
+  // אתחול עם כל החודשים והערך 0
+  const [data, setData] = useState(() => formatMonthlyData([]));
 
   useEffect(() => {
     const socket = io(SOCKET_URL, {
@@ -41,9 +60,8 @@ const BarChartComponent = ({
       });
     });
 
-    // 2. מאזינים לעדכון מלא של כל הפגישות (מערך פגישות)
+    // 2. עדכון מלא
     socket.on("allAppointmentsUpdated", (appointments) => {
-      // appointments כאן הוא כבר מערך פגישות, לא אובייקט עם ok
       setData(formatMonthlyData(appointments));
     });
 
@@ -51,24 +69,6 @@ const BarChartComponent = ({
       socket.disconnect();
     };
   }, [token, businessId]);
-
-  // מסכמים פגישות לפי חודש
-  function formatMonthlyData(appointments) {
-    const counts = {
-      ינואר: 0, פברואר: 0, מרץ: 0, אפריל: 0,
-      מאי: 0, יוני: 0, יולי: 0, אוגוסט: 0,
-      ספטמבר: 0, אוקטובר: 0, נובמבר: 0, דצמבר: 0,
-    };
-
-    appointments.forEach(appt => {
-      const month = new Date(appt.date)
-        .toLocaleString("he-IL", { month: "long" });
-      if (counts[month] !== undefined) counts[month]++;
-    });
-
-    return Object.entries(counts)
-      .map(([name, customers]) => ({ name, customers }));
-  }
 
   return (
     <div className="graph-box">
