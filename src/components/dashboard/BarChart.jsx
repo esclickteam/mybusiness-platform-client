@@ -35,25 +35,25 @@ const BarChartComponent = ({
   return (
     <div className="graph-box" ref={wrapperRef}>
       <h4>{title}</h4>
-      <ResponsiveContainer width="100%" height={500}>
+      <ResponsiveContainer width="100%" height={550}>
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 20, left: 20, bottom: 120 }}  
-          barCategoryGap={80}   
-          barGap={8}            
-          barSize={20}          
+          margin={{ top: 30, right: 20, left: 20, bottom: 140 }}
+          barCategoryGap={80}
+          barGap={8}
+          barSize={20}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
             type="category"
             dataKey="name"
             interval={0}
-            height={100}         
+            height={120}
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 700 }}
             axisLine={{ stroke: "#4b0082" }}
             tickLine={false}
-            angle={0}            
-            textAnchor="middle"  
+            angle={0}
+            textAnchor="middle"
           />
           <YAxis
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 600 }}
