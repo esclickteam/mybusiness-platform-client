@@ -6,7 +6,7 @@ import createSocket from "../socket";
 
 export default function ChatComponent({
   userId,
-  partnerId,
+  partnerId,             // מזהה הצד השני בשיחה (ללקוח - העסק, לעסק - הלקוח)
   initialConversationId,
   customerId: customerIdProp,
   isBusiness,
@@ -53,6 +53,7 @@ export default function ChatComponent({
             if (!conversationId && convs.length > 0) {
               const first = convs[0];
               const convoId = first._id ?? first.conversationId;
+              // לוקח מזהה לקוח מתוך המשתתפים (לא העסק)
               const custId = first.participants.find((pid) => pid !== userId) ?? null;
               setConversationId(convoId);
               setCurrentCustomerId(custId);
@@ -106,18 +107,20 @@ export default function ChatComponent({
   if (!conversationId) return <p>⏳ אין שיחה זמינה</p>;
   if (!userId) return <p>⏳ טוען משתמש…</p>;
 
+  // חשיבות: בלקוח, businessId הוא מזהה העסק (partnerId)
+  // בעסק, userId הוא מזהה העסק, customerId הוא הלקוח
   return isBusiness ? (
     <BusinessChatTab
       conversationId={conversationId}
-      businessId={userId}
-      customerId={currentCustomerId}
+      businessId={userId}              // העסק שמחובר
+      customerId={currentCustomerId}   // הלקוח המשתתף בשיחה
       socket={socketRef.current}
     />
   ) : (
     <ClientChatTab
       conversationId={conversationId}
-      businessId={currentCustomerId}
-      userId={userId}
+      businessId={partnerId}           // העסק שאליו הלקוח מדבר
+      userId={userId}                 // המשתמש המחובר (הלקוח)
       socket={socketRef.current}
     />
   );
