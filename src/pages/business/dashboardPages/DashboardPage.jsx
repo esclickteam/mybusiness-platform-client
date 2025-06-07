@@ -70,7 +70,6 @@ function getMonthlyUniqueCustomersFromAppointments(appointments) {
     if (!monthlyData[key]) {
       monthlyData[key] = new Set();
     }
-    // מניח ש-appt.client הוא מזהה (ObjectId) - מחרים למחרוזת
     monthlyData[key].add(appt.client.toString());
   });
 
@@ -78,6 +77,52 @@ function getMonthlyUniqueCustomersFromAppointments(appointments) {
     name: monthYear,
     customers: clientsSet.size,
   }));
+}
+
+// כל החודשים בעברית בסדר כרונולוגי
+const allMonths = [
+  "ינואר",
+  "פברואר",
+  "מרץ",
+  "אפריל",
+  "מאי",
+  "יוני",
+  "יולי",
+  "אוגוסט",
+  "ספטמבר",
+  "אוקטובר",
+  "נובמבר",
+  "דצמבר",
+];
+
+// פונקציה למילוי חודשים חסרים בנתונים
+function fillMissingMonths(data) {
+  const yearsSet = new Set(
+    data.map((item) => item.name.split(" ")[1])
+  );
+
+  const filledData = [];
+
+  yearsSet.forEach((year) => {
+    allMonths.forEach((month) => {
+      const key = `${month} ${year}`;
+      const found = data.find((d) => d.name === key);
+      if (found) {
+        filledData.push(found);
+      } else {
+        filledData.push({ name: key, customers: 0 });
+      }
+    });
+  });
+
+  filledData.sort((a, b) => {
+    const [monthA, yearA] = a.name.split(" ");
+    const [monthB, yearB] = b.name.split(" ");
+    if (yearA !== yearB) return yearA - yearB;
+    return allMonths.indexOf(monthA) - allMonths.indexOf(monthB);
+  });
+
+  return filledData;
 }
 
 const DashboardPage = () => {
@@ -168,8 +213,6 @@ const DashboardPage = () => {
         });
         const data = res.data || {};
 
-        console.log("📊 API fetched stats:", data);
-
         const enrichedAppointments = Array.isArray(data.appointments)
           ? data.appointments.map((appt) => enrichAppointment(appt, data))
           : [];
@@ -195,7 +238,6 @@ const DashboardPage = () => {
         };
         setStats(safeData);
       } catch (err) {
-        console.error("❌ Error fetching stats:", err);
         setError("❌ שגיאה בטעינת נתונים מהשרת");
       } finally {
         setLoading(false);
@@ -217,7 +259,6 @@ const DashboardPage = () => {
       const sock = await createSocket(refreshAccessToken, logout, businessId);
 
       if (!sock) {
-        console.warn("Failed to create socket");
         return;
       }
 
@@ -227,9 +268,7 @@ const DashboardPage = () => {
         console.log("Dashboard socket connected with ID:", sock.id);
       });
 
-      // טיפול ב tokenExpired - רענון טוקן אוטומטי
       sock.on("tokenExpired", async () => {
-        console.log("🚨 Token expired event received");
         const newToken = await refreshAccessToken();
 
         if (!newToken) {
@@ -244,7 +283,6 @@ const DashboardPage = () => {
           if (ack && ack.ok) {
             console.log("✅ Socket re-authenticated successfully");
           } else {
-            console.warn("⚠ Socket re-authentication failed");
             alert("Session expired. Please log in again.");
             logout();
           }
@@ -267,17 +305,13 @@ const DashboardPage = () => {
             if (isEqual) return prevStats;
             try {
               localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-            } catch (e) {
-              console.warn("Failed to save dashboard stats to localStorage", e);
-            }
+            } catch (e) {}
             return merged;
           });
         }
       });
 
       sock.on("appointmentUpdated", (newAppointment) => {
-        console.log("🚀 appointmentUpdated event received:", newAppointment);
-
         const newBizId = newAppointment.business?.toString();
         const currentBizId = businessId.toString();
 
@@ -311,14 +345,10 @@ const DashboardPage = () => {
               setTimeout(() => setSelectedDate(apptDate), 10);
             }
           }
-        } else {
-          console.log("appointmentUpdated: businessId mismatch", newBizId, currentBizId);
         }
       });
 
       sock.on("allAppointmentsUpdated", (allAppointments) => {
-        console.log("allAppointmentsUpdated event received:", allAppointments);
-
         setStats((prevStats) => {
           const enrichedAppointments = Array.isArray(allAppointments)
             ? allAppointments.map((appt) => enrichAppointment(appt, prevStats))
@@ -384,7 +414,8 @@ const DashboardPage = () => {
   };
 
   // חישוב התפלגות לקוחות חודשית לפי פגישות
-  const monthlyCustomerData = getMonthlyUniqueCustomersFromAppointments(appointments);
+  const rawMonthlyData = getMonthlyUniqueCustomersFromAppointments(appointments);
+  const monthlyCustomerData = fillMissingMonths(rawMonthlyData);
 
   // חישוב פגישות מתוכננות בשבוע הקרוב
   const upcomingAppointmentsCount = getUpcomingAppointmentsCount(appointments);
