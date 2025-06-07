@@ -70,16 +70,12 @@ export default function ClientChatSection() {
     const tryEmit = () => {
       setLoading(true);
       setError("");
+      console.log("מנסה לפתוח שיחה עם businessId:", businessId);
 
       sock.emit("startConversation", { otherUserId: businessId }, (res) => {
         console.log("startConversation response:", res);
-        if (!res || typeof res !== "object") {
-          setError("תגובה לא תקינה משרת השיחה");
-          setLoading(false);
-          return;
-        }
-        if (res.ok) {
-          console.log("Conversation ID set:", res.conversationId);
+        if (res?.ok) {
+          console.log("שיחה נפתחה עם ID:", res.conversationId);
           setConversationId(res.conversationId);
           setError("");
         } else {
@@ -104,8 +100,12 @@ export default function ClientChatSection() {
     const sock = socketRef.current;
     if (!sock || !conversationId || !userId) return;
 
+    setLoading(true);
+    console.log("מזמין את רשימת השיחות עבור userId:", userId);
+
     sock.emit("getConversations", { userId }, (res) => {
       console.log("getConversations response:", res);
+      setLoading(false);
       if (!res || typeof res !== "object") {
         setError("תגובה לא תקינה משרת השיחות");
         return;
@@ -114,10 +114,16 @@ export default function ClientChatSection() {
         const conv = res.conversations.find((c) =>
           [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
         );
-        console.log("Found conversation businessName:", conv?.businessName);
-        setBusinessName(conv?.businessName || "");
+        if (!conv) {
+          setError("לא נמצאה שיחה מתאימה");
+          setBusinessName("");
+        } else {
+          setBusinessName(conv.businessName || "");
+          setError("");
+        }
       } else {
         setError("שגיאה בטעינת שם העסק");
+        setBusinessName("");
       }
     });
   }, [conversationId, userId]);
