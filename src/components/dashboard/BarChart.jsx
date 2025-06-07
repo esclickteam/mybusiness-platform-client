@@ -38,12 +38,13 @@ const BarChartComponent = ({
       <ResponsiveContainer width="100%" height={450}>
         <BarChart
           data={dataProp}
-          margin={{ top: 30, right: 40, left: 20, bottom: 80 }}
-          barCategoryGap="60%"  // הגדלנו מרווח בין כל קטגוריה
-          barSize={30}          // כיווננו עובי עמודה ל-30px
+          margin={{ top: 30, right: 20, left: 20, bottom: 80 }}
+          barCategoryGap={50}  // 50px ריווח בין כל עמודה
+          barSize={30}         // עובי כל עמודה
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
+            type="category"    // חשוב כדי לדעת שמדובר בקטגוריה
             dataKey="name"
             tick={{ fill: "#4b0082", fontSize: 14, fontWeight: 700 }}
             axisLine={{ stroke: "#4b0082" }}
