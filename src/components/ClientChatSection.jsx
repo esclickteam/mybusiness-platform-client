@@ -7,7 +7,7 @@ import createSocket from "../socket";
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
-  const { user, initialized, getValidAccessToken } = useAuth();
+  const { user, initialized, refreshAccessToken } = useAuth(); // שים לב כאן להחליף ל-refreshAccessToken
   const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
@@ -21,13 +21,13 @@ export default function ClientChatSection() {
 
     async function setupSocket() {
       try {
-        const token = await getValidAccessToken();
+        const token = await refreshAccessToken(); // כאן קורא ל-refreshAccessToken במקום getValidAccessToken
         if (!token) {
           setError("אין טוקן תקין, אנא התחבר מחדש");
           return;
         }
 
-        const sock = await createSocket(token, getValidAccessToken, () => {
+        const sock = await createSocket(token, refreshAccessToken, () => {
           window.location.href = "/login";
         });
         socketRef.current = sock;
@@ -53,7 +53,7 @@ export default function ClientChatSection() {
         socketRef.current = null;
       }
     };
-  }, [initialized, userId, businessId, getValidAccessToken]);
+  }, [initialized, userId, businessId, refreshAccessToken]); // ופה גם להוסיף ל-deps
 
   useEffect(() => {
     if (!socketRef.current || !socketRef.current.connected || !businessId) return;
