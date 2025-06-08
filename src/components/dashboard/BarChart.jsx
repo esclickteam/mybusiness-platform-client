@@ -77,10 +77,11 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
-              axisLine={{ stroke: "#4b0082" }}
-              tickLine={false}
-            />
+  allowDecimals={false}
+  tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
+  axisLine={{ stroke: "#4b0082" }}
+  tickLine={false}
+/>
             <Tooltip
               cursor={false}
               wrapperStyle={{ fontSize: 12 }}
