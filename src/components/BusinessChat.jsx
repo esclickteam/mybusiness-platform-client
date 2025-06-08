@@ -124,22 +124,31 @@ export default function BusinessChat({
     });
 
     s.on("tokenExpired", async () => {
-      console.log("🚨 Token expired, refreshing...");
-      const refreshFn = getValidAccessToken || refreshAccessToken;
-      if (!refreshFn) {
-        console.error("No refresh token function available");
-        if (onLogout) onLogout();
-        return;
-      }
-      const newToken = await refreshFn();
-      if (!newToken) {
-        if (onLogout) onLogout();
-        return;
-      }
-      s.auth.token = newToken;
-      s.disconnect();
-      s.connect();
-    });
+  console.log("🚨 Token expired, refreshing...");
+  const refreshFn = getValidAccessToken || refreshAccessToken;
+  if (!refreshFn) {
+    console.error("No refresh token function available");
+    if (onLogout) onLogout();
+    return;
+  }
+  const newToken = await refreshFn();
+  if (!newToken) {
+    if (onLogout) onLogout();
+    return;
+  }
+  s.auth.token = newToken;
+  s.io.opts.auth.token = newToken;  // מעדכן את הטוקן גם באופציות הפנימיות
+
+  // מפעיל חיבור מחדש "רך" מבלי לנתק ידנית
+  if (typeof s.io._reconnect === "function") {
+    s.io._reconnect();
+  } else {
+    // fallback לחיבור מחדש רגיל, אם אין _reconnect
+    s.disconnect();
+    s.connect();
+  }
+});
+
 
     s.on("connect_error", (err) => {
       console.error("❌ Socket connect error:", err.message);
