@@ -5,7 +5,7 @@ import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import API from "../api";
-import { useSocket } from "../context/SocketProvider";  // <-- ייבוא useSocket
+import { useSocket } from "../context/socketContext";
 
 export default function BusinessChatPage() {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
