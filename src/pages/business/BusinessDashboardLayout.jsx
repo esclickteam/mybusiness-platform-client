@@ -69,12 +69,28 @@ export default function BusinessDashboardLayout() {
     };
   }, [socket, updateMessagesCount]);
 
-  // איפוס ספירת ההודעות כשנכנסים לטאב הודעות
+  // איפוס וסימון הודעות כנקראות כשנכנסים לטאב הודעות
   useEffect(() => {
     if (location.pathname.includes("/messages")) {
       resetMessagesCount();
+
+      if (socket && businessId) {
+        // כאן צריך conversationId - במידה ויש לך דרך לשלוף אותו (למשל מהstate או פרמטרים), הכנס אותו כאן
+        const conversationId = location.state?.conversationId || null;
+
+        if (conversationId) {
+          socket.emit('markMessagesRead', conversationId, (response) => {
+            if (response.ok) {
+              updateMessagesCount(response.unreadCount);
+              console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+            } else {
+              console.error("Failed to mark messages as read:", response.error);
+            }
+          });
+        }
+      }
     }
-  }, [location.pathname, resetMessagesCount]);
+  }, [location.pathname, resetMessagesCount, socket, businessId, updateMessagesCount, location.state]);
 
   // ניהול רספונסיביות לסיידבר
   useEffect(() => {
