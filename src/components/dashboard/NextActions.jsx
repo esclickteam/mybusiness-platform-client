@@ -12,7 +12,7 @@ const NextActions = ({ stats }) => {
   const {
     orders_count = 0,
     views_count = 0,
-    upcoming_appointments = 0,
+    appointments_count = 0,  // עדכון לשם השדה הנכון
     reviews_count = 0,
     requests_count = 0,
   } = stats;
@@ -23,7 +23,7 @@ const NextActions = ({ stats }) => {
     actions.push({ text: "👀 הרבה צפיות – כדאי לפרסם שירות חדש או מבצע", type: "info" });
   }
 
-  if (upcoming_appointments === 0) {
+  if (appointments_count === 0) {  // שימוש בשדה המעודכן
     actions.push({ text: "📅 אין פגישות השבוע – קבעי שיחות ייעוץ", type: "warning" });
   }
 
