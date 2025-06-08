@@ -6,6 +6,8 @@
   direction: rtl;
 
   width: 100%;
+  max-width: 700px;  /* בדסקטופ בלבד */
+  margin: 0 auto;
   height: auto;
   padding-bottom: 3.5rem;
 
@@ -23,28 +25,27 @@
   font-size: 1.2rem;
 }
 
-/* הגרף תופס את כל השטח */
 .graph-box .recharts-responsive-container {
   width: 100% !important;
   height: 100% !important;
 }
 
-/* מסכים קטנים – שימוש מלא ברוחב, בלי max-width */
+/* התאמות למובייל */
 @media (max-width: 768px) {
   .graph-box {
     padding: 0.5rem 1rem 2.5rem 1rem;
     width: 100vw;
-    max-width: none;
+    max-width: 100vw;
     border-radius: 0;
+  }
+
+  .graph-box .recharts-responsive-container {
+    min-width: 600px;
   }
 
   .graph-title {
     font-size: 1rem;
     margin-top: 8px;
     margin-bottom: 8px;
-  }
-
-  .graph-box .recharts-responsive-container {
-    min-width: 100vw;
   }
 }
