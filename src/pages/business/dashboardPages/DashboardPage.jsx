@@ -55,7 +55,6 @@ function enrichAppointment(appt, business) {
   };
 }
 
-// פונקציה לחישוב לקוחות ייחודיים לפי חודשים מתוך פגישות
 function getMonthlyUniqueCustomersFromAppointments(appointments) {
   const monthlyData = {};
 
@@ -79,23 +78,11 @@ function getMonthlyUniqueCustomersFromAppointments(appointments) {
   }));
 }
 
-// כל החודשים בעברית בסדר כרונולוגי
 const allMonths = [
-  "ינואר",
-  "פברואר",
-  "מרץ",
-  "אפריל",
-  "מאי",
-  "יוני",
-  "יולי",
-  "אוגוסט",
-  "ספטמבר",
-  "אוקטובר",
-  "נובמבר",
-  "דצמבר",
+  "ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני",
+  "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר",
 ];
 
-// פונקציה למילוי חודשים חסרים בנתונים
 function fillMissingMonths(data) {
   const yearsSet = new Set(
     data.map((item) => item.name.split(" ")[1])
@@ -125,7 +112,6 @@ function fillMissingMonths(data) {
   return filledData;
 }
 
-// ספירת אירועים בשבוע האחרון לפי מפתח תאריך
 const countItemsInLastWeek = (items, dateKey = "date") => {
   if (!Array.isArray(items)) return 0;
   const now = new Date();
@@ -164,7 +150,6 @@ const DashboardPage = () => {
             leads: [],
             businessName: "",
             services: [],
-            // הוספתי מערכים ריקים במידה ואין ב-localStorage
             views: [],
             reviews: [],
             messages: [],
@@ -196,6 +181,9 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(!stats || Object.keys(stats).length === 0);
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
+
+  // *** הוספת סטייט עבור התראת הודעה חדשה מלקוח ***
+  const [clientMessageAlert, setClientMessageAlert] = useState(null);
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
@@ -333,6 +321,15 @@ const DashboardPage = () => {
         }
       });
 
+      // *** מאזין חדש להתראה על הודעה מלקוח ***
+      sock.on("newClientMessageNotification", ({ conversationId, message }) => {
+        console.log("New client message notification:", message);
+        setClientMessageAlert(`הודעה חדשה מלקוח: ${message.text || "תוכן לא טקסטואלי"}`);
+
+        // ניקוי התראה אחרי 8 שניות
+        setTimeout(() => setClientMessageAlert(null), 8000);
+      });
+
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
         const currentBizId = businessId.toString();
@@ -424,7 +421,6 @@ const DashboardPage = () => {
     }
   };
 
-  // חישוב פגישות בשבוע הקרוב
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
     const endOfWeek = new Date();
@@ -435,14 +431,11 @@ const DashboardPage = () => {
     }).length;
   };
 
-  // חישוב התפלגות לקוחות חודשית לפי פגישות
   const rawMonthlyData = getMonthlyUniqueCustomersFromAppointments(appointments);
   const monthlyCustomerData = fillMissingMonths(rawMonthlyData);
 
-  // חישוב פגישות מתוכננות בשבוע הקרוב
   const upcomingAppointmentsCount = getUpcomingAppointmentsCount(appointments);
 
-  // חישוב נתונים שבועיים להמלצות
   const weeklyAppointmentsCount = countItemsInLastWeek(appointments);
   const weeklyMessagesCount = countItemsInLastWeek(stats.messages, "date");
   const weeklyViewsCount = countItemsInLastWeek(stats.views, "date");
@@ -456,6 +449,28 @@ const DashboardPage = () => {
           {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
         </span>
       </h2>
+
+      {/* הצגת התראת הודעה חדשה מלקוח */}
+      {clientMessageAlert && (
+        <div className="client-message-alert" style={{
+          backgroundColor: "#fffae6",
+          border: "1px solid #ffd633",
+          padding: "12px 20px",
+          margin: "10px 0",
+          borderRadius: "6px",
+          fontWeight: "bold",
+          color: "#7a5e00",
+          direction: "rtl",
+          textAlign: "right",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          cursor: "pointer",
+        }}
+          onClick={() => setClientMessageAlert(null)}
+          title="לחץ לסגירה"
+        >
+          {clientMessageAlert}
+        </div>
+      )}
 
       <QuickActions onAction={handleQuickAction} />
       {alert && <DashboardAlert text={alert} type="info" />}
