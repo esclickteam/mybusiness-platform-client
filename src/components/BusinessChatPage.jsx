@@ -4,8 +4,8 @@ import { useOutletContext } from "react-router-dom";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
-import createSocket from "../socket";
 import API from "../api";
+import { useSocket } from "../context/SocketProvider";  // <-- ייבוא useSocket
 
 export default function BusinessChatPage() {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
@@ -19,141 +19,26 @@ export default function BusinessChatPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const socketRef = useRef(null);
+  const socket = useSocket();
   const prevSelectedRef = useRef(null);
   const selectedRef = useRef(selected);
 
-  // Keep selectedRef in sync with selected state
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
 
   // Reset unread messages count on mount
   useEffect(() => {
-    console.log("[BusinessChatPage] resetMessagesCount called");
-    if (resetMessagesCount) {
-      resetMessagesCount();
-    }
+    if (resetMessagesCount) resetMessagesCount();
   }, [resetMessagesCount]);
-
-  // Create socket connection once
-  useEffect(() => {
-    console.log("[BusinessChatPage] useEffect for socket - initialized:", initialized, "businessId:", businessId);
-
-    if (!initialized || !businessId) {
-      console.log("[BusinessChatPage] Socket creation skipped - not initialized or missing businessId");
-      return;
-    }
-
-    if (socketRef.current) {
-      console.log("[BusinessChatPage] Socket already exists, skipping creation. Socket ID:", socketRef.current.id);
-      return;
-    }
-
-    let isMounted = true;
-
-    (async () => {
-      console.log("[BusinessChatPage] Attempting to refresh token...");
-      const token = await refreshAccessToken();
-
-      if (!token) {
-        setError("Session expired, please login again");
-        console.warn("[BusinessChatPage] No token after refresh, logging out");
-        logout();
-        return;
-      }
-
-      console.log("[BusinessChatPage] Creating socket...");
-      const sock = await createSocket(refreshAccessToken, logout, businessId);
-
-      if (!sock) {
-        setError("Socket connection failed");
-        console.error("[BusinessChatPage] createSocket returned null");
-        return;
-      }
-
-      if (!isMounted) {
-        console.log("[BusinessChatPage] Component unmounted before socket created, disconnecting socket");
-        sock.disconnect();
-        return;
-      }
-
-      sock.on("connect", () => {
-        console.log("[BusinessChatPage] Socket connected:", sock.id);
-
-        // Assign socketRef only after connection established
-        socketRef.current = sock;
-        console.log("[BusinessChatPage] Socket assigned to ref inside connect handler. Socket ID:", sock.id);
-
-        if (selectedRef.current?.conversationId) {
-          console.log("[BusinessChatPage] Rejoining conversation on reconnect:", selectedRef.current.conversationId);
-          sock.emit(
-            "joinConversation",
-            selectedRef.current.conversationId,
-            (ack) => {
-              if (!ack.ok) {
-                console.error("[BusinessChatPage] Failed to join conversation on reconnect:", ack.error);
-              } else {
-                console.log("[BusinessChatPage] Re-joined conversation on reconnect");
-              }
-            }
-          );
-        }
-      });
-
-      sock.on("connect_error", (err) => {
-        setError("Socket error: " + err.message);
-        console.error("[BusinessChatPage] Socket connection failed:", err);
-      });
-
-      sock.on("disconnect", (reason) => {
-        console.log("[BusinessChatPage] Socket disconnected:", reason);
-      });
-
-      sock.on("tokenExpired", async () => {
-        console.log("[BusinessChatPage] Token expired, refreshing...");
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
-          console.warn("[BusinessChatPage] Token refresh failed, logging out");
-          logout();
-          return;
-        }
-        console.log("[BusinessChatPage] New token received, reconnecting socket");
-        sock.auth.token = newToken;
-        sock.disconnect();
-        sock.connect();
-      });
-
-      sock.on("unreadMessagesCount", (count) => {
-        console.log("[BusinessChatPage] Received unreadMessagesCount:", count);
-        if (updateMessagesCount) {
-          updateMessagesCount(count);
-        }
-      });
-    })();
-
-    return () => {
-      isMounted = false;
-      if (socketRef.current) {
-        console.log("[BusinessChatPage] Disconnecting socket on cleanup. Socket ID:", socketRef.current.id);
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [initialized, businessId, refreshAccessToken, logout, updateMessagesCount]);
 
   // Load conversations list
   useEffect(() => {
-    if (!initialized || !businessId) {
-      console.log("[BusinessChatPage] Skipping conversations load - not initialized or no businessId");
-      return;
-    }
+    if (!initialized || !businessId) return;
 
-    console.log("[BusinessChatPage] Loading conversations...");
     setLoading(true);
     API.get("/conversations", { params: { businessId } })
       .then(({ data }) => {
-        console.log("[BusinessChatPage] Conversations loaded:", data.length);
         setConvos(data);
         if (data.length > 0) {
           const first = data[0];
@@ -161,35 +46,24 @@ export default function BusinessChatPage() {
           const partnerId =
             first.partnerId || first.participants.find((p) => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
-          console.log("[BusinessChatPage] Selected first conversation:", convoId);
         }
       })
       .catch(() => {
         setError("שגיאה בטעינת שיחות");
-        console.error("[BusinessChatPage] Error loading conversations");
       })
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // Listen for new messages and update conversations/messages accordingly
+  // Listen for new messages
   useEffect(() => {
-    const sock = socketRef.current;
-    if (!sock) {
-      console.log("[BusinessChatPage] Socket not ready - skipping newMessage listener");
-      return;
-    }
+    if (!socket) return;
 
     const handler = (msg) => {
-      console.log("[BusinessChatPage] Received newMessage:", msg);
-
       setConvos((prev) => {
         const idx = prev.findIndex(
           (c) => String(c._id || c.conversationId) === msg.conversationId
         );
-        if (idx === -1) {
-          console.warn("[BusinessChatPage] newMessage conversation not found:", msg.conversationId);
-          return prev;
-        }
+        if (idx === -1) return prev;
 
         const updated = {
           ...prev[idx],
@@ -198,91 +72,69 @@ export default function BusinessChatPage() {
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
 
-      const sel = selectedRef.current;
-      if (msg.conversationId === sel?.conversationId) {
+      if (msg.conversationId === selectedRef.current?.conversationId) {
         setMessages((prev) =>
           prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
         );
       }
     };
 
-    sock.on("newMessage", handler);
-    console.log("[BusinessChatPage] newMessage listener attached");
+    socket.on("newMessage", handler);
 
     return () => {
-      sock.off("newMessage", handler);
-      console.log("[BusinessChatPage] newMessage listener removed");
+      socket.off("newMessage", handler);
     };
-  }, []);
+  }, [socket]);
 
   // Manage joining/leaving conversation on selection change
   useEffect(() => {
-    const sock = socketRef.current;
-    if (!sock || !sock.connected || !selected?.conversationId) {
-      console.log("[BusinessChatPage] No socket or no selected conversation - clearing messages");
+    if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
       return;
     }
 
-    if (resetMessagesCount) {
-      resetMessagesCount();
-      console.log("[BusinessChatPage] resetMessagesCount called due to conversation change");
-    }
+    if (resetMessagesCount) resetMessagesCount();
 
-    // Mark messages as read
-    sock.emit("markMessagesRead", selected.conversationId, (response) => {
+    socket.emit("markMessagesRead", selected.conversationId, (response) => {
       if (!response.ok) {
-        console.error("[BusinessChatPage] Failed to mark messages as read:", response.error);
-      } else {
-        console.log("[BusinessChatPage] Marked messages as read for", selected.conversationId);
+        console.error("Failed to mark messages as read:", response.error);
       }
     });
 
-    // Leave previous conversation
     if (
       prevSelectedRef.current &&
       prevSelectedRef.current !== selected.conversationId
     ) {
-      sock.emit("leaveConversation", prevSelectedRef.current, (ack) => {
+      socket.emit("leaveConversation", prevSelectedRef.current, (ack) => {
         if (!ack.ok) {
-          console.error("[BusinessChatPage] Failed to leave previous conversation:", ack.error);
-        } else {
-          console.log("[BusinessChatPage] Left previous conversation:", prevSelectedRef.current);
+          console.error("Failed to leave previous conversation:", ack.error);
         }
       });
     }
 
-    // Join new conversation
-    sock.emit("joinConversation", selected.conversationId, (ack) => {
+    socket.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) {
         setError("לא ניתן להצטרף לשיחה");
-        console.error("[BusinessChatPage] Error joining conversation:", ack.error);
-      } else {
-        console.log("[BusinessChatPage] Successfully joined conversation:", selected.conversationId);
       }
     });
 
-    // Fetch conversation history
-    sock.emit(
+    socket.emit(
       "getHistory",
       { conversationId: selected.conversationId },
       (res) => {
         if (res.ok) {
           setMessages(res.messages || []);
-          console.log("[BusinessChatPage] History loaded for conversation:", selected.conversationId);
         } else {
           setMessages([]);
           setError("שגיאה בטעינת ההודעות");
-          console.error("[BusinessChatPage] Error loading history:", res.error);
         }
       }
     );
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, resetMessagesCount]);
+  }, [selected, resetMessagesCount, socket]);
 
   const handleSelect = (conversationId, partnerId) => {
-    console.log("[BusinessChatPage] Conversation selected:", conversationId);
     setSelected({ conversationId, partnerId });
   };
 
@@ -314,7 +166,7 @@ export default function BusinessChatPage() {
             businessId={businessId}
             customerId={selected.partnerId}
             businessName={user?.businessName || user?.name}
-            socket={socketRef.current}
+            socket={socket}
             messages={messages}
             setMessages={setMessages}
           />
