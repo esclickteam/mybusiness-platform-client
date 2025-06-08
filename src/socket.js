@@ -18,6 +18,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   }
 
   const role = getUserRole();
+
   console.log("createSocket() - detected role:", role);
   console.log("createSocket() - received businessId:", businessId);
 
@@ -48,11 +49,9 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
   socket.connect();
 
-  // חיבור מוצלח
   socket.on("connect", () => {
     console.log("✅ Connected to WebSocket server. Socket ID:", socket.id);
     if (socket.conversationId) {
-      console.log("Rejoining conversation:", socket.conversationId);
       socket.emit("joinConversation", socket.conversationId, (ack) => {
         if (!ack.ok) {
           console.error("Failed to rejoin conversation:", ack.error);
@@ -63,7 +62,6 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     }
   });
 
-  // ניתוק מהשרת
   socket.on("disconnect", (reason) => {
     console.log("🔴 Disconnected from WebSocket server. Reason:", reason);
     if (reason === "io client disconnect") {
@@ -73,23 +71,19 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     }
   });
 
-  // ניסיון התחברות מחדש
   socket.on("reconnect_attempt", (attempt) => {
     console.log("🔄 Reconnect attempt:", attempt);
   });
 
-  // שגיאה בהתחברות מחדש
   socket.on("reconnect_error", (error) => {
     console.error("❌ Reconnect error:", error);
   });
 
-  // כשלון בהתחברות מחדש
   socket.on("reconnect_failed", () => {
     console.error("❌ Reconnect failed");
     alert("Failed to reconnect to server.");
   });
 
-  // אם הטוקן פג תוקף
   socket.on("tokenExpired", async () => {
     console.log("🚨 Token expired. Refreshing...");
     const newToken = await getValidAccessToken();
@@ -114,24 +108,23 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     });
   });
 
-  // שגיאה בהתחברות
   socket.on("connect_error", (err) => {
     console.error("❌ Socket connection error:", err.message);
     alert("Connection failed: " + err.message);
   });
 
-  // שגיאה בהתחברות
   socket.on("connect_failed", () => {
     console.error("❌ Socket connection failed");
     alert("Failed to connect to server. Please try again.");
   });
 
-  // לאחר חיבור מחדש, טוען את ההיסטוריה של השיחה
+  // Reconnect and fetch the history
   socket.on("reconnect", async () => {
     console.log("🔄 Reconnected to server");
+
     if (socket.conversationId) {
       const history = await fetchConversationHistory(socket.conversationId);
-      setMessages(history); // עדכון הסטייט עם ההיסטוריה
+      setMessages(history); // Update the state with the history
     }
   });
 

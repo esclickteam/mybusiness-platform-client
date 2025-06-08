@@ -160,7 +160,7 @@ export default function BusinessChatPage() {
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !sock.connected || !selected?.conversationId) {
-      setMessages([]);
+      setMessages([]); // מנקה הודעות אם לא מחובר או אין שיחה נבחרת
       return;
     }
 
@@ -176,16 +176,28 @@ export default function BusinessChatPage() {
     });
 
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
-      sock.emit("leaveConversation", prevSelectedRef.current);
+      sock.emit("leaveConversation", prevSelectedRef.current, (ack) => {
+        if (!ack.ok) {
+          console.error("Failed to leave previous conversation");
+        } else {
+          console.log("Left previous conversation:", prevSelectedRef.current);
+        }
+      });
     }
 
     sock.emit("joinConversation", selected.conversationId, (ack) => {
-      if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
+      if (!ack.ok) {
+        setError("לא ניתן להצטרף לשיחה");
+        console.error("Error joining conversation:", ack.error);
+      } else {
+        console.log("Successfully joined conversation:", selected.conversationId);
+      }
     });
 
     sock.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
+        console.log("History loaded for conversation:", selected.conversationId);
       } else {
         setMessages([]);
         setError("שגיאה בטעינת ההודעות");
