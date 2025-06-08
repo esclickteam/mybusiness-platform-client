@@ -22,11 +22,27 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
+  // סטייט לספירת הודעות חדשות
   const [newMessagesCount, setNewMessagesCount] = useState(0);
+  // סטייט שמצביע אם המשתמש כבר "קרא" את ההודעות (איפס את הספירה)
+  const [messagesRead, setMessagesRead] = useState(false);
 
-  // לוג למעקב אחרי הערך של newMessagesCount בכל רינדור
-  console.log("BusinessDashboardLayout: newMessagesCount =", newMessagesCount);
-  console.log("BusinessDashboardLayout: setNewMessagesCount =", setNewMessagesCount);
+  // פונקציה לאיפוס ספירת הודעות והגדרת מצב קריאה
+  const resetMessagesCount = () => {
+    setNewMessagesCount(0);
+    setMessagesRead(true);
+  };
+
+  // פונקציה לעדכון ספירת הודעות בהתאם למצב הקריאה
+  const updateMessagesCount = (count) => {
+    if (!messagesRead) {
+      setNewMessagesCount(count);
+    } else if (count > 0) {
+      // הודעות חדשות נכנסו לאחר שהמשתמש איפס - יש לעדכן ולבטל את מצב הקריאה
+      setMessagesRead(false);
+      setNewMessagesCount(count);
+    }
+  };
 
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
@@ -58,6 +74,13 @@ export default function BusinessDashboardLayout() {
     }
     // eslint-disable-next-line
   }, [user, loading, location.search, location.state, navigate]);
+
+  // איפוס ספירת הודעות כשנכנסים ללשונית הודעות
+  useEffect(() => {
+    if (location.pathname.includes("/messages")) {
+      resetMessagesCount();
+    }
+  }, [location.pathname]);
 
   // Trap focus for accessibility
   useEffect(() => {
@@ -203,7 +226,13 @@ export default function BusinessDashboardLayout() {
             aria-live="polite"
             aria-atomic="true"
           >
-            <Outlet context={{ newMessagesCount, setNewMessagesCount }} />
+            <Outlet
+              context={{
+                newMessagesCount,
+                resetMessagesCount,
+                updateMessagesCount,
+              }}
+            />
           </main>
         </div>
       </div>

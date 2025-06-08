@@ -127,7 +127,8 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { setNewMessagesCount } = useOutletContext() || {};
+  // *** כאן: קבלת הפונקציות מה-context ***
+  const { resetMessagesCount, updateMessagesCount } = useOutletContext() || {};
 
   const [stats, setStats] = useState(() => {
     try {
@@ -181,12 +182,12 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // איפוס ספירת הודעות חדשות בלחיצה על לשונית ההודעות
+  // *** כאן: איפוס ספירת הודעות בלחיצה על לשונית הודעות ***
   useEffect(() => {
-    if (setNewMessagesCount && location.pathname.includes("/messages")) {
-      setNewMessagesCount(0);
+    if (location.pathname.includes("/messages") && resetMessagesCount) {
+      resetMessagesCount();
     }
-  }, [location.pathname, setNewMessagesCount]);
+  }, [location.pathname, resetMessagesCount]);
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
@@ -251,8 +252,9 @@ const DashboardPage = () => {
         };
         setStats(safeData);
 
-        if (setNewMessagesCount) {
-          setNewMessagesCount(safeData.messages_count ?? 0);
+        // *** כאן: עדכון ספירת הודעות דרך updateMessagesCount ***
+        if (updateMessagesCount && safeData.messages_count !== undefined) {
+          updateMessagesCount(safeData.messages_count);
         }
       } catch (err) {
         setError("❌ שגיאה בטעינת נתונים מהשרת");
@@ -261,7 +263,7 @@ const DashboardPage = () => {
       }
     }
     fetchStats();
-  }, [businessId, refreshAccessToken, logout, setNewMessagesCount]);
+  }, [businessId, refreshAccessToken, logout, updateMessagesCount]);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -316,9 +318,12 @@ const DashboardPage = () => {
           }
           setStats((prevStats) => {
             const merged = mergeStats(prevStats, cleanedStats);
-            if (setNewMessagesCount && cleanedStats.messages_count !== undefined) {
-              setNewMessagesCount(cleanedStats.messages_count);
+
+            // *** כאן: עדכון ספירת הודעות דרך updateMessagesCount ***
+            if (updateMessagesCount && cleanedStats.messages_count !== undefined) {
+              updateMessagesCount(cleanedStats.messages_count);
             }
+
             const isEqual = Object.keys(merged).every(
               (key) => merged[key] === prevStats[key]
             );
@@ -330,8 +335,6 @@ const DashboardPage = () => {
           });
         }
       });
-
-      // לא מאזינים ל-newClientMessageNotification כאן
 
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
@@ -401,7 +404,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, selectedDate, setNewMessagesCount]);
+  }, [initialized, businessId, logout, refreshAccessToken, selectedDate, updateMessagesCount]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
@@ -442,8 +445,6 @@ const DashboardPage = () => {
           {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
         </span>
       </h2>
-
-      {/* לא מציגים התראת הודעה חדשה מלקוח */}
 
       <QuickActions onAction={handleQuickAction} />
       {alert && <DashboardAlert text={alert} type="info" />}

@@ -11,8 +11,8 @@ export default function BusinessChatPage() {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
-  // הפונקציה לאיפוס ספירת הודעות שלא נקראו מדשבורד האב
-  const { setNewMessagesCount } = useOutletContext() || {};
+  // כאן מקבלים את שתי הפונקציות מה-context
+  const { resetMessagesCount, updateMessagesCount } = useOutletContext() || {};
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -27,11 +27,12 @@ export default function BusinessChatPage() {
     selectedRef.current = selected;
   }, [selected]);
 
+  // אפס ספירת הודעות בתחילת טעינת הקומפוננטה (אם הפונקציה קיימת)
   useEffect(() => {
-    if (setNewMessagesCount) {
-      setNewMessagesCount(0);
+    if (resetMessagesCount) {
+      resetMessagesCount();
     }
-  }, [setNewMessagesCount]);
+  }, [resetMessagesCount]);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -67,11 +68,11 @@ export default function BusinessChatPage() {
         sock.connect();
       });
 
-      // כאן אנו מאזינים לעדכוני ספירת הודעות שלא נקראו מהשרת
+      // מאזינים לעדכון ספירת הודעות שלא נקראו
       sock.on("unreadMessagesCount", (count) => {
         console.log("Received unreadMessagesCount:", count);
-        if (setNewMessagesCount) {
-          setNewMessagesCount(count);
+        if (updateMessagesCount) {
+          updateMessagesCount(count);
         }
       });
     })();
@@ -80,7 +81,7 @@ export default function BusinessChatPage() {
       socketRef.current?.disconnect();
       prevSelectedRef.current = null;
     };
-  }, [initialized, businessId, refreshAccessToken, logout, setNewMessagesCount]);
+  }, [initialized, businessId, refreshAccessToken, logout, resetMessagesCount, updateMessagesCount]);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -137,8 +138,8 @@ export default function BusinessChatPage() {
     }
 
     // אפס ספירת הודעות חדשות כאשר המשתמש בוחר שיחה
-    if (setNewMessagesCount) {
-      setNewMessagesCount(0);
+    if (resetMessagesCount) {
+      resetMessagesCount();
     }
 
     // שלח סיגנל לסמן הודעות כנקראות דרך socket.io
@@ -166,7 +167,7 @@ export default function BusinessChatPage() {
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, setNewMessagesCount]);
+  }, [selected, resetMessagesCount]);
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
