@@ -147,6 +147,7 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               <Line
                 type="monotone"
                 dataKey="customers"
+                name="לקוחות"  
                 stroke="#4b0082"
                 strokeWidth={2}
                 activeDot={{ r: 6 }}
