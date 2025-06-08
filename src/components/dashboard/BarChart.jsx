@@ -62,20 +62,20 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
             <XAxis
-              dataKey="name"
-              interval={0}
-              tick={{
-                fill: "#4b0082",
-                fontSize: 12,
-                fontWeight: 700,
-                angle: isMobile ? 0 : -45, 
-                  textAnchor: isMobile ? "middle" : "end",
-              }}
-              height={isMobile ? 60 : 40}
-              tickMargin={12}
-              axisLine={{ stroke: "#4b0082" }}
-              tickLine={false}
-            />
+  dataKey="name"
+  interval={0}
+  tick={{
+    fill: "#4b0082",
+    fontSize: 12,
+    fontWeight: 700,
+    angle: 0,               // ⬅️ תמיד ישר
+    textAnchor: "middle",  // ⬅️ טקסט ממורכז
+  }}
+  height={40}
+  tickMargin={10}
+  axisLine={{ stroke: "#4b0082" }}
+  tickLine={false}
+/>
             <YAxis
   allowDecimals={false}
   tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
