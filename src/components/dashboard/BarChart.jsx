@@ -4,6 +4,7 @@ import "./BarChartComponent.css";
 import {
   BarChart,
   Bar,
+  Cell,
   LineChart,
   Line,
   XAxis,
@@ -103,16 +104,14 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
                   wrapperStyle={{ marginBottom: 12, fontWeight: 600, color: "#4b0082", fontSize: 12 }}
                 />
               )}
-              {data.map((entry, index) => (
-                <Bar
-                  key={index}
-                  dataKey="customers"
-                  data={[entry]}
-                  name="לקוחות"
-                  fill={entry.name === maxMonth.name ? "#4caf50" : "#6a5acd"}
-                  radius={[5, 5, 0, 0]}
-                />
-              ))}
+              <Bar dataKey="customers" name="לקוחות" radius={[5, 5, 0, 0]}>
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.name === maxMonth.name ? "#4caf50" : "#6a5acd"}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           )}
 
