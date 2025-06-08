@@ -10,7 +10,7 @@ const THRESHOLDS = {
   views: 50,
   appointments: 3,
   reviews: 3,
-  messages: 1,  // שינית את השם ל messages
+  messages: 1,  
 };
 
 const NextActions = ({ stats }) => {
@@ -20,29 +20,33 @@ const NextActions = ({ stats }) => {
     views_count = 0,
     appointments_count = 0,
     reviews_count = 0,
-    messages_count = 0,  // כאן עדכון לשם הנכון
+    messages_count = 0,
   } = stats;
 
   const actions = [];
 
   if (views_count < THRESHOLDS.views) {
     actions.push({ text: "אין הרבה צפיות – כדאי לפרסם שירות חדש או מבצע", type: "info" });
+  } else {
+    actions.push({ text: "👀 צפיות בפרופיל במצב טוב", type: "success" });
   }
 
   if (appointments_count < THRESHOLDS.appointments) {
     actions.push({ text: "📅 מעט פגישות השבוע – שקלי לקבוע שיחות ייעוץ", type: "warning" });
+  } else {
+    actions.push({ text: "📅 מספר הפגישות השבועי תקין", type: "success" });
   }
 
   if (reviews_count < THRESHOLDS.reviews) {
     actions.push({ text: "⭐ מעט ביקורות – בקשי מלקוחות לדרג אותך", type: "warning" });
+  } else {
+    actions.push({ text: "⭐ יש ביקורות טובות ומספיקות", type: "success" });
   }
 
   if (messages_count < THRESHOLDS.messages) {
     actions.push({ text: "📩 אין הודעות חדשות מלקוחות – נסי להעלות תוכן חדש במדיה החברתית", type: "warning" });
-  }
-
-  if (actions.length === 0) {
-    actions.push({ text: "✅ הכל נראה מעולה – המשיכי ככה!", type: "success" });
+  } else {
+    actions.push({ text: "📩 יש מספיק הודעות מלקוחות", type: "success" });
   }
 
   return (
