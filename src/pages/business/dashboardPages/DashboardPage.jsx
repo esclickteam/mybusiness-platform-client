@@ -127,12 +127,27 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // אפס ספירת הודעות בלחיצה על לשונית הודעות בדשבורד
+  // סימון הודעות כנקראות בשרת ואיפוס ספירת הודעות לא נקראות בצד לקוח בכניסה לטאב הודעות
   useEffect(() => {
-    if (location.pathname.includes("/messages") && resetMessagesCount) {
+    if (location.pathname.includes("/messages") && socketRef.current) {
+      const conversationId = location.state?.conversationId || null;
+
+      if (conversationId) {
+        socketRef.current.emit('markMessagesRead', conversationId, (response) => {
+          if (response.ok) {
+            updateMessagesCount(response.unreadCount);
+            console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+          } else {
+            console.error("Failed to mark messages as read:", response.error);
+          }
+        });
+      } else {
+        console.warn("No conversationId available for marking messages as read");
+      }
+
       resetMessagesCount();
     }
-  }, [location.pathname, resetMessagesCount]);
+  }, [location.pathname, resetMessagesCount, updateMessagesCount]);
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
@@ -381,7 +396,6 @@ const DashboardPage = () => {
         📊 דשבורד העסק
         <span className="greeting">
           {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
-          {/* תוכל להוסיף כאן הצגת ספירת הודעות לא נקראות אם תרצה */}
         </span>
       </h2>
 
