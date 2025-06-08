@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useUnreadMessages } from "../context/UnreadMessagesContext"; // ייבוא ה־Context
+import { useOutletContext } from "react-router-dom";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -11,8 +11,8 @@ export default function BusinessChatPage() {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
-  // שימוש ב־Context לניהול ספירת הודעות
-  const { resetMessagesCount, updateMessagesCount } = useUnreadMessages();
+  // מקבלים מה-Outlet context את הפונקציות לניהול ספירת הודעות
+  const { resetMessagesCount, updateMessagesCount } = useOutletContext();
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
