@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useOutletContext } from "react-router-dom"; // <-- ייבוא
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -7,8 +8,10 @@ import createSocket from "../socket";
 import API from "../api";
 
 export default function BusinessChatPage() {
-  const { user, initialized, refreshAccessToken, logout } = useAuth(); // <-- כאן השינוי
+  const { user, initialized, refreshAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
+
+  const { setNewMessagesCount } = useOutletContext() || {}; // <-- הוצאת הפונקציה מהקונטקסט
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -24,21 +27,26 @@ export default function BusinessChatPage() {
     selectedRef.current = selected;
   }, [selected]);
 
+  // אפס ספירת הודעות חדשות כשנטען הדף
+  useEffect(() => {
+    if (setNewMessagesCount) {
+      setNewMessagesCount(0);
+    }
+  }, [setNewMessagesCount]);
+
   // 1. Initialize & connect socket
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     (async () => {
-      // בקש טוקן תקין (כולל רענון)
-      const token = await refreshAccessToken(); // <-- כאן השינוי
+      const token = await refreshAccessToken();
       if (!token) {
         setError("Session expired, please login again");
         logout();
         return;
       }
 
-          const sock = await createSocket(refreshAccessToken, logout, businessId);  // <-- הוספת await כאן
-
+      const sock = await createSocket(refreshAccessToken, logout, businessId);
 
       if (!sock) {
         setError("Socket connection failed");
@@ -53,7 +61,7 @@ export default function BusinessChatPage() {
 
       sock.on("tokenExpired", async () => {
         console.log("Token expired - refreshing...");
-        const newToken = await refreshAccessToken(); // <-- כאן השינוי
+        const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
           return;
