@@ -78,29 +78,13 @@ export default function BusinessChat({
   }, [socket, otherBusinessId]);
 
   useEffect(() => {
-  if (!socket || !socket.connected || !otherBusinessId) return;
+    if (!socket || !socket.connected || !otherBusinessId) return;
 
-  // הצטרפות מחדש לשיחה אחרי חיבור מחדש של הסוקט
-  const handleConnect = () => {
-    console.log("Socket connected/reconnected:", socket.id);
-    if (previousOtherBusinessId.current === otherBusinessId) {
-      // מצטרפים שוב לשיחה עם אותו otherBusinessId
+    if (previousOtherBusinessId.current !== otherBusinessId) {
+      previousOtherBusinessId.current = otherBusinessId;
       initConversation();
     }
-  };
-
-  socket.on("connect", handleConnect);
-
-  if (previousOtherBusinessId.current !== otherBusinessId) {
-    previousOtherBusinessId.current = otherBusinessId;
-    initConversation();
-  }
-
-  return () => {
-    socket.off("connect", handleConnect);
-  };
-}, [socket, otherBusinessId, initConversation]);
-
+  }, [socket, otherBusinessId, initConversation]);
 
   useEffect(() => {
     if (!token || !role || !myBusinessId) {
