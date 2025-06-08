@@ -323,12 +323,10 @@ const DashboardPage = () => {
 
       // *** מאזין חדש להתראה על הודעה מלקוח ***
       sock.on("newClientMessageNotification", ({ conversationId, message }) => {
-        console.log("New client message notification:", message);
-        setClientMessageAlert(`הודעה חדשה מלקוח: ${message.text || "תוכן לא טקסטואלי"}`);
-
-        // ניקוי התראה אחרי 8 שניות
-        setTimeout(() => setClientMessageAlert(null), 8000);
-      });
+  const clientName = message.clientName || message.from || "לקוח לא מזוהה";
+  setClientMessageAlert(`הודעה חדשה מלקוח ${clientName}: ${message.text || "תוכן לא טקסטואלי"}`);
+  setTimeout(() => setClientMessageAlert(null), 8000);
+});
 
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
