@@ -19,34 +19,29 @@ const tabs = [
 
 export default function BusinessDashboardLayout() {
   const { user, loading } = useAuth();
-  const socket = useSocket(); // <-- כאן מקבלים את האובייקט socket
+  const socket = useSocket();
   const navigate = useNavigate();
   const { businessId } = useParams();
   const location = useLocation();
 
-  // סטייט לספירת הודעות חדשות
   const [newMessagesCount, setNewMessagesCount] = useState(0);
-  // סטייט שמצביע אם המשתמש כבר "קרא" את ההודעות (איפס את הספירה)
   const [messagesRead, setMessagesRead] = useState(false);
 
-  // פונקציה לאיפוס ספירת הודעות והגדרת מצב קריאה
   const resetMessagesCount = () => {
     setNewMessagesCount(0);
     setMessagesRead(true);
   };
 
-  // פונקציה לעדכון ספירת הודעות בהתאם למצב הקריאה
   const updateMessagesCount = (count) => {
     if (!messagesRead) {
       setNewMessagesCount(count);
     } else if (count > 0) {
-      // הודעות חדשות נכנסו לאחר שהמשתמש איפס - יש לעדכן ולבטל את מצב הקריאה
       setMessagesRead(false);
       setNewMessagesCount(count);
     }
   };
 
-  // מאזין לאירוע הודעות חדשות מהשרת דרך הסוקט
+  // מאזין להודעות חדשות
   useEffect(() => {
     if (!socket) return;
 
@@ -60,6 +55,23 @@ export default function BusinessDashboardLayout() {
       socket.off("newClientMessageNotification", handleNewClientMessage);
     };
   }, [socket]);
+
+  // מאזין לספירת הודעות שלא נקראו מהשרת
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleUnreadCount = (count) => {
+      setNewMessagesCount(count);
+    };
+
+    socket.on("unreadMessagesCount", handleUnreadCount);
+
+    return () => {
+      socket.off("unreadMessagesCount", handleUnreadCount);
+    };
+  }, [socket]);
+
+  // שאר הקוד נשאר כפי שהיה...
 
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
@@ -92,14 +104,12 @@ export default function BusinessDashboardLayout() {
     // eslint-disable-next-line
   }, [user, loading, location.search, location.state, navigate]);
 
-  // איפוס ספירת הודעות כשנכנסים ללשונית הודעות
   useEffect(() => {
     if (location.pathname.includes("/messages")) {
       resetMessagesCount();
     }
   }, [location.pathname]);
 
-  // Trap focus for accessibility
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
 
@@ -140,7 +150,6 @@ export default function BusinessDashboardLayout() {
     <BusinessServicesProvider>
       <div className={`rtl-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
         <div className={`business-dashboard-layout`}>
-          {/* Sidebar */}
           {(!isMobile || showSidebar) && (
             <aside
               className={`sidebar ${isMobile ? "mobile open" : ""}`}
@@ -190,7 +199,6 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
-          {/* Overlay */}
           {isMobile && showSidebar && (
             <div
               className="sidebar-overlay"
@@ -204,7 +212,6 @@ export default function BusinessDashboardLayout() {
             />
           )}
 
-          {/* Toggle Sidebar Button */}
           {isMobile && (
             <button
               onClick={() => setShowSidebar((prev) => !prev)}
@@ -236,7 +243,6 @@ export default function BusinessDashboardLayout() {
             </button>
           )}
 
-          {/* Main content */}
           <main
             className="dashboard-content"
             tabIndex={-1}
