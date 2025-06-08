@@ -103,6 +103,8 @@ export default function BusinessChatTab({
 
   // טעינת היסטוריה והאזנה לסוקט
   useEffect(() => {
+  console.log("useEffect triggered", { conversationId, socket });
+  
   if (!conversationId || !socket) return;
 
   console.log("[BusinessChatTab] joinConversation:", conversationId);
