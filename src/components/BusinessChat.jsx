@@ -12,7 +12,7 @@ export default function BusinessChat({
   myBusinessId,
   myBusinessName,
   otherBusinessId,
-  getValidAccessToken, // אופציונלי, אם מועבר
+  getValidAccessToken,
   onLogout,
 }) {
   const { refreshAccessToken, logout } = useAuth();
@@ -27,10 +27,6 @@ export default function BusinessChat({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  useEffect(() => {
-    console.log("🆕 conversationId updated:", conversationId);
-  }, [conversationId]);
 
   const initConversation = useCallback(() => {
     if (!socket || !otherBusinessId) return;
@@ -137,15 +133,25 @@ export default function BusinessChat({
     };
   }, [token, role, myBusinessId, myBusinessName, getValidAccessToken, refreshAccessToken, onLogout]);
 
+  // מאזין ל-newMessage ומוודא שהסוקט מצטרף לשיחה במקרה ש-conversationId משתנה
   useEffect(() => {
     if (!socket || !conversationId) return;
+
+    // ודא שאנחנו מחוברים לחדר השיחה (למקרה של ניתוק/שינוי)
+    socket.emit("joinConversation", conversationId, (ack) => {
+      if (!ack?.ok) {
+        console.error("Failed to join conversation on newMessage listener:", ack?.error);
+      } else {
+        console.log(`Joined conversation room ${conversationId} for message listening`);
+      }
+    });
 
     const handler = (msg) => {
       console.log("📥 newMessage:", msg);
       if (msg.conversationId === conversationId) {
         setMessages((prev) => [...prev, msg]);
 
-        // כשמקבלים הודעה חדשה, אם אנחנו בצ'אט הזה - שלח סימון קריאה
+        // סימון הודעות כנקראו
         socket.emit("markMessagesRead", conversationId, (ackMark) => {
           if (!ackMark?.ok) {
             console.warn("Failed to mark messages as read:", ackMark?.error);
@@ -225,9 +231,7 @@ export default function BusinessChat({
         maxRows={4}
         placeholder="הקלד הודעה..."
         value={input}
-        onChange={(e) => {
-          setInput(e.target.value);
-        }}
+        onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
