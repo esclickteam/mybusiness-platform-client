@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useOutletContext } from "react-router-dom";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -7,8 +8,11 @@ import createSocket from "../socket";
 import API from "../api";
 
 export default function BusinessChatPage() {
-  const { user, initialized } = useAuth();
+  const { user, initialized, refreshAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
+
+  // מקבלים מה-Outlet context את הפונקציות לניהול ספירת הודעות
+  const { resetMessagesCount, updateMessagesCount } = useOutletContext();
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -19,24 +23,38 @@ export default function BusinessChatPage() {
   const prevSelectedRef = useRef(null);
   const selectedRef = useRef(selected);
 
-  // Keep latest selected in ref for message handler
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
 
-  // Initialize & connect socket
+  useEffect(() => {
+    if (resetMessagesCount) {
+      console.log("resetMessagesCount called");
+      resetMessagesCount();
+    }
+  }, [resetMessagesCount]);
+
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     (async () => {
-      const sock = await createSocket(); // וודא שפונקציה זו מחזירה את socket עם הטוקן וכדומה
+      const token = await refreshAccessToken();
+      if (!token) {
+        setError("Session expired, please login again");
+        logout();
+        return;
+      }
+
+      const sock = await createSocket(refreshAccessToken, logout, businessId);
       if (!sock) {
         setError("Socket connection failed");
         return;
       }
       socketRef.current = sock;
-      // socket.connect() כבר בתוך createSocket? אם כן אפשר להסיר כאן
-      // sock.connect();
+
+      sock.on("connect", () => {
+        console.log("Socket connected:", sock.id);
+      });
 
       sock.on("connect_error", (err) => {
         setError("Socket error: " + err.message);
@@ -47,16 +65,35 @@ export default function BusinessChatPage() {
         console.log("Socket disconnected:", reason);
       });
 
-      console.log("Socket connected:", sock.id);
+      sock.on("tokenExpired", async () => {
+        console.log("Token expired, refreshing...");
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+          logout();
+          return;
+        }
+        sock.auth.token = newToken;
+        sock.disconnect();
+        sock.connect();
+      });
+
+      sock.on("unreadMessagesCount", (count) => {
+        console.log("Received unreadMessagesCount:", count);
+        if (updateMessagesCount) {
+          updateMessagesCount(count);
+        }
+      });
     })();
 
     return () => {
-      socketRef.current?.disconnect();
+      if (socketRef.current) {
+        console.log("Disconnecting socket:", socketRef.current.id);
+        socketRef.current.disconnect();
+      }
       prevSelectedRef.current = null;
     };
-  }, [initialized, businessId]);
+  }, [initialized, businessId, refreshAccessToken, logout, resetMessagesCount, updateMessagesCount]);
 
-  // Load conversations via REST
   useEffect(() => {
     if (!initialized || !businessId) return;
     setLoading(true);
@@ -66,37 +103,38 @@ export default function BusinessChatPage() {
         if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
-          // מצא פרטנר (השני לשיחה) – בטוח ש-id לא זהה לעסק?
-          const partnerId = first.partnerId || first.participants.find((p) => p !== businessId);
+          const partnerId =
+            first.partnerId || first.participants.find((p) => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
       })
-      .catch(() => {
-        setError("שגיאה בטעינת שיחות");
-      })
+      .catch(() => setError("שגיאה בטעינת שיחות"))
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // Listen for incoming messages
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const handler = (msg) => {
-      console.log("New message received:", msg);
-
-      // עדכון סדר השיחות בצד שמאל לפי עדכון חדש
+      console.log("Received newMessage:", msg);
       setConvos((prev) => {
-        const idx = prev.findIndex((c) => String(c._id || c.conversationId) === msg.conversationId);
+        const idx = prev.findIndex(
+          (c) => String(c._id || c.conversationId) === msg.conversationId
+        );
         if (idx === -1) return prev;
-        const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
+        const updated = {
+          ...prev[idx],
+          updatedAt: msg.timestamp || new Date().toISOString(),
+        };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
 
-      // עדכון היסטוריית ההודעות לשיחה שנפתחה
       const sel = selectedRef.current;
       if (msg.conversationId === sel?.conversationId) {
-        setMessages((prev) => (prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]));
+        setMessages((prev) =>
+          prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
+        );
       }
     };
 
@@ -104,13 +142,23 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, []);
 
-  // Join/leave rooms & load messages on selection change
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !sock.connected || !selected?.conversationId) {
       setMessages([]);
       return;
     }
+
+    if (resetMessagesCount) {
+      console.log("Resetting messages count due to conversation change");
+      resetMessagesCount();
+    }
+
+    sock.emit("markMessagesRead", selected.conversationId, (response) => {
+      if (!response.ok) {
+        console.error("Failed to mark messages as read:", response.error);
+      }
+    });
 
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
       sock.emit("leaveConversation", prevSelectedRef.current);
@@ -130,7 +178,7 @@ export default function BusinessChatPage() {
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected]);
+  }, [selected, resetMessagesCount]);
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
