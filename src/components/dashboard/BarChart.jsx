@@ -4,6 +4,8 @@ import "./BarChartComponent.css";
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -35,9 +37,10 @@ function formatMonthlyData(appointments) {
   return Object.entries(counts).map(([name, customers]) => ({ name, customers }));
 }
 
-const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
+const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמינו פגישות לפי חודשים \uD83D\uDCCA" }) => {
   const [data, setData] = useState(() => formatMonthlyData([]));
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const [viewMode, setViewMode] = useState("bar"); // "bar", "line", "table"
 
   useEffect(() => {
     setData(formatMonthlyData(appointments));
@@ -45,74 +48,138 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
 
   const showLegend = data.some(d => d.customers > 0);
 
+  const total = data.reduce((sum, d) => sum + d.customers, 0);
+  const average = total / 12;
+  const maxMonth = data.reduce((max, curr) =>
+    curr.customers > max.customers ? curr : max, data[0]);
+
   return (
     <div className="graph-box">
       <h4 className="graph-title">{title}</h4>
-      <p style={{ textAlign: "center", fontSize: "0.85rem", color: "#666" }}>
-        סה"כ פגישות שנקבעו לפי חודש לאורך השנה
-      </p>
+      <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+        <button onClick={() => setViewMode("bar")}>\uD83D\uDCCA עמודות</button>
+        <button onClick={() => setViewMode("line")}>\uD83D\uDCC8 קווי</button>
+        <button onClick={() => setViewMode("table")}>\uD83D\uDCCB טבלה</button>
+      </div>
+
       <div className="graph-scroll">
         <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
-          <BarChart
-            data={data}
-            layout="horizontal"
-            margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
-            barCategoryGap="40%"
-            barSize={20}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis
-  dataKey="name"
-  interval={0}
-  tick={{
-    fill: "#4b0082",
-    fontSize: 12,
-    fontWeight: 700,
-    angle: 0,               // ⬅️ תמיד ישר
-    textAnchor: "middle",  // ⬅️ טקסט ממורכז
-  }}
-  height={40}
-  tickMargin={10}
-  axisLine={{ stroke: "#4b0082" }}
-  tickLine={false}
-/>
-            <YAxis
-  allowDecimals={false}
-  tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
-  axisLine={{ stroke: "#4b0082" }}
-  tickLine={false}
-/>
-            <Tooltip
-              cursor={false}
-              wrapperStyle={{ fontSize: 12 }}
-              contentStyle={{
-                backgroundColor: "#fafafa",
-                borderRadius: 8,
-                borderColor: "#ddd",
-              }}
-              labelFormatter={(value) => `חודש: ${value}`}
-              formatter={(value) => [`${value} לקוחות`, '']}
-            />
-            {showLegend && (
-              <Legend
-                verticalAlign="top"
-                align="center"
-                wrapperStyle={{
-                  marginBottom: 12,
-                  fontWeight: 600,
-                  color: "#4b0082",
-                  fontSize: 12,
-                }}
+          {viewMode === "bar" && (
+            <BarChart
+              data={data}
+              layout="horizontal"
+              margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
+              barCategoryGap="40%"
+              barSize={20}
+              animationDuration={800}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+              <XAxis
+                dataKey="name"
+                interval={0}
+                tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 700, angle: 0, textAnchor: "middle" }}
+                height={40}
+                tickMargin={10}
+                axisLine={{ stroke: "#4b0082" }}
+                tickLine={false}
               />
-            )}
-            <Bar
-              dataKey="customers"
-              name="לקוחות"
-              fill="#6a5acd"
-              radius={[5, 5, 0, 0]}
-            />
-          </BarChart>
+              <YAxis
+                allowDecimals={false}
+                tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
+                axisLine={{ stroke: "#4b0082" }}
+                tickLine={false}
+              />
+              <Tooltip
+                cursor={false}
+                wrapperStyle={{ fontSize: 12 }}
+                contentStyle={{ backgroundColor: "#fafafa", borderRadius: 8, borderColor: "#ddd" }}
+                labelFormatter={(value) => `חודש: ${value}`}
+                formatter={(value) => [`${value} לקוחות`, ""]}
+              />
+              {showLegend && (
+                <Legend
+                  verticalAlign="top"
+                  align="center"
+                  wrapperStyle={{ marginBottom: 12, fontWeight: 600, color: "#4b0082", fontSize: 12 }}
+                />
+              )}
+              {data.map((entry, index) => (
+                <Bar
+                  key={index}
+                  dataKey="customers"
+                  data={[entry]}
+                  name="לקוחות"
+                  fill={entry.name === maxMonth.name ? "#4caf50" : "#6a5acd"}
+                  radius={[5, 5, 0, 0]}
+                />
+              ))}
+            </BarChart>
+          )}
+
+          {viewMode === "line" && (
+            <LineChart
+              data={data}
+              margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+              <XAxis
+                dataKey="name"
+                interval={0}
+                tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 700 }}
+                height={40}
+                tickMargin={10}
+                axisLine={{ stroke: "#4b0082" }}
+                tickLine={false}
+              />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 600 }}
+                axisLine={{ stroke: "#4b0082" }}
+                tickLine={false}
+              />
+              <Tooltip
+                cursor={false}
+                wrapperStyle={{ fontSize: 12 }}
+                contentStyle={{ backgroundColor: "#fafafa", borderRadius: 8, borderColor: "#ddd" }}
+                labelFormatter={(value) => `חודש: ${value}`}
+                formatter={(value) => [`${value} לקוחות`, ""]}
+              />
+              <Legend verticalAlign="top" align="center" />
+              <Line
+                type="monotone"
+                dataKey="customers"
+                stroke="#4b0082"
+                strokeWidth={2}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          )}
+
+          {viewMode === "table" && (
+            <div style={{ width: "100%", overflowX: "auto" }}>
+              <table style={{ margin: "0 auto", direction: "rtl", borderCollapse: "collapse", fontSize: "0.9rem", width: "100%" }}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: "8px", borderBottom: "1px solid #ccc" }}>חודש</th>
+                    <th style={{ padding: "8px", borderBottom: "1px solid #ccc" }}>כמות פגישות</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((row, i) => (
+                    <tr key={i}>
+                      <td style={{ padding: "6px", borderBottom: "1px solid #eee" }}>{row.name}</td>
+                      <td style={{ padding: "6px", borderBottom: "1px solid #eee" }}>{row.customers}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </ResponsiveContainer>
+      </div>
+
+      <div style={{ textAlign: "center", fontSize: "0.85rem", color: "#4b0082", marginTop: "1rem" }}>
+        סה\"כ פגישות: {total} • ממוצע חודשי: {average.toFixed(1)} • שיא: {maxMonth.name} ({maxMonth.customers})
       </div>
     </div>
   );
