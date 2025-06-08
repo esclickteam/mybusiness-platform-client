@@ -25,37 +25,37 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const { count, incrementCount, resetCount, updateCount } = useUnreadMessages();
+  const { unreadCount, updateMessagesCount, resetMessagesCount } = useUnreadMessages();
 
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
 
-  // מאזין להודעות חדשות מהשרת ומגדיל את הספירה
+  // מאזין להודעות חדשות מהשרת ומעדכן ספירת הודעות
   useEffect(() => {
-  if (!socket) return;
+    if (!socket) return;
 
-  const handleNewClientMessage = (data) => {
-    console.log("Received newClientMessageNotification:", data);
-    incrementCount();  // תקן לקריאה לפונקציה הנכונה
-  };
+    const handleNewClientMessage = (data) => {
+      console.log("Received newClientMessageNotification:", data);
+      // מעלה את הספירה ב-1 בכל הודעה חדשה
+      updateMessagesCount(unreadCount + 1);
+    };
 
-  socket.on("newClientMessageNotification", handleNewClientMessage);
+    socket.on("newClientMessageNotification", handleNewClientMessage);
 
-  return () => {
-    socket.off("newClientMessageNotification", handleNewClientMessage);
-  };
-}, [socket, incrementCount]);
+    return () => {
+      socket.off("newClientMessageNotification", handleNewClientMessage);
+    };
+  }, [socket, updateMessagesCount, unreadCount]);
 
-
-  // מאזין לספירת הודעות שלא נקראו מהשרת ומעדכן את הספירה
+  // מאזין לספירת הודעות שלא נקראו מהשרת ומעדכן את הספירה במדויק
   useEffect(() => {
     if (!socket) return;
 
     const handleUnreadCount = (newCount) => {
       console.log("Received unreadMessagesCount:", newCount);
-      updateCount(newCount);
+      updateMessagesCount(newCount);
     };
 
     socket.on("unreadMessagesCount", handleUnreadCount);
@@ -63,16 +63,16 @@ export default function BusinessDashboardLayout() {
     return () => {
       socket.off("unreadMessagesCount", handleUnreadCount);
     };
-  }, [socket, updateCount]);
+  }, [socket, updateMessagesCount]);
 
   // איפוס ספירת ההודעות כשנכנסים ל"טאב הודעות"
   useEffect(() => {
     if (location.pathname.includes("/messages")) {
-      resetCount();
+      resetMessagesCount();
     }
-  }, [location.pathname, resetCount]);
+  }, [location.pathname, resetMessagesCount]);
 
-  // שאר הקוד לניהול רספונסיביות, ניווט, סיידבר וכו'
+  // ניהול רספונסיביות לסיידבר
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -83,12 +83,12 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // ניווט למקומות מתאימים לפי טאב בפנייה ראשונית
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
       return;
     }
-    // ניווט ראשוני לפי טאב מהשורה
     const searchParams = new URLSearchParams(location.search);
     const tabFromQuery = searchParams.get("tab");
     const tabFromState = location.state?.activeTab;
@@ -99,6 +99,7 @@ export default function BusinessDashboardLayout() {
     }
   }, [user, loading, location.search, location.state, navigate]);
 
+  // ניהול התמקדות וסגירת סיידבר במובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
 
@@ -166,7 +167,7 @@ export default function BusinessDashboardLayout() {
                     className={({ isActive }) => (isActive ? "active" : undefined)}
                   >
                     {label}
-                    {path === "messages" && count > 0 && (
+                    {path === "messages" && unreadCount > 0 && (
                       <span
                         style={{
                           backgroundColor: "red",
@@ -179,7 +180,7 @@ export default function BusinessDashboardLayout() {
                           verticalAlign: "middle",
                         }}
                       >
-                        {count}
+                        {unreadCount}
                       </span>
                     )}
                   </NavLink>
@@ -240,10 +241,9 @@ export default function BusinessDashboardLayout() {
           >
             <Outlet
               context={{
-                count,
-                resetCount,
-                incrementCount,
-                updateCount,
+                unreadCount,
+                resetMessagesCount,
+                updateMessagesCount,
               }}
             />
           </main>
