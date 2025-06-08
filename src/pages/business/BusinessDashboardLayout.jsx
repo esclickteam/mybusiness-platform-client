@@ -16,7 +16,7 @@ const tabs = [
   { path: "upgrade", label: "🚀 שדרוג חבילה" },
 ];
 
-export default function BusinessDashboardLayout() {
+export default function BusinessDashboardLayout({ newMessagesCount = 0 }) {  // <- מקבל prop חדש
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
@@ -126,6 +126,22 @@ export default function BusinessDashboardLayout() {
                     className={({ isActive }) => (isActive ? "active" : undefined)}
                   >
                     {label}
+                    {path === "messages" && newMessagesCount > 0 && (
+                      <span
+                        style={{
+                          backgroundColor: "red",
+                          color: "white",
+                          borderRadius: "12px",
+                          padding: "2px 8px",
+                          fontSize: "12px",
+                          marginLeft: "8px",
+                          fontWeight: "bold",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        {newMessagesCount}
+                      </span>
+                    )}
                   </NavLink>
                 ))}
               </nav>

@@ -28,10 +28,6 @@ const QuickActions = ({ onAction }) => (
   </div>
 );
 
-const DashboardAlert = ({ text, type = "info" }) => (
-  <div className={`dashboard-alert dashboard-alert-${type}`}>{text}</div>
-);
-
 const LOCAL_STORAGE_KEY = "dashboardStats";
 
 function mergeStats(oldStats, newStats) {
@@ -182,8 +178,7 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // הוספת סטייט להתראה על הודעה חדשה מלקוח
-  const [clientMessageAlert, setClientMessageAlert] = useState(null);
+  // ** כאן אין יותר clientMessageAlert כי לא נרצה להציג את ההתראה הטקסטואלית בדשבורד **
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
@@ -321,12 +316,8 @@ const DashboardPage = () => {
         }
       });
 
-      // מאזין להתראת הודעה מלקוח
-      sock.on("newClientMessageNotification", ({ conversationId, message }) => {
-        const clientName = message.clientName || message.from || "לקוח לא מזוהה";
-        setClientMessageAlert(`הודעה חדשה מלקוח ${clientName}: ${message.text || "תוכן לא טקסטואלי"}`);
-        setTimeout(() => setClientMessageAlert(null), 8000);
-      });
+      // ** לא מאזינים יותר ל-newClientMessageNotification כאן **
+      // כך ההתראה הטקסטואלית לא תופיע בדשבורד העסק
 
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
@@ -429,16 +420,6 @@ const DashboardPage = () => {
     }).length;
   };
 
-  const rawMonthlyData = getMonthlyUniqueCustomersFromAppointments(appointments);
-  const monthlyCustomerData = fillMissingMonths(rawMonthlyData);
-
-  const upcomingAppointmentsCount = getUpcomingAppointmentsCount(appointments);
-
-  const weeklyAppointmentsCount = countItemsInLastWeek(appointments);
-  const weeklyMessagesCount = countItemsInLastWeek(stats.messages, "date");
-  const weeklyViewsCount = countItemsInLastWeek(stats.views, "date");
-  const weeklyReviewsCount = countItemsInLastWeek(stats.reviews, "date");
-
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
@@ -448,29 +429,7 @@ const DashboardPage = () => {
         </span>
       </h2>
 
-      {/* התראת הודעה חדשה מלקוח */}
-      {clientMessageAlert && (
-        <div
-          className="client-message-alert"
-          style={{
-            backgroundColor: "#fffae6",
-            border: "1px solid #ffd633",
-            padding: "12px 20px",
-            margin: "10px 0",
-            borderRadius: "6px",
-            fontWeight: "bold",
-            color: "#7a5e00",
-            direction: "rtl",
-            textAlign: "right",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-            cursor: "pointer",
-          }}
-          onClick={() => setClientMessageAlert(null)}
-          title="לחץ לסגירה"
-        >
-          {clientMessageAlert}
-        </div>
-      )}
+      {/* ** לא מציגים התראת הודעה חדשה מלקוח ** */}
 
       <QuickActions onAction={handleQuickAction} />
       {alert && <DashboardAlert text={alert} type="info" />}
@@ -489,14 +448,14 @@ const DashboardPage = () => {
 
       <DashboardCards stats={stats} />
 
-      <Insights stats={{ ...stats, upcoming_appointments: upcomingAppointmentsCount }} />
+      <Insights stats={{ ...stats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }} />
 
       <NextActions
         stats={{
-          weekly_views_count: weeklyViewsCount,
-          weekly_appointments_count: weeklyAppointmentsCount,
-          weekly_reviews_count: weeklyReviewsCount,
-          weekly_messages_count: weeklyMessagesCount,
+          weekly_views_count: countItemsInLastWeek(stats.views, "date"),
+          weekly_appointments_count: countItemsInLastWeek(appointments),
+          weekly_reviews_count: countItemsInLastWeek(stats.reviews, "date"),
+          weekly_messages_count: countItemsInLastWeek(stats.messages, "date"),
         }}
       />
 
@@ -505,9 +464,7 @@ const DashboardPage = () => {
       </div>
 
       <div>
-        {stats.recent_activity && (
-          <RecentActivityTable activities={stats.recent_activity} />
-        )}
+        {stats.recent_activity && <RecentActivityTable activities={stats.recent_activity} />}
       </div>
 
       <div>

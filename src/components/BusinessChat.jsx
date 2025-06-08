@@ -36,7 +36,7 @@ export default function BusinessChat({
     if (!socket || !otherBusinessId) return;
     console.log("▶️ initConversation to", otherBusinessId);
 
-    socket.emit("startConversation", { otherBusinessId }, (res) => {
+    socket.emit("startConversation", { otherUserId: otherBusinessId }, (res) => {
       if (typeof res !== "object" || res === null) {
         console.warn("Invalid startConversation response:", res);
         return;
@@ -63,10 +63,19 @@ export default function BusinessChat({
           }
           console.log("↩️ getHistory:", h);
           if (h.ok) setMessages(h.messages);
+
+          // סמן את ההודעות כנקראו ברגע שקיבלנו את ההיסטוריה
+          socket.emit("markMessagesRead", { conversationId: res.conversationId, userId: myBusinessId }, (ackMark) => {
+            if (!ackMark?.ok) {
+              console.warn("Failed to mark messages as read:", ackMark?.error);
+            } else {
+              console.log("Marked messages as read");
+            }
+          });
         });
       });
     });
-  }, [socket, otherBusinessId]);
+  }, [socket, otherBusinessId, myBusinessId]);
 
   useEffect(() => {
     if (!socket || !socket.connected || !otherBusinessId) return;
@@ -135,6 +144,15 @@ export default function BusinessChat({
       console.log("📥 newMessage:", msg);
       if (msg.conversationId === conversationId) {
         setMessages((prev) => [...prev, msg]);
+
+        // כשמקבלים הודעה חדשה, אם אנחנו בצ'אט הזה - שלח סימון קריאה
+        socket.emit("markMessagesRead", { conversationId, userId: myBusinessId }, (ackMark) => {
+          if (!ackMark?.ok) {
+            console.warn("Failed to mark messages as read:", ackMark?.error);
+          } else {
+            console.log("Marked messages as read");
+          }
+        });
       }
     };
 
@@ -143,7 +161,7 @@ export default function BusinessChat({
     return () => {
       socket.off("newMessage", handler);
     };
-  }, [socket, conversationId]);
+  }, [socket, conversationId, myBusinessId]);
 
   const sendMessage = () => {
     console.log("▶️ sendMessage()", { conversationId, text: input });
