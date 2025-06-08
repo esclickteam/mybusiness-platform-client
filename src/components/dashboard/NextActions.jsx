@@ -7,7 +7,7 @@ const actionColors = {
 };
 
 const THRESHOLDS = {
-  views: 50,
+  views: 40,
   appointments: 3,
   reviews: 3,
   messages: 1,  
