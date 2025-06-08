@@ -125,7 +125,11 @@ export default function BusinessChatTab({
     setLoading(false);
 
     if (!history.length) {
+      const token = localStorage.getItem("token");  // קבלת טוקן מתוך localStorage
       fetch(`/api/conversations/history?conversationId=${conversationId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // הוספת כותרת Authorization עם הטוקן
+        },
         credentials: "include",
       })
         .then((r) => {
