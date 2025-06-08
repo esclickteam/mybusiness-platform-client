@@ -6,8 +6,6 @@
   direction: rtl;
 
   width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
   height: auto;
   padding-bottom: 3.5rem;
 
@@ -25,38 +23,19 @@
   font-size: 1.2rem;
 }
 
-/* תצוגת גרף רספונסיבית */
+/* הגרף תופס את כל השטח */
 .graph-box .recharts-responsive-container {
   width: 100% !important;
   height: 100% !important;
-  min-width: 500px;
-  scroll-snap-align: start;
 }
 
-/* תמיכה ב-Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .graph-box {
-    background: #1e1e1e;
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
-  }
-
-  .graph-title {
-    color: #b39ddb;
-  }
-
-  .graph-box .recharts-tooltip-wrapper,
-  .graph-box .recharts-default-tooltip {
-    background-color: #333 !important;
-    color: #fff !important;
-    border: 1px solid #666 !important;
-  }
-}
-
-/* התאמות למסכים קטנים */
+/* מסכים קטנים – שימוש מלא ברוחב, בלי max-width */
 @media (max-width: 768px) {
   .graph-box {
-    padding: 0.5rem 0.5rem 2.5rem 0.5rem;
-    max-width: 100%;
+    padding: 0.5rem 1rem 2.5rem 1rem;
+    width: 100vw;
+    max-width: none;
+    border-radius: 0;
   }
 
   .graph-title {
@@ -66,6 +45,6 @@
   }
 
   .graph-box .recharts-responsive-container {
-    min-width: 600px;
+    min-width: 100vw;
   }
 }
