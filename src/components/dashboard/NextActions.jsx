@@ -19,9 +19,10 @@ const NextActions = ({ stats }) => {
 
   const actions = [];
 
-  if (orders_count < 3) {
-    actions.push({ text: "📉 ירידה בהזמנות – שלחי קופון ללקוחות קודמים", type: "warning" });
-  }
+  // הסרת ההמלצה על ירידה בהזמנות
+  // if (orders_count < 3) {
+  //   actions.push({ text: "📉 ירידה בהזמנות – שלחי קופון ללקוחות קודמים", type: "warning" });
+  // }
 
   if (views_count > 100 && orders_count < 5) {
     actions.push({ text: "👀 הרבה צפיות – כדאי לפרסם שירות חדש או מבצע", type: "info" });
@@ -35,9 +36,10 @@ const NextActions = ({ stats }) => {
     actions.push({ text: "⭐ אין ביקורות – בקשי מלקוחות לדרג אותך", type: "warning" });
   }
 
-  if (requests_count === 0) {
-    actions.push({ text: "📩 לא התקבלו פניות – נסי להעלות סטורי חדש", type: "warning" });
-  }
+  // הסרת ההמלצה על לא התקבלו פניות
+  // if (requests_count === 0) {
+  //   actions.push({ text: "📩 לא התקבלו פניות – נסי להעלות סטורי חדש", type: "warning" });
+  // }
 
   if (actions.length === 0) {
     actions.push({ text: "✅ הכל נראה מעולה – המשיכי ככה!", type: "success" });
