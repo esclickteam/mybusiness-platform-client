@@ -9,11 +9,11 @@ const actionColors = {
 const NextActions = ({ stats }) => {
   // כאן לא בודקים תנאים, מציגים תמיד את כל ההמלצות
   const actions = [
-    { text: "👀 הרבה צפיות – כדאי לפרסם שירות חדש או מבצע", type: "info" },
-    { text: "📅 אין פגישות השבוע – קבעי שיחות ייעוץ", type: "warning" },
-    { text: "⭐ אין ביקורות – בקשי מלקוחות לדרג אותך", type: "warning" },
-    { text: "📩 אין פניות חדשות – נסי להעלות תוכן חדש במדיה החברתית", type: "warning" },
-  ];
+  { text: "אין הרבה צפיות – כדאי לפרסם שירות חדש או מבצע", type: "info" },
+  { text: "📅 אין פגישות השבוע – קבעי שיחות ייעוץ", type: "warning" },
+  { text: "⭐ אין ביקורות – בקשי מלקוחות לדרג אותך", type: "warning" },
+  { text: "📩 אין פניות חדשות – נסי להעלות תוכן חדש במדיה החברתית", type: "warning" },
+];
 
   return (
     <div className="actions-container">
