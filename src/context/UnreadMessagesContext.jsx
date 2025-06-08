@@ -1,4 +1,3 @@
-// context/UnreadMessagesContext.jsx
 import React, { createContext, useContext, useState } from "react";
 
 const UnreadMessagesContext = createContext();
@@ -14,9 +13,18 @@ export const UnreadMessagesProvider = ({ children }) => {
     setUnreadCount(0);
   };
 
+  const incrementMessagesCount = () => {
+    setUnreadCount((c) => c + 1);
+  };
+
   return (
     <UnreadMessagesContext.Provider
-      value={{ unreadCount, updateMessagesCount, resetMessagesCount }}
+      value={{
+        unreadCount,
+        updateMessagesCount,
+        resetMessagesCount,
+        incrementMessagesCount,
+      }}
     >
       {children}
     </UnreadMessagesContext.Provider>
