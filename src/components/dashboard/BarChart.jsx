@@ -37,7 +37,7 @@ function formatMonthlyData(appointments) {
   return Object.entries(counts).map(([name, customers]) => ({ name, customers }));
 }
 
-const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמינו פגישות לפי חודשים \uD83D\uDCCA" }) => {
+const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
   const [data, setData] = useState(() => formatMonthlyData([]));
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [viewMode, setViewMode] = useState("bar"); // "bar", "line", "table"
@@ -57,9 +57,9 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
     <div className="graph-box">
       <h4 className="graph-title">{title}</h4>
       <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-        <button onClick={() => setViewMode("bar")}>\uD83D\uDCCA עמודות</button>
-        <button onClick={() => setViewMode("line")}>\uD83D\uDCC8 קווי</button>
-        <button onClick={() => setViewMode("table")}>\uD83D\uDCCB טבלה</button>
+        <button onClick={() => setViewMode("bar")}>📊 עמודות</button>
+        <button onClick={() => setViewMode("line")}>📈 קווי</button>
+        <button onClick={() => setViewMode("table")}>📋 טבלה</button>
       </div>
 
       <div className="graph-scroll">
@@ -179,7 +179,7 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
       </div>
 
       <div style={{ textAlign: "center", fontSize: "0.85rem", color: "#4b0082", marginTop: "1rem" }}>
-        סה\"כ פגישות: {total} • ממוצע חודשי: {average.toFixed(1)} • שיא: {maxMonth.name} ({maxMonth.customers})
+        סה"כ פגישות: {total} • ממוצע חודשי: {average.toFixed(1)} • שיא: {maxMonth.name} ({maxMonth.customers})
       </div>
     </div>
   );
