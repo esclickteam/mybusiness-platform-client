@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useOutletContext } from "react-router-dom"; // <-- ייבוא
+import { useOutletContext } from "react-router-dom";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -11,7 +11,7 @@ export default function BusinessChatPage() {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
-  const { setNewMessagesCount } = useOutletContext() || {}; // <-- הוצאת הפונקציה מהקונטקסט
+  const { setNewMessagesCount } = useOutletContext() || {};
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -22,19 +22,16 @@ export default function BusinessChatPage() {
   const prevSelectedRef = useRef(null);
   const selectedRef = useRef(selected);
 
-  // Keep latest selected in ref for message handler
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
 
-  // אפס ספירת הודעות חדשות כשנטען הדף
   useEffect(() => {
     if (setNewMessagesCount) {
       setNewMessagesCount(0);
     }
   }, [setNewMessagesCount]);
 
-  // 1. Initialize & connect socket
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -47,7 +44,6 @@ export default function BusinessChatPage() {
       }
 
       const sock = await createSocket(refreshAccessToken, logout, businessId);
-
       if (!sock) {
         setError("Socket connection failed");
         return;
@@ -60,7 +56,6 @@ export default function BusinessChatPage() {
       });
 
       sock.on("tokenExpired", async () => {
-        console.log("Token expired - refreshing...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
@@ -70,8 +65,6 @@ export default function BusinessChatPage() {
         sock.disconnect();
         sock.connect();
       });
-
-      console.log("Socket connected:", sock.id);
     })();
 
     return () => {
@@ -80,7 +73,6 @@ export default function BusinessChatPage() {
     };
   }, [initialized, businessId, refreshAccessToken, logout]);
 
-  // 2. Load conversations via REST
   useEffect(() => {
     if (!initialized || !businessId) return;
     setLoading(true);
@@ -95,20 +87,15 @@ export default function BusinessChatPage() {
           setSelected({ conversationId: convoId, partnerId });
         }
       })
-      .catch(() => {
-        setError("שגיאה בטעינת שיחות");
-      })
+      .catch(() => setError("שגיאה בטעינת שיחות"))
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // 3. Listen for incoming messages
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const handler = (msg) => {
-      console.log("New message received:", msg);
-
       setConvos((prev) => {
         const idx = prev.findIndex(
           (c) => String(c._id || c.conversationId) === msg.conversationId
@@ -133,7 +120,6 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, []);
 
-  // 4. Join/leave rooms & load messages on selection change + אפס ספירת הודעות
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !sock.connected || !selected?.conversationId) {
@@ -141,10 +127,16 @@ export default function BusinessChatPage() {
       return;
     }
 
-    // אפס ספירת הודעות חדשות כשמשתמש בוחר שיחה
+    // אפס ספירת הודעות חדשות כאשר המשתמש בוחר שיחה
     if (setNewMessagesCount) {
       setNewMessagesCount(0);
     }
+
+    // שלח לשרת בקשה לסמן הודעות כנקראות
+    API.post("/messages/markRead", {
+      businessId,
+      conversationId: selected.conversationId,
+    }).catch(console.error);
 
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
       sock.emit("leaveConversation", prevSelectedRef.current);
@@ -164,9 +156,8 @@ export default function BusinessChatPage() {
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, setNewMessagesCount]);
+  }, [selected, setNewMessagesCount, businessId]);
 
-  // 5. Handle selection change from conversation list
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
   };
