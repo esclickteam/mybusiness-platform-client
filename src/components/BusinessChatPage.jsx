@@ -11,6 +11,7 @@ export default function BusinessChatPage() {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
+  // הפונקציה לאיפוס ספירת הודעות שלא נקראו מדשבורד האב
   const { setNewMessagesCount } = useOutletContext() || {};
 
   const [convos, setConvos] = useState([]);
@@ -65,13 +66,21 @@ export default function BusinessChatPage() {
         sock.disconnect();
         sock.connect();
       });
+
+      // כאן אנו מאזינים לעדכוני ספירת הודעות שלא נקראו מהשרת
+      sock.on("unreadMessagesCount", (count) => {
+        console.log("Received unreadMessagesCount:", count);
+        if (setNewMessagesCount) {
+          setNewMessagesCount(count);
+        }
+      });
     })();
 
     return () => {
       socketRef.current?.disconnect();
       prevSelectedRef.current = null;
     };
-  }, [initialized, businessId, refreshAccessToken, logout]);
+  }, [initialized, businessId, refreshAccessToken, logout, setNewMessagesCount]);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
