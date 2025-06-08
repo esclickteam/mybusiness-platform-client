@@ -1,6 +1,6 @@
 // src/pages/business/BusinessDashboardRoutes.jsx
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 
@@ -26,72 +26,51 @@ import CRMSettingsTab     from "./dashboardPages/crmpages/CRMSettingsTab";
 
 import GoalsPage          from "./dashboardPages/GoalsPage";
 
-import { useAuth } from "../../context/AuthContext";
-import { createSocket } from "../../socket";
-import { getBusinessId } from "../../utils/authHelpers";
+const BusinessDashboardRoutes = () => (
+  <Routes>
+    {/* Layout משותף לכל לשוניות בדשבורד */}
+    <Route path="" element={<BusinessDashboardLayout />}>
+      {/* ברירת מחדל → תמצית */}
+      <Route index element={<Navigate to="dashboard" replace />} />
 
-const BusinessDashboardRoutes = () => {
-  const { initialized, logout, refreshAccessToken } = useAuth();
-  const businessId = getBusinessId();
-  const socketRef = useRef(null);
-  const [newMessagesCount, setNewMessagesCount] = useState(0);
+      {/* תמצית הדשבורד */}
+      <Route path="dashboard" element={<DashboardPage />} />
 
-  useEffect(() => {
-    if (!initialized || !businessId) return;
+      {/* עריכת העסק */}
+      <Route path="edit"  element={<BuildBusinessPage />} />
+      <Route path="build" element={<BuildBusinessPage />} />
 
-    async function setupSocket() {
-      const token = await refreshAccessToken();
-      if (!token) {
-        logout();
-        return;
-      }
-      const sock = await createSocket(refreshAccessToken, logout, businessId);
-      if (!sock) return;
+      {/* סל הקניות */}
+      <Route path="cart" element={<CartPage />} />
 
-      socketRef.current = sock;
+      {/* לשוניות נוספות */}
+      <Route path="collab"  element={<Collab />} />
+      <Route path="upgrade" element={<Upgrade />} />
+      <Route path="esclick" element={<EsclickAdvisor />} />
+      <Route path="goals"   element={<GoalsPage />} />
 
-      sock.on("unreadMessagesCount", (count) => {
-        setNewMessagesCount(count || 0);
-      });
+      {/* לשונית ההודעות עם לקוחות */}
+      <Route path="messages" element={<BusinessChatPage />} />
 
-      return () => {
-        if (socketRef.current) {
-          socketRef.current.disconnect();
-          socketRef.current = null;
-        }
-      };
-    }
+      {/* 🟢 הודעות עסקיות בין עסקים */}
+      <Route path="business-messages" element={<CollabChat />} />
 
-    const cleanup = setupSocket();
-    return () => cleanup && cleanup();
-  }, [initialized, businessId, logout, refreshAccessToken]);
+      {/* שותפים ואפיליאייט */}
+      <Route path="affiliate" element={<AffiliatePage />} />
 
-  return (
-    <Routes>
-      <Route path="" element={<BusinessDashboardLayout newMessagesCount={newMessagesCount} />}>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="edit"  element={<BuildBusinessPage />} />
-        <Route path="build" element={<BuildBusinessPage />} />
-        <Route path="cart" element={<CartPage />} />
-        <Route path="collab"  element={<Collab />} />
-        <Route path="upgrade" element={<Upgrade />} />
-        <Route path="esclick" element={<EsclickAdvisor />} />
-        <Route path="goals"   element={<GoalsPage />} />
-        <Route path="messages" element={<BusinessChatPage />} />
-        <Route path="business-messages" element={<CollabChat />} />
-        <Route path="affiliate" element={<AffiliatePage />} />
-        <Route path="crm" element={<CRMMain />}>
-          <Route index element={<Navigate to="appointments" replace />} />
-          <Route path="appointments" element={<CRMAppointmentsTab />} />
-          <Route path="clients"      element={<CRMClientsTab />} />
-          <Route path="services"     element={<CRMServicesTab />} />
-          <Route path="settings"     element={<CRMSettingsTab />} />
-        </Route>
-        <Route path="*" element={<Navigate to="dashboard" replace />} />
+      {/* CRM nested */}
+      <Route path="crm" element={<CRMMain />}>
+        <Route index element={<Navigate to="appointments" replace />} />
+        <Route path="appointments" element={<CRMAppointmentsTab />} />
+        <Route path="clients"      element={<CRMClientsTab />} />
+        <Route path="services"     element={<CRMServicesTab />} />
+        <Route path="settings"     element={<CRMSettingsTab />} />
       </Route>
-    </Routes>
-  );
-};
+
+      {/* כל נתיב אחר בתוך דשבורד → חזרה לתמצית */}
+      <Route path="*" element={<Navigate to="dashboard" replace />} />
+    </Route>
+  </Routes>
+);
 
 export default BusinessDashboardRoutes;
