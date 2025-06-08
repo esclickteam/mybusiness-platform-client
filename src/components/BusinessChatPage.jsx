@@ -24,25 +24,30 @@ export default function BusinessChatPage() {
     selectedRef.current = selected;
   }, [selected]);
 
-  // 1. Initialize & connect socket
+  // Initialize & connect socket
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     (async () => {
-      const sock = await createSocket();
+      const sock = await createSocket(); // וודא שפונקציה זו מחזירה את socket עם הטוקן וכדומה
       if (!sock) {
         setError("Socket connection failed");
         return;
       }
       socketRef.current = sock;
-      sock.connect();
+      // socket.connect() כבר בתוך createSocket? אם כן אפשר להסיר כאן
+      // sock.connect();
 
       sock.on("connect_error", (err) => {
         setError("Socket error: " + err.message);
         console.log("Socket connection failed:", err);
       });
 
-      console.log("Socket connected:", sock.id); // Log successful connection
+      sock.on("disconnect", (reason) => {
+        console.log("Socket disconnected:", reason);
+      });
+
+      console.log("Socket connected:", sock.id);
     })();
 
     return () => {
@@ -51,7 +56,7 @@ export default function BusinessChatPage() {
     };
   }, [initialized, businessId]);
 
-  // 2. Load conversations via REST
+  // Load conversations via REST
   useEffect(() => {
     if (!initialized || !businessId) return;
     setLoading(true);
@@ -61,6 +66,7 @@ export default function BusinessChatPage() {
         if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
+          // מצא פרטנר (השני לשיחה) – בטוח ש-id לא זהה לעסק?
           const partnerId = first.partnerId || first.participants.find((p) => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
@@ -71,16 +77,15 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // 3. Listen for incoming messages
+  // Listen for incoming messages
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const handler = (msg) => {
-      // Log the incoming message
       console.log("New message received:", msg);
 
-      // Update sidebar order
+      // עדכון סדר השיחות בצד שמאל לפי עדכון חדש
       setConvos((prev) => {
         const idx = prev.findIndex((c) => String(c._id || c.conversationId) === msg.conversationId);
         if (idx === -1) return prev;
@@ -88,7 +93,7 @@ export default function BusinessChatPage() {
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
 
-      // Update history for currently open conversation
+      // עדכון היסטוריית ההודעות לשיחה שנפתחה
       const sel = selectedRef.current;
       if (msg.conversationId === sel?.conversationId) {
         setMessages((prev) => (prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]));
@@ -99,7 +104,7 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, []);
 
-  // 4. Join/leave rooms & load messages on selection change
+  // Join/leave rooms & load messages on selection change
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !sock.connected || !selected?.conversationId) {
@@ -107,17 +112,14 @@ export default function BusinessChatPage() {
       return;
     }
 
-    // Leave previous conversation room if changed
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
       sock.emit("leaveConversation", prevSelectedRef.current);
     }
 
-    // Join current conversation room
     sock.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
 
-    // Load message history
     sock.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
@@ -130,7 +132,6 @@ export default function BusinessChatPage() {
     prevSelectedRef.current = selected.conversationId;
   }, [selected]);
 
-  // 5. Handle selection change from conversation list
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
   };
