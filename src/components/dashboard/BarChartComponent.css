@@ -2,21 +2,18 @@
   padding: 1rem;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   direction: rtl;
 
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
-
-  /* ביטול גובה קשיח – שיאפשר גמישות */
   height: auto;
-
-  /* מקום לתוויות מסובבות */
   padding-bottom: 3.5rem;
 
-  /* גלילה אופקית במובייל אם צריך */
   overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
 }
 
 .graph-title {
@@ -28,11 +25,31 @@
   font-size: 1.2rem;
 }
 
-/* גורם ל-ResponsiveContainer לתפוס את מלוא המרחב הזמין */
+/* תצוגת גרף רספונסיבית */
 .graph-box .recharts-responsive-container {
   width: 100% !important;
   height: 100% !important;
-  min-width: 500px; /* מבטיח שתהיה גלילה אם צפוף */
+  min-width: 500px;
+  scroll-snap-align: start;
+}
+
+/* תמיכה ב-Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .graph-box {
+    background: #1e1e1e;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+  }
+
+  .graph-title {
+    color: #b39ddb;
+  }
+
+  .graph-box .recharts-tooltip-wrapper,
+  .graph-box .recharts-default-tooltip {
+    background-color: #333 !important;
+    color: #fff !important;
+    border: 1px solid #666 !important;
+  }
 }
 
 /* התאמות למסכים קטנים */
@@ -49,6 +66,6 @@
   }
 
   .graph-box .recharts-responsive-container {
-    min-width: 600px; /* מונע חיתוך של תוויות */
+    min-width: 600px;
   }
 }
