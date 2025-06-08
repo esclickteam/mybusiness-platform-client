@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
+import { useSocket } from "../../context/socketContext";
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [
@@ -18,6 +19,7 @@ const tabs = [
 
 export default function BusinessDashboardLayout() {
   const { user, loading } = useAuth();
+  const socket = useSocket(); // <-- כאן מקבלים את האובייקט socket
   const navigate = useNavigate();
   const { businessId } = useParams();
   const location = useLocation();
@@ -43,6 +45,21 @@ export default function BusinessDashboardLayout() {
       setNewMessagesCount(count);
     }
   };
+
+  // מאזין לאירוע הודעות חדשות מהשרת דרך הסוקט
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewClientMessage = (data) => {
+      setNewMessagesCount((prev) => prev + 1);
+    };
+
+    socket.on("newClientMessageNotification", handleNewClientMessage);
+
+    return () => {
+      socket.off("newClientMessageNotification", handleNewClientMessage);
+    };
+  }, [socket]);
 
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
