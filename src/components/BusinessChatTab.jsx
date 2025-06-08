@@ -120,23 +120,25 @@ export default function BusinessChatTab({
   }, [conversationId, setMessages]);
 
   const handleNew = useCallback(
-    (msg) => {
-      if (msg.conversationId === conversationId) {
-        setMessages((prev) => {
-          if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
-            return prev.map((m) =>
-              m._id === msg.tempId ? { ...msg, sending: false } : m
-            );
-          }
-          if (prev.some((m) => m._id === msg._id)) {
-            return prev;
-          }
-          return [...prev, msg];
-        });
-      }
-    },
-    [conversationId, setMessages]
-  );
+  (msg) => {
+    console.log("[BusinessChatTab] newMessage received:", msg);
+    if (msg.conversationId === conversationId) {
+      setMessages((prev) => {
+        if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
+          return prev.map((m) =>
+            m._id === msg.tempId ? { ...msg, sending: false } : m
+          );
+        }
+        if (prev.some((m) => m._id === msg._id)) {
+          return prev;
+        }
+        return [...prev, msg];
+      });
+    }
+  },
+  [conversationId, setMessages]
+);
+
 
   const handleTyping = useCallback(
     ({ from }) => {
