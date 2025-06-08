@@ -6,6 +6,13 @@ const actionColors = {
   success: "#5cb85c",
 };
 
+const THRESHOLDS = {
+  views: 50,
+  appointments: 3,
+  reviews: 3,
+  messages: 1,  // שינית את השם ל messages
+};
+
 const NextActions = ({ stats }) => {
   if (!stats || typeof stats !== "object") return null;
 
@@ -13,25 +20,25 @@ const NextActions = ({ stats }) => {
     views_count = 0,
     appointments_count = 0,
     reviews_count = 0,
-    requests_count = 0,
+    messages_count = 0,  // כאן עדכון לשם הנכון
   } = stats;
 
   const actions = [];
 
-  if (views_count < 100) {
+  if (views_count < THRESHOLDS.views) {
     actions.push({ text: "אין הרבה צפיות – כדאי לפרסם שירות חדש או מבצע", type: "info" });
   }
 
-  if (appointments_count === 0) {
-    actions.push({ text: "📅 אין פגישות השבוע – קבעי שיחות ייעוץ", type: "warning" });
+  if (appointments_count < THRESHOLDS.appointments) {
+    actions.push({ text: "📅 מעט פגישות השבוע – שקלי לקבוע שיחות ייעוץ", type: "warning" });
   }
 
-  if (reviews_count === 0) {
-    actions.push({ text: "⭐ אין ביקורות – בקשי מלקוחות לדרג אותך", type: "warning" });
+  if (reviews_count < THRESHOLDS.reviews) {
+    actions.push({ text: "⭐ מעט ביקורות – בקשי מלקוחות לדרג אותך", type: "warning" });
   }
 
-  if (requests_count === 0) {
-    actions.push({ text: "📩 אין פניות חדשות – נסי להעלות תוכן חדש במדיה החברתית", type: "warning" });
+  if (messages_count < THRESHOLDS.messages) {
+    actions.push({ text: "📩 אין הודעות חדשות מלקוחות – נסי להעלות תוכן חדש במדיה החברתית", type: "warning" });
   }
 
   if (actions.length === 0) {
