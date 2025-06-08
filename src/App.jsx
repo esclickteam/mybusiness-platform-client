@@ -18,7 +18,7 @@ import { useAuth } from "./context/AuthContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 import { UnreadMessagesProvider } from "./context/UnreadMessagesContext";
-import { SocketProvider } from "./context/SocketProvider"; // הוספת ייבוא SocketProvider
+import { SocketProvider } from "./context/socketContext";
 
 // ---- כל הייבוא הדינמי כפי שהיה ----
 const HomePage            = lazy(() => import("./pages/Home"));
