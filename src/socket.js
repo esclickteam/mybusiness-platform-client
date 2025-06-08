@@ -118,16 +118,6 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     alert("Failed to connect to server. Please try again.");
   });
 
-  // Reconnect and fetch the history
-  socket.on("reconnect", async () => {
-    console.log("🔄 Reconnected to server");
-
-    if (socket.conversationId) {
-      const history = await fetchConversationHistory(socket.conversationId);
-      setMessages(history); // Update the state with the history
-    }
-  });
-
   return socket;
 }
 

@@ -125,11 +125,9 @@ export default function BusinessChatTab({
     setLoading(false);
 
     if (!history.length) {
-      const token = localStorage.getItem("token");  // קבלת טוקן מתוך localStorage
+      const token = localStorage.getItem("token");
       fetch(`/api/conversations/history?conversationId=${conversationId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // הוספת כותרת Authorization עם הטוקן
-        },
+        headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
       })
         .then((r) => {
@@ -145,26 +143,38 @@ export default function BusinessChatTab({
     }
   });
 
+  // טיפול בחיבור מחדש וטעינת היסטוריה
+  const handleReconnect = async () => {
+    console.log("[BusinessChatTab] Socket reconnected, fetching history...");
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/conversations/history?conversationId=${conversationId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Failed to fetch history on reconnect");
+      const data = await response.json();
+      setMessages(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Fetch history on reconnect failed:", err);
+    }
+  };
+
+  // טיפול בהודעות חדשות
   const handleNew = (msg) => {
-  if (msg.conversationId === conversationId) {
-    setMessages((prev) => {
-      // אם tempId תואם – החלף הודעה אופטימית בזו של השרת
-      if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
-        return prev.map((m) =>
-          m._id === msg.tempId ? { ...msg, sending: false } : m
-        );
-      }
-      // אם כבר יש הודעה עם אותו _id – אל תוסיף
-      if (prev.some((m) => m._id === msg._id)) {
-        return prev;
-      }
-      return [...prev, msg];
-    });
-  }
-};
+    if (msg.conversationId === conversationId) {
+      setMessages((prev) => {
+        if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
+          return prev.map((m) => (m._id === msg.tempId ? { ...msg, sending: false } : m));
+        }
+        if (prev.some((m) => m._id === msg._id)) {
+          return prev;
+        }
+        return [...prev, msg];
+      });
+    }
+  };
 
-
-
+  // טיפול בהקלדה של הלקוח
   const handleTyping = ({ from }) => {
     if (from === customerId) {
       setIsTyping(true);
@@ -173,17 +183,21 @@ export default function BusinessChatTab({
     }
   };
 
-  // קודם להסיר לפני הוספה למניעת ריבוי מאזינים
+  // הסרת מאזינים קיימים למניעת כפילויות
   socket.off("newMessage", handleNew);
   socket.off("typing", handleTyping);
+  socket.off("reconnect", handleReconnect);
 
+  // הוספת מאזינים חדשים
   socket.on("newMessage", handleNew);
   socket.on("typing", handleTyping);
+  socket.on("reconnect", handleReconnect);
 
+  // ניקוי המאזינים והמשאבים בעת פירוק הקומפוננטה או שינוי תלויות
   return () => {
-    console.log("[BusinessChatTab] cleanup listeners");
     socket.off("newMessage", handleNew);
     socket.off("typing", handleTyping);
+    socket.off("reconnect", handleReconnect);
     clearTimeout(typingTimeout.current);
     if (timerRef.current) clearInterval(timerRef.current);
     if (mediaStreamRef.current) {
@@ -192,6 +206,7 @@ export default function BusinessChatTab({
     }
   };
 }, [socket, conversationId, customerId, setMessages]);
+
 
 
   // גלילה אוטומטית
