@@ -99,14 +99,18 @@ export default function BusinessChatTab({
   const recordedChunks = useRef([]);
   const timerRef = useRef(null);
   const mediaStreamRef = useRef(null);
+  const currentRoomRef = useRef(null); // Ref to track current joined conversation
 
   const handleReconnect = useCallback(async () => {
     console.log("[BusinessChatTab] Socket reconnected, fetching history...");
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`/api/conversations/history?conversationId=${conversationId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `/api/conversations/history?conversationId=${conversationId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch history on reconnect");
       const data = await response.json();
       setMessages(Array.isArray(data) ? data : []);
@@ -115,39 +119,52 @@ export default function BusinessChatTab({
     }
   }, [conversationId, setMessages]);
 
-  const handleNew = useCallback((msg) => {
-    if (msg.conversationId === conversationId) {
-      setMessages((prev) => {
-        if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
-          return prev.map((m) => (m._id === msg.tempId ? { ...msg, sending: false } : m));
-        }
-        if (prev.some((m) => m._id === msg._id)) {
-          return prev;
-        }
-        return [...prev, msg];
-      });
-    }
-  }, [conversationId, setMessages]);
+  const handleNew = useCallback(
+    (msg) => {
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => {
+          if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
+            return prev.map((m) =>
+              m._id === msg.tempId ? { ...msg, sending: false } : m
+            );
+          }
+          if (prev.some((m) => m._id === msg._id)) {
+            return prev;
+          }
+          return [...prev, msg];
+        });
+      }
+    },
+    [conversationId, setMessages]
+  );
 
-  const handleTyping = useCallback(({ from }) => {
-    if (from === customerId) {
-      setIsTyping(true);
-      clearTimeout(typingTimeout.current);
-      typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
-    }
-  }, [customerId]);
+  const handleTyping = useCallback(
+    ({ from }) => {
+      if (from === customerId) {
+        setIsTyping(true);
+        clearTimeout(typingTimeout.current);
+        typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
+      }
+    },
+    [customerId]
+  );
 
   useEffect(() => {
-    if (!conversationId || !socket) return;
+    if (!socket || !conversationId) return;
 
-    console.log("[BusinessChatTab] joinConversation:", conversationId);
-
-    if (socket._currentRoom && socket._currentRoom !== conversationId) {
-      console.log("[BusinessChatTab] leaving previous room:", socket._currentRoom);
-      socket.emit("leaveConversation", socket._currentRoom);
+    // מניעת הצטרפות כפולה לאותו חדר
+    if (currentRoomRef.current === conversationId) {
+      console.log("[BusinessChatTab] Already joined conversation:", conversationId);
+      return;
     }
 
-    socket._currentRoom = conversationId;
+    // עזיבת חדר קודם במידת הצורך
+    if (currentRoomRef.current) {
+      console.log("[BusinessChatTab] Leaving previous conversation:", currentRoomRef.current);
+      socket.emit("leaveConversation", currentRoomRef.current);
+    }
+
+    currentRoomRef.current = conversationId;
 
     setMessages([]);
     setLoading(true);
@@ -191,14 +208,28 @@ export default function BusinessChatTab({
         mediaStreamRef.current.getTracks().forEach((t) => t.stop());
         mediaStreamRef.current = null;
       }
+      // עזיבת חדר בעת ניקוי הקומפוננטה
+      if (currentRoomRef.current === conversationId) {
+        socket.emit("leaveConversation", conversationId);
+        currentRoomRef.current = null;
+      }
     };
-  }, [socket, conversationId, customerId, handleNew, handleTyping, handleReconnect, setMessages]);
+  }, [
+    socket,
+    conversationId,
+    handleNew,
+    handleTyping,
+    handleReconnect,
+    setMessages,
+  ]);
 
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  // --- שאר הפונקציות שלך לשיגור הודעות, הקלטות וכו' (אותן לא שיניתי) ---
 
   const handleInput = (e) => {
     setInput(e.target.value);
@@ -249,6 +280,7 @@ export default function BusinessChatTab({
       }
     );
   };
+
 
 
 
