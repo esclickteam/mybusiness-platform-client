@@ -133,12 +133,17 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, []);
 
-  // 4. Join/leave rooms & load messages on selection change
+  // 4. Join/leave rooms & load messages on selection change + אפס ספירת הודעות
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !sock.connected || !selected?.conversationId) {
       setMessages([]);
       return;
+    }
+
+    // אפס ספירת הודעות חדשות כשמשתמש בוחר שיחה
+    if (setNewMessagesCount) {
+      setNewMessagesCount(0);
     }
 
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
@@ -159,7 +164,7 @@ export default function BusinessChatPage() {
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected]);
+  }, [selected, setNewMessagesCount]);
 
   // 5. Handle selection change from conversation list
   const handleSelect = (conversationId, partnerId) => {
