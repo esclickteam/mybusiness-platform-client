@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
-// קומפוננטת נגן אודיו (כמו בקוד המקורי)
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -101,52 +100,7 @@ export default function BusinessChatTab({
   const timerRef = useRef(null);
   const mediaStreamRef = useRef(null);
 
-  // טעינת היסטוריה והאזנה לסוקט
-  useEffect(() => {
-  console.log("useEffect triggered", { conversationId, socket });
-  
-  if (!conversationId || !socket) return;
-
-  console.log("[BusinessChatTab] joinConversation:", conversationId);
-
-  // עזיבת החדר הקודם אם קיים
-  if (socket._currentRoom && socket._currentRoom !== conversationId) {
-    console.log("[BusinessChatTab] leaving previous room:", socket._currentRoom);
-    socket.emit("leaveConversation", socket._currentRoom);
-  }
-
-  socket._currentRoom = conversationId;
-
-  setMessages([]);
-  setLoading(true);
-
-  socket.emit("joinConversation", conversationId, (res) => {
-    console.log("[BusinessChatTab] joinConversation ack:", res);
-    const history = Array.isArray(res?.messages) ? res.messages : [];
-    setMessages(history);
-    setLoading(false);
-
-    if (!history.length) {
-      const token = localStorage.getItem("token");
-      fetch(`/api/conversations/history?conversationId=${conversationId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        credentials: "include",
-      })
-        .then((r) => {
-          if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          return r.json();
-        })
-        .then((data) => setMessages(Array.isArray(data) ? data : []))
-        .catch((err) => {
-          console.error("Fetch history failed:", err);
-          setMessages([]);
-        })
-        .finally(() => setLoading(false));
-    }
-  });
-
-  // טיפול בחיבור מחדש וטעינת היסטוריה
-  const handleReconnect = async () => {
+  const handleReconnect = useCallback(async () => {
     console.log("[BusinessChatTab] Socket reconnected, fetching history...");
     try {
       const token = localStorage.getItem("token");
@@ -159,10 +113,9 @@ export default function BusinessChatTab({
     } catch (err) {
       console.error("Fetch history on reconnect failed:", err);
     }
-  };
+  }, [conversationId, setMessages]);
 
-  // טיפול בהודעות חדשות
-  const handleNew = (msg) => {
+  const handleNew = useCallback((msg) => {
     if (msg.conversationId === conversationId) {
       setMessages((prev) => {
         if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
@@ -174,110 +127,128 @@ export default function BusinessChatTab({
         return [...prev, msg];
       });
     }
-  };
+  }, [conversationId, setMessages]);
 
-  // טיפול בהקלדה של הלקוח
-  const handleTyping = ({ from }) => {
+  const handleTyping = useCallback(({ from }) => {
     if (from === customerId) {
       setIsTyping(true);
       clearTimeout(typingTimeout.current);
       typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
     }
-  };
+  }, [customerId]);
 
-  // הסרת מאזינים קיימים למניעת כפילויות
-  socket.off("newMessage", handleNew);
-  socket.off("typing", handleTyping);
-  socket.off("reconnect", handleReconnect);
+  useEffect(() => {
+    if (!conversationId || !socket) return;
 
-  // הוספת מאזינים חדשים
-  socket.on("newMessage", handleNew);
-  socket.on("typing", handleTyping);
-  socket.on("reconnect", handleReconnect);
+    console.log("[BusinessChatTab] joinConversation:", conversationId);
 
-  // ניקוי המאזינים והמשאבים בעת פירוק הקומפוננטה או שינוי תלויות
-  return () => {
-    socket.off("newMessage", handleNew);
-    socket.off("typing", handleTyping);
-    socket.off("reconnect", handleReconnect);
-    clearTimeout(typingTimeout.current);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-      mediaStreamRef.current = null;
+    if (socket._currentRoom && socket._currentRoom !== conversationId) {
+      console.log("[BusinessChatTab] leaving previous room:", socket._currentRoom);
+      socket.emit("leaveConversation", socket._currentRoom);
     }
-  };
-}, [socket, conversationId, customerId, setMessages]);
 
+    socket._currentRoom = conversationId;
 
+    setMessages([]);
+    setLoading(true);
 
-  // גלילה אוטומטית
+    socket.emit("joinConversation", conversationId, (res) => {
+      console.log("[BusinessChatTab] joinConversation ack:", res);
+      const history = Array.isArray(res?.messages) ? res.messages : [];
+      setMessages(history);
+      setLoading(false);
+
+      if (!history.length) {
+        const token = localStorage.getItem("token");
+        fetch(`/api/conversations/history?conversationId=${conversationId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
+        })
+          .then((r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+          })
+          .then((data) => setMessages(Array.isArray(data) ? data : []))
+          .catch((err) => {
+            console.error("Fetch history failed:", err);
+            setMessages([]);
+          })
+          .finally(() => setLoading(false));
+      }
+    });
+
+    socket.on("newMessage", handleNew);
+    socket.on("typing", handleTyping);
+    socket.on("reconnect", handleReconnect);
+
+    return () => {
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
+      socket.off("reconnect", handleReconnect);
+      clearTimeout(typingTimeout.current);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+      }
+    };
+  }, [socket, conversationId, customerId, handleNew, handleTyping, handleReconnect, setMessages]);
+
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  // טיפוס בהקלדה
   const handleInput = (e) => {
-  setInput(e.target.value);
-  console.log("Input changed:", e.target.value);
-  socket?.emit("typing", { conversationId, from: businessId });
-};
+    setInput(e.target.value);
+    socket?.emit("typing", { conversationId, from: businessId });
+  };
 
-
-  // שליחת הודעת טקסט אופטימיסטית עם uuid
   const sendMessage = () => {
-  if (sending) return; // חסימת שליחה כפולה
+    if (sending) return;
 
-  const text = input.trim();
-  console.log("Sending message:", text);
-  if (!text || !socket) {
-    console.warn("No text or socket connection, aborting sendMessage");
-    return;
-  }
+    const text = input.trim();
+    if (!text || !socket) return;
 
-  console.log("Sending message:", text);
-  setSending(true);
+    setSending(true);
 
-  const tempId = uuidv4();
-const optimisticMsg = {
-  _id: tempId,
-  conversationId,
-  from: businessId,
-  to: customerId,
-  text,
-  timestamp: new Date().toISOString(),
-  sending: true,
-  tempId, // הוסף גם כאן (לא חובה, אבל שיהיה אחיד)
-};
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      text,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
 
-setMessages((prev) => [...prev, optimisticMsg]);
-setInput("");
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setInput("");
 
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: businessId, to: customerId, text, tempId },
-    (ack) => {
-      console.log("Acknowledgment received:", ack);
-      setSending(false);
-      if (ack.ok) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m._id === tempId ? { ...ack.message, sending: false } : m
-          )
-        );
-      } else {
-        console.error("sendMessage error:", ack.error);
-        setMessages((prev) =>
-          prev.map((m) =>
-            m._id === tempId ? { ...m, sending: false, failed: true } : m
-          )
-        );
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: businessId, to: customerId, text, tempId },
+      (ack) => {
+        setSending(false);
+        if (ack.ok) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...ack.message, sending: false } : m
+            )
+          );
+        } else {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...m, sending: false, failed: true } : m
+            )
+          );
+        }
       }
-    }
-  );
-};
+    );
+  };
 
 
 

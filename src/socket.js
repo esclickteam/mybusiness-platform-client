@@ -3,12 +3,15 @@ import { getUserRole } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-/**
- * @param {function} getValidAccessToken - פונקציה להחזרת טוקן תקין (רענון במידת הצורך)
- * @param {function} onLogout - פונקציה לטיפול ביציאה (למשל הפניה ל-login)
- * @param {string|null} businessId - מזהה העסק (אם רלוונטי)
- */
+let socketInstance = null; // משתנה מחוץ לפונקציה לשמירת מופע יחיד
+
 export async function createSocket(getValidAccessToken, onLogout, businessId = null) {
+  // אם כבר יש socket פעיל, מחזירים אותו
+  if (socketInstance && socketInstance.connected) {
+    console.log("Reusing existing socket instance:", socketInstance.id);
+    return socketInstance;
+  }
+
   const token = await getValidAccessToken();
 
   if (!token) {
@@ -35,7 +38,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   const auth = { token, role };
   if (businessId) auth.businessId = businessId;
 
-  const socket = io(SOCKET_URL, {
+  socketInstance = io(SOCKET_URL, {
     path: "/socket.io",
     transports: ["polling", "websocket"],
     auth,
@@ -47,12 +50,12 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     randomizationFactor: 0.5,
   });
 
-  socket.connect();
+  socketInstance.connect();
 
-  socket.on("connect", () => {
-    console.log("✅ Connected to WebSocket server. Socket ID:", socket.id);
-    if (socket.conversationId) {
-      socket.emit("joinConversation", socket.conversationId, (ack) => {
+  socketInstance.on("connect", () => {
+    console.log("✅ Connected to WebSocket server. Socket ID:", socketInstance.id);
+    if (socketInstance.conversationId) {
+      socketInstance.emit("joinConversation", socketInstance.conversationId, (ack) => {
         if (!ack.ok) {
           console.error("Failed to rejoin conversation:", ack.error);
         } else {
@@ -62,29 +65,30 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     }
   });
 
-  socket.on("disconnect", (reason) => {
+  socketInstance.on("disconnect", (reason) => {
     console.log("🔴 Disconnected from WebSocket server. Reason:", reason);
     if (reason === "io client disconnect") {
       console.log("Socket manually disconnected.");
+      socketInstance = null; // איפוס המופע כשמתנתקים ידנית
     } else {
       console.log("Trying to reconnect...");
     }
   });
 
-  socket.on("reconnect_attempt", (attempt) => {
+  socketInstance.on("reconnect_attempt", (attempt) => {
     console.log("🔄 Reconnect attempt:", attempt);
   });
 
-  socket.on("reconnect_error", (error) => {
+  socketInstance.on("reconnect_error", (error) => {
     console.error("❌ Reconnect error:", error);
   });
 
-  socket.on("reconnect_failed", () => {
+  socketInstance.on("reconnect_failed", () => {
     console.error("❌ Reconnect failed");
     alert("Failed to reconnect to server.");
   });
 
-  socket.on("tokenExpired", async () => {
+  socketInstance.on("tokenExpired", async () => {
     console.log("🚨 Token expired. Refreshing...");
     const newToken = await getValidAccessToken();
     if (!newToken) {
@@ -94,38 +98,34 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     }
     console.log("🔄 New token received, updating socket auth");
 
-    socket.auth.token = newToken;
-    socket.io.opts.auth.token = newToken;
+    socketInstance.auth.token = newToken;
+    socketInstance.io.opts.auth.token = newToken;
 
-    socket.emit("authenticate", { token: newToken }, (ack) => {
+    socketInstance.emit("authenticate", { token: newToken }, (ack) => {
       if (ack && ack.ok) {
         console.log("✅ Socket re-authenticated successfully");
       } else {
         console.warn("⚠ Socket re-authentication failed, disconnecting");
-        socket.disconnect();
+        socketInstance.disconnect();
+        socketInstance = null;
         if (onLogout) onLogout();
       }
     });
   });
 
-  socket.on("connect_error", (err) => {
+  socketInstance.on("connect_error", (err) => {
     console.error("❌ Socket connection error:", err.message);
     alert("Connection failed: " + err.message);
   });
 
-  socket.on("connect_failed", () => {
+  socketInstance.on("connect_failed", () => {
     console.error("❌ Socket connection failed");
     alert("Failed to connect to server. Please try again.");
   });
 
-  return socket;
+  return socketInstance;
 }
 
-/**
- * Fetches the conversation history after reconnecting to the server.
- * @param {string} conversationId - The conversation ID to fetch the history for.
- * @returns {Promise<Array>} - The conversation history.
- */
 async function fetchConversationHistory(conversationId) {
   try {
     const response = await fetch(`/api/conversations/history?conversationId=${conversationId}`);
