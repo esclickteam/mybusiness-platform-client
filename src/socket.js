@@ -51,6 +51,15 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
   socket.on("connect", () => {
     console.log("✅ Connected to WebSocket server. Socket ID:", socket.id);
+    if (socket.conversationId) {
+      socket.emit("joinConversation", socket.conversationId, (ack) => {
+        if (!ack.ok) {
+          console.error("Failed to rejoin conversation:", ack.error);
+        } else {
+          console.log("Rejoined conversation after reconnect");
+        }
+      });
+    }
   });
 
   socket.on("disconnect", (reason) => {
@@ -86,6 +95,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     console.log("🔄 New token received, updating socket auth");
 
     socket.auth.token = newToken;
+    socket.io.opts.auth.token = newToken;
 
     socket.emit("authenticate", { token: newToken }, (ack) => {
       if (ack && ack.ok) {
