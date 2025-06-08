@@ -132,11 +132,12 @@ export default function BusinessChatPage() {
       setNewMessagesCount(0);
     }
 
-    // שלח לשרת בקשה לסמן הודעות כנקראות
-    API.post("/messages/markRead", {
-      businessId,
-      conversationId: selected.conversationId,
-    }).catch(console.error);
+    // שלח סיגנל לסמן הודעות כנקראות דרך socket.io
+    sock.emit("markMessagesRead", selected.conversationId, (response) => {
+      if (!response.ok) {
+        console.error("Failed to mark messages as read:", response.error);
+      }
+    });
 
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
       sock.emit("leaveConversation", prevSelectedRef.current);
@@ -156,7 +157,7 @@ export default function BusinessChatPage() {
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, setNewMessagesCount, businessId]);
+  }, [selected, setNewMessagesCount]);
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
