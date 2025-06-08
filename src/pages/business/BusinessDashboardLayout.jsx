@@ -24,6 +24,10 @@ export default function BusinessDashboardLayout() {
 
   const [newMessagesCount, setNewMessagesCount] = useState(0);
 
+  // לוג למעקב אחרי הערך של newMessagesCount בכל רינדור
+  console.log("BusinessDashboardLayout: newMessagesCount =", newMessagesCount);
+  console.log("BusinessDashboardLayout: setNewMessagesCount =", setNewMessagesCount);
+
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
