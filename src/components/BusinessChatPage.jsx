@@ -54,37 +54,7 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // Listen for new messages
-  useEffect(() => {
-    if (!socket) return;
-
-    const handler = (msg) => {
-      setConvos((prev) => {
-        const idx = prev.findIndex(
-          (c) => String(c._id || c.conversationId) === msg.conversationId
-        );
-        if (idx === -1) return prev;
-
-        const updated = {
-          ...prev[idx],
-          updatedAt: msg.timestamp || new Date().toISOString(),
-        };
-        return [updated, ...prev.filter((_, i) => i !== idx)];
-      });
-
-      if (msg.conversationId === selectedRef.current?.conversationId) {
-        setMessages((prev) =>
-          prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
-        );
-      }
-    };
-
-    socket.on("newMessage", handler);
-
-    return () => {
-      socket.off("newMessage", handler);
-    };
-  }, [socket]);
+  // **הסרנו את מאזין ה-newMessage כדי למנוע שליחה כפולה של הודעות**
 
   // Manage joining/leaving conversation on selection change
   useEffect(() => {
