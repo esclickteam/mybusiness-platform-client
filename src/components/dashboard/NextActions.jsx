@@ -46,7 +46,8 @@ const NextActions = ({ stats }) => {
 
   return (
     <div className="actions-container">
-      <h4>המלצות לפעולה חכמה 🤖</h4>
+      <h4>המלצות לפעולה חכמה 💡</h4>
+
       <ul>
         {actions.map(({ text, type }, i) => (
           <li key={i} className={type}>
