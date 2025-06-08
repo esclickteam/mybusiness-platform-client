@@ -11,7 +11,6 @@ export default function BusinessChatPage() {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
-  // מקבלים מה-Outlet context את הפונקציות לניהול ספירת הודעות
   const { resetMessagesCount, updateMessagesCount } = useOutletContext();
 
   const [convos, setConvos] = useState([]);
@@ -19,23 +18,29 @@ export default function BusinessChatPage() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const socketRef = useRef(null);
   const prevSelectedRef = useRef(null);
   const selectedRef = useRef(selected);
 
+  // Sync selected ref
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
 
+  // Reset unread messages count on mount
   useEffect(() => {
     if (resetMessagesCount) {
-      console.log("resetMessagesCount called");
       resetMessagesCount();
     }
   }, [resetMessagesCount]);
 
+  // Create socket connection once
   useEffect(() => {
     if (!initialized || !businessId) return;
+    if (socketRef.current) return; // Prevent duplicate sockets
+
+    let isMounted = true;
 
     (async () => {
       const token = await refreshAccessToken();
@@ -50,12 +55,16 @@ export default function BusinessChatPage() {
         setError("Socket connection failed");
         return;
       }
+      if (!isMounted) {
+        sock.disconnect();
+        return;
+      }
       socketRef.current = sock;
 
       sock.on("connect", () => {
         console.log("Socket connected:", sock.id);
 
-        // הצטרפות מחדש לשיחה נבחרת אחרי חיבור/חיבור מחדש
+        // Rejoin selected conversation after reconnect
         if (selectedRef.current?.conversationId) {
           sock.emit(
             "joinConversation",
@@ -73,7 +82,7 @@ export default function BusinessChatPage() {
 
       sock.on("connect_error", (err) => {
         setError("Socket error: " + err.message);
-        console.log("Socket connection failed:", err);
+        console.error("Socket connection failed:", err);
       });
 
       sock.on("disconnect", (reason) => {
@@ -93,7 +102,6 @@ export default function BusinessChatPage() {
       });
 
       sock.on("unreadMessagesCount", (count) => {
-        console.log("Received unreadMessagesCount:", count);
         if (updateMessagesCount) {
           updateMessagesCount(count);
         }
@@ -101,16 +109,18 @@ export default function BusinessChatPage() {
     })();
 
     return () => {
+      isMounted = false;
       if (socketRef.current) {
-        console.log("Disconnecting socket:", socketRef.current.id);
         socketRef.current.disconnect();
+        socketRef.current = null;
       }
-      prevSelectedRef.current = null;
     };
-  }, [initialized, businessId, refreshAccessToken, logout, resetMessagesCount, updateMessagesCount]);
+  }, [initialized, businessId, refreshAccessToken, logout, updateMessagesCount]);
 
+  // Load conversations list
   useEffect(() => {
     if (!initialized || !businessId) return;
+
     setLoading(true);
     API.get("/conversations", { params: { businessId } })
       .then(({ data }) => {
@@ -127,17 +137,18 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
+  // Listen for new messages and update conversations/messages accordingly
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const handler = (msg) => {
-      console.log("Received newMessage:", msg);
       setConvos((prev) => {
         const idx = prev.findIndex(
           (c) => String(c._id || c.conversationId) === msg.conversationId
         );
         if (idx === -1) return prev;
+
         const updated = {
           ...prev[idx],
           updatedAt: msg.timestamp || new Date().toISOString(),
@@ -157,25 +168,30 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, []);
 
+  // Manage joining/leaving conversation on selection change
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !sock.connected || !selected?.conversationId) {
-      setMessages([]); // מנקה הודעות אם לא מחובר או אין שיחה נבחרת
+      setMessages([]); // Clear messages if no socket or no selection
       return;
     }
 
     if (resetMessagesCount) {
-      console.log("Resetting messages count due to conversation change");
       resetMessagesCount();
     }
 
+    // Mark messages as read
     sock.emit("markMessagesRead", selected.conversationId, (response) => {
       if (!response.ok) {
         console.error("Failed to mark messages as read:", response.error);
       }
     });
 
-    if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
+    // Leave previous conversation
+    if (
+      prevSelectedRef.current &&
+      prevSelectedRef.current !== selected.conversationId
+    ) {
       sock.emit("leaveConversation", prevSelectedRef.current, (ack) => {
         if (!ack.ok) {
           console.error("Failed to leave previous conversation");
@@ -185,6 +201,7 @@ export default function BusinessChatPage() {
       });
     }
 
+    // Join new conversation
     sock.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) {
         setError("לא ניתן להצטרף לשיחה");
@@ -194,15 +211,20 @@ export default function BusinessChatPage() {
       }
     });
 
-    sock.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
-      if (res.ok) {
-        setMessages(res.messages || []);
-        console.log("History loaded for conversation:", selected.conversationId);
-      } else {
-        setMessages([]);
-        setError("שגיאה בטעינת ההודעות");
+    // Fetch conversation history
+    sock.emit(
+      "getHistory",
+      { conversationId: selected.conversationId },
+      (res) => {
+        if (res.ok) {
+          setMessages(res.messages || []);
+          console.log("History loaded for conversation:", selected.conversationId);
+        } else {
+          setMessages([]);
+          setError("שגיאה בטעינת ההודעות");
+        }
       }
-    });
+    );
 
     prevSelectedRef.current = selected.conversationId;
   }, [selected, resetMessagesCount]);
