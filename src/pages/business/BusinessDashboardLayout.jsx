@@ -180,6 +180,7 @@ export default function BusinessDashboardLayout() {
                     className={({ isActive }) => (isActive ? "active" : undefined)}
                   >
                     {label}
+                    {/* כאן ההתראה תוצג תמיד ליד לשונית הודעות */}
                     {path === "messages" && newMessagesCount > 0 && (
                       <span
                         style={{
