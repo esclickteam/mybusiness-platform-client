@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/socketContext';
+import { UnreadMessagesProvider } from './context/UnreadMessagesContext'; 
 
 // Polyfill ל-Buffer בדפדפן:
 import { Buffer } from 'buffer';
@@ -14,7 +15,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <SocketProvider>
-          <App />
+          <UnreadMessagesProvider>  {/* הוסף עטיפה כאן */}
+            <App />
+          </UnreadMessagesProvider>
         </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
