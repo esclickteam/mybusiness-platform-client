@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, useOutletContext, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
@@ -14,6 +14,8 @@ import WeeklySummary from "../../../components/dashboard/WeeklySummary";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
+
+import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
 
 import "../../../styles/dashboard.css";
 
@@ -51,64 +53,7 @@ function enrichAppointment(appt, business) {
   };
 }
 
-function getMonthlyUniqueCustomersFromAppointments(appointments) {
-  const monthlyData = {};
-
-  appointments.forEach(appt => {
-    if (!appt.date || !appt.client) return;
-
-    const date = new Date(appt.date);
-    const month = date.toLocaleString("he-IL", { month: "long" });
-    const year = date.getFullYear();
-    const key = `${month} ${year}`;
-
-    if (!monthlyData[key]) {
-      monthlyData[key] = new Set();
-    }
-    monthlyData[key].add(appt.client.toString());
-  });
-
-  return Object.entries(monthlyData).map(([monthYear, clientsSet]) => ({
-    name: monthYear,
-    customers: clientsSet.size,
-  }));
-}
-
-const allMonths = [
-  "ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני",
-  "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר",
-];
-
-function fillMissingMonths(data) {
-  const yearsSet = new Set(
-    data.map((item) => item.name.split(" ")[1])
-  );
-
-  const filledData = [];
-
-  yearsSet.forEach((year) => {
-    allMonths.forEach((month) => {
-      const key = `${month} ${year}`;
-      const found = data.find((d) => d.name === key);
-      if (found) {
-        filledData.push(found);
-      } else {
-        filledData.push({ name: key, customers: 0 });
-      }
-    });
-  });
-
-  filledData.sort((a, b) => {
-    const [monthA, yearA] = a.name.split(" ");
-    const [monthB, yearB] = b.name.split(" ");
-    if (yearA !== yearB) return yearA - yearB;
-    return allMonths.indexOf(monthA) - allMonths.indexOf(monthB);
-  });
-
-  return filledData;
-}
-
-const countItemsInLastWeek = (items, dateKey = "date") => {
+function countItemsInLastWeek(items, dateKey = "date") {
   if (!Array.isArray(items)) return 0;
   const now = new Date();
   const weekAgo = new Date();
@@ -117,7 +62,7 @@ const countItemsInLastWeek = (items, dateKey = "date") => {
     const itemDate = new Date(item[dateKey]);
     return itemDate >= weekAgo && itemDate <= now;
   }).length;
-};
+}
 
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
@@ -127,8 +72,8 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // *** כאן: קבלת הפונקציות מה-context ***
-  const { resetMessagesCount, updateMessagesCount } = useOutletContext() || {};
+  // קבלת הפונקציות והמצב מניהול ההודעות הלא נקראות בקונטקסט
+  const { resetMessagesCount, updateMessagesCount, unreadCount } = useUnreadMessages();
 
   const [stats, setStats] = useState(() => {
     try {
@@ -182,7 +127,7 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // *** כאן: איפוס ספירת הודעות בלחיצה על לשונית הודעות ***
+  // אפס ספירת הודעות בלחיצה על לשונית הודעות בדשבורד
   useEffect(() => {
     if (location.pathname.includes("/messages") && resetMessagesCount) {
       resetMessagesCount();
@@ -202,10 +147,6 @@ const DashboardPage = () => {
     } catch (e) {
       console.warn("Failed to save dashboard stats to localStorage", e);
     }
-  }, [stats]);
-
-  useEffect(() => {
-    console.log("🔄 stats state updated:", stats);
   }, [stats]);
 
   useEffect(() => {
@@ -235,10 +176,7 @@ const DashboardPage = () => {
           reviews_count: data.reviews_count ?? 0,
           messages_count: data.messages_count ?? 0,
           appointments_count: Array.isArray(data.appointments) ? data.appointments.length : 0,
-
-          todaysAppointments: Array.isArray(data.todaysAppointments)
-            ? data.todaysAppointments
-            : [],
+          todaysAppointments: Array.isArray(data.todaysAppointments) ? data.todaysAppointments : [],
           monthly_comparison: data.monthly_comparison ?? null,
           recent_activity: data.recent_activity ?? null,
           appointments: enrichedAppointments,
@@ -252,7 +190,7 @@ const DashboardPage = () => {
         };
         setStats(safeData);
 
-        // *** כאן: עדכון ספירת הודעות דרך updateMessagesCount ***
+        // עדכון ספירת הודעות לא נקראות בקונטקסט
         if (updateMessagesCount && safeData.messages_count !== undefined) {
           updateMessagesCount(safeData.messages_count);
         }
@@ -319,7 +257,7 @@ const DashboardPage = () => {
           setStats((prevStats) => {
             const merged = mergeStats(prevStats, cleanedStats);
 
-            // *** כאן: עדכון ספירת הודעות דרך updateMessagesCount ***
+            // עדכון ספירת הודעות לא נקראות בקונטקסט
             if (updateMessagesCount && cleanedStats.messages_count !== undefined) {
               updateMessagesCount(cleanedStats.messages_count);
             }
@@ -443,6 +381,7 @@ const DashboardPage = () => {
         📊 דשבורד העסק
         <span className="greeting">
           {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
+          {/* תוכל להוסיף כאן הצגת ספירת הודעות לא נקראות אם תרצה */}
         </span>
       </h2>
 

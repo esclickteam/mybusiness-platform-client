@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useOutletContext } from "react-router-dom";
+import { useUnreadMessages } from "../context/UnreadMessagesContext"; // ייבוא ה־Context
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -11,8 +11,8 @@ export default function BusinessChatPage() {
   const { user, initialized, refreshAccessToken, logout } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
-  // כאן מקבלים את שתי הפונקציות מה-context
-  const { resetMessagesCount, updateMessagesCount } = useOutletContext() || {};
+  // שימוש ב־Context לניהול ספירת הודעות
+  const { resetMessagesCount, updateMessagesCount } = useUnreadMessages();
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -27,10 +27,9 @@ export default function BusinessChatPage() {
     selectedRef.current = selected;
   }, [selected]);
 
-  // אפס ספירת הודעות בתחילת טעינת הקומפוננטה (אם הפונקציה קיימת)
   useEffect(() => {
     if (resetMessagesCount) {
-      resetMessagesCount(); // איפוס ספירת הודעות בדשבורד האב
+      resetMessagesCount();
     }
   }, [resetMessagesCount]);
 
@@ -68,9 +67,7 @@ export default function BusinessChatPage() {
         sock.connect();
       });
 
-      // מאזינים לעדכון ספירת הודעות שלא נקראו מהשרת
       sock.on("unreadMessagesCount", (count) => {
-        console.log("Received unreadMessagesCount:", count);
         if (updateMessagesCount) {
           updateMessagesCount(count);
         }
@@ -137,12 +134,10 @@ export default function BusinessChatPage() {
       return;
     }
 
-    // אפס ספירת הודעות חדשות כאשר המשתמש בוחר שיחה
     if (resetMessagesCount) {
       resetMessagesCount();
     }
 
-    // שלח סיגנל לסמן הודעות כנקראות דרך socket.io
     sock.emit("markMessagesRead", selected.conversationId, (response) => {
       if (!response.ok) {
         console.error("Failed to mark messages as read:", response.error);
