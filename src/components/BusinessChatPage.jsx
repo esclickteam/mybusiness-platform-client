@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useOutletContext } from "react-router-dom";
 import ConversationsList from "./ConversationsList";
@@ -30,7 +30,7 @@ export default function BusinessChatPage() {
   // אפס ספירת הודעות בתחילת טעינת הקומפוננטה (אם הפונקציה קיימת)
   useEffect(() => {
     if (resetMessagesCount) {
-      resetMessagesCount();
+      resetMessagesCount(); // איפוס ספירת הודעות בדשבורד האב
     }
   }, [resetMessagesCount]);
 
@@ -68,7 +68,7 @@ export default function BusinessChatPage() {
         sock.connect();
       });
 
-      // מאזינים לעדכון ספירת הודעות שלא נקראו
+      // מאזינים לעדכון ספירת הודעות שלא נקראו מהשרת
       sock.on("unreadMessagesCount", (count) => {
         console.log("Received unreadMessagesCount:", count);
         if (updateMessagesCount) {

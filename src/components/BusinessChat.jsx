@@ -65,7 +65,7 @@ export default function BusinessChat({
           if (h.ok) setMessages(h.messages);
 
           // סמן את ההודעות כנקראו ברגע שקיבלנו את ההיסטוריה
-          socket.emit("markMessagesRead", { conversationId: res.conversationId, userId: myBusinessId }, (ackMark) => {
+          socket.emit("markMessagesRead", res.conversationId, (ackMark) => {
             if (!ackMark?.ok) {
               console.warn("Failed to mark messages as read:", ackMark?.error);
             } else {
@@ -75,7 +75,7 @@ export default function BusinessChat({
         });
       });
     });
-  }, [socket, otherBusinessId, myBusinessId]);
+  }, [socket, otherBusinessId]);
 
   useEffect(() => {
     if (!socket || !socket.connected || !otherBusinessId) return;
@@ -146,7 +146,7 @@ export default function BusinessChat({
         setMessages((prev) => [...prev, msg]);
 
         // כשמקבלים הודעה חדשה, אם אנחנו בצ'אט הזה - שלח סימון קריאה
-        socket.emit("markMessagesRead", { conversationId, userId: myBusinessId }, (ackMark) => {
+        socket.emit("markMessagesRead", conversationId, (ackMark) => {
           if (!ackMark?.ok) {
             console.warn("Failed to mark messages as read:", ackMark?.error);
           } else {
@@ -161,7 +161,7 @@ export default function BusinessChat({
     return () => {
       socket.off("newMessage", handler);
     };
-  }, [socket, conversationId, myBusinessId]);
+  }, [socket, conversationId]);
 
   const sendMessage = () => {
     console.log("▶️ sendMessage()", { conversationId, text: input });
