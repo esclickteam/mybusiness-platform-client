@@ -1,10 +1,5 @@
 import React from "react";
-
-const actionColors = {
-  warning: "#d9534f",
-  info: "#5bc0de",
-  success: "#5cb85c",
-};
+import "./NextActions.css";
 
 const THRESHOLDS = {
   views: 40,
@@ -54,10 +49,7 @@ const NextActions = ({ stats }) => {
       <h4>המלצות לפעולה חכמה 🤖</h4>
       <ul>
         {actions.map(({ text, type }, i) => (
-          <li
-            key={i}
-            style={{ color: actionColors[type], marginBottom: '8px', fontWeight: '600' }}
-          >
+          <li key={i} className={type}>
             {text}
           </li>
         ))}
