@@ -106,6 +106,7 @@ export default function BusinessDashboardLayout() {
     // eslint-disable-next-line
   }, [user, loading, location.search, location.state, navigate]);
 
+  // איפוס ספירת ההודעות כשנכנסים ל"טאב הודעות"
   useEffect(() => {
     if (location.pathname.includes("/messages")) {
       resetMessagesCount();
