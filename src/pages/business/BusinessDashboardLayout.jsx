@@ -16,11 +16,13 @@ const tabs = [
   { path: "upgrade", label: "🚀 שדרוג חבילה" },
 ];
 
-export default function BusinessDashboardLayout({ newMessagesCount = 0 }) {  // <- מקבל prop חדש
+export default function BusinessDashboardLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
   const location = useLocation();
+
+  const [newMessagesCount, setNewMessagesCount] = useState(0);
 
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
@@ -31,11 +33,7 @@ export default function BusinessDashboardLayout({ newMessagesCount = 0 }) {  // 
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      if (mobile) {
-        setShowSidebar(false); // סגור תמיד במובייל
-      } else {
-        setShowSidebar(true);
-      }
+      setShowSidebar(!mobile);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -162,15 +160,15 @@ export default function BusinessDashboardLayout({ newMessagesCount = 0 }) {  // 
             />
           )}
 
-          {/* Toggle Sidebar Button (mobile) עם הזזה למטה מצד שמאל */}
+          {/* Toggle Sidebar Button */}
           {isMobile && (
             <button
               onClick={() => setShowSidebar((prev) => !prev)}
               aria-label={showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"}
               style={{
                 position: "fixed",
-                top: 60, // הזזה למטה
-                left: 12, // מימין לשמאל
+                top: 60,
+                left: 12,
                 zIndex: 9999,
                 backgroundColor: "#7c4dff",
                 border: "none",
@@ -201,7 +199,7 @@ export default function BusinessDashboardLayout({ newMessagesCount = 0 }) {  // 
             aria-live="polite"
             aria-atomic="true"
           >
-            <Outlet />
+            <Outlet context={{ newMessagesCount, setNewMessagesCount }} />
           </main>
         </div>
       </div>

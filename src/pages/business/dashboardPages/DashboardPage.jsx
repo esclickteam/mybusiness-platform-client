@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
@@ -126,6 +126,8 @@ const DashboardPage = () => {
   const socketRef = useRef(null);
   const navigate = useNavigate();
 
+  const { setNewMessagesCount } = useOutletContext() || {};
+
   const [stats, setStats] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -178,7 +180,7 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // ** כאן אין יותר clientMessageAlert כי לא נרצה להציג את ההתראה הטקסטואלית בדשבורד **
+  // ** לא מציגים התראת הודעה חדשה טקסטואלית בדשבורד **
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
@@ -242,6 +244,10 @@ const DashboardPage = () => {
           messages: Array.isArray(data.messages) ? data.messages : [],
         };
         setStats(safeData);
+
+        if (setNewMessagesCount) {
+          setNewMessagesCount(safeData.messages_count ?? 0);
+        }
       } catch (err) {
         setError("❌ שגיאה בטעינת נתונים מהשרת");
       } finally {
@@ -249,7 +255,7 @@ const DashboardPage = () => {
       }
     }
     fetchStats();
-  }, [businessId, refreshAccessToken, logout]);
+  }, [businessId, refreshAccessToken, logout, setNewMessagesCount]);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -304,6 +310,9 @@ const DashboardPage = () => {
           }
           setStats((prevStats) => {
             const merged = mergeStats(prevStats, cleanedStats);
+            if (setNewMessagesCount && cleanedStats.messages_count !== undefined) {
+              setNewMessagesCount(cleanedStats.messages_count);
+            }
             const isEqual = Object.keys(merged).every(
               (key) => merged[key] === prevStats[key]
             );
@@ -316,8 +325,7 @@ const DashboardPage = () => {
         }
       });
 
-      // ** לא מאזינים יותר ל-newClientMessageNotification כאן **
-      // כך ההתראה הטקסטואלית לא תופיע בדשבורד העסק
+      // לא מאזינים ל-newClientMessageNotification כאן
 
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
@@ -387,7 +395,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, selectedDate]);
+  }, [initialized, businessId, logout, refreshAccessToken, selectedDate, setNewMessagesCount]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
@@ -429,7 +437,7 @@ const DashboardPage = () => {
         </span>
       </h2>
 
-      {/* ** לא מציגים התראת הודעה חדשה מלקוח ** */}
+      {/* לא מציגים התראת הודעה חדשה מלקוח */}
 
       <QuickActions onAction={handleQuickAction} />
       {alert && <DashboardAlert text={alert} type="info" />}
