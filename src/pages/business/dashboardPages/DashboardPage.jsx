@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, useLocation } from "react-router-dom";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
@@ -125,6 +125,7 @@ const DashboardPage = () => {
   const businessId = getBusinessId();
   const socketRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { setNewMessagesCount } = useOutletContext() || {};
 
@@ -180,7 +181,12 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // ** לא מציגים התראת הודעה חדשה טקסטואלית בדשבורד **
+  // איפוס ספירת הודעות חדשות בלחיצה על לשונית ההודעות
+  useEffect(() => {
+    if (setNewMessagesCount && location.pathname.includes("/messages")) {
+      setNewMessagesCount(0);
+    }
+  }, [location.pathname, setNewMessagesCount]);
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
