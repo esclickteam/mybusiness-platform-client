@@ -34,19 +34,20 @@ export default function BusinessDashboardLayout() {
 
   // מאזין להודעות חדשות מהשרת ומגדיל את הספירה
   useEffect(() => {
-    if (!socket) return;
+  if (!socket) return;
 
-    const handleNewClientMessage = (data) => {
-      console.log("Received newClientMessageNotification:", data);
-      incrementCount();
-    };
+  const handleNewClientMessage = (data) => {
+    console.log("Received newClientMessageNotification:", data);
+    incrementCount();  // תקן לקריאה לפונקציה הנכונה
+  };
 
-    socket.on("newClientMessageNotification", handleNewClientMessage);
+  socket.on("newClientMessageNotification", handleNewClientMessage);
 
-    return () => {
-      socket.off("newClientMessageNotification", handleNewClientMessage);
-    };
-  }, [socket, incrementCount]);
+  return () => {
+    socket.off("newClientMessageNotification", handleNewClientMessage);
+  };
+}, [socket, incrementCount]);
+
 
   // מאזין לספירת הודעות שלא נקראו מהשרת ומעדכן את הספירה
   useEffect(() => {
