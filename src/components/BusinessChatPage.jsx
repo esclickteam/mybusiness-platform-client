@@ -54,6 +54,21 @@ export default function BusinessChatPage() {
 
       sock.on("connect", () => {
         console.log("Socket connected:", sock.id);
+
+        // הצטרפות מחדש לשיחה נבחרת אחרי חיבור/חיבור מחדש
+        if (selectedRef.current?.conversationId) {
+          sock.emit(
+            "joinConversation",
+            selectedRef.current.conversationId,
+            (ack) => {
+              if (!ack.ok) {
+                console.error("Failed to join conversation on reconnect");
+              } else {
+                console.log("Re-joined conversation on reconnect");
+              }
+            }
+          );
+        }
       });
 
       sock.on("connect_error", (err) => {
