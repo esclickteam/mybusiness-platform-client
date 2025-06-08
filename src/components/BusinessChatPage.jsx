@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useOutletContext } from "react-router-dom";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
@@ -8,11 +7,8 @@ import createSocket from "../socket";
 import API from "../api";
 
 export default function BusinessChatPage() {
-  const { user, initialized, refreshAccessToken, logout } = useAuth();
+  const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
-
-  // מקבלים מה-Outlet context את הפונקציות לניהול ספירת הודעות
-  const { resetMessagesCount, updateMessagesCount } = useOutletContext();
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -23,77 +19,39 @@ export default function BusinessChatPage() {
   const prevSelectedRef = useRef(null);
   const selectedRef = useRef(selected);
 
+  // Keep latest selected in ref for message handler
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
 
-  useEffect(() => {
-    if (resetMessagesCount) {
-      console.log("resetMessagesCount called");
-      resetMessagesCount();
-    }
-  }, [resetMessagesCount]);
-
+  // 1. Initialize & connect socket
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     (async () => {
-      const token = await refreshAccessToken();
-      if (!token) {
-        setError("Session expired, please login again");
-        logout();
-        return;
-      }
-
-      const sock = await createSocket(refreshAccessToken, logout, businessId);
+      const sock = await createSocket();
       if (!sock) {
         setError("Socket connection failed");
         return;
       }
       socketRef.current = sock;
-
-      sock.on("connect", () => {
-        console.log("Socket connected:", sock.id);
-      });
+      sock.connect();
 
       sock.on("connect_error", (err) => {
         setError("Socket error: " + err.message);
         console.log("Socket connection failed:", err);
       });
 
-      sock.on("disconnect", (reason) => {
-        console.log("Socket disconnected:", reason);
-      });
-
-      sock.on("tokenExpired", async () => {
-        console.log("Token expired, refreshing...");
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
-          logout();
-          return;
-        }
-        sock.auth.token = newToken;
-        sock.disconnect();
-        sock.connect();
-      });
-
-      sock.on("unreadMessagesCount", (count) => {
-        console.log("Received unreadMessagesCount:", count);
-        if (updateMessagesCount) {
-          updateMessagesCount(count);
-        }
-      });
+      console.log("Socket connected:", sock.id); // Log successful connection
     })();
 
     return () => {
-      if (socketRef.current) {
-        console.log("Disconnecting socket:", socketRef.current.id);
-        socketRef.current.disconnect();
-      }
+      socketRef.current?.disconnect();
       prevSelectedRef.current = null;
     };
-  }, [initialized, businessId, refreshAccessToken, logout, resetMessagesCount, updateMessagesCount]);
+  }, [initialized, businessId]);
 
+  // 2. Load conversations via REST
   useEffect(() => {
     if (!initialized || !businessId) return;
     setLoading(true);
@@ -103,38 +61,37 @@ export default function BusinessChatPage() {
         if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
-          const partnerId =
-            first.partnerId || first.participants.find((p) => p !== businessId);
+          const partnerId = first.partnerId || first.participants.find((p) => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
       })
-      .catch(() => setError("שגיאה בטעינת שיחות"))
+      .catch(() => {
+        setError("שגיאה בטעינת שיחות");
+      })
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
+  // 3. Listen for incoming messages
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock) return;
 
     const handler = (msg) => {
-      console.log("Received newMessage:", msg);
+      // Log the incoming message
+      console.log("New message received:", msg);
+
+      // Update sidebar order
       setConvos((prev) => {
-        const idx = prev.findIndex(
-          (c) => String(c._id || c.conversationId) === msg.conversationId
-        );
+        const idx = prev.findIndex((c) => String(c._id || c.conversationId) === msg.conversationId);
         if (idx === -1) return prev;
-        const updated = {
-          ...prev[idx],
-          updatedAt: msg.timestamp || new Date().toISOString(),
-        };
+        const updated = { ...prev[idx], updatedAt: msg.timestamp || new Date().toISOString() };
         return [updated, ...prev.filter((_, i) => i !== idx)];
       });
 
+      // Update history for currently open conversation
       const sel = selectedRef.current;
       if (msg.conversationId === sel?.conversationId) {
-        setMessages((prev) =>
-          prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]
-        );
+        setMessages((prev) => (prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]));
       }
     };
 
@@ -142,6 +99,7 @@ export default function BusinessChatPage() {
     return () => sock.off("newMessage", handler);
   }, []);
 
+  // 4. Join/leave rooms & load messages on selection change
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !sock.connected || !selected?.conversationId) {
@@ -149,25 +107,17 @@ export default function BusinessChatPage() {
       return;
     }
 
-    if (resetMessagesCount) {
-      console.log("Resetting messages count due to conversation change");
-      resetMessagesCount();
-    }
-
-    sock.emit("markMessagesRead", selected.conversationId, (response) => {
-      if (!response.ok) {
-        console.error("Failed to mark messages as read:", response.error);
-      }
-    });
-
+    // Leave previous conversation room if changed
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
       sock.emit("leaveConversation", prevSelectedRef.current);
     }
 
+    // Join current conversation room
     sock.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
 
+    // Load message history
     sock.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
@@ -178,8 +128,9 @@ export default function BusinessChatPage() {
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, resetMessagesCount]);
+  }, [selected]);
 
+  // 5. Handle selection change from conversation list
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
   };
