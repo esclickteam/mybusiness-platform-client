@@ -23,7 +23,7 @@ export default function BusinessChatPage() {
   const prevSelectedRef = useRef(null);
   const selectedRef = useRef(selected);
 
-  // Sync selected ref
+  // Keep selectedRef in sync with selected state
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
@@ -47,7 +47,7 @@ export default function BusinessChatPage() {
 
     if (socketRef.current) {
       console.log("[BusinessChatPage] Socket already exists, skipping creation. Socket ID:", socketRef.current.id);
-      return; // Prevent duplicate sockets
+      return;
     }
 
     let isMounted = true;
@@ -78,11 +78,12 @@ export default function BusinessChatPage() {
         return;
       }
 
-      socketRef.current = sock;
-      console.log("[BusinessChatPage] Socket assigned to ref, Socket ID:", sock.id);
-
       sock.on("connect", () => {
         console.log("[BusinessChatPage] Socket connected:", sock.id);
+
+        // Assign socketRef only after connection established
+        socketRef.current = sock;
+        console.log("[BusinessChatPage] Socket assigned to ref inside connect handler. Socket ID:", sock.id);
 
         if (selectedRef.current?.conversationId) {
           console.log("[BusinessChatPage] Rejoining conversation on reconnect:", selectedRef.current.conversationId);
