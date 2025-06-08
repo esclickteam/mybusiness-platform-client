@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-rout
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { useSocket } from "../../context/socketContext";
+import { useUnreadMessages } from "../../context/UnreadMessagesContext";
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [
@@ -24,32 +25,20 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const [newMessagesCount, setNewMessagesCount] = useState(0);
-  const [messagesRead, setMessagesRead] = useState(false);
+  const { count, incrementCount, resetCount, updateCount } = useUnreadMessages();
 
-  const resetMessagesCount = () => {
-    console.log("resetMessagesCount called");
-    setNewMessagesCount(0);
-    setMessagesRead(true);
-  };
+  const isMobileInit = window.innerWidth <= 768;
+  const [isMobile, setIsMobile] = useState(isMobileInit);
+  const [showSidebar, setShowSidebar] = useState(!isMobileInit);
+  const sidebarRef = useRef(null);
 
-  const updateMessagesCount = (count) => {
-    console.log("updateMessagesCount called with count:", count);
-    if (!messagesRead) {
-      setNewMessagesCount(count);
-    } else if (count > 0) {
-      setMessagesRead(false);
-      setNewMessagesCount(count);
-    }
-  };
-
-  // מאזין להודעות חדשות מהשרת
+  // מאזין להודעות חדשות מהשרת ומגדיל את הספירה
   useEffect(() => {
     if (!socket) return;
 
     const handleNewClientMessage = (data) => {
       console.log("Received newClientMessageNotification:", data);
-      setNewMessagesCount((prev) => prev + 1);
+      incrementCount();
     };
 
     socket.on("newClientMessageNotification", handleNewClientMessage);
@@ -57,15 +46,15 @@ export default function BusinessDashboardLayout() {
     return () => {
       socket.off("newClientMessageNotification", handleNewClientMessage);
     };
-  }, [socket]);
+  }, [socket, incrementCount]);
 
-  // מאזין לספירת הודעות שלא נקראו מהשרת
+  // מאזין לספירת הודעות שלא נקראו מהשרת ומעדכן את הספירה
   useEffect(() => {
     if (!socket) return;
 
-    const handleUnreadCount = (count) => {
-      console.log("Received unreadMessagesCount:", count);
-      setNewMessagesCount(count);
+    const handleUnreadCount = (newCount) => {
+      console.log("Received unreadMessagesCount:", newCount);
+      updateCount(newCount);
     };
 
     socket.on("unreadMessagesCount", handleUnreadCount);
@@ -73,13 +62,16 @@ export default function BusinessDashboardLayout() {
     return () => {
       socket.off("unreadMessagesCount", handleUnreadCount);
     };
-  }, [socket]);
+  }, [socket, updateCount]);
 
-  const isMobileInit = window.innerWidth <= 768;
-  const [isMobile, setIsMobile] = useState(isMobileInit);
-  const [showSidebar, setShowSidebar] = useState(!isMobileInit);
-  const sidebarRef = useRef(null);
+  // איפוס ספירת ההודעות כשנכנסים ל"טאב הודעות"
+  useEffect(() => {
+    if (location.pathname.includes("/messages")) {
+      resetCount();
+    }
+  }, [location.pathname, resetCount]);
 
+  // שאר הקוד לניהול רספונסיביות, ניווט, סיידבר וכו'
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -95,6 +87,7 @@ export default function BusinessDashboardLayout() {
       navigate("/", { replace: true });
       return;
     }
+    // ניווט ראשוני לפי טאב מהשורה
     const searchParams = new URLSearchParams(location.search);
     const tabFromQuery = searchParams.get("tab");
     const tabFromState = location.state?.activeTab;
@@ -103,15 +96,7 @@ export default function BusinessDashboardLayout() {
     } else if (tabFromState && tabs.some((t) => t.path === tabFromState)) {
       navigate(`./${tabFromState}`, { replace: true });
     }
-    // eslint-disable-next-line
   }, [user, loading, location.search, location.state, navigate]);
-
-  // איפוס ספירת ההודעות כשנכנסים ל"טאב הודעות"
-  useEffect(() => {
-    if (location.pathname.includes("/messages")) {
-      resetMessagesCount();
-    }
-  }, [location.pathname]);
 
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
@@ -180,8 +165,7 @@ export default function BusinessDashboardLayout() {
                     className={({ isActive }) => (isActive ? "active" : undefined)}
                   >
                     {label}
-                    {/* כאן ההתראה תוצג תמיד ליד לשונית הודעות */}
-                    {path === "messages" && newMessagesCount > 0 && (
+                    {path === "messages" && count > 0 && (
                       <span
                         style={{
                           backgroundColor: "red",
@@ -194,7 +178,7 @@ export default function BusinessDashboardLayout() {
                           verticalAlign: "middle",
                         }}
                       >
-                        {newMessagesCount}
+                        {count}
                       </span>
                     )}
                   </NavLink>
@@ -255,9 +239,10 @@ export default function BusinessDashboardLayout() {
           >
             <Outlet
               context={{
-                newMessagesCount,
-                resetMessagesCount,
-                updateMessagesCount,
+                count,
+                resetCount,
+                incrementCount,
+                updateCount,
               }}
             />
           </main>
