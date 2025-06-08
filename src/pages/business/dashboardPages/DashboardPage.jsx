@@ -182,7 +182,7 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // *** הוספת סטייט עבור התראת הודעה חדשה מלקוח ***
+  // הוספת סטייט להתראה על הודעה חדשה מלקוח
   const [clientMessageAlert, setClientMessageAlert] = useState(null);
 
   if (!initialized) {
@@ -321,12 +321,12 @@ const DashboardPage = () => {
         }
       });
 
-      // *** מאזין חדש להתראה על הודעה מלקוח ***
+      // מאזין להתראת הודעה מלקוח
       sock.on("newClientMessageNotification", ({ conversationId, message }) => {
-  const clientName = message.clientName || message.from || "לקוח לא מזוהה";
-  setClientMessageAlert(`הודעה חדשה מלקוח ${clientName}: ${message.text || "תוכן לא טקסטואלי"}`);
-  setTimeout(() => setClientMessageAlert(null), 8000);
-});
+        const clientName = message.clientName || message.from || "לקוח לא מזוהה";
+        setClientMessageAlert(`הודעה חדשה מלקוח ${clientName}: ${message.text || "תוכן לא טקסטואלי"}`);
+        setTimeout(() => setClientMessageAlert(null), 8000);
+      });
 
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
@@ -448,21 +448,23 @@ const DashboardPage = () => {
         </span>
       </h2>
 
-      {/* הצגת התראת הודעה חדשה מלקוח */}
+      {/* התראת הודעה חדשה מלקוח */}
       {clientMessageAlert && (
-        <div className="client-message-alert" style={{
-          backgroundColor: "#fffae6",
-          border: "1px solid #ffd633",
-          padding: "12px 20px",
-          margin: "10px 0",
-          borderRadius: "6px",
-          fontWeight: "bold",
-          color: "#7a5e00",
-          direction: "rtl",
-          textAlign: "right",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-          cursor: "pointer",
-        }}
+        <div
+          className="client-message-alert"
+          style={{
+            backgroundColor: "#fffae6",
+            border: "1px solid #ffd633",
+            padding: "12px 20px",
+            margin: "10px 0",
+            borderRadius: "6px",
+            fontWeight: "bold",
+            color: "#7a5e00",
+            direction: "rtl",
+            textAlign: "right",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+            cursor: "pointer",
+          }}
           onClick={() => setClientMessageAlert(null)}
           title="לחץ לסגירה"
         >
