@@ -6,7 +6,7 @@ import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 
 import DashboardCards from "../../../components/DashboardCards";
-import BarChartComponent from "../../../components/dashboard/BarChart"; // שים לב לייבוא עם השם הנכון
+import BarChartComponent from "../../../components/dashboard/BarChart";
 import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
 import Insights from "../../../components/dashboard/Insights";
 import NextActions from "../../../components/dashboard/NextActions";
@@ -125,6 +125,18 @@ function fillMissingMonths(data) {
   return filledData;
 }
 
+// ספירת אירועים בשבוע האחרון לפי מפתח תאריך
+const countItemsInLastWeek = (items, dateKey = "date") => {
+  if (!Array.isArray(items)) return 0;
+  const now = new Date();
+  const weekAgo = new Date();
+  weekAgo.setDate(now.getDate() - 7);
+  return items.filter((item) => {
+    const itemDate = new Date(item[dateKey]);
+    return itemDate >= weekAgo && itemDate <= now;
+  }).length;
+};
+
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
 
@@ -152,6 +164,10 @@ const DashboardPage = () => {
             leads: [],
             businessName: "",
             services: [],
+            // הוספתי מערכים ריקים במידה ואין ב-localStorage
+            views: [],
+            reviews: [],
+            messages: [],
           };
     } catch {
       return {
@@ -169,6 +185,9 @@ const DashboardPage = () => {
         leads: [],
         businessName: "",
         services: [],
+        views: [],
+        reviews: [],
+        messages: [],
       };
     }
   });
@@ -235,6 +254,9 @@ const DashboardPage = () => {
           businessName: data.businessName ?? "",
           income_distribution: data.income_distribution ?? null,
           services: data.services ?? [],
+          views: Array.isArray(data.views) ? data.views : [],
+          reviews: Array.isArray(data.reviews) ? data.reviews : [],
+          messages: Array.isArray(data.messages) ? data.messages : [],
         };
         setStats(safeData);
       } catch (err) {
@@ -420,26 +442,11 @@ const DashboardPage = () => {
   // חישוב פגישות מתוכננות בשבוע הקרוב
   const upcomingAppointmentsCount = getUpcomingAppointmentsCount(appointments);
 
-  const barChartData = [
-    {
-      name: "פגישות עתידיות",
-      customers: stats.appointments_count,
-      requests: 0,
-      orders: 0,
-    },
-    {
-      name: "פניות חדשות",
-      customers: 0,
-      requests: stats.requests_count,
-      orders: 0,
-    },
-    {
-      name: "הודעות מלקוחות",
-      customers: 0,
-      requests: 0,
-      orders: stats.messages_count,
-    },
-  ];
+  // חישוב נתונים שבועיים להמלצות
+  const weeklyAppointmentsCount = countItemsInLastWeek(appointments);
+  const weeklyMessagesCount = countItemsInLastWeek(stats.messages, "date");
+  const weeklyViewsCount = countItemsInLastWeek(stats.views, "date");
+  const weeklyReviewsCount = countItemsInLastWeek(stats.reviews, "date");
 
   return (
     <div className="dashboard-container">
@@ -469,7 +476,14 @@ const DashboardPage = () => {
 
       <Insights stats={{ ...stats, upcoming_appointments: upcomingAppointmentsCount }} />
 
-      <NextActions stats={stats} />
+      <NextActions
+        stats={{
+          weekly_views_count: weeklyViewsCount,
+          weekly_appointments_count: weeklyAppointmentsCount,
+          weekly_reviews_count: weeklyReviewsCount,
+          weekly_messages_count: weeklyMessagesCount,
+        }}
+      />
 
       <div>
         <BarChartComponent appointments={stats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />

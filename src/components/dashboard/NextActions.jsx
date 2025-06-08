@@ -12,36 +12,36 @@ const NextActions = ({ stats }) => {
   if (!stats || typeof stats !== "object") return null;
 
   const {
-    views_count = 0,
-    appointments_count = 0,
-    reviews_count = 0,
-    messages_count = 0,
+    weekly_views_count = 0,
+    weekly_appointments_count = 0,
+    weekly_reviews_count = 0,
+    weekly_messages_count = 0,
   } = stats;
 
   const actions = [];
 
-  if (views_count < THRESHOLDS.views) {
-    actions.push({ text: "אין הרבה צפיות – כדאי לפרסם שירות חדש או מבצע", type: "info" });
+  if (weekly_views_count < THRESHOLDS.views) {
+    actions.push({ text: "אין הרבה צפיות השבוע – כדאי לפרסם שירות חדש או מבצע", type: "info" });
   } else {
-    actions.push({ text: "👀 צפיות בפרופיל במצב טוב", type: "success" });
+    actions.push({ text: "👀 צפיות בפרופיל השבוע במצב טוב", type: "success" });
   }
 
-  if (appointments_count < THRESHOLDS.appointments) {
+  if (weekly_appointments_count < THRESHOLDS.appointments) {
     actions.push({ text: "📅 מעט פגישות השבוע – שקלי לקבוע שיחות ייעוץ", type: "warning" });
   } else {
     actions.push({ text: "📅 מספר הפגישות השבועי תקין", type: "success" });
   }
 
-  if (reviews_count < THRESHOLDS.reviews) {
-    actions.push({ text: "⭐ מעט ביקורות – בקשי מלקוחות לדרג אותך", type: "warning" });
+  if (weekly_reviews_count < THRESHOLDS.reviews) {
+    actions.push({ text: "⭐ מעט ביקורות השבוע – בקשי מלקוחות לדרג אותך", type: "warning" });
   } else {
-    actions.push({ text: "⭐ יש ביקורות טובות ומספיקות", type: "success" });
+    actions.push({ text: "⭐ יש ביקורות טובות ומספיקות השבוע", type: "success" });
   }
 
-  if (messages_count < THRESHOLDS.messages) {
-    actions.push({ text: "📩 אין הודעות חדשות מלקוחות – נסי להעלות תוכן חדש במדיה החברתית", type: "warning" });
+  if (weekly_messages_count < THRESHOLDS.messages) {
+    actions.push({ text: "📩 אין הודעות חדשות מלקוחות השבוע – נסי להעלות תוכן חדש במדיה החברתית", type: "warning" });
   } else {
-    actions.push({ text: "📩 יש מספיק הודעות מלקוחות", type: "success" });
+    actions.push({ text: "📩 יש מספיק הודעות מלקוחות השבוע", type: "success" });
   }
 
   return (
