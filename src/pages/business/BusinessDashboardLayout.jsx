@@ -25,21 +25,25 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const { unreadCount, updateMessagesCount, resetMessagesCount } = useUnreadMessages();
+  const {
+    unreadCount,
+    updateMessagesCount,
+    resetMessagesCount,
+    incrementMessagesCount,
+  } = useUnreadMessages();
 
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
 
-  // מאזין להודעות חדשות מהשרת ומעדכן ספירת הודעות
+  // מאזין להודעות חדשות מהשרת ומגדיל ספירת הודעות
   useEffect(() => {
     if (!socket) return;
 
     const handleNewClientMessage = (data) => {
       console.log("Received newClientMessageNotification:", data);
-      // מעלה את הספירה ב-1 בכל הודעה חדשה
-      updateMessagesCount(unreadCount + 1);
+      incrementMessagesCount(); // מגדיל בצורה בטוחה על הערך הקודם
     };
 
     socket.on("newClientMessageNotification", handleNewClientMessage);
@@ -47,9 +51,9 @@ export default function BusinessDashboardLayout() {
     return () => {
       socket.off("newClientMessageNotification", handleNewClientMessage);
     };
-  }, [socket, updateMessagesCount, unreadCount]);
+  }, [socket, incrementMessagesCount]);
 
-  // מאזין לספירת הודעות שלא נקראו מהשרת ומעדכן את הספירה במדויק
+  // מאזין לעדכון ספירת הודעות מדויק מהשרת
   useEffect(() => {
     if (!socket) return;
 
@@ -65,7 +69,7 @@ export default function BusinessDashboardLayout() {
     };
   }, [socket, updateMessagesCount]);
 
-  // איפוס ספירת ההודעות כשנכנסים ל"טאב הודעות"
+  // איפוס ספירת ההודעות כשנכנסים לטאב הודעות
   useEffect(() => {
     if (location.pathname.includes("/messages")) {
       resetMessagesCount();
@@ -83,7 +87,7 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ניווט למקומות מתאימים לפי טאב בפנייה ראשונית
+  // ניווט ראשוני לפי טאב בשורת הכתובת או סטייט
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });

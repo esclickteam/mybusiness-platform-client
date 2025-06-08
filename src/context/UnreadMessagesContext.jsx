@@ -5,8 +5,11 @@ const UnreadMessagesContext = createContext();
 export const UnreadMessagesProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const updateMessagesCount = (count) => {
-    setUnreadCount(count);
+  // עדכון ספירה – מקבל מספר או פונקציה שמקבלת את הערך הקודם
+  const updateMessagesCount = (countOrUpdater) => {
+    setUnreadCount((prev) =>
+      typeof countOrUpdater === "function" ? countOrUpdater(prev) : countOrUpdater
+    );
   };
 
   const resetMessagesCount = () => {
