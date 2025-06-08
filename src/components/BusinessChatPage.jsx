@@ -29,6 +29,7 @@ export default function BusinessChatPage() {
 
   useEffect(() => {
     if (resetMessagesCount) {
+      console.log("resetMessagesCount called");
       resetMessagesCount();
     }
   }, [resetMessagesCount]);
@@ -51,12 +52,21 @@ export default function BusinessChatPage() {
       }
       socketRef.current = sock;
 
+      sock.on("connect", () => {
+        console.log("Socket connected:", sock.id);
+      });
+
       sock.on("connect_error", (err) => {
         setError("Socket error: " + err.message);
         console.log("Socket connection failed:", err);
       });
 
+      sock.on("disconnect", (reason) => {
+        console.log("Socket disconnected:", reason);
+      });
+
       sock.on("tokenExpired", async () => {
+        console.log("Token expired, refreshing...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
@@ -68,6 +78,7 @@ export default function BusinessChatPage() {
       });
 
       sock.on("unreadMessagesCount", (count) => {
+        console.log("Received unreadMessagesCount:", count);
         if (updateMessagesCount) {
           updateMessagesCount(count);
         }
@@ -75,7 +86,10 @@ export default function BusinessChatPage() {
     })();
 
     return () => {
-      socketRef.current?.disconnect();
+      if (socketRef.current) {
+        console.log("Disconnecting socket:", socketRef.current.id);
+        socketRef.current.disconnect();
+      }
       prevSelectedRef.current = null;
     };
   }, [initialized, businessId, refreshAccessToken, logout, resetMessagesCount, updateMessagesCount]);
@@ -103,6 +117,7 @@ export default function BusinessChatPage() {
     if (!sock) return;
 
     const handler = (msg) => {
+      console.log("Received newMessage:", msg);
       setConvos((prev) => {
         const idx = prev.findIndex(
           (c) => String(c._id || c.conversationId) === msg.conversationId
@@ -135,6 +150,7 @@ export default function BusinessChatPage() {
     }
 
     if (resetMessagesCount) {
+      console.log("Resetting messages count due to conversation change");
       resetMessagesCount();
     }
 

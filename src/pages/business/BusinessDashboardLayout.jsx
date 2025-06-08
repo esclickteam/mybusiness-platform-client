@@ -28,11 +28,13 @@ export default function BusinessDashboardLayout() {
   const [messagesRead, setMessagesRead] = useState(false);
 
   const resetMessagesCount = () => {
+    console.log("resetMessagesCount called");
     setNewMessagesCount(0);
     setMessagesRead(true);
   };
 
   const updateMessagesCount = (count) => {
+    console.log("updateMessagesCount called with count:", count);
     if (!messagesRead) {
       setNewMessagesCount(count);
     } else if (count > 0) {
@@ -41,11 +43,12 @@ export default function BusinessDashboardLayout() {
     }
   };
 
-  // מאזין להודעות חדשות
+  // מאזין להודעות חדשות מהשרת
   useEffect(() => {
     if (!socket) return;
 
     const handleNewClientMessage = (data) => {
+      console.log("Received newClientMessageNotification:", data);
       setNewMessagesCount((prev) => prev + 1);
     };
 
@@ -61,6 +64,7 @@ export default function BusinessDashboardLayout() {
     if (!socket) return;
 
     const handleUnreadCount = (count) => {
+      console.log("Received unreadMessagesCount:", count);
       setNewMessagesCount(count);
     };
 
@@ -70,8 +74,6 @@ export default function BusinessDashboardLayout() {
       socket.off("unreadMessagesCount", handleUnreadCount);
     };
   }, [socket]);
-
-  // שאר הקוד נשאר כפי שהיה...
 
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
