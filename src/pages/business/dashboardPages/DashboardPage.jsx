@@ -262,32 +262,39 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", (newStats) => {
-        if (newStats && typeof newStats === "object") {
-          const cleanedStats = {};
-          for (const key in newStats) {
-            if (newStats[key] !== undefined) {
-              cleanedStats[key] = newStats[key];
-            }
-          }
-          setStats((prevStats) => {
-            const merged = mergeStats(prevStats, cleanedStats);
+  if (newStats && typeof newStats === "object") {
+    const cleanedStats = {};
+    for (const key in newStats) {
+      if (newStats[key] !== undefined) {
+        cleanedStats[key] = newStats[key];
+      }
+    }
 
-            // עדכון ספירת הודעות לא נקראות בקונטקסט
-            if (updateMessagesCount && cleanedStats.messages_count !== undefined) {
-              updateMessagesCount(cleanedStats.messages_count);
-            }
+    setStats((prevStats) => {
+      // אם הספירה הנוכחית כבר 0, אל תחליף ל־messages_count גדול מ-0
+      if (unreadCount === 0 && cleanedStats.messages_count > 0) {
+        // מוותר על עדכון ספירת ההודעות
+        delete cleanedStats.messages_count;
+      }
 
-            const isEqual = Object.keys(merged).every(
-              (key) => merged[key] === prevStats[key]
-            );
-            if (isEqual) return prevStats;
-            try {
-              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-            } catch (e) {}
-            return merged;
-          });
-        }
-      });
+      const merged = mergeStats(prevStats, cleanedStats);
+
+      // עדכון ספירת הודעות לא נקראות בקונטקסט
+      if (updateMessagesCount && cleanedStats.messages_count !== undefined) {
+        updateMessagesCount(cleanedStats.messages_count);
+      }
+
+      const isEqual = Object.keys(merged).every(
+        (key) => merged[key] === prevStats[key]
+      );
+      if (isEqual) return prevStats;
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+      } catch (e) {}
+      return merged;
+    });
+  }
+});
 
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
