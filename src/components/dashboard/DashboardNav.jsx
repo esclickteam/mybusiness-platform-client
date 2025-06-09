@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const DashboardNav = ({ refs }) => {
   const [activeSection, setActiveSection] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,29 +24,9 @@ const DashboardNav = ({ refs }) => {
   const handleScrollTo = (refName, e) => {
     e.preventDefault();
 
-    // ניווט לפי id הכפתור
-    switch (refName) {
-      case "cardsRef":
-        navigate("/business/dashboard/cards");
-        break;
-      case "insightsRef":
-        navigate("/business/dashboard/insights");
-        break;
-      case "chartsRef":
-        navigate("/business/dashboard/charts");
-        break;
-      case "appointmentsRef":
-        navigate("/business/dashboard/appointments");
-        break;
-      case "nextActionsRef":
-        navigate("/business/dashboard/next-actions");
-        break;
-      default:
-        const targetRef = refs[refName];
-        if (targetRef?.current) {
-          targetRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-        break;
+    const targetRef = refs[refName];
+    if (targetRef?.current) {
+      targetRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -58,6 +36,7 @@ const DashboardNav = ({ refs }) => {
     { id: "chartsRef", label: "גרפים" },
     { id: "appointmentsRef", label: "פגישות" },
     { id: "nextActionsRef", label: "המלצות" },
+    { id: "weeklySummaryRef", label: "סיכום שבועי" },  // הוספתי את זה
   ];
 
   return (

@@ -434,6 +434,7 @@ const DashboardPage = () => {
           leadsRef: null,
           appointmentsRef: null,
           calendarRef: null,
+          weeklySummaryRef: null, // הוספתי רפרנס לסיכום השבועי
         }}
       />
 
@@ -461,7 +462,7 @@ const DashboardPage = () => {
         {syncedStats.recent_activity && <RecentActivityTable activities={syncedStats.recent_activity} />}
       </div>
 
-      <div>
+      <div ref={null /* הוסף ref כאן אם תרצה */}>
         <WeeklySummary stats={syncedStats} />
       </div>
 
