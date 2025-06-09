@@ -132,34 +132,37 @@ const DashboardPage = () => {
   const [alert, setAlert] = useState(null);
 
   useEffect(() => {
-    if (
-      (location.pathname.includes("/messages") ||
-        location.pathname.includes("/dashboard")) &&
-      socketRef.current
-    ) {
-      if (location.pathname.includes("/messages")) {
-        const conversationId = location.state?.conversationId || null;
+  if (!socket || !businessId) return;
 
-        if (conversationId) {
-          socketRef.current.emit("markMessagesRead", conversationId, (response) => {
-            if (response.ok) {
-              updateMessagesCount(response.unreadCount);
-              console.log(
-                "Messages marked as read, unreadCount updated:",
-                response.unreadCount
-              );
-            } else {
-              console.error("Failed to mark messages as read:", response.error);
-            }
-          });
+  if (location.pathname.includes("/messages")) {
+    hasResetUnreadCount.current = false; // Reset flag when entering /messages
+    const conversationId = location.state?.conversationId || null;
+    if (conversationId) {
+      console.log("Calling markMessagesRead with conversationId:", conversationId);
+      socket.emit('markMessagesRead', conversationId, (response) => {
+        if (response.ok) {
+          updateMessagesCount(response.unreadCount);
+          console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
         } else {
-          console.warn("No conversationId available for marking messages as read");
+          console.error("Failed to mark messages as read:", response.error);
         }
-      }
-
-      resetMessagesCount();
+      });
     }
-  }, [location.pathname, resetMessagesCount, updateMessagesCount]);
+  } else {
+    // Reset unreadCount only once when leaving /messages tab
+    if (!hasResetUnreadCount.current) {
+      setTimeout(() => {
+        if (!hasResetUnreadCount.current) {
+          console.log("Leaving /messages tab, resetting unreadCount");
+          updateMessagesCount(0);
+          hasResetUnreadCount.current = true;
+        }
+      }, 200);
+    }
+  }
+}, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
+
+
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
