@@ -31,8 +31,6 @@ export default function BusinessDashboardLayout() {
     incrementMessagesCount,
   } = useUnreadMessages();
 
-  const [pendingUnreadCount, setPendingUnreadCount] = useState(null);
-
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
@@ -68,40 +66,28 @@ export default function BusinessDashboardLayout() {
     };
   }, [socket, updateMessagesCount]);
 
-  // סימון הודעות כנקראות כשנכנסים/עוזבים לטאב הודעות ועדכון ספירת ההודעות בצורה אסינכרונית
+  // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
-    if (!socket || !businessId) return;
+  if (!socket || !businessId) return;
 
-    if (location.pathname.includes("/messages")) {
-      const conversationId = location.state?.conversationId || null;
-      if (conversationId) {
-        console.log("Calling markMessagesRead with conversationId:", conversationId);
-        socket.emit('markMessagesRead', conversationId, (response) => {
-          if (response.ok) {
-            setPendingUnreadCount(response.unreadCount);
-            console.log("Messages marked as read, unreadCount pending update:", response.unreadCount);
-          } else {
-            console.error("Failed to mark messages as read:", response.error);
-          }
-        });
-      }
+  if (location.pathname.includes("/messages")) {
+    const conversationId = location.state?.conversationId || null;
+    if (conversationId) {
+      console.log("Calling markMessagesRead with conversationId:", conversationId);
+      socket.emit('markMessagesRead', conversationId, (response) => {
+        if (response.ok) {
+          updateMessagesCount(response.unreadCount);
+          console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+        } else {
+          console.error("Failed to mark messages as read:", response.error);
+        }
+      });
     }
-
-    return () => {
-      // ניקוי – כשעוזבים את הטאב הודעות
-      if (!location.pathname.includes("/messages")) {
-        console.log("Leaving /messages tab - resetting unreadCount pending");
-        setPendingUnreadCount(0);
-      }
-    };
-  }, [location.pathname, socket, businessId, location.state]);
-
-  // עדכון מדויק של unreadCount מחוץ לרינדור בזמן המתאים
-  useEffect(() => {
-    if (pendingUnreadCount !== null) {
-      updateMessagesCount(pendingUnreadCount);
-    }
-  }, [pendingUnreadCount, updateMessagesCount]);
+  } else {
+    // כשעוזבים את הטאב הודעות - איפוס ספירת ההודעות (ההתראה האדומה)
+    updateMessagesCount(0);
+  }
+}, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
 
   // ניהול רספונסיביות לסיידבר
   useEffect(() => {
