@@ -30,7 +30,7 @@ const CRMServicesTab = () => {
   useEffect(() => {
     async function fetchServices() {
       try {
-        const res = await API.get("/my/services");
+        const res = await API.get("/business/my/services");
         setServices(res.data.services || []);
       } catch (err) {
         alert("❌ שגיאה בטעינת השירותים");
@@ -47,7 +47,11 @@ const CRMServicesTab = () => {
 
   // הוספת שירות חדש
   const addService = async () => {
-    if (!newService.name || !newService.price || (calcDurationInMinutes(newService.hours, newService.minutes) === 0)) {
+    if (
+      !newService.name ||
+      !newService.price ||
+      calcDurationInMinutes(newService.hours, newService.minutes) === 0
+    ) {
       alert("יש למלא שם, מחיר ומשך תקין");
       return;
     }
@@ -65,7 +69,7 @@ const CRMServicesTab = () => {
         formData.append("image", newService.imageFile);
       }
 
-      const res = await API.post("/my/services", formData, {
+      const res = await API.post("/business/my/services", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -103,7 +107,11 @@ const CRMServicesTab = () => {
 
   // שמירת עריכה
   const saveEdit = async () => {
-    if (!editData.name || !editData.price || (calcDurationInMinutes(editData.hours, editData.minutes) === 0)) {
+    if (
+      !editData.name ||
+      !editData.price ||
+      calcDurationInMinutes(editData.hours, editData.minutes) === 0
+    ) {
       alert("יש למלא שם, מחיר ומשך תקין לעדכון");
       return;
     }
@@ -121,12 +129,12 @@ const CRMServicesTab = () => {
         formData.append("image", editData.imageFile);
       }
 
-      await API.put(`/my/services/${editServiceId}`, formData, {
+      await API.put(`/business/my/services/${editServiceId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       // טען מחדש שירותים מהשרת אחרי העריכה
-      const res = await API.get("/my/services");
+      const res = await API.get("/business/my/services");
       setServices(res.data.services || []);
 
       setEditServiceId(null);
@@ -149,7 +157,7 @@ const CRMServicesTab = () => {
   const deleteService = async (id) => {
     if (!window.confirm("האם למחוק את השירות?")) return;
     try {
-      await API.delete(`/my/services/${id}`);
+      await API.delete(`/business/my/services/${id}`);
       setServices((prev) => prev.filter((s) => s._id !== id));
     } catch {
       alert("❌ שגיאה במחיקת השירות");
