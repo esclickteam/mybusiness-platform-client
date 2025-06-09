@@ -11,7 +11,7 @@ export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
-  const { resetMessagesCount, updateMessagesCount } = useOutletContext();
+  const { updateMessagesCount } = useOutletContext();
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -22,7 +22,20 @@ export default function BusinessChatPage() {
   const socket = useSocket();
   const prevSelectedRef = useRef(null);
 
-  // Load conversations list
+  // Map של ספירת הודעות לא נקראו לכל שיחה
+  const [unreadCountsByConversation, setUnreadCountsByConversation] = useState({});
+
+  // חישוב הסכום הכולל של הודעות לא נקראות להצגה בתפריט
+  const totalUnreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
+
+  // עדכון ספירת הודעות כללית ב-outlet context לצורך התראה בתפריט הצד
+  useEffect(() => {
+    if (updateMessagesCount) {
+      updateMessagesCount(totalUnreadCount);
+    }
+  }, [totalUnreadCount, updateMessagesCount]);
+
+  // טעינת רשימת השיחות
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -30,11 +43,20 @@ export default function BusinessChatPage() {
     API.get("/conversations", { params: { businessId } })
       .then(({ data }) => {
         setConvos(data);
+
+        // אתחל ספירת הודעות לא נקראות לכל שיחה (אם יש מידע בשיחות)
+        const initialUnread = {};
+        data.forEach((convo) => {
+          const id = convo.conversationId || convo._id;
+          const unread = convo.unreadCount || 0; // ודא שיש שדה כזה מהשרת
+          if (unread > 0) initialUnread[id] = unread;
+        });
+        setUnreadCountsByConversation(initialUnread);
+
         if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
-          const partnerId =
-            first.partnerId || first.participants.find((p) => p !== businessId);
+          const partnerId = first.partnerId || first.participants.find((p) => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
       })
@@ -44,63 +66,48 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // Manage joining/leaving conversation on selection change and mark as read
+  // ניהול כניסה לשיחה, סימון הודעות כנקראות ואיפוס ספירה בשיחה זו
   useEffect(() => {
     if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
       return;
     }
 
-    console.log(
-      "Frontend markMessagesRead called with conversationId:",
-      selected.conversationId,
-      "businessId:",
-      businessId
-    );
-
-    // סימון השיחה שנכנסנו אליה כנקראת
+    // סימון השיחה שנכנסנו אליה כנקראת בשרת
     socket.emit("markMessagesRead", selected.conversationId, (response) => {
       if (!response.ok) {
         console.error("Failed to mark messages as read:", response.error);
       } else {
-        console.log(
-          "Messages marked as read, unreadCount updated:",
-          response.unreadCount
-        );
-        if (updateMessagesCount) updateMessagesCount(response.unreadCount);
-        // לא קוראים resetMessagesCount כאן כדי לא לאפס מיד את הספירה
+        // אפס ספירת הודעות לא נקראות בשיחה שנכנסנו אליה
+        setUnreadCountsByConversation((prev) => {
+          const updated = { ...prev };
+          delete updated[selected.conversationId];
+          return updated;
+        });
       }
     });
 
     // עזיבת השיחה הקודמת אם שונה
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
-      console.log("Leaving previous conversation:", prevSelectedRef.current);
       socket.emit("leaveConversation", prevSelectedRef.current, (ack) => {
         if (!ack.ok) {
           console.error("Failed to leave previous conversation:", ack.error);
-        } else {
-          console.log("Left previous conversation successfully");
         }
       });
     }
 
     // הצטרפות לשיחה החדשה
-    console.log("Joining new conversation:", selected.conversationId);
     socket.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) {
         setError("לא ניתן להצטרף לשיחה");
         console.error("Failed to join conversation:", ack.error);
-      } else {
-        console.log("Joined conversation successfully");
       }
     });
 
     // טעינת היסטוריית ההודעות
-    console.log("Fetching history for conversation:", selected.conversationId);
     socket.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
-        console.log("Loaded messages:", res.messages?.length || 0);
       } else {
         setMessages([]);
         setError("שגיאה בטעינת ההודעות");
@@ -109,10 +116,32 @@ export default function BusinessChatPage() {
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, resetMessagesCount, updateMessagesCount, socket]);
+  }, [selected, socket]);
+
+  // מאזין להודעות חדשות שמגיעות דרך websocket
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = (message) => {
+      const convoId = message.conversationId || message.conversation_id;
+
+      // אם ההודעה היא לשיחה שלא פתוחה כרגע, הגדל ספירת לא נקראו
+      if (convoId && convoId !== selected?.conversationId) {
+        setUnreadCountsByConversation((prev) => {
+          const prevCount = prev[convoId] || 0;
+          return { ...prev, [convoId]: prevCount + 1 };
+        });
+      }
+    };
+
+    socket.on("newClientMessageNotification", handleNewMessage);
+
+    return () => {
+      socket.off("newClientMessageNotification", handleNewMessage);
+    };
+  }, [socket, selected?.conversationId]);
 
   const handleSelect = (conversationId, partnerId) => {
-    console.log("Selecting conversation:", conversationId);
     setSelected({ conversationId, partnerId });
   };
 
@@ -131,6 +160,7 @@ export default function BusinessChatPage() {
             businessId={businessId}
             selectedConversationId={selected?.conversationId}
             onSelect={handleSelect}
+            unreadCountsByConversation={unreadCountsByConversation} // העבר ספירה לפי שיחה להצגה ברשימה
             isBusiness
           />
         )}
