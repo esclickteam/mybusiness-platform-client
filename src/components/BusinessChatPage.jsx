@@ -54,6 +54,8 @@ export default function BusinessChatPage() {
     // איפוס ספירת הודעות שלא נקראו בצד לקוח
     if (resetMessagesCount) resetMessagesCount();
 
+    console.log("Frontend markMessagesRead called with conversationId:", selected.conversationId, "businessId:", businessId);
+
     // סימון השיחה שנכנסנו אליה כנקראת
     socket.emit("markMessagesRead", selected.conversationId, (response) => {
       if (!response.ok) {
