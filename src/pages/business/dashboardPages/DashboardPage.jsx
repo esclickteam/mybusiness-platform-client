@@ -135,28 +135,27 @@ const DashboardPage = () => {
 
   // סימון הודעות כנקראות בשרת ואיפוס ספירת הודעות לא נקראות בצד לקוח בכניסה לטאב הודעות
   useEffect(() => {
-  if ((location.pathname.includes("/messages") || location.pathname.includes("/dashboard")) && socketRef.current) {
-    if (location.pathname.includes("/messages")) {
-      const conversationId = location.state?.conversationId || null;
+    if ((location.pathname.includes("/messages") || location.pathname.includes("/dashboard")) && socketRef.current) {
+      if (location.pathname.includes("/messages")) {
+        const conversationId = location.state?.conversationId || null;
 
-      if (conversationId) {
-        socketRef.current.emit('markMessagesRead', conversationId, (response) => {
-          if (response.ok) {
-            updateMessagesCount(response.unreadCount);
-            console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
-          } else {
-            console.error("Failed to mark messages as read:", response.error);
-          }
-        });
-      } else {
-        console.warn("No conversationId available for marking messages as read");
+        if (conversationId) {
+          socketRef.current.emit('markMessagesRead', conversationId, (response) => {
+            if (response.ok) {
+              updateMessagesCount(response.unreadCount);
+              console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+            } else {
+              console.error("Failed to mark messages as read:", response.error);
+            }
+          });
+        } else {
+          console.warn("No conversationId available for marking messages as read");
+        }
       }
+
+      resetMessagesCount();
     }
-
-    resetMessagesCount();
-  }
-}, [location.pathname, resetMessagesCount, updateMessagesCount]);
-
+  }, [location.pathname, resetMessagesCount, updateMessagesCount]);
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
@@ -288,7 +287,7 @@ const DashboardPage = () => {
             const merged = mergeStats(prevStats, cleanedStats);
 
             // עדכון ספירת הודעות לא נקראות בקונטקסט
-            if (updateMessagesCount && cleanedStats.messages_count !== undefined) {
+            if (updateMessagesCount && cleanedStats.messages_count !== undefined && cleanedStats.messages_count !== unreadCountRef.current) {
               updateMessagesCount(cleanedStats.messages_count);
             }
 
@@ -405,6 +404,12 @@ const DashboardPage = () => {
     }).length;
   };
 
+  // סנכרון הסטטיסטיקות להצגה, משתמש ב-unreadCount מהקונטקסט
+  const syncedStats = {
+    ...stats,
+    messages_count: unreadCount,
+  };
+
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
@@ -429,29 +434,29 @@ const DashboardPage = () => {
         }}
       />
 
-      <DashboardCards stats={stats} />
+      <DashboardCards stats={syncedStats} />
 
-      <Insights stats={{ ...stats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }} />
+      <Insights stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }} />
 
       <NextActions
         stats={{
-          weekly_views_count: countItemsInLastWeek(stats.views, "date"),
+          weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
           weekly_appointments_count: countItemsInLastWeek(appointments),
-          weekly_reviews_count: countItemsInLastWeek(stats.reviews, "date"),
-          weekly_messages_count: countItemsInLastWeek(stats.messages, "date"),
+          weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
+          weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
         }}
       />
 
       <div>
-        <BarChartComponent appointments={stats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
+        <BarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
       </div>
 
       <div>
-        {stats.recent_activity && <RecentActivityTable activities={stats.recent_activity} />}
+        {syncedStats.recent_activity && <RecentActivityTable activities={syncedStats.recent_activity} />}
       </div>
 
       <div>
-        <WeeklySummary stats={stats} />
+        <WeeklySummary stats={syncedStats} />
       </div>
 
       <div className="calendar-row">
@@ -459,7 +464,7 @@ const DashboardPage = () => {
           <DailyAgenda
             date={selectedDate}
             appointments={appointments}
-            businessName={stats.businessName}
+            businessName={syncedStats.businessName}
           />
         </div>
         <div className="calendar-container">
