@@ -26,10 +26,9 @@ export default function BusinessDashboardLayout() {
   const location = useLocation();
 
   const {
-    unreadCountsByConversation,
-    incrementUnreadCountForConversation,
-    getTotalUnreadCount,
+    unreadCount,
     updateMessagesCount,
+    incrementMessagesCount,
   } = useUnreadMessages();
 
   const isMobileInit = window.innerWidth <= 768;
@@ -40,32 +39,29 @@ export default function BusinessDashboardLayout() {
   // Ref to prevent infinite update loops on unread count reset
   const hasResetUnreadCount = useRef(false);
 
-  // מאזין להודעות חדשות מהשרת ומעדכן ספירה לפי שיחה
+  // מאזין להודעות חדשות מהשרת ומגדיל ספירת הודעות
   useEffect(() => {
     if (!socket) return;
 
     const handleNewClientMessage = (data) => {
       console.log("Received newClientMessageNotification:", data);
-      const convoId = data.conversationId || data.conversation_id;
-      if (convoId) {
-        incrementUnreadCountForConversation(convoId);
-      }
+      incrementMessagesCount();
     };
 
     socket.on("newClientMessageNotification", handleNewClientMessage);
     return () => {
       socket.off("newClientMessageNotification", handleNewClientMessage);
     };
-  }, [socket, incrementUnreadCountForConversation]);
+  }, [socket, incrementMessagesCount]);
 
-  // מאזין לעדכון ספירת הודעות מדויק מהשרת (אופציונלי)
+  // מאזין לעדכון ספירת הודעות מדויק מהשרת
   useEffect(() => {
     if (!socket) return;
 
     const handleUnreadCount = (newCount) => {
-      // עדכון כולל לפי הצורך, לדוגמה לאפס ספירה כשטאב הודעות פתוח
+      // מנע עדכון ספירה בזמן שבלשונית ההודעות פתוחה (או עדכן רק אם הערך גדל)
       if (location.pathname.includes("/messages")) {
-        if (newCount > getTotalUnreadCount()) {
+        if (newCount > unreadCount) {
           updateMessagesCount(newCount);
         }
       } else {
@@ -77,7 +73,7 @@ export default function BusinessDashboardLayout() {
     return () => {
       socket.off("unreadMessagesCount", handleUnreadCount);
     };
-  }, [socket, updateMessagesCount, location.pathname, getTotalUnreadCount]);
+  }, [socket, updateMessagesCount, location.pathname, unreadCount]);
 
   // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
@@ -207,7 +203,7 @@ export default function BusinessDashboardLayout() {
                     className={({ isActive }) => (isActive ? "active" : undefined)}
                   >
                     {label}
-                    {path === "messages" && getTotalUnreadCount() > 0 && (
+                    {path === "messages" && unreadCount > 0 && (
                       <span
                         style={{
                           backgroundColor: "red",
@@ -220,7 +216,7 @@ export default function BusinessDashboardLayout() {
                           verticalAlign: "middle",
                         }}
                       >
-                        {getTotalUnreadCount()}
+                        {unreadCount}
                       </span>
                     )}
                   </NavLink>
@@ -281,7 +277,7 @@ export default function BusinessDashboardLayout() {
           >
             <Outlet
               context={{
-                unreadCount: getTotalUnreadCount(),
+                unreadCount,
                 updateMessagesCount,
               }}
             />
