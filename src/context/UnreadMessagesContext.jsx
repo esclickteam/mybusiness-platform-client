@@ -7,13 +7,17 @@ export const UnreadMessagesProvider = ({ children }) => {
 
   // עדכון ספירה – מקבל מספר או פונקציה שמקבלת את הערך הקודם
   const updateMessagesCount = (countOrUpdater) => {
-    setUnreadCount((prev) => {
-      const newCount =
-        typeof countOrUpdater === "function" ? countOrUpdater(prev) : countOrUpdater;
-      console.log("[UnreadMessagesContext] updateMessagesCount:", prev, "->", newCount);
-      return newCount;
-    });
-  };
+  setUnreadCount((prev) => {
+    const newCount =
+      typeof countOrUpdater === "function" ? countOrUpdater(prev) : countOrUpdater;
+    if (newCount === prev) {
+      console.log("[UnreadMessagesContext] updateMessagesCount skipped, same value:", newCount);
+      return prev; // לא מעדכן אם הערך זהה
+    }
+    console.log("[UnreadMessagesContext] updateMessagesCount:", prev, "->", newCount);
+    return newCount;
+  });
+};
 
   const resetMessagesCount = () => {
     console.log("[UnreadMessagesContext] resetMessagesCount: 0");
