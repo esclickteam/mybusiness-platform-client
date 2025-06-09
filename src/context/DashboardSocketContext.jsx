@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { useAuth } from "./AuthContext"; // הנחה: הקונטקסט נמצא באותו מיקום
+import { useAuth } from "./AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 const DashboardSocketContext = createContext(null);
@@ -13,7 +13,7 @@ export function DashboardSocketProvider({ businessId, children }) {
     requests_count: 0,
     orders_count: 0,
     reviews_count: 0,
-    messages_count: 0,
+    messages_count: 0,  // ספירת הודעות לא נקראו
     appointments_count: 0,
   });
 
@@ -54,6 +54,12 @@ export function DashboardSocketProvider({ businessId, children }) {
 
       socketRef.current.on("dashboardUpdate", handleUpdate);
 
+      socketRef.current.on("unreadMessagesCount", (count) => {
+        if (!isMounted) return;
+        console.log("🔄 [SocketProvider] עדכון ספירת הודעות לא נקראו:", count);
+        setStats(prev => ({ ...prev, messages_count: count }));
+      });
+
       socketRef.current.on("connect", () => {
         console.log("🔌 [SocketProvider] מחובר עם ID:", socketRef.current.id);
       });
@@ -81,11 +87,12 @@ export function DashboardSocketProvider({ businessId, children }) {
       isMounted = false;
       if (socketRef.current) {
         socketRef.current.off("dashboardUpdate");
+        socketRef.current.off("unreadMessagesCount");
         socketRef.current.disconnect();
         console.log("🔌 [SocketProvider] ניתוק ה־socket");
         socketRef.current = null;
       }
-      // שים לב: לא מאפסים את hasInitRef כדי למנוע התחברות חוזרת לא רצויה
+      // לא מאפסים את hasInitRef כדי למנוע התחברות חוזרת לא רצויה
     };
   }, [businessId, refreshAccessToken, logout]);
 
