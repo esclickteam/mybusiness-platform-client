@@ -75,6 +75,12 @@ const DashboardPage = () => {
   // קבלת הפונקציות והמצב מניהול ההודעות הלא נקראות בקונטקסט
   const { resetMessagesCount, updateMessagesCount, unreadCount } = useUnreadMessages();
 
+  // Ref לשמירת הערך המעודכן של unreadCount כדי למנוע בעיות בתוך ה-socket event
+  const unreadCountRef = useRef(unreadCount);
+  useEffect(() => {
+    unreadCountRef.current = unreadCount;
+  }, [unreadCount]);
+
   const [stats, setStats] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -262,39 +268,38 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", (newStats) => {
-  if (newStats && typeof newStats === "object") {
-    const cleanedStats = {};
-    for (const key in newStats) {
-      if (newStats[key] !== undefined) {
-        cleanedStats[key] = newStats[key];
-      }
-    }
+        if (newStats && typeof newStats === "object") {
+          const cleanedStats = {};
+          for (const key in newStats) {
+            if (newStats[key] !== undefined) {
+              cleanedStats[key] = newStats[key];
+            }
+          }
 
-    setStats((prevStats) => {
-      // אם הספירה הנוכחית כבר 0, אל תחליף ל־messages_count גדול מ-0
-      if (unreadCount === 0 && cleanedStats.messages_count > 0) {
-        // מוותר על עדכון ספירת ההודעות
-        delete cleanedStats.messages_count;
-      }
+          setStats((prevStats) => {
+            // אם הספירה הנוכחית כבר 0, אל תחליף ל־messages_count גדול מ-0
+            if (unreadCountRef.current === 0 && cleanedStats.messages_count > 0) {
+              delete cleanedStats.messages_count;
+            }
 
-      const merged = mergeStats(prevStats, cleanedStats);
+            const merged = mergeStats(prevStats, cleanedStats);
 
-      // עדכון ספירת הודעות לא נקראות בקונטקסט
-      if (updateMessagesCount && cleanedStats.messages_count !== undefined) {
-        updateMessagesCount(cleanedStats.messages_count);
-      }
+            // עדכון ספירת הודעות לא נקראות בקונטקסט
+            if (updateMessagesCount && cleanedStats.messages_count !== undefined) {
+              updateMessagesCount(cleanedStats.messages_count);
+            }
 
-      const isEqual = Object.keys(merged).every(
-        (key) => merged[key] === prevStats[key]
-      );
-      if (isEqual) return prevStats;
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-      } catch (e) {}
-      return merged;
-    });
-  }
-});
+            const isEqual = Object.keys(merged).every(
+              (key) => merged[key] === prevStats[key]
+            );
+            if (isEqual) return prevStats;
+            try {
+              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+            } catch (e) {}
+            return merged;
+          });
+        }
+      });
 
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
