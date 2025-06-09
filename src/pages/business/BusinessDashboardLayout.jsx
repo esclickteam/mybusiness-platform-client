@@ -68,26 +68,23 @@ export default function BusinessDashboardLayout() {
 
   // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
-  if (!socket || !businessId) return;
-
-  if (location.pathname.includes("/messages")) {
-    const conversationId = location.state?.conversationId || null;
-    if (conversationId) {
-      console.log("Calling markMessagesRead with conversationId:", conversationId);
-      socket.emit('markMessagesRead', conversationId, (response) => {
-        if (response.ok) {
-          updateMessagesCount(response.unreadCount);
-          console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
-        } else {
-          console.error("Failed to mark messages as read:", response.error);
+    if (location.pathname.includes("/messages")) {
+      if (socket && businessId) {
+        const conversationId = location.state?.conversationId || null;
+        if (conversationId) {
+          console.log("Calling markMessagesRead with conversationId:", conversationId);
+          socket.emit('markMessagesRead', conversationId, (response) => {
+            if (response.ok) {
+              updateMessagesCount(response.unreadCount);
+              console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+            } else {
+              console.error("Failed to mark messages as read:", response.error);
+            }
+          });
         }
-      });
+      }
     }
-  } else {
-    // כשעוזבים את הטאב הודעות - איפוס ספירת ההודעות (ההתראה האדומה)
-    updateMessagesCount(0);
-  }
-}, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
+  }, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
 
   // ניהול רספונסיביות לסיידבר
   useEffect(() => {
