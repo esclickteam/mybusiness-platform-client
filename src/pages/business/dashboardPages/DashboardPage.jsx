@@ -74,7 +74,7 @@ const DashboardPage = () => {
   const chartsRef = useRef(null);
   const appointmentsRef = useRef(null);
   const nextActionsRef = useRef(null);
-  const weeklySummaryRef = useRef(null);  // רפרנס לסיכום השבועי
+  const weeklySummaryRef = useRef(null);  
 
   const [stats, setStats] = useState(() => {
     try {
@@ -440,7 +440,7 @@ const DashboardPage = () => {
           chartsRef,
           appointmentsRef,
           nextActionsRef,
-          weeklySummaryRef, // Added ref here
+          weeklySummaryRef, 
         }}
       />
 
@@ -474,11 +474,8 @@ const DashboardPage = () => {
         {syncedStats.recent_activity && <RecentActivityTable activities={syncedStats.recent_activity} />}
       </div>
 
-      <div ref={weeklySummaryRef}>
-        <WeeklySummary stats={syncedStats} />
-      </div>
-
-      <div className="calendar-row">
+      {/* הוספת ref לבלוק הפגישות */}
+      <div ref={appointmentsRef} className="calendar-row">
         <div className="day-agenda-box">
           <DailyAgenda
             date={selectedDate}
@@ -493,6 +490,10 @@ const DashboardPage = () => {
             selectedDate={selectedDate}
           />
         </div>
+      </div>
+
+      <div ref={weeklySummaryRef}>
+        <WeeklySummary stats={syncedStats} />
       </div>
     </div>
   );
