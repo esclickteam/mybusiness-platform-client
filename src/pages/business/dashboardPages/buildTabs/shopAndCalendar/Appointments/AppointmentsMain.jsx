@@ -5,6 +5,7 @@ import ClientServiceCard from './ClientServiceCard';
 import CalendarSetup from './CalendarSetup';
 import './AppointmentsMain.css';
 import { format, parse, differenceInMinutes, addMinutes } from 'date-fns';
+import { useAuth } from '../../../context/AuthContext'; // עדכן את הנתיב לפי הפרויקט שלך
 
 // === Normalize work hours to {0: {...}, 1: {...}, ...} ===
 function normalizeWorkHours(data) {
@@ -33,6 +34,8 @@ const AppointmentsMain = ({
   setWorkHours,
   setBusinessDetails
 }) => {
+  const { currentUser } = useAuth();
+
   const [showCalendarSetup, setShowCalendarSetup] = useState(false);
   const [selectedService, setSelectedService]     = useState(null);
   const [selectedDate, setSelectedDate]           = useState(null);
@@ -51,18 +54,18 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setServices]);
 
-  // --- Fetch & normalize workHours (if you fetch here, or from parent do it there!) ---
+  // --- Fetch & normalize workHours ---
   useEffect(() => {
-    if (!isPreview && setWorkHours) {
+    if (!isPreview && setWorkHours && currentUser) {
       API.get('/appointments/get-work-hours', {
-  params: { businessId: currentUser?.businessId || "" }
-})
-  .then(res => {
-    setWorkHours(normalizeWorkHours(res.data));
-  })
-  .catch(() => setWorkHours({}));
+        params: { businessId: currentUser?.businessId || "" }
+      })
+      .then(res => {
+        setWorkHours(normalizeWorkHours(res.data));
+      })
+      .catch(() => setWorkHours({}));
     }
-  }, [isPreview, setWorkHours]);
+  }, [isPreview, setWorkHours, currentUser]);
 
   // --- Compute slots when date or service changes ---
   useEffect(() => {
