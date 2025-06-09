@@ -120,11 +120,14 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
+  // Ref to avoid multiple resets on unread count
+  const hasResetUnreadCount = useRef(false);
+
   useEffect(() => {
     if (!socketRef.current) return;
 
     if (location.pathname.includes("/messages")) {
-      // נכנס לעמוד ההודעות — מאפס את הדגל לאיפוס
+      // Entered messages page — reset flag to allow counting
       hasResetUnreadCount.current = false;
       const conversationId = location.state?.conversationId || null;
 
@@ -139,7 +142,7 @@ const DashboardPage = () => {
         });
       }
     } else {
-      // יוצא מעמוד ההודעות — מאפס את unreadCount פעם אחת בלבד, עם דיליי למניעת קונפליקטים
+      // Leaving messages page — reset unreadCount once with a slight delay
       if (!hasResetUnreadCount.current) {
         setTimeout(() => {
           if (!hasResetUnreadCount.current) {
@@ -395,19 +398,6 @@ const DashboardPage = () => {
     : [];
   const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
 
-  const handleQuickAction = (action) => {
-    switch (action) {
-      case "meeting":
-        navigate(`/business/${businessId}/dashboard/appointments/new`);
-        break;
-      case "message":
-        navigate(`/business/${businessId}/dashboard/messages/new`);
-        break;
-      default:
-        console.warn("Unknown quick action:", action);
-    }
-  };
-
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
     const endOfWeek = new Date();
@@ -432,8 +422,6 @@ const DashboardPage = () => {
           {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
         </span>
       </h2>
-
-      {/* QuickActions הוסר */}
 
       {alert && <DashboardAlert text={alert} type="info" />}
 
