@@ -6,17 +6,16 @@ export const UnreadMessagesProvider = ({ children }) => {
   // מפת ספירות הודעות לא נקראות לפי שיחה: { [conversationId]: count }
   const [unreadCountsByConversation, setUnreadCountsByConversation] = useState({});
 
-  // עדכון ספירה של שיחה אחת או עדכון כללי עם אובייקט חדש
+  // עדכון ספירה של שיחה אחת או הוספת שיחה חדשה עם ספירה
   const updateMessagesCount = (conversationId, count) => {
     setUnreadCountsByConversation((prev) => {
-      // אם count זהה לערך הקודם, לא מעדכן
+      // אם count זהה לערך הקודם, לא מעדכן את ה-state
       if (prev[conversationId] === count) return prev;
-
       return { ...prev, [conversationId]: count };
     });
   };
 
-  // איפוס ספירה של שיחה מסוימת
+  // איפוס ספירת הודעות של שיחה מסוימת (מסיר אותה מהמפה)
   const resetMessagesCount = (conversationId) => {
     setUnreadCountsByConversation((prev) => {
       const updated = { ...prev };
@@ -25,7 +24,7 @@ export const UnreadMessagesProvider = ({ children }) => {
     });
   };
 
-  // הגדלת ספירה של שיחה מסוימת באחד
+  // הגדלת ספירת הודעות של שיחה מסוימת ב-1 (למשל בהודעה חדשה שלא נקראה)
   const incrementMessagesCount = (conversationId) => {
     setUnreadCountsByConversation((prev) => {
       const prevCount = prev[conversationId] || 0;
@@ -33,7 +32,7 @@ export const UnreadMessagesProvider = ({ children }) => {
     });
   };
 
-  // סכום כל ההודעות הלא נקראות
+  // סכום כל ההודעות הלא נקראות מכל השיחות (לנקודת התראה כללית)
   const totalUnreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
 
   return (
