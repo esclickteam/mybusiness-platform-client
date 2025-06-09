@@ -19,16 +19,6 @@ import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
 
 import "../../../styles/dashboard.css";
 
-const QuickActions = ({ onAction }) => (
-  <div className="quick-actions-row">
-    <button className="quick-action-btn" onClick={() => onAction("meeting")}>
-      + פגישה חדשה
-    </button>
-    <button className="quick-action-btn" onClick={() => onAction("message")}>
-      + שלח הודעה
-    </button>
-  </div>
-);
 
 const LOCAL_STORAGE_KEY = "dashboardStats";
 
