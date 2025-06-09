@@ -8,7 +8,7 @@ import API from "../api";
 import { useSocket } from "../context/socketContext";
 
 export default function BusinessChatPage() {
-  const { user, initialized, refreshAccessToken, logout } = useAuth();
+  const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
   const { resetMessagesCount, updateMessagesCount } = useOutletContext();
@@ -21,16 +21,6 @@ export default function BusinessChatPage() {
 
   const socket = useSocket();
   const prevSelectedRef = useRef(null);
-  const selectedRef = useRef(selected);
-
-  useEffect(() => {
-    selectedRef.current = selected;
-  }, [selected]);
-
-  // Reset unread messages count on mount
-  useEffect(() => {
-    if (resetMessagesCount) resetMessagesCount();
-  }, [resetMessagesCount]);
 
   // Load conversations list
   useEffect(() => {
@@ -54,27 +44,27 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // **הסרנו את מאזין ה-newMessage כדי למנוע שליחה כפולה של הודעות**
-
-  // Manage joining/leaving conversation on selection change
+  // Manage joining/leaving conversation on selection change and mark as read
   useEffect(() => {
     if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
       return;
     }
 
+    // איפוס ספירת הודעות שלא נקראו בצד לקוח
     if (resetMessagesCount) resetMessagesCount();
 
+    // סימון השיחה שנכנסנו אליה כנקראת
     socket.emit("markMessagesRead", selected.conversationId, (response) => {
       if (!response.ok) {
         console.error("Failed to mark messages as read:", response.error);
+      } else if (updateMessagesCount) {
+        updateMessagesCount(response.unreadCount);
       }
     });
 
-    if (
-      prevSelectedRef.current &&
-      prevSelectedRef.current !== selected.conversationId
-    ) {
+    // עזיבת השיחה הקודמת אם שונה
+    if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
       socket.emit("leaveConversation", prevSelectedRef.current, (ack) => {
         if (!ack.ok) {
           console.error("Failed to leave previous conversation:", ack.error);
@@ -82,27 +72,25 @@ export default function BusinessChatPage() {
       });
     }
 
+    // הצטרפות לשיחה החדשה
     socket.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) {
         setError("לא ניתן להצטרף לשיחה");
       }
     });
 
-    socket.emit(
-      "getHistory",
-      { conversationId: selected.conversationId },
-      (res) => {
-        if (res.ok) {
-          setMessages(res.messages || []);
-        } else {
-          setMessages([]);
-          setError("שגיאה בטעינת ההודעות");
-        }
+    // טעינת היסטוריית ההודעות
+    socket.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
+      if (res.ok) {
+        setMessages(res.messages || []);
+      } else {
+        setMessages([]);
+        setError("שגיאה בטעינת ההודעות");
       }
-    );
+    });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, resetMessagesCount, socket]);
+  }, [selected, resetMessagesCount, updateMessagesCount, socket]);
 
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
