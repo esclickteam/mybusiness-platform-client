@@ -68,6 +68,14 @@ const DashboardPage = () => {
     unreadCountRef.current = unreadCount;
   }, [unreadCount]);
 
+  // refs לכל קטע תוכן
+  const cardsRef = useRef(null);
+  const insightsRef = useRef(null);
+  const chartsRef = useRef(null);
+  const appointmentsRef = useRef(null);
+  const nextActionsRef = useRef(null);
+  const weeklySummaryRef = useRef(null);  // רפרנס לסיכום השבועי
+
   const [stats, setStats] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -427,34 +435,38 @@ const DashboardPage = () => {
 
       <DashboardNav
         refs={{
-          cardsRef: null,
-          insightsRef: null,
-          comparisonRef: null,
-          chartsRef: null,
-          leadsRef: null,
-          appointmentsRef: null,
-          calendarRef: null,
-          weeklySummaryRef: null, // הוספתי רפרנס לסיכום השבועי
+          cardsRef,
+          insightsRef,
+          chartsRef,
+          appointmentsRef,
+          nextActionsRef,
+          weeklySummaryRef, // Added ref here
         }}
       />
 
       {/* העברת unreadCount כ-prop ל-DashboardCards */}
-      <DashboardCards stats={syncedStats} unreadCount={unreadCount} />
+      <div ref={cardsRef}>
+        <DashboardCards stats={syncedStats} unreadCount={unreadCount} />
+      </div>
 
-      <Insights
-        stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }}
-      />
+      <div ref={insightsRef}>
+        <Insights
+          stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }}
+        />
+      </div>
 
-      <NextActions
-        stats={{
-          weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
-          weekly_appointments_count: countItemsInLastWeek(appointments),
-          weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
-          weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
-        }}
-      />
+      <div ref={nextActionsRef}>
+        <NextActions
+          stats={{
+            weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
+            weekly_appointments_count: countItemsInLastWeek(appointments),
+            weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
+            weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
+          }}
+        />
+      </div>
 
-      <div>
+      <div ref={chartsRef}>
         <BarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
       </div>
 
@@ -462,7 +474,7 @@ const DashboardPage = () => {
         {syncedStats.recent_activity && <RecentActivityTable activities={syncedStats.recent_activity} />}
       </div>
 
-      <div ref={null /* הוסף ref כאן אם תרצה */}>
+      <div ref={weeklySummaryRef}>
         <WeeklySummary stats={syncedStats} />
       </div>
 
