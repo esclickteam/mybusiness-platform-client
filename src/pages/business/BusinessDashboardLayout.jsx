@@ -43,7 +43,7 @@ export default function BusinessDashboardLayout() {
 
     const handleNewClientMessage = (data) => {
       console.log("Received newClientMessageNotification:", data);
-      incrementMessagesCount(); // מגדיל בצורה בטוחה על הערך הקודם
+      incrementMessagesCount();
     };
 
     socket.on("newClientMessageNotification", handleNewClientMessage);
@@ -75,7 +75,6 @@ export default function BusinessDashboardLayout() {
       resetMessagesCount();
 
       if (socket && businessId) {
-        // כאן צריך conversationId - במידה ויש לך דרך לשלוף אותו (למשל מהstate או פרמטרים), הכנס אותו כאן
         const conversationId = location.state?.conversationId || null;
 
         if (conversationId) {
@@ -179,32 +178,37 @@ export default function BusinessDashboardLayout() {
                     👀 צפייה בפרופיל
                   </NavLink>
                 )}
-                {tabs.map(({ path, label }) => (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
-                    {label}
-                    {path === "messages" && unreadCount > 0 && (
-                      <span
-                        style={{
-                          backgroundColor: "red",
-                          color: "white",
-                          borderRadius: "12px",
-                          padding: "2px 8px",
-                          fontSize: "12px",
-                          marginLeft: "8px",
-                          fontWeight: "bold",
-                          verticalAlign: "middle",
-                        }}
-                      >
-                        {unreadCount}
-                      </span>
-                    )}
-                  </NavLink>
-                ))}
+                {tabs.map(({ path, label }) => {
+                  if (path === "messages") {
+                    console.log("Rendering messages tab, unreadCount:", unreadCount);
+                  }
+                  return (
+                    <NavLink
+                      key={path}
+                      to={path}
+                      end
+                      className={({ isActive }) => (isActive ? "active" : undefined)}
+                    >
+                      {label}
+                      {path === "messages" && unreadCount > 0 && (
+                        <span
+                          style={{
+                            backgroundColor: "red",
+                            color: "white",
+                            borderRadius: "12px",
+                            padding: "2px 8px",
+                            fontSize: "12px",
+                            marginLeft: "8px",
+                            fontWeight: "bold",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          {unreadCount}
+                        </span>
+                      )}
+                    </NavLink>
+                  );
+                })}
               </nav>
             </aside>
           )}
