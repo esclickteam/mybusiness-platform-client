@@ -5,7 +5,7 @@ import ClientServiceCard from './ClientServiceCard';
 import CalendarSetup from './CalendarSetup';
 import './AppointmentsMain.css';
 import { format, parse, differenceInMinutes, addMinutes } from 'date-fns';
-import { useAuth } from '../../../context/AuthContext'; // עדכן את הנתיב לפי הפרויקט שלך
+import { useAuth } from '../../../../../../context/AuthContext';
 
 // === Normalize work hours to {0: {...}, 1: {...}, ...} ===
 function normalizeWorkHours(data) {
