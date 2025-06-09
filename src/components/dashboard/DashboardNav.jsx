@@ -34,9 +34,10 @@ const DashboardNav = ({ refs }) => {
     { id: "insightsRef", label: "תובנות" },
     { id: "comparisonRef", label: "השוואה" },
     { id: "chartsRef", label: "גרפים" },
-    { id: "leadsRef", label: "לידים" },
+    // הסרנו את הלידים והפגישות והיומן
+    // { id: "leadsRef", label: "לידים" },
     { id: "appointmentsRef", label: "פגישות" },
-    { id: "calendarRef", label: "יומן" },
+    // { id: "calendarRef", label: "יומן" },
   ];
 
   return (
