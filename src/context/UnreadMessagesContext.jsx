@@ -3,44 +3,47 @@ import React, { createContext, useContext, useState } from "react";
 const UnreadMessagesContext = createContext();
 
 export const UnreadMessagesProvider = ({ children }) => {
-  const [unreadCount, setUnreadCount] = useState(0);
+  // מפת ספירות הודעות לא נקראות לפי שיחה: { [conversationId]: count }
+  const [unreadCountsByConversation, setUnreadCountsByConversation] = useState({});
 
-  // עדכון ספירה – מקבל מספר או פונקציה שמקבלת את הערך הקודם
-  const updateMessagesCount = (countOrUpdater) => {
-    setUnreadCount((prev) => {
-      const newCount =
-        typeof countOrUpdater === "function" ? countOrUpdater(prev) : countOrUpdater;
+  // עדכון ספירה של שיחה אחת או עדכון כללי עם אובייקט חדש
+  const updateMessagesCount = (conversationId, count) => {
+    setUnreadCountsByConversation((prev) => {
+      // אם count זהה לערך הקודם, לא מעדכן
+      if (prev[conversationId] === count) return prev;
 
-      // אפשר לעדכן אם הערך שונה, או אם הערך החדש הוא 0 (איפוס)
-      if (newCount === prev && newCount !== 0) {
-        console.log("[UnreadMessagesContext] updateMessagesCount skipped, same value:", newCount);
-        return prev; // לא מעדכן אם הערך זהה ולא 0
-      }
-
-      console.log("[UnreadMessagesContext] updateMessagesCount:", prev, "->", newCount);
-      return newCount;
+      return { ...prev, [conversationId]: count };
     });
   };
 
-  const resetMessagesCount = () => {
-    console.log("[UnreadMessagesContext] resetMessagesCount: 0");
-    setUnreadCount(0);
-  };
-
-  const incrementMessagesCount = () => {
-    setUnreadCount((c) => {
-      console.log("[UnreadMessagesContext] incrementMessagesCount:", c, "->", c + 1);
-      return c + 1;
+  // איפוס ספירה של שיחה מסוימת
+  const resetMessagesCount = (conversationId) => {
+    setUnreadCountsByConversation((prev) => {
+      const updated = { ...prev };
+      delete updated[conversationId];
+      return updated;
     });
   };
+
+  // הגדלת ספירה של שיחה מסוימת באחד
+  const incrementMessagesCount = (conversationId) => {
+    setUnreadCountsByConversation((prev) => {
+      const prevCount = prev[conversationId] || 0;
+      return { ...prev, [conversationId]: prevCount + 1 };
+    });
+  };
+
+  // סכום כל ההודעות הלא נקראות
+  const totalUnreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
 
   return (
     <UnreadMessagesContext.Provider
       value={{
-        unreadCount,
+        unreadCountsByConversation,
         updateMessagesCount,
         resetMessagesCount,
         incrementMessagesCount,
+        totalUnreadCount,
       }}
     >
       {children}
