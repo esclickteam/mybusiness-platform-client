@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const DashboardNav = ({ refs }) => {
   const [activeSection, setActiveSection] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,21 +25,39 @@ const DashboardNav = ({ refs }) => {
 
   const handleScrollTo = (refName, e) => {
     e.preventDefault();
-    const targetRef = refs[refName];
-    if (targetRef?.current) {
-      targetRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // ניווט לפי id הכפתור
+    switch (refName) {
+      case "cardsRef":
+        navigate("/business/dashboard/cards");
+        break;
+      case "insightsRef":
+        navigate("/business/dashboard/insights");
+        break;
+      case "chartsRef":
+        navigate("/business/dashboard/charts");
+        break;
+      case "appointmentsRef":
+        navigate("/business/dashboard/appointments");
+        break;
+      case "nextActionsRef":
+        navigate("/business/dashboard/next-actions");
+        break;
+      default:
+        const targetRef = refs[refName];
+        if (targetRef?.current) {
+          targetRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        break;
     }
   };
 
   const buttons = [
     { id: "cardsRef", label: "כרטיסים" },
     { id: "insightsRef", label: "תובנות" },
-    { id: "comparisonRef", label: "השוואה" },
     { id: "chartsRef", label: "גרפים" },
-    // הסרנו את הלידים והפגישות והיומן
-    // { id: "leadsRef", label: "לידים" },
     { id: "appointmentsRef", label: "פגישות" },
-    // { id: "calendarRef", label: "יומן" },
+    { id: "nextActionsRef", label: "המלצות" },
   ];
 
   return (
