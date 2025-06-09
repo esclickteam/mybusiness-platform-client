@@ -51,43 +51,60 @@ export default function BusinessChatPage() {
       return;
     }
 
-    // איפוס ספירת הודעות שלא נקראו בצד לקוח
-    if (resetMessagesCount) resetMessagesCount();
-
-    console.log("Frontend markMessagesRead called with conversationId:", selected.conversationId, "businessId:", businessId);
+    console.log(
+      "Frontend markMessagesRead called with conversationId:",
+      selected.conversationId,
+      "businessId:",
+      businessId
+    );
 
     // סימון השיחה שנכנסנו אליה כנקראת
     socket.emit("markMessagesRead", selected.conversationId, (response) => {
       if (!response.ok) {
         console.error("Failed to mark messages as read:", response.error);
-      } else if (updateMessagesCount) {
-        updateMessagesCount(response.unreadCount);
+      } else {
+        console.log(
+          "Messages marked as read, unreadCount updated:",
+          response.unreadCount
+        );
+        if (updateMessagesCount) updateMessagesCount(response.unreadCount);
+        if (resetMessagesCount) resetMessagesCount();
       }
     });
 
     // עזיבת השיחה הקודמת אם שונה
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
+      console.log("Leaving previous conversation:", prevSelectedRef.current);
       socket.emit("leaveConversation", prevSelectedRef.current, (ack) => {
         if (!ack.ok) {
           console.error("Failed to leave previous conversation:", ack.error);
+        } else {
+          console.log("Left previous conversation successfully");
         }
       });
     }
 
     // הצטרפות לשיחה החדשה
+    console.log("Joining new conversation:", selected.conversationId);
     socket.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) {
         setError("לא ניתן להצטרף לשיחה");
+        console.error("Failed to join conversation:", ack.error);
+      } else {
+        console.log("Joined conversation successfully");
       }
     });
 
     // טעינת היסטוריית ההודעות
+    console.log("Fetching history for conversation:", selected.conversationId);
     socket.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
+        console.log("Loaded messages:", res.messages?.length || 0);
       } else {
         setMessages([]);
         setError("שגיאה בטעינת ההודעות");
+        console.error("Failed to load messages:", res.error);
       }
     });
 
@@ -95,6 +112,7 @@ export default function BusinessChatPage() {
   }, [selected, resetMessagesCount, updateMessagesCount, socket]);
 
   const handleSelect = (conversationId, partnerId) => {
+    console.log("Selecting conversation:", conversationId);
     setSelected({ conversationId, partnerId });
   };
 
