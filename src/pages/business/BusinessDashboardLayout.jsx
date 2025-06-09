@@ -26,26 +26,30 @@ export default function BusinessDashboardLayout() {
   const location = useLocation();
 
   const {
-    unreadCount,
+    unreadCountsByConversation,
     updateMessagesCount,
     incrementMessagesCount,
   } = useUnreadMessages();
+
+  // חישוב כולל של כל ההודעות הלא נקראו מכל השיחות
+  const unreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
 
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
 
-  // Ref to prevent infinite update loops on unread count reset
   const hasResetUnreadCount = useRef(false);
 
-  // מאזין להודעות חדשות מהשרת ומגדיל ספירת הודעות
+  // מאזין להודעות חדשות מהשרת ומעדכן ספירה לפי conversationId מדויק
   useEffect(() => {
     if (!socket) return;
 
     const handleNewClientMessage = (data) => {
       console.log("Received newClientMessageNotification:", data);
-      incrementMessagesCount();
+      if (data?.conversationId) {
+        incrementMessagesCount(data.conversationId);
+      }
     };
 
     socket.on("newClientMessageNotification", handleNewClientMessage);
@@ -54,39 +58,36 @@ export default function BusinessDashboardLayout() {
     };
   }, [socket, incrementMessagesCount]);
 
-  // מאזין לעדכון ספירת הודעות מדויק מהשרת
+  // מאזין לעדכון ספירות הודעות לא נקראות מדויק מהשרת
   useEffect(() => {
     if (!socket) return;
 
-    const handleUnreadCount = (newCount) => {
-      // מנע עדכון ספירה בזמן שבלשונית ההודעות פתוחה (או עדכן רק אם הערך גדל)
-      if (location.pathname.includes("/messages")) {
-        if (newCount > unreadCount) {
-          updateMessagesCount(newCount);
-        }
-      } else {
-        updateMessagesCount(newCount);
-      }
+    const handleUnreadCounts = (unreadCountsObj) => {
+      if (typeof unreadCountsObj !== "object" || unreadCountsObj === null) return;
+
+      Object.entries(unreadCountsObj).forEach(([convId, count]) => {
+        updateMessagesCount(convId, count);
+      });
     };
 
-    socket.on("unreadMessagesCount", handleUnreadCount);
+    socket.on("unreadCountsByConversation", handleUnreadCounts);
     return () => {
-      socket.off("unreadMessagesCount", handleUnreadCount);
+      socket.off("unreadCountsByConversation", handleUnreadCounts);
     };
-  }, [socket, updateMessagesCount, location.pathname, unreadCount]);
+  }, [socket, updateMessagesCount]);
 
   // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
     if (!socket || !businessId) return;
 
     if (location.pathname.includes("/messages")) {
-      hasResetUnreadCount.current = false; // Reset flag on entering messages tab
+      hasResetUnreadCount.current = false;
       const conversationId = location.state?.conversationId || null;
       if (conversationId) {
         console.log("Calling markMessagesRead with conversationId:", conversationId);
-        socket.emit('markMessagesRead', conversationId, (response) => {
+        socket.emit("markMessagesRead", conversationId, (response) => {
           if (response.ok) {
-            updateMessagesCount(response.unreadCount);
+            updateMessagesCount(conversationId, 0);
             console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
           } else {
             console.error("Failed to mark messages as read:", response.error);
@@ -94,18 +95,19 @@ export default function BusinessDashboardLayout() {
         });
       }
     } else {
-      // איפוס ההתראה רק פעם אחת כשעוזבים את טאב ההודעות, עם דיליי קטן למניעת קונפליקט עם עדכוני socket
       if (!hasResetUnreadCount.current) {
         setTimeout(() => {
           if (!hasResetUnreadCount.current) {
-            console.log("Leaving /messages tab, resetting unreadCount");
-            updateMessagesCount(0);
+            console.log("Leaving /messages tab, resetting all unread counts");
+            Object.keys(unreadCountsByConversation).forEach((convId) =>
+              updateMessagesCount(convId, 0)
+            );
             hasResetUnreadCount.current = true;
           }
         }, 200);
       }
     }
-  }, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
+  }, [location.pathname, socket, businessId, updateMessagesCount, location.state, unreadCountsByConversation]);
 
   // ניהול רספונסיביות לסיידבר
   useEffect(() => {
