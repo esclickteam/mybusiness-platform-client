@@ -10,9 +10,10 @@ export const UnreadMessagesProvider = ({ children }) => {
   setUnreadCount((prev) => {
     const newCount =
       typeof countOrUpdater === "function" ? countOrUpdater(prev) : countOrUpdater;
-    if (newCount === prev) {
+    // אפשר לעדכן אם הערך שונה, או אם הערך החדש הוא 0 (איפוס)
+    if (newCount === prev && newCount !== 0) {
       console.log("[UnreadMessagesContext] updateMessagesCount skipped, same value:", newCount);
-      return prev; // לא מעדכן אם הערך זהה
+      return prev; // לא מעדכן אם הערך זהה ולא 0
     }
     console.log("[UnreadMessagesContext] updateMessagesCount:", prev, "->", newCount);
     return newCount;
