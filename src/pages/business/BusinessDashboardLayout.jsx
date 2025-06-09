@@ -36,6 +36,9 @@ export default function BusinessDashboardLayout() {
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
 
+  // Ref to prevent infinite update loops on unread count reset
+  const hasResetUnreadCount = useRef(false);
+
   // מאזין להודעות חדשות מהשרת ומגדיל ספירת הודעות
   useEffect(() => {
     if (!socket) return;
@@ -68,27 +71,31 @@ export default function BusinessDashboardLayout() {
 
   // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
-  if (!socket || !businessId) return;
+    if (!socket || !businessId) return;
 
-  if (location.pathname.includes("/messages")) {
-    const conversationId = location.state?.conversationId || null;
-    if (conversationId) {
-      console.log("Calling markMessagesRead with conversationId:", conversationId);
-      socket.emit('markMessagesRead', conversationId, (response) => {
-        if (response.ok) {
-          updateMessagesCount(response.unreadCount);
-          console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
-        } else {
-          console.error("Failed to mark messages as read:", response.error);
-        }
-      });
+    if (location.pathname.includes("/messages")) {
+      hasResetUnreadCount.current = false; // Reset flag on entering messages tab
+      const conversationId = location.state?.conversationId || null;
+      if (conversationId) {
+        console.log("Calling markMessagesRead with conversationId:", conversationId);
+        socket.emit('markMessagesRead', conversationId, (response) => {
+          if (response.ok) {
+            updateMessagesCount(response.unreadCount);
+            console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+          } else {
+            console.error("Failed to mark messages as read:", response.error);
+          }
+        });
+      }
+    } else {
+      // איפוס ההתראה רק פעם אחת כשעוזבים את טאב ההודעות
+      if (!hasResetUnreadCount.current) {
+        console.log("Leaving /messages tab, resetting unreadCount");
+        updateMessagesCount(0);
+        hasResetUnreadCount.current = true;
+      }
     }
-  } else {
-    // איפוס ההתראה כשהולכים לטאב אחר
-    console.log("Leaving /messages tab, resetting unreadCount");
-    updateMessagesCount(0);
-  }
-}, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
+  }, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
 
   // ניהול רספונסיביות לסיידבר
   useEffect(() => {
