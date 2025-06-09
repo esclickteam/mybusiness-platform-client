@@ -30,13 +30,14 @@ const DashboardNav = ({ refs }) => {
     }
   };
 
+  // הסדר החדש לפי הבקשה שלך
   const buttons = [
     { id: "cardsRef", label: "כרטיסים" },
     { id: "insightsRef", label: "תובנות" },
-    { id: "chartsRef", label: "גרפים" },
-    { id: "appointmentsRef", label: "פגישות" },
     { id: "nextActionsRef", label: "המלצות" },
-    { id: "weeklySummaryRef", label: "סיכום שבועי" },  // הוספתי את זה
+    { id: "chartsRef", label: "גרפים" },
+    { id: "weeklySummaryRef", label: "סיכום שבועי" },
+    { id: "appointmentsRef", label: "פגישות" },
   ];
 
   return (
