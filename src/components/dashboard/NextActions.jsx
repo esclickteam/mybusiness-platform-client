@@ -38,9 +38,7 @@ const NextActions = ({ stats }) => {
     actions.push({ text: "⭐ יש ביקורות טובות ומספיקות השבוע", type: "success" });
   }
 
-  if (weekly_messages_count < THRESHOLDS.messages) {
-    actions.push({ text: "📩 אין הודעות חדשות מלקוחות השבוע – נסי להעלות תוכן חדש במדיה החברתית", type: "warning" });
-  } else {
+  if (weekly_messages_count >= THRESHOLDS.messages) {
     actions.push({ text: "📩 יש מספיק הודעות מלקוחות השבוע", type: "success" });
   }
 
