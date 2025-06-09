@@ -4,9 +4,26 @@ import "./CRMServicesTab.css";
 
 const CRMServicesTab = () => {
   const [services, setServices] = useState([]);
-  const [newService, setNewService] = useState({ name: "", price: "", duration: "" });
+  const [newService, setNewService] = useState({
+    name: "",
+    price: "",
+    hours: "0",
+    minutes: "30",
+    description: "",
+    appointmentType: "at_business",
+    imageFile: null,
+  });
   const [editServiceId, setEditServiceId] = useState(null);
-  const [editData, setEditData] = useState({ name: "", price: "", duration: "", imageFile: null, imageUrl: "" });
+  const [editData, setEditData] = useState({
+    name: "",
+    price: "",
+    hours: "0",
+    minutes: "30",
+    description: "",
+    appointmentType: "at_business",
+    imageFile: null,
+    imageUrl: "",
+  });
   const [loading, setLoading] = useState(true);
 
   // טעינת שירותים מהשרת בהתחלה
@@ -24,17 +41,26 @@ const CRMServicesTab = () => {
     fetchServices();
   }, []);
 
+  // --- פונקציה לחישוב משך בשניות מ-hours ו-minutes ---
+  const calcDurationInMinutes = (hours, minutes) =>
+    parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+
   // הוספת שירות חדש
   const addService = async () => {
-    if (!newService.name || !newService.price || !newService.duration) {
-      alert("יש למלא שם, מחיר ומשך");
+    if (!newService.name || !newService.price || (calcDurationInMinutes(newService.hours, newService.minutes) === 0)) {
+      alert("יש למלא שם, מחיר ומשך תקין");
       return;
     }
     try {
       const formData = new FormData();
       formData.append("name", newService.name);
       formData.append("price", newService.price);
-      formData.append("duration", newService.duration);
+      formData.append(
+        "duration",
+        calcDurationInMinutes(newService.hours, newService.minutes)
+      );
+      formData.append("description", newService.description);
+      formData.append("appointmentType", newService.appointmentType);
       if (newService.imageFile) {
         formData.append("image", newService.imageFile);
       }
@@ -44,7 +70,15 @@ const CRMServicesTab = () => {
       });
 
       setServices(res.data.services || []);
-      setNewService({ name: "", price: "", duration: "", imageFile: null });
+      setNewService({
+        name: "",
+        price: "",
+        hours: "0",
+        minutes: "30",
+        description: "",
+        appointmentType: "at_business",
+        imageFile: null,
+      });
     } catch {
       alert("❌ שגיאה ביצירת השירות");
     }
@@ -52,27 +86,37 @@ const CRMServicesTab = () => {
 
   // התחלת עריכה
   const startEdit = (service) => {
+    const hours = Math.floor(service.duration / 60).toString();
+    const minutes = (service.duration % 60).toString();
     setEditServiceId(service._id);
     setEditData({
       name: service.name,
       price: service.price,
-      duration: service.duration,
+      hours,
+      minutes,
+      description: service.description || "",
+      appointmentType: service.appointmentType || "at_business",
       imageFile: null,
-      imageUrl: service.imageUrl || ""
+      imageUrl: service.imageUrl || "",
     });
   };
 
   // שמירת עריכה
   const saveEdit = async () => {
-    if (!editData.name || !editData.price || !editData.duration) {
-      alert("יש למלא שם, מחיר ומשך לעדכון");
+    if (!editData.name || !editData.price || (calcDurationInMinutes(editData.hours, editData.minutes) === 0)) {
+      alert("יש למלא שם, מחיר ומשך תקין לעדכון");
       return;
     }
     try {
       const formData = new FormData();
       formData.append("name", editData.name);
       formData.append("price", editData.price);
-      formData.append("duration", editData.duration);
+      formData.append(
+        "duration",
+        calcDurationInMinutes(editData.hours, editData.minutes)
+      );
+      formData.append("description", editData.description);
+      formData.append("appointmentType", editData.appointmentType);
       if (editData.imageFile) {
         formData.append("image", editData.imageFile);
       }
@@ -86,7 +130,16 @@ const CRMServicesTab = () => {
       setServices(res.data.services || []);
 
       setEditServiceId(null);
-      setEditData({ name: "", price: "", duration: "", imageFile: null, imageUrl: "" });
+      setEditData({
+        name: "",
+        price: "",
+        hours: "0",
+        minutes: "30",
+        description: "",
+        appointmentType: "at_business",
+        imageFile: null,
+        imageUrl: "",
+      });
     } catch {
       alert("❌ שגיאה בעדכון השירות");
     }
@@ -110,6 +163,31 @@ const CRMServicesTab = () => {
       <h2>🛠️ שירותים</h2>
 
       <div className="add-service-form">
+        <div className="appointment-type-selector">
+          <button
+            type="button"
+            className={
+              newService.appointmentType === "at_business" ? "active" : ""
+            }
+            onClick={() =>
+              setNewService({ ...newService, appointmentType: "at_business" })
+            }
+          >
+            🏢 תיאום תור בעסק
+          </button>
+          <button
+            type="button"
+            className={
+              newService.appointmentType === "on_site" ? "active" : ""
+            }
+            onClick={() =>
+              setNewService({ ...newService, appointmentType: "on_site" })
+            }
+          >
+            🚗 שירות עד הבית
+          </button>
+        </div>
+
         <input
           type="text"
           placeholder="שם השירות"
@@ -126,14 +204,43 @@ const CRMServicesTab = () => {
             setNewService({ ...newService, price: e.target.value })
           }
         />
-        <input
-          type="number"
-          placeholder="משך (בדקות)"
-          value={newService.duration}
+        <div className="time-row">
+          <select
+            value={newService.hours}
+            onChange={(e) =>
+              setNewService({ ...newService, hours: e.target.value })
+            }
+          >
+            {[...Array(13).keys()].map((h) => (
+              <option key={h} value={h}>
+                {h}
+              </option>
+            ))}
+          </select>
+          <span>שעות</span>
+          <select
+            value={newService.minutes}
+            onChange={(e) =>
+              setNewService({ ...newService, minutes: e.target.value })
+            }
+          >
+            {["0", "15", "30", "45"].map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+          <span>דקות</span>
+        </div>
+
+        <textarea
+          placeholder="תיאור השירות (לא חובה)"
+          value={newService.description}
           onChange={(e) =>
-            setNewService({ ...newService, duration: e.target.value })
+            setNewService({ ...newService, description: e.target.value })
           }
         />
+
         <input
           type="file"
           accept="image/*"
@@ -141,107 +248,208 @@ const CRMServicesTab = () => {
             setNewService({ ...newService, imageFile: e.target.files[0] })
           }
         />
+        {newService.imageFile && (
+          <img
+            src={URL.createObjectURL(newService.imageFile)}
+            alt="preview"
+            style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
+          />
+        )}
+
         <button onClick={addService}>➕ הוסף</button>
       </div>
 
       <table className="services-table">
         <thead>
           <tr>
+            <th>סוג שירות</th>
             <th>שם</th>
             <th>מחיר</th>
-            <th>משך (בדקות)</th>
+            <th>משך (שעות ודקות)</th>
+            <th>תיאור</th>
             <th>תמונה</th>
             <th>פעולות</th>
           </tr>
         </thead>
         <tbody>
-          {services.map((service) => (
-            <tr key={service._id}>
-              <td>
-                {editServiceId === service._id ? (
-                  <input
-                    value={editData.name}
-                    onChange={(e) =>
-                      setEditData({ ...editData, name: e.target.value })
-                    }
-                  />
-                ) : (
-                  service.name
-                )}
-              </td>
-              <td>
-                {editServiceId === service._id ? (
-                  <input
-                    value={editData.price}
-                    onChange={(e) =>
-                      setEditData({ ...editData, price: e.target.value })
-                    }
-                  />
-                ) : (
-                  service.price
-                )}
-              </td>
-              <td>
-                {editServiceId === service._id ? (
-                  <input
-                    type="number"
-                    value={editData.duration}
-                    onChange={(e) =>
-                      setEditData({ ...editData, duration: e.target.value })
-                    }
-                  />
-                ) : (
-                  service.duration
-                )}
-              </td>
-              <td>
-                {editServiceId === service._id ? (
-                  <>
+          {services.map((service) => {
+            const hours = Math.floor(service.duration / 60);
+            const minutes = service.duration % 60;
+
+            return (
+              <tr key={service._id}>
+                <td>
+                  {editServiceId === service._id ? (
+                    <div className="appointment-type-selector">
+                      <button
+                        type="button"
+                        className={
+                          editData.appointmentType === "at_business"
+                            ? "active"
+                            : ""
+                        }
+                        onClick={() =>
+                          setEditData({
+                            ...editData,
+                            appointmentType: "at_business",
+                          })
+                        }
+                      >
+                        🏢 תיאום תור בעסק
+                      </button>
+                      <button
+                        type="button"
+                        className={
+                          editData.appointmentType === "on_site" ? "active" : ""
+                        }
+                        onClick={() =>
+                          setEditData({
+                            ...editData,
+                            appointmentType: "on_site",
+                          })
+                        }
+                      >
+                        🚗 שירות עד הבית
+                      </button>
+                    </div>
+                  ) : service.appointmentType === "on_site" ? (
+                    "שירות עד הבית"
+                  ) : (
+                    "תיאום תור בעסק"
+                  )}
+                </td>
+                <td>
+                  {editServiceId === service._id ? (
                     <input
-                      type="file"
-                      accept="image/*"
+                      value={editData.name}
                       onChange={(e) =>
-                        setEditData({ ...editData, imageFile: e.target.files[0] })
+                        setEditData({ ...editData, name: e.target.value })
                       }
                     />
-                    {editData.imageFile ? (
-                      <img
-                        src={URL.createObjectURL(editData.imageFile)}
-                        alt="preview"
-                        style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
+                  ) : (
+                    service.name
+                  )}
+                </td>
+                <td>
+                  {editServiceId === service._id ? (
+                    <input
+                      value={editData.price}
+                      onChange={(e) =>
+                        setEditData({ ...editData, price: e.target.value })
+                      }
+                    />
+                  ) : (
+                    service.price
+                  )}
+                </td>
+                <td>
+                  {editServiceId === service._id ? (
+                    <>
+                      <select
+                        value={editData.hours}
+                        onChange={(e) =>
+                          setEditData({ ...editData, hours: e.target.value })
+                        }
+                      >
+                        {[...Array(13).keys()].map((h) => (
+                          <option key={h} value={h}>
+                            {h}
+                          </option>
+                        ))}
+                      </select>
+                      <span>שעות</span>
+                      <select
+                        value={editData.minutes}
+                        onChange={(e) =>
+                          setEditData({ ...editData, minutes: e.target.value })
+                        }
+                      >
+                        {["0", "15", "30", "45"].map((m) => (
+                          <option key={m} value={m}>
+                            {m}
+                          </option>
+                        ))}
+                      </select>
+                      <span>דקות</span>
+                    </>
+                  ) : (
+                    `${hours} שעות ו-${minutes} דקות`
+                  )}
+                </td>
+                <td>
+                  {editServiceId === service._id ? (
+                    <textarea
+                      value={editData.description}
+                      onChange={(e) =>
+                        setEditData({ ...editData, description: e.target.value })
+                      }
+                    />
+                  ) : (
+                    service.description || "-"
+                  )}
+                </td>
+                <td>
+                  {editServiceId === service._id ? (
+                    <>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          setEditData({
+                            ...editData,
+                            imageFile: e.target.files[0],
+                          })
+                        }
                       />
-                    ) : editData.imageUrl ? (
-                      <img
-                        src={editData.imageUrl}
-                        alt="current"
-                        style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
-                      />
-                    ) : (
-                      <em>אין תמונה</em>
-                    )}
-                  </>
-                ) : service.imageUrl ? (
-                  <img
-                    src={service.imageUrl}
-                    alt={service.name}
-                    style={{ maxWidth: "80px", maxHeight: "80px" }}
-                  />
-                ) : (
-                  <em>אין תמונה</em>
-                )}
-              </td>
-              <td>
-                {editServiceId === service._id ? (
-                  <button onClick={saveEdit}>💾 שמור</button>
-                ) : (
-                  <>
-                    <button onClick={() => startEdit(service)}>✏️ ערוך</button>
-                    <button onClick={() => deleteService(service._id)}>🗑️ מחק</button>
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
+                      {editData.imageFile ? (
+                        <img
+                          src={URL.createObjectURL(editData.imageFile)}
+                          alt="preview"
+                          style={{
+                            maxWidth: "80px",
+                            maxHeight: "80px",
+                            marginTop: "5px",
+                          }}
+                        />
+                      ) : editData.imageUrl ? (
+                        <img
+                          src={editData.imageUrl}
+                          alt="current"
+                          style={{
+                            maxWidth: "80px",
+                            maxHeight: "80px",
+                            marginTop: "5px",
+                          }}
+                        />
+                      ) : (
+                        <em>אין תמונה</em>
+                      )}
+                    </>
+                  ) : service.imageUrl ? (
+                    <img
+                      src={service.imageUrl}
+                      alt={service.name}
+                      style={{ maxWidth: "80px", maxHeight: "80px" }}
+                    />
+                  ) : (
+                    <em>אין תמונה</em>
+                  )}
+                </td>
+                <td>
+                  {editServiceId === service._id ? (
+                    <button onClick={saveEdit}>💾 שמור</button>
+                  ) : (
+                    <>
+                      <button onClick={() => startEdit(service)}>✏️ ערוך</button>
+                      <button onClick={() => deleteService(service._id)}>
+                        🗑️ מחק
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
