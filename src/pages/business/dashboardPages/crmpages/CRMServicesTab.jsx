@@ -1,3 +1,4 @@
+// CRMServicesTab.jsx
 import React, { useState, useEffect } from "react";
 import API from "@api"; // עדכן לנתיב הנכון
 import "./CRMServicesTab.css";
@@ -26,7 +27,6 @@ const CRMServicesTab = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // טעינת שירותים מהשרת בהתחלה
   useEffect(() => {
     async function fetchServices() {
       try {
@@ -41,11 +41,9 @@ const CRMServicesTab = () => {
     fetchServices();
   }, []);
 
-  // --- פונקציה לחישוב משך בשניות מ-hours ו-minutes ---
   const calcDurationInMinutes = (hours, minutes) =>
     parseInt(hours, 10) * 60 + parseInt(minutes, 10);
 
-  // הוספת שירות חדש
   const addService = async () => {
     if (
       !newService.name ||
@@ -88,7 +86,6 @@ const CRMServicesTab = () => {
     }
   };
 
-  // התחלת עריכה
   const startEdit = (service) => {
     const hours = Math.floor(service.duration / 60).toString();
     const minutes = (service.duration % 60).toString();
@@ -105,7 +102,6 @@ const CRMServicesTab = () => {
     });
   };
 
-  // שמירת עריכה
   const saveEdit = async () => {
     if (
       !editData.name ||
@@ -133,7 +129,6 @@ const CRMServicesTab = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // טען מחדש שירותים מהשרת אחרי העריכה
       const res = await API.get("/business/my/services");
       setServices(res.data.services || []);
 
@@ -153,7 +148,6 @@ const CRMServicesTab = () => {
     }
   };
 
-  // מחיקת שירות
   const deleteService = async (id) => {
     if (!window.confirm("האם למחוק את השירות?")) return;
     try {
@@ -170,101 +164,103 @@ const CRMServicesTab = () => {
     <div className="crm-tab-content">
       <h2>🛠️ שירותים</h2>
 
-      <div className="add-service-form">
-        <div className="appointment-type-selector">
-          <button
-            type="button"
-            className={
-              newService.appointmentType === "at_business" ? "active" : ""
-            }
-            onClick={() =>
-              setNewService({ ...newService, appointmentType: "at_business" })
-            }
-          >
-            🏢 תיאום תור בעסק
-          </button>
-          <button
-            type="button"
-            className={
-              newService.appointmentType === "on_site" ? "active" : ""
-            }
-            onClick={() =>
-              setNewService({ ...newService, appointmentType: "on_site" })
-            }
-          >
-            🚗 שירות עד הבית
-          </button>
-        </div>
+      <div className="form-wrapper">
+        <div className="add-service-form">
+          <div className="appointment-type-selector">
+            <button
+              type="button"
+              className={
+                newService.appointmentType === "at_business" ? "active" : ""
+              }
+              onClick={() =>
+                setNewService({ ...newService, appointmentType: "at_business" })
+              }
+            >
+              🏢 תיאום תור בעסק
+            </button>
+            <button
+              type="button"
+              className={
+                newService.appointmentType === "on_site" ? "active" : ""
+              }
+              onClick={() =>
+                setNewService({ ...newService, appointmentType: "on_site" })
+              }
+            >
+              🚗 שירות עד הבית
+            </button>
+          </div>
 
-        <input
-          type="text"
-          placeholder="שם השירות"
-          value={newService.name}
-          onChange={(e) =>
-            setNewService({ ...newService, name: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="מחיר (₪)"
-          value={newService.price}
-          onChange={(e) =>
-            setNewService({ ...newService, price: e.target.value })
-          }
-        />
-        <div className="time-row">
-          <select
-            value={newService.hours}
+          <input
+            type="text"
+            placeholder="שם השירות"
+            value={newService.name}
             onChange={(e) =>
-              setNewService({ ...newService, hours: e.target.value })
+              setNewService({ ...newService, name: e.target.value })
             }
-          >
-            {[...Array(13).keys()].map((h) => (
-              <option key={h} value={h}>
-                {h}
-              </option>
-            ))}
-          </select>
-          <span>שעות</span>
-          <select
-            value={newService.minutes}
-            onChange={(e) =>
-              setNewService({ ...newService, minutes: e.target.value })
-            }
-          >
-            {["0", "15", "30", "45"].map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-          <span>דקות</span>
-        </div>
-
-        <textarea
-          placeholder="תיאור השירות (לא חובה)"
-          value={newService.description}
-          onChange={(e) =>
-            setNewService({ ...newService, description: e.target.value })
-          }
-        />
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) =>
-            setNewService({ ...newService, imageFile: e.target.files[0] })
-          }
-        />
-        {newService.imageFile && (
-          <img
-            src={URL.createObjectURL(newService.imageFile)}
-            alt="preview"
-            style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
           />
-        )}
+          <input
+            type="text"
+            placeholder="מחיר (₪)"
+            value={newService.price}
+            onChange={(e) =>
+              setNewService({ ...newService, price: e.target.value })
+            }
+          />
+          <div className="time-row">
+            <select
+              value={newService.hours}
+              onChange={(e) =>
+                setNewService({ ...newService, hours: e.target.value })
+              }
+            >
+              {[...Array(13).keys()].map((h) => (
+                <option key={h} value={h}>
+                  {h}
+                </option>
+              ))}
+            </select>
+            <span>שעות</span>
+            <select
+              value={newService.minutes}
+              onChange={(e) =>
+                setNewService({ ...newService, minutes: e.target.value })
+              }
+            >
+              {["0", "15", "30", "45"].map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+            <span>דקות</span>
+          </div>
 
-        <button onClick={addService}>➕ הוסף</button>
+          <textarea
+            placeholder="תיאור השירות (לא חובה)"
+            value={newService.description}
+            onChange={(e) =>
+              setNewService({ ...newService, description: e.target.value })
+            }
+          />
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setNewService({ ...newService, imageFile: e.target.files[0] })
+            }
+          />
+          {newService.imageFile && (
+            <img
+              src={URL.createObjectURL(newService.imageFile)}
+              alt="preview"
+              style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
+            />
+          )}
+
+          <button onClick={addService}>➕ הוסף</button>
+        </div>
       </div>
 
       <table className="services-table">

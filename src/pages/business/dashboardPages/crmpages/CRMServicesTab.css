@@ -1,3 +1,10 @@
+.crm-tab-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* מרכז את כל התוכן אופקית */
+  padding: 1rem;
+}
+
 .add-service-form {
   display: flex;
   flex-direction: column;
@@ -12,6 +19,8 @@
   color: #2c065d;
   font-size: 16px;
   direction: rtl; /* כדי שהטקסט יהיה מימין לשמאל */
+  margin-left: auto;    /* מרכז את הקופסה אופקית */
+  margin-right: auto;   /* מרכז את הקופסה אופקית */
 }
 
 .add-service-form label {
@@ -110,4 +119,44 @@
 .appointment-type-selector button svg {
   vertical-align: middle;
   margin-left: 5px;
+}
+
+.services-table {
+  width: 100%;
+  border-collapse: collapse;
+  max-width: 900px;
+  margin: 0 auto; /* מרכז את הטבלה */
+}
+
+.services-table th,
+.services-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+  text-align: right;
+}
+
+.services-table th {
+  background-color: #f8f8f8;
+  font-weight: bold;
+}
+
+.services-table input {
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.services-table button {
+  background: none;
+  border: none;
+  color: #7c4dff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+
+.services-table button:hover {
+  text-decoration: underline;
 }
