@@ -1,66 +1,82 @@
 import React, { useState, useEffect } from "react";
+import API from "@api"; // עדכן נתיב ל-API שלך
 import "./CRMServicesTab.css";
-
-const initialServices = [
-  { id: 1, name: "ייעוץ עסקי", price: "₪200" },
-  { id: 2, name: "בניית אתר", price: "₪1200" },
-];
 
 const CRMServicesTab = () => {
   const [services, setServices] = useState([]);
   const [newService, setNewService] = useState({ name: "", price: "" });
   const [editServiceId, setEditServiceId] = useState(null);
   const [editData, setEditData] = useState({ name: "", price: "" });
+  const [loading, setLoading] = useState(true);
 
+  // טען שירותים מהשרת בהתחלה
   useEffect(() => {
-    const local = JSON.parse(localStorage.getItem("demoServices") || "[]");
-    const fallback = JSON.parse(localStorage.getItem("demoServices_calendar") || "[]");
-
-    // טוען מ־CRM או מהיומן אם אין
-    if (local.length > 0) {
-      setServices(local);
-    } else if (fallback.length > 0) {
-      setServices(fallback);
-    } else {
-      setServices(initialServices);
+    async function fetchServices() {
+      try {
+        const res = await API.get("/business/my/services");
+        setServices(res.data.services || []);
+      } catch (err) {
+        alert("❌ שגיאה בטעינת השירותים");
+      } finally {
+        setLoading(false);
+      }
     }
+    fetchServices();
   }, []);
 
-  const saveToStorage = (updated) => {
-    setServices(updated);
-    localStorage.setItem("demoServices", JSON.stringify(updated));
-    localStorage.setItem("demoServices_calendar", JSON.stringify(updated));
-  };
-
-  const addService = () => {
+  // הוספת שירות חדש
+  const addService = async () => {
     if (!newService.name || !newService.price) {
       alert("יש למלא שם ומחיר");
       return;
     }
-    const updated = [...services, { ...newService, id: Date.now() }];
-    saveToStorage(updated);
-    setNewService({ name: "", price: "" });
-  };
-
-  const deleteService = (id) => {
-    if (window.confirm("האם למחוק את השירות?")) {
-      const updated = services.filter((s) => s.id !== id);
-      saveToStorage(updated);
+    try {
+      const res = await API.post("/business/my/services", newService);
+      // API מחזיר את כל השירותים המעודכנים
+      setServices(res.data.services);
+      setNewService({ name: "", price: "" });
+    } catch {
+      alert("❌ שגיאה ביצירת השירות");
     }
   };
 
+  // התחלת עריכה
   const startEdit = (service) => {
-    setEditServiceId(service.id);
+    setEditServiceId(service._id);
     setEditData({ name: service.name, price: service.price });
   };
 
-  const saveEdit = () => {
-    const updated = services.map((s) =>
-      s.id === editServiceId ? { ...s, ...editData } : s
-    );
-    saveToStorage(updated);
-    setEditServiceId(null);
+  // שמירת עריכה
+  const saveEdit = async () => {
+    if (!editData.name || !editData.price) {
+      alert("יש למלא שם ומחיר לעדכון");
+      return;
+    }
+    try {
+      await API.put(`/business/my/services/${editServiceId}`, editData);
+      setServices((prev) =>
+        prev.map((s) =>
+          s._id === editServiceId ? { ...s, ...editData } : s
+        )
+      );
+      setEditServiceId(null);
+    } catch {
+      alert("❌ שגיאה בעדכון השירות");
+    }
   };
+
+  // מחיקת שירות
+  const deleteService = async (id) => {
+    if (!window.confirm("האם למחוק את השירות?")) return;
+    try {
+      await API.delete(`/business/my/services/${id}`);
+      setServices((prev) => prev.filter((s) => s._id !== id));
+    } catch {
+      alert("❌ שגיאה במחיקת השירות");
+    }
+  };
+
+  if (loading) return <p>טוען שירותים...</p>;
 
   return (
     <div className="crm-tab-content">
@@ -96,9 +112,9 @@ const CRMServicesTab = () => {
         </thead>
         <tbody>
           {services.map((service) => (
-            <tr key={service.id}>
+            <tr key={service._id}>
               <td>
-                {editServiceId === service.id ? (
+                {editServiceId === service._id ? (
                   <input
                     value={editData.name}
                     onChange={(e) =>
@@ -110,7 +126,7 @@ const CRMServicesTab = () => {
                 )}
               </td>
               <td>
-                {editServiceId === service.id ? (
+                {editServiceId === service._id ? (
                   <input
                     value={editData.price}
                     onChange={(e) =>
@@ -122,12 +138,12 @@ const CRMServicesTab = () => {
                 )}
               </td>
               <td>
-                {editServiceId === service.id ? (
+                {editServiceId === service._id ? (
                   <button onClick={saveEdit}>💾 שמור</button>
                 ) : (
                   <>
                     <button onClick={() => startEdit(service)}>✏️ ערוך</button>
-                    <button onClick={() => deleteService(service.id)}>🗑️ מחק</button>
+                    <button onClick={() => deleteService(service._id)}>🗑️ מחק</button>
                   </>
                 )}
               </td>
