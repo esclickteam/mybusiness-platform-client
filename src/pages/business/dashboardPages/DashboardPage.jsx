@@ -132,36 +132,25 @@ const DashboardPage = () => {
   const [alert, setAlert] = useState(null);
 
   useEffect(() => {
-  if (!socket || !businessId) return;
-
-  if (location.pathname.includes("/messages")) {
-    hasResetUnreadCount.current = false; // Reset flag when entering /messages
+  if (location.pathname.includes("/messages") && socketRef.current) {
     const conversationId = location.state?.conversationId || null;
+
     if (conversationId) {
-      console.log("Calling markMessagesRead with conversationId:", conversationId);
-      socket.emit('markMessagesRead', conversationId, (response) => {
+      socketRef.current.emit("markMessagesRead", conversationId, (response) => {
         if (response.ok) {
           updateMessagesCount(response.unreadCount);
-          console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+          console.log(
+            "Messages marked as read, unreadCount updated:",
+            response.unreadCount
+          );
         } else {
           console.error("Failed to mark messages as read:", response.error);
         }
       });
     }
-  } else {
-    // Reset unreadCount only once when leaving /messages tab
-    if (!hasResetUnreadCount.current) {
-      setTimeout(() => {
-        if (!hasResetUnreadCount.current) {
-          console.log("Leaving /messages tab, resetting unreadCount");
-          updateMessagesCount(0);
-          hasResetUnreadCount.current = true;
-        }
-      }, 200);
-    }
+    resetMessagesCount();  // עכשיו האיפוס יקרה רק בעמוד הודעות
   }
-}, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
-
+}, [location.pathname, resetMessagesCount, updateMessagesCount]);
 
 
   if (!initialized) {
