@@ -13,7 +13,7 @@ export function DashboardSocketProvider({ businessId, children }) {
     requests_count: 0,
     orders_count: 0,
     reviews_count: 0,
-    messages_count: 0,  // ספירת הודעות לא נקראו
+    messages_count: 0, // ספירת הודעות לא נקראו
     appointments_count: 0,
   });
 
@@ -49,15 +49,21 @@ export function DashboardSocketProvider({ businessId, children }) {
             cleanedStats[key] = newStats[key];
           }
         }
-        setStats(prev => ({ ...prev, ...cleanedStats }));
+        setStats((prev) => ({ ...prev, ...cleanedStats }));
       };
 
       socketRef.current.on("dashboardUpdate", handleUpdate);
 
       socketRef.current.on("unreadMessagesCount", (count) => {
         if (!isMounted) return;
-        console.log("🔄 [SocketProvider] עדכון ספירת הודעות לא נקראו:", count);
-        setStats(prev => ({ ...prev, messages_count: count }));
+        setStats((prev) => {
+          if (prev.messages_count === count) {
+            console.log("[SocketProvider] דילוג על עדכון unreadMessagesCount - אותו ערך:", count);
+            return prev; // לא לעדכן אם אותו ערך
+          }
+          console.log("🔄 [SocketProvider] עדכון ספירת הודעות לא נקראו:", count);
+          return { ...prev, messages_count: count };
+        });
       });
 
       socketRef.current.on("connect", () => {
