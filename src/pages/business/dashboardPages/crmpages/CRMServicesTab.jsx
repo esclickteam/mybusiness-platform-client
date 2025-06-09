@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
-import API from "@api"; // עדכן נתיב ל-API שלך
+import API from "@api"; // עדכן לנתיב הנכון
 import "./CRMServicesTab.css";
 
 const CRMServicesTab = () => {
   const [services, setServices] = useState([]);
-  const [newService, setNewService] = useState({ name: "", price: "" });
+  const [newService, setNewService] = useState({ name: "", price: "", duration: "" });
   const [editServiceId, setEditServiceId] = useState(null);
-  const [editData, setEditData] = useState({ name: "", price: "" });
+  const [editData, setEditData] = useState({ name: "", price: "", duration: "", imageFile: null, imageUrl: "" });
   const [loading, setLoading] = useState(true);
 
-  // טען שירותים מהשרת בהתחלה
+  // טעינת שירותים מהשרת בהתחלה
   useEffect(() => {
     async function fetchServices() {
       try {
-        const res = await API.get("/business/my/services");
+        const res = await API.get("/my/services");
         setServices(res.data.services || []);
       } catch (err) {
         alert("❌ שגיאה בטעינת השירותים");
@@ -26,15 +26,25 @@ const CRMServicesTab = () => {
 
   // הוספת שירות חדש
   const addService = async () => {
-    if (!newService.name || !newService.price) {
-      alert("יש למלא שם ומחיר");
+    if (!newService.name || !newService.price || !newService.duration) {
+      alert("יש למלא שם, מחיר ומשך");
       return;
     }
     try {
-      const res = await API.post("/business/my/services", newService);
-      // API מחזיר את כל השירותים המעודכנים
-      setServices(res.data.services);
-      setNewService({ name: "", price: "" });
+      const formData = new FormData();
+      formData.append("name", newService.name);
+      formData.append("price", newService.price);
+      formData.append("duration", newService.duration);
+      if (newService.imageFile) {
+        formData.append("image", newService.imageFile);
+      }
+
+      const res = await API.post("/my/services", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setServices(res.data.services || []);
+      setNewService({ name: "", price: "", duration: "", imageFile: null });
     } catch {
       alert("❌ שגיאה ביצירת השירות");
     }
@@ -43,23 +53,40 @@ const CRMServicesTab = () => {
   // התחלת עריכה
   const startEdit = (service) => {
     setEditServiceId(service._id);
-    setEditData({ name: service.name, price: service.price });
+    setEditData({
+      name: service.name,
+      price: service.price,
+      duration: service.duration,
+      imageFile: null,
+      imageUrl: service.imageUrl || ""
+    });
   };
 
   // שמירת עריכה
   const saveEdit = async () => {
-    if (!editData.name || !editData.price) {
-      alert("יש למלא שם ומחיר לעדכון");
+    if (!editData.name || !editData.price || !editData.duration) {
+      alert("יש למלא שם, מחיר ומשך לעדכון");
       return;
     }
     try {
-      await API.put(`/business/my/services/${editServiceId}`, editData);
-      setServices((prev) =>
-        prev.map((s) =>
-          s._id === editServiceId ? { ...s, ...editData } : s
-        )
-      );
+      const formData = new FormData();
+      formData.append("name", editData.name);
+      formData.append("price", editData.price);
+      formData.append("duration", editData.duration);
+      if (editData.imageFile) {
+        formData.append("image", editData.imageFile);
+      }
+
+      await API.put(`/my/services/${editServiceId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      // טען מחדש שירותים מהשרת אחרי העריכה
+      const res = await API.get("/my/services");
+      setServices(res.data.services || []);
+
       setEditServiceId(null);
+      setEditData({ name: "", price: "", duration: "", imageFile: null, imageUrl: "" });
     } catch {
       alert("❌ שגיאה בעדכון השירות");
     }
@@ -69,7 +96,7 @@ const CRMServicesTab = () => {
   const deleteService = async (id) => {
     if (!window.confirm("האם למחוק את השירות?")) return;
     try {
-      await API.delete(`/business/my/services/${id}`);
+      await API.delete(`/my/services/${id}`);
       setServices((prev) => prev.filter((s) => s._id !== id));
     } catch {
       alert("❌ שגיאה במחיקת השירות");
@@ -99,6 +126,21 @@ const CRMServicesTab = () => {
             setNewService({ ...newService, price: e.target.value })
           }
         />
+        <input
+          type="number"
+          placeholder="משך (בדקות)"
+          value={newService.duration}
+          onChange={(e) =>
+            setNewService({ ...newService, duration: e.target.value })
+          }
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+            setNewService({ ...newService, imageFile: e.target.files[0] })
+          }
+        />
         <button onClick={addService}>➕ הוסף</button>
       </div>
 
@@ -107,6 +149,8 @@ const CRMServicesTab = () => {
           <tr>
             <th>שם</th>
             <th>מחיר</th>
+            <th>משך (בדקות)</th>
+            <th>תמונה</th>
             <th>פעולות</th>
           </tr>
         </thead>
@@ -135,6 +179,55 @@ const CRMServicesTab = () => {
                   />
                 ) : (
                   service.price
+                )}
+              </td>
+              <td>
+                {editServiceId === service._id ? (
+                  <input
+                    type="number"
+                    value={editData.duration}
+                    onChange={(e) =>
+                      setEditData({ ...editData, duration: e.target.value })
+                    }
+                  />
+                ) : (
+                  service.duration
+                )}
+              </td>
+              <td>
+                {editServiceId === service._id ? (
+                  <>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        setEditData({ ...editData, imageFile: e.target.files[0] })
+                      }
+                    />
+                    {editData.imageFile ? (
+                      <img
+                        src={URL.createObjectURL(editData.imageFile)}
+                        alt="preview"
+                        style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
+                      />
+                    ) : editData.imageUrl ? (
+                      <img
+                        src={editData.imageUrl}
+                        alt="current"
+                        style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
+                      />
+                    ) : (
+                      <em>אין תמונה</em>
+                    )}
+                  </>
+                ) : service.imageUrl ? (
+                  <img
+                    src={service.imageUrl}
+                    alt={service.name}
+                    style={{ maxWidth: "80px", maxHeight: "80px" }}
+                  />
+                ) : (
+                  <em>אין תמונה</em>
                 )}
               </td>
               <td>
