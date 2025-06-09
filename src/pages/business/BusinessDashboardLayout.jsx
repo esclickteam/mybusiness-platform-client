@@ -47,7 +47,6 @@ export default function BusinessDashboardLayout() {
     };
 
     socket.on("newClientMessageNotification", handleNewClientMessage);
-
     return () => {
       socket.off("newClientMessageNotification", handleNewClientMessage);
     };
@@ -63,7 +62,6 @@ export default function BusinessDashboardLayout() {
     };
 
     socket.on("unreadMessagesCount", handleUnreadCount);
-
     return () => {
       socket.off("unreadMessagesCount", handleUnreadCount);
     };
@@ -111,6 +109,7 @@ export default function BusinessDashboardLayout() {
     const searchParams = new URLSearchParams(location.search);
     const tabFromQuery = searchParams.get("tab");
     const tabFromState = location.state?.activeTab;
+
     if (tabFromQuery && tabs.some((t) => t.path === tabFromQuery)) {
       navigate(`./${tabFromQuery}`, { replace: true });
     } else if (tabFromState && tabs.some((t) => t.path === tabFromState)) {
@@ -158,7 +157,7 @@ export default function BusinessDashboardLayout() {
   return (
     <BusinessServicesProvider>
       <div className={`rtl-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
-        <div className={`business-dashboard-layout`}>
+        <div className="business-dashboard-layout">
           {(!isMobile || showSidebar) && (
             <aside
               className={`sidebar ${isMobile ? "mobile open" : ""}`}
@@ -178,37 +177,32 @@ export default function BusinessDashboardLayout() {
                     👀 צפייה בפרופיל
                   </NavLink>
                 )}
-                {tabs.map(({ path, label }) => {
-                  if (path === "messages") {
-                    console.log("Rendering messages tab, unreadCount:", unreadCount);
-                  }
-                  return (
-                    <NavLink
-                      key={path}
-                      to={path}
-                      end
-                      className={({ isActive }) => (isActive ? "active" : undefined)}
-                    >
-                      {label}
-                      {path === "messages" && unreadCount > 0 && (
-                        <span
-                          style={{
-                            backgroundColor: "red",
-                            color: "white",
-                            borderRadius: "12px",
-                            padding: "2px 8px",
-                            fontSize: "12px",
-                            marginLeft: "8px",
-                            fontWeight: "bold",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          {unreadCount}
-                        </span>
-                      )}
-                    </NavLink>
-                  );
-                })}
+                {tabs.map(({ path, label }) => (
+                  <NavLink
+                    key={path}
+                    to={path}
+                    end
+                    className={({ isActive }) => (isActive ? "active" : undefined)}
+                  >
+                    {label}
+                    {path === "messages" && unreadCount > 0 && (
+                      <span
+                        style={{
+                          backgroundColor: "red",
+                          color: "white",
+                          borderRadius: "12px",
+                          padding: "2px 8px",
+                          fontSize: "12px",
+                          marginLeft: "8px",
+                          fontWeight: "bold",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        {unreadCount}
+                      </span>
+                    )}
+                  </NavLink>
+                ))}
               </nav>
             </aside>
           )}
