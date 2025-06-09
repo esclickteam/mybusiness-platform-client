@@ -7,17 +7,24 @@ export const UnreadMessagesProvider = ({ children }) => {
 
   // עדכון ספירה – מקבל מספר או פונקציה שמקבלת את הערך הקודם
   const updateMessagesCount = (countOrUpdater) => {
-    setUnreadCount((prev) =>
-      typeof countOrUpdater === "function" ? countOrUpdater(prev) : countOrUpdater
-    );
+    setUnreadCount((prev) => {
+      const newCount =
+        typeof countOrUpdater === "function" ? countOrUpdater(prev) : countOrUpdater;
+      console.log("[UnreadMessagesContext] updateMessagesCount:", prev, "->", newCount);
+      return newCount;
+    });
   };
 
   const resetMessagesCount = () => {
+    console.log("[UnreadMessagesContext] resetMessagesCount: 0");
     setUnreadCount(0);
   };
 
   const incrementMessagesCount = () => {
-    setUnreadCount((c) => c + 1);
+    setUnreadCount((c) => {
+      console.log("[UnreadMessagesContext] incrementMessagesCount:", c, "->", c + 1);
+      return c + 1;
+    });
   };
 
   return (

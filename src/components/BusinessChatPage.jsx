@@ -68,7 +68,7 @@ export default function BusinessChatPage() {
           response.unreadCount
         );
         if (updateMessagesCount) updateMessagesCount(response.unreadCount);
-        if (resetMessagesCount) resetMessagesCount();
+        // לא קוראים resetMessagesCount כאן כדי לא לאפס מיד את הספירה
       }
     });
 
