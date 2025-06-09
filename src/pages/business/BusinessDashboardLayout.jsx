@@ -28,7 +28,6 @@ export default function BusinessDashboardLayout() {
   const {
     unreadCount,
     updateMessagesCount,
-    resetMessagesCount,
     incrementMessagesCount,
   } = useUnreadMessages();
 
@@ -37,15 +36,11 @@ export default function BusinessDashboardLayout() {
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
 
-  // דגל שמציין האם אנחנו באיפוס ספירת הודעות
-  const [isResetting, setIsResetting] = useState(false);
-
-  // מאזין להודעות חדשות מהשרת ומגדיל ספירת הודעות, רק אם לא באיפוס
+  // מאזין להודעות חדשות מהשרת ומגדיל ספירת הודעות
   useEffect(() => {
     if (!socket) return;
 
     const handleNewClientMessage = (data) => {
-      if (isResetting) return;
       console.log("Received newClientMessageNotification:", data);
       incrementMessagesCount();
     };
@@ -54,14 +49,13 @@ export default function BusinessDashboardLayout() {
     return () => {
       socket.off("newClientMessageNotification", handleNewClientMessage);
     };
-  }, [socket, incrementMessagesCount, isResetting]);
+  }, [socket, incrementMessagesCount]);
 
-  // מאזין לעדכון ספירת הודעות מדויק מהשרת, רק אם לא באיפוס
+  // מאזין לעדכון ספירת הודעות מדויק מהשרת
   useEffect(() => {
     if (!socket) return;
 
     const handleUnreadCount = (newCount) => {
-      if (isResetting) return;
       console.log("Received unreadMessagesCount:", newCount);
       updateMessagesCount(newCount);
     };
@@ -70,17 +64,13 @@ export default function BusinessDashboardLayout() {
     return () => {
       socket.off("unreadMessagesCount", handleUnreadCount);
     };
-  }, [socket, updateMessagesCount, isResetting]);
+  }, [socket, updateMessagesCount]);
 
-  // איפוס וסימון הודעות כנקראות כשנכנסים לטאב הודעות
+  // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
     if (location.pathname.includes("/messages")) {
-      setIsResetting(true);
-      resetMessagesCount();
-
       if (socket && businessId) {
         const conversationId = location.state?.conversationId || null;
-
         if (conversationId) {
           console.log("Calling markMessagesRead with conversationId:", conversationId);
           socket.emit('markMessagesRead', conversationId, (response) => {
@@ -90,16 +80,11 @@ export default function BusinessDashboardLayout() {
             } else {
               console.error("Failed to mark messages as read:", response.error);
             }
-            setIsResetting(false);
           });
-        } else {
-          setIsResetting(false);
         }
-      } else {
-        setIsResetting(false);
       }
     }
-  }, [location.pathname, resetMessagesCount, socket, businessId, updateMessagesCount, location.state]);
+  }, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
 
   // ניהול רספונסיביות לסיידבר
   useEffect(() => {
@@ -272,7 +257,6 @@ export default function BusinessDashboardLayout() {
             <Outlet
               context={{
                 unreadCount,
-                resetMessagesCount,
                 updateMessagesCount,
               }}
             />
