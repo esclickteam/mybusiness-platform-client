@@ -72,10 +72,8 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // קבלת הפונקציות והמצב מניהול ההודעות הלא נקראות בקונטקסט
   const { resetMessagesCount, updateMessagesCount, unreadCount } = useUnreadMessages();
 
-  // Ref לשמירת הערך המעודכן של unreadCount כדי למנוע בעיות בתוך ה-socket event
   const unreadCountRef = useRef(unreadCount);
   useEffect(() => {
     unreadCountRef.current = unreadCount;
@@ -133,17 +131,23 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // סימון הודעות כנקראות בשרת ואיפוס ספירת הודעות לא נקראות בצד לקוח בכניסה לטאב הודעות
   useEffect(() => {
-    if ((location.pathname.includes("/messages") || location.pathname.includes("/dashboard")) && socketRef.current) {
+    if (
+      (location.pathname.includes("/messages") ||
+        location.pathname.includes("/dashboard")) &&
+      socketRef.current
+    ) {
       if (location.pathname.includes("/messages")) {
         const conversationId = location.state?.conversationId || null;
 
         if (conversationId) {
-          socketRef.current.emit('markMessagesRead', conversationId, (response) => {
+          socketRef.current.emit("markMessagesRead", conversationId, (response) => {
             if (response.ok) {
               updateMessagesCount(response.unreadCount);
-              console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+              console.log(
+                "Messages marked as read, unreadCount updated:",
+                response.unreadCount
+              );
             } else {
               console.error("Failed to mark messages as read:", response.error);
             }
@@ -198,8 +202,12 @@ const DashboardPage = () => {
           orders_count: data.orders_count ?? 0,
           reviews_count: data.reviews_count ?? 0,
           messages_count: data.messages_count ?? 0,
-          appointments_count: Array.isArray(data.appointments) ? data.appointments.length : 0,
-          todaysAppointments: Array.isArray(data.todaysAppointments) ? data.todaysAppointments : [],
+          appointments_count: Array.isArray(data.appointments)
+            ? data.appointments.length
+            : 0,
+          todaysAppointments: Array.isArray(data.todaysAppointments)
+            ? data.todaysAppointments
+            : [],
           monthly_comparison: data.monthly_comparison ?? null,
           recent_activity: data.recent_activity ?? null,
           appointments: enrichedAppointments,
@@ -213,7 +221,6 @@ const DashboardPage = () => {
         };
         setStats(safeData);
 
-        // עדכון ספירת הודעות לא נקראות בקונטקסט
         if (updateMessagesCount && safeData.messages_count !== undefined) {
           updateMessagesCount(safeData.messages_count);
         }
@@ -279,15 +286,20 @@ const DashboardPage = () => {
           }
 
           setStats((prevStats) => {
-            // אם הספירה הנוכחית כבר 0, אל תחליף ל־messages_count גדול מ-0
-            if (unreadCountRef.current === 0 && cleanedStats.messages_count > 0) {
+            if (
+              unreadCountRef.current === 0 &&
+              cleanedStats.messages_count > 0
+            ) {
               delete cleanedStats.messages_count;
             }
 
             const merged = mergeStats(prevStats, cleanedStats);
 
-            // עדכון ספירת הודעות לא נקראות בקונטקסט
-            if (updateMessagesCount && cleanedStats.messages_count !== undefined && cleanedStats.messages_count !== unreadCountRef.current) {
+            if (
+              updateMessagesCount &&
+              cleanedStats.messages_count !== undefined &&
+              cleanedStats.messages_count !== unreadCountRef.current
+            ) {
               updateMessagesCount(cleanedStats.messages_count);
             }
 
@@ -315,7 +327,9 @@ const DashboardPage = () => {
 
             const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
 
-            const index = appointments.findIndex((a) => a._id === newAppointment._id);
+            const index = appointments.findIndex(
+              (a) => a._id === newAppointment._id
+            );
 
             if (index !== -1) {
               appointments[index] = enrichedNewAppointment;
@@ -331,7 +345,9 @@ const DashboardPage = () => {
           });
 
           if (newAppointment.date) {
-            const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
+            const apptDate = new Date(newAppointment.date)
+              .toISOString()
+              .split("T")[0];
             if (apptDate === selectedDate) {
               setSelectedDate(null);
               setTimeout(() => setSelectedDate(apptDate), 10);
@@ -371,7 +387,14 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, selectedDate, updateMessagesCount]);
+  }, [
+    initialized,
+    businessId,
+    logout,
+    refreshAccessToken,
+    selectedDate,
+    updateMessagesCount,
+  ]);
 
   if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (error) return <p className="error-text">{error}</p>;
@@ -404,7 +427,7 @@ const DashboardPage = () => {
     }).length;
   };
 
-  // סנכרון הסטטיסטיקות להצגה, משתמש ב-unreadCount מהקונטקסט
+  // סנכרון סטטיסטיקות להצגה: משתמשים ב-unreadCount מהקונטקסט במקום stats.messages_count
   const syncedStats = {
     ...stats,
     messages_count: unreadCount,
@@ -434,9 +457,12 @@ const DashboardPage = () => {
         }}
       />
 
-      <DashboardCards stats={syncedStats} />
+      {/* העברת unreadCount כ-prop ל-DashboardCards */}
+      <DashboardCards stats={syncedStats} unreadCount={unreadCount} />
 
-      <Insights stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }} />
+      <Insights
+        stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }}
+      />
 
       <NextActions
         stats={{

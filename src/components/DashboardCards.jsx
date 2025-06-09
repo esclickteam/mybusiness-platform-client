@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import "../styles/dashboard.css";
 
-const DashboardCards = ({ stats = {} }) => {
+const DashboardCards = ({ stats = {}, unreadCount = 0 }) => {
   useEffect(() => {
     console.log("DashboardCards received stats:", stats);
-    console.log("Stats keys:", Object.keys(stats));
-  }, [stats]);
+    console.log("UnreadCount prop:", unreadCount);
+  }, [stats, unreadCount]);
 
   const cards = [
     {
@@ -22,7 +22,7 @@ const DashboardCards = ({ stats = {} }) => {
     },
     {
       label: "הודעות מלקוחות",
-      value: stats.messages_count ?? 0,
+      value: unreadCount,  // <-- כאן
       icon: "💬",
       bgColor: "#e6f7ff",
     },
@@ -44,7 +44,7 @@ const DashboardCards = ({ stats = {} }) => {
         >
           <div className="card-icon">{card.icon}</div>
           <div className="card-title">{card.label}</div>
-          <div className="card-value">{JSON.stringify(card.value)}</div>
+          <div className="card-value">{card.value}</div>
         </div>
       ))}
     </div>
