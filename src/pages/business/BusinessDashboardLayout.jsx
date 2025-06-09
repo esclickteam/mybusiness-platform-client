@@ -25,9 +25,8 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  // השתמש ב-totalUnreadCount להצגת התראות, ועדכון ספירה
   const {
-    totalUnreadCount,
+    unreadCount,
     updateMessagesCount,
     incrementMessagesCount,
   } = useUnreadMessages();
@@ -60,8 +59,9 @@ export default function BusinessDashboardLayout() {
     if (!socket) return;
 
     const handleUnreadCount = (newCount) => {
+      // מנע עדכון ספירה בזמן שבלשונית ההודעות פתוחה (או עדכן רק אם הערך גדל)
       if (location.pathname.includes("/messages")) {
-        if (newCount > totalUnreadCount) {
+        if (newCount > unreadCount) {
           updateMessagesCount(newCount);
         }
       } else {
@@ -73,14 +73,14 @@ export default function BusinessDashboardLayout() {
     return () => {
       socket.off("unreadMessagesCount", handleUnreadCount);
     };
-  }, [socket, updateMessagesCount, location.pathname, totalUnreadCount]);
+  }, [socket, updateMessagesCount, location.pathname, unreadCount]);
 
   // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
     if (!socket || !businessId) return;
 
     if (location.pathname.includes("/messages")) {
-      hasResetUnreadCount.current = false;
+      hasResetUnreadCount.current = false; // Reset flag on entering messages tab
       const conversationId = location.state?.conversationId || null;
       if (conversationId) {
         console.log("Calling markMessagesRead with conversationId:", conversationId);
@@ -94,6 +94,7 @@ export default function BusinessDashboardLayout() {
         });
       }
     } else {
+      // איפוס ההתראה רק פעם אחת כשעוזבים את טאב ההודעות, עם דיליי קטן למניעת קונפליקט עם עדכוני socket
       if (!hasResetUnreadCount.current) {
         setTimeout(() => {
           if (!hasResetUnreadCount.current) {
@@ -202,7 +203,7 @@ export default function BusinessDashboardLayout() {
                     className={({ isActive }) => (isActive ? "active" : undefined)}
                   >
                     {label}
-                    {path === "messages" && totalUnreadCount > 0 && (
+                    {path === "messages" && unreadCount > 0 && (
                       <span
                         style={{
                           backgroundColor: "red",
@@ -215,7 +216,7 @@ export default function BusinessDashboardLayout() {
                           verticalAlign: "middle",
                         }}
                       >
-                        {totalUnreadCount}
+                        {unreadCount}
                       </span>
                     )}
                   </NavLink>
@@ -276,7 +277,7 @@ export default function BusinessDashboardLayout() {
           >
             <Outlet
               context={{
-                totalUnreadCount,
+                unreadCount,
                 updateMessagesCount,
               }}
             />
