@@ -59,15 +59,21 @@ export default function BusinessDashboardLayout() {
     if (!socket) return;
 
     const handleUnreadCount = (newCount) => {
-      console.log("Received unreadMessagesCount:", newCount);
-      updateMessagesCount(newCount);
+      // מנע עדכון ספירה בזמן שבלשונית ההודעות פתוחה (או עדכן רק אם הערך גדל)
+      if (location.pathname.includes("/messages")) {
+        if (newCount > unreadCount) {
+          updateMessagesCount(newCount);
+        }
+      } else {
+        updateMessagesCount(newCount);
+      }
     };
 
     socket.on("unreadMessagesCount", handleUnreadCount);
     return () => {
       socket.off("unreadMessagesCount", handleUnreadCount);
     };
-  }, [socket, updateMessagesCount]);
+  }, [socket, updateMessagesCount, location.pathname, unreadCount]);
 
   // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
@@ -88,11 +94,15 @@ export default function BusinessDashboardLayout() {
         });
       }
     } else {
-      // איפוס ההתראה רק פעם אחת כשעוזבים את טאב ההודעות
+      // איפוס ההתראה רק פעם אחת כשעוזבים את טאב ההודעות, עם דיליי קטן למניעת קונפליקט עם עדכוני socket
       if (!hasResetUnreadCount.current) {
-        console.log("Leaving /messages tab, resetting unreadCount");
-        updateMessagesCount(0);
-        hasResetUnreadCount.current = true;
+        setTimeout(() => {
+          if (!hasResetUnreadCount.current) {
+            console.log("Leaving /messages tab, resetting unreadCount");
+            updateMessagesCount(0);
+            hasResetUnreadCount.current = true;
+          }
+        }, 200);
       }
     }
   }, [location.pathname, socket, businessId, updateMessagesCount, location.state]);
