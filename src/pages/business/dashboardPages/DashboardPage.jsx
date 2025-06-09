@@ -19,7 +19,6 @@ import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
 
 import "../../../styles/dashboard.css";
 
-
 const LOCAL_STORAGE_KEY = "dashboardStats";
 
 function mergeStats(oldStats, newStats) {
@@ -122,38 +121,36 @@ const DashboardPage = () => {
   const [alert, setAlert] = useState(null);
 
   useEffect(() => {
-  if (!socketRef.current) return;
+    if (!socketRef.current) return;
 
-  if (location.pathname.includes("/messages")) {
-    // נכנס לעמוד ההודעות — מאפס את הדגל לאיפוס
-    hasResetUnreadCount.current = false;
-    const conversationId = location.state?.conversationId || null;
+    if (location.pathname.includes("/messages")) {
+      // נכנס לעמוד ההודעות — מאפס את הדגל לאיפוס
+      hasResetUnreadCount.current = false;
+      const conversationId = location.state?.conversationId || null;
 
-    if (conversationId) {
-      socketRef.current.emit("markMessagesRead", conversationId, (response) => {
-        if (response.ok) {
-          updateMessagesCount(response.unreadCount);
-          console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
-        } else {
-          console.error("Failed to mark messages as read:", response.error);
-        }
-      });
+      if (conversationId) {
+        socketRef.current.emit("markMessagesRead", conversationId, (response) => {
+          if (response.ok) {
+            updateMessagesCount(response.unreadCount);
+            console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
+          } else {
+            console.error("Failed to mark messages as read:", response.error);
+          }
+        });
+      }
+    } else {
+      // יוצא מעמוד ההודעות — מאפס את unreadCount פעם אחת בלבד, עם דיליי למניעת קונפליקטים
+      if (!hasResetUnreadCount.current) {
+        setTimeout(() => {
+          if (!hasResetUnreadCount.current) {
+            updateMessagesCount(0);
+            hasResetUnreadCount.current = true;
+            console.log("Leaving /messages tab, unreadCount reset");
+          }
+        }, 200);
+      }
     }
-  } else {
-    // יוצא מעמוד ההודעות — מאפס את unreadCount פעם אחת בלבד, עם דיליי למניעת קונפליקטים
-    if (!hasResetUnreadCount.current) {
-      setTimeout(() => {
-        if (!hasResetUnreadCount.current) {
-          updateMessagesCount(0);
-          hasResetUnreadCount.current = true;
-          console.log("Leaving /messages tab, unreadCount reset");
-        }
-      }, 200);
-    }
-  }
-}, [location.pathname, resetMessagesCount, updateMessagesCount]);
-
-
+  }, [location.pathname, resetMessagesCount, updateMessagesCount]);
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
@@ -436,7 +433,8 @@ const DashboardPage = () => {
         </span>
       </h2>
 
-      <QuickActions onAction={handleQuickAction} />
+      {/* QuickActions הוסר */}
+
       {alert && <DashboardAlert text={alert} type="info" />}
 
       <DashboardNav
