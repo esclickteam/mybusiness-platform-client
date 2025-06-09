@@ -135,7 +135,8 @@ const DashboardPage = () => {
 
   // סימון הודעות כנקראות בשרת ואיפוס ספירת הודעות לא נקראות בצד לקוח בכניסה לטאב הודעות
   useEffect(() => {
-    if (location.pathname.includes("/messages") && socketRef.current) {
+  if ((location.pathname.includes("/messages") || location.pathname.includes("/dashboard")) && socketRef.current) {
+    if (location.pathname.includes("/messages")) {
       const conversationId = location.state?.conversationId || null;
 
       if (conversationId) {
@@ -150,10 +151,12 @@ const DashboardPage = () => {
       } else {
         console.warn("No conversationId available for marking messages as read");
       }
-
-      resetMessagesCount();
     }
-  }, [location.pathname, resetMessagesCount, updateMessagesCount]);
+
+    resetMessagesCount();
+  }
+}, [location.pathname, resetMessagesCount, updateMessagesCount]);
+
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
