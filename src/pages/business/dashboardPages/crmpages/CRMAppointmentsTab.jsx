@@ -3,20 +3,8 @@ import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api"; // תקן לנתיב הנכון
 import { useAuth } from "../../../../context/AuthContext";
-import { format } from 'date-fns';
 
 const statusCycle = ["new", "pending", "completed"]; // ערכי סטטוס באנגלית לפי backend
-
-// פונקציה להמרת זמן UTC לאזור זמן ישראל להצגה
-function formatSlotTime(dateStr, timeStr) {
-  if (!dateStr || !timeStr) return timeStr || "";
-  const utcDate = new Date(`${dateStr}T${timeStr}:00Z`);
-  return utcDate.toLocaleTimeString('he-IL', {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'Asia/Jerusalem',
-  });
-}
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
@@ -399,7 +387,7 @@ const CRMAppointmentsTab = () => {
                       }
                     />
                   ) : (
-                    formatSlotTime(appt.date, appt.time)
+                    appt.time
                   )}
                 </td>
                 <td>
