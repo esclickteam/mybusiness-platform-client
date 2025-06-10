@@ -37,6 +37,7 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
 
   useEffect(() => {
     if (!date || !businessId) {
+      console.log("SelectTimeFromSlots: no date or businessId provided");
       setAvailableSlots([]);
       setBookedSlots([]);
       return;
@@ -44,27 +45,35 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
 
     const fetchData = async () => {
       try {
+        console.log("Fetching work hours and booked slots for businessId:", businessId, "date:", date);
         const workHoursRes = await API.get("/appointments/get-work-hours", {
           params: { businessId }
         });
         const workHours = workHoursRes.data.workHours || {};
+        console.log("Work hours fetched:", workHours);
 
         const apptsRes = await API.get("/appointments/by-date", {
           params: { businessId, date }
         });
         const booked = apptsRes.data || [];
+        console.log("Booked slots fetched:", booked);
 
         const dayIdx = new Date(date).toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
         const config = workHours[dayIdx];
+        console.log("Work hours config for day", dayIdx, ":", config);
 
         if (!config || !config.start || !config.end) {
+          console.warn("No work hours config for this day or missing start/end");
           setAvailableSlots([]);
           setBookedSlots([]);
           return;
         }
 
         const allSlots = generateSlots(config.start, config.end, serviceDuration, config.breaks || []);
+        console.log("All possible slots generated:", allSlots);
+
         const freeSlots = allSlots.filter(t => !booked.includes(t));
+        console.log("Filtered free slots (excluding booked):", freeSlots);
 
         setAvailableSlots(freeSlots);
         setBookedSlots(booked);
@@ -80,14 +89,19 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
   }, [date, businessId, serviceDuration]);
 
   useEffect(() => {
-    if (!socket || !businessId) return;
+    if (!socket || !businessId) {
+      console.log("Socket or businessId missing, skipping socket listeners");
+      return;
+    }
 
     const updateSlots = () => {
       if (!date) return;
+      console.log("Socket event received, updating slots for date:", date);
       API.get("/appointments/by-date", {
         params: { businessId, date }
       }).then(res => {
         const booked = res.data || [];
+        console.log("Updated booked slots from socket event:", booked);
         setBookedSlots(booked);
         setAvailableSlots(prevSlots => prevSlots.filter(t => !booked.includes(t)));
       });
