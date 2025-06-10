@@ -96,7 +96,7 @@ const CRMAppointmentsTab = () => {
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
 
     try {
-      await API.put(`/business/my/appointments/${id}/status`, { status: nextStatus });
+      await API.put(`/appointments/${id}/status`, { status: nextStatus });
       setAppointments((prev) =>
         prev.map((appt) => (appt._id === id ? { ...appt, status: nextStatus } : appt))
       );
@@ -114,7 +114,7 @@ const CRMAppointmentsTab = () => {
           ...prev,
           serviceId: service._id,
           serviceName: service.name,
-          time: "",  // אפס זמן כשמשנים שירות
+          time: "", // אפס זמן כשמשנים שירות
         }));
       } else {
         setNewAppointment((prev) => ({
@@ -148,7 +148,7 @@ const CRMAppointmentsTab = () => {
     if (editId) {
       setEditData((prev) => ({
         ...prev,
-        time: ""
+        time: "",
       }));
     }
   }, [editData.date, editId]);
@@ -167,7 +167,7 @@ const CRMAppointmentsTab = () => {
     }
 
     try {
-      const res = await API.post("/business/my/appointments", {
+      const res = await API.post("/appointments", {
         ...newAppointment,
         status: "חדש",
       });
@@ -206,8 +206,8 @@ const CRMAppointmentsTab = () => {
     }
 
     try {
-      await API.put(`/business/my/appointments/${editId}`, editData);
-      const res = await API.get("/business/my/appointments");
+      await API.put(`/appointments/${editId}`, editData);
+      const res = await API.get("/appointments");
       setAppointments(res.data.appointments || []);
       setEditId(null);
     } catch {
@@ -219,7 +219,7 @@ const CRMAppointmentsTab = () => {
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
-        await API.delete(`/business/my/appointments/${id}`);
+        await API.delete(`/appointments/${id}`);
         setAppointments((prev) => prev.filter((appt) => appt._id !== id));
       } catch {
         alert("❌ שגיאה במחיקת התיאום");
@@ -284,7 +284,7 @@ const CRMAppointmentsTab = () => {
             onChange={(time) => setNewAppointment({ ...newAppointment, time })}
             businessId={businessId}
             serviceDuration={
-              services.find(s => s._id === newAppointment.serviceId)?.duration || 30
+              services.find((s) => s._id === newAppointment.serviceId)?.duration || 30
             }
           />
           <button onClick={handleAddAppointment}>📩 שמור תיאום</button>
@@ -371,7 +371,7 @@ const CRMAppointmentsTab = () => {
                       onChange={(time) => setEditData({ ...editData, time })}
                       businessId={businessId}
                       serviceDuration={
-                        services.find(s => s._id === editData.serviceId)?.duration || 30
+                        services.find((s) => s._id === editData.serviceId)?.duration || 30
                       }
                     />
                   ) : (

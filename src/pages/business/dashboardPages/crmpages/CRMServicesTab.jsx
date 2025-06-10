@@ -87,7 +87,7 @@ const CRMAppointmentsTab = () => {
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
 
     try {
-      await API.put(`/business/my/appointments/${id}/status`, { status: nextStatus });
+      await API.put(`/appointments/${id}/status`, { status: nextStatus });
       setAppointments((prev) =>
         prev.map((appt) => (appt._id === id ? { ...appt, status: nextStatus } : appt))
       );
@@ -125,7 +125,7 @@ const CRMAppointmentsTab = () => {
       return;
     }
     try {
-      const res = await API.post("/business/my/appointments", { ...newAppointment, status: "חדש" });
+      const res = await API.post("/appointments", { ...newAppointment, status: "חדש" });
       setAppointments(res.data.appointments || []);
       setShowAddForm(false);
       setNewAppointment({ clientName: "", clientPhone: "", serviceId: "", serviceName: "", date: "", time: "" });
@@ -151,8 +151,8 @@ const CRMAppointmentsTab = () => {
       return;
     }
     try {
-      await API.put(`/business/my/appointments/${editId}`, editData);
-      const res = await API.get("/business/my/appointments");
+      await API.put(`/appointments/${editId}`, editData);
+      const res = await API.get("/appointments");
       setAppointments(res.data.appointments || []);
       setEditId(null);
     } catch {
@@ -163,7 +163,7 @@ const CRMAppointmentsTab = () => {
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
-        await API.delete(`/business/my/appointments/${id}`);
+        await API.delete(`/appointments/${id}`);
         setAppointments((prev) => prev.filter((appt) => appt._id !== id));
       } catch {
         alert("❌ שגיאה במחיקת התיאום");
@@ -273,7 +273,7 @@ const CRMAppointmentsTab = () => {
                 </td>
                 <td>
                   {editId === appt._id ? (
-                    <input value={editData.time} onChange={(e) => setEditData({ ...editData, time: e.target.value })} />
+                    <input type="time" value={editData.time} onChange={(e) => setEditData({ ...editData, time: e.target.value })} />
                   ) : (
                     appt.time
                   )}
