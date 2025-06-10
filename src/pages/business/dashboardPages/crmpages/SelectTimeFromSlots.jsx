@@ -62,14 +62,14 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
         const config = workHours[dayIdx];
         console.log("Work hours config for day", dayIdx, ":", config);
 
-        if (!config || !config.start || !config.end) {
-          console.warn("No work hours config for this day or missing start/end");
+        if (!config || !config.open || !config.close) {
+          console.warn("No work hours config for this day or missing open/close");
           setAvailableSlots([]);
           setBookedSlots([]);
           return;
         }
 
-        const allSlots = generateSlots(config.start, config.end, serviceDuration, config.breaks || []);
+        const allSlots = generateSlots(config.open, config.close, serviceDuration, config.breaks || []);
         console.log("All possible slots generated:", allSlots);
 
         const freeSlots = allSlots.filter(t => !booked.includes(t));
