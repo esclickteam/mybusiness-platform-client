@@ -31,36 +31,54 @@ const generateSlots = (start, end, duration, breaks = []) => {
   return slots;
 };
 
-const CRMAvailableSlots = () => {
+const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [workHours, setWorkHours] = useState({});
-  const [appointments, setAppointments] = useState([]);
+  const [workHours, setWorkHours] = useState(null);
+  const [bookedTimes, setBookedTimes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // פונקציה לפורמט תאריך ל-YYYY-MM-DD
+  const formatDate = (date) => {
+    return date.toISOString().slice(0, 10);
+  };
 
   useEffect(() => {
-    const workHours = JSON.parse(localStorage.getItem("demoWorkHours_calendar") || "{}");
-    const appointments = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
-  
-    console.log("📅 workHours (מהיומן):", workHours);
-    console.log("📩 appointments (מהלקוחות):", appointments);
-  }, []);
-  
-  useEffect(() => {
-    const calendarData = JSON.parse(localStorage.getItem("demoWorkHours_calendar") || "{}");
-    const appointmentData = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
-    setWorkHours(calendarData);
-    setAppointments(appointmentData);
-  }, []);
+    if (!businessId || !serviceId || !selectedDate) return;
 
-  const dateKey = selectedDate.toDateString();
-  const config = workHours[dateKey];
+    setLoading(true);
+    setError(null);
 
-  const bookedTimes = appointments
-    .filter((a) => a.date === selectedDate.toLocaleDateString("he-IL") && a.time)
-    .map((a) => a.time);
+    const dateStr = formatDate(selectedDate);
 
-  const availableSlots = config
-    ? generateSlots(config.start, config.end, config.duration || 30, config.breaks || [])
-        .filter((slot) => !bookedTimes.includes(slot))
+    // בקשה מקבילית ל-work hours ול-pending appointments
+    Promise.all([
+      fetch(`/api/appointments/get-work-hours?businessId=${businessId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(res => {
+        if (!res.ok) throw new Error("Failed to fetch work hours");
+        return res.json();
+      }),
+      fetch(`/api/appointments/slots?businessId=${businessId}&serviceId=${serviceId}&date=${dateStr}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(res => {
+        if (!res.ok) throw new Error("Failed to fetch booked slots");
+        return res.json();
+      }),
+    ])
+      .then(([workHoursData, slotsData]) => {
+        setWorkHours(workHoursData.workHours || null);
+        setBookedTimes(slotsData.slots || []);
+      })
+      .catch(err => {
+        setError(err.message);
+      })
+      .finally(() => setLoading(false));
+  }, [businessId, serviceId, selectedDate, token]);
+
+  const availableSlots = workHours
+    ? generateSlots(workHours.start, workHours.end, workHours.duration || 30, workHours.breaks || [])
+        .filter(slot => !bookedTimes.includes(slot))
     : [];
 
   return (
@@ -73,12 +91,16 @@ const CRMAvailableSlots = () => {
       />
 
       <h4>תאריך נבחר: {selectedDate.toLocaleDateString("he-IL")}</h4>
-      {config ? (
+
+      {loading && <p>טוען נתונים...</p>}
+      {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
+
+      {workHours ? (
         <>
-          <p>שעות פעילות: {config.start} - {config.end}</p>
+          <p>שעות פעילות: {workHours.start} - {workHours.end}</p>
           <ul className="slot-list">
             {availableSlots.length > 0 ? (
-              availableSlots.map((slot) => (
+              availableSlots.map(slot => (
                 <li key={slot}>🕒 {slot}</li>
               ))
             ) : (
@@ -87,7 +109,7 @@ const CRMAvailableSlots = () => {
           </ul>
         </>
       ) : (
-        <p>⚠️ אין הגדרות פעילות ליום זה ביומן</p>
+        !loading && <p>⚠️ אין הגדרות פעילות ליום זה ביומן</p>
       )}
     </div>
   );
