@@ -220,8 +220,8 @@ const CRMAppointmentsTab = () => {
         duration,
         status: statusEnum,
       });
-      const res = await API.get("/appointments");
-      setAppointments(res.data.appointments || []);
+      const res = await API.get("/appointments/all-with-services");
+      setAppointments(res.data || []);
       setEditId(null);
     } catch {
       alert("❌ שגיאה בעדכון התיאום");
@@ -295,9 +295,7 @@ const CRMAppointmentsTab = () => {
             selectedTime={newAppointment.time}
             onChange={(time) => setNewAppointment({ ...newAppointment, time })}
             businessId={businessId}
-            serviceDuration={
-              services.find((s) => s._id === newAppointment.serviceId)?.duration || 30
-            }
+            serviceId={newAppointment.serviceId}
           />
           <button onClick={handleAddAppointment}>📩 שמור תיאום</button>
         </div>
@@ -382,9 +380,7 @@ const CRMAppointmentsTab = () => {
                       selectedTime={editData.time}
                       onChange={(time) => setEditData({ ...editData, time })}
                       businessId={businessId}
-                      serviceDuration={
-                        services.find((s) => s._id === editData.serviceId)?.duration || 30
-                      }
+                      serviceId={editData.serviceId}
                     />
                   ) : (
                     appt.time

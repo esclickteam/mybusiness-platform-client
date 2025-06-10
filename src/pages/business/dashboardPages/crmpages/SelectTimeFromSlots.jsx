@@ -1,168 +1,52 @@
 import React, { useEffect, useState } from "react";
 import API from "@api";
-import { useAuth } from "../../../../context/AuthContext";
-
-const generateSlots = (start, end, duration, breaks = []) => {
-  const parseTime = (str) => {
-    const [h, m = "00"] = str.split(":");
-    return parseInt(h) * 60 + parseInt(m);
-  };
-  const formatTime = (minutes) => {
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-  };
-
-  const startMin = parseTime(start);
-  const endMin = parseTime(end);
-  const breakRanges = breaks.map((b) => {
-    const [from, to] = b.replace(/\s/g, "").split("-");
-    return [parseTime(from), parseTime(to)];
-  });
-
-  const slots = [];
-  for (let t = startMin; t + duration <= endMin; t += duration) {
-    const isBreak = breakRanges.some(
-      ([from, to]) => t < to && t + duration > from
-    );
-    if (!isBreak) {
-      slots.push(formatTime(t));
-    }
-  }
-  return slots;
-};
-
-const convertScheduleArrayToObject = (scheduleArray) => {
-  const dayNames = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-  ];
-  const scheduleObj = {};
-  scheduleArray.forEach((item) => {
-    const dayIndex = Number(item.day);
-    if (dayIndex >= 0 && dayIndex <= 6) {
-      scheduleObj[dayNames[dayIndex]] = {
-        open: item.start,
-        close: item.end,
-        breaks: item.breaks || [],
-      };
-    }
-  });
-  return scheduleObj;
-};
 
 const SelectTimeFromSlots = ({
   date,
   selectedTime,
   onChange,
   businessId,
-  serviceDuration = 30,
+  serviceId,
 }) => {
-  const { socket } = useAuth();
   const [availableSlots, setAvailableSlots] = useState([]);
-  const [bookedSlots, setBookedSlots] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const fetchSlotsAndWorkHours = async () => {
-    console.log("Fetching slots and work hours for", { date, businessId });
-    if (!date || !businessId) {
+  useEffect(() => {
+    if (!businessId || !serviceId || !date) {
       setAvailableSlots([]);
-      setBookedSlots([]);
-      console.log("Missing date or businessId, cleared slots");
       return;
     }
 
-    try {
-      const workHoursRes = await API.get("/appointments/get-work-hours", {
-        params: { businessId },
-      });
-      const rawWorkHours = workHoursRes.data.workHours || [];
-      const workHours = convertScheduleArrayToObject(rawWorkHours);
-
-      console.log("Work hours:", workHours);
-
-      const apptsRes = await API.get("/appointments/by-date", {
-        params: { businessId, date },
-      });
-      const bookedRaw = apptsRes.data || [];
-      // אם יש אובייקטים במקום מחרוזות, המיר ל-time בלבד
-      const booked =
-        bookedRaw.length > 0 && typeof bookedRaw[0] === "object"
-          ? bookedRaw.map((a) => a.time)
-          : bookedRaw;
-
-      console.log("Booked slots from API:", booked);
-
-      const dayIdx = new Date(date)
-        .toLocaleDateString("en-US", { weekday: "long" })
-        .toLowerCase();
-      const config = workHours[dayIdx];
-      if (!config || !config.open || !config.close) {
+    const fetchSlots = async () => {
+      setLoading(true);
+      try {
+        const res = await API.get("/appointments/slots", {
+          params: { businessId, serviceId, date },
+        });
+        setAvailableSlots(res.data.slots || []);
+      } catch (err) {
+        console.error("Error fetching slots:", err);
         setAvailableSlots([]);
-        setBookedSlots([]);
-        console.log("No work hours config for day", dayIdx);
-        return;
+      } finally {
+        setLoading(false);
       }
-
-      const allSlots = generateSlots(
-        config.open,
-        config.close,
-        serviceDuration,
-        config.breaks || []
-      );
-      console.log("All generated slots:", allSlots);
-
-      const freeSlots = allSlots.filter((t) => !booked.includes(t));
-      console.log("Free slots after filtering booked:", freeSlots);
-
-      setAvailableSlots(freeSlots);
-      setBookedSlots(booked);
-    } catch (err) {
-      console.error("Error fetching slots or work hours:", err);
-      setAvailableSlots([]);
-      setBookedSlots([]);
-    }
-  };
-
-  useEffect(() => {
-    fetchSlotsAndWorkHours();
-  }, [date, businessId, serviceDuration]);
-
-  useEffect(() => {
-    if (!socket || !businessId) return;
-
-    const updateSlots = () => {
-      console.log("Socket event received, updating slots...");
-      fetchSlotsAndWorkHours();
     };
 
-    socket.on("appointmentUpdated", updateSlots);
-    socket.on("appointmentCreated", updateSlots);
-    socket.on("appointmentDeleted", updateSlots);
+    fetchSlots();
+  }, [businessId, serviceId, date]);
 
-    return () => {
-      socket.off("appointmentUpdated", updateSlots);
-      socket.off("appointmentCreated", updateSlots);
-      socket.off("appointmentDeleted", updateSlots);
-    };
-  }, [socket, businessId, date, serviceDuration]);
+  if (loading) return <p>טוען זמני פגישה...</p>;
+  if (!date) return <p>יש לבחור תאריך תחילה</p>;
+  if (availableSlots.length === 0) return <p>אין משבצות זמינות בתאריך זה</p>;
 
   return (
     <div className="time-select-wrapper">
       <label>שעה:</label>
       <select
         value={selectedTime}
-        onChange={(e) => {
-          console.log("Selected time changed to:", e.target.value);
-          onChange(e.target.value);
-        }}
+        onChange={(e) => onChange(e.target.value)}
       >
         <option value="">בחר שעה</option>
-        {availableSlots.length === 0 && <option disabled>אין זמינים</option>}
         {availableSlots.map((time) => (
           <option key={time} value={time}>
             {time}
