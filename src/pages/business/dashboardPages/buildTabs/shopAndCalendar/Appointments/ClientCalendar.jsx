@@ -149,14 +149,28 @@ export default function ClientCalendar({
   useEffect(() => {
   if (config?.start && config?.end) {
     const allSlots = generateTimeSlots(config.start, config.end, config.breaks);
-    // bookedSlots הוא כבר מערך של מחרוזות זמן (למשל ["09:00", "11:00"])
-    const takenTimes = bookedSlots;
-    const freeSlots = allSlots.filter((time) => !takenTimes.includes(time));
+
+    const normalizeTime = (timeStr) => {
+      const [h, m] = timeStr.split(":").map(Number);
+      return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+    };
+
+    const takenTimesNormalized = bookedSlots.map(normalizeTime);
+
+    console.log("Booked slots raw:", bookedSlots);
+    console.log("Booked slots normalized:", takenTimesNormalized);
+    console.log("All generated slots:", allSlots);
+
+    const freeSlots = allSlots.filter(time => !takenTimesNormalized.includes(normalizeTime(time)));
+
+    console.log("Filtered free slots:", freeSlots);
+
     setAvailableSlots(freeSlots);
   } else {
     setAvailableSlots([]);
   }
 }, [config, bookedSlots]);
+
 
   const handleSelectSlot = (time) => {
     setSelectedSlot({
