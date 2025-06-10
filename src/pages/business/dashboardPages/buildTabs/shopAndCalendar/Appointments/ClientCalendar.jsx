@@ -47,7 +47,8 @@ export default function ClientCalendar({
       console.warn('loadBookedSlots: No businessId provided');
       return;
     }
-    const dateStr = selectedDate.toISOString().slice(0, 10);
+    const dateStr = selectedDate.toLocaleDateString('en-CA');
+
     console.log(`Loading booked slots for businessId=${businessId}, date=${dateStr}`);
 
     API.get("/appointments/by-date", {
@@ -199,7 +200,7 @@ export default function ClientCalendar({
   const handleSelectSlot = (time) => {
     setSelectedSlot({
       time,
-      date: selectedDate.toISOString().slice(0, 10),
+      date: selectedDate.toLocaleDateString('en-CA'),
       rawDate: selectedDate,
       duration: selectedService.duration,
       price: selectedService.price,
