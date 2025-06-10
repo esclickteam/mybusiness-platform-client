@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import API from '@api';
 import ServiceList from './ServiceList';
 import CalendarSetup from './CalendarSetup';
@@ -25,6 +25,7 @@ function normalizeWorkHours(data) {
 }
 
 // פונקציה להמרת זמן slot לאזור זמן ישראל להצגה
+// כאן לא תצטרך להשתמש בה, אך אפשר להשאיר אם תרצה בעתיד
 function formatSlotTime(date, timeStr) {
   if (!date || !timeStr) return timeStr || "";
   const utcDate = new Date(`${format(date, 'yyyy-MM-dd')}T${timeStr}:00Z`);
@@ -178,7 +179,7 @@ const AppointmentsMain = ({
         date: format(selectedDate, 'yyyy-MM-dd'),
         time: selectedSlot
       });
-      alert(`✅ התור נקבע ל־${format(selectedDate, 'dd.MM.yyyy')} בשעה ${formatSlotTime(selectedDate, selectedSlot)}`);
+      alert(`✅ התור נקבע ל־${format(selectedDate, 'dd.MM.yyyy')} בשעה ${selectedSlot}`);
       setSelectedDate(null);
       setSelectedSlot(null);
       setSelectedService(null);
@@ -271,7 +272,7 @@ const AppointmentsMain = ({
                   className={`slot-btn ${selectedSlot === slot ? 'active' : ''}`}
                   onClick={() => setSelectedSlot(slot)}
                 >
-                  {formatSlotTime(selectedDate, slot)}
+                  {slot}
                 </button>
               ))}
             </div>
@@ -282,7 +283,7 @@ const AppointmentsMain = ({
         {selectedSlot && (
           <div className="book-action">
             <button onClick={handleBook}>
-              📅 קבע תור ל־{format(selectedDate, 'dd.MM.yyyy')} בשעה {formatSlotTime(selectedDate, selectedSlot)}
+              📅 קבע תור ל־{format(selectedDate, 'dd.MM.yyyy')} בשעה {selectedSlot}
             </button>
           </div>
         )}
