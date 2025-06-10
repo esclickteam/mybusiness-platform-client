@@ -35,15 +35,15 @@ export function DashboardSocketProvider({ businessId, children }) {
         return;
       }
 
+      // מחברים לסוקט עם auth שמכיל גם businessId
       socketRef.current = io(SOCKET_URL, {
         path: "/socket.io",
         auth: { token, role: "business-dashboard", businessId },
         transports: ["websocket"],
       });
 
-      // הסרנו emit ל-"joinBusinessRoom" כי השרת כבר מחבר לפי businessId ב-auth
-
-      const handleUpdate = (newStats) => {
+      // מאזינים לאירועים מהשרת
+      socketRef.current.on("dashboardUpdate", (newStats) => {
         if (!isMounted) return;
         const cleanedStats = {};
         for (const key in newStats) {
@@ -52,9 +52,7 @@ export function DashboardSocketProvider({ businessId, children }) {
           }
         }
         setStats((prev) => ({ ...prev, ...cleanedStats }));
-      };
-
-      socketRef.current.on("dashboardUpdate", handleUpdate);
+      });
 
       socketRef.current.on("unreadMessagesCount", (count) => {
         if (!isMounted) return;
@@ -78,7 +76,7 @@ export function DashboardSocketProvider({ businessId, children }) {
         if (!isMounted) return;
         setStats((prev) => {
           const updatedAppointments = prev.appointments ? [...prev.appointments] : [];
-          const index = updatedAppointments.findIndex(a => a._id === newAppointment._id);
+          const index = updatedAppointments.findIndex((a) => a._id === newAppointment._id);
           if (index !== -1) {
             updatedAppointments[index] = newAppointment;
           } else {
@@ -95,7 +93,7 @@ export function DashboardSocketProvider({ businessId, children }) {
       socketRef.current.on("appointmentDeleted", ({ id }) => {
         if (!isMounted) return;
         setStats((prev) => {
-          const updatedAppointments = prev.appointments ? prev.appointments.filter(a => a._id !== id) : [];
+          const updatedAppointments = prev.appointments ? prev.appointments.filter((a) => a._id !== id) : [];
           return {
             ...prev,
             appointments: updatedAppointments,
