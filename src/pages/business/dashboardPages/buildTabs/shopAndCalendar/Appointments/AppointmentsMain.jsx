@@ -62,13 +62,14 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setServices, selectedBusinessId]);
 
-  // טעינת שעות עבודה מעודכנות
+  // טעינת שעות עבודה מעודכנות עם לוג
   useEffect(() => {
     if (!isPreview && setWorkHours && selectedBusinessId) {
       API.get('/appointments/get-work-hours', {
         params: { businessId: selectedBusinessId }
       })
       .then(res => {
+        console.log("📅 שעות עבודה מהשרת:", res.data);
         setWorkHours(normalizeWorkHours(res.data));
       })
       .catch(() => {
@@ -77,19 +78,18 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setWorkHours, selectedBusinessId]);
 
-  // פונקציה לטעינת תורים תפוסים מתאריך מסוים
+  // פונקציה לטעינת תורים תפוסים מתאריך מסוים עם לוג
   const fetchBookedSlots = async (businessId, dateStr) => {
-  if (!businessId || !dateStr) return [];
-  try {
-    const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
-    console.log("Booked slots from API:", res.data); // <-- כאן
-    return res.data || [];
-  } catch (err) {
-    console.error("Error fetching booked slots:", err);
-    return [];
-  }
-};
-
+    if (!businessId || !dateStr) return [];
+    try {
+      const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
+      console.log("⏰ תורים תפוסים מהשרת:", res.data);
+      return res.data || [];
+    } catch (err) {
+      console.error("Error fetching booked slots:", err);
+      return [];
+    }
+  };
 
   // פונקציית עזר לנירמול פורמט זמן
   const normalizeTime = (t) => {
@@ -101,7 +101,7 @@ const AppointmentsMain = ({
     return `${h}:${m}`;
   };
 
-  // טעינת זמני הפגישה הפנויים
+  // טעינת זמני הפגישה הפנויים עם לוגים לבדיקה
   useEffect(() => {
     if (selectedDate && selectedService && selectedBusinessId) {
       const dayIdx = selectedDate.getDay();
@@ -130,6 +130,9 @@ const AppointmentsMain = ({
         const cleanedBookedSlots = bookedSlots.map(normalizeTime);
         const cleanedAllSlots = allSlots.map(normalizeTime);
         const freeSlots = cleanedAllSlots.filter(slot => !cleanedBookedSlots.includes(slot));
+        console.log("🕒 כל הזמנים:", allSlots);
+        console.log("🚫 תפוסים:", cleanedBookedSlots);
+        console.log("✅ פנויים:", freeSlots);
         setAvailableSlots(freeSlots);
       });
     } else {
