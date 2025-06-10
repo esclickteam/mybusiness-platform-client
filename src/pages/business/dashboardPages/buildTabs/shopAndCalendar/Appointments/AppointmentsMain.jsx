@@ -30,7 +30,9 @@ const AppointmentsMain = ({
   setServices,
   workHours = {},
   setWorkHours,
-  setBusinessDetails
+  setBusinessDetails,
+  // אם העסק נבחר מבחוץ (לדוגמה בפרופיל עסק), אפשר לקבל פה את המזהה:
+  initialBusinessId = null,
 }) => {
   const { currentUser, socket } = useAuth();
 
@@ -39,13 +41,20 @@ const AppointmentsMain = ({
   const [selectedDate, setSelectedDate] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  // מזהה העסק שהלקוח בחר או מצוי בפרופיל העסק
+  const [selectedBusinessId, setSelectedBusinessId] = useState(initialBusinessId);
 
   const [refreshCounter, setRefreshCounter] = useState(0);
 
+  // אם המזהה הגיע מבחוץ, שמור אותו ב-state
+  useEffect(() => {
+    if (initialBusinessId) setSelectedBusinessId(initialBusinessId);
+  }, [initialBusinessId]);
+
   // --- Fetch services ---
   useEffect(() => {
-    if (!isPreview && setServices) {
-      API.get('/business/my/services')
+    if (!isPreview && setServices && selectedBusinessId) {
+      API.get('/business/my/services', { params: { businessId: selectedBusinessId } })
         .then(res => {
           setServices(res.data.services || []);
         })
@@ -54,13 +63,13 @@ const AppointmentsMain = ({
           setServices(demo);
         });
     }
-  }, [isPreview, setServices]);
+  }, [isPreview, setServices, selectedBusinessId]);
 
   // --- Fetch & normalize workHours ---
   useEffect(() => {
-    if (!isPreview && setWorkHours && currentUser) {
+    if (!isPreview && setWorkHours && selectedBusinessId) {
       API.get('/appointments/get-work-hours', {
-        params: { businessId: currentUser?.businessId || "" }
+        params: { businessId: selectedBusinessId }
       })
       .then(res => {
         setWorkHours(normalizeWorkHours(res.data));
@@ -69,22 +78,23 @@ const AppointmentsMain = ({
         setWorkHours({});
       });
     }
-  }, [isPreview, setWorkHours, currentUser]);
+  }, [isPreview, setWorkHours, selectedBusinessId]);
 
   // --- Fetch booked slots from API ---
   const fetchBookedSlots = async (businessId, dateStr) => {
-  try {
-    console.log(`[AppointmentsMain] Fetching booked slots for businessId=${businessId} date=${dateStr}`);
-    const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
-    console.log("[AppointmentsMain] Booked slots received from API:", res.data);
-    return res.data || [];
-  } catch (err) {
-    console.error("[AppointmentsMain] Error fetching booked slots:", err);
-    return [];
-  }
-};
+    if (!businessId || !dateStr) return [];
+    try {
+      console.log(`[AppointmentsMain] Fetching booked slots for businessId=${businessId} date=${dateStr}`);
+      const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
+      console.log("[AppointmentsMain] Booked slots received from API:", res.data);
+      return res.data || [];
+    } catch (err) {
+      console.error("[AppointmentsMain] Error fetching booked slots:", err);
+      return [];
+    }
+  };
 
-  // --- Normalize time string (handles possible seconds or trailing spaces) ---
+  // --- Normalize time string ---
   const normalizeTime = (t) => {
     if (!t) return "";
     const parts = t.trim().split(":");
@@ -94,9 +104,9 @@ const AppointmentsMain = ({
     return `${h}:${m}`;
   };
 
-  // --- Compute slots when date or service changes or refreshCounter changes ---
+  // --- Compute slots when date, service, businessId, or refreshCounter changes ---
   useEffect(() => {
-    if (selectedDate && selectedService && currentUser) {
+    if (selectedDate && selectedService && selectedBusinessId) {
       const dayIdx = selectedDate.getDay();
       const hours = workHours[dayIdx];
       if (!hours) {
@@ -118,23 +128,19 @@ const AppointmentsMain = ({
         return slots;
       };
 
-      fetchBookedSlots(currentUser.businessId, dateStr).then(bookedSlots => {
+      fetchBookedSlots(selectedBusinessId, dateStr).then(bookedSlots => {
         const allSlots = generateAllSlots();
-
-        // נרמל את הזמנים שהוזמנו כדי להתאים לפורמט HH:mm ללא שניות או רווחים
         const cleanedBookedSlots = bookedSlots.map(normalizeTime);
         const cleanedAllSlots = allSlots.map(normalizeTime);
-
-        // מסננים את כל הזמנים הפנויים, כלומר אלה שאינם תפוסים
         const freeSlots = cleanedAllSlots.filter(slot => !cleanedBookedSlots.includes(slot));
         setAvailableSlots(freeSlots);
       });
     } else {
       setAvailableSlots([]);
     }
-  }, [selectedDate, selectedService, workHours, currentUser, refreshCounter]);
+  }, [selectedDate, selectedService, workHours, selectedBusinessId, refreshCounter]);
 
-  // אתחול selectedSlot לשעה הראשונה הזמינה ברשימת availableSlots
+  // Init selectedSlot to first available slot
   useEffect(() => {
     if (availableSlots.length > 0) {
       setSelectedSlot(availableSlots[0]);
@@ -164,10 +170,11 @@ const AppointmentsMain = ({
 
   // --- Book appointment ---
   const handleBook = async () => {
-    if (!selectedService || !selectedDate || !selectedSlot) return;
+    if (!selectedService || !selectedDate || !selectedSlot || !selectedBusinessId) return;
 
     try {
       await API.post('/appointments/create', {
+        businessId: selectedBusinessId,
         serviceId: selectedService._id,
         date: format(selectedDate, 'yyyy-MM-dd'),
         time: selectedSlot
