@@ -148,46 +148,51 @@ const CRMAppointmentsTab = () => {
   }, [editData.date, editId]);
 
   const handleAddAppointment = async () => {
-    if (
-      !newAppointment.clientName ||
-      !newAppointment.clientPhone ||
-      !newAppointment.date ||
-      !newAppointment.time ||
-      !newAppointment.serviceId
-    ) {
-      alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
-      return;
-    }
+  if (
+    !newAppointment.clientName ||
+    !newAppointment.clientPhone ||
+    !newAppointment.date ||
+    !newAppointment.time ||
+    !newAppointment.serviceId
+  ) {
+    alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
+    return;
+  }
 
-    const service = services.find((s) => s._id === newAppointment.serviceId);
-    const duration = service?.duration || 30;
-    const statusEnum = "new";
+  const service = services.find((s) => s._id === newAppointment.serviceId);
+  const duration = service?.duration || 30;
+  const statusEnum = "new";
 
-    try {
-      const res = await API.post("/appointments", {
-        businessId,
-        serviceId: newAppointment.serviceId,
-        date: newAppointment.date,
-        time: newAppointment.time,
-        name: newAppointment.clientName,
-        phone: newAppointment.clientPhone,
-        duration,
-        status: statusEnum,
-      });
-      setAppointments(res.data.appointments || []);
-      setShowAddForm(false);
-      setNewAppointment({
-        clientName: "",
-        clientPhone: "",
-        serviceId: "",
-        serviceName: "",
-        date: "",
-        time: "",
-      });
-    } catch {
-      alert("❌ שגיאה ביצירת התיאום");
-    }
-  };
+  try {
+    const res = await API.post("/appointments", {
+      businessId,
+      serviceId: newAppointment.serviceId,
+      date: newAppointment.date,
+      time: newAppointment.time,
+      name: newAppointment.clientName,
+      phone: newAppointment.clientPhone,
+      duration,
+      status: statusEnum,
+    });
+
+    // אם ה-API מחזיר את התיאום החדש ב-res.data.appt
+    const newAppt = res.data.appt;
+
+    setAppointments((prev) => [...prev, newAppt]); // מוסיף תיאום חדש ל-state
+    setShowAddForm(false);
+    setNewAppointment({
+      clientName: "",
+      clientPhone: "",
+      serviceId: "",
+      serviceName: "",
+      date: "",
+      time: "",
+    });
+  } catch {
+    alert("❌ שגיאה ביצירת התיאום");
+  }
+};
+
 
   const startEdit = (appt) => {
     setEditId(appt._id);
@@ -195,38 +200,55 @@ const CRMAppointmentsTab = () => {
   };
 
   const saveEdit = async () => {
-    if (
-      !editData.clientName ||
-      !editData.clientPhone ||
-      !editData.date ||
-      !editData.time ||
-      !editData.serviceId
-    ) {
-      alert("יש למלא שם, טלפון, שירות, תאריך ושעה לעדכון");
-      return;
-    }
+  if (
+    !editData.clientName ||
+    !editData.clientPhone ||
+    !editData.date ||
+    !editData.time ||
+    !editData.serviceId
+  ) {
+    alert("יש למלא שם, טלפון, שירות, תאריך ושעה לעדכון");
+    return;
+  }
 
-    const service = services.find((s) => s._id === editData.serviceId);
-    const duration = service?.duration || 30;
-    const statusEnum = editData.status || "new";
+  const service = services.find((s) => s._id === editData.serviceId);
+  const duration = service?.duration || 30;
+  const statusEnum = editData.status || "new";
 
-    try {
-      await API.put(`/appointments/${editId}`, {
-        serviceId: editData.serviceId,
-        date: editData.date,
-        time: editData.time,
-        name: editData.clientName,
-        phone: editData.clientPhone,
-        duration,
-        status: statusEnum,
-      });
-      const res = await API.get("/appointments/all-with-services");
-      setAppointments(res.data || []);
-      setEditId(null);
-    } catch {
-      alert("❌ שגיאה בעדכון התיאום");
-    }
-  };
+  try {
+    await API.put(`/appointments/${editId}`, {
+      serviceId: editData.serviceId,
+      date: editData.date,
+      time: editData.time,
+      name: editData.clientName,
+      phone: editData.clientPhone,
+      duration,
+      status: statusEnum,
+    });
+
+    // עדכון רק הפריט בעריכה ב-state המקומי
+    setAppointments((prev) =>
+      prev.map((appt) =>
+        appt._id === editId
+          ? {
+              ...appt,
+              clientName: editData.clientName,
+              clientPhone: editData.clientPhone,
+              serviceId: editData.serviceId,
+              serviceName: editData.serviceName,
+              date: editData.date,
+              time: editData.time,
+              status: statusEnum,
+            }
+          : appt
+      )
+    );
+    setEditId(null);
+  } catch {
+    alert("❌ שגיאה בעדכון התיאום");
+  }
+};
+
 
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
