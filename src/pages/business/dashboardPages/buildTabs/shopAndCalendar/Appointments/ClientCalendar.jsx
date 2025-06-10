@@ -43,23 +43,26 @@ export default function ClientCalendar({
   const serviceDuration = selectedService?.duration || 30;
 
   const loadBookedSlots = () => {
-    if (!businessId) return;
-    const dateStr = selectedDate.toISOString().slice(0, 10);
-    setLoadingSlots(true);
-    setBookedSlots([]);
-    API.get("/appointments/by-date", {
-      params: { businessId, date: dateStr },
+  if (!businessId) return;
+  const dateStr = selectedDate.toISOString().slice(0, 10);
+  setLoadingSlots(true);
+  setBookedSlots([]);
+  console.log(`Loading booked slots for businessId=${businessId}, date=${dateStr}`);
+  API.get("/appointments/by-date", {
+    params: { businessId, date: dateStr },
+  })
+    .then((res) => {
+      console.log("Booked slots from API:", res.data);
+      setBookedSlots(res.data || []);
+      setError(null);
     })
-      .then((res) => {
-        setBookedSlots(res.data || []);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("Error fetching booked slots:", err);
-        setError("שגיאה בטעינת זמינות.");
-      })
-      .finally(() => setLoadingSlots(false));
-  };
+    .catch((err) => {
+      console.error("Error fetching booked slots:", err);
+      setError("שגיאה בטעינת זמינות.");
+    })
+    .finally(() => setLoadingSlots(false));
+};
+
 
   useEffect(() => {
     loadBookedSlots();
@@ -143,35 +146,39 @@ export default function ClientCalendar({
   };
 
   useEffect(() => {
-    if (config?.start && config?.end) {
-      const allSlots = generateTimeSlots(config.start, config.end, config.breaks);
+  if (config?.start && config?.end) {
+    const allSlots = generateTimeSlots(config.start, config.end, config.breaks);
 
-      const toMinutes = (t) => {
-        const [h, m] = t.split(":").map(Number);
-        return h * 60 + m;
-      };
+    const toMinutes = (t) => {
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
+    };
 
-      // כאן bookedSlots הוא מערך של אובייקטים: [{ time: "09:00", duration: 120 }, ...]
-      const occupiedSlots = new Set();
+    const occupiedSlots = new Set();
 
-      bookedSlots.forEach(({ time, duration }) => {
-        const startMin = toMinutes(time);
-        const dur = duration || serviceDuration;
-        for (let i = 0; i < dur; i += serviceDuration) {
-          const slotMin = startMin + i;
-          const hh = String(Math.floor(slotMin / 60)).padStart(2, "0");
-          const mm = String(slotMin % 60).padStart(2, "0");
-          occupiedSlots.add(`${hh}:${mm}`);
-        }
-      });
+    bookedSlots.forEach(({ time, duration }) => {
+      const startMin = toMinutes(time);
+      const dur = duration || serviceDuration;
+      for (let i = 0; i < dur; i += serviceDuration) {
+        const slotMin = startMin + i;
+        const hh = String(Math.floor(slotMin / 60)).padStart(2, "0");
+        const mm = String(slotMin % 60).padStart(2, "0");
+        occupiedSlots.add(`${hh}:${mm}`);
+      }
+    });
 
-      const freeSlots = allSlots.filter(slot => !occupiedSlots.has(slot));
+    console.log("Occupied slots:", Array.from(occupiedSlots));
 
-      setAvailableSlots(freeSlots);
-    } else {
-      setAvailableSlots([]);
-    }
-  }, [config, bookedSlots]);
+    const freeSlots = allSlots.filter(slot => !occupiedSlots.has(slot));
+
+    console.log("Free slots:", freeSlots);
+
+    setAvailableSlots(freeSlots);
+  } else {
+    setAvailableSlots([]);
+  }
+}, [config, bookedSlots]);
+
 
   const handleSelectSlot = (time) => {
     setSelectedSlot({
