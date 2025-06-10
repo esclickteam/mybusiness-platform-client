@@ -34,7 +34,6 @@ const CRMAppointmentsTab = () => {
     time: "",
   });
 
-  // טען תיאומים ושירותים מהשרת
   useEffect(() => {
     async function fetchAppointmentsAndServices() {
       try {
@@ -51,7 +50,6 @@ const CRMAppointmentsTab = () => {
     fetchAppointmentsAndServices();
   }, []);
 
-  // האזנה לאירועי socket
   useEffect(() => {
     if (!socket) return;
 
@@ -78,7 +76,6 @@ const CRMAppointmentsTab = () => {
     };
   }, [socket]);
 
-  // סינון תיאומים לפי חיפוש
   const filteredAppointments = appointments.filter((appt) => {
     const searchLower = search.toLowerCase();
     return (
@@ -87,7 +84,6 @@ const CRMAppointmentsTab = () => {
     );
   });
 
-  // מחזור סטטוס תיאום
   const cycleStatus = async (id) => {
     const apptToUpdate = appointments.find((appt) => appt._id === id);
     if (!apptToUpdate) return;
@@ -105,7 +101,6 @@ const CRMAppointmentsTab = () => {
     }
   };
 
-  // שינוי שירות (בשמירה או עריכה)
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
     if (service) {
@@ -114,7 +109,7 @@ const CRMAppointmentsTab = () => {
           ...prev,
           serviceId: service._id,
           serviceName: service.name,
-          time: "", // אפס זמן כשמשנים שירות
+          time: "",
         }));
       } else {
         setNewAppointment((prev) => ({
@@ -143,7 +138,6 @@ const CRMAppointmentsTab = () => {
     }
   };
 
-  // שינוי תאריך בעריכה - מאפס זמן
   useEffect(() => {
     if (editId) {
       setEditData((prev) => ({
@@ -153,7 +147,6 @@ const CRMAppointmentsTab = () => {
     }
   }, [editData.date, editId]);
 
-  // יצירת תיאום חדש
   const handleAddAppointment = async () => {
     if (
       !newAppointment.clientName ||
@@ -168,7 +161,12 @@ const CRMAppointmentsTab = () => {
 
     try {
       const res = await API.post("/appointments", {
-        ...newAppointment,
+        businessId, // הוספת מזהה העסק כאן
+        serviceId: newAppointment.serviceId,
+        date: newAppointment.date,
+        time: newAppointment.time,
+        name: newAppointment.clientName, // המיפוי הנכון לשם
+        phone: newAppointment.clientPhone, // המיפוי הנכון לטלפון
         status: "חדש",
       });
       setAppointments(res.data.appointments || []);
@@ -186,13 +184,11 @@ const CRMAppointmentsTab = () => {
     }
   };
 
-  // התחלת עריכה
   const startEdit = (appt) => {
     setEditId(appt._id);
     setEditData({ ...appt });
   };
 
-  // שמירת עריכה
   const saveEdit = async () => {
     if (
       !editData.clientName ||
@@ -206,7 +202,17 @@ const CRMAppointmentsTab = () => {
     }
 
     try {
-      await API.put(`/appointments/${editId}`, editData);
+      // גם כאן צריך למפות את השמות לשדות שה-backend מצפה להם
+      const payload = {
+        serviceId: editData.serviceId,
+        date: editData.date,
+        time: editData.time,
+        name: editData.clientName,
+        phone: editData.clientPhone,
+        status: editData.status || "חדש",
+      };
+
+      await API.put(`/appointments/${editId}`, payload);
       const res = await API.get("/appointments");
       setAppointments(res.data.appointments || []);
       setEditId(null);
@@ -215,7 +221,6 @@ const CRMAppointmentsTab = () => {
     }
   };
 
-  // מחיקת תיאום
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
