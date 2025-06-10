@@ -24,6 +24,17 @@ function normalizeWorkHours(data) {
   return map;
 }
 
+// פונקציה להמרת זמן slot לאזור זמן ישראל להצגה
+function formatSlotTime(date, timeStr) {
+  if (!date || !timeStr) return timeStr || "";
+  const utcDate = new Date(`${format(date, 'yyyy-MM-dd')}T${timeStr}:00Z`);
+  return utcDate.toLocaleTimeString('he-IL', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Asia/Jerusalem',
+  });
+}
+
 const AppointmentsMain = ({
   isPreview = false,
   services = [],
@@ -31,7 +42,6 @@ const AppointmentsMain = ({
   workHours = {},
   setWorkHours,
   setBusinessDetails,
-  // אם העסק נבחר מבחוץ (לדוגמה בפרופיל עסק), אפשר לקבל פה את המזהה:
   initialBusinessId = null,
 }) => {
   const { currentUser, socket } = useAuth();
@@ -41,17 +51,13 @@ const AppointmentsMain = ({
   const [selectedDate, setSelectedDate] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  // מזהה העסק שהלקוח בחר או מצוי בפרופיל העסק
   const [selectedBusinessId, setSelectedBusinessId] = useState(initialBusinessId);
-
   const [refreshCounter, setRefreshCounter] = useState(0);
 
-  // אם המזהה הגיע מבחוץ, שמור אותו ב-state
   useEffect(() => {
     if (initialBusinessId) setSelectedBusinessId(initialBusinessId);
   }, [initialBusinessId]);
 
-  // --- Fetch services ---
   useEffect(() => {
     if (!isPreview && setServices && selectedBusinessId) {
       API.get('/business/my/services', { params: { businessId: selectedBusinessId } })
@@ -65,7 +71,6 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setServices, selectedBusinessId]);
 
-  // --- Fetch & normalize workHours ---
   useEffect(() => {
     if (!isPreview && setWorkHours && selectedBusinessId) {
       API.get('/appointments/get-work-hours', {
@@ -80,7 +85,6 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setWorkHours, selectedBusinessId]);
 
-  // --- Fetch booked slots from API ---
   const fetchBookedSlots = async (businessId, dateStr) => {
     if (!businessId || !dateStr) return [];
     try {
@@ -94,7 +98,6 @@ const AppointmentsMain = ({
     }
   };
 
-  // --- Normalize time string ---
   const normalizeTime = (t) => {
     if (!t) return "";
     const parts = t.trim().split(":");
@@ -104,7 +107,6 @@ const AppointmentsMain = ({
     return `${h}:${m}`;
   };
 
-  // --- Compute slots when date, service, businessId, or refreshCounter changes ---
   useEffect(() => {
     if (selectedDate && selectedService && selectedBusinessId) {
       const dayIdx = selectedDate.getDay();
@@ -140,7 +142,6 @@ const AppointmentsMain = ({
     }
   }, [selectedDate, selectedService, workHours, selectedBusinessId, refreshCounter]);
 
-  // Init selectedSlot to first available slot
   useEffect(() => {
     if (availableSlots.length > 0) {
       setSelectedSlot(availableSlots[0]);
@@ -149,7 +150,6 @@ const AppointmentsMain = ({
     }
   }, [availableSlots]);
 
-  // --- Sync real-time updates with Socket.IO ---
   useEffect(() => {
     if (!socket) return;
 
@@ -168,7 +168,6 @@ const AppointmentsMain = ({
     };
   }, [socket]);
 
-  // --- Book appointment ---
   const handleBook = async () => {
     if (!selectedService || !selectedDate || !selectedSlot || !selectedBusinessId) return;
 
@@ -179,7 +178,7 @@ const AppointmentsMain = ({
         date: format(selectedDate, 'yyyy-MM-dd'),
         time: selectedSlot
       });
-      alert(`✅ התור נקבע ל־${format(selectedDate, 'dd.MM.yyyy')} בשעה ${selectedSlot}`);
+      alert(`✅ התור נקבע ל־${format(selectedDate, 'dd.MM.yyyy')} בשעה ${formatSlotTime(selectedDate, selectedSlot)}`);
       setSelectedDate(null);
       setSelectedSlot(null);
       setSelectedService(null);
@@ -272,7 +271,7 @@ const AppointmentsMain = ({
                   className={`slot-btn ${selectedSlot === slot ? 'active' : ''}`}
                   onClick={() => setSelectedSlot(slot)}
                 >
-                  {slot}
+                  {formatSlotTime(selectedDate, slot)}
                 </button>
               ))}
             </div>
@@ -283,7 +282,7 @@ const AppointmentsMain = ({
         {selectedSlot && (
           <div className="book-action">
             <button onClick={handleBook}>
-              📅 קבע תור ל־{format(selectedDate, 'dd.MM.yyyy')} בשעה {selectedSlot}
+              📅 קבע תור ל־{format(selectedDate, 'dd.MM.yyyy')} בשעה {formatSlotTime(selectedDate, selectedSlot)}
             </button>
           </div>
         )}
