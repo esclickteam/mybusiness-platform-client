@@ -19,6 +19,15 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     }
   }, [date]);
 
+  // טיפול בתאריך לתצוגה בטקסט הכותרת, עם fallback
+  const displayDate = useMemo(() => {
+    try {
+      return new Date(date).toLocaleDateString("he-IL");
+    } catch {
+      return "לא זמין";
+    }
+  }, [date]);
+
   const dayAppointments = useMemo(() => {
     if (!selectedDate) return [];
 
@@ -50,7 +59,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
   return (
     <div className="daily-agenda-container">
       <h4 style={{ textAlign: "center", marginBottom: "15px" }}>
-        לו״ז ליום {new Date(date).toLocaleDateString("he-IL")}
+        לו״ז ליום {displayDate}
       </h4>
 
       {dayAppointments.length === 0 ? (
@@ -59,19 +68,23 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
         </p>
       ) : (
         <div className="agenda-list">
-          {dayAppointments.map((a, i) => {
+          {dayAppointments.map((a) => {
             const time = a.time || "";
             const clientName = a.clientName || "לא ידוע";
             const serviceName = a.serviceName || "לא ידוע";
 
             return (
-              <div key={i} className="agenda-item">
+              <div
+                key={a._id || a.id || `${time}-${clientName}-${serviceName}`}
+                className="agenda-item"
+              >
                 <div className="agenda-time">🕒 {time}</div>
                 <div className="agenda-service">💼 שירות: {serviceName}</div>
                 <div className="agenda-client">👤 לקוח: {clientName}</div>
                 <div className="agenda-actions">
                   <button
                     className="agenda-btn"
+                    aria-label={`שלח תזכורת לווטסאפ ללקוח ${clientName} לשעה ${time}`}
                     onClick={() =>
                       sendWhatsAppReminder(clientName, time, serviceName)
                     }
@@ -80,6 +93,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
                   </button>
                   <button
                     className="agenda-btn outline"
+                    aria-label={`ערוך פגישה של לקוח ${clientName} לשעה ${time}`}
                     onClick={() => editAppointment(a)}
                   >
                     ערוך פגישה

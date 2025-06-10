@@ -13,9 +13,7 @@ export default function ClientCalendar({
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
 
-  // כל הזמנים המקוריים
   const [availableSlots, setAvailableSlots] = useState([]);
-  // שעות שכבר הוזמנו בפנים (משרת ה-API)
   const [bookedSlots, setBookedSlots] = useState([]);
 
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -28,41 +26,47 @@ export default function ClientCalendar({
   const [clientEmail, setClientEmail] = useState("");
 
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [error, setError] = useState(null);
 
-  // 1) עדכון חודש ושנה בהתייחס לתאריך נבחר
   useEffect(() => {
     setMonth(selectedDate.getMonth());
     setYear(selectedDate.getFullYear());
   }, [selectedDate]);
 
-  const dayIdx = selectedDate.getDay();
-  const config = workHours[dayIdx];
+  // workHours: אובייקט עם ימים ושעות, לדוגמה: { sunday: { start: '09:00', end: '17:00', breaks: '12:00-13:00' }, ... }
+  // נניח ש-workHours מופרדים לפי שם יום באנגלית קטנה
+  const dayKey = selectedDate.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+  const config = workHours[dayKey];
   const serviceDuration = selectedService?.duration || 30;
 
-  // 2) שליפת bookedSlots מהשרת עבור התאריך הנבחר
+  // שליפת bookedSlots מהשרת עבור התאריך הנבחר
   useEffect(() => {
     if (!businessId) return;
     const dateStr = selectedDate.toISOString().slice(0, 10); // YYYY-MM-DD
+    setLoadingSlots(true);
     setBookedSlots([]); // איפוס לפני רענון
     API.get("/appointments/by-date", {
       params: { businessId, date: dateStr }
     })
       .then(res => {
-        // אם השרת מחזיר array של מחרוזות זמנים
-        setBookedSlots(res.data);
+        setBookedSlots(res.data || []);
+        setError(null);
       })
       .catch(err => {
         console.error("Error fetching booked slots:", err);
-      });
+        setError("שגיאה בטעינת זמינות.");
+      })
+      .finally(() => setLoadingSlots(false));
   }, [selectedDate, businessId]);
 
-  // 3a) כל שינוי בתאריך/קונפיג מחזיר למסך slots (אך לא על bookedSlots)
+  // איפוס בחירה כאשר משתנה תאריך או שעות עבודה
   useEffect(() => {
     setSelectedSlot(null);
     setMode("slots");
   }, [selectedDate, config]);
 
-  // 3b) בניית availableSlots מסוננים ע"פ bookedSlots
+  // יצירת availableSlots סינון לפי bookedSlots
   useEffect(() => {
     if (config?.start && config?.end) {
       const all = generateTimeSlots(config.start, config.end, config.breaks);
@@ -80,9 +84,7 @@ export default function ClientCalendar({
     const fromMin = m => {
       const h = Math.floor(m / 60),
         mm = m % 60;
-      return `${h.toString().padStart(2, "0")}:${mm
-        .toString()
-        .padStart(2, "0")}`;
+      return `${h.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}`;
     };
 
     const start = toMin(startTime),
@@ -110,7 +112,7 @@ export default function ClientCalendar({
   const handleSelectSlot = time => {
     setSelectedSlot({
       time,
-      date: selectedDate.toLocaleDateString("he-IL"),
+      date: selectedDate.toISOString().slice(0, 10), // שימוש בפורמט אחיד
       rawDate: selectedDate,
       duration: selectedService.duration,
       price: selectedService.price,
@@ -121,7 +123,7 @@ export default function ClientCalendar({
   };
 
   const handleSubmitBooking = async () => {
-    if (!clientName || !clientPhone || !clientAddress) {
+    if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim()) {
       alert("אנא מלא את כל הפרטים הנדרשים");
       return;
     }
@@ -138,7 +140,7 @@ export default function ClientCalendar({
       await API.post("/appointments", {
         businessId,
         serviceId: selectedSlot.serviceId,
-        date: selectedSlot.rawDate.toISOString().slice(0, 10), // YYYY-MM-DD
+        date: selectedSlot.date,
         time: selectedSlot.time,
         name: clientName,
         phone: clientPhone,
@@ -149,7 +151,7 @@ export default function ClientCalendar({
         duration: selectedSlot.duration,
       });
 
-      // אחרי הצלחה: הוסף את השעה ל-bookedSlots כדי שתסונן מיד
+      // הוספת השעה ל-bookedSlots לסינון מיידי
       setBookedSlots(prev => [...prev, selectedSlot.time]);
       setBookingSuccess(true);
     } catch (err) {
@@ -210,17 +212,19 @@ export default function ClientCalendar({
 
           <div className="selected-date-info">
             <h4>📆 {selectedDate.toLocaleDateString("he-IL")}</h4>
-            {config ? (
+            {loadingSlots ? (
+              <p>טוען זמינות...</p>
+            ) : error ? (
+              <p className="error-text">{error}</p>
+            ) : config ? (
               <>
-                <p>
-                  🕓 שעות פעילות: {config.start} - {config.end}
-                </p>
+                <p>🕓 שעות פעילות: {config.start} - {config.end}</p>
                 {config.breaks && <p>⏸️ הפסקות: {config.breaks}</p>}
                 <h5>🕒 שעות פנויות:</h5>
                 {availableSlots.length ? (
                   <div className="slot-list">
                     {availableSlots.map((t, i) => (
-                      <div key={i} className="slot-item">
+                      <div key={t} className="slot-item">
                         <button onClick={() => handleSelectSlot(t)}>
                           {t}
                         </button>
@@ -257,27 +261,32 @@ export default function ClientCalendar({
                 <input
                   value={clientName}
                   onChange={e => setClientName(e.target.value)}
+                  placeholder="הכנס שם מלא"
                 />
                 <label>טלפון:</label>
                 <input
                   value={clientPhone}
                   onChange={e => setClientPhone(e.target.value)}
+                  placeholder="הכנס טלפון"
                 />
                 <label>כתובת:</label>
                 <input
                   value={clientAddress}
                   onChange={e => setClientAddress(e.target.value)}
+                  placeholder="הכנס כתובת"
                 />
                 <label>אימייל (לשליחת אישור):</label>
                 <input
                   value={clientEmail}
                   onChange={e => setClientEmail(e.target.value)}
                   type="email"
+                  placeholder="הכנס אימייל"
                 />
                 <label>הערה (לא חובה):</label>
                 <textarea
                   value={clientNote}
                   onChange={e => setClientNote(e.target.value)}
+                  placeholder="הערה נוספת"
                 />
               </div>
 

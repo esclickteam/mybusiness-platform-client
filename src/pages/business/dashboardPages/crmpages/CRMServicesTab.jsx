@@ -1,7 +1,10 @@
 // CRMServicesTab.jsx
 import React, { useState, useEffect } from "react";
 import API from "@api"; // עדכן לנתיב הנכון
+import { io } from "socket.io-client";
 import "./CRMServicesTab.css";
+
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 const CRMServicesTab = () => {
   const [services, setServices] = useState([]);
@@ -27,6 +30,7 @@ const CRMServicesTab = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  // חיבור ל-socket לשמירת סנכרון בזמן אמת
   useEffect(() => {
     async function fetchServices() {
       try {
@@ -39,6 +43,33 @@ const CRMServicesTab = () => {
       }
     }
     fetchServices();
+
+    const socket = io(SOCKET_URL, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      // הוסף auth אם צריך לפי המערכת שלך
+    });
+
+    socket.on("connect", () => {
+      console.log("🔌 Connected to socket in CRMServicesTab");
+    });
+
+    socket.on("servicesUpdated", (updatedServices) => {
+      console.log("🔄 servicesUpdated received from socket", updatedServices);
+      setServices(updatedServices);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("🔌 Disconnected from socket");
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Socket connection error:", err);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const calcDurationInMinutes = (hours, minutes) =>
@@ -129,6 +160,7 @@ const CRMServicesTab = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
+      // עדכון השירותים אחרי שמירת עריכה (מומלץ לרענן מהר מהשרת)
       const res = await API.get("/business/my/services");
       setServices(res.data.services || []);
 
@@ -152,6 +184,8 @@ const CRMServicesTab = () => {
     if (!window.confirm("האם למחוק את השירות?")) return;
     try {
       await API.delete(`/business/my/services/${id}`);
+
+      // עדכון רשימת השירותים לאחר מחיקה (לסנכרן מיידית)
       setServices((prev) => prev.filter((s) => s._id !== id));
     } catch {
       alert("❌ שגיאה במחיקת השירות");
@@ -169,23 +203,15 @@ const CRMServicesTab = () => {
           <div className="appointment-type-selector">
             <button
               type="button"
-              className={
-                newService.appointmentType === "at_business" ? "active" : ""
-              }
-              onClick={() =>
-                setNewService({ ...newService, appointmentType: "at_business" })
-              }
+              className={newService.appointmentType === "at_business" ? "active" : ""}
+              onClick={() => setNewService({ ...newService, appointmentType: "at_business" })}
             >
               🏢 תיאום תור בעסק
             </button>
             <button
               type="button"
-              className={
-                newService.appointmentType === "on_site" ? "active" : ""
-              }
-              onClick={() =>
-                setNewService({ ...newService, appointmentType: "on_site" })
-              }
+              className={newService.appointmentType === "on_site" ? "active" : ""}
+              onClick={() => setNewService({ ...newService, appointmentType: "on_site" })}
             >
               🚗 שירות עד הבית
             </button>
@@ -195,24 +221,18 @@ const CRMServicesTab = () => {
             type="text"
             placeholder="שם השירות"
             value={newService.name}
-            onChange={(e) =>
-              setNewService({ ...newService, name: e.target.value })
-            }
+            onChange={(e) => setNewService({ ...newService, name: e.target.value })}
           />
           <input
             type="text"
             placeholder="מחיר (₪)"
             value={newService.price}
-            onChange={(e) =>
-              setNewService({ ...newService, price: e.target.value })
-            }
+            onChange={(e) => setNewService({ ...newService, price: e.target.value })}
           />
           <div className="time-row">
             <select
               value={newService.hours}
-              onChange={(e) =>
-                setNewService({ ...newService, hours: e.target.value })
-              }
+              onChange={(e) => setNewService({ ...newService, hours: e.target.value })}
             >
               {[...Array(13).keys()].map((h) => (
                 <option key={h} value={h}>
@@ -223,9 +243,7 @@ const CRMServicesTab = () => {
             <span>שעות</span>
             <select
               value={newService.minutes}
-              onChange={(e) =>
-                setNewService({ ...newService, minutes: e.target.value })
-              }
+              onChange={(e) => setNewService({ ...newService, minutes: e.target.value })}
             >
               {["0", "15", "30", "45"].map((m) => (
                 <option key={m} value={m}>
@@ -239,17 +257,13 @@ const CRMServicesTab = () => {
           <textarea
             placeholder="תיאור השירות (לא חובה)"
             value={newService.description}
-            onChange={(e) =>
-              setNewService({ ...newService, description: e.target.value })
-            }
+            onChange={(e) => setNewService({ ...newService, description: e.target.value })}
           />
 
           <input
             type="file"
             accept="image/*"
-            onChange={(e) =>
-              setNewService({ ...newService, imageFile: e.target.files[0] })
-            }
+            onChange={(e) => setNewService({ ...newService, imageFile: e.target.files[0] })}
           />
           {newService.imageFile && (
             <img
@@ -287,30 +301,18 @@ const CRMServicesTab = () => {
                     <div className="appointment-type-selector">
                       <button
                         type="button"
-                        className={
-                          editData.appointmentType === "at_business"
-                            ? "active"
-                            : ""
-                        }
+                        className={editData.appointmentType === "at_business" ? "active" : ""}
                         onClick={() =>
-                          setEditData({
-                            ...editData,
-                            appointmentType: "at_business",
-                          })
+                          setEditData({ ...editData, appointmentType: "at_business" })
                         }
                       >
                         🏢 תיאום תור בעסק
                       </button>
                       <button
                         type="button"
-                        className={
-                          editData.appointmentType === "on_site" ? "active" : ""
-                        }
+                        className={editData.appointmentType === "on_site" ? "active" : ""}
                         onClick={() =>
-                          setEditData({
-                            ...editData,
-                            appointmentType: "on_site",
-                          })
+                          setEditData({ ...editData, appointmentType: "on_site" })
                         }
                       >
                         🚗 שירות עד הבית
@@ -326,9 +328,7 @@ const CRMServicesTab = () => {
                   {editServiceId === service._id ? (
                     <input
                       value={editData.name}
-                      onChange={(e) =>
-                        setEditData({ ...editData, name: e.target.value })
-                      }
+                      onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                     />
                   ) : (
                     service.name
@@ -338,9 +338,7 @@ const CRMServicesTab = () => {
                   {editServiceId === service._id ? (
                     <input
                       value={editData.price}
-                      onChange={(e) =>
-                        setEditData({ ...editData, price: e.target.value })
-                      }
+                      onChange={(e) => setEditData({ ...editData, price: e.target.value })}
                     />
                   ) : (
                     service.price
@@ -351,9 +349,7 @@ const CRMServicesTab = () => {
                     <>
                       <select
                         value={editData.hours}
-                        onChange={(e) =>
-                          setEditData({ ...editData, hours: e.target.value })
-                        }
+                        onChange={(e) => setEditData({ ...editData, hours: e.target.value })}
                       >
                         {[...Array(13).keys()].map((h) => (
                           <option key={h} value={h}>
@@ -364,9 +360,7 @@ const CRMServicesTab = () => {
                       <span>שעות</span>
                       <select
                         value={editData.minutes}
-                        onChange={(e) =>
-                          setEditData({ ...editData, minutes: e.target.value })
-                        }
+                        onChange={(e) => setEditData({ ...editData, minutes: e.target.value })}
                       >
                         {["0", "15", "30", "45"].map((m) => (
                           <option key={m} value={m}>
@@ -384,9 +378,7 @@ const CRMServicesTab = () => {
                   {editServiceId === service._id ? (
                     <textarea
                       value={editData.description}
-                      onChange={(e) =>
-                        setEditData({ ...editData, description: e.target.value })
-                      }
+                      onChange={(e) => setEditData({ ...editData, description: e.target.value })}
                     />
                   ) : (
                     service.description || "-"
@@ -399,31 +391,20 @@ const CRMServicesTab = () => {
                         type="file"
                         accept="image/*"
                         onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            imageFile: e.target.files[0],
-                          })
+                          setEditData({ ...editData, imageFile: e.target.files[0] })
                         }
                       />
                       {editData.imageFile ? (
                         <img
                           src={URL.createObjectURL(editData.imageFile)}
                           alt="preview"
-                          style={{
-                            maxWidth: "80px",
-                            maxHeight: "80px",
-                            marginTop: "5px",
-                          }}
+                          style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
                         />
                       ) : editData.imageUrl ? (
                         <img
                           src={editData.imageUrl}
                           alt="current"
-                          style={{
-                            maxWidth: "80px",
-                            maxHeight: "80px",
-                            marginTop: "5px",
-                          }}
+                          style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
                         />
                       ) : (
                         <em>אין תמונה</em>
@@ -445,9 +426,7 @@ const CRMServicesTab = () => {
                   ) : (
                     <>
                       <button onClick={() => startEdit(service)}>✏️ ערוך</button>
-                      <button onClick={() => deleteService(service._id)}>
-                        🗑️ מחק
-                      </button>
+                      <button onClick={() => deleteService(service._id)}>🗑️ מחק</button>
                     </>
                   )}
                 </td>

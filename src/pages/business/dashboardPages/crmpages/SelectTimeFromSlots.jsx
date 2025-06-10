@@ -28,27 +28,37 @@ const generateSlots = (start, end, duration, breaks = []) => {
   return slots;
 };
 
-const SelectTimeFromSlots = ({ date, selectedTime, onChange }) => {
+const SelectTimeFromSlots = ({ date, selectedTime, onChange, serviceDuration = 30 }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
 
   useEffect(() => {
-    if (!date) return;
+    if (!date) {
+      setAvailableSlots([]);
+      return;
+    }
 
+    // קבלת ימי עבודה לפי אינדקס יום בשבוע
     const workHours = JSON.parse(localStorage.getItem("demoWorkHours_calendar") || "{}");
     const appointments = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
 
-    const config = workHours[new Date(date).toDateString()];
-    if (!config) return setAvailableSlots([]);
+    const dayIdx = new Date(date).getDay();
+    const config = workHours[dayIdx];
+    if (!config || !config.start || !config.end) {
+      setAvailableSlots([]);
+      return;
+    }
 
+    // איסוף שעות שהתיאומים תפוסים באותו יום
     const booked = appointments
       .filter(a => a.date === new Date(date).toLocaleDateString("he-IL"))
       .map(a => a.time);
 
-    const all = generateSlots(config.start, config.end, config.duration || 30, config.breaks || []);
-    const free = all.filter(t => !booked.includes(t));
+    // מחולל הזמנים הפנוי
+    const allSlots = generateSlots(config.start, config.end, serviceDuration, config.breaks || []);
+    const freeSlots = allSlots.filter(t => !booked.includes(t));
 
-    setAvailableSlots(free);
-  }, [date]);
+    setAvailableSlots(freeSlots);
+  }, [date, serviceDuration]);
 
   return (
     <div className="time-select-wrapper">

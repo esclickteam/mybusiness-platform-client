@@ -15,6 +15,7 @@ export function DashboardSocketProvider({ businessId, children }) {
     reviews_count: 0,
     messages_count: 0, // ספירת הודעות לא נקראו
     appointments_count: 0,
+    appointments: [], // מערך הפגישות
   });
 
   const socketRef = useRef(null);
@@ -66,6 +67,35 @@ export function DashboardSocketProvider({ businessId, children }) {
         });
       });
 
+      // אירוע סנכרון פגישה יחידה
+      socketRef.current.on("appointmentUpdated", (newAppointment) => {
+        if (!isMounted) return;
+        setStats((prev) => {
+          const updatedAppointments = prev.appointments ? [...prev.appointments] : [];
+          const index = updatedAppointments.findIndex(a => a._id === newAppointment._id);
+          if (index !== -1) {
+            updatedAppointments[index] = newAppointment;
+          } else {
+            updatedAppointments.push(newAppointment);
+          }
+          return {
+            ...prev,
+            appointments: updatedAppointments,
+            appointments_count: updatedAppointments.length,
+          };
+        });
+      });
+
+      // אירוע סנכרון כל הפגישות
+      socketRef.current.on("allAppointmentsUpdated", (allAppointments) => {
+        if (!isMounted) return;
+        setStats((prev) => ({
+          ...prev,
+          appointments: allAppointments,
+          appointments_count: allAppointments.length,
+        }));
+      });
+
       socketRef.current.on("connect", () => {
         console.log("🔌 [SocketProvider] מחובר עם ID:", socketRef.current.id);
       });
@@ -94,6 +124,8 @@ export function DashboardSocketProvider({ businessId, children }) {
       if (socketRef.current) {
         socketRef.current.off("dashboardUpdate");
         socketRef.current.off("unreadMessagesCount");
+        socketRef.current.off("appointmentUpdated");
+        socketRef.current.off("allAppointmentsUpdated");
         socketRef.current.disconnect();
         console.log("🔌 [SocketProvider] ניתוק ה־socket");
         socketRef.current = null;
