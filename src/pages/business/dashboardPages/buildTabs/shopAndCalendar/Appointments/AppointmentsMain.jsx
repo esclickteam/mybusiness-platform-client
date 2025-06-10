@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import API from '@api';
 import ServiceList from './ServiceList';
-import ClientServiceCard from './ClientServiceCard';
 import CalendarSetup from './CalendarSetup';
 import './AppointmentsMain.css';
 import { format, parse, differenceInMinutes, addMinutes } from 'date-fns';
 import { useAuth } from '../../../../../../context/AuthContext';
 
-// === Normalize work hours to {0: {...}, 1: {...}, ...} ===
 function normalizeWorkHours(data) {
   let map = {};
   if (Array.isArray(data?.workHours)) {
@@ -34,7 +32,7 @@ const AppointmentsMain = ({
   setWorkHours,
   setBusinessDetails
 }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, socket } = useAuth();
 
   const [showCalendarSetup, setShowCalendarSetup] = useState(false);
   const [selectedService, setSelectedService]     = useState(null);
@@ -67,9 +65,19 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setWorkHours, currentUser]);
 
+  // --- Fetch booked slots from API ---
+  const fetchBookedSlots = async (businessId, dateStr) => {
+    try {
+      const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
+      return res.data || [];
+    } catch {
+      return [];
+    }
+  };
+
   // --- Compute slots when date or service changes ---
   useEffect(() => {
-    if (selectedDate && selectedService) {
+    if (selectedDate && selectedService && currentUser) {
       const dayIdx = selectedDate.getDay();
       const hours  = workHours[dayIdx];
       if (!hours) {
@@ -82,14 +90,44 @@ const AppointmentsMain = ({
       const endDT    = parse(`${dateStr} ${hours.end}`,   'yyyy-MM-dd HH:mm', new Date());
       const totalMin = differenceInMinutes(endDT, startDT);
 
-      const slots = [];
-      for (let offset = 0; offset + duration <= totalMin; offset += duration) {
-        const slotDT = addMinutes(startDT, offset);
-        slots.push(format(slotDT, 'HH:mm'));
-      }
-      setAvailableSlots(slots);
+      const generateAllSlots = () => {
+        const slots = [];
+        for (let offset = 0; offset + duration <= totalMin; offset += duration) {
+          const slotDT = addMinutes(startDT, offset);
+          slots.push(format(slotDT, 'HH:mm'));
+        }
+        return slots;
+      };
+
+      fetchBookedSlots(currentUser.businessId, dateStr).then(bookedSlots => {
+        const allSlots = generateAllSlots();
+        const freeSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
+        setAvailableSlots(freeSlots);
+      });
+    } else {
+      setAvailableSlots([]);
     }
-  }, [selectedDate, selectedService, workHours]);
+  }, [selectedDate, selectedService, workHours, currentUser]);
+
+  // --- Sync real-time updates with Socket.IO ---
+  useEffect(() => {
+    if (!socket) return;
+
+    const updateSlots = () => {
+      // פשוט מחזיר את ה־selectedDate וה־selectedService באותו ערך כדי להפעיל את useEffect לעיל
+      setSelectedDate((date) => date ? new Date(date) : null);
+    };
+
+    socket.on('appointmentCreated', updateSlots);
+    socket.on('appointmentUpdated', updateSlots);
+    socket.on('appointmentDeleted', updateSlots);
+
+    return () => {
+      socket.off('appointmentCreated', updateSlots);
+      socket.off('appointmentUpdated', updateSlots);
+      socket.off('appointmentDeleted', updateSlots);
+    };
+  }, [socket]);
 
   // --- Book appointment ---
   const handleBook = async () => {
@@ -101,12 +139,15 @@ const AppointmentsMain = ({
         time:      selectedSlot
       });
       alert(`✅ התור נקבע ל־${format(selectedDate, 'dd.MM.yyyy')} בשעה ${selectedSlot}`);
+      // אופציונלי: איפוס בחירות אחרי הזמנה
+      setSelectedDate(null);
+      setSelectedSlot(null);
+      setSelectedService(null);
     } catch {
       alert('❌ לא הצלחנו לקבוע את התור, נסה שוב');
     }
   };
 
-  // --- Preview mode ---
   if (isPreview) {
     return (
       <div className="services-page-wrapper">
@@ -118,7 +159,6 @@ const AppointmentsMain = ({
     );
   }
 
-  // --- Calendar setup mode ---
   if (showCalendarSetup) {
     return (
       <CalendarSetup
@@ -131,7 +171,6 @@ const AppointmentsMain = ({
           }));
           try {
             await API.post('/appointments/update-work-hours', { workHours: hoursArray });
-            // תמיד נרמל למבנה של map לפי יום
             const updatedMap = {};
             hoursArray.forEach(({ day, start, end }) => {
               updatedMap[Number(day)] = { start, end };
