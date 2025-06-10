@@ -4,7 +4,7 @@ import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api"; // תקן לנתיב הנכון
 import { useAuth } from "../../../../context/AuthContext";
 
-const statusCycle = ["new", "pending", "completed"]; // ערכי סטטוס באנגלית (תתאים לפי backend)
+const statusCycle = ["new", "pending", "completed"]; // ערכי סטטוס באנגלית לפי backend
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
@@ -161,7 +161,7 @@ const CRMAppointmentsTab = () => {
 
     const service = services.find((s) => s._id === newAppointment.serviceId);
     const duration = service?.duration || 30;
-    const statusEnum = "new"; // תעדכן לפי ה-Enum שלך בשרת
+    const statusEnum = "new";
 
     try {
       const res = await API.post("/appointments", {
