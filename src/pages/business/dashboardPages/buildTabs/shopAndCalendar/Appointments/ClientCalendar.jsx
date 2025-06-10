@@ -46,8 +46,8 @@ export default function ClientCalendar({
   };
 
   const weekdayName = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
-  const dayKey = weekdayEngMap[weekdayName];
-  const config = workHours[dayKey];
+  const dayIdx = selectedDate.getDay();
+const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
 
   useEffect(() => {
