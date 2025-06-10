@@ -79,15 +79,17 @@ const AppointmentsMain = ({
 
   // פונקציה לטעינת תורים תפוסים מתאריך מסוים
   const fetchBookedSlots = async (businessId, dateStr) => {
-    if (!businessId || !dateStr) return [];
-    try {
-      const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
-      return res.data || [];
-    } catch (err) {
-      console.error("Error fetching booked slots:", err);
-      return [];
-    }
-  };
+  if (!businessId || !dateStr) return [];
+  try {
+    const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
+    console.log("Booked slots from API:", res.data); // <-- כאן
+    return res.data || [];
+  } catch (err) {
+    console.error("Error fetching booked slots:", err);
+    return [];
+  }
+};
+
 
   // פונקציית עזר לנירמול פורמט זמן
   const normalizeTime = (t) => {
