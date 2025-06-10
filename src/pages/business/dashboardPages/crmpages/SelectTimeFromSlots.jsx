@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import API from "@api"; // עדכן לפי הנתיב שלך
-import { io } from "socket.io-client";
-
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
+import API from "@api";
+import { useAuth } from "../../../../context/AuthContext";
 
 const generateSlots = (start, end, duration, breaks = []) => {
   const parseTime = (str) => {
@@ -33,6 +31,7 @@ const generateSlots = (start, end, duration, breaks = []) => {
 };
 
 const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, serviceDuration = 30 }) => {
+  const { socket } = useAuth();
   const [availableSlots, setAvailableSlots] = useState([]);
   const [bookedSlots, setBookedSlots] = useState([]);
 
@@ -43,16 +42,13 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
       return;
     }
 
-    // Fetch work hours and booked appointments from server
     const fetchData = async () => {
       try {
-        // שליפת שעות עבודה
         const workHoursRes = await API.get("/appointments/get-work-hours", {
           params: { businessId }
         });
         const workHours = workHoursRes.data.workHours || {};
 
-        // שליפת תיאומים באותו יום
         const apptsRes = await API.get("/appointments/by-date", {
           params: { businessId, date }
         });
@@ -83,43 +79,30 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
     fetchData();
   }, [date, businessId, serviceDuration]);
 
-  // Optional: setup socket to listen for real-time updates and refresh slots
   useEffect(() => {
-    if (!businessId) return;
-    const socket = io(SOCKET_URL, { path: "/socket.io", transports: ["websocket"] });
+    if (!socket || !businessId) return;
 
-    socket.on("connect", () => {
-      console.log("Connected to socket for slots updates");
-      socket.emit("joinRoom", `business-${businessId}`);
-    });
+    const updateSlots = () => {
+      if (!date) return;
+      API.get("/appointments/by-date", {
+        params: { businessId, date }
+      }).then(res => {
+        const booked = res.data || [];
+        setBookedSlots(booked);
+        setAvailableSlots(prevSlots => prevSlots.filter(t => !booked.includes(t)));
+      });
+    };
 
-    socket.on("appointmentUpdated", () => {
-      // פשוט מרענן את הנתונים כדי לקבל את הזמינות המעודכנת
-      if (date) {
-        // קריאה חוזרת לשרת
-        API.get("/appointments/by-date", {
-          params: { businessId, date }
-        }).then(res => {
-          const booked = res.data || [];
-          setBookedSlots(booked);
-
-          // צריך גם לקבל workHours שוב? תלוי אם משתנים תכופים
-          // כאן נניח לא, רק מעדכנים slots
-          setAvailableSlots((prevSlots) =>
-            prevSlots.filter(t =>  !booked.includes(t))
-          );
-        });
-      }
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from socket");
-    });
+    socket.on("appointmentUpdated", updateSlots);
+    socket.on("appointmentCreated", updateSlots);
+    socket.on("appointmentDeleted", updateSlots);
 
     return () => {
-      socket.disconnect();
+      socket.off("appointmentUpdated", updateSlots);
+      socket.off("appointmentCreated", updateSlots);
+      socket.off("appointmentDeleted", updateSlots);
     };
-  }, [businessId, date]);
+  }, [socket, businessId, date]);
 
   return (
     <div className="time-select-wrapper">

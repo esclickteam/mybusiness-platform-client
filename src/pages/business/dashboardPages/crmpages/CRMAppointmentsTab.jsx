@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api"; // תקן לנתיב הנכון
-import { io } from "socket.io-client";
 import { useAuth } from "../../../../context/AuthContext";
-
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 const statusCycle = ["חדש", "בטיפול", "הושלם"];
 
 const CRMAppointmentsTab = () => {
-  const { user } = useAuth();
+  const { user, socket } = useAuth();
   const businessId = user?.businessId || user?.business?._id || null;
 
   const [search, setSearch] = useState("");
@@ -37,8 +34,7 @@ const CRMAppointmentsTab = () => {
     time: "",
   });
 
-  const socketRef = useRef(null);
-
+  // טען תיאומים ושירותים מהשרת
   useEffect(() => {
     async function fetchAppointmentsAndServices() {
       try {
@@ -48,63 +44,41 @@ const CRMAppointmentsTab = () => {
         ]);
         setAppointments(appointmentsRes.data || []);
         setServices(servicesRes.data.services || []);
-        localStorage.setItem("demoAppointments", JSON.stringify(appointmentsRes.data || []));
       } catch (err) {
-        const savedAppointments = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
-        if (savedAppointments.length) setAppointments(savedAppointments);
+        console.error("Error loading appointments or services", err);
       }
     }
     fetchAppointmentsAndServices();
-
-    const socket = io(SOCKET_URL, {
-      path: "/socket.io",
-      transports: ["websocket"],
-      // הוסף auth אם צריך
-    });
-    socketRef.current = socket;
-
-    socket.on("connect", () => {
-      console.log("🔌 Connected to socket in CRMAppointmentsTab");
-    });
-
-    socket.on("appointmentCreated", (appt) => {
-      setAppointments((prev) => {
-        const updated = [...prev, appt];
-        localStorage.setItem("demoAppointments", JSON.stringify(updated));
-        return updated;
-      });
-    });
-
-    socket.on("appointmentUpdated", (updatedAppt) => {
-      setAppointments((prev) => {
-        const updated = prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt));
-        localStorage.setItem("demoAppointments", JSON.stringify(updated));
-        return updated;
-      });
-    });
-
-    socket.on("appointmentDeleted", ({ id }) => {
-      setAppointments((prev) => {
-        const updated = prev.filter((appt) => appt._id !== id);
-        localStorage.setItem("demoAppointments", JSON.stringify(updated));
-        return updated;
-      });
-    });
-
-    socket.on("disconnect", () => {
-      console.log("🔌 Disconnected from socket");
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("❌ Socket connection error:", err);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
   }, []);
 
-  // חיפוש case-insensitive
+  // האזנה לאירועי socket
+  useEffect(() => {
+    if (!socket) return;
+
+    const onCreated = (appt) => {
+      setAppointments((prev) => [...prev, appt]);
+    };
+    const onUpdated = (updatedAppt) => {
+      setAppointments((prev) =>
+        prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+      );
+    };
+    const onDeleted = ({ id }) => {
+      setAppointments((prev) => prev.filter((appt) => appt._id !== id));
+    };
+
+    socket.on("appointmentCreated", onCreated);
+    socket.on("appointmentUpdated", onUpdated);
+    socket.on("appointmentDeleted", onDeleted);
+
+    return () => {
+      socket.off("appointmentCreated", onCreated);
+      socket.off("appointmentUpdated", onUpdated);
+      socket.off("appointmentDeleted", onDeleted);
+    };
+  }, [socket]);
+
+  // סינון תיאומים לפי חיפוש
   const filteredAppointments = appointments.filter((appt) => {
     const searchLower = search.toLowerCase();
     return (
@@ -113,6 +87,7 @@ const CRMAppointmentsTab = () => {
     );
   });
 
+  // מחזור סטטוס תיאום
   const cycleStatus = async (id) => {
     const apptToUpdate = appointments.find((appt) => appt._id === id);
     if (!apptToUpdate) return;
@@ -122,17 +97,15 @@ const CRMAppointmentsTab = () => {
 
     try {
       await API.put(`/business/my/appointments/${id}/status`, { status: nextStatus });
-
-      const updated = appointments.map((appt) =>
-        appt._id === id ? { ...appt, status: nextStatus } : appt
+      setAppointments((prev) =>
+        prev.map((appt) => (appt._id === id ? { ...appt, status: nextStatus } : appt))
       );
-      setAppointments(updated);
-      localStorage.setItem("demoAppointments", JSON.stringify(updated));
-    } catch (err) {
+    } catch {
       alert("❌ שגיאה בעדכון סטטוס התיאום");
     }
   };
 
+  // שינוי שירות (בשמירה או עריכה)
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
     if (service) {
@@ -166,6 +139,7 @@ const CRMAppointmentsTab = () => {
     }
   };
 
+  // יצירת תיאום חדש
   const handleAddAppointment = async () => {
     if (
       !newAppointment.clientName ||
@@ -184,7 +158,7 @@ const CRMAppointmentsTab = () => {
         status: "חדש",
       });
       setAppointments(res.data.appointments || []);
-
+      setShowAddForm(false);
       setNewAppointment({
         clientName: "",
         clientPhone: "",
@@ -193,18 +167,18 @@ const CRMAppointmentsTab = () => {
         date: "",
         time: "",
       });
-      setShowAddForm(false);
-      localStorage.setItem("demoAppointments", JSON.stringify(res.data.appointments || []));
-    } catch (err) {
+    } catch {
       alert("❌ שגיאה ביצירת התיאום");
     }
   };
 
+  // התחלת עריכה
   const startEdit = (appt) => {
     setEditId(appt._id);
     setEditData({ ...appt });
   };
 
+  // שמירת עריכה
   const saveEdit = async () => {
     if (
       !editData.clientName ||
@@ -219,26 +193,21 @@ const CRMAppointmentsTab = () => {
 
     try {
       await API.put(`/business/my/appointments/${editId}`, editData);
-
       const res = await API.get("/business/my/appointments");
       setAppointments(res.data.appointments || []);
-      localStorage.setItem("demoAppointments", JSON.stringify(res.data.appointments || []));
-
       setEditId(null);
-    } catch (err) {
+    } catch {
       alert("❌ שגיאה בעדכון התיאום");
     }
   };
 
+  // מחיקת תיאום
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
         await API.delete(`/business/my/appointments/${id}`);
-
-        const updated = appointments.filter((appt) => appt._id !== id);
-        setAppointments(updated);
-        localStorage.setItem("demoAppointments", JSON.stringify(updated));
-      } catch (err) {
+        setAppointments((prev) => prev.filter((appt) => appt._id !== id));
+      } catch {
         alert("❌ שגיאה במחיקת התיאום");
       }
     }
@@ -299,7 +268,7 @@ const CRMAppointmentsTab = () => {
             date={newAppointment.date}
             selectedTime={newAppointment.time}
             onChange={(time) => setNewAppointment({ ...newAppointment, time })}
-            businessId={businessId} // העברת businessId כאן
+            businessId={businessId}
           />
           <button onClick={handleAddAppointment}>📩 שמור תיאום</button>
         </div>

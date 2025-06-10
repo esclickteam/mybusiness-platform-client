@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api"; // axios instance עם withCredentials:true כברירת מחדל
+import API from "../api";
 import { io } from "socket.io-client";
 
 export const AuthContext = createContext();
@@ -39,7 +39,6 @@ export function AuthProvider({ children }) {
     return refreshingTokenPromise.current;
   };
 
-  // יצירת חיבור Socket.IO עם הטוקן, role ו-businessId
   const createSocketConnection = (token, user) => {
     if (ws.current) {
       ws.current.disconnect();
@@ -287,6 +286,7 @@ export function AuthProvider({ children }) {
         login,
         logout,
         refreshAccessToken,
+        socket: ws.current, // <-- הוספתי כאן את ה-socket
       }}
     >
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
