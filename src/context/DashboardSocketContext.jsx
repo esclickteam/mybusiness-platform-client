@@ -13,9 +13,9 @@ export function DashboardSocketProvider({ businessId, children }) {
     requests_count: 0,
     orders_count: 0,
     reviews_count: 0,
-    messages_count: 0, // ספירת הודעות לא נקראו
+    messages_count: 0,
     appointments_count: 0,
-    appointments: [], // מערך הפגישות
+    appointments: [],
   });
 
   const socketRef = useRef(null);
@@ -23,7 +23,7 @@ export function DashboardSocketProvider({ businessId, children }) {
 
   useEffect(() => {
     if (!businessId) return;
-    if (hasInitRef.current) return; // מונע התחברות חוזרת
+    if (hasInitRef.current) return;
     hasInitRef.current = true;
 
     let isMounted = true;
@@ -37,13 +37,16 @@ export function DashboardSocketProvider({ businessId, children }) {
 
       socketRef.current = io(SOCKET_URL, {
         path: "/socket.io",
-        auth: { token, role: "business-dashboard", businessId },
+        auth: { token, role: "business-dashboard" },
+        query: { businessId },  // חשוב: מצרף את businessId ב-query להתחברות לחדר עסק
         transports: ["websocket"],
       });
 
+      // הצטרפות לחדר העסק בצד לקוח (אם שרת לא עושה זאת אוטומטית)
+      socketRef.current.emit("joinBusinessRoom", businessId);
+
       const handleUpdate = (newStats) => {
         if (!isMounted) return;
-        console.log("🔄 [SocketProvider] עדכון סטטיסטיקות:", newStats);
         const cleanedStats = {};
         for (const key in newStats) {
           if (newStats[key] !== undefined) {
@@ -57,17 +60,22 @@ export function DashboardSocketProvider({ businessId, children }) {
 
       socketRef.current.on("unreadMessagesCount", (count) => {
         if (!isMounted) return;
+        setStats((prev) => (prev.messages_count === count ? prev : { ...prev, messages_count: count }));
+      });
+
+      socketRef.current.on("appointmentCreated", (newAppointment) => {
+        if (!isMounted) return;
         setStats((prev) => {
-          if (prev.messages_count === count) {
-            console.log("[SocketProvider] דילוג על עדכון unreadMessagesCount - אותו ערך:", count);
-            return prev; // לא לעדכן אם אותו ערך
-          }
-          console.log("🔄 [SocketProvider] עדכון ספירת הודעות לא נקראו:", count);
-          return { ...prev, messages_count: count };
+          const updatedAppointments = prev.appointments ? [...prev.appointments] : [];
+          updatedAppointments.push(newAppointment);
+          return {
+            ...prev,
+            appointments: updatedAppointments,
+            appointments_count: updatedAppointments.length,
+          };
         });
       });
 
-      // אירוע סנכרון פגישה יחידה
       socketRef.current.on("appointmentUpdated", (newAppointment) => {
         if (!isMounted) return;
         setStats((prev) => {
@@ -86,7 +94,18 @@ export function DashboardSocketProvider({ businessId, children }) {
         });
       });
 
-      // אירוע סנכרון כל הפגישות
+      socketRef.current.on("appointmentDeleted", ({ id }) => {
+        if (!isMounted) return;
+        setStats((prev) => {
+          const updatedAppointments = prev.appointments ? prev.appointments.filter(a => a._id !== id) : [];
+          return {
+            ...prev,
+            appointments: updatedAppointments,
+            appointments_count: updatedAppointments.length,
+          };
+        });
+      });
+
       socketRef.current.on("allAppointmentsUpdated", (allAppointments) => {
         if (!isMounted) return;
         setStats((prev) => ({
@@ -124,27 +143,28 @@ export function DashboardSocketProvider({ businessId, children }) {
       if (socketRef.current) {
         socketRef.current.off("dashboardUpdate");
         socketRef.current.off("unreadMessagesCount");
+        socketRef.current.off("appointmentCreated");
         socketRef.current.off("appointmentUpdated");
+        socketRef.current.off("appointmentDeleted");
         socketRef.current.off("allAppointmentsUpdated");
         socketRef.current.disconnect();
         console.log("🔌 [SocketProvider] ניתוק ה־socket");
         socketRef.current = null;
       }
-      // לא מאפסים את hasInitRef כדי למנוע התחברות חוזרת לא רצויה
     };
   }, [businessId, refreshAccessToken, logout]);
 
   return (
-    <DashboardSocketContext.Provider value={stats}>
+    <DashboardSocketContext.Provider value={{ stats, socket: socketRef.current }}>
       {children}
     </DashboardSocketContext.Provider>
   );
 }
 
 export function useDashboardStats() {
-  const stats = useContext(DashboardSocketContext);
-  if (stats === undefined) {
+  const context = useContext(DashboardSocketContext);
+  if (context === undefined) {
     throw new Error("useDashboardStats חייב להיות בתוך DashboardSocketProvider");
   }
-  return stats;
+  return context;
 }
