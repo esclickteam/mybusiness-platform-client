@@ -3,12 +3,16 @@ import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api"; // תקן לנתיב הנכון
 import { io } from "socket.io-client";
+import { useAuth } from "../context/AuthContext"; // דוגמה - עדכן לפי מיקום אמיתי
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 const statusCycle = ["חדש", "בטיפול", "הושלם"];
 
 const CRMAppointmentsTab = () => {
+  const { user } = useAuth();
+  const businessId = user?.businessId || user?.business?._id || null;
+
   const [search, setSearch] = useState("");
   const [appointments, setAppointments] = useState([]);
   const [services, setServices] = useState([]);
@@ -295,6 +299,7 @@ const CRMAppointmentsTab = () => {
             date={newAppointment.date}
             selectedTime={newAppointment.time}
             onChange={(time) => setNewAppointment({ ...newAppointment, time })}
+            businessId={businessId} // העברת businessId כאן
           />
           <button onClick={handleAddAppointment}>📩 שמור תיאום</button>
         </div>
