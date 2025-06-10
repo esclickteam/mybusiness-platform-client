@@ -213,6 +213,10 @@ const CRMAppointmentsTab = () => {
     }
   };
 
+  // ——— הוסף לוגים חשובים בבדיקת בוץ ———
+  console.log("CRMAppointmentsTab businessId:", businessId);
+  console.log("CRMAppointmentsTab newAppointment.date:", newAppointment.date);
+
   return (
     <div className="crm-appointments-tab">
       <h2>📆 תיאומים / הזמנות</h2>
