@@ -40,6 +40,9 @@ const AppointmentsMain = ({
   const [availableSlots, setAvailableSlots]       = useState([]);
   const [selectedSlot, setSelectedSlot]           = useState(null);
 
+  // ** כאן הוספתי את ה-refreshCounter **
+  const [refreshCounter, setRefreshCounter] = useState(0);
+
   // --- Fetch services ---
   useEffect(() => {
     if (!isPreview && setServices) {
@@ -75,7 +78,7 @@ const AppointmentsMain = ({
     }
   };
 
-  // --- Compute slots when date or service changes ---
+  // --- Compute slots when date or service changes or refreshCounter changes ---
   useEffect(() => {
     if (selectedDate && selectedService && currentUser) {
       const dayIdx = selectedDate.getDay();
@@ -107,15 +110,15 @@ const AppointmentsMain = ({
     } else {
       setAvailableSlots([]);
     }
-  }, [selectedDate, selectedService, workHours, currentUser]);
+  }, [selectedDate, selectedService, workHours, currentUser, refreshCounter]);
 
   // --- Sync real-time updates with Socket.IO ---
   useEffect(() => {
     if (!socket) return;
 
     const updateSlots = () => {
-      // פשוט מחזיר את ה־selectedDate וה־selectedService באותו ערך כדי להפעיל את useEffect לעיל
-      setSelectedDate((date) => date ? new Date(date) : null);
+      console.log('[Socket] appointment event received - refreshing slots');
+      setRefreshCounter(c => c + 1);
     };
 
     socket.on('appointmentCreated', updateSlots);
