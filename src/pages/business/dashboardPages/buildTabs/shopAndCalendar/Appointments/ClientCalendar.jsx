@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import API from "../../../../../../api"; // תקן בהתאם לפרויקט שלך
 import "./ClientCalendar.css";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
+import { useAuth } from "../../../../../../context/AuthContext"; // נתיב מתאים
 
 export default function ClientCalendar({
   workHours = {},
@@ -9,6 +10,8 @@ export default function ClientCalendar({
   onBackToList,
   businessId,
 }) {
+  const { socket } = useAuth(); // נניח שיש context שמספק socket
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
@@ -34,24 +37,12 @@ export default function ClientCalendar({
     setYear(selectedDate.getFullYear());
   }, [selectedDate]);
 
-  // מפת מיפוי בין שם יום מלא באנגלית לשם מפתח ב-workHours
-  const weekdayEngMap = {
-    Sunday: "sunday",
-    Monday: "monday",
-    Tuesday: "tuesday",
-    Wednesday: "wednesday",
-    Thursday: "thursday",
-    Friday: "friday",
-    Saturday: "saturday",
-  };
-
-  const weekdayName = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
   const dayIdx = selectedDate.getDay();
   const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
 
-  // טוען תורים שכבר קיימים בתאריך שנבחר
-  useEffect(() => {
+  // טוען תורים תפוסים מתאריך שנבחר
+  const loadBookedSlots = () => {
     if (!businessId) return;
     const dateStr = selectedDate.toISOString().slice(0, 10); // YYYY-MM-DD
     setLoadingSlots(true);
@@ -68,7 +59,48 @@ export default function ClientCalendar({
         setError("שגיאה בטעינת זמינות.");
       })
       .finally(() => setLoadingSlots(false));
+  };
+
+  useEffect(() => {
+    loadBookedSlots();
   }, [selectedDate, businessId]);
+
+  // מאזין לאירועים מ-socket לעדכון זמנים תפוסים בזמן אמת
+  useEffect(() => {
+    if (!socket) return;
+
+    const onAppointmentCreated = (appt) => {
+      if (appt.business !== businessId) return;
+      const apptDateStr = appt.date?.slice(0, 10);
+      const selectedDateStr = selectedDate?.toISOString().slice(0, 10);
+      if (apptDateStr === selectedDateStr) {
+        setBookedSlots((prev) => [...prev, appt.time]);
+      }
+    };
+
+    const onAppointmentDeleted = ({ id }) => {
+      loadBookedSlots();
+    };
+
+    const onAppointmentUpdated = (appt) => {
+      if (appt.business !== businessId) return;
+      const apptDateStr = appt.date?.slice(0, 10);
+      const selectedDateStr = selectedDate?.toISOString().slice(0, 10);
+      if (apptDateStr === selectedDateStr) {
+        loadBookedSlots();
+      }
+    };
+
+    socket.on("appointmentCreated", onAppointmentCreated);
+    socket.on("appointmentDeleted", onAppointmentDeleted);
+    socket.on("appointmentUpdated", onAppointmentUpdated);
+
+    return () => {
+      socket.off("appointmentCreated", onAppointmentCreated);
+      socket.off("appointmentDeleted", onAppointmentDeleted);
+      socket.off("appointmentUpdated", onAppointmentUpdated);
+    };
+  }, [socket, businessId, selectedDate]);
 
   // איפוס בחירת שעה ומצב תצוגה כשמשנים תאריך או שעות עבודה
   useEffect(() => {
@@ -77,7 +109,7 @@ export default function ClientCalendar({
     setBookingSuccess(false);
   }, [selectedDate, config]);
 
-  // מחשב זמני פגישה פנויים לפי שעות עבודה וזמנים כבר שמורים
+  // מחשב זמני פגישה פנויים לפי שעות עבודה וזמנים כבר תפוסים
   useEffect(() => {
     if (config?.start && config?.end) {
       const all = generateTimeSlots(config.start, config.end, config.breaks);
@@ -162,7 +194,7 @@ export default function ClientCalendar({
         duration: selectedSlot.duration,
       });
 
-      // עדכון הזמנים הפנויים והזמינים מידית (סינכרון)
+      // עדכון מיידי של תורים תפוסים
       setBookedSlots((prev) => [...prev, selectedSlot.time]);
       setSelectedSlot(null);
       setBookingSuccess(true);
