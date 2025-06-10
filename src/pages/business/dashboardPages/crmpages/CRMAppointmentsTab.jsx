@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useEffect } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api"; // תקן לנתיב הנכון
@@ -114,12 +114,14 @@ const CRMAppointmentsTab = () => {
           ...prev,
           serviceId: service._id,
           serviceName: service.name,
+          time: "",  // אפס זמן כשמשנים שירות
         }));
       } else {
         setNewAppointment((prev) => ({
           ...prev,
           serviceId: service._id,
           serviceName: service.name,
+          time: "",
         }));
       }
     } else {
@@ -128,16 +130,28 @@ const CRMAppointmentsTab = () => {
           ...prev,
           serviceId: "",
           serviceName: "",
+          time: "",
         }));
       } else {
         setNewAppointment((prev) => ({
           ...prev,
           serviceId: "",
           serviceName: "",
+          time: "",
         }));
       }
     }
   };
+
+  // שינוי תאריך בעריכה - מאפס זמן
+  useEffect(() => {
+    if (editId) {
+      setEditData((prev) => ({
+        ...prev,
+        time: ""
+      }));
+    }
+  }, [editData.date, editId]);
 
   // יצירת תיאום חדש
   const handleAddAppointment = async () => {
@@ -213,10 +227,6 @@ const CRMAppointmentsTab = () => {
     }
   };
 
-  // ——— הוסף לוגים חשובים בבדיקת בוץ ———
-  console.log("CRMAppointmentsTab businessId:", businessId);
-  console.log("CRMAppointmentsTab newAppointment.date:", newAppointment.date);
-
   return (
     <div className="crm-appointments-tab">
       <h2>📆 תיאומים / הזמנות</h2>
@@ -273,6 +283,9 @@ const CRMAppointmentsTab = () => {
             selectedTime={newAppointment.time}
             onChange={(time) => setNewAppointment({ ...newAppointment, time })}
             businessId={businessId}
+            serviceDuration={
+              services.find(s => s._id === newAppointment.serviceId)?.duration || 30
+            }
           />
           <button onClick={handleAddAppointment}>📩 שמור תיאום</button>
         </div>
@@ -352,9 +365,14 @@ const CRMAppointmentsTab = () => {
                 </td>
                 <td>
                   {editId === appt._id ? (
-                    <input
-                      value={editData.time}
-                      onChange={(e) => setEditData({ ...editData, time: e.target.value })}
+                    <SelectTimeFromSlots
+                      date={editData.date}
+                      selectedTime={editData.time}
+                      onChange={(time) => setEditData({ ...editData, time })}
+                      businessId={businessId}
+                      serviceDuration={
+                        services.find(s => s._id === editData.serviceId)?.duration || 30
+                      }
                     />
                   ) : (
                     appt.time
