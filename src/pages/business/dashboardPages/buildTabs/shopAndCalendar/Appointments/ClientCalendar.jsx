@@ -10,7 +10,7 @@ export default function ClientCalendar({
   onBackToList,
   businessId,
 }) {
-  const { socket } = useAuth();
+  const { socket, token } = useAuth();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [month, setMonth] = useState(new Date().getMonth());
@@ -44,15 +44,17 @@ export default function ClientCalendar({
 
   const loadBookedSlots = () => {
     if (!businessId) {
-      console.warn('loadBookedSlots: No businessId provided');
+      console.warn("loadBookedSlots: No businessId provided");
       return;
     }
-    const dateStr = selectedDate.toLocaleDateString('en-CA');
+    const dateStr = selectedDate.toLocaleDateString("en-CA");
 
+    setLoadingSlots(true);
     console.log(`Loading booked slots for businessId=${businessId}, date=${dateStr}`);
 
     API.get("/appointments/by-date", {
       params: { businessId, date: dateStr },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         console.log("API response status:", res.status);
@@ -63,18 +65,18 @@ export default function ClientCalendar({
       .catch((err) => {
         console.error("Error fetching booked slots:", err);
         if (err.response) {
-          console.error('Response data:', err.response.data);
-          console.error('Response status:', err.response.status);
-          console.error('Response headers:', err.response.headers);
+          console.error("Response data:", err.response.data);
+          console.error("Response status:", err.response.status);
+          console.error("Response headers:", err.response.headers);
         } else if (err.request) {
-          console.error('No response received:', err.request);
+          console.error("No response received:", err.request);
         } else {
-          console.error('Error message:', err.message);
+          console.error("Error message:", err.message);
         }
         setError("שגיאה בטעינת זמינות.");
       })
       .finally(() => {
-        console.log('Finished loading booked slots');
+        console.log("Finished loading booked slots");
         setLoadingSlots(false);
       });
   };
@@ -187,7 +189,7 @@ export default function ClientCalendar({
 
       console.log("Occupied slots:", Array.from(occupiedSlots));
 
-      const freeSlots = allSlots.filter(slot => !occupiedSlots.has(slot));
+      const freeSlots = allSlots.filter((slot) => !occupiedSlots.has(slot));
 
       console.log("Free slots:", freeSlots);
 
@@ -200,7 +202,7 @@ export default function ClientCalendar({
   const handleSelectSlot = (time) => {
     setSelectedSlot({
       time,
-      date: selectedDate.toLocaleDateString('en-CA'),
+      date: selectedDate.toLocaleDateString("en-CA"),
       rawDate: selectedDate,
       duration: selectedService.duration,
       price: selectedService.price,
@@ -225,19 +227,27 @@ export default function ClientCalendar({
     }
 
     try {
-      await API.post("/appointments", {
-        businessId,
-        serviceId: selectedSlot.serviceId,
-        date: selectedSlot.date,
-        time: selectedSlot.time,
-        name: clientName,
-        phone: clientPhone,
-        address: clientAddress,
-        note: clientNote,
-        email: clientEmail,
-        price: selectedSlot.price,
-        duration: selectedSlot.duration,
-      });
+      await API.post(
+        "/appointments",
+        {
+          businessId,
+          serviceId: selectedSlot.serviceId,
+          date: selectedSlot.date,
+          time: selectedSlot.time,
+          name: clientName,
+          phone: clientPhone,
+          address: clientAddress,
+          note: clientNote,
+          email: clientEmail,
+          price: selectedSlot.price,
+          duration: selectedSlot.duration,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setSelectedSlot(null);
       setBookingSuccess(true);
