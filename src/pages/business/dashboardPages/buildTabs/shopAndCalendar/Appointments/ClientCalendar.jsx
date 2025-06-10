@@ -47,9 +47,10 @@ export default function ClientCalendar({
 
   const weekdayName = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
   const dayIdx = selectedDate.getDay();
-const config = workHours[dayIdx];
+  const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
 
+  // טוען תורים שכבר קיימים בתאריך שנבחר
   useEffect(() => {
     if (!businessId) return;
     const dateStr = selectedDate.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -69,11 +70,13 @@ const config = workHours[dayIdx];
       .finally(() => setLoadingSlots(false));
   }, [selectedDate, businessId]);
 
+  // איפוס בחירת שעה ומצב תצוגה כשמשנים תאריך או שעות עבודה
   useEffect(() => {
     setSelectedSlot(null);
     setMode("slots");
   }, [selectedDate, config]);
 
+  // מחשב זמני פגישה פנויים לפי שעות עבודה וזמנים כבר שמורים
   useEffect(() => {
     if (config?.start && config?.end) {
       const all = generateTimeSlots(config.start, config.end, config.breaks);
@@ -114,6 +117,7 @@ const config = workHours[dayIdx];
     return slots;
   };
 
+  // בוחר שעה
   const handleSelectSlot = (time) => {
     setSelectedSlot({
       time,
@@ -127,6 +131,7 @@ const config = workHours[dayIdx];
     setMode("summary");
   };
 
+  // שולח הזמנה לשרת ומעדכן את הזמנים ביומן
   const handleSubmitBooking = async () => {
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim()) {
       alert("אנא מלא את כל הפרטים הנדרשים");
@@ -156,7 +161,9 @@ const config = workHours[dayIdx];
         duration: selectedSlot.duration,
       });
 
+      // עדכון הזמנים הפנויים והזמינים
       setBookedSlots((prev) => [...prev, selectedSlot.time]);
+      setSelectedSlot(null); // איפוס בחירת שעה
       setBookingSuccess(true);
     } catch (err) {
       alert("שגיאה בשליחת תיאום: " + (err?.response?.data?.message || err.message));
