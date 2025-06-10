@@ -21,7 +21,7 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
     const dateStr = formatDate(selectedDate);
 
     fetch(
-      `/api/appointments/slots?businessId=${businessId}&serviceId=${serviceId}&date=${dateStr}`,
+      `/appointments/slots?businessId=${businessId}&serviceId=${serviceId}&date=${dateStr}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -33,7 +33,10 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
       .then((data) => {
         setAvailableSlots(data.slots || []);
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        console.error("Error fetching slots:", err);
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
   }, [businessId, serviceId, selectedDate, token]);
 
