@@ -106,7 +106,7 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
           // צריך גם לקבל workHours שוב? תלוי אם משתנים תכופים
           // כאן נניח לא, רק מעדכנים slots
           setAvailableSlots((prevSlots) =>
-            prevSlots.filter(t => !booked.includes(t))
+            prevSlots.filter(t =>  !booked.includes(t))
           );
         });
       }
