@@ -74,6 +74,7 @@ export default function ClientCalendar({
   useEffect(() => {
     setSelectedSlot(null);
     setMode("slots");
+    setBookingSuccess(false);
   }, [selectedDate, config]);
 
   // מחשב זמני פגישה פנויים לפי שעות עבודה וזמנים כבר שמורים
@@ -131,7 +132,7 @@ export default function ClientCalendar({
     setMode("summary");
   };
 
-  // שולח הזמנה לשרת ומעדכן את הזמנים ביומן
+  // שולח הזמנה לשרת ומעדכן את הזמנים ביומן מיידית
   const handleSubmitBooking = async () => {
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim()) {
       alert("אנא מלא את כל הפרטים הנדרשים");
@@ -161,9 +162,9 @@ export default function ClientCalendar({
         duration: selectedSlot.duration,
       });
 
-      // עדכון הזמנים הפנויים והזמינים
+      // עדכון הזמנים הפנויים והזמינים מידית (סינכרון)
       setBookedSlots((prev) => [...prev, selectedSlot.time]);
-      setSelectedSlot(null); // איפוס בחירת שעה
+      setSelectedSlot(null);
       setBookingSuccess(true);
     } catch (err) {
       alert("שגיאה בשליחת תיאום: " + (err?.response?.data?.message || err.message));

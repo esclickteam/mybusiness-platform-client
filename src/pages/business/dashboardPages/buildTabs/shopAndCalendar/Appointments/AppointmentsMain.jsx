@@ -24,18 +24,6 @@ function normalizeWorkHours(data) {
   return map;
 }
 
-// פונקציה להמרת זמן slot לאזור זמן ישראל להצגה
-// כאן לא תצטרך להשתמש בה, אך אפשר להשאיר אם תרצה בעתיד
-function formatSlotTime(date, timeStr) {
-  if (!date || !timeStr) return timeStr || "";
-  const utcDate = new Date(`${format(date, 'yyyy-MM-dd')}T${timeStr}:00Z`);
-  return utcDate.toLocaleTimeString('he-IL', {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'Asia/Jerusalem',
-  });
-}
-
 const AppointmentsMain = ({
   isPreview = false,
   services = [],
@@ -55,10 +43,12 @@ const AppointmentsMain = ({
   const [selectedBusinessId, setSelectedBusinessId] = useState(initialBusinessId);
   const [refreshCounter, setRefreshCounter] = useState(0);
 
+  // Sync initial businessId
   useEffect(() => {
     if (initialBusinessId) setSelectedBusinessId(initialBusinessId);
   }, [initialBusinessId]);
 
+  // טעינת שירותים לעסק
   useEffect(() => {
     if (!isPreview && setServices && selectedBusinessId) {
       API.get('/business/my/services', { params: { businessId: selectedBusinessId } })
@@ -72,6 +62,7 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setServices, selectedBusinessId]);
 
+  // טעינת שעות עבודה מעודכנות
   useEffect(() => {
     if (!isPreview && setWorkHours && selectedBusinessId) {
       API.get('/appointments/get-work-hours', {
@@ -86,19 +77,19 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setWorkHours, selectedBusinessId]);
 
+  // פונקציה לטעינת תורים תפוסים מתאריך מסוים
   const fetchBookedSlots = async (businessId, dateStr) => {
     if (!businessId || !dateStr) return [];
     try {
-      console.log(`[AppointmentsMain] Fetching booked slots for businessId=${businessId} date=${dateStr}`);
       const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
-      console.log("[AppointmentsMain] Booked slots received from API:", res.data);
       return res.data || [];
     } catch (err) {
-      console.error("[AppointmentsMain] Error fetching booked slots:", err);
+      console.error("Error fetching booked slots:", err);
       return [];
     }
   };
 
+  // פונקציית עזר לנירמול פורמט זמן
   const normalizeTime = (t) => {
     if (!t) return "";
     const parts = t.trim().split(":");
@@ -108,6 +99,7 @@ const AppointmentsMain = ({
     return `${h}:${m}`;
   };
 
+  // טעינת זמני הפגישה הפנויים
   useEffect(() => {
     if (selectedDate && selectedService && selectedBusinessId) {
       const dayIdx = selectedDate.getDay();
@@ -143,6 +135,7 @@ const AppointmentsMain = ({
     }
   }, [selectedDate, selectedService, workHours, selectedBusinessId, refreshCounter]);
 
+  // הגדרת ברירת מחדל לשעה נבחרת
   useEffect(() => {
     if (availableSlots.length > 0) {
       setSelectedSlot(availableSlots[0]);
@@ -151,6 +144,7 @@ const AppointmentsMain = ({
     }
   }, [availableSlots]);
 
+  // מאזין לאירועים מ-WebSocket לעדכון זמני תורים
   useEffect(() => {
     if (!socket) return;
 
@@ -169,6 +163,7 @@ const AppointmentsMain = ({
     };
   }, [socket]);
 
+  // טיפול בקביעת תור
   const handleBook = async () => {
     if (!selectedService || !selectedDate || !selectedSlot || !selectedBusinessId) return;
 
