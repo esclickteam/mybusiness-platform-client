@@ -24,7 +24,6 @@ const defaultWeeklyHours = {
 };
 
 export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSave, onCancel }) {
-  // State פנימי לאחסון שעות השבוע
   const [weeklyHours, setWeeklyHours] = useState(initialHours);
 
   // סנכרון פנימי: עדכון weeklyHours בכל שינוי של initialHours בפרופס

@@ -74,7 +74,10 @@ export default function ClientCalendar({
       const apptDateStr = appt.date?.slice(0, 10);
       const selectedDateStr = selectedDate?.toISOString().slice(0, 10);
       if (apptDateStr === selectedDateStr) {
-        setBookedSlots((prev) => [...prev, appt.time]);
+        setBookedSlots((prev) => {
+          if (prev.includes(appt.time)) return prev; // מניעת הוספה כפולה
+          return [...prev, appt.time];
+        });
       }
     };
 

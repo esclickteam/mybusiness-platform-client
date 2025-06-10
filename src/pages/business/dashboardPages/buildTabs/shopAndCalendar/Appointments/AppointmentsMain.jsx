@@ -35,6 +35,7 @@ const AppointmentsMain = ({
 }) => {
   const { currentUser, socket } = useAuth();
 
+  const [refreshCounter, setRefreshCounter] = useState(0);
   const [showCalendarSetup, setShowCalendarSetup] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
