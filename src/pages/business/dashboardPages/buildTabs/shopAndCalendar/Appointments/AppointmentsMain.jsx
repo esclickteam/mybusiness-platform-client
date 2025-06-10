@@ -40,16 +40,20 @@ const AppointmentsMain = ({
   const [availableSlots, setAvailableSlots]       = useState([]);
   const [selectedSlot, setSelectedSlot]           = useState(null);
 
-  // ** כאן הוספתי את ה-refreshCounter **
   const [refreshCounter, setRefreshCounter] = useState(0);
 
   // --- Fetch services ---
   useEffect(() => {
     if (!isPreview && setServices) {
+      console.log("[AppointmentsMain] Fetching services...");
       API.get('/business/my/services')
-        .then(res => setServices(res.data.services || []))
+        .then(res => {
+          console.log("[AppointmentsMain] Services received:", res.data.services);
+          setServices(res.data.services || []);
+        })
         .catch(() => {
           const demo = JSON.parse(localStorage.getItem('demoServices_calendar') || '[]');
+          console.log("[AppointmentsMain] Using demo services:", demo);
           setServices(demo);
         });
     }
@@ -58,32 +62,46 @@ const AppointmentsMain = ({
   // --- Fetch & normalize workHours ---
   useEffect(() => {
     if (!isPreview && setWorkHours && currentUser) {
+      console.log("[AppointmentsMain] Fetching work hours for business:", currentUser.businessId);
       API.get('/appointments/get-work-hours', {
         params: { businessId: currentUser?.businessId || "" }
       })
       .then(res => {
+        console.log("[AppointmentsMain] Work hours received:", res.data);
         setWorkHours(normalizeWorkHours(res.data));
       })
-      .catch(() => setWorkHours({}));
+      .catch(() => {
+        console.error("[AppointmentsMain] Failed to fetch work hours");
+        setWorkHours({});
+      });
     }
   }, [isPreview, setWorkHours, currentUser]);
 
   // --- Fetch booked slots from API ---
   const fetchBookedSlots = async (businessId, dateStr) => {
     try {
+      console.log(`[AppointmentsMain] Fetching booked slots for business ${businessId} on date ${dateStr}`);
       const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
+      console.log("[AppointmentsMain] Booked slots received:", res.data);
       return res.data || [];
-    } catch {
+    } catch (err) {
+      console.error("[AppointmentsMain] Error fetching booked slots:", err);
       return [];
     }
   };
 
   // --- Compute slots when date or service changes or refreshCounter changes ---
   useEffect(() => {
+    console.log("[AppointmentsMain] Computing available slots", {
+      selectedDate,
+      selectedService,
+      refreshCounter
+    });
     if (selectedDate && selectedService && currentUser) {
       const dayIdx = selectedDate.getDay();
       const hours  = workHours[dayIdx];
       if (!hours) {
+        console.warn("[AppointmentsMain] No work hours found for day:", dayIdx);
         setAvailableSlots([]);
         return;
       }
@@ -103,8 +121,11 @@ const AppointmentsMain = ({
       };
 
       fetchBookedSlots(currentUser.businessId, dateStr).then(bookedSlots => {
+        console.log("[AppointmentsMain] Filtering slots...");
         const allSlots = generateAllSlots();
+        console.log("[AppointmentsMain] All slots:", allSlots);
         const freeSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
+        console.log("[AppointmentsMain] Available (free) slots:", freeSlots);
         setAvailableSlots(freeSlots);
       });
     } else {
@@ -114,10 +135,13 @@ const AppointmentsMain = ({
 
   // --- Sync real-time updates with Socket.IO ---
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      console.warn("[AppointmentsMain] Socket is not connected");
+      return;
+    }
 
     const updateSlots = () => {
-      console.log('[Socket] appointment event received - refreshing slots');
+      console.log('[Socket] appointment event received - incrementing refreshCounter');
       setRefreshCounter(c => c + 1);
     };
 
@@ -134,19 +158,27 @@ const AppointmentsMain = ({
 
   // --- Book appointment ---
   const handleBook = async () => {
-    if (!selectedService || !selectedDate || !selectedSlot) return;
+    if (!selectedService || !selectedDate || !selectedSlot) {
+      console.warn("[AppointmentsMain] Missing data for booking");
+      return;
+    }
     try {
+      console.log("[AppointmentsMain] Booking appointment...", {
+        serviceId: selectedService._id,
+        date: format(selectedDate, 'yyyy-MM-dd'),
+        time: selectedSlot
+      });
       await API.post('/appointments/create', {
         serviceId: selectedService._id,
         date:      format(selectedDate, 'yyyy-MM-dd'),
         time:      selectedSlot
       });
       alert(`✅ התור נקבע ל־${format(selectedDate, 'dd.MM.yyyy')} בשעה ${selectedSlot}`);
-      // אופציונלי: איפוס בחירות אחרי הזמנה
       setSelectedDate(null);
       setSelectedSlot(null);
       setSelectedService(null);
-    } catch {
+    } catch (err) {
+      console.error("[AppointmentsMain] Booking failed:", err);
       alert('❌ לא הצלחנו לקבוע את התור, נסה שוב');
     }
   };
