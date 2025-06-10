@@ -4,7 +4,7 @@ import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api"; // תקן לנתיב הנכון
 import { useAuth } from "../../../../context/AuthContext";
 
-const statusCycle = ["חדש", "בטיפול", "הושלם"];
+const statusCycle = ["new", "pending", "completed"]; // ערכי סטטוס באנגלית (תתאים לפי backend)
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
@@ -159,15 +159,20 @@ const CRMAppointmentsTab = () => {
       return;
     }
 
+    const service = services.find((s) => s._id === newAppointment.serviceId);
+    const duration = service?.duration || 30;
+    const statusEnum = "new"; // תעדכן לפי ה-Enum שלך בשרת
+
     try {
       const res = await API.post("/appointments", {
-        businessId, // הוספת מזהה העסק כאן
+        businessId,
         serviceId: newAppointment.serviceId,
         date: newAppointment.date,
         time: newAppointment.time,
-        name: newAppointment.clientName, // המיפוי הנכון לשם
-        phone: newAppointment.clientPhone, // המיפוי הנכון לטלפון
-        status: "חדש",
+        name: newAppointment.clientName,
+        phone: newAppointment.clientPhone,
+        duration,
+        status: statusEnum,
       });
       setAppointments(res.data.appointments || []);
       setShowAddForm(false);
@@ -201,18 +206,20 @@ const CRMAppointmentsTab = () => {
       return;
     }
 
+    const service = services.find((s) => s._id === editData.serviceId);
+    const duration = service?.duration || 30;
+    const statusEnum = editData.status || "new";
+
     try {
-      // גם כאן צריך למפות את השמות לשדות שה-backend מצפה להם
-      const payload = {
+      await API.put(`/appointments/${editId}`, {
         serviceId: editData.serviceId,
         date: editData.date,
         time: editData.time,
         name: editData.clientName,
         phone: editData.clientPhone,
-        status: editData.status || "חדש",
-      };
-
-      await API.put(`/appointments/${editId}`, payload);
+        duration,
+        status: statusEnum,
+      });
       const res = await API.get("/appointments");
       setAppointments(res.data.appointments || []);
       setEditId(null);
