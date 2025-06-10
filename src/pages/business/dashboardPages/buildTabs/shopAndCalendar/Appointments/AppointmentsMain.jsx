@@ -42,15 +42,12 @@ const AppointmentsMain = ({
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedBusinessId, setSelectedBusinessId] = useState(initialBusinessId);
-  // מאגר תורים תפוסים בתאריך הנבחר, מנוהל בזמן אמת
   const [bookedSlots, setBookedSlots] = useState([]);
 
-  // Sync initial businessId
   useEffect(() => {
     if (initialBusinessId) setSelectedBusinessId(initialBusinessId);
   }, [initialBusinessId]);
 
-  // טעינת שירותים לעסק
   useEffect(() => {
     if (!isPreview && setServices && selectedBusinessId) {
       API.get('/business/my/services', { params: { businessId: selectedBusinessId } })
@@ -64,7 +61,6 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setServices, selectedBusinessId]);
 
-  // טעינת שעות עבודה מעודכנות
   useEffect(() => {
     if (!isPreview && setWorkHours && selectedBusinessId) {
       API.get('/appointments/get-work-hours', {
@@ -79,7 +75,6 @@ const AppointmentsMain = ({
     }
   }, [isPreview, setWorkHours, selectedBusinessId]);
 
-  // נירמול פורמט זמן HH:mm
   const normalizeTime = (t) => {
     if (!t) return "";
     const parts = t.trim().split(":");
@@ -89,19 +84,17 @@ const AppointmentsMain = ({
     return `${h}:${m}`;
   };
 
-  // טען תורים תפוסים מתאריך מסוים, שמור בזיכרון מקומי לתיעוד עדכונים בזמן אמת
   const fetchBookedSlots = async (businessId, dateStr) => {
     if (!businessId || !dateStr) return [];
     try {
       const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
-      return res.data || [];
+      return (res.data || []).map(normalizeTime);
     } catch (err) {
       console.error("Error fetching booked slots:", err);
       return [];
     }
   };
 
-  // חשב זמינות - כל הזמנים בנויים לפי שעות עבודה - מפחיתים את הזמנים התפוסים (bookedSlots)
   const computeAvailableSlots = () => {
     if (!selectedDate || !selectedService || !selectedBusinessId) return [];
 
@@ -123,11 +116,12 @@ const AppointmentsMain = ({
 
     const cleanedBooked = bookedSlots.map(normalizeTime);
 
-    // הפחת את הזמנים התפוסים מהרשימה המלאה
-    return allSlots.filter(slot => !cleanedBooked.includes(slot));
+    return allSlots.filter(slot => {
+      const normSlot = normalizeTime(slot);
+      return !cleanedBooked.includes(normSlot);
+    });
   };
 
-  // טען את התורים התפוסים בכל פעם שהתאריך/עסק משתנים או שקיבלנו אירוע ריענון
   useEffect(() => {
     if (!selectedDate || !selectedBusinessId) {
       setBookedSlots([]);
@@ -139,13 +133,11 @@ const AppointmentsMain = ({
     });
   }, [selectedDate, selectedBusinessId, refreshCounter]);
 
-  // חישוב זמינות עם עדכון כל שינוי
   useEffect(() => {
     const freeSlots = computeAvailableSlots();
     setAvailableSlots(freeSlots);
   }, [bookedSlots, selectedDate, selectedService, workHours]);
 
-  // ברירת מחדל לשעה נבחרת
   useEffect(() => {
     if (availableSlots.length > 0) {
       setSelectedSlot(availableSlots[0]);
@@ -154,16 +146,19 @@ const AppointmentsMain = ({
     }
   }, [availableSlots]);
 
-  // מאזין לאירועים מ-WebSocket ומעדכן תורים תפוסים ו/או זמינות בהתאם
   useEffect(() => {
     if (!socket) return;
 
     const handleAppointmentCreated = (appt) => {
-      // אם התור שנוצר הוא בתאריך ובעסק שלנו - עדכן bookedSlots
       const apptDateStr = appt.date?.slice(0,10);
       const selectedDateStr = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null;
       if (appt.business === selectedBusinessId && apptDateStr === selectedDateStr) {
-        setBookedSlots(prev => [...prev, appt.time]);
+        setBookedSlots(prev => {
+          const normTime = normalizeTime(appt.time);
+          const prevNormalized = prev.map(normalizeTime);
+          if (prevNormalized.includes(normTime)) return prev;
+          return [...prev, normTime];
+        });
       }
     };
 
@@ -171,18 +166,11 @@ const AppointmentsMain = ({
       const apptDateStr = appt.date?.slice(0,10);
       const selectedDateStr = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null;
       if (appt.business === selectedBusinessId && apptDateStr === selectedDateStr) {
-        setBookedSlots(prev => {
-          // עדכן: הסר את הזמן הישן אם שונה והוסף את החדש
-          // כאן יש צורך בניהול מצב מלא אם שינינו זמן או תאריך - לצורך פשטות, נטען הכל מחדש:
-          // לכן ניתן פשוט לרענן עם refreshCounter:
-          setRefreshCounter(c => c + 1);
-          return prev;
-        });
+        setRefreshCounter(c => c + 1);
       }
     };
 
     const handleAppointmentDeleted = ({ id }) => {
-      // מאחר ואין פרטי התור - נטען מחדש את הזמנים כדי לוודא דיוק
       setRefreshCounter(c => c + 1);
     };
 
@@ -197,7 +185,6 @@ const AppointmentsMain = ({
     };
   }, [socket, selectedBusinessId, selectedDate]);
 
-  // טיפול בקביעת תור
   const handleBook = async () => {
     if (!selectedService || !selectedDate || !selectedSlot || !selectedBusinessId) return;
 
@@ -209,7 +196,6 @@ const AppointmentsMain = ({
         time: selectedSlot
       });
       alert(`✅ התור נקבע ל־${format(selectedDate, 'dd.MM.yyyy')} בשעה ${selectedSlot}`);
-      // אפס בחירת תור ותאריך ושירות, והכי חשוב - גם bookedSlots יתעדכנו בזכות האירועים
       setSelectedDate(null);
       setSelectedSlot(null);
       setSelectedService(null);
@@ -263,7 +249,6 @@ const AppointmentsMain = ({
       <div className="services-form-box">
         <h2 className="services-form-title">📅 קביעת תור</h2>
 
-        {/* 1. בחירת שירות */}
         <div className="defined-services-section">
           <h3 className="defined-services-title">בחר שירות</h3>
           <ServiceList
@@ -278,7 +263,6 @@ const AppointmentsMain = ({
           />
         </div>
 
-        {/* 2. בחירת תאריך */}
         {selectedService && (
           <div className="date-picker">
             <h3>בחר תאריך</h3>
@@ -291,7 +275,6 @@ const AppointmentsMain = ({
           </div>
         )}
 
-        {/* 3. הצגת חלונות זמן */}
         {selectedDate && availableSlots.length > 0 && (
           <div className="slots-list">
             <h3>שעות פנויים</h3>
@@ -309,7 +292,6 @@ const AppointmentsMain = ({
           </div>
         )}
 
-        {/* 4. כפתור קביעת התור */}
         {selectedSlot && (
           <div className="book-action">
             <button onClick={handleBook}>
@@ -318,7 +300,6 @@ const AppointmentsMain = ({
           </div>
         )}
 
-        {/* כפתור מעבר להגדרת יומן */}
         <button
           className="go-to-calendar-btn"
           onClick={() => setShowCalendarSetup(true)}
