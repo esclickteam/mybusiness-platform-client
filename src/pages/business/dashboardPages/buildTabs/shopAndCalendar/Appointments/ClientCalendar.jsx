@@ -34,54 +34,61 @@ export default function ClientCalendar({
     setYear(selectedDate.getFullYear());
   }, [selectedDate]);
 
-  // workHours: אובייקט עם ימים ושעות, לדוגמה: { sunday: { start: '09:00', end: '17:00', breaks: '12:00-13:00' }, ... }
-  // נניח ש-workHours מופרדים לפי שם יום באנגלית קטנה
-  const dayKey = selectedDate.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+  // מפת מיפוי בין שם יום מלא באנגלית לשם מפתח ב-workHours
+  const weekdayEngMap = {
+    Sunday: "sunday",
+    Monday: "monday",
+    Tuesday: "tuesday",
+    Wednesday: "wednesday",
+    Thursday: "thursday",
+    Friday: "friday",
+    Saturday: "saturday",
+  };
+
+  const weekdayName = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
+  const dayKey = weekdayEngMap[weekdayName];
   const config = workHours[dayKey];
   const serviceDuration = selectedService?.duration || 30;
 
-  // שליפת bookedSlots מהשרת עבור התאריך הנבחר
   useEffect(() => {
     if (!businessId) return;
     const dateStr = selectedDate.toISOString().slice(0, 10); // YYYY-MM-DD
     setLoadingSlots(true);
     setBookedSlots([]); // איפוס לפני רענון
     API.get("/appointments/by-date", {
-      params: { businessId, date: dateStr }
+      params: { businessId, date: dateStr },
     })
-      .then(res => {
+      .then((res) => {
         setBookedSlots(res.data || []);
         setError(null);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Error fetching booked slots:", err);
         setError("שגיאה בטעינת זמינות.");
       })
       .finally(() => setLoadingSlots(false));
   }, [selectedDate, businessId]);
 
-  // איפוס בחירה כאשר משתנה תאריך או שעות עבודה
   useEffect(() => {
     setSelectedSlot(null);
     setMode("slots");
   }, [selectedDate, config]);
 
-  // יצירת availableSlots סינון לפי bookedSlots
   useEffect(() => {
     if (config?.start && config?.end) {
       const all = generateTimeSlots(config.start, config.end, config.breaks);
-      setAvailableSlots(all.filter(s => !bookedSlots.includes(s)));
+      setAvailableSlots(all.filter((s) => !bookedSlots.includes(s)));
     } else {
       setAvailableSlots([]);
     }
   }, [config, bookedSlots]);
 
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
-    const toMin = t => {
+    const toMin = (t) => {
       const [h, m = "00"] = t.trim().split(":");
       return +h * 60 + +m;
     };
-    const fromMin = m => {
+    const fromMin = (m) => {
       const h = Math.floor(m / 60),
         mm = m % 60;
       return `${h.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}`;
@@ -91,9 +98,9 @@ export default function ClientCalendar({
       end = toMin(endTime);
     const breaksArr = breaks
       .split(/[\n,]/)
-      .map(s => s.trim())
+      .map((s) => s.trim())
       .filter(Boolean)
-      .map(b => {
+      .map((b) => {
         const [f, t] = b.replace(/\s/g, "").split("-");
         return f && t ? [toMin(f), toMin(t)] : null;
       })
@@ -101,18 +108,16 @@ export default function ClientCalendar({
 
     const slots = [];
     for (let t = start; t + serviceDuration <= end; t += serviceDuration) {
-      const inBreak = breaksArr.some(
-        ([f, to]) => t < to && t + serviceDuration > f
-      );
+      const inBreak = breaksArr.some(([f, to]) => t < to && t + serviceDuration > f);
       if (!inBreak) slots.push(fromMin(t));
     }
     return slots;
   };
 
-  const handleSelectSlot = time => {
+  const handleSelectSlot = (time) => {
     setSelectedSlot({
       time,
-      date: selectedDate.toISOString().slice(0, 10), // שימוש בפורמט אחיד
+      date: selectedDate.toISOString().slice(0, 10),
       rawDate: selectedDate,
       duration: selectedService.duration,
       price: selectedService.price,
@@ -151,14 +156,10 @@ export default function ClientCalendar({
         duration: selectedSlot.duration,
       });
 
-      // הוספת השעה ל-bookedSlots לסינון מיידי
-      setBookedSlots(prev => [...prev, selectedSlot.time]);
+      setBookedSlots((prev) => [...prev, selectedSlot.time]);
       setBookingSuccess(true);
     } catch (err) {
-      alert(
-        "שגיאה בשליחת תיאום: " +
-          (err?.response?.data?.message || err.message)
-      );
+      alert("שגיאה בשליחת תיאום: " + (err?.response?.data?.message || err.message));
     }
   };
 
@@ -174,9 +175,9 @@ export default function ClientCalendar({
                   onClick={() => {
                     if (month === 0) {
                       setMonth(11);
-                      setYear(y => y - 1);
+                      setYear((y) => y - 1);
                     } else {
-                      setMonth(m => m - 1);
+                      setMonth((m) => m - 1);
                     }
                   }}
                   className="month-nav-btn"
@@ -188,9 +189,9 @@ export default function ClientCalendar({
                   onClick={() => {
                     if (month === 11) {
                       setMonth(0);
-                      setYear(y => y + 1);
+                      setYear((y) => y + 1);
                     } else {
-                      setMonth(m => m + 1);
+                      setMonth((m) => m + 1);
                     }
                   }}
                   className="month-nav-btn"
@@ -203,7 +204,7 @@ export default function ClientCalendar({
                 year={year}
                 month={month}
                 selectedDate={selectedDate}
-                onDateClick={date => {
+                onDateClick={(date) => {
                   setSelectedDate(date);
                 }}
               />
@@ -218,16 +219,16 @@ export default function ClientCalendar({
               <p className="error-text">{error}</p>
             ) : config ? (
               <>
-                <p>🕓 שעות פעילות: {config.start} - {config.end}</p>
+                <p>
+                  🕓 שעות פעילות: {config.start} - {config.end}
+                </p>
                 {config.breaks && <p>⏸️ הפסקות: {config.breaks}</p>}
                 <h5>🕒 שעות פנויות:</h5>
                 {availableSlots.length ? (
                   <div className="slot-list">
-                    {availableSlots.map((t, i) => (
+                    {availableSlots.map((t) => (
                       <div key={t} className="slot-item">
-                        <button onClick={() => handleSelectSlot(t)}>
-                          {t}
-                        </button>
+                        <button onClick={() => handleSelectSlot(t)}>{t}</button>
                       </div>
                     ))}
                   </div>
@@ -260,40 +261,37 @@ export default function ClientCalendar({
                 <label>שם מלא:</label>
                 <input
                   value={clientName}
-                  onChange={e => setClientName(e.target.value)}
+                  onChange={(e) => setClientName(e.target.value)}
                   placeholder="הכנס שם מלא"
                 />
                 <label>טלפון:</label>
                 <input
                   value={clientPhone}
-                  onChange={e => setClientPhone(e.target.value)}
+                  onChange={(e) => setClientPhone(e.target.value)}
                   placeholder="הכנס טלפון"
                 />
                 <label>כתובת:</label>
                 <input
                   value={clientAddress}
-                  onChange={e => setClientAddress(e.target.value)}
+                  onChange={(e) => setClientAddress(e.target.value)}
                   placeholder="הכנס כתובת"
                 />
                 <label>אימייל (לשליחת אישור):</label>
                 <input
                   value={clientEmail}
-                  onChange={e => setClientEmail(e.target.value)}
+                  onChange={(e) => setClientEmail(e.target.value)}
                   type="email"
                   placeholder="הכנס אימייל"
                 />
                 <label>הערה (לא חובה):</label>
                 <textarea
                   value={clientNote}
-                  onChange={e => setClientNote(e.target.value)}
+                  onChange={(e) => setClientNote(e.target.value)}
                   placeholder="הערה נוספת"
                 />
               </div>
 
-              <button
-                className="confirm-slot-btn"
-                onClick={handleSubmitBooking}
-              >
+              <button className="confirm-slot-btn" onClick={handleSubmitBooking}>
                 📅 תיאום תור
               </button>
               <button className="back-button" onClick={() => setMode("slots")}>
@@ -303,11 +301,7 @@ export default function ClientCalendar({
           ) : (
             <div>
               <h4 className="success-message">🎉 התיאום נשלח בהצלחה!</h4>
-              <p>
-                {clientEmail
-                  ? "נשלח אישור למייל"
-                  : "לא נשלח אישור כי לא הוזן אימייל"}
-              </p>
+              <p>{clientEmail ? "נשלח אישור למייל" : "לא נשלח אישור כי לא הוזן אימייל"}</p>
               <button className="back-button" onClick={onBackToList}>
                 🔙 חזרה לרשימה
               </button>
