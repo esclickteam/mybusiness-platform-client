@@ -90,6 +90,12 @@ const AppointmentsMain = ({
     }
   };
 
+  // --- Normalize time string (e.g., "9:00" to "09:00") ---
+  const normalizeTime = (t) => {
+    const [h, m] = t.split(":");
+    return `${h.padStart(2, "0")}:${m.padStart(2, "0")}`;
+  };
+
   // --- Compute slots when date or service changes or refreshCounter changes ---
   useEffect(() => {
     console.log("[AppointmentsMain] Computing available slots", {
@@ -123,9 +129,14 @@ const AppointmentsMain = ({
       fetchBookedSlots(currentUser.businessId, dateStr).then(bookedSlots => {
         console.log("[AppointmentsMain] Filtering slots...");
         const allSlots = generateAllSlots();
-        console.log("[AppointmentsMain] All slots:", allSlots);
-        const freeSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
-        console.log("[AppointmentsMain] Available (free) slots:", freeSlots);
+        console.log("[AppointmentsMain] All slots raw:", allSlots);
+        const cleanedBookedSlots = bookedSlots.map(s => normalizeTime(s.trim()));
+        const cleanedAllSlots = allSlots.map(s => normalizeTime(s.trim()));
+        console.log("[AppointmentsMain] Booked slots normalized:", cleanedBookedSlots);
+        console.log("[AppointmentsMain] All slots normalized:", cleanedAllSlots);
+
+        const freeSlots = cleanedAllSlots.filter(slot => !cleanedBookedSlots.includes(slot));
+        console.log("[AppointmentsMain] Available (free) slots after filtering:", freeSlots);
         setAvailableSlots(freeSlots);
       });
     } else {
