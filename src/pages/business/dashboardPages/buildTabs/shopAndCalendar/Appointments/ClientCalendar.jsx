@@ -39,7 +39,8 @@ export default function ClientCalendar({
 
   // בוחרים את תצורת שעות העבודה לפי היום בשבוע מתוך workHours (schedule)
   const dayIdx = selectedDate.getDay();
-  const config = workHours.find(dayConfig => dayConfig.day === dayIdx);
+  const config = workHours[dayIdx]; // גישה ישירה למפתח מספרי במקום find
+
 
   const serviceDuration = selectedService?.duration || 30;
 
