@@ -37,13 +37,11 @@ export function DashboardSocketProvider({ businessId, children }) {
 
       socketRef.current = io(SOCKET_URL, {
         path: "/socket.io",
-        auth: { token, role: "business-dashboard" },
-        query: { businessId },  // חשוב: מצרף את businessId ב-query להתחברות לחדר עסק
+        auth: { token, role: "business-dashboard", businessId },
         transports: ["websocket"],
       });
 
-      // הצטרפות לחדר העסק בצד לקוח (אם שרת לא עושה זאת אוטומטית)
-      socketRef.current.emit("joinBusinessRoom", businessId);
+      // הסרנו emit ל-"joinBusinessRoom" כי השרת כבר מחבר לפי businessId ב-auth
 
       const handleUpdate = (newStats) => {
         if (!isMounted) return;

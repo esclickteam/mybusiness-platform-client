@@ -317,6 +317,41 @@ const DashboardPage = () => {
         }
       });
 
+      // --------- **הוספת טיפול באירוע appointmentCreated** ---------
+      sock.on("appointmentCreated", (newAppointment) => {
+        const newBizId = newAppointment.business?.toString();
+        const currentBizId = businessId.toString();
+
+        if (newBizId === currentBizId) {
+          setStats((prevStats) => {
+            const appointments = Array.isArray(prevStats.appointments)
+              ? [...prevStats.appointments]
+              : [];
+
+            const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
+
+            appointments.push(enrichedNewAppointment);
+
+            return {
+              ...prevStats,
+              appointments,
+              appointments_count: appointments.length,
+            };
+          });
+
+          if (newAppointment.date) {
+            const apptDate = new Date(newAppointment.date)
+              .toISOString()
+              .split("T")[0];
+            if (apptDate === selectedDate) {
+              setSelectedDate(null);
+              setTimeout(() => setSelectedDate(apptDate), 10);
+            }
+          }
+        }
+      });
+      // ---------------------------------------------------------------
+
       sock.on("appointmentUpdated", (newAppointment) => {
         const newBizId = newAppointment.business?.toString();
         const currentBizId = businessId.toString();
