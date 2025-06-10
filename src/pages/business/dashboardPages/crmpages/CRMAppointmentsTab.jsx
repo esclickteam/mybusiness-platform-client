@@ -1,4 +1,3 @@
-// CRMAppointmentsTab.jsx
 import React, { useState, useEffect } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
@@ -12,12 +11,14 @@ const statusCycle = ["חדש", "בטיפול", "הושלם"];
 const CRMAppointmentsTab = () => {
   const [search, setSearch] = useState("");
   const [appointments, setAppointments] = useState([]);
+  const [services, setServices] = useState([]);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newAppointment, setNewAppointment] = useState({
     name: "",
     phone: "",
-    service: "",
+    serviceId: "",
+    serviceName: "",
     date: "",
     time: "",
   });
@@ -26,24 +27,29 @@ const CRMAppointmentsTab = () => {
   const [editData, setEditData] = useState({
     name: "",
     phone: "",
-    service: "",
+    serviceId: "",
+    serviceName: "",
     date: "",
     time: "",
   });
 
-  // טען תיאומים מהשרת (או מ-localStorage אם נדרש)
+  // טען תיאומים ושירותים מהשרת
   useEffect(() => {
-    async function fetchAppointments() {
+    async function fetchAppointmentsAndServices() {
       try {
-        const res = await API.get("/business/my/appointments");
-        setAppointments(res.data.appointments || []);
+        const [appointmentsRes, servicesRes] = await Promise.all([
+          API.get("/business/my/appointments"),
+          API.get("/business/my/services"),
+        ]);
+        setAppointments(appointmentsRes.data.appointments || []);
+        setServices(servicesRes.data.services || []);
       } catch (err) {
         // fallback ל-localStorage במידה ויש צורך
-        const saved = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
-        if (saved.length) setAppointments(saved);
+        const savedAppointments = JSON.parse(localStorage.getItem("demoAppointments") || "[]");
+        if (savedAppointments.length) setAppointments(savedAppointments);
       }
     }
-    fetchAppointments();
+    fetchAppointmentsAndServices();
 
     const socket = io(SOCKET_URL, {
       path: "/socket.io",
@@ -77,7 +83,8 @@ const CRMAppointmentsTab = () => {
 
   const filteredAppointments = appointments.filter(
     (appt) =>
-      appt.name.includes(search) || appt.phone.includes(search)
+      appt.name.includes(search) ||
+      appt.phone.includes(search)
   );
 
   const cycleStatus = async (id) => {
@@ -102,9 +109,43 @@ const CRMAppointmentsTab = () => {
     }
   };
 
+  // כאשר בוחרים שירות בטופס הוספה או עריכה - מעדכן serviceName ו- serviceId
+  const handleServiceChange = (serviceId, isEdit = false) => {
+    const service = services.find((s) => s._id === serviceId);
+    if (service) {
+      if (isEdit) {
+        setEditData((prev) => ({
+          ...prev,
+          serviceId: service._id,
+          serviceName: service.name,
+        }));
+      } else {
+        setNewAppointment((prev) => ({
+          ...prev,
+          serviceId: service._id,
+          serviceName: service.name,
+        }));
+      }
+    } else {
+      if (isEdit) {
+        setEditData((prev) => ({
+          ...prev,
+          serviceId: "",
+          serviceName: "",
+        }));
+      } else {
+        setNewAppointment((prev) => ({
+          ...prev,
+          serviceId: "",
+          serviceName: "",
+        }));
+      }
+    }
+  };
+
   const handleAddAppointment = async () => {
-    if (!newAppointment.name || !newAppointment.phone || !newAppointment.date || !newAppointment.time) {
-      alert("יש למלא שם, טלפון, תאריך ושעה");
+    if (!newAppointment.name || !newAppointment.phone || !newAppointment.date || !newAppointment.time || !newAppointment.serviceId) {
+      alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
       return;
     }
 
@@ -115,7 +156,7 @@ const CRMAppointmentsTab = () => {
       });
       setAppointments(res.data.appointments || []);
 
-      setNewAppointment({ name: "", phone: "", service: "", date: "", time: "" });
+      setNewAppointment({ name: "", phone: "", serviceId: "", serviceName: "", date: "", time: "" });
       setShowAddForm(false);
     } catch (err) {
       alert("❌ שגיאה ביצירת התיאום");
@@ -132,9 +173,10 @@ const CRMAppointmentsTab = () => {
       !editData.name ||
       !editData.phone ||
       !editData.date ||
-      !editData.time
+      !editData.time ||
+      !editData.serviceId
     ) {
-      alert("יש למלא שם, טלפון, תאריך ושעה לעדכון");
+      alert("יש למלא שם, טלפון, שירות, תאריך ושעה לעדכון");
       return;
     }
 
@@ -195,12 +237,17 @@ const CRMAppointmentsTab = () => {
             value={newAppointment.phone}
             onChange={(e) => setNewAppointment({ ...newAppointment, phone: e.target.value })}
           />
-          <input
-            type="text"
-            placeholder="שירות"
-            value={newAppointment.service}
-            onChange={(e) => setNewAppointment({ ...newAppointment, service: e.target.value })}
-          />
+          <select
+            value={newAppointment.serviceId}
+            onChange={(e) => handleServiceChange(e.target.value)}
+          >
+            <option value="">בחר שירות</option>
+            {services.map((s) => (
+              <option key={s._id} value={s._id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
           <input
             type="date"
             value={newAppointment.date}
@@ -257,12 +304,19 @@ const CRMAppointmentsTab = () => {
                 </td>
                 <td>
                   {editId === appt.id ? (
-                    <input
-                      value={editData.service}
-                      onChange={(e) => setEditData({ ...editData, service: e.target.value })}
-                    />
+                    <select
+                      value={editData.serviceId}
+                      onChange={(e) => handleServiceChange(e.target.value, true)}
+                    >
+                      <option value="">בחר שירות</option>
+                      {services.map((s) => (
+                        <option key={s._id} value={s._id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
                   ) : (
-                    appt.service
+                    appt.serviceName || appt.service
                   )}
                 </td>
                 <td>
