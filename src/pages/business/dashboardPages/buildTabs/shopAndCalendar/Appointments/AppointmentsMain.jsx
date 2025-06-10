@@ -73,14 +73,16 @@ const AppointmentsMain = ({
 
   // --- Fetch booked slots from API ---
   const fetchBookedSlots = async (businessId, dateStr) => {
-    try {
-      const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
-      return res.data || [];
-    } catch (err) {
-      console.error("Error fetching booked slots:", err);
-      return [];
-    }
-  };
+  try {
+    console.log(`[AppointmentsMain] Fetching booked slots for businessId=${businessId} date=${dateStr}`);
+    const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
+    console.log("[AppointmentsMain] Booked slots received from API:", res.data);
+    return res.data || [];
+  } catch (err) {
+    console.error("[AppointmentsMain] Error fetching booked slots:", err);
+    return [];
+  }
+};
 
   // --- Normalize time string (handles possible seconds or trailing spaces) ---
   const normalizeTime = (t) => {
