@@ -52,77 +52,54 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
   const [availableSlots, setAvailableSlots] = useState([]);
   const [bookedSlots, setBookedSlots] = useState([]);
 
-  useEffect(() => {
+  const fetchSlotsAndWorkHours = async () => {
     if (!date || !businessId) {
-      console.log("SelectTimeFromSlots: no date or businessId provided");
       setAvailableSlots([]);
       setBookedSlots([]);
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        console.log("Fetching work hours and booked slots for businessId:", businessId, "date:", date);
-        const workHoursRes = await API.get("/appointments/get-work-hours", {
-          params: { businessId }
-        });
-        const rawWorkHours = workHoursRes.data.workHours || [];
-        const workHours = convertScheduleArrayToObject(rawWorkHours);
-        console.log("Work hours fetched and converted:", workHours);
+    try {
+      const workHoursRes = await API.get("/appointments/get-work-hours", {
+        params: { businessId }
+      });
+      const rawWorkHours = workHoursRes.data.workHours || [];
+      const workHours = convertScheduleArrayToObject(rawWorkHours);
 
-        const apptsRes = await API.get("/appointments/by-date", {
-          params: { businessId, date }
-        });
-        const booked = apptsRes.data || [];
-        console.log("Booked slots fetched:", booked);
+      const apptsRes = await API.get("/appointments/by-date", {
+        params: { businessId, date }
+      });
+      const booked = apptsRes.data || [];
 
-        const dayIdx = new Date(date).toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
-        const config = workHours[dayIdx];
-        console.log("Work hours config for day", dayIdx, ":", config);
-
-        if (!config || !config.open || !config.close) {
-          console.warn("No work hours config for this day or missing open/close");
-          setAvailableSlots([]);
-          setBookedSlots([]);
-          return;
-        }
-
-        const allSlots = generateSlots(config.open, config.close, serviceDuration, config.breaks || []);
-        console.log("All possible slots generated:", allSlots);
-
-        const freeSlots = allSlots.filter(t => !booked.includes(t));
-        console.log("Filtered free slots (excluding booked):", freeSlots);
-
-        setAvailableSlots(freeSlots);
-        setBookedSlots(booked);
-
-      } catch (err) {
-        console.error("Error fetching slots or work hours:", err);
+      const dayIdx = new Date(date).toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+      const config = workHours[dayIdx];
+      if (!config || !config.open || !config.close) {
         setAvailableSlots([]);
         setBookedSlots([]);
+        return;
       }
-    };
 
-    fetchData();
+      const allSlots = generateSlots(config.open, config.close, serviceDuration, config.breaks || []);
+      const freeSlots = allSlots.filter(t => !booked.includes(t));
+
+      setAvailableSlots(freeSlots);
+      setBookedSlots(booked);
+    } catch (err) {
+      console.error("Error fetching slots or work hours:", err);
+      setAvailableSlots([]);
+      setBookedSlots([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchSlotsAndWorkHours();
   }, [date, businessId, serviceDuration]);
 
   useEffect(() => {
-    if (!socket || !businessId) {
-      console.log("Socket or businessId missing, skipping socket listeners");
-      return;
-    }
+    if (!socket || !businessId) return;
 
     const updateSlots = () => {
-      if (!date) return;
-      console.log("Socket event received, updating slots for date:", date);
-      API.get("/appointments/by-date", {
-        params: { businessId, date }
-      }).then(res => {
-        const booked = res.data || [];
-        console.log("Updated booked slots from socket event:", booked);
-        setBookedSlots(booked);
-        setAvailableSlots(prevSlots => prevSlots.filter(t => !booked.includes(t)));
-      });
+      fetchSlotsAndWorkHours();
     };
 
     socket.on("appointmentUpdated", updateSlots);
@@ -134,7 +111,7 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
       socket.off("appointmentCreated", updateSlots);
       socket.off("appointmentDeleted", updateSlots);
     };
-  }, [socket, businessId, date]);
+  }, [socket, businessId, date, serviceDuration]);
 
   return (
     <div className="time-select-wrapper">
