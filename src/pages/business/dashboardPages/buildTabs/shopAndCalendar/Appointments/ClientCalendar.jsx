@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import API from "../../../../../../api"; // תקן בהתאם לפרויקט שלך
+import API from "../../../../../../api";
 import "./ClientCalendar.css";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
-import { useAuth } from "../../../../../../context/AuthContext"; // נתיב מתאים
+import { useAuth } from "../../../../../../context/AuthContext";
 
 export default function ClientCalendar({
   workHours = {},
@@ -41,12 +41,11 @@ export default function ClientCalendar({
   const config = workHours[dayIdx];
   const serviceDuration = selectedService?.duration || 30;
 
-  // טוען תורים תפוסים מתאריך שנבחר
   const loadBookedSlots = () => {
     if (!businessId) return;
     const dateStr = selectedDate.toISOString().slice(0, 10);
     setLoadingSlots(true);
-    setBookedSlots([]); // איפוס לפני רענון
+    setBookedSlots([]);
     API.get("/appointments/by-date", {
       params: { businessId, date: dateStr },
     })
@@ -65,7 +64,6 @@ export default function ClientCalendar({
     loadBookedSlots();
   }, [selectedDate, businessId]);
 
-  // מאזין לאירועים מ-socket לעדכון זמנים תפוסים בזמן אמת - עם קריאת API מחדש
   useEffect(() => {
     if (!socket) return;
 
@@ -106,14 +104,12 @@ export default function ClientCalendar({
     };
   }, [socket, businessId, selectedDate]);
 
-  // איפוס בחירת שעה ומצב תצוגה כשמשנים תאריך או שעות עבודה
   useEffect(() => {
     setSelectedSlot(null);
     setMode("slots");
     setBookingSuccess(false);
   }, [selectedDate, config]);
 
-  // מחשב זמני פגישה פנויים לפי שעות עבודה וזמנים כבר תפוסים
   useEffect(() => {
     if (config?.start && config?.end) {
       const all = generateTimeSlots(config.start, config.end, config.breaks);
@@ -154,7 +150,6 @@ export default function ClientCalendar({
     return slots;
   };
 
-  // בוחר שעה
   const handleSelectSlot = (time) => {
     setSelectedSlot({
       time,
@@ -168,7 +163,6 @@ export default function ClientCalendar({
     setMode("summary");
   };
 
-  // שולח הזמנה לשרת ומעדכן את הזמנים ביומן מיידית
   const handleSubmitBooking = async () => {
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim()) {
       alert("אנא מלא את כל הפרטים הנדרשים");
@@ -198,7 +192,7 @@ export default function ClientCalendar({
         duration: selectedSlot.duration,
       });
 
-      // עדכון מיידי של תורים תפוסים ייעשה ע"י האירוע הנקלט מ-socket, לכן לא צריך לעדכן כאן ידנית
+      // עדכון תורים תפוסים דרך אירוע socket - לא צריך לעדכן כאן ידנית
       setSelectedSlot(null);
       setBookingSuccess(true);
     } catch (err) {
