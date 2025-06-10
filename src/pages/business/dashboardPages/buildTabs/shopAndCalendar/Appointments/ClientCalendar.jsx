@@ -147,15 +147,16 @@ export default function ClientCalendar({
 
   // סינון הזמנים הפנויים מתוך כל החלונות מול הזמנים שתפוסים
   useEffect(() => {
-    if (config?.start && config?.end) {
-      const allSlots = generateTimeSlots(config.start, config.end, config.breaks);
-      const takenTimes = bookedSlots.map((slot) => slot.time);
-      const freeSlots = allSlots.filter((time) => !takenTimes.includes(time));
-      setAvailableSlots(freeSlots);
-    } else {
-      setAvailableSlots([]);
-    }
-  }, [config, bookedSlots]);
+  if (config?.start && config?.end) {
+    const allSlots = generateTimeSlots(config.start, config.end, config.breaks);
+    // bookedSlots הוא כבר מערך של מחרוזות זמן (למשל ["09:00", "11:00"])
+    const takenTimes = bookedSlots;
+    const freeSlots = allSlots.filter((time) => !takenTimes.includes(time));
+    setAvailableSlots(freeSlots);
+  } else {
+    setAvailableSlots([]);
+  }
+}, [config, bookedSlots]);
 
   const handleSelectSlot = (time) => {
     setSelectedSlot({
