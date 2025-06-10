@@ -5,7 +5,7 @@ import MonthCalendar from "../../../../../../components/MonthCalendar";
 import { useAuth } from "../../../../../../context/AuthContext";
 
 export default function ClientCalendar({
-  workHours = [],  // כאן מצפה למערך כמו schedule
+  workHours = [],
   selectedService,
   onBackToList,
   businessId,
@@ -37,10 +37,8 @@ export default function ClientCalendar({
     setYear(selectedDate.getFullYear());
   }, [selectedDate]);
 
-  // בוחרים את תצורת שעות העבודה לפי היום בשבוע מתוך workHours (schedule)
   const dayIdx = selectedDate.getDay();
-  const config = workHours[dayIdx]; // גישה ישירה למפתח מספרי במקום find
-
+  const config = workHours[dayIdx];
 
   const serviceDuration = selectedService?.duration || 30;
 
@@ -113,7 +111,6 @@ export default function ClientCalendar({
     setBookingSuccess(false);
   }, [selectedDate, config]);
 
-  // הפונקציה ליצירת חלונות זמן
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
     const toMin = (t) => {
       const [h, m = "00"] = t.trim().split(":");
@@ -145,32 +142,36 @@ export default function ClientCalendar({
     return slots;
   };
 
-  // סינון הזמנים הפנויים מתוך כל החלונות מול הזמנים שתפוסים
   useEffect(() => {
-  if (config?.start && config?.end) {
-    const allSlots = generateTimeSlots(config.start, config.end, config.breaks);
+    if (config?.start && config?.end) {
+      const allSlots = generateTimeSlots(config.start, config.end, config.breaks);
 
-    const normalizeTime = (timeStr) => {
-      const [h, m] = timeStr.split(":").map(Number);
-      return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-    };
+      const toMinutes = (t) => {
+        const [h, m] = t.split(":").map(Number);
+        return h * 60 + m;
+      };
 
-    const takenTimesNormalized = bookedSlots.map(normalizeTime);
+      // כאן bookedSlots הוא מערך של אובייקטים: [{ time: "09:00", duration: 120 }, ...]
+      const occupiedSlots = new Set();
 
-    console.log("Booked slots raw:", bookedSlots);
-    console.log("Booked slots normalized:", takenTimesNormalized);
-    console.log("All generated slots:", allSlots);
+      bookedSlots.forEach(({ time, duration }) => {
+        const startMin = toMinutes(time);
+        const dur = duration || serviceDuration;
+        for (let i = 0; i < dur; i += serviceDuration) {
+          const slotMin = startMin + i;
+          const hh = String(Math.floor(slotMin / 60)).padStart(2, "0");
+          const mm = String(slotMin % 60).padStart(2, "0");
+          occupiedSlots.add(`${hh}:${mm}`);
+        }
+      });
 
-    const freeSlots = allSlots.filter(time => !takenTimesNormalized.includes(normalizeTime(time)));
+      const freeSlots = allSlots.filter(slot => !occupiedSlots.has(slot));
 
-    console.log("Filtered free slots:", freeSlots);
-
-    setAvailableSlots(freeSlots);
-  } else {
-    setAvailableSlots([]);
-  }
-}, [config, bookedSlots]);
-
+      setAvailableSlots(freeSlots);
+    } else {
+      setAvailableSlots([]);
+    }
+  }, [config, bookedSlots]);
 
   const handleSelectSlot = (time) => {
     setSelectedSlot({
