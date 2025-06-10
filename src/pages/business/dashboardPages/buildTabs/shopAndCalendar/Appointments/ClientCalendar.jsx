@@ -10,7 +10,7 @@ export default function ClientCalendar({
   onBackToList,
   businessId,
 }) {
-  const { socket } = useAuth(); // נניח שיש context שמספק socket
+  const { socket } = useAuth();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [month, setMonth] = useState(new Date().getMonth());
@@ -44,7 +44,7 @@ export default function ClientCalendar({
   // טוען תורים תפוסים מתאריך שנבחר
   const loadBookedSlots = () => {
     if (!businessId) return;
-    const dateStr = selectedDate.toISOString().slice(0, 10); // YYYY-MM-DD
+    const dateStr = selectedDate.toISOString().slice(0, 10);
     setLoadingSlots(true);
     setBookedSlots([]); // איפוס לפני רענון
     API.get("/appointments/by-date", {
@@ -65,24 +65,25 @@ export default function ClientCalendar({
     loadBookedSlots();
   }, [selectedDate, businessId]);
 
-  // מאזין לאירועים מ-socket לעדכון זמנים תפוסים בזמן אמת
+  // מאזין לאירועים מ-socket לעדכון זמנים תפוסים בזמן אמת - עם קריאת API מחדש
   useEffect(() => {
     if (!socket) return;
+
+    const fetchAndSetBookedSlots = () => {
+      loadBookedSlots();
+    };
 
     const onAppointmentCreated = (appt) => {
       if (appt.business !== businessId) return;
       const apptDateStr = appt.date?.slice(0, 10);
       const selectedDateStr = selectedDate?.toISOString().slice(0, 10);
       if (apptDateStr === selectedDateStr) {
-        setBookedSlots((prev) => {
-          if (prev.includes(appt.time)) return prev; // מניעת הוספה כפולה
-          return [...prev, appt.time];
-        });
+        fetchAndSetBookedSlots();
       }
     };
 
     const onAppointmentDeleted = ({ id }) => {
-      loadBookedSlots();
+      fetchAndSetBookedSlots();
     };
 
     const onAppointmentUpdated = (appt) => {
@@ -90,7 +91,7 @@ export default function ClientCalendar({
       const apptDateStr = appt.date?.slice(0, 10);
       const selectedDateStr = selectedDate?.toISOString().slice(0, 10);
       if (apptDateStr === selectedDateStr) {
-        loadBookedSlots();
+        fetchAndSetBookedSlots();
       }
     };
 
@@ -197,8 +198,7 @@ export default function ClientCalendar({
         duration: selectedSlot.duration,
       });
 
-      // עדכון מיידי של תורים תפוסים
-      setBookedSlots((prev) => [...prev, selectedSlot.time]);
+      // עדכון מיידי של תורים תפוסים ייעשה ע"י האירוע הנקלט מ-socket, לכן לא צריך לעדכן כאן ידנית
       setSelectedSlot(null);
       setBookingSuccess(true);
     } catch (err) {
