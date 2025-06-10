@@ -5,7 +5,7 @@ import MonthCalendar from "../../../../../../components/MonthCalendar";
 import { useAuth } from "../../../../../../context/AuthContext";
 
 export default function ClientCalendar({
-  workHours = {},
+  workHours = [],  // כאן מצפה למערך כמו schedule
   selectedService,
   onBackToList,
   businessId,
@@ -37,8 +37,10 @@ export default function ClientCalendar({
     setYear(selectedDate.getFullYear());
   }, [selectedDate]);
 
+  // בוחרים את תצורת שעות העבודה לפי היום בשבוע מתוך workHours (schedule)
   const dayIdx = selectedDate.getDay();
-  const config = workHours[dayIdx];
+  const config = workHours.find(dayConfig => dayConfig.day === dayIdx);
+
   const serviceDuration = selectedService?.duration || 30;
 
   const loadBookedSlots = () => {
@@ -110,15 +112,7 @@ export default function ClientCalendar({
     setBookingSuccess(false);
   }, [selectedDate, config]);
 
-  useEffect(() => {
-    if (config?.start && config?.end) {
-      const all = generateTimeSlots(config.start, config.end, config.breaks);
-      setAvailableSlots(all.filter((s) => !bookedSlots.includes(s)));
-    } else {
-      setAvailableSlots([]);
-    }
-  }, [config, bookedSlots]);
-
+  // הפונקציה ליצירת חלונות זמן
   const generateTimeSlots = (startTime, endTime, breaks = "") => {
     const toMin = (t) => {
       const [h, m = "00"] = t.trim().split(":");
@@ -149,6 +143,18 @@ export default function ClientCalendar({
     }
     return slots;
   };
+
+  // סינון הזמנים הפנויים מתוך כל החלונות מול הזמנים שתפוסים
+  useEffect(() => {
+    if (config?.start && config?.end) {
+      const allSlots = generateTimeSlots(config.start, config.end, config.breaks);
+      const takenTimes = bookedSlots.map((slot) => slot.time);
+      const freeSlots = allSlots.filter((time) => !takenTimes.includes(time));
+      setAvailableSlots(freeSlots);
+    } else {
+      setAvailableSlots([]);
+    }
+  }, [config, bookedSlots]);
 
   const handleSelectSlot = (time) => {
     setSelectedSlot({
@@ -192,7 +198,6 @@ export default function ClientCalendar({
         duration: selectedSlot.duration,
       });
 
-      // עדכון תורים תפוסים דרך אירוע socket - לא צריך לעדכן כאן ידנית
       setSelectedSlot(null);
       setBookingSuccess(true);
     } catch (err) {
