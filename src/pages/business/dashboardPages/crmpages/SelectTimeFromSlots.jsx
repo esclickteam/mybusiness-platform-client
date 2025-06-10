@@ -30,6 +30,23 @@ const generateSlots = (start, end, duration, breaks = []) => {
   return slots;
 };
 
+// פונקציה להמרת מערך schedule לאובייקט עם מפתחות ימי שבוע
+const convertScheduleArrayToObject = (scheduleArray) => {
+  const dayNames = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+  const scheduleObj = {};
+  scheduleArray.forEach(item => {
+    const dayIndex = Number(item.day);
+    if (dayIndex >= 0 && dayIndex <= 6) {
+      scheduleObj[dayNames[dayIndex]] = {
+        open: item.start,
+        close: item.end,
+        breaks: item.breaks || []
+      };
+    }
+  });
+  return scheduleObj;
+};
+
 const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, serviceDuration = 30 }) => {
   const { socket } = useAuth();
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -49,8 +66,9 @@ const SelectTimeFromSlots = ({ date, selectedTime, onChange, businessId, service
         const workHoursRes = await API.get("/appointments/get-work-hours", {
           params: { businessId }
         });
-        const workHours = workHoursRes.data.workHours || {};
-        console.log("Work hours fetched:", workHours);
+        const rawWorkHours = workHoursRes.data.workHours || [];
+        const workHours = convertScheduleArrayToObject(rawWorkHours);
+        console.log("Work hours fetched and converted:", workHours);
 
         const apptsRes = await API.get("/appointments/by-date", {
           params: { businessId, date }
