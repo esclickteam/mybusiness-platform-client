@@ -3,7 +3,7 @@ import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api"; // תקן לנתיב הנכון
 import { io } from "socket.io-client";
-import { useAuth } from "../context/AuthContext"; // דוגמה - עדכן לפי מיקום אמיתי
+import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
