@@ -1,62 +1,84 @@
-// CRMServicesTab.jsx
-import React, { useState, useEffect } from "react";
-import API from "@api"; // עדכן לנתיב הנכון
+import React, { useState, useEffect, useRef } from "react";
+import "./CRMAppointmentsTab.css";
+import SelectTimeFromSlots from "./SelectTimeFromSlots";
+import API from "@api"; // תקן לנתיב הנכון
 import { io } from "socket.io-client";
-import "./CRMServicesTab.css";
+import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-const CRMServicesTab = () => {
-  const [services, setServices] = useState([]);
-  const [newService, setNewService] = useState({
-    name: "",
-    price: "",
-    hours: "0",
-    minutes: "30",
-    description: "",
-    appointmentType: "at_business",
-    imageFile: null,
-  });
-  const [editServiceId, setEditServiceId] = useState(null);
-  const [editData, setEditData] = useState({
-    name: "",
-    price: "",
-    hours: "0",
-    minutes: "30",
-    description: "",
-    appointmentType: "at_business",
-    imageFile: null,
-    imageUrl: "",
-  });
-  const [loading, setLoading] = useState(true);
+const statusCycle = ["חדש", "בטיפול", "הושלם"];
 
-  // חיבור ל-socket לשמירת סנכרון בזמן אמת
+const CRMAppointmentsTab = () => {
+  const { user, token } = useAuth();
+  const businessId = user?.businessId || user?.business?._id || null;
+
+  const [search, setSearch] = useState("");
+  const [appointments, setAppointments] = useState([]);
+  const [services, setServices] = useState([]);
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newAppointment, setNewAppointment] = useState({
+    clientName: "",
+    clientPhone: "",
+    serviceId: "",
+    serviceName: "",
+    date: "",
+    time: "",
+  });
+
+  const [editId, setEditId] = useState(null);
+  const [editData, setEditData] = useState({
+    clientName: "",
+    clientPhone: "",
+    serviceId: "",
+    serviceName: "",
+    date: "",
+    time: "",
+  });
+
+  const socketRef = useRef(null);
+
   useEffect(() => {
-    async function fetchServices() {
+    const fetchData = async () => {
       try {
-        const res = await API.get("/business/my/services");
-        setServices(res.data.services || []);
+        const [appointmentsRes, servicesRes] = await Promise.all([
+          API.get("/appointments/all-with-services"),
+          API.get("/business/my/services"),
+        ]);
+        setAppointments(appointmentsRes.data || []);
+        setServices(servicesRes.data.services || []);
       } catch (err) {
-        alert("❌ שגיאה בטעינת השירותים");
-      } finally {
-        setLoading(false);
+        console.error("Error fetching appointments or services", err);
       }
-    }
-    fetchServices();
+    };
+    fetchData();
+
+    if (!token) return;
 
     const socket = io(SOCKET_URL, {
       path: "/socket.io",
       transports: ["websocket"],
-      // הוסף auth אם צריך לפי המערכת שלך
+      auth: { token },
     });
+    socketRef.current = socket;
 
     socket.on("connect", () => {
-      console.log("🔌 Connected to socket in CRMServicesTab");
+      console.log("🔌 Connected to socket in CRMAppointmentsTab");
     });
 
-    socket.on("servicesUpdated", (updatedServices) => {
-      console.log("🔄 servicesUpdated received from socket", updatedServices);
-      setServices(updatedServices);
+    socket.on("appointmentCreated", (appt) => {
+      setAppointments((prev) => [...prev, appt]);
+    });
+
+    socket.on("appointmentUpdated", (updatedAppt) => {
+      setAppointments((prev) =>
+        prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+      );
+    });
+
+    socket.on("appointmentDeleted", ({ id }) => {
+      setAppointments((prev) => prev.filter((appt) => appt._id !== id));
     });
 
     socket.on("disconnect", () => {
@@ -70,373 +92,319 @@ const CRMServicesTab = () => {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [token]);
 
-  const calcDurationInMinutes = (hours, minutes) =>
-    parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+  // חיפוש case-insensitive
+  const filteredAppointments = appointments.filter((appt) => {
+    const searchLower = search.toLowerCase();
+    return (
+      appt.clientName?.toLowerCase().includes(searchLower) ||
+      appt.clientPhone?.toLowerCase().includes(searchLower)
+    );
+  });
 
-  const addService = async () => {
-    if (
-      !newService.name ||
-      !newService.price ||
-      calcDurationInMinutes(newService.hours, newService.minutes) === 0
-    ) {
-      alert("יש למלא שם, מחיר ומשך תקין");
-      return;
-    }
+  const cycleStatus = async (id) => {
+    const apptToUpdate = appointments.find((appt) => appt._id === id);
+    if (!apptToUpdate) return;
+
+    const currentIndex = statusCycle.indexOf(apptToUpdate.status);
+    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+
     try {
-      const formData = new FormData();
-      formData.append("name", newService.name);
-      formData.append("price", newService.price);
-      formData.append(
-        "duration",
-        calcDurationInMinutes(newService.hours, newService.minutes)
+      await API.put(`/business/my/appointments/${id}/status`, { status: nextStatus });
+
+      setAppointments((prev) =>
+        prev.map((appt) => (appt._id === id ? { ...appt, status: nextStatus } : appt))
       );
-      formData.append("description", newService.description);
-      formData.append("appointmentType", newService.appointmentType);
-      if (newService.imageFile) {
-        formData.append("image", newService.imageFile);
-      }
-
-      const res = await API.post("/business/my/services", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      setServices(res.data.services || []);
-      setNewService({
-        name: "",
-        price: "",
-        hours: "0",
-        minutes: "30",
-        description: "",
-        appointmentType: "at_business",
-        imageFile: null,
-      });
-    } catch {
-      alert("❌ שגיאה ביצירת השירות");
+    } catch (err) {
+      alert("❌ שגיאה בעדכון סטטוס התיאום");
     }
   };
 
-  const startEdit = (service) => {
-    const hours = Math.floor(service.duration / 60).toString();
-    const minutes = (service.duration % 60).toString();
-    setEditServiceId(service._id);
-    setEditData({
-      name: service.name,
-      price: service.price,
-      hours,
-      minutes,
-      description: service.description || "",
-      appointmentType: service.appointmentType || "at_business",
-      imageFile: null,
-      imageUrl: service.imageUrl || "",
-    });
+  const handleServiceChange = (serviceId, isEdit = false) => {
+    const service = services.find((s) => s._id === serviceId);
+    if (service) {
+      if (isEdit) {
+        setEditData((prev) => ({
+          ...prev,
+          serviceId: service._id,
+          serviceName: service.name,
+        }));
+      } else {
+        setNewAppointment((prev) => ({
+          ...prev,
+          serviceId: service._id,
+          serviceName: service.name,
+        }));
+      }
+    } else {
+      if (isEdit) {
+        setEditData((prev) => ({
+          ...prev,
+          serviceId: "",
+          serviceName: "",
+        }));
+      } else {
+        setNewAppointment((prev) => ({
+          ...prev,
+          serviceId: "",
+          serviceName: "",
+        }));
+      }
+    }
+  };
+
+  const handleAddAppointment = async () => {
+    if (
+      !newAppointment.clientName ||
+      !newAppointment.clientPhone ||
+      !newAppointment.date ||
+      !newAppointment.time ||
+      !newAppointment.serviceId
+    ) {
+      alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
+      return;
+    }
+
+    try {
+      const res = await API.post("/business/my/appointments", {
+        ...newAppointment,
+        status: "חדש",
+      });
+      setAppointments(res.data.appointments || []);
+      setShowAddForm(false);
+      setNewAppointment({
+        clientName: "",
+        clientPhone: "",
+        serviceId: "",
+        serviceName: "",
+        date: "",
+        time: "",
+      });
+    } catch (err) {
+      alert("❌ שגיאה ביצירת התיאום");
+    }
+  };
+
+  const startEdit = (appt) => {
+    setEditId(appt._id);
+    setEditData({ ...appt });
   };
 
   const saveEdit = async () => {
     if (
-      !editData.name ||
-      !editData.price ||
-      calcDurationInMinutes(editData.hours, editData.minutes) === 0
+      !editData.clientName ||
+      !editData.clientPhone ||
+      !editData.date ||
+      !editData.time ||
+      !editData.serviceId
     ) {
-      alert("יש למלא שם, מחיר ומשך תקין לעדכון");
+      alert("יש למלא שם, טלפון, שירות, תאריך ושעה לעדכון");
       return;
     }
+
     try {
-      const formData = new FormData();
-      formData.append("name", editData.name);
-      formData.append("price", editData.price);
-      formData.append(
-        "duration",
-        calcDurationInMinutes(editData.hours, editData.minutes)
-      );
-      formData.append("description", editData.description);
-      formData.append("appointmentType", editData.appointmentType);
-      if (editData.imageFile) {
-        formData.append("image", editData.imageFile);
+      await API.put(`/business/my/appointments/${editId}`, editData);
+
+      const res = await API.get("/business/my/appointments");
+      setAppointments(res.data.appointments || []);
+      setEditId(null);
+    } catch (err) {
+      alert("❌ שגיאה בעדכון התיאום");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("האם למחוק את התיאום?")) {
+      try {
+        await API.delete(`/business/my/appointments/${id}`);
+
+        setAppointments((prev) => prev.filter((appt) => appt._id !== id));
+      } catch (err) {
+        alert("❌ שגיאה במחיקת התיאום");
       }
-
-      await API.put(`/business/my/services/${editServiceId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      // עדכון השירותים אחרי שמירת עריכה (מומלץ לרענן מהר מהשרת)
-      const res = await API.get("/business/my/services");
-      setServices(res.data.services || []);
-
-      setEditServiceId(null);
-      setEditData({
-        name: "",
-        price: "",
-        hours: "0",
-        minutes: "30",
-        description: "",
-        appointmentType: "at_business",
-        imageFile: null,
-        imageUrl: "",
-      });
-    } catch {
-      alert("❌ שגיאה בעדכון השירות");
     }
   };
-
-  const deleteService = async (id) => {
-    if (!window.confirm("האם למחוק את השירות?")) return;
-    try {
-      await API.delete(`/business/my/services/${id}`);
-
-      // עדכון רשימת השירותים לאחר מחיקה (לסנכרן מיידית)
-      setServices((prev) => prev.filter((s) => s._id !== id));
-    } catch {
-      alert("❌ שגיאה במחיקת השירות");
-    }
-  };
-
-  if (loading) return <p>טוען שירותים...</p>;
 
   return (
-    <div className="crm-tab-content">
-      <h2>🛠️ שירותים</h2>
+    <div className="crm-appointments-tab">
+      <h2>📆 תיאומים / הזמנות</h2>
 
-      <div className="form-wrapper">
-        <div className="add-service-form">
-          <div className="appointment-type-selector">
-            <button
-              type="button"
-              className={newService.appointmentType === "at_business" ? "active" : ""}
-              onClick={() => setNewService({ ...newService, appointmentType: "at_business" })}
-            >
-              🏢 תיאום תור בעסק
-            </button>
-            <button
-              type="button"
-              className={newService.appointmentType === "on_site" ? "active" : ""}
-              onClick={() => setNewService({ ...newService, appointmentType: "on_site" })}
-            >
-              🚗 שירות עד הבית
-            </button>
-          </div>
-
-          <input
-            type="text"
-            placeholder="שם השירות"
-            value={newService.name}
-            onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="מחיר (₪)"
-            value={newService.price}
-            onChange={(e) => setNewService({ ...newService, price: e.target.value })}
-          />
-          <div className="time-row">
-            <select
-              value={newService.hours}
-              onChange={(e) => setNewService({ ...newService, hours: e.target.value })}
-            >
-              {[...Array(13).keys()].map((h) => (
-                <option key={h} value={h}>
-                  {h}
-                </option>
-              ))}
-            </select>
-            <span>שעות</span>
-            <select
-              value={newService.minutes}
-              onChange={(e) => setNewService({ ...newService, minutes: e.target.value })}
-            >
-              {["0", "15", "30", "45"].map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-            <span>דקות</span>
-          </div>
-
-          <textarea
-            placeholder="תיאור השירות (לא חובה)"
-            value={newService.description}
-            onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-          />
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setNewService({ ...newService, imageFile: e.target.files[0] })}
-          />
-          {newService.imageFile && (
-            <img
-              src={URL.createObjectURL(newService.imageFile)}
-              alt="preview"
-              style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
-            />
-          )}
-
-          <button onClick={addService}>➕ הוסף</button>
-        </div>
+      <div className="appointments-header">
+        <input
+          type="text"
+          placeholder="חפש לפי שם או טלפון..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-input"
+        />
+        <button className="add-btn" onClick={() => setShowAddForm(!showAddForm)}>
+          ➕ הוסף תיאום
+        </button>
       </div>
 
-      <table className="services-table">
+      {showAddForm && (
+        <div className="add-form">
+          <input
+            type="text"
+            placeholder="שם מלא"
+            value={newAppointment.clientName}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, clientName: e.target.value })
+            }
+          />
+          <input
+            type="tel"
+            placeholder="טלפון"
+            value={newAppointment.clientPhone}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, clientPhone: e.target.value })
+            }
+          />
+          <select
+            value={newAppointment.serviceId}
+            onChange={(e) => handleServiceChange(e.target.value)}
+          >
+            <option value="">בחר שירות</option>
+            {services.map((s) => (
+              <option key={s._id} value={s._id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <input
+            type="date"
+            value={newAppointment.date}
+            onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
+          />
+          <SelectTimeFromSlots
+            date={newAppointment.date}
+            selectedTime={newAppointment.time}
+            onChange={(time) => setNewAppointment({ ...newAppointment, time })}
+            businessId={businessId}
+          />
+          <button onClick={handleAddAppointment}>📩 שמור תיאום</button>
+        </div>
+      )}
+
+      <table className="appointments-table">
         <thead>
           <tr>
-            <th>סוג שירות</th>
             <th>שם</th>
-            <th>מחיר</th>
-            <th>משך (שעות ודקות)</th>
-            <th>תיאור</th>
-            <th>תמונה</th>
+            <th>טלפון</th>
+            <th>שירות</th>
+            <th>תאריך</th>
+            <th>שעה</th>
+            <th>סטטוס</th>
             <th>פעולות</th>
           </tr>
         </thead>
         <tbody>
-          {services.map((service) => {
-            const hours = Math.floor(service.duration / 60);
-            const minutes = service.duration % 60;
-
-            return (
-              <tr key={service._id}>
+          {filteredAppointments.length === 0 ? (
+            <tr>
+              <td colSpan="7">לא נמצאו תיאומים</td>
+            </tr>
+          ) : (
+            filteredAppointments.map((appt) => (
+              <tr key={appt._id} className={editId === appt._id ? "editing" : ""}>
                 <td>
-                  {editServiceId === service._id ? (
-                    <div className="appointment-type-selector">
-                      <button
-                        type="button"
-                        className={editData.appointmentType === "at_business" ? "active" : ""}
-                        onClick={() =>
-                          setEditData({ ...editData, appointmentType: "at_business" })
-                        }
-                      >
-                        🏢 תיאום תור בעסק
-                      </button>
-                      <button
-                        type="button"
-                        className={editData.appointmentType === "on_site" ? "active" : ""}
-                        onClick={() =>
-                          setEditData({ ...editData, appointmentType: "on_site" })
-                        }
-                      >
-                        🚗 שירות עד הבית
-                      </button>
-                    </div>
-                  ) : service.appointmentType === "on_site" ? (
-                    "שירות עד הבית"
-                  ) : (
-                    "תיאום תור בעסק"
-                  )}
-                </td>
-                <td>
-                  {editServiceId === service._id ? (
+                  {editId === appt._id ? (
                     <input
-                      value={editData.name}
-                      onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                      value={editData.clientName}
+                      onChange={(e) =>
+                        setEditData({ ...editData, clientName: e.target.value })
+                      }
                     />
                   ) : (
-                    service.name
+                    appt.clientName
                   )}
                 </td>
                 <td>
-                  {editServiceId === service._id ? (
+                  {editId === appt._id ? (
                     <input
-                      value={editData.price}
-                      onChange={(e) => setEditData({ ...editData, price: e.target.value })}
+                      value={editData.clientPhone}
+                      onChange={(e) =>
+                        setEditData({ ...editData, clientPhone: e.target.value })
+                      }
                     />
                   ) : (
-                    service.price
+                    appt.clientPhone
                   )}
                 </td>
                 <td>
-                  {editServiceId === service._id ? (
+                  {editId === appt._id ? (
+                    <select
+                      value={editData.serviceId}
+                      onChange={(e) => handleServiceChange(e.target.value, true)}
+                    >
+                      <option value="">בחר שירות</option>
+                      {services.map((s) => (
+                        <option key={s._id} value={s._id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    appt.serviceName || appt.service
+                  )}
+                </td>
+                <td>
+                  {editId === appt._id ? (
+                    <input
+                      type="date"
+                      value={editData.date}
+                      onChange={(e) => setEditData({ ...editData, date: e.target.value })}
+                    />
+                  ) : (
+                    appt.date
+                  )}
+                </td>
+                <td>
+                  {editId === appt._id ? (
+                    <input
+                      value={editData.time}
+                      onChange={(e) => setEditData({ ...editData, time: e.target.value })}
+                    />
+                  ) : (
+                    appt.time
+                  )}
+                </td>
+                <td>
+                  <button
+                    className={`status-btn status-${appt.status}`}
+                    onClick={() => cycleStatus(appt._id)}
+                  >
+                    {appt.status}
+                  </button>
+                </td>
+                <td className="actions-cell">
+                  {editId === appt._id ? (
                     <>
-                      <select
-                        value={editData.hours}
-                        onChange={(e) => setEditData({ ...editData, hours: e.target.value })}
-                      >
-                        {[...Array(13).keys()].map((h) => (
-                          <option key={h} value={h}>
-                            {h}
-                          </option>
-                        ))}
-                      </select>
-                      <span>שעות</span>
-                      <select
-                        value={editData.minutes}
-                        onChange={(e) => setEditData({ ...editData, minutes: e.target.value })}
-                      >
-                        {["0", "15", "30", "45"].map((m) => (
-                          <option key={m} value={m}>
-                            {m}
-                          </option>
-                        ))}
-                      </select>
-                      <span>דקות</span>
+                      <button className="action-btn action-edit" onClick={saveEdit}>
+                        💾 שמור
+                      </button>
+                      <button className="action-btn action-cancel" onClick={() => setEditId(null)}>
+                        ❌ בטל
+                      </button>
                     </>
                   ) : (
-                    `${hours} שעות ו-${minutes} דקות`
-                  )}
-                </td>
-                <td>
-                  {editServiceId === service._id ? (
-                    <textarea
-                      value={editData.description}
-                      onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                    />
-                  ) : (
-                    service.description || "-"
-                  )}
-                </td>
-                <td>
-                  {editServiceId === service._id ? (
                     <>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                          setEditData({ ...editData, imageFile: e.target.files[0] })
-                        }
-                      />
-                      {editData.imageFile ? (
-                        <img
-                          src={URL.createObjectURL(editData.imageFile)}
-                          alt="preview"
-                          style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
-                        />
-                      ) : editData.imageUrl ? (
-                        <img
-                          src={editData.imageUrl}
-                          alt="current"
-                          style={{ maxWidth: "80px", maxHeight: "80px", marginTop: "5px" }}
-                        />
-                      ) : (
-                        <em>אין תמונה</em>
-                      )}
-                    </>
-                  ) : service.imageUrl ? (
-                    <img
-                      src={service.imageUrl}
-                      alt={service.name}
-                      style={{ maxWidth: "80px", maxHeight: "80px" }}
-                    />
-                  ) : (
-                    <em>אין תמונה</em>
-                  )}
-                </td>
-                <td>
-                  {editServiceId === service._id ? (
-                    <button onClick={saveEdit}>💾 שמור</button>
-                  ) : (
-                    <>
-                      <button onClick={() => startEdit(service)}>✏️ ערוך</button>
-                      <button onClick={() => deleteService(service._id)}>🗑️ מחק</button>
+                      <button className="action-btn action-edit" onClick={() => startEdit(appt)}>
+                        ✏️ ערוך
+                      </button>
+                      <button className="action-btn action-cancel" onClick={() => handleDelete(appt._id)}>
+                        ❌ בטל
+                      </button>
                     </>
                   )}
                 </td>
               </tr>
-            );
-          })}
+            ))
+          )}
         </tbody>
       </table>
     </div>
   );
 };
 
-export default CRMServicesTab;
+export default CRMAppointmentsTab;
