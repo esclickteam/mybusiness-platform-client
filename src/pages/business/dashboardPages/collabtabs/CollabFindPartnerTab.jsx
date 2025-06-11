@@ -8,7 +8,7 @@ import Alert from "@mui/material/Alert";
 import API from "../../../../api";
 import PartnershipAgreementForm from "../PartnershipAgreementForm";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
-import CreatePartnershipAgreementForm from "./CreatePartnershipAgreementForm";
+import CreatePartnershipAgreementForm from "../../../../components/CreateAgreementForm";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
