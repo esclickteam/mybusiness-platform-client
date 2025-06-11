@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
+import SignAgreement from "./SignAgreement"; // <-- ייבוא קומפוננטת החתימה
 
 const partnershipAgreementFormInitial = {
   yourBusinessName: "",
@@ -20,7 +21,7 @@ const partnershipAgreementFormInitial = {
   receiverSignature: "",
 };
 
-export default function PartnershipAgreementForm({ isSender = true, onSubmit }) {
+export default function PartnershipAgreementForm({ isSender = true, onSubmit, agreementId, token }) {
   const [formData, setFormData] = useState(partnershipAgreementFormInitial);
   const [sending, setSending] = useState(false);
 
@@ -73,45 +74,44 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (isSender && !formData.senderSignature) {
-    alert("השולח חייב לחתום!");
-    return;
-  }
-  if (!isSender && !formData.receiverSignature) {
-    alert("המקבל חייב לחתום על ההסכם!");
-    return;
-  }
-  if (!formData.toBusinessId) {
-    alert("יש לבחור עסק שותף עם מזהה תקין");
-    return;
-  }
+    if (isSender && !formData.senderSignature) {
+      alert("השולח חייב לחתום!");
+      return;
+    }
+    if (!isSender && !formData.receiverSignature) {
+      alert("המקבל חייב לחתום על ההסכם!");
+      return;
+    }
+    if (!formData.toBusinessId) {
+      alert("יש לבחור עסק שותף עם מזהה תקין");
+      return;
+    }
 
-  try {
-    setSending(true);
-    const token = localStorage.getItem("token"); // מושך טוקן מ־localStorage
+    try {
+      setSending(true);
+      const tokenToUse = token || localStorage.getItem("token");
 
-    await API.post(
-      "/collab-contracts/contract/send",
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,  // כאן העברת הטוקן
-        },
-        withCredentials: true,
-      }
-    );
-    alert(isSender ? "ההסכם נשלח למקבל לחתימה!" : "ההסכם הושלם!");
-    if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
-  } catch (err) {
-    alert("שגיאה בשליחת ההסכם: " + (err?.response?.data?.error || err.message));
-  } finally {
-    setSending(false);
-  }
-};
-
+      await API.post(
+        "/collab-contracts/contract/send",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenToUse}`,
+          },
+          withCredentials: true,
+        }
+      );
+      alert(isSender ? "ההסכם נשלח למקבל לחתימה!" : "ההסכם הושלם!");
+      if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
+    } catch (err) {
+      alert("שגיאה בשליחת ההסכם: " + (err?.response?.data?.error || err.message));
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <form
@@ -128,7 +128,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
     >
       <h2 style={{ textAlign: "center", color: "#5a59d6" }}>הסכם שיתוף פעולה 🤝</h2>
 
-      {/* הוסף שדה לבחירת העסק השותף עם מזהה */}
+      {/* שדות טופס */}
       <label>
         מזהה עסק שותף (toBusinessId):
         <input
@@ -295,7 +295,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
         </label>
       </div>
 
-      {/* חתימות */}
+      {/* חתימות - אפשר להחליף פה עם קומפוננטת SignAgreement אם תרצה */}
       <div style={{ marginTop: 20 }}>
         <label>חתימה (של החותם הראשון):</label>
         {isSender ? (
