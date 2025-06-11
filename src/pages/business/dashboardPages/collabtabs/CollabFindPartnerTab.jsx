@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
+import CollabContractForm from "./CollabContractForm"; // ודא שהנתיב נכון
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -36,8 +35,6 @@ export default function CollabFindPartnerTab({
   // מודאל חוזה
   const [contractModalOpen, setContractModalOpen] = useState(false);
   const [contractBusiness, setContractBusiness] = useState(null);
-  const [contractTitle, setContractTitle] = useState("");
-  const [contractDescription, setContractDescription] = useState("");
 
   useEffect(() => {
     async function fetchPartners() {
@@ -105,36 +102,9 @@ export default function CollabFindPartnerTab({
   // פתיחת מודאל חוזה
   const openContractModal = (business) => {
     setContractBusiness(business);
-    setContractTitle("");
-    setContractDescription("");
     setContractModalOpen(true);
   };
   const closeContractModal = () => setContractModalOpen(false);
-
-  // שליחת חוזה API
-  const handleSendContract = async () => {
-    if (!contractTitle.trim() || !contractDescription.trim()) {
-      alert("אנא מלא כותרת ותיאור לחוזה");
-      return;
-    }
-    setSending(true);
-    try {
-      await API.post("/business-contract/send", {
-        toBusinessId: contractBusiness._id || contractBusiness.id,
-        fromBusinessId: myBusinessId,
-        title: contractTitle,
-        description: contractDescription,
-      });
-      setSnackbarMessage("החוזה נשלח בהצלחה 📄");
-      setSnackbarOpen(true);
-      closeContractModal();
-    } catch (err) {
-      setSnackbarMessage("שגיאה בשליחת החוזה: " + (err?.response?.data?.error || err.message));
-      setSnackbarOpen(true);
-    } finally {
-      setSending(false);
-    }
-  };
 
   return (
     <div>
@@ -221,38 +191,30 @@ export default function CollabFindPartnerTab({
         </Box>
       </Modal>
 
-      {/* Contract Modal */}
+      {/* Contract Modal עם CollabContractForm */}
       <Modal open={contractModalOpen} onClose={closeContractModal}>
-        <Box sx={modalStyle}>
-          <h3>שלח חוזה ל-{contractBusiness?.businessName}</h3>
-          <TextField
-            label="כותרת החוזה"
-            fullWidth
-            value={contractTitle}
-            onChange={(e) => setContractTitle(e.target.value)}
-            margin="normal"
+        <Box sx={{ ...modalStyle, maxWidth: 700 }}>
+          <CollabContractForm
+            currentUser={{ businessName: myBusinessName }}
+            partnerBusiness={contractBusiness || {}}
+            existingContract={null}
+            onSubmit={async (contractData) => {
+              setSending(true);
+              try {
+                await API.post("/business-contract/send", contractData);
+                setSnackbarMessage("החוזה נשלח בהצלחה 📄");
+                setSnackbarOpen(true);
+                closeContractModal();
+              } catch (err) {
+                setSnackbarMessage(
+                  "שגיאה בשליחת החוזה: " + (err?.response?.data?.error || err.message)
+                );
+                setSnackbarOpen(true);
+              } finally {
+                setSending(false);
+              }
+            }}
           />
-          <TextField
-            label="תיאור החוזה"
-            multiline
-            minRows={4}
-            fullWidth
-            value={contractDescription}
-            onChange={(e) => setContractDescription(e.target.value)}
-            margin="normal"
-          />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2, gap: 1 }}>
-            <Button onClick={closeContractModal} disabled={sending}>
-              ביטול
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleSendContract}
-              disabled={sending || !contractTitle.trim() || !contractDescription.trim()}
-            >
-              {sending ? "שולח..." : "שלח חוזה"}
-            </Button>
-          </Box>
         </Box>
       </Modal>
 
