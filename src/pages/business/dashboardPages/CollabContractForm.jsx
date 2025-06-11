@@ -5,29 +5,33 @@ import "./CollabContractForm.css";
 const CollabContractForm = ({
   currentUser,
   partnerBusiness,
-  initialData = null,
+  existingContract = null,
   onSubmit,
 }) => {
-  const [form, setForm] = useState(
-    initialData || {
-      title: "",
-      description: "",
-      giving: "",
-      receiving: "",
-      type: "",
-      payment: "",
-      startDate: "",
-      endDate: "",
-      cancelAnytime: false,
-      confidentiality: false,
-      senderSignature: "",
-      receiverSignature: "",
-      status: "ממתין לאישור",
-    }
-  );
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    giving: "",
+    receiving: "",
+    type: "",
+    payment: "",
+    startDate: "",
+    endDate: "",
+    cancelAnytime: false,
+    confidentiality: false,
+    senderSignature: "",
+    receiverSignature: "",
+    status: "ממתין לאישור",
+  });
 
   const senderSigRef = useRef();
   const receiverSigRef = useRef();
+
+  useEffect(() => {
+    if (existingContract) {
+      setForm(existingContract);
+    }
+  }, [existingContract]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -40,41 +44,58 @@ const CollabContractForm = ({
   const saveSenderSignature = () => {
     if (!senderSigRef.current) return;
     const dataURL = senderSigRef.current.getCanvas().toDataURL("image/png");
-    setForm((prev) => ({ ...prev, senderSignature: dataURL }));
+    setForm((prev) => ({
+      ...prev,
+      senderSignature: dataURL,
+    }));
   };
 
   const saveReceiverSignature = () => {
     if (!receiverSigRef.current) return;
     const dataURL = receiverSigRef.current.getCanvas().toDataURL("image/png");
-    setForm((prev) => ({ ...prev, receiverSignature: dataURL }));
-  };
-
-  const clearSenderSignature = () => {
-    setForm((prev) => ({ ...prev, senderSignature: "" }));
-    senderSigRef.current.clear();
-  };
-
-  const clearReceiverSignature = () => {
-    setForm((prev) => ({ ...prev, receiverSignature: "" }));
-    receiverSigRef.current.clear();
+    setForm((prev) => ({
+      ...prev,
+      receiverSignature: dataURL,
+    }));
   };
 
   const handleSend = () => {
-    if (!form.senderSignature) {
-      alert("נא לחתום לפני השליחה.");
+    // דרישה שכל השדות מלאים, וחתימות קיימות
+    if (
+      !form.title ||
+      !form.description ||
+      !form.giving ||
+      !form.receiving ||
+      !form.type ||
+      !form.startDate ||
+      !form.endDate
+    ) {
+      alert("נא למלא את כל השדות החיוניים.");
       return;
     }
+
+    if (!form.senderSignature) {
+      alert("נא לחתום חתימת שולח.");
+      return;
+    }
+
+    if (!form.receiverSignature) {
+      alert("ההסכם ממתין לחתימת העסק השותף.");
+      return;
+    }
+
     onSubmit(form);
   };
 
-  const isSender = true; // כיוון שזה טופס שחותם הצד הראשון
-  const isReceiver = true; // אפשר לשנות לפי לוגיקה חיצונית אם רוצים להציג
+  // האם המשתמש הוא השולח או המקבל
+  const isSender = currentUser.businessName === (form.sender?.businessName || currentUser.businessName);
+  const isReceiver = currentUser.businessName === (form.receiver?.businessName || partnerBusiness.name);
 
   return (
     <div className="contract-form-container">
       <h2 className="contract-title">🤝 הסכם שיתוף פעולה</h2>
 
-      <form className="contract-form" onSubmit={(e) => e.preventDefault()}>
+      <form className="contract-form">
         <div>
           <label>שם העסק שלך:</label>
           <div className="static-field">{currentUser.businessName}</div>
@@ -82,7 +103,20 @@ const CollabContractForm = ({
 
         <div>
           <label>שם העסק השותף:</label>
-          <div className="static-field">{partnerBusiness.name}</div>
+          <input
+            type="text"
+            name="partnerName"
+            value={form.receiver?.businessName || partnerBusiness.name || ""}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                receiver: { businessName: e.target.value },
+              }))
+            }
+            placeholder="הזן שם העסק השותף"
+            required
+            disabled={!isSender} // רק השולח יכול לערוך שם שותף
+          />
         </div>
 
         <div>
@@ -115,6 +149,7 @@ const CollabContractForm = ({
             value={form.giving}
             onChange={handleChange}
             rows="2"
+            required
           />
         </div>
 
@@ -125,6 +160,7 @@ const CollabContractForm = ({
             value={form.receiving}
             onChange={handleChange}
             rows="2"
+            required
           />
         </div>
 
@@ -155,12 +191,14 @@ const CollabContractForm = ({
             name="startDate"
             value={form.startDate}
             onChange={handleChange}
+            required
           />
           <input
             type="date"
             name="endDate"
             value={form.endDate}
             onChange={handleChange}
+            required
           />
         </div>
 
@@ -186,107 +224,123 @@ const CollabContractForm = ({
           </label>
         </div>
 
-        {/* חתימת שולח */}
+        {/* חתימה של השולח */}
         <div>
           <label>חתימת {currentUser.businessName}:</label>
-          {form.senderSignature ? (
-            <div>
+          {isSender ? (
+            form.senderSignature ? (
+              <div>
+                <img
+                  src={form.senderSignature}
+                  alt="חתימה"
+                  className="form-signature-image"
+                />
+                <button
+                  type="button"
+                  className="collab-form-button mt-2"
+                  onClick={() =>
+                    setForm((prev) => ({
+                      ...prev,
+                      senderSignature: "",
+                    }))
+                  }
+                >
+                  🗑️ חתום מחדש
+                </button>
+              </div>
+            ) : (
+              <>
+                <SignatureCanvas
+                  penColor="#000"
+                  canvasProps={{
+                    width: 300,
+                    height: 100,
+                    className: "form-sigCanvas",
+                  }}
+                  ref={senderSigRef}
+                />
+                <button
+                  type="button"
+                  className="collab-form-button mt-2"
+                  onClick={saveSenderSignature}
+                >
+                  ✍️ שמור חתימה
+                </button>
+              </>
+            )
+          ) : (
+            form.senderSignature ? (
               <img
                 src={form.senderSignature}
                 alt="חתימה"
                 className="form-signature-image"
               />
-              <button
-                type="button"
-                className="collab-form-button mt-2"
-                onClick={clearSenderSignature}
-              >
-                🗑️ חתום מחדש
-              </button>
-            </div>
-          ) : isSender ? (
-            <>
-              <SignatureCanvas
-                penColor="#000"
-                canvasProps={{
-                  width: 300,
-                  height: 100,
-                  className: "form-sigCanvas",
-                }}
-                ref={senderSigRef}
-              />
-              <button
-                type="button"
-                className="collab-form-button mt-2"
-                onClick={saveSenderSignature}
-              >
-                ✍️ שמור חתימה
-              </button>
-            </>
-          ) : (
-            <span>טרם נחתם</span>
+            ) : (
+              <span>טרם נחתם</span>
+            )
           )}
         </div>
 
-        {/* חתימת מקבל */}
+        {/* חתימה של המקבל */}
         <div>
-          <label>חתימת {partnerBusiness.name}:</label>
-          {form.receiverSignature ? (
-            <div>
+          <label>חתימת {form.receiver?.businessName || partnerBusiness.name}:</label>
+          {isReceiver ? (
+            form.receiverSignature ? (
+              <div>
+                <img
+                  src={form.receiverSignature}
+                  alt="חתימה"
+                  className="form-signature-image"
+                />
+                <button
+                  type="button"
+                  className="collab-form-button mt-2"
+                  onClick={() =>
+                    setForm((prev) => ({
+                      ...prev,
+                      receiverSignature: "",
+                    }))
+                  }
+                >
+                  🗑️ חתום מחדש
+                </button>
+              </div>
+            ) : (
+              <>
+                <SignatureCanvas
+                  penColor="#000"
+                  canvasProps={{
+                    width: 300,
+                    height: 100,
+                    className: "form-sigCanvas",
+                  }}
+                  ref={receiverSigRef}
+                />
+                <button
+                  type="button"
+                  className="collab-form-button mt-2"
+                  onClick={saveReceiverSignature}
+                >
+                  ✍️ שמור חתימה
+                </button>
+              </>
+            )
+          ) : (
+            form.receiverSignature ? (
               <img
                 src={form.receiverSignature}
                 alt="חתימה"
                 className="form-signature-image"
               />
-              <button
-                type="button"
-                className="collab-form-button mt-2"
-                onClick={clearReceiverSignature}
-              >
-                🗑️ חתום מחדש
-              </button>
-            </div>
-          ) : isReceiver ? (
-            <>
-              <SignatureCanvas
-                penColor="#000"
-                canvasProps={{
-                  width: 300,
-                  height: 100,
-                  className: "form-sigCanvas",
-                }}
-                ref={receiverSigRef}
-              />
-              <button
-                type="button"
-                className="collab-form-button mt-2"
-                onClick={saveReceiverSignature}
-              >
-                ✍️ שמור חתימה
-              </button>
-            </>
-          ) : (
-            <span>טרם נחתם</span>
+            ) : (
+              <span>טרם נחתם</span>
+            )
           )}
         </div>
 
-        <div>
-          <label>סטטוס ההסכם:</label>
-          <input
-            type="text"
-            name="status"
-            value={form.status}
-            readOnly
-          />
-        </div>
-
         {/* כפתור שליחה */}
-        {form.senderSignature && (
-          <button
-            type="button"
-            className="collab-form-button"
-            onClick={handleSend}
-          >
+        {(isSender || isReceiver) && (
+          <button type="button" className="collab-form-button" onClick={handleSend}>
             📩 שלח את ההסכם
           </button>
         )}
