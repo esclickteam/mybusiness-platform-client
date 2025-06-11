@@ -30,15 +30,13 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
         setLoading(false);
       }
     }
-    fetchAgreement();
+    if (agreementId) fetchAgreement();
   }, [agreementId]);
 
   const hasSigned = agreement?.signatures?.[side]?.signed;
 
   const clearSignature = () => {
-    if (sigPadRef.current) {
-      sigPadRef.current.clear();
-    }
+    sigPadRef.current?.clear();
   };
 
   const saveSignature = async () => {
@@ -50,13 +48,10 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
     const signatureDataUrl = sigPadRef.current.getTrimmedCanvas().toDataURL();
 
     try {
-      await API.post(`/partnershipAgreements/${agreementId}/sign`, {
-        signatureDataUrl,
-        side,
-      });
+      await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl, side });
 
       alert("הסכם נחתם בהצלחה!");
-      setAgreement((prev) => ({
+      setAgreement(prev => ({
         ...prev,
         signatures: {
           ...prev.signatures,
@@ -71,11 +66,8 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
             ? "fully_signed"
             : "partially_signed",
       }));
-
-      if (typeof onSigned === "function") {
-        onSigned();
-      }
       clearSignature();
+      if (typeof onSigned === "function") onSigned();
     } catch {
       alert("שגיאה בשמירת החתימה");
     } finally {
@@ -84,14 +76,14 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
   };
 
   if (loading) return <p>טוען הסכם...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!agreement) return <p>ההסכם לא נמצא.</p>;
   if (!side) return <p>אין לך הרשאה לצפות או לחתום על ההסכם הזה.</p>;
 
   return (
     <div style={{ maxWidth: 600, margin: "auto", direction: "rtl", fontFamily: "Arial, sans-serif" }}>
       <h2 style={{ textAlign: "center" }}>{agreement.title}</h2>
-      <p><strong>תיאור:</strong> {agreement.description}</p>
+      <p><strong>תיאור:</strong> {agreement.description || "-"}</p>
       <p><strong>תנאי ההסכם:</strong></p>
       <pre
         style={{

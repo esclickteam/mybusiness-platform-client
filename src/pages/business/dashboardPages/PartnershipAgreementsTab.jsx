@@ -14,7 +14,7 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
       setError("");
       try {
         const res = await API.get("/partnershipAgreements");
-        setAgreements(res.data);
+        setAgreements(res.data || []);
       } catch (err) {
         console.error(err);
         setError("שגיאה בטעינת ההסכמים");
@@ -26,7 +26,7 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
   }, []);
 
   if (loading) return <p>טוען הסכמים...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   if (selectedId)
     return (
@@ -37,6 +37,9 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
         <PartnershipAgreement agreementId={selectedId} userBusinessId={userBusinessId} />
       </div>
     );
+
+  if (agreements.length === 0)
+    return <p>אין הסכמים להצגה</p>;
 
   return (
     <div>
@@ -57,7 +60,8 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
                 fontSize: 16,
               }}
             >
-              {agreement.title} - סטטוס: {agreement.status}
+              {agreement.title} - סטטוס: {agreement.status} <br />
+              {agreement.startDate ? `מתאריך: ${new Date(agreement.startDate).toLocaleDateString()}` : ""}
             </button>
           </li>
         ))}
