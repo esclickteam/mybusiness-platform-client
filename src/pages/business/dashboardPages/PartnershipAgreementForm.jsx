@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import API from "../../api"; // עדכן נתיב לפי הצורך
+import API from "../../../api";
 
 const partnershipAgreementFormInitial = {
   yourBusinessName: "",
