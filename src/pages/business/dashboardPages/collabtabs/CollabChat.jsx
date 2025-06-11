@@ -8,12 +8,14 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useAuth } from "../../../../context/AuthContext";
 
+import CollabContractForm from "./CollabContractForm"; // הטופס ששלחת
+
 const SOCKET_URL = "https://api.esclick.co.il";
 
 function ChatInput({
   onSendText,
   onSendFile,
-  onSendAgreement,
+  onOpenCollabForm,
   uploading,
   disabled,
 }) {
@@ -32,10 +34,8 @@ function ChatInput({
 
   const handleMenuClick = (option) => {
     closeMenu();
-    if (option === "agreement") {
-      onSendAgreement("collab");
-    } else if (option === "package") {
-      onSendAgreement("package");
+    if (option === "collab") {
+      onOpenCollabForm();
     } else if (option === "file") {
       fileInputRef.current.click();
     } else if (option === "image") {
@@ -45,9 +45,8 @@ function ChatInput({
 
   const onFileChange = (e) => {
     if (e.target.files.length > 0) {
-      const selectedFile = e.target.files[0];
-      onSendFile(selectedFile);
-      e.target.value = null; // איפוס בחירת קובץ
+      onSendFile(e.target.files[0]);
+      e.target.value = null; // איפוס בחירה
     }
   };
 
@@ -68,6 +67,7 @@ function ChatInput({
         borderTop: "1px solid #eee",
       }}
     >
+      {/* כפתור + לפתיחת תפריט */}
       <Button
         onClick={openMenu}
         disabled={uploading || disabled}
@@ -89,6 +89,7 @@ function ChatInput({
         +
       </Button>
 
+      {/* שדה הטקסט */}
       <TextField
         fullWidth
         size="small"
@@ -104,6 +105,7 @@ function ChatInput({
         disabled={uploading || disabled}
       />
 
+      {/* כפתור שליחה */}
       <Button
         variant="contained"
         sx={{ fontWeight: 600 }}
@@ -113,17 +115,16 @@ function ChatInput({
         שלח
       </Button>
 
+      {/* תפריט הבחירה */}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
-        <MenuItem onClick={() => handleMenuClick("agreement")}>
-          הסכם שיתופי פעולה
-        </MenuItem>
-        <MenuItem onClick={() => handleMenuClick("package")}>
-          הסכם חבילה משותפת
+        <MenuItem onClick={() => handleMenuClick("collab")}>
+          הסכם שיתוף פעולה
         </MenuItem>
         <MenuItem onClick={() => handleMenuClick("file")}>קובץ</MenuItem>
         <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
       </Menu>
 
+      {/* קלטים חבויים להעלאת קבצים */}
       <input
         type="file"
         style={{ display: "none" }}
@@ -156,7 +157,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [showCollabForm, setShowCollabForm] = useState(false);
 
+  // טען שיחות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -174,6 +177,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
+  // אתחול הסוקט
   useEffect(() => {
     async function setupSocket() {
       const token = await refreshAccessToken();
@@ -222,6 +226,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
+  // הקשבה להודעות חדשות
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -254,6 +259,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, []);
 
+  // הצטרפות לשיחה חדשה וטעינת היסטוריה
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -290,15 +296,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation, refreshAccessToken]);
 
+  // גלילה אוטומטית להודעה האחרונה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // שליחת הודעה טקסט
   const sendMessage = (text) => {
     if (!text || !selectedConversation || !socketRef.current) return;
 
-    const otherId =
-      selectedConversation.participants.find((id) => id !== myBusinessId);
+    const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
 
     const payload = {
       conversationId: selectedConversation._id,
@@ -343,6 +350,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   };
 
+  // שליחת קובץ
   const sendFileMessage = async (file) => {
     if (!file || !selectedConversation || !socketRef.current) return;
     setUploading(true);
@@ -387,29 +395,37 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  const sendAgreement = (type) => {
-    if (!selectedConversation || !socketRef.current) return;
+  // פתיחת טופס הסכם שיתוף פעולה
+  const openCollabForm = () => {
+    setShowCollabForm(true);
+  };
 
-    const url =
-      type === "collab"
-        ? "https://yourcdn.com/collab-agreement.pdf"
-        : "https://yourcdn.com/package-agreement.pdf";
+  // שליחה מטופס ההסכם
+  const handleCollabSubmit = async (formData) => {
+    try {
+      // שליחה לשרת להוספת הסכם חדש
+      const token = await refreshAccessToken();
+      const res = await API.post(
+        "/collab-contracts",
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
+      if (!res.data || !res.data.contractId) {
+        alert("התרחשה שגיאה ביצירת ההסכם");
+        return;
+      }
 
-    const payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessId,
-      to: otherId,
-      text:
-        type === "collab"
-          ? "הסכם שיתופי פעולה מצורף כאן:"
-          : "הסכם חבילה משותפת מצורף כאן:",
-      fileUrl: url,
-      isFile: true,
-    };
+      const contractUrl = `${window.location.origin}/business/collab-contracts/${res.data.contractId}`;
 
-    socketRef.current.emit("sendMessage", payload);
+      // שליחת הודעה בצ'אט עם הקישור להסכם
+      sendMessage(`הסכם שיתוף פעולה נוצר: ${contractUrl}`);
+
+      setShowCollabForm(false);
+    } catch (err) {
+      console.error("שגיאה ביצירת הסכם:", err);
+      alert("שגיאה ביצירת הסכם, נסה שוב.");
+    }
   };
 
   const getPartnerBusiness = (conv) => {
@@ -569,13 +585,24 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
+        {/* תיבת קלט + כפתורים */}
         {selectedConversation && (
           <ChatInput
             onSendText={sendMessage}
             onSendFile={sendFileMessage}
-            onSendAgreement={sendAgreement}
+            onOpenCollabForm={openCollabForm}
             uploading={uploading}
             disabled={false}
+          />
+        )}
+
+        {/* מודאל טופס הסכם */}
+        {showCollabForm && selectedConversation && (
+          <CollabContractForm
+            currentUser={{ businessName: myBusinessName }}
+            partnerBusiness={getPartnerBusiness(selectedConversation)}
+            onSubmit={handleCollabSubmit}
+            onClose={() => setShowCollabForm(false)}
           />
         )}
 
