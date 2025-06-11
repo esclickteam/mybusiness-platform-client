@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useAuth } from "../../../../context/AuthContext";
+import CollabContractForm from "./CollabContractForm";
 
 const SOCKET_URL = "https://api.esclick.co.il"; // כתובת השרת שלך
 
@@ -20,8 +21,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [showContractForm, setShowContractForm] = useState(false);
 
-  // טען שיחות עסקיות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -39,7 +40,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // אתחול חיבור לסוקט וטעינת שיחות
   useEffect(() => {
     async function setupSocket() {
       const token = await refreshAccessToken();
@@ -49,7 +49,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         path: "/socket.io",
         auth: {
           token,
-          role: "business", // תפקיד של עסק
+          role: "business",
           businessId: myBusinessId,
           businessName: myBusinessName,
         },
@@ -88,7 +88,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
-  // הקשבה להודעות חדשות
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -121,7 +120,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, []);
 
-  // הצטרפות/עזיבת שיחות וטעינת היסטוריית הודעות
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -158,12 +156,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation, refreshAccessToken]);
 
-  // גלילה אוטומטית על הודעה חדשה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה
   const sendMessage = () => {
     if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
@@ -206,7 +202,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       }
     });
 
-    // גם שלח ל-API לשמירה
     API.post(
       `/business-chat/${selectedConversation._id}/message`,
       { text: optimistic.text },
@@ -216,194 +211,109 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   };
 
-  // עזרה להוצאת פרטי השותף בשיחה
+  const sendJointPackage = () => {
+    const msg = {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: getPartnerBusiness(selectedConversation)._id,
+      text: "💼 הצעת חבילה משותפת: פרסום + קופון + שיתוף תכנים",
+      jointPackage: true,
+    };
+    socketRef.current.emit("sendMessage", msg);
+    setMessages((prev) => [...prev, msg]);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !selectedConversation) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await API.post(`/business-chat/${selectedConversation._id}/upload`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    const fileMsg = {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: getPartnerBusiness(selectedConversation)._id,
+      text: `📎 קובץ: ${file.name}`,
+      fileUrl: res.data.url,
+    };
+    socketRef.current.emit("sendMessage", fileMsg);
+    setMessages((prev) => [...prev, fileMsg]);
+  };
+
   const getPartnerBusiness = (conv) => {
     const idx = conv.participants.findIndex((id) => id !== myBusinessId);
     return conv.participantsInfo?.[idx] || { businessName: "עסק" };
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        minHeight: 540,
-        height: "70vh",
-        background: "#f8f7ff",
-        borderRadius: "18px",
-        boxShadow: 2,
-        display: "flex",
-        overflow: "hidden",
-      }}
-    >
-      {/* רשימת שיחות */}
-      <Box
-        sx={{
-          width: 270,
-          borderLeft: "1px solid #eee",
-          background: "#fff",
-          overflowY: "auto",
-        }}
-      >
-        <Box
-          sx={{
-            fontWeight: 700,
-            color: "#764ae6",
-            fontSize: 19,
-            px: 2.5,
-            py: 2,
-          }}
-        >
-          הודעות עסקיות
-        </Box>
-        {conversations.length === 0 && (
-          <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>
-            אין שיחות עסקיות
-          </Box>
-        )}
+    <Box sx={{ width: "100%", minHeight: 540, height: "70vh", background: "#f8f7ff", borderRadius: "18px", boxShadow: 2, display: "flex", overflow: "hidden" }}>
+      <Box sx={{ width: 270, borderLeft: "1px solid #eee", background: "#fff", overflowY: "auto" }}>
+        <Box sx={{ fontWeight: 700, color: "#764ae6", fontSize: 19, px: 2.5, py: 2 }}>הודעות עסקיות</Box>
+        {conversations.length === 0 && <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>אין שיחות עסקיות</Box>}
         {conversations.map((conv) => {
           const partner = getPartnerBusiness(conv);
           const lastMsg = conv.messages?.slice(-1)[0]?.text || "";
           return (
-            <Box
-              key={conv._id}
-              sx={{
-                px: 2.5,
-                py: 1.5,
-                cursor: "pointer",
-                borderBottom: "1px solid #f3f0fa",
-                background:
-                  selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
-              }}
-              onClick={() => setSelectedConversation(conv)}
-            >
+            <Box key={conv._id} sx={{ px: 2.5, py: 1.5, cursor: "pointer", borderBottom: "1px solid #f3f0fa", background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff" }} onClick={() => setSelectedConversation(conv)}>
               <Box sx={{ fontWeight: 600 }}>{partner.businessName}</Box>
-              <Box
-                sx={{
-                  color: "#7c6ae6",
-                  fontSize: 13,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {lastMsg || "אין הודעות"}
-              </Box>
+              <Box sx={{ color: "#7c6ae6", fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{lastMsg || "אין הודעות"}</Box>
             </Box>
           );
         })}
       </Box>
-
-      {/* אזור צ'אט */}
-      <Box
-        sx={{
-          flex: 1,
-          position: "relative",
-          background: "#f8f7ff",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <Box sx={{ flex: 1, position: "relative", background: "#f8f7ff", display: "flex", flexDirection: "column" }}>
         <Box sx={{ flex: 1, px: 2, pt: 2, overflowY: "auto" }}>
           {selectedConversation ? (
             <>
-              <Box
-                sx={{
-                  mb: 2,
-                  color: "#6d4fc4",
-                  fontWeight: 600,
-                  fontSize: 17,
-                }}
-              >
-                שיחה עם{" "}
-                {getPartnerBusiness(selectedConversation).businessName}
-              </Box>
+              <Box sx={{ mb: 2, color: "#6d4fc4", fontWeight: 600, fontSize: 17 }}>שיחה עם {getPartnerBusiness(selectedConversation).businessName}</Box>
               {messages.map((msg, i) => (
-                <Box
-                  key={msg._id || i}
-                  sx={{
-                    background:
-                      msg.fromBusinessId === myBusinessId
-                        ? "#e6ddff"
-                        : "#fff",
-                    alignSelf:
-                      msg.fromBusinessId === myBusinessId
-                        ? "flex-end"
-                        : "flex-start",
-                    p: 1.2,
-                    borderRadius: 2,
-                    mb: 1,
-                    maxWidth: 340,
-                    boxShadow: 1,
-                  }}
-                >
+                <Box key={msg._id || i} sx={{ background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff", alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start", p: 1.2, borderRadius: 2, mb: 1, maxWidth: 340, boxShadow: 1 }}>
                   <Box>{msg.text}</Box>
-                  <Box
-                    sx={{
-                      fontSize: 11,
-                      color: "#888",
-                      mt: 0.5,
-                      textAlign: "left",
-                    }}
-                  >
-                    {msg.timestamp &&
-                      new Date(msg.timestamp).toLocaleTimeString("he-IL", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                  </Box>
+                  <Box sx={{ fontSize: 11, color: "#888", mt: 0.5, textAlign: "left" }}>{msg.timestamp && new Date(msg.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}</Box>
                 </Box>
               ))}
               <div ref={messagesEndRef} />
             </>
           ) : (
-            <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-              בחרי שיחה עסקית מהעמודה הימנית
-            </Box>
+            <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>בחרי שיחה עסקית מהעמודה הימנית</Box>
           )}
         </Box>
-
-        {/* אזור הזנת הודעה */}
         {selectedConversation && (
-          <Box
-            sx={{
-              p: 2,
-              borderTop: "1px solid #eee",
-              display: "flex",
-              gap: 1,
-            }}
-          >
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="כתוב הודעה..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{ fontWeight: 600 }}
-              onClick={sendMessage}
-              disabled={!input.trim()}
-            >
-              שלח
-            </Button>
+          <Box sx={{ p: 2, borderTop: "1px solid #eee", display: "flex", gap: 1, alignItems: "center" }}>
+            <input type="file" id="fileUpload" style={{ display: "none" }} onChange={handleFileUpload} />
+            <label htmlFor="fileUpload" style={{ cursor: "pointer" }}>📎</label>
+            <Button onClick={() => setShowContractForm(true)}>📝 הסכם</Button>
+            <Button onClick={sendJointPackage}>💼</Button>
+            <TextField fullWidth size="small" placeholder="כתוב הודעה..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }} />
+            <Button variant="contained" sx={{ fontWeight: 600 }} onClick={sendMessage} disabled={!input.trim()}>שלח</Button>
           </Box>
         )}
-
-        {onClose && (
-          <Button
-            sx={{ position: "absolute", top: 13, left: 18 }}
-            onClick={onClose}
-          >
-            ✖
-          </Button>
+        {showContractForm && (
+          <Box sx={{ position: "fixed", top: "10%", left: "50%", transform: "translateX(-50%)", zIndex: 1300, background: "white", p: 4, borderRadius: 2, boxShadow: 4 }}>
+            <CollabContractForm
+              currentUser={{ businessName: myBusinessName }}
+              partnerBusiness={getPartnerBusiness(selectedConversation)}
+              onSubmit={(data) => {
+                const msg = {
+                  conversationId: selectedConversation._id,
+                  from: myBusinessId,
+                  to: getPartnerBusiness(selectedConversation)._id,
+                  text: `📄 הסכם: ${data.title}`,
+                  contractData: data,
+                };
+                socketRef.current.emit("sendMessage", msg);
+                setMessages((prev) => [...prev, msg]);
+                setShowContractForm(false);
+              }}
+            />
+          </Box>
         )}
+        {onClose && (<Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>✖</Button>)}
       </Box>
     </Box>
   );
