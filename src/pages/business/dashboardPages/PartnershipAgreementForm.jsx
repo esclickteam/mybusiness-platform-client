@@ -87,7 +87,8 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
       alert("ההסכם הושלם!");
       onSubmit(formData, "approved"); // שליחה שמירה עם סטטוס הושלם
     }
-  };
+};
+
 
   return (
     <form
