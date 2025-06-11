@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useAuth } from "../../../../context/AuthContext";
 
-const SOCKET_URL = "https://api.esclick.co.il"; // כתובת השרת שלך
+const SOCKET_URL = "https://api.esclick.co.il";
 
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketRef = useRef(null);
@@ -20,6 +20,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   // טען שיחות עסקיות
   const fetchConversations = async (token) => {
@@ -39,7 +41,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // אתחול חיבור לסוקט וטעינת שיחות
+  // אתחול socket
   useEffect(() => {
     async function setupSocket() {
       const token = await refreshAccessToken();
@@ -49,7 +51,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         path: "/socket.io",
         auth: {
           token,
-          role: "business", // תפקיד של עסק
+          role: "business",
           businessId: myBusinessId,
           businessName: myBusinessName,
         },
@@ -158,17 +160,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation, refreshAccessToken]);
 
-  // גלילה אוטומטית על הודעה חדשה
+  // גלילה אוטומטית להודעה חדשה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה
+  // שליחת הודעה טקסטואלית
   const sendMessage = () => {
     if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
     const otherId =
-      selectedConversation.participantsInfo?.find((b) => b._id !== myBusinessId)?._id ||
       selectedConversation.participants.find((id) => id !== myBusinessId);
 
     const payload = {
@@ -206,7 +207,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       }
     });
 
-    // גם שלח ל-API לשמירה
+    // שליחה ל-API לשמירת ההודעה
     API.post(
       `/business-chat/${selectedConversation._id}/message`,
       { text: optimistic.text },
@@ -216,7 +217,79 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   };
 
-  // עזרה להוצאת פרטי השותף בשיחה
+  // טיפול בשינוי קובץ להעלאה
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  // שליחת קובץ
+  const sendFileMessage = async () => {
+    if (!file || !selectedConversation || !socketRef.current) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("conversationId", selectedConversation._id);
+      formData.append("from", myBusinessId);
+      formData.append("to", selectedConversation.participants.find(id => id !== myBusinessId));
+
+      const token = await refreshAccessToken();
+
+      const res = await fetch(`${API.baseURL || ""}/business-chat/upload-file`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to upload file");
+
+      const data = await res.json();
+
+      const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
+
+      const payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessId,
+        to: otherId,
+        fileUrl: data.fileUrl,
+        text: file.name,
+        isFile: true,
+      };
+
+      socketRef.current.emit("sendMessage", payload);
+
+      setFile(null);
+    } catch (err) {
+      alert("שגיאה בהעלאת הקובץ");
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // שליחת הסכם שיתופי פעולה מוכן (PDF לדוגמה)
+  const sendAgreement = () => {
+    if (!selectedConversation || !socketRef.current) return;
+
+    const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
+
+    const payload = {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: otherId,
+      text: "הסכם שיתופי פעולה מצורף כאן:",
+      fileUrl: "https://yourcdn.com/collab-agreement.pdf", // שנה לכתובת שלך
+      isFile: true,
+    };
+
+    socketRef.current.emit("sendMessage", payload);
+  };
+
+  // קבלת פרטי השותף בשיחה
   const getPartnerBusiness = (conv) => {
     const idx = conv.participants.findIndex((id) => id !== myBusinessId);
     return conv.participantsInfo?.[idx] || { businessName: "עסק" };
@@ -303,6 +376,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           flexDirection: "column",
         }}
       >
+        <Box sx={{ p: 1, borderBottom: "1px solid #ddd" }}>
+          <Button onClick={sendAgreement} variant="outlined" size="small">
+            שלח הסכם שיתופי פעולה
+          </Button>
+        </Box>
         <Box sx={{ flex: 1, px: 2, pt: 2, overflowY: "auto" }}>
           {selectedConversation ? (
             <>
@@ -314,17 +392,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   fontSize: 17,
                 }}
               >
-                שיחה עם{" "}
-                {getPartnerBusiness(selectedConversation).businessName}
+                שיחה עם {getPartnerBusiness(selectedConversation).businessName}
               </Box>
               {messages.map((msg, i) => (
                 <Box
                   key={msg._id || i}
                   sx={{
                     background:
-                      msg.fromBusinessId === myBusinessId
-                        ? "#e6ddff"
-                        : "#fff",
+                      msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
                     alignSelf:
                       msg.fromBusinessId === myBusinessId
                         ? "flex-end"
@@ -334,9 +409,24 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                     mb: 1,
                     maxWidth: 340,
                     boxShadow: 1,
+                    wordBreak: "break-word",
                   }}
                 >
-                  <Box>{msg.text}</Box>
+                  {msg.isFile ? (
+                    msg.fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                      <img
+                        src={msg.fileUrl}
+                        alt={msg.text || "קובץ"}
+                        style={{ maxWidth: "100%", borderRadius: 8 }}
+                      />
+                    ) : (
+                      <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
+                        {msg.text || "קובץ להורדה"}
+                      </a>
+                    )
+                  ) : (
+                    <Box>{msg.text}</Box>
+                  )}
                   <Box
                     sx={{
                       fontSize: 11,
@@ -362,7 +452,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
-        {/* אזור הזנת הודעה */}
+        {/* אזור הזנת הודעה והעלאת קבצים */}
         {selectedConversation && (
           <Box
             sx={{
@@ -370,6 +460,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               borderTop: "1px solid #eee",
               display: "flex",
               gap: 1,
+              alignItems: "center",
             }}
           >
             <TextField
@@ -381,17 +472,31 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  sendMessage();
+                  if (file) sendFileMessage();
+                  else sendMessage();
                 }
               }}
+              disabled={uploading}
             />
+            <input
+              type="file"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+              id="file-upload"
+              disabled={uploading}
+            />
+            <label htmlFor="file-upload">
+              <Button variant="outlined" component="span" disabled={uploading}>
+                {file ? file.name : "צרף קובץ"}
+              </Button>
+            </label>
             <Button
               variant="contained"
               sx={{ fontWeight: 600 }}
-              onClick={sendMessage}
-              disabled={!input.trim()}
+              onClick={file ? sendFileMessage : sendMessage}
+              disabled={!input.trim() && !file}
             >
-              שלח
+              {uploading ? "מעלה..." : "שלח"}
             </Button>
           </Box>
         )}
