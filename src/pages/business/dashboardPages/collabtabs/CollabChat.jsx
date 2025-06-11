@@ -45,8 +45,9 @@ function ChatInput({
 
   const onFileChange = (e) => {
     if (e.target.files.length > 0) {
-      onSendFile(e.target.files[0]);
-      e.target.value = null; // איפוס הקובץ שנבחר
+      const selectedFile = e.target.files[0];
+      onSendFile(selectedFile);
+      e.target.value = null; // איפוס בחירת קובץ
     }
   };
 
@@ -106,7 +107,7 @@ function ChatInput({
         <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
       </Menu>
 
-      {/* קלטים מוסתרים לקבצים */}
+      {/* קלטים מוסתרים */}
       <input
         type="file"
         style={{ display: "none" }}
@@ -140,7 +141,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  // טען שיחות עסקיות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -158,7 +158,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // אתחול socket
   useEffect(() => {
     async function setupSocket() {
       const token = await refreshAccessToken();
@@ -207,7 +206,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
-  // הקשבה להודעות חדשות
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -240,7 +238,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, []);
 
-  // הצטרפות/עזיבת שיחות וטעינת היסטוריית הודעות
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -277,12 +274,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation, refreshAccessToken]);
 
-  // גלילה אוטומטית להודעה חדשה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה טקסטואלית
   const sendMessage = (text) => {
     if (!text || !selectedConversation || !socketRef.current) return;
 
@@ -332,7 +327,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   };
 
-  // שליחת קובץ (כללי או תמונה)
   const sendFileMessage = async (file) => {
     if (!file || !selectedConversation || !socketRef.current) return;
     setUploading(true);
@@ -377,7 +371,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // שליחת הסכם קבוע (שיתוף פעולה או חבילה)
   const sendAgreement = (type) => {
     if (!selectedConversation || !socketRef.current) return;
 
@@ -403,7 +396,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     socketRef.current.emit("sendMessage", payload);
   };
 
-  // קבלת פרטי השותף בשיחה
   const getPartnerBusiness = (conv) => {
     const idx = conv.participants.findIndex((id) => id !== myBusinessId);
     return conv.participantsInfo?.[idx] || { businessName: "עסק" };
@@ -561,7 +553,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
-        {/* אזור הזנת הודעה + כפתור + */}
         {selectedConversation && (
           <ChatInput
             onSendText={sendMessage}
