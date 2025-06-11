@@ -203,7 +203,7 @@ export default function CollabFindPartnerTab({
             onSubmit={async (contractData) => {
               setSending(true);
               try {
-                await API.post("/collab", contractData);
+                await API.post("/collab/contract/send", contractData);
                 setSnackbarMessage("החוזה נשלח בהצלחה 📄");
                 setSnackbarOpen(true);
                 closeContractModal();
