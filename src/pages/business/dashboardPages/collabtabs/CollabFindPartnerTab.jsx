@@ -8,7 +8,7 @@ import Alert from "@mui/material/Alert";
 import API from "../../../../api";
 import PartnershipAgreementForm from "../PartnershipAgreementForm";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
-
+import CreatePartnershipAgreementForm from "./CreatePartnershipAgreementForm";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -43,6 +43,10 @@ export default function CollabFindPartnerTab({
   // מודאל הצגת והחתמת ההסכם
   const [agreementModalOpen, setAgreementModalOpen] = useState(false);
   const [agreementToShow, setAgreementToShow] = useState(null);
+
+  // מודאל יצירת הסכם חדש
+  const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
+  const [createAgreementPartner, setCreateAgreementPartner] = useState(null);
 
   useEffect(() => {
     async function fetchPartners() {
@@ -79,7 +83,7 @@ export default function CollabFindPartnerTab({
   });
 
   const handleOpenProfile = (business) => {
-    // הוסף כאן לוגיקה לפתיחת פרופיל
+    // לוגיקה לפתיחת פרופיל אם צריך
   };
 
   const openChatModal = (business) => {
@@ -113,11 +117,7 @@ export default function CollabFindPartnerTab({
   };
   const closeContractModal = () => setContractModalOpen(false);
 
-  // פתיחת מודאל הצגת ההסכם עם מזהה ההסכם (בדוגמה זו, יש לשלוף או לשמור את ההסכם הרלוונטי)
-  // כאן אפשר להוסיף לוגיקה לבחירת ההסכם המדויק, כרגע מציג את העסק בלבד
   const openAgreementModal = (business) => {
-    // למשל, אם יש הסכם קיים יש לשלוף את מזהה ההסכם
-    // לצורך הדוגמה, נניח שיש property business.agreementId
     if (!business.agreementId) {
       setSnackbarMessage("לא נמצא הסכם זמין לעסק זה");
       setSnackbarOpen(true);
@@ -132,6 +132,15 @@ export default function CollabFindPartnerTab({
   const closeAgreementModal = () => {
     setAgreementModalOpen(false);
     setAgreementToShow(null);
+  };
+
+  const openCreateAgreementModal = (business) => {
+    setCreateAgreementPartner(business);
+    setCreateAgreementModalOpen(true);
+  };
+  const closeCreateAgreementModal = () => {
+    setCreateAgreementModalOpen(false);
+    setCreateAgreementPartner(null);
   };
 
   return (
@@ -186,12 +195,17 @@ export default function CollabFindPartnerTab({
                     >
                       📄 שלח חוזה
                     </button>
-                    {/* כפתור חדש לפתיחת הצגת ההסכם */}
                     <button
                       className="message-box-button show-agreement-button"
                       onClick={() => openAgreementModal(business)}
                     >
                       הצג הסכם
+                    </button>
+                    <button
+                      className="message-box-button create-agreement-button"
+                      onClick={() => openCreateAgreementModal(business)}
+                    >
+                      ✍️ צור הסכם חדש
                     </button>
                   </>
                 )}
@@ -225,7 +239,7 @@ export default function CollabFindPartnerTab({
         </Box>
       </Modal>
 
-      {/* Contract Modal עם PartnershipAgreementForm */}
+      {/* Contract Modal */}
       <Modal open={contractModalOpen} onClose={closeContractModal}>
         <Box sx={{ ...modalStyle, maxWidth: 700 }}>
           <PartnershipAgreementForm
@@ -251,13 +265,30 @@ export default function CollabFindPartnerTab({
         </Box>
       </Modal>
 
-      {/* Agreement Modal להצגת וחתימת ההסכם */}
+      {/* Agreement Modal */}
       <Modal open={agreementModalOpen} onClose={closeAgreementModal}>
         <Box sx={{ ...modalStyle, maxWidth: 700, maxHeight: "85vh", overflowY: "auto" }}>
           {agreementToShow && (
             <PartnershipAgreementView
               agreementId={agreementToShow.id}
               currentBusinessId={agreementToShow.currentBusinessId}
+            />
+          )}
+        </Box>
+      </Modal>
+
+      {/* Create Agreement Modal */}
+      <Modal open={createAgreementModalOpen} onClose={closeCreateAgreementModal}>
+        <Box sx={{ ...modalStyle, maxWidth: 600, maxHeight: "80vh", overflowY: "auto" }}>
+          {createAgreementPartner && (
+            <CreatePartnershipAgreementForm
+              partnerBusiness={createAgreementPartner}
+              onCreated={(agreement) => {
+                setSnackbarMessage("ההסכם נוצר בהצלחה");
+                setSnackbarOpen(true);
+                closeCreateAgreementModal();
+                // אפשר להוסיף כאן רענון או פתיחת ההסכם החדש
+              }}
             />
           )}
         </Box>
