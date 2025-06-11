@@ -16,6 +16,8 @@ export default function CreateAgreementForm({ onCreated }) {
   const [error, setError] = useState("");
   const sigPadRef = useRef(null);
 
+  const isValidObjectId = (id) => /^[a-fA-F0-9]{24}$/.test(id);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -26,6 +28,12 @@ export default function CreateAgreementForm({ onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!isValidObjectId(formData.invitedBusinessId)) {
+      setError("מזהה העסק השותף לא תקין. ודא שהוזן מזהה תקין של MongoDB.");
+      return;
+    }
+
     setSending(true);
 
     try {
@@ -48,7 +56,10 @@ export default function CreateAgreementForm({ onCreated }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "auto", direction: "rtl", fontFamily: "Arial, sans-serif" }}>
+    <form
+      onSubmit={handleSubmit}
+      style={{ maxWidth: 600, margin: "auto", direction: "rtl", fontFamily: "Arial, sans-serif" }}
+    >
       <h2 style={{ textAlign: "center", marginBottom: 20 }}>צור הסכם שיתוף פעולה חדש</h2>
 
       <label>
