@@ -68,7 +68,24 @@ function ChatInput({
         borderTop: "1px solid #eee",
       }}
     >
-      <Button onClick={openMenu} disabled={uploading || disabled}>
+      <Button
+        onClick={openMenu}
+        disabled={uploading || disabled}
+        sx={{
+          minWidth: 40,
+          fontSize: 26,
+          fontWeight: "bold",
+          color: "#764ae6",
+          borderRadius: "50%",
+          border: "2px solid #764ae6",
+          padding: "4px 0",
+          lineHeight: 1,
+          "&:hover": {
+            backgroundColor: "#764ae6",
+            color: "#fff",
+          },
+        }}
+      >
         +
       </Button>
 
@@ -107,7 +124,6 @@ function ChatInput({
         <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
       </Menu>
 
-      {/* קלטים מוסתרים */}
       <input
         type="file"
         style={{ display: "none" }}
