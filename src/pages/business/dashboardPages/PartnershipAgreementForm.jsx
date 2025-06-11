@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
-import SignAgreement from '../../../components/SignAgreement';
+import SignAgreement from './SignAgreement';
 
 
 const partnershipAgreementFormInitial = {

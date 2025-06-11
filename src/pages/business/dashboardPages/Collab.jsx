@@ -9,6 +9,7 @@ import CollabSentRequestsTab from "./collabtabs/CollabSentRequestsTab";
 import CollabReceivedRequestsTab from "./collabtabs/CollabReceivedRequestsTab";
 import CollabActiveTab from "./collabtabs/CollabActiveTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
+import PartnershipAgreementsTab from "./collabtabs/PartnershipAgreementsTab";
 import "./Collab.css";
 
 const tabMap = {
@@ -18,6 +19,7 @@ const tabMap = {
   receivedRequests: 3,
   activeCollabs: 4,
   market: 5,
+  agreements: 6,
 };
 
 const tabLabels = {
@@ -27,6 +29,7 @@ const tabLabels = {
   receivedRequests: "הצעות שהתקבלו",
   activeCollabs: "שיתופי פעולה פעילים",
   market: "מרקט שיתופים",
+  agreements: "הסכמי שיתוף פעולה",
 };
 
 export default function Collab() {
@@ -36,7 +39,7 @@ export default function Collab() {
   const { user, loading } = useAuth();
   const devMode = true; // אפשרות פיתוח
 
-  // ניהול טאב לפי URL
+  // ניהול הטאב לפי URL
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
   useEffect(() => {
     if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
@@ -44,14 +47,15 @@ export default function Collab() {
     }
   }, [tabParam]);
 
-  // מחלקת רענון לטאבים
+  // מחלקות רענון לטאבים שונים
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
 
-  // פרופיל עסק
+  // נתוני פרופיל עסק
   const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -145,15 +149,16 @@ export default function Collab() {
       </div>
 
       {/* פרופיל עסק */}
-      {tab === 0 && (loadingProfile ? (
-        <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
-      ) : (
-        <CollabBusinessProfileTab
-          profileData={profileData}
-          profileImage={profileImage}
-          handleSaveProfile={handleSaveProfile}
-        />
-      ))}
+      {tab === 0 &&
+        (loadingProfile ? (
+          <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
+        ) : (
+          <CollabBusinessProfileTab
+            profileData={profileData}
+            profileImage={profileImage}
+            handleSaveProfile={handleSaveProfile}
+          />
+        ))}
 
       {/* מצא שותף */}
       {tab === 1 && (
@@ -173,9 +178,7 @@ export default function Collab() {
       )}
 
       {/* הצעות שנשלחו */}
-      {tab === 2 && (
-        <CollabSentRequestsTab refreshFlag={refreshSent} />
-      )}
+      {tab === 2 && <CollabSentRequestsTab refreshFlag={refreshSent} />}
 
       {/* הצעות שהתקבלו */}
       {tab === 3 && (
@@ -191,6 +194,9 @@ export default function Collab() {
 
       {/* מרקט שיתופים */}
       {tab === 5 && <CollabMarketTab isDevUser={isDevUser} />}
+
+      {/* הסכמי שיתוף פעולה */}
+      {tab === 6 && <PartnershipAgreementsTab userBusinessId={user?.businessId} />}
     </div>
   );
 }
