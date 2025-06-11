@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField"; 
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
 import CollabContractForm from "../CollabContractForm";
 import "./CollabFindPartnerTab.css";
+
 
 export default function CollabFindPartnerTab({
   searchMode,
