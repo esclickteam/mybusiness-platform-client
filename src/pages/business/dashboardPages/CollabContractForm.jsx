@@ -38,7 +38,6 @@ const CollabContractForm = ({
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // אם משתנה cancelAnytime, אפס תאריכים במידת הצורך
     if (name === "cancelAnytime" && checked) {
       setForm((prev) => ({
         ...prev,
@@ -75,7 +74,6 @@ const CollabContractForm = ({
   };
 
   const handleSend = () => {
-    // דרישה שכל השדות מלאים (תאריכים רק אם לא סימנו ביטול)
     if (
       !form.title ||
       !form.description ||
@@ -97,13 +95,11 @@ const CollabContractForm = ({
       return;
     }
 
-    // לא אפשרי לשלוח אם אין חתימת מקבל עדיין, רק השולח יכול לשלוח בהתחלה
     if (!form.receiverSignature && currentUser.businessName === form.receiver.businessName) {
       alert("ההסכם ממתין לחתימת העסק השותף.");
       return;
     }
 
-    // לאחר ששני הצדדים חתמו, סטטוס משתנה ל'מאושר'
     const newStatus = form.senderSignature && form.receiverSignature ? "מאושר" : form.status;
 
     onSubmit({
@@ -112,11 +108,8 @@ const CollabContractForm = ({
     });
   };
 
-  // האם המשתמש הוא השולח או המקבל
   const isSender = currentUser.businessName === (form.sender?.businessName || currentUser.businessName);
   const isReceiver = currentUser.businessName === (form.receiver?.businessName || partnerBusiness.name);
-
-  // אחרי אישור ההסכם לא ניתן לערוך יותר
   const isReadOnly = form.status === "מאושר";
 
   return (
@@ -267,7 +260,7 @@ const CollabContractForm = ({
           </label>
         </div>
 
-        {/* חתימה של השולח */}
+        {/* חתימת השולח */}
         <div>
           <label>חתימת {currentUser.businessName}:</label>
           {form.senderSignature ? (
@@ -317,7 +310,7 @@ const CollabContractForm = ({
           )}
         </div>
 
-        {/* חתימה של המקבל */}
+        {/* חתימת המקבל */}
         <div>
           <label>חתימת {form.receiver?.businessName || partnerBusiness.name}:</label>
           {form.receiverSignature ? (
@@ -367,7 +360,6 @@ const CollabContractForm = ({
           )}
         </div>
 
-        {/* כפתור שליחה */}
         {(isSender || isReceiver) && !isReadOnly && (
           <button type="button" className="collab-form-button" onClick={handleSend}>
             📩 שלח את ההסכם
