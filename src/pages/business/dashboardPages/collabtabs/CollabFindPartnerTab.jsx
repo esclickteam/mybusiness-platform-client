@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
-import CollabContractForm from "../CollabContractForm";
+import PartnershipAgreementForm from "../../business/dashboardPages/PartnershipAgreementForm";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -101,7 +101,6 @@ export default function CollabFindPartnerTab({
     }
   };
 
-  // פתיחת מודאל חוזה
   const openContractModal = (business) => {
     setContractBusiness(business);
     setContractModalOpen(true);
@@ -193,13 +192,12 @@ export default function CollabFindPartnerTab({
         </Box>
       </Modal>
 
-      {/* Contract Modal עם CollabContractForm */}
+      {/* Contract Modal עם PartnershipAgreementForm */}
       <Modal open={contractModalOpen} onClose={closeContractModal}>
         <Box sx={{ ...modalStyle, maxWidth: 700 }}>
-          <CollabContractForm
+          <PartnershipAgreementForm
             currentUser={{ businessName: myBusinessName }}
             partnerBusiness={contractBusiness || {}}
-            existingContract={null}
             onSubmit={async (contractData) => {
               setSending(true);
               try {
