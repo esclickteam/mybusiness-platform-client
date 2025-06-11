@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
-import CollabContractForm from "./CollabContractForm"; // ודא שהנתיב נכון
+import CollabContractForm from "../CollabContractForm";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
