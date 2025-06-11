@@ -293,17 +293,34 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = (text) => {
-    if (!text || !selectedConversation || !socketRef.current) return;
+  // שדרוג sendMessage לתמיכה גם בשליחת אובייקט הסכם ולא רק טקסט
+  const sendMessage = (content) => {
+    if (!content || !selectedConversation || !socketRef.current) return;
 
     const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
 
-    const payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessId,
-      to: otherId,
-      text,
-    };
+    let payload;
+    if (typeof content === "string") {
+      // הודעה רגילה טקסט
+      payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessId,
+        to: otherId,
+        text: content,
+      };
+    } else if (content.type === "contract") {
+      // הודעת הסכם
+      payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessId,
+        to: otherId,
+        text: content.text || "הסכם שיתוף פעולה",
+        type: "contract",
+        contractData: content.contractData,
+      };
+    } else {
+      return;
+    }
 
     const optimistic = {
       ...payload,
@@ -393,7 +410,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     setShowCollabForm(false);
   };
 
-  // שליחת טופס ההסכם
+  // עדכון שליחת טופס ההסכם - עכשיו שולח את ההסכם כאובייקט הודעה
   const handleCollabSubmit = async (formData) => {
     try {
       const token = await refreshAccessToken();
@@ -408,8 +425,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         return;
       }
 
-      const contractUrl = `${window.location.origin}/business/collab-contracts/${res.data.contractId}`;
-      sendMessage(`הסכם שיתוף פעולה נוצר: ${contractUrl}`);
+      // שלח את ההסכם כאובייקט הודעה
+      sendMessage({
+        type: "contract",
+        text: `הסכם שיתוף פעולה נוצר: ${window.location.origin}/business/collab-contracts/${res.data.contractId}`,
+        contractData: res.data,
+      });
+
       setShowCollabForm(false);
     } catch (err) {
       console.error("שגיאה ביצירת ההסכם:", err);
@@ -538,7 +560,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 שיחה עם {getPartnerBusiness(selectedConversation).businessName}
               </Box>
               {messages.map((msg, i) => {
-                // הצגה מיוחדת להודעות הסכם (אם מזהים שההודעה מכילה קישור להסכם)
+                // הצגה מיוחדת להודעות הסכם (אם מזהים שההודעה מכילה אובייקט הסכם)
                 if (msg.type === "contract" && msg.contractData) {
                   return (
                     <Box
