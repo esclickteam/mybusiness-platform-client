@@ -8,7 +8,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useAuth } from "../../../../context/AuthContext";
 
-import CollabContractForm from "../CollabContractForm";
+import CollabContractForm from "../CollabContractForm"; // טופס הסכם שיתוף פעולה
+import CollabPackageForm from "../CollabPackageForm"; // טופס הסכם חבילה משותפת (הוסף קובץ חדש)
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -16,6 +17,7 @@ function ChatInput({
   onSendText,
   onSendFile,
   onOpenCollabForm,
+  onOpenPackageForm,
   uploading,
   disabled,
 }) {
@@ -36,6 +38,8 @@ function ChatInput({
     closeMenu();
     if (option === "collab") {
       onOpenCollabForm();
+    } else if (option === "package") {
+      onOpenPackageForm();
     } else if (option === "file") {
       fileInputRef.current.click();
     } else if (option === "image") {
@@ -116,6 +120,9 @@ function ChatInput({
         <MenuItem onClick={() => handleMenuClick("collab")}>
           הסכם שיתוף פעולה
         </MenuItem>
+        <MenuItem onClick={() => handleMenuClick("package")}>
+          הסכם חבילה משותפת
+        </MenuItem>
         <MenuItem onClick={() => handleMenuClick("file")}>קובץ</MenuItem>
         <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
       </Menu>
@@ -153,6 +160,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [showCollabForm, setShowCollabForm] = useState(false);
+  const [showPackageForm, setShowPackageForm] = useState(false);
 
   const fetchConversations = async (token) => {
     try {
@@ -386,6 +394,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     setShowCollabForm(true);
   };
 
+  const openPackageForm = () => {
+    setShowPackageForm(true);
+  };
+
   const handleCollabSubmit = async (formData) => {
     try {
       const token = await refreshAccessToken();
@@ -406,6 +418,29 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     } catch (err) {
       console.error("שגיאה ביצירת הסכם:", err);
       alert("שגיאה ביצירת הסכם, נסה שוב.");
+    }
+  };
+
+  const handlePackageSubmit = async (formData) => {
+    try {
+      const token = await refreshAccessToken();
+      const res = await API.post("/collab-packages", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.data || !res.data.packageId) {
+        alert("התרחשה שגיאה ביצירת הסכם החבילה");
+        return;
+      }
+
+      const packageUrl = `${window.location.origin}/business/collab-packages/${res.data.packageId}`;
+
+      sendMessage(`הסכם חבילה משותפת נוצר: ${packageUrl}`);
+
+      setShowPackageForm(false);
+    } catch (err) {
+      console.error("שגיאה ביצירת הסכם חבילה:", err);
+      alert("שגיאה ביצירת הסכם החבילה, נסה שוב.");
     }
   };
 
@@ -570,44 +605,36 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
+        {/* תיבת הקלט */}
         {selectedConversation && (
           <ChatInput
             onSendText={sendMessage}
             onSendFile={sendFileMessage}
             onOpenCollabForm={openCollabForm}
+            onOpenPackageForm={openPackageForm}
             uploading={uploading}
             disabled={false}
           />
         )}
 
-        {/* מודאל טופס הסכם */}
+        {/* מודאל טופס הסכם שיתוף פעולה */}
         {showCollabForm && selectedConversation && (
-          <Box
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              bgcolor: "rgba(0, 0, 0, 0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1500,
-              p: 2,
-              overflowY: "auto",
-            }}
-            onClick={() => setShowCollabForm(false)}
-          >
-            <Box onClick={(e) => e.stopPropagation()}>
-              <CollabContractForm
-                currentUser={{ businessName: myBusinessName }}
-                partnerBusiness={getPartnerBusiness(selectedConversation)}
-                onSubmit={handleCollabSubmit}
-                onClose={() => setShowCollabForm(false)}
-              />
-            </Box>
-          </Box>
+          <CollabContractForm
+            currentUser={{ businessName: myBusinessName }}
+            partnerBusiness={getPartnerBusiness(selectedConversation)}
+            onSubmit={handleCollabSubmit}
+            onClose={() => setShowCollabForm(false)}
+          />
+        )}
+
+        {/* מודאל טופס הסכם חבילה משותפת */}
+        {showPackageForm && selectedConversation && (
+          <CollabPackageForm
+            currentUser={{ businessName: myBusinessName }}
+            partnerBusiness={getPartnerBusiness(selectedConversation)}
+            onSubmit={handlePackageSubmit}
+            onClose={() => setShowPackageForm(false)}
+          />
         )}
 
         {onClose && (
