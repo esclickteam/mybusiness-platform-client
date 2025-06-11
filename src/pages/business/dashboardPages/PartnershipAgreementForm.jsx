@@ -21,11 +21,9 @@ const partnershipAgreementFormInitial = {
 export default function PartnershipAgreementForm({ isSender = true }) {
   const [formData, setFormData] = useState(partnershipAgreementFormInitial);
 
-  // רפרנסים ל־SignatureCanvas
   const senderSigPadRef = useRef(null);
   const receiverSigPadRef = useRef(null);
 
-  // טוען חתימות אם יש (כאן אפשר להרחיב בעת טעינת הנתונים)
   useEffect(() => {
     if (formData.senderSignature && senderSigPadRef.current) {
       senderSigPadRef.current.fromDataURL(formData.senderSignature);
@@ -33,7 +31,7 @@ export default function PartnershipAgreementForm({ isSender = true }) {
     if (formData.receiverSignature && receiverSigPadRef.current) {
       receiverSigPadRef.current.fromDataURL(formData.receiverSignature);
     }
-  }, []);
+  }, [formData.senderSignature, formData.receiverSignature]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -43,7 +41,6 @@ export default function PartnershipAgreementForm({ isSender = true }) {
     }));
   };
 
-  // שמירת חתימה של השולח
   const saveSenderSignature = () => {
     if (senderSigPadRef.current) {
       const dataURL = senderSigPadRef.current.toDataURL();
@@ -51,7 +48,6 @@ export default function PartnershipAgreementForm({ isSender = true }) {
     }
   };
 
-  // שמירת חתימה של המקבל
   const saveReceiverSignature = () => {
     if (receiverSigPadRef.current) {
       const dataURL = receiverSigPadRef.current.toDataURL();
@@ -75,9 +71,9 @@ export default function PartnershipAgreementForm({ isSender = true }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // כאן תוכל להוסיף קריאה ל-API לשמירת ההסכם
     alert("הסכם שיתוף הפעולה נשמר בהצלחה!");
     console.log("Form Data:", formData);
+    // כאן תוסיף את השמירה בפועל (API וכו')
   };
 
   return (
@@ -97,7 +93,7 @@ export default function PartnershipAgreementForm({ isSender = true }) {
         הסכם שיתוף פעולה 🤝
       </h2>
 
-      {/* שדות הטקסט הרגילים */}
+      {/* כל השדות שלך כפי שהיו */}
       <label>
         שם העסק שלך:
         <input
@@ -124,9 +120,134 @@ export default function PartnershipAgreementForm({ isSender = true }) {
         />
       </label>
 
-      {/* ... שדות נוספים כמו קודם ... */}
+      <label>
+        כותרת ההסכם:
+        <input
+          type="text"
+          name="agreementTitle"
+          value={formData.agreementTitle}
+          onChange={handleChange}
+          placeholder="כותרת ההסכם (למשל: קמפיין קיץ)"
+          style={inputStyle}
+          required
+        />
+      </label>
 
-      {/* חתימה של החותם הראשון */}
+      <label>
+        תיאור שיתוף הפעולה:
+        <textarea
+          name="partnershipDescription"
+          value={formData.partnershipDescription}
+          onChange={handleChange}
+          placeholder="תאר בקצרה את שיתוף הפעולה"
+          style={textareaStyle}
+          rows={4}
+          required
+        />
+      </label>
+
+      <label>
+        מה תספק במסגרת ההסכם:
+        <textarea
+          name="agreementSupplies"
+          value={formData.agreementSupplies}
+          onChange={handleChange}
+          placeholder="מה תספק במסגרת ההסכם"
+          style={textareaStyle}
+          rows={3}
+        />
+      </label>
+
+      <label>
+        מה תקבל במסגרת ההסכם:
+        <textarea
+          name="agreementBenefits"
+          value={formData.agreementBenefits}
+          onChange={handleChange}
+          placeholder="מה תקבל במסגרת ההסכם"
+          style={textareaStyle}
+          rows={3}
+        />
+      </label>
+
+      <label>
+        סוג שיתוף פעולה:
+        <select
+          name="partnershipType"
+          value={formData.partnershipType}
+          onChange={handleChange}
+          style={inputStyle}
+          required
+        >
+          <option value="">בחר סוג</option>
+          <option value="jointCampaign">קמפיין משותף</option>
+          <option value="referral">הפניות</option>
+          <option value="resale">מכירה מחדש</option>
+          <option value="other">אחר</option>
+        </select>
+      </label>
+
+      <label>
+        עמלה / תשלום (אם יש):
+        <input
+          type="text"
+          name="commissionOrPayment"
+          value={formData.commissionOrPayment}
+          onChange={handleChange}
+          placeholder="למשל: 10% עמלה"
+          style={inputStyle}
+        />
+      </label>
+
+      <label>
+        תוקף ההסכם - תאריך התחלה:
+        <input
+          type="date"
+          name="agreementStartDate"
+          value={formData.agreementStartDate}
+          onChange={handleChange}
+          style={inputStyle}
+          required
+        />
+      </label>
+
+      <label>
+        תוקף ההסכם - תאריך סיום:
+        <input
+          type="date"
+          name="agreementEndDate"
+          value={formData.agreementEndDate}
+          onChange={handleChange}
+          style={inputStyle}
+          required
+        />
+      </label>
+
+      <div style={{ margin: "12px 0" }}>
+        <label>
+          <input
+            type="checkbox"
+            name="cancellableAtAnyStage"
+            checked={formData.cancellableAtAnyStage}
+            onChange={handleChange}
+          />
+          ניתן לבטל את ההסכם בכל שלב
+        </label>
+      </div>
+
+      <div style={{ margin: "12px 0" }}>
+        <label>
+          <input
+            type="checkbox"
+            name="confidentialityClause"
+            checked={formData.confidentialityClause}
+            onChange={handleChange}
+          />
+          סעיף סודיות
+        </label>
+      </div>
+
+      {/* שדה חתימה של החותם הראשון */}
       <div style={{ marginTop: 20 }}>
         <label>חתימה (של החותם הראשון):</label>
         {isSender ? (
@@ -159,7 +280,7 @@ export default function PartnershipAgreementForm({ isSender = true }) {
         )}
       </div>
 
-      {/* חתימה של החותם השני */}
+      {/* שדה חתימה של החותם השני */}
       <div style={{ marginTop: 20 }}>
         <label>חתימה (של החותם השני):</label>
         {!isSender ? (
@@ -221,6 +342,7 @@ const inputStyle = {
   fontSize: 16,
   fontFamily: "'Arial', sans-serif",
 };
+
 const textareaStyle = {
   ...inputStyle,
   resize: "vertical",
