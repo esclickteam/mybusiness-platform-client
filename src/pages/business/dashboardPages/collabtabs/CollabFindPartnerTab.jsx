@@ -33,7 +33,12 @@ export default function CollabFindPartnerTab({
   const [chatMessage, setChatMessage] = useState("");
   const [sending, setSending] = useState(false);
 
-  // טעינת שותפים
+  // מודאל חוזה
+  const [contractModalOpen, setContractModalOpen] = useState(false);
+  const [contractBusiness, setContractBusiness] = useState(null);
+  const [contractTitle, setContractTitle] = useState("");
+  const [contractDescription, setContractDescription] = useState("");
+
   useEffect(() => {
     async function fetchPartners() {
       try {
@@ -48,13 +53,10 @@ export default function CollabFindPartnerTab({
     return () => clearInterval(intervalId);
   }, []);
 
-  // סינון שותפים לפי חיפוש
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
-        business.category
-          .toLowerCase()
-          .includes(searchCategory.toLowerCase()) ||
+        business.category.toLowerCase().includes(searchCategory.toLowerCase()) ||
         (business.complementaryCategories || []).some((cat) =>
           cat.toLowerCase().includes(searchCategory.toLowerCase())
         )
@@ -71,24 +73,20 @@ export default function CollabFindPartnerTab({
     return true;
   });
 
-  // צפיה בפרופיל (פונקציה קיימת)
   const handleOpenProfile = (business) => {
-    // add navigation/view logic here
+    // הוסף כאן לוגיקה לפתיחת פרופיל
   };
 
-  // פתיחת מודאל לשליחת הודעה ראשונה
   const openChatModal = (business) => {
     setChatTarget(business);
     setChatMessage("");
     setChatModalOpen(true);
   };
 
-  // שליחת הודעה ראשונה שמייצרת שיחה
   const handleSendBusinessMessage = async () => {
     if (!chatTarget || !chatMessage.trim()) return;
     setSending(true);
     try {
-      // יצירת שיחה (אם אין) ושליחת הודעה ראשונה
       await API.post("/business-chat/start", {
         otherBusinessId: chatTarget._id || chatTarget.id,
         text: chatMessage.trim(),
@@ -98,6 +96,40 @@ export default function CollabFindPartnerTab({
       setChatModalOpen(false);
     } catch (err) {
       setSnackbarMessage("שגיאה בשליחה: " + (err?.response?.data?.error || err.message));
+      setSnackbarOpen(true);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // פתיחת מודאל חוזה
+  const openContractModal = (business) => {
+    setContractBusiness(business);
+    setContractTitle("");
+    setContractDescription("");
+    setContractModalOpen(true);
+  };
+  const closeContractModal = () => setContractModalOpen(false);
+
+  // שליחת חוזה API
+  const handleSendContract = async () => {
+    if (!contractTitle.trim() || !contractDescription.trim()) {
+      alert("אנא מלא כותרת ותיאור לחוזה");
+      return;
+    }
+    setSending(true);
+    try {
+      await API.post("/business-contract/send", {
+        toBusinessId: contractBusiness._id || contractBusiness.id,
+        fromBusinessId: myBusinessId,
+        title: contractTitle,
+        description: contractDescription,
+      });
+      setSnackbarMessage("החוזה נשלח בהצלחה 📄");
+      setSnackbarOpen(true);
+      closeContractModal();
+    } catch (err) {
+      setSnackbarMessage("שגיאה בשליחת החוזה: " + (err?.response?.data?.error || err.message));
       setSnackbarOpen(true);
     } finally {
       setSending(false);
@@ -151,6 +183,12 @@ export default function CollabFindPartnerTab({
                     >
                       צ'אט
                     </button>
+                    <button
+                      className="message-box-button send-contract-button"
+                      onClick={() => openContractModal(business)}
+                    >
+                      📄 שלח חוזה
+                    </button>
                   </>
                 )}
               </div>
@@ -159,7 +197,7 @@ export default function CollabFindPartnerTab({
         })
       )}
 
-      {/* Chat Modal (פופאפ לשליחת הודעה בלבד) */}
+      {/* Chat Modal */}
       <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
         <Box sx={modalStyle}>
           <h3>שלח הודעה אל {chatTarget?.businessName}</h3>
@@ -169,7 +207,7 @@ export default function CollabFindPartnerTab({
             minRows={3}
             fullWidth
             value={chatMessage}
-            onChange={e => setChatMessage(e.target.value)}
+            onChange={(e) => setChatMessage(e.target.value)}
             placeholder="הקלד הודעה ראשונה לעסק…"
           />
           <Button
@@ -180,6 +218,41 @@ export default function CollabFindPartnerTab({
           >
             שלח
           </Button>
+        </Box>
+      </Modal>
+
+      {/* Contract Modal */}
+      <Modal open={contractModalOpen} onClose={closeContractModal}>
+        <Box sx={modalStyle}>
+          <h3>שלח חוזה ל-{contractBusiness?.businessName}</h3>
+          <TextField
+            label="כותרת החוזה"
+            fullWidth
+            value={contractTitle}
+            onChange={(e) => setContractTitle(e.target.value)}
+            margin="normal"
+          />
+          <TextField
+            label="תיאור החוזה"
+            multiline
+            minRows={4}
+            fullWidth
+            value={contractDescription}
+            onChange={(e) => setContractDescription(e.target.value)}
+            margin="normal"
+          />
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2, gap: 1 }}>
+            <Button onClick={closeContractModal} disabled={sending}>
+              ביטול
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleSendContract}
+              disabled={sending || !contractTitle.trim() || !contractDescription.trim()}
+            >
+              {sending ? "שולח..." : "שלח חוזה"}
+            </Button>
+          </Box>
         </Box>
       </Modal>
 
