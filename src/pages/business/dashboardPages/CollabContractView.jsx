@@ -25,6 +25,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     receiverSignature,
   } = contract;
 
+  // בודק מי המשתמש הנוכחי - האם הוא השולח או המקבל
   const isSender = currentUser.businessName === sender?.businessName;
   const isReceiver = currentUser.businessName === receiver?.businessName;
 
@@ -32,10 +33,12 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
   const [localReceiverSig, setLocalReceiverSig] = useState(receiverSignature || "");
   const [hasSigned, setHasSigned] = useState(!!receiverSignature);
 
+  // אם התקבלה חתימה חדשה מהשרת, מעדכן מקומית
   useEffect(() => {
     if (receiverSignature) setLocalReceiverSig(receiverSignature);
   }, [receiverSignature]);
 
+  // שמירת חתימת המקבל
   const handleReceiverSign = () => {
     if (receiverSigRef.current) {
       const dataURL = receiverSigRef.current.getCanvas().toDataURL("image/png");
@@ -44,6 +47,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     }
   };
 
+  // אישור ההסכם ע"י המקבל ושליחת הנתונים לשרת (API)
   const handleApprove = async () => {
     if (!localReceiverSig) return;
 
@@ -54,6 +58,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     };
 
     try {
+      // שולח הודעה עם עדכון ההסכם דרך API (לפי הצורך שלך - החלף את הנתיב)
       await API.post("/chat/send", {
         ...contract.messageMetadata,
         type: "contract",
@@ -64,6 +69,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       console.error("❌ שגיאה בשליחת אישור החוזה לשרת:", err);
     }
 
+    // מעדכן בקומפוננטה האב
     onApprove({
       receiverSignature: localReceiverSig,
       status: "מאושר",

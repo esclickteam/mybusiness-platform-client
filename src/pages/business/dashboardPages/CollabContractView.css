@@ -5,6 +5,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   max-width: 650px;
   margin: 1.5rem auto;
+  box-sizing: border-box;
 }
 
 .contract-title {
@@ -22,6 +23,7 @@
   margin-bottom: 0.8rem;
   font-size: 1rem;
   border: 1px solid #eee;
+  word-wrap: break-word;
 }
 
 .view-sigCanvas {
@@ -29,10 +31,12 @@
   border-radius: 8px;
   background: #fff;
   margin-top: 0.5rem;
+  max-width: 100%;
 }
 
 .view-signature-image {
   width: 300px;
+  max-width: 100%;
   height: auto;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -47,6 +51,11 @@
 }
 
 @media (max-width: 500px) {
+  .contract-view-container {
+    padding: 1rem;
+    max-width: 100vw;
+  }
+
   .view-signature-image {
     width: 100%;
   }
