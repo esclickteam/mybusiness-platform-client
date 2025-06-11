@@ -1,10 +1,8 @@
-// CollabContractForm.jsx – טופס הסכם שיתוף פעולה עם חתימה דיגיטלית ושידור אוטומטי
-
 import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import "./CollabContractForm.css";
 
-const CollabContractForm = ({ currentUser, partnerBusiness, onSubmit }) => {
+const CollabContractForm = ({ currentUser, partnerBusiness, onSubmit, onClose }) => {
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -33,16 +31,14 @@ const CollabContractForm = ({ currentUser, partnerBusiness, onSubmit }) => {
     if (!sigRef.current) return;
     const dataURL = sigRef.current.getCanvas().toDataURL("image/png");
 
-    const fullForm = {
-      ...form,
+    setForm(prev => ({
+      ...prev,
       senderSignature: dataURL,
       sender: { businessName: currentUser.businessName },
       receiver: { businessName: partnerBusiness.name },
       createdAt: new Date().toISOString(),
       status: "ממתין לאישור",
-    };
-
-    setForm(fullForm);
+    }));
   };
 
   const handleSend = () => {
@@ -54,7 +50,24 @@ const CollabContractForm = ({ currentUser, partnerBusiness, onSubmit }) => {
   };
 
   return (
-    <div className="contract-form-container">
+    <div className="contract-form-container" style={{ position: "relative" }}>
+      <button
+        type="button"
+        onClick={onClose}
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          background: "transparent",
+          border: "none",
+          fontSize: "1.5rem",
+          cursor: "pointer",
+        }}
+        aria-label="סגור טופס"
+      >
+        ×
+      </button>
+
       <h2 className="contract-title">🤝 הסכם שיתוף פעולה</h2>
 
       <form className="contract-form">
