@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";  // הוסף את זה
+import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
 import CollabContractForm from "../CollabContractForm";
 import "./CollabFindPartnerTab.css";
-
 
 export default function CollabFindPartnerTab({
   searchMode,
@@ -113,7 +112,7 @@ export default function CollabFindPartnerTab({
     <div>
       {/* Search Bar */}
       <div className="search-container">
-        {/* ...לא השתנה... */}
+        {/* כאן תוכל להוסיף את שדה החיפוש או הפילטרים שלך */}
       </div>
 
       {/* Partners List */}
@@ -204,7 +203,7 @@ export default function CollabFindPartnerTab({
             onSubmit={async (contractData) => {
               setSending(true);
               try {
-                await API.post("/business-contract/send", contractData);
+                await API.post("/collab", contractData);
                 setSnackbarMessage("החוזה נשלח בהצלחה 📄");
                 setSnackbarOpen(true);
                 closeContractModal();
