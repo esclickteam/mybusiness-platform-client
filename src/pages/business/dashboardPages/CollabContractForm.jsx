@@ -60,6 +60,7 @@ const CollabContractForm = ({
     setForm((prev) => ({
       ...prev,
       senderSignature: dataURL,
+      status: prev.receiverSignature ? "ממתין לאישור" : "ממתין לחתימת שותף",
     }));
   };
 
@@ -69,6 +70,7 @@ const CollabContractForm = ({
     setForm((prev) => ({
       ...prev,
       receiverSignature: dataURL,
+      status: "ממתין לאישור",
     }));
   };
 
@@ -95,17 +97,27 @@ const CollabContractForm = ({
       return;
     }
 
-    if (!form.receiverSignature) {
+    // לא אפשרי לשלוח אם אין חתימת מקבל עדיין, רק השולח יכול לשלוח בהתחלה
+    if (!form.receiverSignature && currentUser.businessName === form.receiver.businessName) {
       alert("ההסכם ממתין לחתימת העסק השותף.");
       return;
     }
 
-    onSubmit(form);
+    // לאחר ששני הצדדים חתמו, סטטוס משתנה ל'מאושר'
+    const newStatus = form.senderSignature && form.receiverSignature ? "מאושר" : form.status;
+
+    onSubmit({
+      ...form,
+      status: newStatus,
+    });
   };
 
   // האם המשתמש הוא השולח או המקבל
   const isSender = currentUser.businessName === (form.sender?.businessName || currentUser.businessName);
   const isReceiver = currentUser.businessName === (form.receiver?.businessName || partnerBusiness.name);
+
+  // אחרי אישור ההסכם לא ניתן לערוך יותר
+  const isReadOnly = form.status === "מאושר";
 
   return (
     <div className="contract-form-container">
@@ -131,7 +143,7 @@ const CollabContractForm = ({
             }
             placeholder="הזן שם העסק השותף"
             required
-            disabled={!isSender} // רק השולח יכול לערוך שם שותף
+            disabled={!isSender || isReadOnly}
           />
         </div>
 
@@ -144,6 +156,7 @@ const CollabContractForm = ({
             onChange={handleChange}
             placeholder="כותרת ההסכם (למשל: קמפיין קיץ)"
             required
+            disabled={isReadOnly}
           />
         </div>
 
@@ -155,6 +168,7 @@ const CollabContractForm = ({
             onChange={handleChange}
             rows="3"
             required
+            disabled={isReadOnly}
           />
         </div>
 
@@ -166,6 +180,7 @@ const CollabContractForm = ({
             onChange={handleChange}
             rows="2"
             required
+            disabled={isReadOnly}
           />
         </div>
 
@@ -177,12 +192,19 @@ const CollabContractForm = ({
             onChange={handleChange}
             rows="2"
             required
+            disabled={isReadOnly}
           />
         </div>
 
         <div>
           <label>סוג שיתוף פעולה:</label>
-          <select name="type" value={form.type} onChange={handleChange} required>
+          <select
+            name="type"
+            value={form.type}
+            onChange={handleChange}
+            required
+            disabled={isReadOnly}
+          >
             <option value="">בחר סוג</option>
             <option value="חד צדדי">חד צדדי</option>
             <option value="דו צדדי">דו צדדי</option>
@@ -197,6 +219,7 @@ const CollabContractForm = ({
             name="payment"
             value={form.payment}
             onChange={handleChange}
+            disabled={isReadOnly}
           />
         </div>
 
@@ -208,7 +231,7 @@ const CollabContractForm = ({
             value={form.startDate}
             onChange={handleChange}
             required={!form.cancelAnytime}
-            disabled={form.cancelAnytime}
+            disabled={form.cancelAnytime || isReadOnly}
           />
           <input
             type="date"
@@ -216,7 +239,7 @@ const CollabContractForm = ({
             value={form.endDate}
             onChange={handleChange}
             required={!form.cancelAnytime}
-            disabled={form.cancelAnytime}
+            disabled={form.cancelAnytime || isReadOnly}
           />
         </div>
 
@@ -227,6 +250,7 @@ const CollabContractForm = ({
               name="cancelAnytime"
               checked={form.cancelAnytime}
               onChange={handleChange}
+              disabled={isReadOnly}
             />
             ניתן לבטל את ההסכם בכל שלב
           </label>
@@ -237,6 +261,7 @@ const CollabContractForm = ({
               name="confidentiality"
               checked={form.confidentiality}
               onChange={handleChange}
+              disabled={isReadOnly}
             />
             סעיף סודיות
           </label>
@@ -245,14 +270,14 @@ const CollabContractForm = ({
         {/* חתימה של השולח */}
         <div>
           <label>חתימת {currentUser.businessName}:</label>
-          {isSender ? (
-            form.senderSignature ? (
-              <div>
-                <img
-                  src={form.senderSignature}
-                  alt="חתימה"
-                  className="form-signature-image"
-                />
+          {form.senderSignature ? (
+            <div>
+              <img
+                src={form.senderSignature}
+                alt="חתימה"
+                className="form-signature-image"
+              />
+              {!isReadOnly && isSender && (
                 <button
                   type="button"
                   className="collab-form-button mt-2"
@@ -260,13 +285,16 @@ const CollabContractForm = ({
                     setForm((prev) => ({
                       ...prev,
                       senderSignature: "",
+                      status: "ממתין לחתימת שותף",
                     }))
                   }
                 >
                   🗑️ חתום מחדש
                 </button>
-              </div>
-            ) : (
+              )}
+            </div>
+          ) : (
+            !isReadOnly && isSender && (
               <>
                 <SignatureCanvas
                   penColor="#000"
@@ -286,30 +314,20 @@ const CollabContractForm = ({
                 </button>
               </>
             )
-          ) : (
-            form.senderSignature ? (
-              <img
-                src={form.senderSignature}
-                alt="חתימה"
-                className="form-signature-image"
-              />
-            ) : (
-              <span>טרם נחתם</span>
-            )
           )}
         </div>
 
         {/* חתימה של המקבל */}
         <div>
           <label>חתימת {form.receiver?.businessName || partnerBusiness.name}:</label>
-          {isReceiver ? (
-            form.receiverSignature ? (
-              <div>
-                <img
-                  src={form.receiverSignature}
-                  alt="חתימה"
-                  className="form-signature-image"
-                />
+          {form.receiverSignature ? (
+            <div>
+              <img
+                src={form.receiverSignature}
+                alt="חתימה"
+                className="form-signature-image"
+              />
+              {!isReadOnly && isReceiver && (
                 <button
                   type="button"
                   className="collab-form-button mt-2"
@@ -317,13 +335,16 @@ const CollabContractForm = ({
                     setForm((prev) => ({
                       ...prev,
                       receiverSignature: "",
+                      status: "ממתין לאישור",
                     }))
                   }
                 >
                   🗑️ חתום מחדש
                 </button>
-              </div>
-            ) : (
+              )}
+            </div>
+          ) : (
+            !isReadOnly && isReceiver && (
               <>
                 <SignatureCanvas
                   penColor="#000"
@@ -343,21 +364,11 @@ const CollabContractForm = ({
                 </button>
               </>
             )
-          ) : (
-            form.receiverSignature ? (
-              <img
-                src={form.receiverSignature}
-                alt="חתימה"
-                className="form-signature-image"
-              />
-            ) : (
-              <span>טרם נחתם</span>
-            )
           )}
         </div>
 
         {/* כפתור שליחה */}
-        {(isSender || isReceiver) && (
+        {(isSender || isReceiver) && !isReadOnly && (
           <button type="button" className="collab-form-button" onClick={handleSend}>
             📩 שלח את ההסכם
           </button>

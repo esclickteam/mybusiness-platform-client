@@ -318,6 +318,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         type: "contract",
         contractData: content.contractData,
       };
+    } else if (content.type === "info") {
+      // הודעות מידע פנימיות, כמו אישור חתימה
+      payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessId,
+        to: otherId,
+        text: content.text,
+        type: "info",
+      };
     } else {
       return;
     }
@@ -471,7 +480,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       );
       closeContractView();
 
-      // שלח הודעה לצ'אט שמסמנת אישור חתימה
+      // שלח הודעת מידע לצ'אט שמסמנת אישור חתימה
       const approvalMessage = {
         conversationId: selectedConversation._id,
         from: myBusinessId,

@@ -23,6 +23,8 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     createdAt,
     senderSignature,
     receiverSignature,
+    _id,
+    messageMetadata,
   } = contract;
 
   // בודק מי המשתמש הנוכחי - האם הוא השולח או המקבל
@@ -32,6 +34,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
   const receiverSigRef = useRef();
   const [localReceiverSig, setLocalReceiverSig] = useState(receiverSignature || "");
   const [hasSigned, setHasSigned] = useState(!!receiverSignature);
+  const [isApproving, setIsApproving] = useState(false);
 
   // אם התקבלה חתימה חדשה מהשרת, מעדכן מקומית
   useEffect(() => {
@@ -51,29 +54,49 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
   const handleApprove = async () => {
     if (!localReceiverSig) return;
 
+    if (status === "מאושר") {
+      alert("ההסכם כבר אושר, לא ניתן לשנות.");
+      return;
+    }
+
+    setIsApproving(true);
+
     const updatedContract = {
       ...contract,
       receiverSignature: localReceiverSig,
       status: "מאושר",
+      updatedAt: new Date().toISOString(),
     };
 
     try {
-      // שולח הודעה עם עדכון ההסכם דרך API (לפי הצורך שלך - החלף את הנתיב)
+      // עדכון ההסכם בשרת (החלף את הנתיב לפי ה-API שלך)
+      const token = localStorage.getItem("token");
+      const res = await API.put(`/collab-contracts/${_id}`, updatedContract, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.data) {
+        alert("שגיאה בעדכון ההסכם, נסה שנית.");
+        setIsApproving(false);
+        return;
+      }
+
+      // שליחת הודעה בצ'אט עם ההסכם המעודכן
       await API.post("/chat/send", {
-        ...contract.messageMetadata,
+        ...messageMetadata,
         type: "contract",
         contractData: updatedContract,
         time: new Date().toISOString(),
       });
+
+      // מעדכן קומפוננטה אב
+      onApprove(updatedContract);
     } catch (err) {
       console.error("❌ שגיאה בשליחת אישור החוזה לשרת:", err);
+      alert("שגיאה בשליחת אישור ההסכם, נסה שנית.");
+    } finally {
+      setIsApproving(false);
     }
-
-    // מעדכן בקומפוננטה האב
-    onApprove({
-      receiverSignature: localReceiverSig,
-      status: "מאושר",
-    });
   };
 
   return (
@@ -89,7 +112,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       <div className="static-field"><strong>מה הוא מצפה לקבל:</strong> {receiving}</div>
       <div className="static-field"><strong>סוג שיתוף:</strong> {type}</div>
       <div className="static-field"><strong>עמלה / תשלום:</strong> {payment || "ללא"}</div>
-      <div className="static-field"><strong>תוקף:</strong> {startDate} עד {endDate}</div>
+      <div className="static-field"><strong>תוקף:</strong> {startDate || "לא מוגדר"} עד {endDate || "לא מוגדר"}</div>
       <div className="static-field">
         <strong>תנאים:</strong> {cancelAnytime ? "❎ ביטול בכל שלב" : ""} {confidentiality ? "| 🔒 סודיות" : ""}
       </div>
@@ -111,7 +134,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
         <strong>✍️ חתימת {receiver?.businessName}:</strong>
         {localReceiverSig ? (
           <img src={localReceiverSig} alt="חתימת מקבל" className="view-signature-image" />
-        ) : isReceiver ? (
+        ) : isReceiver && status !== "מאושר" ? (
           <>
             <SignatureCanvas
               penColor="#000"
@@ -126,6 +149,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
               <button
                 className="collab-form-button"
                 onClick={handleReceiverSign}
+                disabled={isApproving}
               >
                 ✍️ שמור חתימה
               </button>
@@ -133,14 +157,15 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
                 <button
                   className="collab-form-button"
                   onClick={handleApprove}
+                  disabled={isApproving}
                 >
-                  ✅ אני מאשר/ת את ההסכם
+                  {isApproving ? "שולח אישור..." : "✅ אני מאשר/ת את ההסכם"}
                 </button>
               )}
             </div>
           </>
         ) : (
-          <span>טרם נחתם</span>
+          <span>{status === "מאושר" ? "ההסכם אושר" : "טרם נחתם"}</span>
         )}
       </div>
     </div>
