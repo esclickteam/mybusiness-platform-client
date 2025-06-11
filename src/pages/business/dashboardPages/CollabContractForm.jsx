@@ -22,6 +22,8 @@ const CollabContractForm = ({
     senderSignature: "",
     receiverSignature: "",
     status: "ממתין לאישור",
+    receiver: { businessName: partnerBusiness.name || "" },
+    sender: { businessName: currentUser.businessName || "" },
   });
 
   const senderSigRef = useRef();
@@ -35,10 +37,21 @@ const CollabContractForm = ({
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+
+    // אם משתנה cancelAnytime, אפס תאריכים במידת הצורך
+    if (name === "cancelAnytime" && checked) {
+      setForm((prev) => ({
+        ...prev,
+        cancelAnytime: true,
+        startDate: "",
+        endDate: "",
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
   const saveSenderSignature = () => {
@@ -60,17 +73,20 @@ const CollabContractForm = ({
   };
 
   const handleSend = () => {
-    // דרישה שכל השדות מלאים, וחתימות קיימות
+    // דרישה שכל השדות מלאים (תאריכים רק אם לא סימנו ביטול)
     if (
       !form.title ||
       !form.description ||
       !form.giving ||
       !form.receiving ||
-      !form.type ||
-      !form.startDate ||
-      !form.endDate
+      !form.type
     ) {
       alert("נא למלא את כל השדות החיוניים.");
+      return;
+    }
+
+    if (!form.cancelAnytime && (!form.startDate || !form.endDate)) {
+      alert("נא למלא תאריכי התחלה וסיום או לבחור 'ניתן לבטל בכל שלב'.");
       return;
     }
 
@@ -95,7 +111,7 @@ const CollabContractForm = ({
     <div className="contract-form-container">
       <h2 className="contract-title">🤝 הסכם שיתוף פעולה</h2>
 
-      <form className="contract-form">
+      <form className="contract-form" onSubmit={(e) => e.preventDefault()}>
         <div>
           <label>שם העסק שלך:</label>
           <div className="static-field">{currentUser.businessName}</div>
@@ -191,14 +207,16 @@ const CollabContractForm = ({
             name="startDate"
             value={form.startDate}
             onChange={handleChange}
-            required
+            required={!form.cancelAnytime}
+            disabled={form.cancelAnytime}
           />
           <input
             type="date"
             name="endDate"
             value={form.endDate}
             onChange={handleChange}
-            required
+            required={!form.cancelAnytime}
+            disabled={form.cancelAnytime}
           />
         </div>
 
