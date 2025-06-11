@@ -423,11 +423,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const handleCollabSubmit = async (formData) => {
     try {
       const token = await refreshAccessToken();
+
+      console.log("Sending contract data:", formData); // לוג לפני שליחה
+
       const res = await API.post(
         "/collab-contracts",
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      console.log("Response from server:", res); // לוג אחרי שליחה
 
       if (!res.data || !res.data.contractId) {
         alert("התרחשה שגיאה ביצירת ההסכם");
