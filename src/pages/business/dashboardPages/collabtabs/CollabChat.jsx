@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useAuth } from "../../../../context/AuthContext";
+import CollabContractForm from "../CollabContractForm";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
