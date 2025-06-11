@@ -450,14 +450,40 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   };
 
   // אישור הסכם (חתימה שנייה)
-  const handleApproveContract = (update) => {
-    // עדכן בחזרה בצאט (למשל את הסטטוס והחתימה)
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg._id === update._id ? { ...msg, ...update } : msg
-      )
-    );
-    closeContractView();
+  const handleApproveContract = async (update) => {
+    try {
+      const token = await refreshAccessToken();
+      // שלח עדכון חתימה לשרת (עדכן את הAPI שלך בהתאם)
+      const res = await API.put(
+        `/collab-contracts/${update._id}`,
+        update,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!res.data) throw new Error("Update failed");
+
+      // עדכן את ההודעה בצ'אט עם סטטוס וחתימה חדשים
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.contractData?._id === update._id
+            ? { ...msg, contractData: { ...msg.contractData, ...update } }
+            : msg
+        )
+      );
+      closeContractView();
+
+      // שלח הודעה לצ'אט שמסמנת אישור חתימה
+      const approvalMessage = {
+        conversationId: selectedConversation._id,
+        from: myBusinessId,
+        to: selectedConversation.participants.find(id => id !== myBusinessId),
+        text: `ההסכם עם ID ${update._id} אושר על ידי ${myBusinessName}`,
+        type: "info",
+      };
+      socketRef.current.emit("sendMessage", approvalMessage);
+    } catch (err) {
+      alert("שגיאה באישור ההסכם, נסה שנית.");
+      console.error(err);
+    }
   };
 
   const getPartnerBusiness = (conv) => {
