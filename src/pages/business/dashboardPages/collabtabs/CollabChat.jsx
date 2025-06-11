@@ -8,8 +8,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useAuth } from "../../../../context/AuthContext";
 
-import CollabContractForm from "../CollabContractForm"; // טופס הסכם שיתוף פעולה
-import CollabPackageForm from "../CollabPackageForm"; // טופס הסכם חבילה משותפת (הוסף קובץ חדש)
+import CollabContractForm from "../esclickTabs/CollabContractForm";
+import CollabContractView from "../esclickTabs/CollabContractView";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -17,7 +17,6 @@ function ChatInput({
   onSendText,
   onSendFile,
   onOpenCollabForm,
-  onOpenPackageForm,
   uploading,
   disabled,
 }) {
@@ -38,8 +37,6 @@ function ChatInput({
     closeMenu();
     if (option === "collab") {
       onOpenCollabForm();
-    } else if (option === "package") {
-      onOpenPackageForm();
     } else if (option === "file") {
       fileInputRef.current.click();
     } else if (option === "image") {
@@ -120,9 +117,6 @@ function ChatInput({
         <MenuItem onClick={() => handleMenuClick("collab")}>
           הסכם שיתוף פעולה
         </MenuItem>
-        <MenuItem onClick={() => handleMenuClick("package")}>
-          הסכם חבילה משותפת
-        </MenuItem>
         <MenuItem onClick={() => handleMenuClick("file")}>קובץ</MenuItem>
         <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
       </Menu>
@@ -160,8 +154,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [showCollabForm, setShowCollabForm] = useState(false);
-  const [showPackageForm, setShowPackageForm] = useState(false);
+  const [viewContract, setViewContract] = useState(null); // contract object לצפיה/חתימה
 
+  // טען שיחות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -301,7 +296,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const sendMessage = (text) => {
     if (!text || !selectedConversation || !socketRef.current) return;
 
-    const otherId = selectedConversation.participants.find((id) => id !== myBusinessId);
+    const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
 
     const payload = {
       conversationId: selectedConversation._id,
@@ -354,7 +349,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       formData.append("file", file);
       formData.append("conversationId", selectedConversation._id);
       formData.append("from", myBusinessId);
-      formData.append("to", selectedConversation.participants.find((id) => id !== myBusinessId));
+      formData.append("to", selectedConversation.participants.find(id => id !== myBusinessId));
 
       const token = await refreshAccessToken();
 
@@ -370,7 +365,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
       const data = await res.json();
 
-      const otherId = selectedConversation.participants.find((id) => id !== myBusinessId);
+      const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
 
       const payload = {
         conversationId: selectedConversation._id,
@@ -394,16 +389,19 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     setShowCollabForm(true);
   };
 
-  const openPackageForm = () => {
-    setShowPackageForm(true);
+  const closeCollabForm = () => {
+    setShowCollabForm(false);
   };
 
+  // שליחת טופס ההסכם
   const handleCollabSubmit = async (formData) => {
     try {
       const token = await refreshAccessToken();
-      const res = await API.post("/collab-contracts", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await API.post(
+        "/collab-contracts",
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       if (!res.data || !res.data.contractId) {
         alert("התרחשה שגיאה ביצירת ההסכם");
@@ -411,37 +409,33 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       }
 
       const contractUrl = `${window.location.origin}/business/collab-contracts/${res.data.contractId}`;
-
       sendMessage(`הסכם שיתוף פעולה נוצר: ${contractUrl}`);
-
       setShowCollabForm(false);
     } catch (err) {
-      console.error("שגיאה ביצירת הסכם:", err);
-      alert("שגיאה ביצירת הסכם, נסה שוב.");
+      console.error("שגיאה ביצירת ההסכם:", err);
+      alert("שגיאה ביצירת ההסכם, נסה שנית.");
     }
   };
 
-  const handlePackageSubmit = async (formData) => {
-    try {
-      const token = await refreshAccessToken();
-      const res = await API.post("/collab-packages", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  // פתיחת הצגה / חתימה על הסכם
+  const openContractView = (contract) => {
+    setViewContract(contract);
+  };
 
-      if (!res.data || !res.data.packageId) {
-        alert("התרחשה שגיאה ביצירת הסכם החבילה");
-        return;
-      }
+  // סגירת הצגת הסכם
+  const closeContractView = () => {
+    setViewContract(null);
+  };
 
-      const packageUrl = `${window.location.origin}/business/collab-packages/${res.data.packageId}`;
-
-      sendMessage(`הסכם חבילה משותפת נוצר: ${packageUrl}`);
-
-      setShowPackageForm(false);
-    } catch (err) {
-      console.error("שגיאה ביצירת הסכם חבילה:", err);
-      alert("שגיאה ביצירת הסכם החבילה, נסה שוב.");
-    }
+  // אישור הסכם (חתימה שנייה)
+  const handleApproveContract = (update) => {
+    // עדכן בחזרה בצאט (למשל את הסטטוס והחתימה)
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg._id === update._id ? { ...msg, ...update } : msg
+      )
+    );
+    closeContractView();
   };
 
   const getPartnerBusiness = (conv) => {
@@ -543,59 +537,99 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               >
                 שיחה עם {getPartnerBusiness(selectedConversation).businessName}
               </Box>
-              {messages.map((msg, i) => (
-                <Box
-                  key={msg._id || i}
-                  sx={{
-                    background:
-                      msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-                    alignSelf:
-                      msg.fromBusinessId === myBusinessId
-                        ? "flex-end"
-                        : "flex-start",
-                    p: 1.2,
-                    borderRadius: 2,
-                    mb: 1,
-                    maxWidth: 340,
-                    boxShadow: 1,
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {msg.isFile ? (
-                    msg.fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                      <img
-                        src={msg.fileUrl}
-                        alt={msg.text || "קובץ"}
-                        style={{ maxWidth: "100%", borderRadius: 8 }}
-                      />
-                    ) : (
-                      <a
-                        href={msg.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+              {messages.map((msg, i) => {
+                // הצגה מיוחדת להודעות הסכם (אם מזהים שההודעה מכילה קישור להסכם)
+                if (msg.type === "contract" && msg.contractData) {
+                  return (
+                    <Box
+                      key={msg._id || i}
+                      sx={{
+                        background:
+                          msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                        alignSelf:
+                          msg.fromBusinessId === myBusinessId
+                            ? "flex-end"
+                            : "flex-start",
+                        p: 1.2,
+                        borderRadius: 2,
+                        mb: 1,
+                        maxWidth: 340,
+                        boxShadow: 1,
+                        wordBreak: "break-word",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => openContractView(msg.contractData)}
+                      title="לחץ לצפייה / חתימה על ההסכם"
+                    >
+                      📄 {msg.text || "הסכם שיתוף פעולה"}
+                      <Box
+                        sx={{
+                          fontSize: 11,
+                          color: "#888",
+                          mt: 0.5,
+                          textAlign: "left",
+                        }}
                       >
-                        {msg.text || "קובץ להורדה"}
-                      </a>
-                    )
-                  ) : (
-                    <Box>{msg.text}</Box>
-                  )}
+                        {msg.timestamp &&
+                          new Date(msg.timestamp).toLocaleTimeString("he-IL", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                      </Box>
+                    </Box>
+                  );
+                }
+
+                return (
                   <Box
+                    key={msg._id || i}
                     sx={{
-                      fontSize: 11,
-                      color: "#888",
-                      mt: 0.5,
-                      textAlign: "left",
+                      background:
+                        msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                      alignSelf:
+                        msg.fromBusinessId === myBusinessId
+                          ? "flex-end"
+                          : "flex-start",
+                      p: 1.2,
+                      borderRadius: 2,
+                      mb: 1,
+                      maxWidth: 340,
+                      boxShadow: 1,
+                      wordBreak: "break-word",
                     }}
                   >
-                    {msg.timestamp &&
-                      new Date(msg.timestamp).toLocaleTimeString("he-IL", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                    {msg.isFile ? (
+                      msg.fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                        <img
+                          src={msg.fileUrl}
+                          alt={msg.text || "קובץ"}
+                          style={{ maxWidth: "100%", borderRadius: 8 }}
+                        />
+                      ) : (
+                        <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
+                          {msg.text || "קובץ להורדה"}
+                        </a>
+                      )
+                    ) : (
+                      <Box>{msg.text}</Box>
+                    )}
+                    <Box
+                      sx={{
+                        fontSize: 11,
+                        color: "#888",
+                        mt: 0.5,
+                        textAlign: "left",
+                      }}
+                    >
+                      {msg.timestamp &&
+                        new Date(msg.timestamp).toLocaleTimeString("he-IL", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                    </Box>
                   </Box>
-                </Box>
-              ))}
+                );
+              })}
               <div ref={messagesEndRef} />
             </>
           ) : (
@@ -605,35 +639,34 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
-        {/* תיבת הקלט */}
-        {selectedConversation && (
+        {/* תיבת קלט + כפתורים */}
+        {selectedConversation && !showCollabForm && !viewContract && (
           <ChatInput
             onSendText={sendMessage}
             onSendFile={sendFileMessage}
             onOpenCollabForm={openCollabForm}
-            onOpenPackageForm={openPackageForm}
             uploading={uploading}
             disabled={false}
           />
         )}
 
         {/* מודאל טופס הסכם שיתוף פעולה */}
-        {showCollabForm && selectedConversation && (
+        {showCollabForm && (
           <CollabContractForm
             currentUser={{ businessName: myBusinessName }}
             partnerBusiness={getPartnerBusiness(selectedConversation)}
             onSubmit={handleCollabSubmit}
-            onClose={() => setShowCollabForm(false)}
+            onClose={closeCollabForm}
           />
         )}
 
-        {/* מודאל טופס הסכם חבילה משותפת */}
-        {showPackageForm && selectedConversation && (
-          <CollabPackageForm
+        {/* מודאל צפייה וחתימה על ההסכם */}
+        {viewContract && (
+          <CollabContractView
+            contract={viewContract}
             currentUser={{ businessName: myBusinessName }}
-            partnerBusiness={getPartnerBusiness(selectedConversation)}
-            onSubmit={handlePackageSubmit}
-            onClose={() => setShowPackageForm(false)}
+            onApprove={handleApproveContract}
+            onClose={closeContractView}
           />
         )}
 
