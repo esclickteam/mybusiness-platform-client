@@ -4,7 +4,7 @@ import API from "@api";
 
 export default function CreateAgreementForm({ onCreated }) {
   const [formData, setFormData] = useState({
-    invitedBusinessId: "",
+    partnerBusinessName: "", // שם העסק השותף במקום מזהה
     title: "",
     description: "",
     terms: "",
@@ -15,8 +15,6 @@ export default function CreateAgreementForm({ onCreated }) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const sigPadRef = useRef(null);
-
-  const isValidObjectId = (id) => /^[a-fA-F0-9]{24}$/.test(id);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,8 +27,8 @@ export default function CreateAgreementForm({ onCreated }) {
     e.preventDefault();
     setError("");
 
-    if (!isValidObjectId(formData.invitedBusinessId)) {
-      setError("מזהה העסק השותף לא תקין. ודא שהוזן מזהה תקין של MongoDB.");
+    if (!formData.partnerBusinessName.trim()) {
+      setError("יש להזין שם עסק שותף.");
       return;
     }
 
@@ -63,15 +61,15 @@ export default function CreateAgreementForm({ onCreated }) {
       <h2 style={{ textAlign: "center", marginBottom: 20 }}>צור הסכם שיתוף פעולה חדש</h2>
 
       <label>
-        מזהה העסק השותף:
+        שם העסק השותף:
         <input
           type="text"
-          name="invitedBusinessId"
-          value={formData.invitedBusinessId}
+          name="partnerBusinessName"
+          value={formData.partnerBusinessName}
           onChange={handleChange}
           required
           style={inputStyle}
-          placeholder="הזן מזהה עסק שותף"
+          placeholder="הזן שם עסק שותף"
         />
       </label>
 
