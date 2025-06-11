@@ -9,7 +9,7 @@ import CollabSentRequestsTab from "./collabtabs/CollabSentRequestsTab";
 import CollabReceivedRequestsTab from "./collabtabs/CollabReceivedRequestsTab";
 import CollabActiveTab from "./collabtabs/CollabActiveTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import PartnershipAgreementsTab from "./collabtabs/PartnershipAgreementsTab";
+import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
 const tabMap = {
