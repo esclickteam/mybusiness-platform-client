@@ -8,7 +8,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useAuth } from "../../../../context/AuthContext";
 
-import CollabContractForm from "./CollabContractForm"; // הטופס ששלחת
+import CollabContractForm from "../CollabContractForm";
+ // הטופס ששלחת
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
