@@ -7,7 +7,8 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
 import PartnershipAgreementForm from "../PartnershipAgreementForm";
-import PartnershipAgreementView from "../PartnershipAgreementView"; // <-- הוסף את הרכיב החדש להצגת ההסכם
+import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
+
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
