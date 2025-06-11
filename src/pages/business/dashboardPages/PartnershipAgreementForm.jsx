@@ -73,42 +73,45 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (isSender && !formData.senderSignature) {
-      alert("השולח חייב לחתום!");
-      return;
-    }
-    if (!isSender && !formData.receiverSignature) {
-      alert("המקבל חייב לחתום על ההסכם!");
-      return;
-    }
-    if (!formData.toBusinessId) {
-      alert("יש לבחור עסק שותף עם מזהה תקין");
-      return;
-    }
+  if (isSender && !formData.senderSignature) {
+    alert("השולח חייב לחתום!");
+    return;
+  }
+  if (!isSender && !formData.receiverSignature) {
+    alert("המקבל חייב לחתום על ההסכם!");
+    return;
+  }
+  if (!formData.toBusinessId) {
+    alert("יש לבחור עסק שותף עם מזהה תקין");
+    return;
+  }
 
-    try {
-      setSending(true);
-      await API.post(
-        "/collab-contracts/contract/send",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${yourAuthToken}`, // הוסף אם נדרש
-          },
-          withCredentials: true, // אם אתה משתמש בעוגיות לאימות
-        }
-      );
-      alert(isSender ? "ההסכם נשלח למקבל לחתימה!" : "ההסכם הושלם!");
-      if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
-    } catch (err) {
-      alert("שגיאה בשליחת ההסכם: " + (err?.response?.data?.error || err.message));
-    } finally {
-      setSending(false);
-    }
-  };
+  try {
+    setSending(true);
+    const token = localStorage.getItem("token"); // מושך טוקן מ־localStorage
+
+    await API.post(
+      "/collab-contracts/contract/send",
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,  // כאן העברת הטוקן
+        },
+        withCredentials: true,
+      }
+    );
+    alert(isSender ? "ההסכם נשלח למקבל לחתימה!" : "ההסכם הושלם!");
+    if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
+  } catch (err) {
+    alert("שגיאה בשליחת ההסכם: " + (err?.response?.data?.error || err.message));
+  } finally {
+    setSending(false);
+  }
+};
+
 
   return (
     <form
