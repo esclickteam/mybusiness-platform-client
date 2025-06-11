@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
-import SignAgreement from "../SignAgreement";
+import PartnershipAgreement from "./SignAgreement";
 
 export default function PartnershipAgreementsTab({ userBusinessId }) {
   const [agreements, setAgreements] = useState([]);
@@ -34,7 +34,7 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
         <button onClick={() => setSelectedId(null)} style={{ marginBottom: 10 }}>
           ⬅ חזור לרשימת ההסכמים
         </button>
-        <SignAgreement agreementId={selectedId} userBusinessId={userBusinessId} />
+        <PartnershipAgreement agreementId={selectedId} userBusinessId={userBusinessId} />
       </div>
     );
 
