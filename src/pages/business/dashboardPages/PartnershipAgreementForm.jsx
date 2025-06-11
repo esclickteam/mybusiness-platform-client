@@ -18,7 +18,7 @@ const partnershipAgreementFormInitial = {
   receiverSignature: "",
 };
 
-export default function PartnershipAgreementForm({ isSender = true, onSubmit }) {
+export default function PartnershipAgreementForm({ isSender = true }) {
   const [formData, setFormData] = useState(partnershipAgreementFormInitial);
 
   const senderSigPadRef = useRef(null);
@@ -71,22 +71,9 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // אם זה השולח, נשלח את ההסכם רק עם החתימה שלו
-    if (isSender) {
-      if (!formData.senderSignature) {
-        alert("השולח חייב לחתום!");
-        return;
-      }
-      alert("ההסכם נשלח למקבל לחתימה!");
-      onSubmit(formData, "pending"); // שליחה למקבל, סטטוס ממתין לחתימה
-    } else {
-      if (!formData.receiverSignature) {
-        alert("המקבל חייב לחתום על ההסכם!");
-        return;
-      }
-      alert("ההסכם הושלם!");
-      onSubmit(formData, "approved"); // שליחה שמירה עם סטטוס הושלם
-    }
+    alert("הסכם שיתוף הפעולה נשמר בהצלחה!");
+    console.log("Form Data:", formData);
+    // כאן תוסיף את השמירה בפועל (API וכו')
   };
 
   return (
@@ -344,3 +331,20 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
     </form>
   );
 }
+
+const inputStyle = {
+  width: "100%",
+  padding: 8,
+  marginTop: 4,
+  marginBottom: 16,
+  borderRadius: 10,
+  border: "1.5px solid #cec8ff",
+  fontSize: 16,
+  fontFamily: "'Arial', sans-serif",
+};
+
+const textareaStyle = {
+  ...inputStyle,
+  resize: "vertical",
+  minHeight: 70,
+};
