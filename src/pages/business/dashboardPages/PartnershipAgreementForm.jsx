@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
+import API from "../../../../api"; // עדכן נתיב לפי הצורך
 
 const partnershipAgreementFormInitial = {
   yourBusinessName: "",
   partnerBusinessName: "",
+  toBusinessId: "",            // חשוב! הוסף מזהה העסק השותף לשליחה
   agreementTitle: "",
   partnershipDescription: "",
   agreementSupplies: "",
@@ -20,6 +22,7 @@ const partnershipAgreementFormInitial = {
 
 export default function PartnershipAgreementForm({ isSender = true, onSubmit }) {
   const [formData, setFormData] = useState(partnershipAgreementFormInitial);
+  const [sending, setSending] = useState(false);
 
   const senderSigPadRef = useRef(null);
   const receiverSigPadRef = useRef(null);
@@ -69,23 +72,41 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isSender) {
-      if (!formData.senderSignature) {
-        alert("השולח חייב לחתום!");
-        return;
-      }
-      alert("ההסכם נשלח למקבל לחתימה!");
-      onSubmit(formData, "pending");
-    } else {
-      if (!formData.receiverSignature) {
-        alert("המקבל חייב לחתום על ההסכם!");
-        return;
-      }
-      alert("ההסכם הושלם!");
-      onSubmit(formData, "approved");
+    if (isSender && !formData.senderSignature) {
+      alert("השולח חייב לחתום!");
+      return;
+    }
+    if (!isSender && !formData.receiverSignature) {
+      alert("המקבל חייב לחתום על ההסכם!");
+      return;
+    }
+    if (!formData.toBusinessId) {
+      alert("יש לבחור עסק שותף עם מזהה תקין");
+      return;
+    }
+
+    try {
+      setSending(true);
+      await API.post(
+        "/collab-contracts/contract/send",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${yourAuthToken}`, // הוסף אם נדרש
+          },
+          withCredentials: true, // אם אתה משתמש בעוגיות לאימות
+        }
+      );
+      alert(isSender ? "ההסכם נשלח למקבל לחתימה!" : "ההסכם הושלם!");
+      if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
+    } catch (err) {
+      alert("שגיאה בשליחת ההסכם: " + (err?.response?.data?.error || err.message));
+    } finally {
+      setSending(false);
     }
   };
 
@@ -104,7 +125,20 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
     >
       <h2 style={{ textAlign: "center", color: "#5a59d6" }}>הסכם שיתוף פעולה 🤝</h2>
 
-      {/* כל השדות שלך כפי שהיו */}
+      {/* הוסף שדה לבחירת העסק השותף עם מזהה */}
+      <label>
+        מזהה עסק שותף (toBusinessId):
+        <input
+          type="text"
+          name="toBusinessId"
+          value={formData.toBusinessId}
+          onChange={handleChange}
+          placeholder="הזן מזהה עסק שותף"
+          style={inputStyle}
+          required
+        />
+      </label>
+
       <label>
         שם העסק שלך:
         <input
@@ -258,7 +292,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
         </label>
       </div>
 
-      {/* שדה חתימה של החותם הראשון */}
+      {/* חתימות */}
       <div style={{ marginTop: 20 }}>
         <label>חתימה (של החותם הראשון):</label>
         {isSender ? (
@@ -301,7 +335,6 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
         )}
       </div>
 
-      {/* שדה חתימה של החותם השני */}
       <div style={{ marginTop: 20 }}>
         <label>חתימה (של החותם השני):</label>
         {!isSender ? (
@@ -346,6 +379,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
 
       <button
         type="submit"
+        disabled={sending}
         style={{
           backgroundColor: "#7c5abb",
           color: "white",
@@ -353,11 +387,12 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
           borderRadius: 20,
           border: "none",
           padding: "10px 24px",
-          cursor: "pointer",
+          cursor: sending ? "not-allowed" : "pointer",
           marginTop: 16,
+          opacity: sending ? 0.7 : 1,
         }}
       >
-        שלח את ההסכם 📩
+        {sending ? "שולח..." : "שלח את ההסכם 📩"}
       </button>
     </form>
   );
