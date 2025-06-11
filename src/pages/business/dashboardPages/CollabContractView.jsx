@@ -36,12 +36,10 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
   const [hasSigned, setHasSigned] = useState(!!receiverSignature);
   const [isApproving, setIsApproving] = useState(false);
 
-  // אם התקבלה חתימה חדשה מהשרת, מעדכן מקומית
   useEffect(() => {
     if (receiverSignature) setLocalReceiverSig(receiverSignature);
   }, [receiverSignature]);
 
-  // שמירת חתימת המקבל
   const handleReceiverSign = () => {
     if (receiverSigRef.current) {
       const dataURL = receiverSigRef.current.getCanvas().toDataURL("image/png");
@@ -50,9 +48,11 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     }
   };
 
-  // אישור ההסכם ע"י המקבל ושליחת הנתונים לשרת (API)
   const handleApprove = async () => {
-    if (!localReceiverSig) return;
+    if (!localReceiverSig) {
+      alert("אנא חתום קודם.");
+      return;
+    }
 
     if (status === "מאושר") {
       alert("ההסכם כבר אושר, לא ניתן לשנות.");
@@ -69,7 +69,6 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     };
 
     try {
-      // עדכון ההסכם בשרת (החלף את הנתיב לפי ה-API שלך)
       const token = localStorage.getItem("token");
       const res = await API.put(`/collab-contracts/${_id}`, updatedContract, {
         headers: { Authorization: `Bearer ${token}` },
@@ -81,7 +80,6 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
         return;
       }
 
-      // שליחת הודעה בצ'אט עם ההסכם המעודכן
       await API.post("/chat/send", {
         ...messageMetadata,
         type: "contract",
@@ -89,7 +87,6 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
         time: new Date().toISOString(),
       });
 
-      // מעדכן קומפוננטה אב
       onApprove(updatedContract);
     } catch (err) {
       console.error("❌ שגיאה בשליחת אישור החוזה לשרת:", err);
