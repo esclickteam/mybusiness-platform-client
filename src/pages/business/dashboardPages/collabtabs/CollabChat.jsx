@@ -9,7 +9,6 @@ import MenuItem from "@mui/material/MenuItem";
 import { useAuth } from "../../../../context/AuthContext";
 
 import CollabContractForm from "../CollabContractForm";
- // הטופס ששלחת
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -47,7 +46,7 @@ function ChatInput({
   const onFileChange = (e) => {
     if (e.target.files.length > 0) {
       onSendFile(e.target.files[0]);
-      e.target.value = null; // איפוס בחירה
+      e.target.value = null;
     }
   };
 
@@ -68,7 +67,6 @@ function ChatInput({
         borderTop: "1px solid #eee",
       }}
     >
-      {/* כפתור + לפתיחת תפריט */}
       <Button
         onClick={openMenu}
         disabled={uploading || disabled}
@@ -90,7 +88,6 @@ function ChatInput({
         +
       </Button>
 
-      {/* שדה הטקסט */}
       <TextField
         fullWidth
         size="small"
@@ -106,7 +103,6 @@ function ChatInput({
         disabled={uploading || disabled}
       />
 
-      {/* כפתור שליחה */}
       <Button
         variant="contained"
         sx={{ fontWeight: 600 }}
@@ -116,7 +112,6 @@ function ChatInput({
         שלח
       </Button>
 
-      {/* תפריט הבחירה */}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
         <MenuItem onClick={() => handleMenuClick("collab")}>
           הסכם שיתוף פעולה
@@ -125,7 +120,6 @@ function ChatInput({
         <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
       </Menu>
 
-      {/* קלטים חבויים להעלאת קבצים */}
       <input
         type="file"
         style={{ display: "none" }}
@@ -160,7 +154,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [uploading, setUploading] = useState(false);
   const [showCollabForm, setShowCollabForm] = useState(false);
 
-  // טען שיחות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -178,7 +171,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // אתחול הסוקט
   useEffect(() => {
     async function setupSocket() {
       const token = await refreshAccessToken();
@@ -206,7 +198,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       });
 
       sock.on("tokenExpired", async () => {
-        console.log("Token expired, refreshing...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
@@ -227,7 +218,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
-  // הקשבה להודעות חדשות
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -260,7 +250,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, []);
 
-  // הצטרפות לשיחה חדשה וטעינת היסטוריה
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -297,16 +286,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation, refreshAccessToken]);
 
-  // גלילה אוטומטית להודעה האחרונה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה טקסט
   const sendMessage = (text) => {
     if (!text || !selectedConversation || !socketRef.current) return;
 
-    const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
+    const otherId = selectedConversation.participants.find((id) => id !== myBusinessId);
 
     const payload = {
       conversationId: selectedConversation._id,
@@ -351,7 +338,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   };
 
-  // שליחת קובץ
   const sendFileMessage = async (file) => {
     if (!file || !selectedConversation || !socketRef.current) return;
     setUploading(true);
@@ -360,7 +346,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       formData.append("file", file);
       formData.append("conversationId", selectedConversation._id);
       formData.append("from", myBusinessId);
-      formData.append("to", selectedConversation.participants.find(id => id !== myBusinessId));
+      formData.append("to", selectedConversation.participants.find((id) => id !== myBusinessId));
 
       const token = await refreshAccessToken();
 
@@ -376,7 +362,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
       const data = await res.json();
 
-      const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
+      const otherId = selectedConversation.participants.find((id) => id !== myBusinessId);
 
       const payload = {
         conversationId: selectedConversation._id,
@@ -396,21 +382,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // פתיחת טופס הסכם שיתוף פעולה
   const openCollabForm = () => {
     setShowCollabForm(true);
   };
 
-  // שליחה מטופס ההסכם
   const handleCollabSubmit = async (formData) => {
     try {
-      // שליחה לשרת להוספת הסכם חדש
       const token = await refreshAccessToken();
-      const res = await API.post(
-        "/collab-contracts",
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await API.post("/collab-contracts", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!res.data || !res.data.contractId) {
         alert("התרחשה שגיאה ביצירת ההסכם");
@@ -419,7 +400,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
       const contractUrl = `${window.location.origin}/business/collab-contracts/${res.data.contractId}`;
 
-      // שליחת הודעה בצ'אט עם הקישור להסכם
       sendMessage(`הסכם שיתוף פעולה נוצר: ${contractUrl}`);
 
       setShowCollabForm(false);
@@ -554,7 +534,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                         style={{ maxWidth: "100%", borderRadius: 8 }}
                       />
                     ) : (
-                      <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={msg.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {msg.text || "קובץ להורדה"}
                       </a>
                     )
@@ -586,7 +570,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
-        {/* תיבת קלט + כפתורים */}
         {selectedConversation && (
           <ChatInput
             onSendText={sendMessage}
@@ -599,12 +582,32 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
         {/* מודאל טופס הסכם */}
         {showCollabForm && selectedConversation && (
-          <CollabContractForm
-            currentUser={{ businessName: myBusinessName }}
-            partnerBusiness={getPartnerBusiness(selectedConversation)}
-            onSubmit={handleCollabSubmit}
-            onClose={() => setShowCollabForm(false)}
-          />
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              bgcolor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1500,
+              p: 2,
+              overflowY: "auto",
+            }}
+            onClick={() => setShowCollabForm(false)}
+          >
+            <Box onClick={(e) => e.stopPropagation()}>
+              <CollabContractForm
+                currentUser={{ businessName: myBusinessName }}
+                partnerBusiness={getPartnerBusiness(selectedConversation)}
+                onSubmit={handleCollabSubmit}
+                onClose={() => setShowCollabForm(false)}
+              />
+            </Box>
+          </Box>
         )}
 
         {onClose && (
