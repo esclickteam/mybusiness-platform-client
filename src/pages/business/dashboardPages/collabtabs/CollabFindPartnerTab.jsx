@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
-import PartnershipAgreementForm from "../../business/dashboardPages/PartnershipAgreementForm";
+import PartnershipAgreementForm from "../PartnershipAgreementForm";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
