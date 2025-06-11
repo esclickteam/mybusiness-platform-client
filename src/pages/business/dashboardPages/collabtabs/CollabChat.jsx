@@ -4,10 +4,128 @@ import API from "../../../../api";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { useAuth } from "../../../../context/AuthContext";
-import CollabContractForm from "../CollabContractForm";
 
 const SOCKET_URL = "https://api.esclick.co.il";
+
+function ChatInput({
+  onSendText,
+  onSendFile,
+  onSendAgreement,
+  uploading,
+  disabled,
+}) {
+  const [input, setInput] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const fileInputRef = useRef(null);
+  const imageInputRef = useRef(null);
+
+  const openMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuClick = (option) => {
+    closeMenu();
+    if (option === "agreement") {
+      onSendAgreement("collab");
+    } else if (option === "package") {
+      onSendAgreement("package");
+    } else if (option === "file") {
+      fileInputRef.current.click();
+    } else if (option === "image") {
+      imageInputRef.current.click();
+    }
+  };
+
+  const onFileChange = (e) => {
+    if (e.target.files.length > 0) {
+      onSendFile(e.target.files[0]);
+      e.target.value = null; // איפוס הקובץ שנבחר
+    }
+  };
+
+  const handleSendClick = () => {
+    if (input.trim() !== "") {
+      onSendText(input.trim());
+      setInput("");
+    }
+  };
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 1,
+        p: 2,
+        borderTop: "1px solid #eee",
+      }}
+    >
+      <Button onClick={openMenu} disabled={uploading || disabled}>
+        +
+      </Button>
+
+      <TextField
+        fullWidth
+        size="small"
+        placeholder="כתוב הודעה..."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSendClick();
+          }
+        }}
+        disabled={uploading || disabled}
+      />
+
+      <Button
+        variant="contained"
+        sx={{ fontWeight: 600 }}
+        onClick={handleSendClick}
+        disabled={input.trim() === "" || uploading || disabled}
+      >
+        שלח
+      </Button>
+
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
+        <MenuItem onClick={() => handleMenuClick("agreement")}>
+          הסכם שיתופי פעולה
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuClick("package")}>
+          הסכם חבילה משותפת
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuClick("file")}>קובץ</MenuItem>
+        <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
+      </Menu>
+
+      {/* קלטים מוסתרים לקבצים */}
+      <input
+        type="file"
+        style={{ display: "none" }}
+        ref={fileInputRef}
+        onChange={onFileChange}
+        accept="*/*"
+        disabled={uploading || disabled}
+      />
+      <input
+        type="file"
+        style={{ display: "none" }}
+        ref={imageInputRef}
+        onChange={onFileChange}
+        accept="image/*"
+        disabled={uploading || disabled}
+      />
+    </Box>
+  );
+}
 
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketRef = useRef(null);
@@ -19,9 +137,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
   const [error, setError] = useState("");
-  const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
   // טען שיחות עסקיות
@@ -167,8 +283,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   // שליחת הודעה טקסטואלית
-  const sendMessage = () => {
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+  const sendMessage = (text) => {
+    if (!text || !selectedConversation || !socketRef.current) return;
 
     const otherId =
       selectedConversation.participants.find((id) => id !== myBusinessId);
@@ -177,7 +293,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       conversationId: selectedConversation._id,
       from: myBusinessId,
       to: otherId,
-      text: input.trim(),
+      text,
     };
 
     const optimistic = {
@@ -189,7 +305,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
 
     setMessages((prev) => [...prev, optimistic]);
-    setInput("");
 
     socketRef.current.emit("sendMessage", payload, (ack) => {
       if (!ack.ok) {
@@ -208,25 +323,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       }
     });
 
-    // שליחה ל-API לשמירת ההודעה
     API.post(
       `/business-chat/${selectedConversation._id}/message`,
-      { text: optimistic.text },
+      { text: payload.text },
       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
     ).catch((err) => {
       console.error("שליחת הודעה ל־API נכשלה", err);
     });
   };
 
-  // טיפול בשינוי קובץ להעלאה
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  // שליחת קובץ
-  const sendFileMessage = async () => {
+  // שליחת קובץ (כללי או תמונה)
+  const sendFileMessage = async (file) => {
     if (!file || !selectedConversation || !socketRef.current) return;
     setUploading(true);
     try {
@@ -262,8 +369,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       };
 
       socketRef.current.emit("sendMessage", payload);
-
-      setFile(null);
     } catch (err) {
       alert("שגיאה בהעלאת הקובץ");
       console.error(err);
@@ -272,9 +377,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // שליחת הסכם שיתופי פעולה מוכן (PDF לדוגמה)
-  const sendAgreement = () => {
+  // שליחת הסכם קבוע (שיתוף פעולה או חבילה)
+  const sendAgreement = (type) => {
     if (!selectedConversation || !socketRef.current) return;
+
+    const url =
+      type === "collab"
+        ? "https://yourcdn.com/collab-agreement.pdf"
+        : "https://yourcdn.com/package-agreement.pdf";
 
     const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
 
@@ -282,8 +392,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       conversationId: selectedConversation._id,
       from: myBusinessId,
       to: otherId,
-      text: "הסכם שיתופי פעולה מצורף כאן:",
-      fileUrl: "https://yourcdn.com/collab-agreement.pdf", // שנה לכתובת שלך
+      text:
+        type === "collab"
+          ? "הסכם שיתופי פעולה מצורף כאן:"
+          : "הסכם חבילה משותפת מצורף כאן:",
+      fileUrl: url,
       isFile: true,
     };
 
@@ -377,11 +490,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           flexDirection: "column",
         }}
       >
-        <Box sx={{ p: 1, borderBottom: "1px solid #ddd" }}>
-          <Button onClick={sendAgreement} variant="outlined" size="small">
-            שלח הסכם שיתופי פעולה
-          </Button>
-        </Box>
         <Box sx={{ flex: 1, px: 2, pt: 2, overflowY: "auto" }}>
           {selectedConversation ? (
             <>
@@ -453,53 +561,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
-        {/* אזור הזנת הודעה והעלאת קבצים */}
+        {/* אזור הזנת הודעה + כפתור + */}
         {selectedConversation && (
-          <Box
-            sx={{
-              p: 2,
-              borderTop: "1px solid #eee",
-              display: "flex",
-              gap: 1,
-              alignItems: "center",
-            }}
-          >
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="כתוב הודעה..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  if (file) sendFileMessage();
-                  else sendMessage();
-                }
-              }}
-              disabled={uploading}
-            />
-            <input
-              type="file"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-              id="file-upload"
-              disabled={uploading}
-            />
-            <label htmlFor="file-upload">
-              <Button variant="outlined" component="span" disabled={uploading}>
-                {file ? file.name : "צרף קובץ"}
-              </Button>
-            </label>
-            <Button
-              variant="contained"
-              sx={{ fontWeight: 600 }}
-              onClick={file ? sendFileMessage : sendMessage}
-              disabled={!input.trim() && !file}
-            >
-              {uploading ? "מעלה..." : "שלח"}
-            </Button>
-          </Box>
+          <ChatInput
+            onSendText={sendMessage}
+            onSendFile={sendFileMessage}
+            onSendAgreement={sendAgreement}
+            uploading={uploading}
+            disabled={false}
+          />
         )}
 
         {onClose && (
