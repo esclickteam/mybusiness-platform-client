@@ -263,20 +263,30 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
         <label>חתימה (של החותם הראשון):</label>
         {isSender ? (
           <>
-            <SignatureCanvas
-              ref={senderSigPadRef}
-              penColor="black"
-              canvasProps={{
-                width: 400,
-                height: 150,
-                className: "sigCanvas",
-                style: { border: "1px solid #ccc", borderRadius: 5 },
-              }}
-              onEnd={saveSenderSignature}
-            />
-            <button type="button" onClick={clearSenderSignature} style={{ marginTop: 5 }}>
-              נקה חתימה
-            </button>
+            {formData.senderSignature ? (
+              <img
+                src={formData.senderSignature}
+                alt="חתימת השולח"
+                style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
+              />
+            ) : (
+              <>
+                <SignatureCanvas
+                  ref={senderSigPadRef}
+                  penColor="black"
+                  canvasProps={{
+                    width: 400,
+                    height: 150,
+                    className: "sigCanvas",
+                    style: { border: "1px solid #ccc", borderRadius: 5 },
+                  }}
+                  onEnd={saveSenderSignature}
+                />
+                <button type="button" onClick={clearSenderSignature} style={{ marginTop: 5 }}>
+                  נקה חתימה
+                </button>
+              </>
+            )}
           </>
         ) : (
           formData.senderSignature ? (
@@ -296,20 +306,30 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit }) 
         <label>חתימה (של החותם השני):</label>
         {!isSender ? (
           <>
-            <SignatureCanvas
-              ref={receiverSigPadRef}
-              penColor="black"
-              canvasProps={{
-                width: 400,
-                height: 150,
-                className: "sigCanvas",
-                style: { border: "1px solid #ccc", borderRadius: 5 },
-              }}
-              onEnd={saveReceiverSignature}
-            />
-            <button type="button" onClick={clearReceiverSignature} style={{ marginTop: 5 }}>
-              נקה חתימה
-            </button>
+            {formData.receiverSignature ? (
+              <img
+                src={formData.receiverSignature}
+                alt="חתימת המקבל"
+                style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
+              />
+            ) : (
+              <>
+                <SignatureCanvas
+                  ref={receiverSigPadRef}
+                  penColor="black"
+                  canvasProps={{
+                    width: 400,
+                    height: 150,
+                    className: "sigCanvas",
+                    style: { border: "1px solid #ccc", borderRadius: 5 },
+                  }}
+                  onEnd={saveReceiverSignature}
+                />
+                <button type="button" onClick={clearReceiverSignature} style={{ marginTop: 5 }}>
+                  נקה חתימה
+                </button>
+              </>
+            )}
           </>
         ) : (
           formData.receiverSignature ? (
