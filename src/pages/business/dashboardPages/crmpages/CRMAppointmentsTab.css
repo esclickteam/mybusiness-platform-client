@@ -269,8 +269,9 @@
 /* מניע שבירת שורות ומאפשר גלילה אופקית במידת הצורך לטלפון ואימייל */
 .phone-cell,
 .email-cell {
-  white-space: nowrap;      /* מונע שבירת שורה */
-  overflow-x: auto;         /* גלילה אופקית במידת הצורך */
-  max-width: 280px;         /* רוחב מקסימלי מתאים */
-  word-break: normal;       /* מונע שבירת מילים באמצע */
+  white-space: normal;      /* מאפשר שבירת שורות */
+  overflow-x: visible;      /* לא מראה גלילה אופקית */
+  max-width: none;          /* לא מגביל רוחב */
+  word-break: break-word;   /* שובר מילים במידת הצורך */
 }
+
