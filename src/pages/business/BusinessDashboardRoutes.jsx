@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";  // הוסף ייבוא של useAuth
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 
 import BuildBusinessPage  from "./dashboardPages/build/Build";
@@ -11,8 +12,6 @@ import Upgrade            from "./dashboardPages/Upgrade";
 import CartPage           from "./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage";
 
 import BusinessChatPage   from "../../components/BusinessChatPage";
-
-// 🟢 צ'אט עסקי אמיתי בין עסקים — עדכון ייבוא!
 import CollabChat         from "./dashboardPages/collabtabs/CollabChat";
 
 import AffiliatePage      from "./dashboardPages/AffiliatePage";
@@ -26,51 +25,60 @@ import CRMSettingsTab     from "./dashboardPages/crmpages/CRMSettingsTab";
 
 import GoalsPage          from "./dashboardPages/GoalsPage";
 
-const BusinessDashboardRoutes = () => (
-  <Routes>
-    {/* Layout משותף לכל לשוניות בדשבורד */}
-    <Route path="" element={<BusinessDashboardLayout />}>
-      {/* ברירת מחדל → תמצית */}
-      <Route index element={<Navigate to="dashboard" replace />} />
+const BusinessDashboardRoutes = () => {
+  const { user } = useAuth();
+  const businessId = user?.businessId;
 
-      {/* תמצית הדשבורד */}
-      <Route path="dashboard" element={<DashboardPage />} />
+  if (!businessId) {
+    return <div>טוען מידע העסק...</div>;
+  }
 
-      {/* עריכת העסק */}
-      <Route path="edit"  element={<BuildBusinessPage />} />
-      <Route path="build" element={<BuildBusinessPage />} />
+  return (
+    <Routes>
+      {/* Layout משותף לכל לשוניות בדשבורד */}
+      <Route path="" element={<BusinessDashboardLayout />}>
+        {/* ברירת מחדל → תמצית */}
+        <Route index element={<Navigate to="dashboard" replace />} />
 
-      {/* סל הקניות */}
-      <Route path="cart" element={<CartPage />} />
+        {/* תמצית הדשבורד */}
+        <Route path="dashboard" element={<DashboardPage />} />
 
-      {/* לשוניות נוספות */}
-      <Route path="collab"  element={<Collab />} />
-      <Route path="upgrade" element={<Upgrade />} />
-      <Route path="esclick" element={<EsclickAdvisor />} />
-      <Route path="goals"   element={<GoalsPage />} />
+        {/* עריכת העסק */}
+        <Route path="edit"  element={<BuildBusinessPage />} />
+        <Route path="build" element={<BuildBusinessPage />} />
 
-      {/* לשונית ההודעות עם לקוחות */}
-      <Route path="messages" element={<BusinessChatPage />} />
+        {/* סל הקניות */}
+        <Route path="cart" element={<CartPage />} />
 
-      {/* 🟢 הודעות עסקיות בין עסקים */}
-      <Route path="business-messages" element={<CollabChat />} />
+        {/* לשוניות נוספות */}
+        <Route path="collab"  element={<Collab />} />
+        <Route path="upgrade" element={<Upgrade />} />
+        <Route path="esclick" element={<EsclickAdvisor />} />
+        <Route path="goals"   element={<GoalsPage />} />
 
-      {/* שותפים ואפיליאייט */}
-      <Route path="affiliate" element={<AffiliatePage />} />
+        {/* לשונית ההודעות עם לקוחות */}
+        <Route path="messages" element={<BusinessChatPage />} />
 
-      {/* CRM nested */}
-      <Route path="crm" element={<CRMMain />}>
-        <Route index element={<Navigate to="appointments" replace />} />
-        <Route path="appointments" element={<CRMAppointmentsTab />} />
-        <Route path="clients"      element={<CRMClientsTab />} />
-        <Route path="services"     element={<CRMServicesTab />} />
-        <Route path="settings"     element={<CRMSettingsTab />} />
+        {/* 🟢 הודעות עסקיות בין עסקים */}
+        <Route path="business-messages" element={<CollabChat />} />
+
+        {/* שותפים ואפיליאייט */}
+        <Route path="affiliate" element={<AffiliatePage />} />
+
+        {/* CRM nested */}
+        <Route path="crm" element={<CRMMain />}>
+          <Route index element={<Navigate to="appointments" replace />} />
+          <Route path="appointments" element={<CRMAppointmentsTab businessId={businessId} />} />
+          <Route path="clients"      element={<CRMClientsTab businessId={businessId} />} />
+          <Route path="services"     element={<CRMServicesTab businessId={businessId} />} />
+          <Route path="settings"     element={<CRMSettingsTab businessId={businessId} />} />
+        </Route>
+
+        {/* כל נתיב אחר בתוך דשבורד → חזרה לתמצית */}
+        <Route path="*" element={<Navigate to="dashboard" replace />} />
       </Route>
-
-      {/* כל נתיב אחר בתוך דשבורד → חזרה לתמצית */}
-      <Route path="*" element={<Navigate to="dashboard" replace />} />
-    </Route>
-  </Routes>
-);
+    </Routes>
+  );
+};
 
 export default BusinessDashboardRoutes;
