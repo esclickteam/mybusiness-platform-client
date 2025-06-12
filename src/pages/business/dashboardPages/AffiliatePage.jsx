@@ -10,19 +10,38 @@ const AffiliatePage = () => {
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState("2025-04");
+  const [affiliateId, setAffiliateId] = useState(null);
 
-  // TODO: להחליף למזהה המשתמש המחובר שלך (מקור: קונטקסט, רדוקס, או props)
-  const affiliateId = "abcd1234";
-  const affiliateLink = `https://yourdomain.com/signup?ref=${affiliateId}`;
+  // קורא את הפרמטר 'ref' מה-URL ושומר ב-localStorage וב-state
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      localStorage.setItem("affiliateId", ref);
+      setAffiliateId(ref);
+    } else {
+      const storedRef = localStorage.getItem("affiliateId");
+      if (storedRef) setAffiliateId(storedRef);
+    }
+  }, []);
+
+  const affiliateLink = affiliateId
+    ? `https://yourdomain.com/signup?ref=${affiliateId}`
+    : "לא זוהה מזהה שותף";
 
   useEffect(() => {
+    if (!affiliateId) return;
+
     async function fetchAffiliateStats() {
       try {
         setLoadingStats(true);
-        const response = await axios.get("https://api.esclick.co.il/api/affiliate/stats", {
-          params: { affiliateId, month: selectedMonth },
-          withCredentials: true, // אם יש צורך בשליחת קוקיז או טוקן
-        });
+        const response = await axios.get(
+          "https://api.esclick.co.il/api/affiliate/stats",
+          {
+            params: { affiliateId, month: selectedMonth },
+            withCredentials: true,
+          }
+        );
         setStats(response.data);
       } catch (error) {
         setErrorStats("שגיאה בטעינת הנתונים");
@@ -57,9 +76,19 @@ const AffiliatePage = () => {
           onClick={(e) => e.target.select()}
           className="affiliate-link-input"
         />
-        <button onClick={() => navigator.clipboard.writeText(affiliateLink)}>
+        <button
+          onClick={() =>
+            affiliateId && navigator.clipboard.writeText(affiliateLink)
+          }
+          disabled={!affiliateId}
+        >
           📋 העתק קישור
         </button>
+        {!affiliateId && (
+          <p style={{ color: "red", marginTop: 8 }}>
+            לא זוהה מזהה שותף. התחבר כדי לקבל קישור אישי.
+          </p>
+        )}
       </section>
 
       {/* סטטיסטיקות */}
