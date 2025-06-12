@@ -1,5 +1,3 @@
-/* CRMClientsTab.css */
-
 .clients-header {
   display: flex;
   align-items: center;
@@ -123,6 +121,7 @@
   }
 }
 
+/* עיצוב כפתור או dropdown לסינון לפי סטטוס */
 .status-filter {
   padding: 0.4rem 0.8rem;
   border-radius: 8px;

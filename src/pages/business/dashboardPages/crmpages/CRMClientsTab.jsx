@@ -5,7 +5,7 @@ import API from "@api";
 const CRMClientsTab = ({ businessId }) => {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all"); // new state for status filter
+  const [statusFilter, setStatusFilter] = useState("all"); // מצב סינון סטטוס
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -14,13 +14,14 @@ const CRMClientsTab = ({ businessId }) => {
     async function fetchClients() {
       setLoading(true);
       try {
-        const res = await API.get(`/clients/from-clients?businessId=${businessId}&status=all`);
+        // שליפת הלקוחות לפי סטטוס - שולחים status מהסטייט כדי שתתעדכן אוטומטית
+        const res = await API.get(`/clients/from-clients?businessId=${businessId}&status=${statusFilter === "all" ? "" : statusFilter}`);
         const normalizedClients = res.data.map(c => ({
           fullName: c.name || "",
           phone: (c.phone || "").replace(/\s/g, ""),
           email: (c.email || "").replace(/\s/g, ""),
           address: c.address || "",
-          status: c.status || "incomplete", // assuming backend returns this
+          status: c.status || "incomplete", // מצפה מהשרת סטטוס
           id: c._id || Date.now(),
         }));
         setClients(normalizedClients);
@@ -31,13 +32,14 @@ const CRMClientsTab = ({ businessId }) => {
       }
     }
     fetchClients();
-  }, [businessId]);
+  }, [businessId, statusFilter]); // הוספת statusFilter לתלות useEffect כדי לעדכן בהתאם
 
-  // Apply both search and status filtering
+  // סינון לפי חיפוש וסטטוס
   const filteredClients = clients.filter(client => {
     const matchesSearch =
       client.fullName.toLowerCase().includes(search.toLowerCase()) ||
       client.phone.includes(search);
+    // כאן הסינון בוצע כבר בצד שרת, אבל השארנו כפול גם פה להגנה
     const matchesStatus =
       statusFilter === "all" || client.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -78,7 +80,7 @@ const CRMClientsTab = ({ businessId }) => {
               <th>טלפון</th>
               <th>כתובת</th>
               <th>אימייל</th>
-              <th>סטטוס</th> {/* עמודת סטטוס חדשה */}
+              <th>סטטוס</th>
             </tr>
           </thead>
           <tbody>
