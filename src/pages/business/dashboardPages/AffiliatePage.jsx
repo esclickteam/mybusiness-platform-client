@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 
@@ -12,13 +12,10 @@ const AffiliatePage = () => {
   const [selectedMonth, setSelectedMonth] = useState("2025-04");
   const [businessId, setBusinessId] = useState(null);
 
-  // מביא את businessId של המשתמש המחובר מ-API
   useEffect(() => {
     async function fetchBusinessId() {
       try {
-        const res = await axios.get("https://api.esclick.co.il/api/business/my", {
-          withCredentials: true,
-        });
+        const res = await API.get("/business/my");
         setBusinessId(res.data.businessId);
       } catch (error) {
         console.error("Error fetching businessId:", error);
@@ -28,25 +25,15 @@ const AffiliatePage = () => {
     fetchBusinessId();
   }, []);
 
-  // בונה את קישור השותף לפי businessId
-  const affiliateLink = businessId
-    ? `https://esclick.co.il/signup?ref=${businessId}`
-    : "לא זוהה מזהה עסק";
-
-  // מושך סטטיסטיקות לפי businessId ו־month
   useEffect(() => {
     if (!businessId) return;
 
     async function fetchAffiliateStats() {
       try {
         setLoadingStats(true);
-        const response = await axios.get(
-          "https://api.esclick.co.il/api/affiliate/stats",
-          {
-            params: { affiliateId: businessId, month: selectedMonth },
-            withCredentials: true,
-          }
-        );
+        const response = await API.get("/affiliate/stats", {
+          params: { affiliateId: businessId, month: selectedMonth },
+        });
         setStats(response.data);
       } catch (error) {
         setErrorStats("שגיאה בטעינת הנתונים");
@@ -58,9 +45,12 @@ const AffiliatePage = () => {
     fetchAffiliateStats();
   }, [businessId, selectedMonth]);
 
+  const affiliateLink = businessId
+    ? `https://esclick.co.il/signup?ref=${businessId}`
+    : "לא זוהה מזהה עסק";
+
   const handleReceiptSubmit = (e) => {
     e.preventDefault();
-    // TODO: שליחת הקבלה לשרת עם axios או fetch
     alert("קבלה הועלתה בהצלחה!");
     setShowReceiptForm(false);
   };
