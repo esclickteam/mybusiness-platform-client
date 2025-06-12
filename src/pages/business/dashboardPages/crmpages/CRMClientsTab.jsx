@@ -133,14 +133,17 @@ const CRMClientsTab = ({ businessId }) => {
                 <td colSpan="4">לא נמצאו לקוחות</td>
               </tr>
             ) : (
-              filteredClients.map((client) => (
-                <tr key={client.id}>
-                  <td>{client.fullName}</td>
-                  <td className="phone-cell">{client.phone}</td>
-                  <td className="address-cell">{client.address}</td>
-                  <td className="email-cell">{client.email}</td>
-                </tr>
-              ))
+              filteredClients.map((client) => {
+                console.log("Rendering client phone:", client.phone);
+                return (
+                  <tr key={client.id}>
+                    <td>{client.fullName}</td>
+                    <td className="phone-cell">{client.phone}</td>
+                    <td className="address-cell">{client.address}</td>
+                    <td className="email-cell">{client.email}</td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
