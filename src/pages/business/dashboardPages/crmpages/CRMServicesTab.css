@@ -63,60 +63,6 @@
   transition: transform 0.1s ease;
 }
 
-.add-form {
-  background: white;
-  padding: 1rem 1.5rem;
-  border-radius: 14px;
-  box-shadow: 0 0 15px rgba(124, 77, 255, 0.15);
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  justify-content: center;
-}
-
-.add-form input,
-.add-form select {
-  flex: 1 1 180px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1.5px solid #ccc;
-  font-weight: 600;
-  font-size: 15px;
-  color: #222;
-  outline-offset: 2px;
-}
-
-.add-form input:focus,
-.add-form select:focus {
-  border-color: #7c4dff;
-  box-shadow: 0 0 8px rgba(124, 77, 255, 0.5);
-  outline: none;
-}
-
-.add-form button {
-  flex: 1 1 150px;
-  background: linear-gradient(90deg, #7c4dff 0%, #9a67ff 100%);
-  border: none;
-  color: white;
-  font-weight: 900;
-  padding: 0.7rem;
-  border-radius: 30px;
-  cursor: pointer;
-  box-shadow: 0 6px 15px rgba(124, 77, 255, 0.4);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-.add-form button:hover {
-  background: linear-gradient(90deg, #6a3edb 0%, #804ef8 100%);
-  box-shadow: 0 8px 20px rgba(106, 62, 219, 0.7);
-}
-
-.add-form button:active {
-  transform: scale(0.96);
-  transition: transform 0.1s ease;
-}
-
 .appointments-table {
   width: 100%;
   border-collapse: separate;
@@ -147,10 +93,6 @@
   transition: background-color 0.3s ease;
 }
 
-.appointments-table tbody tr.editing {
-  background-color: #f0f0ff;
-}
-
 .appointments-table tbody tr:hover {
   background-color: #f5f2ff;
 }
@@ -165,95 +107,8 @@
   color: #222;
 }
 
-.appointments-table tbody td input,
-.appointments-table tbody td select {
-  width: 100%;
-  padding: 6px 8px;
-  border-radius: 8px;
-  border: 1.5px solid #ccc;
-  font-weight: 600;
-  font-size: 14px;
-  color: #222;
-  outline-offset: 2px;
-  box-sizing: border-box;
-}
-
-.appointments-table tbody td input:focus,
-.appointments-table tbody td select:focus {
-  border-color: #7c4dff;
-  box-shadow: 0 0 8px rgba(124, 77, 255, 0.5);
-  outline: none;
-}
-
-.status-btn {
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  user-select: none;
-  border: none;
-  color: white;
-  box-shadow: 0 3px 8px rgba(124, 77, 255, 0.4);
-  transition: background-color 0.3s ease;
-}
-
-.status-חדש {
-  background-color: #3f00ff;
-}
-
-.status-בטיפול {
-  background-color: #ff8c00;
-}
-
-.status-הושלם {
-  background-color: #228B22;
-}
-
-.status-btn:hover {
-  filter: brightness(1.1);
-}
-
-.actions-cell {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-.action-btn {
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  user-select: none;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.action-edit {
-  background-color: #d9d7ff;
-  color: #4a3fff;
-}
-
-.action-edit:hover {
-  background-color: #b3afff;
-  color: #2c1eff;
-}
-
-.action-cancel {
-  background-color: #ffd7d7;
-  color: #d43f3f;
-}
-
-.action-cancel:hover {
-  background-color: #ffb3b3;
-  color: #a70000;
-}
+/* הסרת סגנונות עריכה ומצב סטטוס (כי אלו תורים, לא שירותים) */
+/* מחקתי את הסגנונות: .appointments-table tbody tr.editing, .status-btn, .actions-cell, .action-btn ועוד */
 
 /* רספונסיביות */
 @media (max-width: 700px) {
@@ -274,9 +129,5 @@
     display: block;
     box-shadow: 0 0 15px rgba(124, 77, 255, 0.15);
     border-radius: 12px;
-  }
-
-  .actions-cell {
-    justify-content: flex-start;
   }
 }
