@@ -107,10 +107,47 @@
   color: #222;
 }
 
-/* הסרת סגנונות עריכה ומצב סטטוס (כי אלו תורים, לא שירותים) */
-/* מחקתי את הסגנונות: .appointments-table tbody tr.editing, .status-btn, .actions-cell, .action-btn ועוד */
+/* --- התאמת התא הראשון לטקסט ותמונה --- */
+.appointments-table tbody td:first-child {
+  text-align: left;
+  white-space: normal; /* אפשר שורות מרובות */
+  overflow: visible;
+  padding-left: 16px;
+  vertical-align: top;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
 
-/* רספונסיביות */
+.appointments-table tbody td:first-child img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.service-name-desc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.service-name-desc .name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #3a0ca3;
+}
+
+.service-name-desc .description {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 4px;
+  white-space: normal;
+}
+
+/* רספונסיביות למובייל */
 @media (max-width: 700px) {
   .appointments-table thead {
     display: none;
@@ -122,6 +159,7 @@
     text-align: right;
     padding: 10px 8px;
     border-bottom: 1px solid #ccc;
+    white-space: normal;
   }
 
   .appointments-table tbody tr {
@@ -130,5 +168,19 @@
     box-shadow: 0 0 15px rgba(124, 77, 255, 0.15);
     border-radius: 12px;
   }
-}
 
+  /* התאמת תא עם תמונה ומידע */
+  .appointments-table tbody td:first-child {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding-left: 0;
+    text-align: right;
+  }
+
+  .appointments-table tbody td:first-child img {
+    width: 70px;
+    height: 70px;
+    margin-top: 0;
+  }
+}

@@ -35,35 +35,50 @@ const CRMAppointmentsTab = () => {
       <div className="appointments-header">
         <input
           type="text"
-          placeholder="חפש לפי שם או טלפון..."
+          placeholder="חפש לפי שם השירות..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        {/* כאן תוכל להוסיף כפתור הוספת שירות אם תרצה */}
       </div>
 
       <table className="appointments-table">
         <thead>
           <tr>
-            <th>שם</th>
+            <th>שם + תמונה + תיאור</th>
             <th>משך (דקות)</th>
             <th>מחיר (ש"ח)</th>
-            <th>תיאור</th>
           </tr>
         </thead>
         <tbody>
           {filteredServices.length === 0 ? (
             <tr>
-              <td colSpan="4">לא נמצאו שירותים</td>
+              <td colSpan="3">לא נמצאו שירותים</td>
             </tr>
           ) : (
             filteredServices.map((service) => (
               <tr key={service._id}>
-                <td>{service.name}</td>
-                <td>{service.duration}</td>
-                <td>{service.price}</td>
-                <td>{service.description || "-"}</td>
+                <td>
+                  {service.imageUrl && (
+                    <img
+                      src={service.imageUrl}
+                      alt={service.name}
+                      className="service-image"
+                    />
+                  )}
+                  <div className="service-name-desc">
+                    <div className="name">{service.name}</div>
+                    <div className="description">
+                      {service.description || "-"}
+                    </div>
+                  </div>
+                </td>
+                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  {service.duration}
+                </td>
+                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  {service.price}
+                </td>
               </tr>
             ))
           )}
