@@ -159,131 +159,54 @@ const CRMAppointmentsTab = () => {
   }, [editData.date, editId]);
 
   const handleAddAppointment = async () => {
-    if (
-      !newAppointment.clientName ||
-      !newAppointment.clientPhone ||
-      !newAppointment.date ||
-      !newAppointment.time ||
-      !newAppointment.serviceId
-    ) {
-      alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
-      return;
-    }
+  if (
+    !newAppointment.clientName ||
+    !newAppointment.clientPhone ||
+    !newAppointment.date ||
+    !newAppointment.time ||
+    !newAppointment.serviceId
+  ) {
+    alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
+    return;
+  }
 
-    const service = services.find((s) => s._id === newAppointment.serviceId);
-    const duration = service?.duration || 30;
-    const statusEnum = "new";
+  const service = services.find((s) => s._id === newAppointment.serviceId);
+  const duration = service?.duration || 30;
+  const statusEnum = "new";
 
-    try {
-      const res = await API.post("/appointments", {
-        businessId,
-        serviceId: newAppointment.serviceId,
-        date: newAppointment.date,
-        time: newAppointment.time,
-        name: newAppointment.clientName,
-        phone: newAppointment.clientPhone,
-        address: newAppointment.address,
-        email: newAppointment.email,
-        note: newAppointment.note,
-        duration,
-        status: statusEnum,
-      });
+  try {
+    await API.post("/appointments", {
+      businessId,
+      serviceId: newAppointment.serviceId,
+      date: newAppointment.date,
+      time: newAppointment.time,
+      name: newAppointment.clientName,
+      phone: newAppointment.clientPhone,
+      address: newAppointment.address,
+      email: newAppointment.email,
+      note: newAppointment.note,
+      duration,
+      status: statusEnum,
+    });
 
-      const newAppt = res.data.appt;
+    // לא מוסיפים את התיאום פה כדי למנוע כפילויות
+    setShowAddForm(false);
+    setNewAppointment({
+      clientName: "",
+      clientPhone: "",
+      address: "",
+      email: "",
+      note: "",
+      serviceId: "",
+      serviceName: "",
+      date: "",
+      time: "",
+    });
+  } catch {
+    alert("❌ שגיאה ביצירת התיאום");
+  }
+};
 
-      setAppointments((prev) => [...prev, newAppt]);
-      setShowAddForm(false);
-      setNewAppointment({
-        clientName: "",
-        clientPhone: "",
-        address: "",
-        email: "",
-        note: "",
-        serviceId: "",
-        serviceName: "",
-        date: "",
-        time: "",
-      });
-    } catch {
-      alert("❌ שגיאה ביצירת התיאום");
-    }
-  };
-
-  const startEdit = (appt) => {
-    setEditId(appt._id);
-    setEditData({ ...appt });
-  };
-
-  // פונקציה לעדכון שדה יחיד אוטומטי בזמן אמת
-  const saveFieldEdit = async (field, value) => {
-    if (!editId) return;
-    try {
-      const updateData = { [field]: value };
-      await API.put(`/appointments/${editId}`, updateData);
-      setAppointments((prev) =>
-        prev.map((appt) =>
-          appt._id === editId ? { ...appt, [field]: value } : appt
-        )
-      );
-    } catch (error) {
-      alert("❌ שגיאה בעדכון השדה");
-    }
-  };
-
-  const saveEdit = async () => {
-    if (
-      !editData.clientName ||
-      !editData.clientPhone ||
-      !editData.date ||
-      !editData.time ||
-      !editData.serviceId
-    ) {
-      alert("יש למלא שם, טלפון, שירות, תאריך ושעה לעדכון");
-      return;
-    }
-
-    const service = services.find((s) => s._id === editData.serviceId);
-    const duration = service?.duration || 30;
-    const statusEnum = editData.status || "new";
-
-    try {
-      await API.put(`/appointments/${editId}`, {
-        serviceId: editData.serviceId,
-        date: editData.date,
-        time: editData.time,
-        name: editData.clientName,
-        phone: editData.clientPhone,
-        address: editData.address,
-        email: editData.email,
-        note: editData.note,
-        duration,
-        status: statusEnum,
-      });
-
-      setAppointments((prev) =>
-        prev.map((appt) =>
-          appt._id === editId
-            ? {
-                ...appt,
-                clientName: editData.clientName,
-                clientPhone: editData.clientPhone,
-                address: editData.address,
-                email: editData.email,
-                note: editData.note,
-                serviceId: editData.serviceId,
-                serviceName: editData.serviceName,
-                date: editData.date,
-                time: editData.time,
-                status: statusEnum,
-              }
-            : appt
-        )
-      );
-      setEditId(null);
-    } catch {
-      alert("❌ שגיאה בעדכון התיאום");
-    }
-  };
 
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
