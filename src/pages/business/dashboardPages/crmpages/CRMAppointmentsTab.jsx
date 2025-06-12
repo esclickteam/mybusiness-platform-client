@@ -419,7 +419,7 @@ const CRMAppointmentsTab = () => {
                     appt.clientName
                   )}
                 </td>
-                <td>
+                <td className="phone-cell">
                   {editId === appt._id ? (
                     <input
                       value={editData.clientPhone}
@@ -447,7 +447,7 @@ const CRMAppointmentsTab = () => {
                     appt.address
                   )}
                 </td>
-                <td>
+                <td className="email-cell">
                   {editId === appt._id ? (
                     <input
                       type="email"
