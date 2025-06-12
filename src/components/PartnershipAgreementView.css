@@ -1,65 +1,79 @@
 .agreement-view-container {
   max-width: 700px;
-  margin: 1rem auto;
-  padding: 1.5rem;
-  background: white;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
   direction: rtl;
-  color: #333;
+  color: #222;
 }
 
 .agreement-title {
-  text-align: center;
+  font-size: 1.8rem;
   font-weight: 700;
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   color: #5a59d6;
+}
+
+.agreement-view-container p {
+  font-size: 1rem;
+  margin: 8px 0;
 }
 
 .status {
   font-weight: 700;
-  padding: 0.2rem 0.5rem;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 4px;
   text-transform: capitalize;
 }
 
 .status-partially_signed {
-  background-color: #f3d4f4;
-  color: #922ea1;
+  background-color: #f0ad4e;
+  color: #fff;
 }
 
 .status-fully_signed {
-  background-color: #d3f0d4;
-  color: #2b7a0b;
+  background-color: #5cb85c;
+  color: #fff;
 }
 
 .status-cancelled {
-  background-color: #f9d6d6;
-  color: #b71c1c;
+  background-color: #d9534f;
+  color: #fff;
+}
+
+hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #ddd;
 }
 
 .signatures-container {
   display: flex;
   gap: 2rem;
-  justify-content: center;
+  justify-content: start;
+  flex-wrap: wrap;
 }
 
 .signature-image {
   max-width: 200px;
-  max-height: 100px;
+  max-height: 120px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  object-fit: contain;
 }
 
 .sign-button {
-  padding: 10px 20px;
+  margin-top: 20px;
   background-color: #5a59d6;
-  color: white;
   border: none;
+  padding: 12px 24px;
   border-radius: 6px;
-  font-weight: 600;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -69,26 +83,34 @@
 }
 
 .signature-pad-container {
-  margin-top: 1rem;
+  margin-top: 20px;
 }
 
-.signature-buttons > button {
+.signature-buttons button {
   margin-right: 10px;
-  padding: 8px 14px;
+  padding: 8px 18px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   font-weight: 600;
+}
+
+.signature-buttons button:nth-child(1) {
+  background-color: #f0ad4e;
+  color: white;
+}
+
+.signature-buttons button:nth-child(2) {
   background-color: #5a59d6;
   color: white;
-  transition: background-color 0.3s ease;
 }
 
-.signature-buttons > button:hover:not(:disabled) {
-  background-color: #4a48b5;
+.signature-buttons button:nth-child(3) {
+  background-color: #d9534f;
+  color: white;
 }
 
-.signature-buttons > button:disabled {
-  background-color: #a3a0d7;
+.signature-buttons button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
-import "./CreateAgreementForm.css"; // <-- הוספת ייבוא CSS
+import "./CreateAgreementForm.css"; // <-- ייבוא CSS
 
 export default function CreateAgreementForm({ onCreated }) {
   const [formData, setFormData] = useState({
