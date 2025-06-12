@@ -182,7 +182,7 @@ const CRMAppointmentsTab = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        <button className="add-btn" onClick={() => setShowAddForm(!showAddForm)}>➕ הוסף תיאום</button>
+        <button className="add-btn" onClick={() => setShowAddForm(!showAddForm)}>➕ הוסף שירות</button>
       </div>
 
       {showAddForm && (
@@ -216,7 +216,7 @@ const CRMAppointmentsTab = () => {
             onChange={(time) => setNewAppointment({ ...newAppointment, time })}
             businessId={businessId}
           />
-          <button onClick={handleAddAppointment}>📩 שמור תיאום</button>
+          <button onClick={handleAddAppointment}>📩 שמור שירות</button>
         </div>
       )}
 
