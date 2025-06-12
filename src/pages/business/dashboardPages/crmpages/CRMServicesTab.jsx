@@ -42,7 +42,11 @@ const CRMAppointmentsTab = () => {
           API.get("/business/my/services"),
         ]);
         setAppointments(appointmentsRes.data || []);
-        setServices(servicesRes.data.services || []);
+        // בדיקה של מבנה הנתונים ב-console:
+        console.log("Services API response:", servicesRes.data);
+        // התאמה למבנה הנתונים המדויק:
+        // אם השירותים במפתח data:
+        setServices(servicesRes.data.data || servicesRes.data.services || []);
       } catch (err) {
         console.error("Error fetching services", err);
       }
