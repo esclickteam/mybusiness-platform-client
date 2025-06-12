@@ -131,7 +131,7 @@
   border-collapse: separate;
   border-spacing: 0 8px;
   font-size: 0.95rem;
-  table-layout: fixed;
+  table-layout: auto;  /* חשוב: שינוי ל-auto */
   word-wrap: break-word;
   font-family: Arial, sans-serif;
 }
@@ -167,7 +167,7 @@
   padding: 0.55rem 0.9rem;
   text-align: right;
   vertical-align: middle;
-  max-width: 150px;
+  /* הסר max-width כדי לא להגביל רוחב */
   word-wrap: break-word;
   border-radius: 8px;
 }
@@ -266,12 +266,11 @@
   flex-wrap: wrap;
 }
 
-/* מניע שבירת שורות ומאפשר גלילה אופקית במידת הצורך לטלפון ואימייל */
+/* סגנון מיוחד לטלפון ואימייל - שבירת שורות מותאמת */
 .phone-cell,
 .email-cell {
-  white-space: normal;      /* מאפשר שבירת שורות */
-  overflow-x: visible;      /* לא מראה גלילה אופקית */
-  max-width: none;          /* לא מגביל רוחב */
-  word-break: break-word;   /* שובר מילים במידת הצורך */
+  white-space: normal;
+  overflow-x: visible;
+  max-width: none;
+  word-break: break-word;
 }
-
