@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API from "../../../../api";
+import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 
