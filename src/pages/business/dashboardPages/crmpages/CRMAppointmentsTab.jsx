@@ -6,9 +6,9 @@ import { useAuth } from "../../../../context/AuthContext";
 
 const statusCycle = ["new", "pending", "completed"];
 const statusMap = {
-  new: "חדש",
-  pending: "ממתין",
-  completed: "הושלם",
+  matched: 'תואם',
+  not_completed: 'לא הושלם',
+  completed: 'הושלם',
 };
 
 const CRMAppointmentsTab = () => {
