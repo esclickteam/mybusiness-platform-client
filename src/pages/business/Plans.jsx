@@ -4,9 +4,9 @@ import { useAuth } from "../../context/AuthContext";
 import "../../styles/Plans.css";
 
 const pricingOptions = {
-  month: { label: "חודש", price: 585, duration: 1 },
-  quarter: { label: "3 חודשים", price: 1580, duration: 3 },
-  year: { label: "שנה", price: 5850, duration: 12 },
+  month: { label: "חודש", monthlyPrice: 585, duration: 1 },
+  quarter: { label: "3 חודשים", monthlyPrice: 520, duration: 3 }, // מחיר מופחת לחודש
+  year: { label: "שנה", monthlyPrice: 490, duration: 12 },        // מחיר מופחת לחודש
 };
 
 export default function Plans() {
@@ -17,18 +17,19 @@ export default function Plans() {
 
   if (loading) return <p role="status" aria-live="polite" className="loading-text">טוען...</p>;
 
+  const { label, monthlyPrice, duration } = pricingOptions[selectedPlan];
+  const totalPrice = monthlyPrice * duration;
+
   const handleSelectPlan = () => {
     if (!user) {
       navigate("/login", { replace: true });
       return;
     }
 
-    const { label, price, duration } = pricingOptions[selectedPlan];
-
     navigate("/checkout", {
       state: {
         planName: `עסקליק – חבילת ניהול מלאה (${label})`,
-        totalPrice: price,
+        totalPrice,
         duration,
       },
     });
@@ -58,7 +59,7 @@ export default function Plans() {
         {/* חיבור הבחירה והתשלום לתחתית הכרטיס */}
         <div className="plan-footer">
           <div className="plan-duration-selector" role="radiogroup" aria-label="בחירת תוקף חבילה">
-            {Object.entries(pricingOptions).map(([key, { label, price }]) => (
+            {Object.entries(pricingOptions).map(([key, { label, monthlyPrice }]) => (
               <label key={key} className={`radio-label ${selectedPlan === key ? "selected" : ""}`}>
                 <input
                   type="radio"
@@ -67,21 +68,21 @@ export default function Plans() {
                   checked={selectedPlan === key}
                   onChange={() => setSelectedPlan(key)}
                 />
-                {label} — <strong>{price.toLocaleString()} ₪</strong>
+                {label} — <strong>{monthlyPrice.toLocaleString()} ₪ לחודש</strong>
               </label>
             ))}
           </div>
 
           <p className="plan-price" aria-live="polite" aria-atomic="true">
-            <strong>{pricingOptions[selectedPlan].price.toLocaleString()} ₪</strong> / {pricingOptions[selectedPlan].label} (כולל מע"מ)
+            סה"כ לתקופה: <strong>{totalPrice.toLocaleString()} ₪</strong> ({label})
           </p>
 
           <button
             className="select-button"
             onClick={handleSelectPlan}
-            aria-label={`הצטרפו עכשיו לחבילת עסקליק ${pricingOptions[selectedPlan].label}`}
+            aria-label={`הצטרפו עכשיו לחבילת עסקליק ${label}`}
           >
-            הצטרפו עכשיו לחבילת עסקליק {pricingOptions[selectedPlan].label}
+            הצטרפו עכשיו לחבילת עסקליק {label}
           </button>
         </div>
       </article>
