@@ -88,9 +88,10 @@
 
 /* מחלקות לתאים של אימייל וטלפון כדי לאפשר רוחב מלא ושורות חדשות */
 
-.clients-table td.email-cell,
-.clients-table td.phone-cell {
-  max-width: 100%;
-  display: block;
-  padding-bottom: 0.5rem;
+.clients-table td.phone-cell,
+.clients-table td.email-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; /* תתאים לפי הצורך */
 }

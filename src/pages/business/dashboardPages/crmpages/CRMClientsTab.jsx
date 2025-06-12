@@ -1,4 +1,3 @@
-// CRMClientsTab.jsx
 import React, { useState, useEffect } from "react";
 import "./CRMClientsTab.css";
 import API from "@api"; // נתיב ל־API שלך
@@ -20,8 +19,8 @@ const CRMClientsTab = ({ businessId }) => {
         const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
         const normalizedClients = res.data.map(c => ({
           fullName: c.clientName || "",
-          phone: c.clientPhone || "",
-          email: c.email || "",
+          phone: (c.clientPhone || "").replace(/\s/g, ""),
+          email: (c.email || "").replace(/\s/g, ""),
         }));
         setClients(normalizedClients);
       } catch (error) {
