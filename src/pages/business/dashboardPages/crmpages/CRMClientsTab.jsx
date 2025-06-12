@@ -17,7 +17,13 @@ const CRMClientsTab = ({ businessId }) => {
       setLoading(true);
       try {
         const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
-        setClients(res.data);
+        // המרה לשמות שדות אחידים בצד לקוח:
+        const normalizedClients = res.data.map(c => ({
+          fullName: c.clientName || "",
+          phone: c.clientPhone || "",
+          email: c.email || "",
+        }));
+        setClients(normalizedClients);
       } catch (error) {
         console.error("Error loading clients:", error);
       } finally {
@@ -29,7 +35,7 @@ const CRMClientsTab = ({ businessId }) => {
 
   const filteredClients = clients.filter(
     (client) =>
-      client.fullName.includes(search) ||
+      client.fullName.toLowerCase().includes(search.toLowerCase()) ||
       client.phone.includes(search)
   );
 
@@ -44,7 +50,12 @@ const CRMClientsTab = ({ businessId }) => {
 
     setClients((prev) => [
       ...prev,
-      { ...newClient, id: Date.now() },
+      {
+        fullName: newClient.name,
+        phone: newClient.phone,
+        email: newClient.email,
+        id: Date.now(),
+      },
     ]);
 
     setNewClient({ name: "", phone: "", email: "" });
@@ -89,11 +100,7 @@ const CRMClientsTab = ({ businessId }) => {
             value={newClient.email}
             onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
           />
-          <button
-            className="save-client-btn"
-            onClick={handleAddClient}
-            disabled={saving}
-          >
+          <button className="save-client-btn" onClick={handleAddClient} disabled={saving}>
             שמור לקוח
           </button>
         </div>
