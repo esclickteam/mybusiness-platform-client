@@ -109,6 +109,8 @@ const CRMAppointmentsTab = () => {
 
     try {
       const res = await API.patch(`/appointments/${id}/status`, { status: nextStatus });
+      console.log('PATCH status response:', res.data);
+
       const updatedAppt = res.data.appt;
 
       setAppointments((prev) =>
