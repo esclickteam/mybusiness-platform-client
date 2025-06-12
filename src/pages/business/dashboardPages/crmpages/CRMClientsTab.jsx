@@ -2,20 +2,20 @@ import React, { useState, useEffect } from "react";
 import "./CRMClientsTab.css";
 import API from "@api"; // נתיב ל־API שלך
 
-const CRMClientsTab = () => {
+const CRMClientsTab = ({ businessId }) => {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
   const [newClient, setNewClient] = useState({ name: "", phone: "", email: "" });
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // טעינת לקוחות מהשרת
   useEffect(() => {
+    if (!businessId) return;
+
     async function fetchClients() {
       setLoading(true);
       try {
-        const businessId = "הכנס כאן את ה-businessId של המשתמש"; // או קח מהקונטקסט/אוט'
-        const res = await API.get(`/clients-from-appointments?businessId=${businessId}`);
+        const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
         setClients(res.data);
       } catch (error) {
         console.error("Error loading clients:", error);
@@ -24,7 +24,7 @@ const CRMClientsTab = () => {
       }
     }
     fetchClients();
-  }, []);
+  }, [businessId]);
 
   const filteredClients = clients.filter(
     (client) =>
