@@ -103,7 +103,7 @@ const CRMAppointmentsTab = () => {
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
 
     try {
-      await API.put(`/appointments/${id}/status`, { status: nextStatus });
+      await API.patch(`/appointments/${id}/status`, { status: nextStatus });
       setAppointments((prev) =>
         prev.map((appt) => (appt._id === id ? { ...appt, status: nextStatus } : appt))
       );
