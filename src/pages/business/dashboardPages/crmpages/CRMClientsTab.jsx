@@ -5,10 +5,7 @@ import API from "@api";
 const CRMClientsTab = ({ businessId }) => {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
-  const [newClient, setNewClient] = useState({ name: "", phone: "", email: "", address: "" });
-  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!businessId) return;
@@ -40,45 +37,6 @@ const CRMClientsTab = ({ businessId }) => {
       client.phone.includes(search)
   );
 
-  const handleAddClient = async () => {
-    if (!newClient.name || !newClient.phone) {
-      alert("יש למלא שם וטלפון לפחות");
-      return;
-    }
-
-    if (saving) return;
-    setSaving(true);
-
-    try {
-      const res = await API.post('/clients', {
-        businessId,
-        clientName: newClient.name,
-        clientPhone: newClient.phone,
-        email: newClient.email,
-        address: newClient.address,
-      });
-
-      setClients((prev) => [
-        ...prev,
-        {
-          fullName: res.data.clientName || newClient.name,
-          phone: res.data.clientPhone || newClient.phone,
-          email: res.data.email || newClient.email,
-          address: res.data.address || newClient.address,
-          id: res.data._id || Date.now(),
-        },
-      ]);
-
-      setNewClient({ name: "", phone: "", email: "", address: "" });
-      setShowForm(false);
-    } catch (error) {
-      console.error("Error saving client:", error.response || error);
-      alert("שגיאה בשמירת הלקוח");
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <div className="crm-tab-content">
       <h2>👥 לקוחות</h2>
@@ -91,43 +49,8 @@ const CRMClientsTab = ({ businessId }) => {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        <button className="add-client-btn" onClick={() => setShowForm(!showForm)}>
-          ➕ לקוח חדש
-        </button>
+        {/* הכפתור הוסר */}
       </div>
-
-      {showForm && (
-        <div className="add-client-form">
-          <input
-            type="text"
-            placeholder="שם מלא"
-            value={newClient.name}
-            onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-          />
-          <input
-            type="tel"
-            placeholder="טלפון"
-            value={newClient.phone}
-            onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
-          />
-          <input
-            type="email"
-            placeholder="אימייל"
-            value={newClient.email}
-            onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="כתובת"
-            className="address-input"
-            value={newClient.address}
-            onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
-          />
-          <button className="save-client-btn" onClick={handleAddClient} disabled={saving}>
-            שמור לקוח
-          </button>
-        </div>
-      )}
 
       {loading ? (
         <p>טוען לקוחות...</p>
