@@ -44,7 +44,7 @@ const CRMAppointmentsTab = () => {
         setAppointments(appointmentsRes.data || []);
         setServices(servicesRes.data.services || []);
       } catch (err) {
-        console.error("Error fetching appointments or services", err);
+        console.error("Error fetching services", err);
       }
     };
     fetchData();
@@ -92,7 +92,7 @@ const CRMAppointmentsTab = () => {
         prev.map((appt) => (appt._id === id ? { ...appt, status: nextStatus } : appt))
       );
     } catch {
-      alert("❌ שגיאה בעדכון סטטוס התיאום");
+      alert("❌ שגיאה בעדכון סטטוס השירות");
     }
   };
 
@@ -130,7 +130,7 @@ const CRMAppointmentsTab = () => {
       setShowAddForm(false);
       setNewAppointment({ clientName: "", clientPhone: "", serviceId: "", serviceName: "", date: "", time: "" });
     } catch {
-      alert("❌ שגיאה ביצירת התיאום");
+      alert("❌ שגיאה ביצירת השירות");
     }
   };
 
@@ -156,24 +156,24 @@ const CRMAppointmentsTab = () => {
       setAppointments(res.data.appointments || []);
       setEditId(null);
     } catch {
-      alert("❌ שגיאה בעדכון התיאום");
+      alert("❌ שגיאה בעדכון השירות");
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("האם למחוק את התיאום?")) {
+    if (window.confirm("האם למחוק את השירות?")) {
       try {
         await API.delete(`/appointments/${id}`);
         setAppointments((prev) => prev.filter((appt) => appt._id !== id));
       } catch {
-        alert("❌ שגיאה במחיקת התיאום");
+        alert("❌ שגיאה במחיקת השירות");
       }
     }
   };
 
   return (
     <div className="crm-appointments-tab">
-      <h2>📆 תיאומים / הזמנות</h2>
+      <h2>🛠️ שירותים</h2>
       <div className="appointments-header">
         <input
           type="text"
@@ -234,7 +234,7 @@ const CRMAppointmentsTab = () => {
         </thead>
         <tbody>
           {filteredAppointments.length === 0 ? (
-            <tr><td colSpan="7">לא נמצאו תיאומים</td></tr>
+            <tr><td colSpan="7">לא נמצאו שירותים</td></tr>
           ) : (
             filteredAppointments.map((appt) => (
               <tr key={appt._id} className={editId === appt._id ? "editing" : ""}>
