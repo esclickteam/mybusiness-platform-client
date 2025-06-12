@@ -6,7 +6,7 @@ import { useAuth } from "../../../../context/AuthContext";
 
 const statusCycle = ['not_completed', 'matched', 'completed'];
 const statusMap = {
-  pending: 'ממתין',
+  pending: 'מאושר',
   matched: 'תואם',
   not_completed: 'לא הושלם',
   completed: 'הושלם',
