@@ -40,6 +40,7 @@ export default function Plans() {
       <h1 className="plans-title">הצטרפו למהפכת העסקים של עסקליק</h1>
       <p className="plans-subtitle">כשהלקוחות מחפשים, כדאי שהם ימצאו אותך!</p>
 
+      {/* כרטיס מתחת לכותרת */}
       <article className="plan-card full-plan-card" aria-labelledby="full-plan-title">
         <h2 id="full-plan-title">הצטרפו למהפכת העסקים של עסקליק</h2>
 
