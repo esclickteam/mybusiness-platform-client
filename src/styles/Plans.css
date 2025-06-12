@@ -1,8 +1,12 @@
 /* עיצוב כללי של העמוד */
 .plans-container {
+    max-width: 480px;
+    margin: 2rem auto;
     text-align: center;
     padding: 20px;
     background: #f5f7fa;
+    font-family: "Arial", sans-serif;
+    color: #333;
 }
 
 /* ניווט עליון */
@@ -40,14 +44,16 @@
 /* כותרות */
 .plans-title {
     font-size: 32px;
-    font-weight: bold;
+    font-weight: 900;
     color: #6a11cb;
+    margin-bottom: 0.5rem;
 }
 
 .plans-subtitle {
     font-size: 18px;
     margin-bottom: 20px;
     color: #444;
+    font-weight: 600;
 }
 
 /* גריד חבילה בודדת */
@@ -59,12 +65,12 @@
 
 /* כרטיס חבילה בודדת */
 .full-plan-card {
-    background: #ffcc00;
+    background: linear-gradient(135deg, #ffdb4d, #f8c500);
     color: #5a4100;
-    border-radius: 12px;
-    padding: 30px 25px;
+    border-radius: 16px;
+    padding: 30px 25px 40px;
     width: 320px;
-    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.55);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -73,64 +79,80 @@
     position: relative;
     font-weight: 600;
     font-size: 16px;
+    transition: box-shadow 0.3s ease;
+}
+
+.full-plan-card:hover {
+    box-shadow: 0 12px 32px rgba(212, 175, 55, 0.85);
 }
 
 /* כותרת החבילה */
 .full-plan-card h2 {
     font-size: 28px;
-    margin-bottom: 15px;
-    font-weight: 700;
+    margin-bottom: 20px;
+    font-weight: 900;
+    line-height: 1.2;
 }
 
 /* מחיר */
 .plan-price {
-    font-size: 24px;
-    margin-bottom: 25px;
-    font-weight: 700;
+    font-size: 26px;
+    margin-bottom: 30px;
+    font-weight: 900;
+    color: #4a3200;
 }
 
 /* רשימת תכונות */
 .full-plan-card ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 30px 0;
+    margin: 0 0 35px 0;
     text-align: right;
+    line-height: 1.5;
 }
 
 .full-plan-card li {
-    margin: 10px 0;
+    margin: 14px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     justify-content: flex-start;
     position: relative;
-    padding-left: 25px;
+    padding-left: 28px;
     font-size: 16px;
+    font-weight: 600;
+    color: #4a3b00;
 }
 
 .full-plan-card li::before {
-    content: "✔️";
+    content: "✔";
     position: absolute;
     left: 0;
-    font-size: 18px;
+    font-size: 20px;
+    color: #6a4700;
 }
 
 /* כפתור בחירה */
 .select-button {
-    padding: 15px 20px;
+    padding: 16px 24px;
     border: none;
-    border-radius: 10px;
+    border-radius: 14px;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
     background-color: #5a4100;
     color: white;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(90, 65, 0, 0.6);
+    user-select: none;
 }
 
-.select-button:hover {
+.select-button:hover,
+.select-button:focus {
     background-color: #7d5712;
-    transform: scale(1.05);
+    transform: scale(1.07);
+    outline: none;
+    box-shadow: 0 6px 14px rgba(125, 87, 18, 0.85);
 }
 
 /* רספונסיביות לנייד */
@@ -143,7 +165,7 @@
   .full-plan-card {
     width: 90%;
     min-height: auto;
-    padding: 20px 15px;
+    padding: 25px 20px 35px;
   }
 
   .full-plan-card h2 {
@@ -151,16 +173,17 @@
   }
 
   .plan-price {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   .full-plan-card li {
-    font-size: 14px;
-    padding-left: 20px;
+    font-size: 15px;
+    padding-left: 24px;
+    margin: 12px 0;
   }
 
   .select-button {
-    font-size: 16px;
-    padding: 12px 18px;
+    font-size: 17px;
+    padding: 14px 20px;
   }
 }
