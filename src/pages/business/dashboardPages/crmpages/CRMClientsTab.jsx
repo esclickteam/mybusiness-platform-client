@@ -8,6 +8,7 @@ const CRMClientsTab = ({ businessId }) => {
   const [newClient, setNewClient] = useState({ name: "", phone: "", email: "" });
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false); // נעילת כפתור שמירה
 
   useEffect(() => {
     if (!businessId) return;
@@ -38,6 +39,9 @@ const CRMClientsTab = ({ businessId }) => {
       return;
     }
 
+    if (saving) return; // חוסם לחיצות כפולות
+    setSaving(true);
+
     setClients((prev) => [
       ...prev,
       { ...newClient, id: Date.now() },
@@ -45,6 +49,7 @@ const CRMClientsTab = ({ businessId }) => {
 
     setNewClient({ name: "", phone: "", email: "" });
     setShowForm(false);
+    setSaving(false);
   };
 
   return (
@@ -84,7 +89,11 @@ const CRMClientsTab = ({ businessId }) => {
             value={newClient.email}
             onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
           />
-          <button className="save-client-btn" onClick={handleAddClient}>
+          <button
+            className="save-client-btn"
+            onClick={handleAddClient}
+            disabled={saving}
+          >
             שמור לקוח
           </button>
         </div>
