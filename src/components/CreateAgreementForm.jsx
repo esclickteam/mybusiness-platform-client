@@ -7,18 +7,30 @@ export default function CreateAgreementForm({ onCreated }) {
     partnerBusinessName: "", // שם העסק השותף במקום מזהה
     title: "",
     description: "",
-    terms: "",
-    paymentDetails: "",
+    giving: "",
+    receiving: "",
+    type: "",
+    payment: "",
     startDate: "",
     endDate: "",
+    cancelAnytime: false,
+    confidentiality: false,
   });
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const sigPadRef = useRef(null);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      setFormData((prev) => ({ ...prev, [name]: checked }));
+      // אם מסמנים ביטול בכל שלב - נקה תאריכים
+      if (name === "cancelAnytime" && checked) {
+        setFormData((prev) => ({ ...prev, startDate: "", endDate: "" }));
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const clearSignature = () => sigPadRef.current?.clear();
@@ -29,6 +41,30 @@ export default function CreateAgreementForm({ onCreated }) {
 
     if (!formData.partnerBusinessName.trim()) {
       setError("יש להזין שם עסק שותף.");
+      return;
+    }
+    if (!formData.title.trim()) {
+      setError("יש להזין כותרת הסכם.");
+      return;
+    }
+    if (!formData.description.trim()) {
+      setError("נא למלא תיאור הסכם.");
+      return;
+    }
+    if (!formData.giving.trim()) {
+      setError("נא למלא מה תספק במסגרת ההסכם.");
+      return;
+    }
+    if (!formData.receiving.trim()) {
+      setError("נא למלא מה תקבל במסגרת ההסכם.");
+      return;
+    }
+    if (!formData.type) {
+      setError("נא לבחור סוג שיתוף פעולה.");
+      return;
+    }
+    if (!formData.cancelAnytime && (!formData.startDate || !formData.endDate)) {
+      setError("נא למלא תאריכי התחלה וסיום או לבחור 'ניתן לבטל בכל שלב'.");
       return;
     }
 
@@ -100,49 +136,97 @@ export default function CreateAgreementForm({ onCreated }) {
       </label>
 
       <label>
-        תנאים:
+        מה תספק במסגרת ההסכם:
         <textarea
-          name="terms"
-          value={formData.terms}
+          name="giving"
+          value={formData.giving}
           onChange={handleChange}
+          required
           style={textareaStyle}
-          placeholder="תנאי ההסכם (אופציונלי)"
-          rows={3}
+          rows={2}
+          placeholder="מה תספק במסגרת ההסכם"
         />
       </label>
 
       <label>
-        פרטי תשלום:
+        מה תקבל במסגרת ההסכם:
+        <textarea
+          name="receiving"
+          value={formData.receiving}
+          onChange={handleChange}
+          required
+          style={textareaStyle}
+          rows={2}
+          placeholder="מה תקבל במסגרת ההסכם"
+        />
+      </label>
+
+      <label>
+        סוג שיתוף פעולה:
+        <select
+          name="type"
+          value={formData.type}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        >
+          <option value="">בחר סוג</option>
+          <option value="חד צדדי">חד צדדי</option>
+          <option value="דו צדדי">דו צדדי</option>
+          <option value="עם עמלות">עם עמלות</option>
+        </select>
+      </label>
+
+      <label>
+        עמלות / תשלום (אם יש):
         <input
           type="text"
-          name="paymentDetails"
-          value={formData.paymentDetails}
+          name="payment"
+          value={formData.payment}
           onChange={handleChange}
           style={inputStyle}
-          placeholder="פרטי תשלום (אופציונלי)"
+          placeholder="עמלות / תשלום"
         />
       </label>
 
-      <label>
-        תאריך התחלה:
+      <label>תוקף ההסכם:</label>
+      <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
         <input
           type="date"
           name="startDate"
           value={formData.startDate}
           onChange={handleChange}
+          disabled={formData.cancelAnytime}
           style={inputStyle}
         />
-      </label>
-
-      <label>
-        תאריך סיום:
         <input
           type="date"
           name="endDate"
           value={formData.endDate}
           onChange={handleChange}
+          disabled={formData.cancelAnytime}
           style={inputStyle}
         />
+      </div>
+
+      <label style={{ display: "block", marginBottom: 16 }}>
+        <input
+          type="checkbox"
+          name="cancelAnytime"
+          checked={formData.cancelAnytime}
+          onChange={handleChange}
+        />
+        ניתן לבטל את ההסכם בכל שלב
+      </label>
+
+      <label style={{ display: "block", marginBottom: 20 }}>
+        <input
+          type="checkbox"
+          name="confidentiality"
+          checked={formData.confidentiality}
+          onChange={handleChange}
+        />
+        סעיף סודיות
       </label>
 
       <div style={{ marginTop: 20 }}>
@@ -187,8 +271,6 @@ export default function CreateAgreementForm({ onCreated }) {
 const inputStyle = {
   width: "100%",
   padding: "8px",
-  marginTop: "6px",
-  marginBottom: "16px",
   borderRadius: "6px",
   border: "1.5px solid #ccc",
   fontSize: "16px",
