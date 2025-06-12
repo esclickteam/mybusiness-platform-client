@@ -43,10 +43,6 @@ const CRMAppointmentsTab = () => {
         ]);
         setAppointments(appointmentsRes.data || []);
 
-        // הדפסת מבנה השירותים בפירוט
-        console.log("Services API response (full):", JSON.stringify(servicesRes.data, null, 2));
-
-        // התאמה למבנה הנתונים המדויק
         const servicesArray =
           servicesRes.data.services ||
           servicesRes.data.data ||
@@ -244,7 +240,7 @@ const CRMAppointmentsTab = () => {
         </thead>
         <tbody>
           {filteredAppointments.length === 0 ? (
-            <tr><td colSpan="7">לא נמצאו שירותים</td></tr>
+            <tr><td colSpan="7">לא נמצאו תורים</td></tr>
           ) : (
             filteredAppointments.map((appt) => (
               <tr key={appt._id} className={editId === appt._id ? "editing" : ""}>
@@ -309,6 +305,22 @@ const CRMAppointmentsTab = () => {
           )}
         </tbody>
       </table>
+
+      {/* תצוגת שירותים בנפרד */}
+      <div style={{ marginTop: "2rem", borderTop: "1px solid #ccc", paddingTop: "1rem" }}>
+        <h3>שירותים זמינים בעסק</h3>
+        {services.length === 0 ? (
+          <p>אין שירותים להצגה</p>
+        ) : (
+          <ul>
+            {services.map((s) => (
+              <li key={s._id}>
+                {s.name} — {s.duration} דקות — {s.price} ש"ח
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
