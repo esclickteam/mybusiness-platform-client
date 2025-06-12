@@ -17,11 +17,14 @@ const CRMClientsTab = ({ businessId }) => {
       setLoading(true);
       try {
         const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
+        console.log("clients from API:", res.data);  // לוג נתוני הלקוחות שהתקבלו
         const normalizedClients = res.data.map(c => ({
-          fullName: c.clientName || "",
-          phone: (c.clientPhone || "").replace(/\s/g, ""),
+          fullName: c.fullName || "",  // תואם לשם השדה מהשרת
+          phone: (c.phone || "").replace(/\s/g, ""),
           email: (c.email || "").replace(/\s/g, ""),
+          id: c._id || Date.now(),      // שימוש ב-ID ייחודי אם קיים
         }));
+        console.log("normalized clients:", normalizedClients); // לוג הנתונים לאחר הנרמול
         setClients(normalizedClients);
       } catch (error) {
         console.error("Error loading clients:", error);
@@ -122,8 +125,8 @@ const CRMClientsTab = ({ businessId }) => {
                 <td colSpan="3">לא נמצאו לקוחות</td>
               </tr>
             ) : (
-              filteredClients.map((client, idx) => (
-                <tr key={idx}>
+              filteredClients.map((client) => (
+                <tr key={client.id}>
                   <td>{client.fullName}</td>
                   <td className="phone-cell">{client.phone}</td>
                   <td className="email-cell">{client.email}</td>
