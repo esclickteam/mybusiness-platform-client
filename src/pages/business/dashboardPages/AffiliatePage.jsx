@@ -46,7 +46,8 @@ const AffiliatePage = () => {
   }, [businessId, selectedMonth]);
 
   const affiliateLink = businessId
-    ? `https://esclick.co.il/signup?ref=${businessId}`
+      ? `https://esclick.co.il/register?ref=${businessId}`  // <-- שונה מ-/signup ל-/register
+
     : "לא זוהה מזהה עסק";
 
   const handleReceiptSubmit = (e) => {
