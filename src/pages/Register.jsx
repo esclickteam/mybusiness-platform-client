@@ -22,17 +22,15 @@ const Register = () => {
   const [searchParams] = useSearchParams();
 
   // בודקים אם יש פרמטר ref ב-URL ושומרים ב-localStorage וב-state
+  // ואם אין - מנקים referralCode מה-state ומה-localStorage
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
       localStorage.setItem("affiliate_referral", ref);
       setFormData(prev => ({ ...prev, referralCode: ref }));
     } else {
-      // אם אין ב-URL אבל יש ב-localStorage, נטען משם
-      const storedRef = localStorage.getItem("affiliate_referral") || "";
-      if (storedRef) {
-        setFormData(prev => ({ ...prev, referralCode: storedRef }));
-      }
+      localStorage.removeItem("affiliate_referral");
+      setFormData(prev => ({ ...prev, referralCode: "" }));
     }
   }, [searchParams]);
 
@@ -79,7 +77,7 @@ const Register = () => {
         password,
         userType,
         businessName: userType === "business" ? businessName.trim() : undefined,
-        referralCode: userType === "customer" ? referralCode || undefined : undefined, // רק ללקוחות
+        referralCode: userType === "customer" ? referralCode || undefined : undefined, // רק ללקוחות נשלח referralCode
       });
 
       const user = await login(email.trim(), password);
