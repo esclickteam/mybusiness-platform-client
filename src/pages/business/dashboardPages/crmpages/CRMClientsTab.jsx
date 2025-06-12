@@ -11,11 +11,16 @@ const CRMClientsTab = ({ businessId }) => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!businessId) return;
+    console.log("CRMClientsTab useEffect triggered, businessId:", businessId);
+    if (!businessId) {
+      console.warn("No businessId provided, skipping fetchClients");
+      return;
+    }
 
     async function fetchClients() {
       setLoading(true);
       try {
+        console.log("Fetching clients for businessId:", businessId);
         const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
         console.log("clients from API:", res.data);  // לוג נתוני הלקוחות שהתקבלו
         const normalizedClients = res.data.map(c => ({
@@ -27,7 +32,7 @@ const CRMClientsTab = ({ businessId }) => {
         console.log("normalized clients:", normalizedClients); // לוג הנתונים לאחר הנרמול
         setClients(normalizedClients);
       } catch (error) {
-        console.error("Error loading clients:", error);
+        console.error("Error loading clients:", error.response || error);
       } finally {
         setLoading(false);
       }
