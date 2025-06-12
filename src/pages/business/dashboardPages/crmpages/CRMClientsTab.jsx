@@ -24,8 +24,8 @@ const CRMClientsTab = ({ businessId }) => {
         const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
         console.log("clients from API:", res.data);  // לוג נתוני הלקוחות שהתקבלו
         const normalizedClients = res.data.map(c => ({
-          fullName: c.fullName || "",  // תואם לשם השדה מהשרת
-          phone: (c.phone || "").replace(/\s/g, ""),
+          fullName: c.clientName || "",  // תיקון שם השדה ל-clientName
+          phone: (c.clientPhone || "").replace(/\s/g, ""), // תיקון שם השדה ל-clientPhone
           email: (c.email || "").replace(/\s/g, ""),
           address: c.address || "",         // הוספת שדה כתובת
           id: c._id || Date.now(),          // שימוש ב-ID ייחודי אם קיים
@@ -123,7 +123,7 @@ const CRMClientsTab = ({ businessId }) => {
             <tr>
               <th>שם</th>
               <th>טלפון</th>
-              <th>כתובת</th> {/* הוספת כותרת לכתובת */}
+              <th>כתובת</th>
               <th>אימייל</th>
             </tr>
           </thead>
@@ -137,7 +137,7 @@ const CRMClientsTab = ({ businessId }) => {
                 <tr key={client.id}>
                   <td>{client.fullName}</td>
                   <td className="phone-cell">{client.phone}</td>
-                  <td className="address-cell">{client.address}</td> {/* הוספת הצגת כתובת */}
+                  <td className="address-cell">{client.address}</td>
                   <td className="email-cell">{client.email}</td>
                 </tr>
               ))
