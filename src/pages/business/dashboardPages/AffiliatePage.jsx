@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API from "@api";
+import API from "@api"; // השתמש ב־API במקום axios
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 
@@ -16,7 +16,7 @@ const AffiliatePage = () => {
     async function fetchBusinessId() {
       try {
         const res = await API.get("/business/my");
-        setBusinessId(res.data.businessId);
+        setBusinessId(res.data.business._id); // תיקון לפי מבנה הנתונים מהשרת
       } catch (error) {
         console.error("Error fetching businessId:", error);
         setErrorStats("לא הצלחנו לקבל מזהה עסק");
