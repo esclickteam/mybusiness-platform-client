@@ -24,11 +24,11 @@ const CRMClientsTab = ({ businessId }) => {
         const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
         console.log("clients from API:", res.data);  // לוג נתוני הלקוחות שהתקבלו
         const normalizedClients = res.data.map(c => ({
-          fullName: c.clientName || "",        // תיקון שם השדה ל-clientName
-          phone: (c.clientPhone || "").replace(/\s/g, ""),  // תיקון שם השדה ל-clientPhone
+          fullName: c.fullName || "",               // שדה מתאים מה-API
+          phone: (c.phone || "").replace(/\s/g, ""),  // שדה מתאים מה-API
           email: (c.email || "").replace(/\s/g, ""),
-          address: c.address || "",             // שדה כתובת
-          id: c._id || Date.now(),              // שימוש ב-ID ייחודי אם קיים
+          address: c.address || "",
+          id: c._id || Date.now(),
         }));
         console.log("normalized clients:", normalizedClients); // לוג הנתונים לאחר הנרמול
         setClients(normalizedClients);
@@ -62,7 +62,7 @@ const CRMClientsTab = ({ businessId }) => {
         fullName: newClient.name,
         phone: newClient.phone,
         email: newClient.email,
-        address: "",               // אפשר להוסיף שדה כתובת גם כאן, כרגע ריק
+        address: "",
         id: Date.now(),
       },
     ]);
