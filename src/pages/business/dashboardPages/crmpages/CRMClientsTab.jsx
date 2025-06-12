@@ -1,20 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CRMClientsTab.css";
-
-const initialClients = [
-  { id: 1, name: "דנה כהן", phone: "050-1234567", email: "dana@example.com" },
-  { id: 2, name: "יוסי לוי", phone: "052-9876543", email: "yossi@example.com" },
-];
+import API from "@api"; // נתיב ל־API שלך
 
 const CRMClientsTab = () => {
-  const [clients, setClients] = useState(initialClients);
+  const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
   const [newClient, setNewClient] = useState({ name: "", phone: "", email: "" });
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // טעינת לקוחות מהשרת
+  useEffect(() => {
+    async function fetchClients() {
+      setLoading(true);
+      try {
+        const businessId = "הכנס כאן את ה-businessId של המשתמש"; // או קח מהקונטקסט/אוט'
+        const res = await API.get(`/clients-from-appointments?businessId=${businessId}`);
+        setClients(res.data);
+      } catch (error) {
+        console.error("Error loading clients:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchClients();
+  }, []);
 
   const filteredClients = clients.filter(
     (client) =>
-      client.name.includes(search) || client.phone.includes(search)
+      client.fullName.includes(search) ||
+      client.phone.includes(search)
   );
 
   const handleAddClient = () => {
@@ -75,30 +90,34 @@ const CRMClientsTab = () => {
         </div>
       )}
 
-      <table className="clients-table">
-        <thead>
-          <tr>
-            <th>שם</th>
-            <th>טלפון</th>
-            <th>אימייל</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredClients.length === 0 ? (
+      {loading ? (
+        <p>טוען לקוחות...</p>
+      ) : (
+        <table className="clients-table">
+          <thead>
             <tr>
-              <td colSpan="3">לא נמצאו לקוחות</td>
+              <th>שם</th>
+              <th>טלפון</th>
+              <th>אימייל</th>
             </tr>
-          ) : (
-            filteredClients.map((client) => (
-              <tr key={client.id}>
-                <td>{client.name}</td>
-                <td>{client.phone}</td>
-                <td>{client.email}</td>
+          </thead>
+          <tbody>
+            {filteredClients.length === 0 ? (
+              <tr>
+                <td colSpan="3">לא נמצאו לקוחות</td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              filteredClients.map((client, idx) => (
+                <tr key={idx}>
+                  <td>{client.fullName}</td>
+                  <td>{client.phone}</td>
+                  <td>{client.email}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
