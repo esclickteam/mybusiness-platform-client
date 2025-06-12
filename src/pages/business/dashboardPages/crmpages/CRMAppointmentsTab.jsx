@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
-import API from "@api"; // תקן לנתיב הנכון
+import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
 
-const statusCycle = ['not_completed', 'matched', 'completed'];
+const statusCycle = ['pending', 'not_completed', 'matched', 'completed'];
 const statusMap = {
   pending: 'מאושר',
   matched: 'תואם',
@@ -46,6 +46,7 @@ const CRMAppointmentsTab = () => {
     time: "",
   });
 
+  // טעינת תיאומים ושירותים
   useEffect(() => {
     async function fetchAppointmentsAndServices() {
       try {
@@ -62,6 +63,7 @@ const CRMAppointmentsTab = () => {
     fetchAppointmentsAndServices();
   }, []);
 
+  // מאזין לאירועי socket
   useEffect(() => {
     if (!socket) return;
 
@@ -93,6 +95,36 @@ const CRMAppointmentsTab = () => {
     };
   }, [socket]);
 
+  // עדכון אוטומטי של סטטוס ל"הושלם" אחרי שעבר זמן הפגישה
+  useEffect(() => {
+    async function updateCompletedStatuses() {
+      const now = new Date();
+
+      for (const appt of appointments) {
+        const apptDateTime = new Date(`${appt.date}T${appt.time}:00`);
+
+        if (appt.status !== "completed" && now > apptDateTime) {
+          try {
+            const res = await API.patch(`/appointments/${appt._id}/status`, {
+              status: "completed",
+            });
+            const updatedAppt = res.data.appt;
+            setAppointments((prev) =>
+              prev.map((a) => (a._id === updatedAppt._id ? updatedAppt : a))
+            );
+          } catch (err) {
+            console.error("Error updating appointment status to completed", err);
+          }
+        }
+      }
+    }
+
+    if (appointments.length > 0) {
+      updateCompletedStatuses();
+    }
+  }, [appointments]);
+
+  // סינון תיאומים לפי חיפוש
   const filteredAppointments = appointments.filter((appt) => {
     const searchLower = search.toLowerCase();
     return (
@@ -101,26 +133,27 @@ const CRMAppointmentsTab = () => {
     );
   });
 
+  // מחזור סטטוס בלחיצה
   const cycleStatus = async (id) => {
-  const apptToUpdate = appointments.find((appt) => appt._id === id);
-  if (!apptToUpdate) return;
+    const apptToUpdate = appointments.find((appt) => appt._id === id);
+    if (!apptToUpdate) return;
 
-  const currentIndex = statusCycle.indexOf(apptToUpdate.status);
-  const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+    const currentIndex = statusCycle.indexOf(apptToUpdate.status);
+    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
 
-  try {
-    const res = await API.patch(`/appointments/${id}/status`, { status: nextStatus });
-    const updatedAppt = res.data.appt;
+    try {
+      const res = await API.patch(`/appointments/${id}/status`, { status: nextStatus });
+      const updatedAppt = res.data.appt;
 
-    setAppointments((prev) =>
-      prev.map((appt) => (appt._id === id ? updatedAppt : appt))
-    );
-  } catch {
-    alert("❌ שגיאה בעדכון סטטוס התיאום");
-  }
-};
+      setAppointments((prev) =>
+        prev.map((appt) => (appt._id === id ? updatedAppt : appt))
+      );
+    } catch {
+      alert("❌ שגיאה בעדכון סטטוס התיאום");
+    }
+  };
 
-
+  // שינוי שירות בטופס (הוספה או עריכה)
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
     if (service) {
@@ -158,6 +191,7 @@ const CRMAppointmentsTab = () => {
     }
   };
 
+  // איפוס זמן כשמשנים תאריך בעריכה
   useEffect(() => {
     if (editId) {
       setEditData((prev) => ({
@@ -167,6 +201,7 @@ const CRMAppointmentsTab = () => {
     }
   }, [editData.date, editId]);
 
+  // שמירת תיאום חדש
   const handleAddAppointment = async () => {
     if (
       !newAppointment.clientName ||
@@ -195,12 +230,8 @@ const CRMAppointmentsTab = () => {
         email: newAppointment.email,
         note: newAppointment.note,
         duration,
-        status: "new",
+        status: "pending", // או "new" לפי מה שמתאים לך
       });
-
-      // עדכון סטטוס ל"הושלם"
-      const appointmentId = res.data.appt._id;
-      await API.patch(`/appointments/${appointmentId}/status`, { status: "completed" });
 
       setShowAddForm(false);
       setNewAppointment({
@@ -217,10 +248,11 @@ const CRMAppointmentsTab = () => {
 
       // העדכון יגיע דרך socket.io, אין צורך לרענן ידנית
     } catch {
-      alert("❌ שגיאה ביצירת התיאום או עדכון הסטטוס");
+      alert("❌ שגיאה ביצירת התיאום");
     }
   };
 
+  // מחיקת תיאום
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
@@ -230,6 +262,59 @@ const CRMAppointmentsTab = () => {
         alert("❌ שגיאה במחיקת התיאום");
       }
     }
+  };
+
+  // שמירת שדה ערוך - צריך לממש פונקציה שמעדכנת בשרת
+  const saveFieldEdit = async (field, value) => {
+    if (!editId) return;
+    try {
+      const updatedData = { [field]: value };
+      if (field === "serviceId") {
+        const service = services.find((s) => s._id === value);
+        if (service) {
+          updatedData.serviceName = service.name;
+        }
+      }
+      const res = await API.patch(`/appointments/${editId}`, updatedData);
+      const updatedAppt = res.data.appt;
+      setAppointments((prev) =>
+        prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+      );
+    } catch (err) {
+      alert("❌ שגיאה בשמירת השינוי");
+    }
+  };
+
+  // התחלת עריכה
+  const startEdit = (appt) => {
+    setEditId(appt._id);
+    setEditData({
+      clientName: appt.clientName || "",
+      clientPhone: appt.clientPhone || "",
+      address: appt.address || "",
+      email: appt.email || "",
+      note: appt.note || "",
+      serviceId: appt.serviceId || "",
+      serviceName: appt.serviceName || "",
+      date: appt.date || "",
+      time: appt.time || "",
+    });
+  };
+
+  // שמירת כל העריכה (אפשר לממש לפי הצורך)
+  const saveEdit = () => {
+    setEditId(null);
+    // במידה ויש צורך, אפשר לקרוא API לעדכון מלא כאן
+  };
+
+  // הצגת סטטוס (לפי תאריך וסטטוס)
+  const getStatusLabel = (appt) => {
+    const now = new Date();
+    const apptDateTime = new Date(`${appt.date}T${appt.time}:00`);
+    if (now > apptDateTime) {
+      return statusMap["completed"];
+    }
+    return statusMap[appt.status] || appt.status;
   };
 
   return (
@@ -469,7 +554,7 @@ const CRMAppointmentsTab = () => {
                     className={`status-btn status-${appt.status}`}
                     onClick={() => cycleStatus(appt._id)}
                   >
-                    {statusMap[appt.status] || appt.status}
+                    {getStatusLabel(appt)}
                   </button>
                 </td>
                 <td className="actions-cell">
