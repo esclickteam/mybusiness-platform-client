@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./CRMAppointmentsTab.css";
+import "./CRMServicesTab.css";
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
 
