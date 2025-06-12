@@ -47,13 +47,23 @@
   margin-bottom: 1rem;
 }
 
-.add-form input {
+/* שדות טופס הוספה (כולל textarea) */
+.add-form input,
+.add-form textarea,
+.add-form select {
   flex: 1;
   min-width: 180px;
   padding: 0.5rem;
   border-radius: 6px;
   border: 1px solid #ccc;
   color: #222; /* טקסט כהה */
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.add-form textarea {
+  min-height: 80px;
+  resize: vertical;
 }
 
 .add-form button {
@@ -64,12 +74,16 @@
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  min-width: 150px;
+  align-self: center;
 }
 
 /* טבלה */
 .appointments-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+  word-wrap: break-word;
 }
 
 .appointments-table th {
@@ -78,12 +92,8 @@
   font-weight: 700;
   text-align: right;
   user-select: none;
-}
-
-.appointments-table th {
-  background-color: #f8f8f8;
-  font-weight: bold;
-  color: #222; /* טקסט כותרת כהה */
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid #ddd;
 }
 
 .appointments-table tr:hover {
@@ -98,19 +108,20 @@
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s;
+  white-space: nowrap;
 }
 
-.status-חדש {
+.status-new {
   background: #f5f5f5;
   color: #444;
 }
 
-.status-בטיפול {
+.status-pending {
   background: #ffe58f;
   color: #664d03;
 }
 
-.status-הושלם {
+.status-completed {
   background: #d9f7be;
   color: #237804;
 }
@@ -121,7 +132,9 @@
 }
 
 /* שדות עריכה בתוך הטבלה */
-.appointments-table td input {
+.appointments-table td input,
+.appointments-table td textarea,
+.appointments-table td select {
   padding: 0.4rem 0.6rem;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -129,6 +142,12 @@
   width: 100%;
   box-sizing: border-box;
   color: #222; /* טקסט כהה */
+  font-family: inherit;
+}
+
+.appointments-table td textarea {
+  min-height: 70px;
+  resize: vertical;
 }
 
 /* כפתורי פעולה אחידים */

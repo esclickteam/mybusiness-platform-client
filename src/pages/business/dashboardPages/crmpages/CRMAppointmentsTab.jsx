@@ -18,6 +18,9 @@ const CRMAppointmentsTab = () => {
   const [newAppointment, setNewAppointment] = useState({
     clientName: "",
     clientPhone: "",
+    address: "",
+    email: "",
+    note: "",
     serviceId: "",
     serviceName: "",
     date: "",
@@ -28,6 +31,9 @@ const CRMAppointmentsTab = () => {
   const [editData, setEditData] = useState({
     clientName: "",
     clientPhone: "",
+    address: "",
+    email: "",
+    note: "",
     serviceId: "",
     serviceName: "",
     date: "",
@@ -176,6 +182,9 @@ const CRMAppointmentsTab = () => {
         time: newAppointment.time,
         name: newAppointment.clientName,
         phone: newAppointment.clientPhone,
+        address: newAppointment.address,
+        email: newAppointment.email,
+        note: newAppointment.note,
         duration,
         status: statusEnum,
       });
@@ -187,6 +196,9 @@ const CRMAppointmentsTab = () => {
       setNewAppointment({
         clientName: "",
         clientPhone: "",
+        address: "",
+        email: "",
+        note: "",
         serviceId: "",
         serviceName: "",
         date: "",
@@ -225,6 +237,9 @@ const CRMAppointmentsTab = () => {
         time: editData.time,
         name: editData.clientName,
         phone: editData.clientPhone,
+        address: editData.address,
+        email: editData.email,
+        note: editData.note,
         duration,
         status: statusEnum,
       });
@@ -236,6 +251,9 @@ const CRMAppointmentsTab = () => {
                 ...appt,
                 clientName: editData.clientName,
                 clientPhone: editData.clientPhone,
+                address: editData.address,
+                email: editData.email,
+                note: editData.note,
                 serviceId: editData.serviceId,
                 serviceName: editData.serviceName,
                 date: editData.date,
@@ -297,6 +315,29 @@ const CRMAppointmentsTab = () => {
               setNewAppointment({ ...newAppointment, clientPhone: e.target.value })
             }
           />
+          <input
+            type="text"
+            placeholder="כתובת"
+            value={newAppointment.address}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, address: e.target.value })
+            }
+          />
+          <input
+            type="email"
+            placeholder="אימייל (לשליחת אישור)"
+            value={newAppointment.email}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, email: e.target.value })
+            }
+          />
+          <textarea
+            placeholder="הערה (לא חובה)"
+            value={newAppointment.note}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, note: e.target.value })
+            }
+          />
           <select
             value={newAppointment.serviceId}
             onChange={(e) => handleServiceChange(e.target.value)}
@@ -329,6 +370,9 @@ const CRMAppointmentsTab = () => {
           <tr>
             <th>שם</th>
             <th>טלפון</th>
+            <th>כתובת</th>
+            <th>אימייל</th>
+            <th>הערה</th>
             <th>שירות</th>
             <th>תאריך</th>
             <th>שעה</th>
@@ -339,7 +383,7 @@ const CRMAppointmentsTab = () => {
         <tbody>
           {filteredAppointments.length === 0 ? (
             <tr>
-              <td colSpan="7">לא נמצאו תיאומים</td>
+              <td colSpan="10">לא נמצאו תיאומים</td>
             </tr>
           ) : (
             filteredAppointments.map((appt) => (
@@ -366,6 +410,43 @@ const CRMAppointmentsTab = () => {
                     />
                   ) : (
                     appt.clientPhone
+                  )}
+                </td>
+                <td>
+                  {editId === appt._id ? (
+                    <input
+                      value={editData.address}
+                      onChange={(e) =>
+                        setEditData({ ...editData, address: e.target.value })
+                      }
+                    />
+                  ) : (
+                    appt.address
+                  )}
+                </td>
+                <td>
+                  {editId === appt._id ? (
+                    <input
+                      type="email"
+                      value={editData.email}
+                      onChange={(e) =>
+                        setEditData({ ...editData, email: e.target.value })
+                      }
+                    />
+                  ) : (
+                    appt.email
+                  )}
+                </td>
+                <td>
+                  {editId === appt._id ? (
+                    <textarea
+                      value={editData.note}
+                      onChange={(e) =>
+                        setEditData({ ...editData, note: e.target.value })
+                      }
+                    />
+                  ) : (
+                    appt.note
                   )}
                 </td>
                 <td>
