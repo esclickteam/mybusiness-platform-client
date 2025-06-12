@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import PartnershipAgreement from "./SignAgreement";
+import "./PartnershipAgreementsTab.css";
 
 export default function PartnershipAgreementsTab({ userBusinessId }) {
   const [agreements, setAgreements] = useState([]);
@@ -26,42 +27,34 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
   }, []);
 
   if (loading) return <p>טוען הסכמים...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p className="error">{error}</p>;
 
   if (selectedId)
     return (
       <div>
-        <button onClick={() => setSelectedId(null)} style={{ marginBottom: 10 }}>
+        <button className="back-btn" onClick={() => setSelectedId(null)}>
           ⬅ חזור לרשימת ההסכמים
         </button>
         <PartnershipAgreement agreementId={selectedId} userBusinessId={userBusinessId} />
       </div>
     );
 
-  if (agreements.length === 0)
-    return <p>אין הסכמים להצגה</p>;
+  if (agreements.length === 0) return <p>אין הסכמים להצגה</p>;
 
   return (
-    <div>
+    <div className="agreements-container">
       <h2>הסכמי שיתוף פעולה</h2>
-      <ul style={{ padding: 0, listStyle: "none" }}>
+      <ul className="agreements-list">
         {agreements.map((agreement) => (
-          <li key={agreement._id} style={{ marginBottom: 10 }}>
+          <li key={agreement._id} className="agreement-item">
             <button
               onClick={() => setSelectedId(agreement._id)}
-              style={{
-                width: "100%",
-                textAlign: "right",
-                padding: "10px 15px",
-                borderRadius: 5,
-                border: "1px solid #ccc",
-                backgroundColor: "#f9f9f9",
-                cursor: "pointer",
-                fontSize: 16,
-              }}
+              className="agreement-btn"
             >
               {agreement.title} - סטטוס: {agreement.status} <br />
-              {agreement.startDate ? `מתאריך: ${new Date(agreement.startDate).toLocaleDateString()}` : ""}
+              {agreement.startDate
+                ? `מתאריך: ${new Date(agreement.startDate).toLocaleDateString()}`
+                : ""}
             </button>
           </li>
         ))}

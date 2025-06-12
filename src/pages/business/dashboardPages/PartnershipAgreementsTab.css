@@ -1,0 +1,53 @@
+.agreements-container {
+  max-width: 700px;
+  margin: 0 auto;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+  padding: 10px;
+}
+
+.agreements-list {
+  padding: 0;
+  list-style: none;
+}
+
+.agreement-item {
+  margin-bottom: 10px;
+}
+
+.agreement-btn {
+  width: 100%;
+  text-align: right;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.agreement-btn:hover {
+  background-color: #e1e1e1;
+}
+
+.back-btn {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #6200ee;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.back-btn:hover {
+  background-color: #4500b5;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
