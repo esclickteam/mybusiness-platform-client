@@ -40,12 +40,12 @@ const CRMAppointmentsTab = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
+        {/* כאן תוכל להוסיף כפתור הוספת שירות אם תרצה */}
       </div>
 
       <table className="appointments-table">
         <thead>
           <tr>
-            <th>תמונה</th>
             <th>שם</th>
             <th>משך (דקות)</th>
             <th>מחיר (ש"ח)</th>
@@ -55,22 +55,11 @@ const CRMAppointmentsTab = () => {
         <tbody>
           {filteredServices.length === 0 ? (
             <tr>
-              <td colSpan="5">לא נמצאו שירותים</td>
+              <td colSpan="4">לא נמצאו שירותים</td>
             </tr>
           ) : (
             filteredServices.map((service) => (
               <tr key={service._id}>
-                <td>
-                  {service.imageUrl ? (
-                    <img
-                      src={service.imageUrl}
-                      alt={service.name}
-                      className="service-image"
-                    />
-                  ) : (
-                    <span>-</span>
-                  )}
-                </td>
                 <td>{service.name}</td>
                 <td>{service.duration}</td>
                 <td>{service.price}</td>
