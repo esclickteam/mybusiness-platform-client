@@ -5,6 +5,11 @@ import API from "@api"; // תקן לנתיב הנכון
 import { useAuth } from "../../../../context/AuthContext";
 
 const statusCycle = ["new", "pending", "completed"];
+const statusMap = {
+  new: "חדש",
+  pending: "ממתין",
+  completed: "הושלם",
+};
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
@@ -103,9 +108,11 @@ const CRMAppointmentsTab = () => {
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
 
     try {
-      await API.patch(`/appointments/${id}/status`, { status: nextStatus });
+      const res = await API.patch(`/appointments/${id}/status`, { status: nextStatus });
+      const updatedAppt = res.data.appt; // לפי מבנה התשובה שלך
+
       setAppointments((prev) =>
-        prev.map((appt) => (appt._id === id ? { ...appt, status: nextStatus } : appt))
+        prev.map((appt) => (appt._id === id ? updatedAppt : appt))
       );
     } catch {
       alert("❌ שגיאה בעדכון סטטוס התיאום");
@@ -159,54 +166,52 @@ const CRMAppointmentsTab = () => {
   }, [editData.date, editId]);
 
   const handleAddAppointment = async () => {
-  if (
-    !newAppointment.clientName ||
-    !newAppointment.clientPhone ||
-    !newAppointment.date ||
-    !newAppointment.time ||
-    !newAppointment.serviceId
-  ) {
-    alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
-    return;
-  }
+    if (
+      !newAppointment.clientName ||
+      !newAppointment.clientPhone ||
+      !newAppointment.date ||
+      !newAppointment.time ||
+      !newAppointment.serviceId
+    ) {
+      alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
+      return;
+    }
 
-  const service = services.find((s) => s._id === newAppointment.serviceId);
-  const duration = service?.duration || 30;
-  const statusEnum = "new";
+    const service = services.find((s) => s._id === newAppointment.serviceId);
+    const duration = service?.duration || 30;
+    const statusEnum = "new";
 
-  try {
-    await API.post("/appointments", {
-      businessId,
-      serviceId: newAppointment.serviceId,
-      date: newAppointment.date,
-      time: newAppointment.time,
-      name: newAppointment.clientName,
-      phone: newAppointment.clientPhone,
-      address: newAppointment.address,
-      email: newAppointment.email,
-      note: newAppointment.note,
-      duration,
-      status: statusEnum,
-    });
+    try {
+      await API.post("/appointments", {
+        businessId,
+        serviceId: newAppointment.serviceId,
+        date: newAppointment.date,
+        time: newAppointment.time,
+        name: newAppointment.clientName,
+        phone: newAppointment.clientPhone,
+        address: newAppointment.address,
+        email: newAppointment.email,
+        note: newAppointment.note,
+        duration,
+        status: statusEnum,
+      });
 
-    // לא מוסיפים את התיאום פה כדי למנוע כפילויות
-    setShowAddForm(false);
-    setNewAppointment({
-      clientName: "",
-      clientPhone: "",
-      address: "",
-      email: "",
-      note: "",
-      serviceId: "",
-      serviceName: "",
-      date: "",
-      time: "",
-    });
-  } catch {
-    alert("❌ שגיאה ביצירת התיאום");
-  }
-};
-
+      setShowAddForm(false);
+      setNewAppointment({
+        clientName: "",
+        clientPhone: "",
+        address: "",
+        email: "",
+        note: "",
+        serviceId: "",
+        serviceName: "",
+        date: "",
+        time: "",
+      });
+    } catch {
+      alert("❌ שגיאה ביצירת התיאום");
+    }
+  };
 
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
@@ -456,7 +461,7 @@ const CRMAppointmentsTab = () => {
                     className={`status-btn status-${appt.status}`}
                     onClick={() => cycleStatus(appt._id)}
                   >
-                    {appt.status}
+                    {statusMap[appt.status] || appt.status}
                   </button>
                 </td>
                 <td className="actions-cell">
