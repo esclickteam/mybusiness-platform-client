@@ -1,0 +1,127 @@
+/* קונטיינר המודל - תיבת התוכן */
+.modal-box {
+  max-width: 600px;
+  max-height: 80vh;       /* עד 80% מגובה החלון */
+  overflow-y: auto;       /* גלילה אנכית כשצריך */
+  margin: 10vh auto;      /* רווח מלמעלה ומרכז אופקי */
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+}
+
+/* הכותרת של הטופס */
+.contract-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #5a59d6;
+}
+
+/* הטופס עצמו */
+.contract-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+/* תוויות */
+.contract-form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: #333;
+}
+
+/* שדות טקסט וקלט */
+.contract-form input[type="text"],
+.contract-form input[type="date"],
+.contract-form select,
+.contract-form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+/* שינוי צבע גבול בשדה במוקד */
+.contract-form input[type="text"]:focus,
+.contract-form input[type="date"]:focus,
+.contract-form select:focus,
+.contract-form textarea:focus {
+  border-color: #5a59d6;
+  outline: none;
+}
+
+/* קונטיינר לגוף גמיש (למשל לתאריכים צמודים) */
+.flex {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* לתיבות סימון */
+.contract-form input[type="checkbox"] {
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+/* לחצנים כלליים בטופס */
+.collab-form-button {
+  background-color: #5a59d6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 12px;
+}
+
+.collab-form-button:hover {
+  background-color: #4a48b5;
+}
+
+/* לחצנים במצב לא פעיל */
+.collab-form-button:disabled {
+  background-color: #a3a0d7;
+  cursor: not-allowed;
+}
+
+/* חתימת הקנבס */
+.form-sigCanvas {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  width: 100%;
+  max-width: 300px;
+  height: 100px;
+}
+
+/* תמונת חתימה */
+.form-signature-image {
+  max-width: 300px;
+  max-height: 100px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+/* טקסט שגיאה */
+.error {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}

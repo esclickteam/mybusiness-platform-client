@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
+import "./CreateAgreementForm.css"; // <-- הוסף פה ייבוא CSS
 
 export default function CreateAgreementForm({ onCreated }) {
   const [formData, setFormData] = useState({
@@ -92,9 +93,10 @@ export default function CreateAgreementForm({ onCreated }) {
   return (
     <form
       onSubmit={handleSubmit}
-      style={{ maxWidth: 600, margin: "auto", direction: "rtl", fontFamily: "Arial, sans-serif" }}
+      className="create-agreement-form"
+      dir="rtl"
     >
-      <h2 style={{ textAlign: "center", marginBottom: 20 }}>צור הסכם שיתוף פעולה חדש</h2>
+      <h2 className="form-title">צור הסכם שיתוף פעולה חדש</h2>
 
       <label>
         שם העסק השותף:
@@ -104,7 +106,6 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.partnerBusinessName}
           onChange={handleChange}
           required
-          style={inputStyle}
           placeholder="הזן שם עסק שותף"
         />
       </label>
@@ -117,7 +118,6 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.title}
           onChange={handleChange}
           required
-          style={inputStyle}
           placeholder="כותרת ההסכם"
         />
       </label>
@@ -129,9 +129,8 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.description}
           onChange={handleChange}
           required
-          style={textareaStyle}
-          placeholder="תיאור ההסכם"
           rows={4}
+          placeholder="תיאור ההסכם"
         />
       </label>
 
@@ -142,7 +141,6 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.giving}
           onChange={handleChange}
           required
-          style={textareaStyle}
           rows={2}
           placeholder="מה תספק במסגרת ההסכם"
         />
@@ -155,7 +153,6 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.receiving}
           onChange={handleChange}
           required
-          style={textareaStyle}
           rows={2}
           placeholder="מה תקבל במסגרת ההסכם"
         />
@@ -168,7 +165,6 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.type}
           onChange={handleChange}
           required
-          style={inputStyle}
         >
           <option value="">בחר סוג</option>
           <option value="חד צדדי">חד צדדי</option>
@@ -184,20 +180,18 @@ export default function CreateAgreementForm({ onCreated }) {
           name="payment"
           value={formData.payment}
           onChange={handleChange}
-          style={inputStyle}
           placeholder="עמלות / תשלום"
         />
       </label>
 
       <label>תוקף ההסכם:</label>
-      <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+      <div className="date-inputs">
         <input
           type="date"
           name="startDate"
           value={formData.startDate}
           onChange={handleChange}
           disabled={formData.cancelAnytime}
-          style={inputStyle}
         />
         <input
           type="date"
@@ -205,11 +199,10 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.endDate}
           onChange={handleChange}
           disabled={formData.cancelAnytime}
-          style={inputStyle}
         />
       </div>
 
-      <label style={{ display: "block", marginBottom: 16 }}>
+      <label className="checkbox-label">
         <input
           type="checkbox"
           name="cancelAnytime"
@@ -219,7 +212,7 @@ export default function CreateAgreementForm({ onCreated }) {
         ניתן לבטל את ההסכם בכל שלב
       </label>
 
-      <label style={{ display: "block", marginBottom: 20 }}>
+      <label className="checkbox-label">
         <input
           type="checkbox"
           name="confidentiality"
@@ -229,56 +222,27 @@ export default function CreateAgreementForm({ onCreated }) {
         סעיף סודיות
       </label>
 
-      <div style={{ marginTop: 20 }}>
+      <div className="signature-container">
         <label>חתימה ראשונית (אופציונלי):</label>
         <SignatureCanvas
           ref={sigPadRef}
           penColor="black"
           canvasProps={{
+            className: "sigCanvas",
             width: 400,
             height: 150,
-            style: { border: "1px solid #ccc", borderRadius: 4, backgroundColor: "#fff" },
           }}
         />
-        <button type="button" onClick={clearSignature} style={{ marginTop: 6 }}>
+        <button type="button" onClick={clearSignature} className="clear-signature-btn">
           נקה חתימה
         </button>
       </div>
 
-      {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={sending}
-        style={{
-          marginTop: 20,
-          backgroundColor: "#5a59d6",
-          color: "white",
-          border: "none",
-          borderRadius: 6,
-          padding: "10px 20px",
-          fontWeight: "bold",
-          cursor: sending ? "not-allowed" : "pointer",
-          opacity: sending ? 0.7 : 1,
-        }}
-      >
+      <button type="submit" disabled={sending} className="submit-btn">
         {sending ? "שולח..." : "צור הסכם"}
       </button>
     </form>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "8px",
-  borderRadius: "6px",
-  border: "1.5px solid #ccc",
-  fontSize: "16px",
-  fontFamily: "'Arial', sans-serif",
-};
-
-const textareaStyle = {
-  ...inputStyle,
-  resize: "vertical",
-  minHeight: "60px",
-};
