@@ -95,7 +95,7 @@ export default function CreateAgreementForm({ onCreated }) {
       className="create-agreement-form"
       dir="rtl"
     >
-      <h2 className="form-title">צור הסכם שיתוף פעולה חדש</h2>
+      <h2 className="form-title">הסכם שיתוף פעולה</h2>
 
       <label>
         שם העסק השותף:
@@ -106,6 +106,7 @@ export default function CreateAgreementForm({ onCreated }) {
           onChange={handleChange}
           required
           placeholder="הזן שם עסק שותף"
+          className="form-input"
         />
       </label>
 
@@ -118,6 +119,7 @@ export default function CreateAgreementForm({ onCreated }) {
           onChange={handleChange}
           required
           placeholder="כותרת ההסכם"
+          className="form-input"
         />
       </label>
 
@@ -130,6 +132,7 @@ export default function CreateAgreementForm({ onCreated }) {
           required
           rows={4}
           placeholder="תיאור ההסכם"
+          className="form-textarea"
         />
       </label>
 
@@ -142,6 +145,7 @@ export default function CreateAgreementForm({ onCreated }) {
           required
           rows={2}
           placeholder="מה תספק במסגרת ההסכם"
+          className="form-textarea"
         />
       </label>
 
@@ -154,6 +158,7 @@ export default function CreateAgreementForm({ onCreated }) {
           required
           rows={2}
           placeholder="מה תקבל במסגרת ההסכם"
+          className="form-textarea"
         />
       </label>
 
@@ -164,6 +169,7 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.type}
           onChange={handleChange}
           required
+          className="form-input"
         >
           <option value="">בחר סוג</option>
           <option value="חד צדדי">חד צדדי</option>
@@ -180,6 +186,7 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.payment}
           onChange={handleChange}
           placeholder="עמלות / תשלום"
+          className="form-input"
         />
       </label>
 
@@ -191,6 +198,7 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.startDate}
           onChange={handleChange}
           disabled={formData.cancelAnytime}
+          className="form-input"
         />
         <input
           type="date"
@@ -198,6 +206,7 @@ export default function CreateAgreementForm({ onCreated }) {
           value={formData.endDate}
           onChange={handleChange}
           disabled={formData.cancelAnytime}
+          className="form-input"
         />
       </div>
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../api"; // axios עם טוקן
+import "./PartnershipAgreementView.css"; // תוסיף קובץ CSS לעיצוב מקצועי
 
 export default function PartnershipAgreementView({ agreementId, currentBusinessId }) {
   const [agreement, setAgreement] = useState(null);
@@ -9,7 +10,6 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
   const [saving, setSaving] = useState(false);
   const sigPadRef = useRef(null);
 
-  // צד המשתמש הנוכחי בהסכם
   const userSide = agreement
     ? (agreement.createdByBusinessId === currentBusinessId ? "createdBy" : "invitedBusiness")
     : null;
@@ -40,7 +40,6 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
         signatureDataUrl,
       });
       setShowSign(false);
-      // רענון ההסכם עם החתימה החדשה
       const res = await API.get(`/agreements/${agreementId}`);
       setAgreement(res.data);
     } catch (error) {
@@ -52,26 +51,32 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
   if (loading) return <div>טוען הסכם...</div>;
   if (!agreement) return <div>הסכם לא נמצא</div>;
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "-";
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("he-IL");
+  };
+
   return (
-    <div>
-      <h2>הסכם שיתוף פעולה: {agreement.title}</h2>
+    <div className="agreement-view-container">
+      <h2 className="agreement-title">הסכם שיתוף פעולה: {agreement.title}</h2>
       <p><strong>תיאור:</strong> {agreement.description}</p>
-      <p><strong>תנאים:</strong> {agreement.terms}</p>
-      <p><strong>תשלום:</strong> {agreement.paymentDetails}</p>
-      <p><strong>תקופת ההסכם:</strong> {agreement.startDate} - {agreement.endDate}</p>
-      <p><strong>סטטוס:</strong> {agreement.status}</p>
+      <p><strong>תנאים:</strong> {agreement.terms || "-"}</p>
+      <p><strong>תשלום:</strong> {agreement.paymentDetails || "-"}</p>
+      <p><strong>תקופת ההסכם:</strong> {formatDate(agreement.startDate)} - {formatDate(agreement.endDate)}</p>
+      <p><strong>סטטוס:</strong> <span className={`status status-${agreement.status}`}>{agreement.status}</span></p>
 
       <hr />
 
       <h3>חתימות:</h3>
-      <div style={{ display: "flex", gap: "2rem" }}>
+      <div className="signatures-container">
         <div>
           <strong>צד שיצר:</strong><br />
           {agreement.signatures?.createdBy?.signed ? (
             <img
               src={agreement.signatures.createdBy.signatureDataUrl}
               alt="חתימת יוצר"
-              style={{ width: 200, border: "1px solid #ccc" }}
+              className="signature-image"
             />
           ) : (
             "לא חתום"
@@ -84,7 +89,7 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
             <img
               src={agreement.signatures.invitedBusiness.signatureDataUrl}
               alt="חתימת מוזמן"
-              style={{ width: 200, border: "1px solid #ccc" }}
+              className="signature-image"
             />
           ) : (
             "לא חתום"
@@ -95,22 +100,22 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
       <hr />
 
       {!userSigned && !showSign && (
-        <button onClick={() => setShowSign(true)}>חתום עכשיו</button>
+        <button className="sign-button" onClick={() => setShowSign(true)}>חתום עכשיו</button>
       )}
 
       {showSign && (
-        <div style={{ marginTop: 20 }}>
+        <div className="signature-pad-container">
           <SignatureCanvas
             penColor="black"
             canvasProps={{ width: 400, height: 150, className: "sigCanvas", style: {border: "1px solid #000"} }}
             ref={sigPadRef}
           />
-          <div style={{ marginTop: 10 }}>
+          <div className="signature-buttons">
             <button onClick={() => sigPadRef.current.clear()}>נקה</button>
-            <button onClick={handleSaveSignature} disabled={saving} style={{ marginLeft: 10 }}>
+            <button onClick={handleSaveSignature} disabled={saving}>
               {saving ? "שומר..." : "שמור חתימה"}
             </button>
-            <button onClick={() => setShowSign(false)} disabled={saving} style={{ marginLeft: 10 }}>
+            <button onClick={() => setShowSign(false)} disabled={saving}>
               בטל
             </button>
           </div>
