@@ -1,12 +1,20 @@
 // src/pages/Plans.jsx
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/Plans.css";
 
+const pricingOptions = {
+  month: { label: "חודש", price: 585, duration: 1 },
+  quarter: { label: "3 חודשים", price: 1580, duration: 3 },
+  year: { label: "שנה", price: 5850, duration: 12 },
+};
+
 export default function Plans() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  const [selectedPlan, setSelectedPlan] = useState("month");
 
   if (loading) return <p role="status" aria-live="polite" className="loading-text">טוען...</p>;
 
@@ -16,11 +24,13 @@ export default function Plans() {
       return;
     }
 
+    const { label, price, duration } = pricingOptions[selectedPlan];
+
     navigate("/checkout", {
       state: {
-        planName: "עסקליק – חבילת ניהול מלאה",
-        totalPrice: 585,
-        duration: 1,
+        planName: `עסקליק – חבילת ניהול מלאה (${label})`,
+        totalPrice: price,
+        duration,
       },
     });
   };
@@ -32,7 +42,26 @@ export default function Plans() {
 
       <article className="plan-card full-plan-card" aria-labelledby="full-plan-title">
         <h2 id="full-plan-title">עסקליק – חבילת ניהול מלאה</h2>
-        <p className="plan-price">585 ₪ / חודש (כולל מע"מ)</p>
+
+        {/* בחירת תוקף */}
+        <div className="plan-duration-selector" role="radiogroup" aria-label="בחירת תוקף חבילה">
+          {Object.entries(pricingOptions).map(([key, { label, price }]) => (
+            <label key={key} className={`radio-label ${selectedPlan === key ? "selected" : ""}`}>
+              <input
+                type="radio"
+                name="planDuration"
+                value={key}
+                checked={selectedPlan === key}
+                onChange={() => setSelectedPlan(key)}
+              />
+              {label} — <strong>{price} ₪</strong>
+            </label>
+          ))}
+        </div>
+
+        <p className="plan-price" aria-live="polite" aria-atomic="true">
+          <strong>{pricingOptions[selectedPlan].price} ₪</strong> / {pricingOptions[selectedPlan].label} (כולל מע"מ)
+        </p>
 
         <ul className="plan-features">
           <li>קבלת פניות ללא הגבלה</li>
@@ -50,9 +79,9 @@ export default function Plans() {
         <button
           className="select-button"
           onClick={handleSelectPlan}
-          aria-label="הצטרפו עכשיו לחבילת עסקליק המלאה"
+          aria-label={`הצטרפו עכשיו לחבילת עסקליק ${pricingOptions[selectedPlan].label}`}
         >
-          הצטרפו עכשיו לחבילת עסקליק המלאה
+          הצטרפו עכשיו לחבילת עסקליק {pricingOptions[selectedPlan].label}
         </button>
       </article>
     </section>
