@@ -1,11 +1,11 @@
 import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
-import "./CreateAgreementForm.css"; // <-- הוסף פה ייבוא CSS
+import "./CreateAgreementForm.css"; // <-- הוספת ייבוא CSS
 
 export default function CreateAgreementForm({ onCreated }) {
   const [formData, setFormData] = useState({
-    partnerBusinessName: "", // שם העסק השותף במקום מזהה
+    partnerBusinessName: "",
     title: "",
     description: "",
     giving: "",
@@ -25,7 +25,6 @@ export default function CreateAgreementForm({ onCreated }) {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
       setFormData((prev) => ({ ...prev, [name]: checked }));
-      // אם מסמנים ביטול בכל שלב - נקה תאריכים
       if (name === "cancelAnytime" && checked) {
         setFormData((prev) => ({ ...prev, startDate: "", endDate: "" }));
       }
