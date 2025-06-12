@@ -81,35 +81,19 @@ const CRMClientsTab = ({ businessId }) => {
           <table className="clients-table">
             <thead>
               <tr>
-                <th>שם</th>
-                <th>טלפון</th>
-                <th>כתובת</th>
-                <th>אימייל</th>
-                <th>סטטוס</th>
-                <th>היסטוריית תורים</th> {/* עמודה חדשה לכפתור */}
+                <th>שם</th><th>טלפון</th><th>כתובת</th><th>אימייל</th><th>סטטוס</th><th>היסטוריית תורים</th>
               </tr>
             </thead>
             <tbody>
               {filteredClients.length === 0 ? (
-                <tr>
-                  <td colSpan="6">לא נמצאו לקוחות</td>
-                </tr>
+                <tr><td colSpan="6">לא נמצאו לקוחות</td></tr>
               ) : (
                 filteredClients.map((client) => (
                   <tr key={client.id}>
-                    <td>{client.fullName}</td>
-                    <td className="phone-cell">{client.phone}</td>
-                    <td className="address-cell">{client.address}</td>
-                    <td className="email-cell">{client.email}</td>
+                    <td>{client.fullName}</td><td className="phone-cell">{client.phone}</td><td className="address-cell">{client.address}</td><td className="email-cell">{client.email}</td>
                     <td
-                      className={`status-cell ${
-                        client.status === "completed" ? "completed" : "incomplete"
-                      }`}
-                      title={
-                        client.status === "completed"
-                          ? "הלקוח השלים תיאום"
-                          : "התיאום לא הושלם"
-                      }
+                      className={`status-cell ${client.status === "completed" ? "completed" : "incomplete"}`}
+                      title={client.status === "completed" ? "הלקוח השלים תיאום" : "התיאום לא הושלם"}
                     >
                       {client.status === "completed" ? "הושלם" : "לא הושלם"}
                     </td>
@@ -128,7 +112,6 @@ const CRMClientsTab = ({ businessId }) => {
             </tbody>
           </table>
 
-          {/* הצגת היסטוריית תורים */}
           {selectedClient && (
             <ClientAppointmentsHistory
               businessId={businessId}
