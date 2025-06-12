@@ -1,9 +1,8 @@
 // src/pages/Plans.jsx
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/Plans.css";
-import PlanComparisonGrid from "./dashboardPages/buildTabs/PlanComparisonGrid.jsx";
 
 export default function Plans() {
   const { user, loading } = useAuth();
@@ -12,168 +11,55 @@ export default function Plans() {
   // עד שלא יודעים אם יש session – לא מציגים כלום כדי למנוע “הבזקים”
   if (loading) return null;
 
-  const [selectedDurations, setSelectedDurations] = useState({
-    advanced: "1",
-    professional: "1",
-    vip: "1",
-  });
-  const [showComparison, setShowComparison] = useState(false);
-
-  const handleDurationChange = (plan, duration) => {
-    setSelectedDurations(prev => ({ ...prev, [plan]: duration }));
-  };
-
-  const handleSelectPlan = (planKey) => {
+  const handleSelectPlan = () => {
     // אם לא מחובר – נעביר ללוגין
     if (!user) {
       navigate("/login", { replace: true });
       return;
     }
 
-    const plan = plansData[planKey];
-    const months = parseInt(selectedDurations[planKey], 10);
-    const monthlyPrice = plan.prices?.[selectedDurations[planKey]] || plan.price || 0;
-    const total = monthlyPrice * months;
+    // נתוני החבילה היחידה
+    const planName = "עסקליק – חבילת ניהול מלאה";
+    const totalPrice = 585;
+    const duration = 1; // חודש
 
     navigate("/checkout", {
       state: {
-        planName: plan.name,
-        totalPrice: total,
-        duration: months,
+        planName,
+        totalPrice,
+        duration,
       },
     });
   };
 
-  const plansData = {
-    free: {
-      name: "חינמית",
-      price: 0,
-      features: [
-        { text: "קבלת פניות", enabled: false },
-        { text: "צ'אט עם לקוחות", enabled: false },
-        { text: "ניהול חנות/תורים", enabled: false },
-        { text: "שיתוף פעולה בין עסקים", enabled: false },
-      ],
-      description: "למי שרוצה לנסות ולהתחיל בקטן",
-    },
-    advanced: {
-      name: "מתקדמת",
-      prices: { "1": 89, "3": 79, "12": 59 },
-      features: [
-        { text: "עד 50 פניות", enabled: true },
-        { text: "צ'אט עם לקוחות", enabled: true },
-        { text: "חנות / יומן לזימון תורים / זימון שירות לבית", enabled: false },
-        { text: "שיתוף פעולה בין עסקים", enabled: false },
-      ],
-      description: "מתאימה לעסקים מתחילים עם תקשורת בסיסית",
-    },
-    professional: {
-      name: "מקצועית",
-      prices: { "1": 189, "3": 169, "12": 129 },
-      recommended: true,
-      features: [
-        { text: "פניות ללא הגבלה", enabled: true },
-        { text: "צ'אט עם לקוחות", enabled: true },
-        { text: "חנות / יומן לזימון תורים / זימון שירות לבית", enabled: true },
-        { text: "שיתוף פעולה בין עסקים", enabled: false },
-      ],
-      description: "הכי משתלם לעסק שצריך שליטה מלאה",
-    },
-    vip: {
-      name: "VIP",
-      prices: { "1": 219, "3": 199, "12": 189 },
-      recommendedVip: true,
-      features: [
-        { text: "פניות ללא הגבלה", enabled: true },
-        { text: "צ'אט עם לקוחות", enabled: true },
-        { text: "חנות / יומן לזימון תורים / זימון שירות לבית", enabled: true },
-        { text: "שיתוף פעולה בין עסקים", enabled: true },
-      ],
-      description: "לעסקים שרוצים להוביל ולהיחשף יותר",
-    },
-  };
-
   return (
     <div className="plans-container">
-      <h1 className="plans-title">הצטרפות לחבילות עסקים</h1>
+      <h1 className="plans-title">הצטרפות לחבילת עסקליק</h1>
       <p className="plans-subtitle">כשהלקוחות מחפשים, כדאי שהם ימצאו אותך!</p>
 
-      <div className="plans-grid">
-        {Object.entries(plansData).map(([planKey, plan]) => {
-          const duration = selectedDurations[planKey];
-          const price = plan.prices?.[duration] ?? plan.price ?? 0;
-          const isRecommended = !!plan.recommended;
-          const isVip = planKey === "vip";
+      <div className="plans-grid single-plan-grid">
+        <div className="plan-card full-plan-card">
+          <h2>עסקליק – חבילת ניהול מלאה</h2>
+          <p className="plan-price">585 ₪ / חודש (כולל מע"מ)</p>
 
-          const cardClasses = [
-            "plan-card",
-            isRecommended && "recommended-plan",
-            isVip ? "vip-background vip-highlight" : `bordered-card ${planKey}`,
-          ]
-            .filter(Boolean)
-            .join(" ");
+          <ul>
+            <li>קבלת פניות ללא הגבלה</li>
+            <li>צ'אט עם לקוחות בזמן אמת</li>
+            <li>פרופיל עסקי מקצועי ודינמי</li>
+            <li>טפסים חכמים ליצירת קשר והצעות מחיר</li>
+            <li>ניהול גלריית תמונות וסרטונים</li>
+            <li>יומן עסקי מסונכרן עם לקוחות (כולל CRM מובנה)</li>
+            <li>תיאום עצמי בין לקוחות ובעל העסק</li>
+            <li>מערכת שיתופי פעולה בין עסקים – כולל מרקט שיתופים והסכמים דיגיטליים</li>
+            <li>AI שותף עסקי חכם – ייעוץ, תמחור, ביצוע פעולות, שיחה קולית (עד 30 שימושים בחודש)</li>
+            <li>מתאים לכל סוגי העסקים – גם נותני שירות במקום וגם ניידים עד הבית</li>
+          </ul>
 
-          return (
-            <div key={planKey} className={cardClasses}>
-              {isRecommended && <div className="plan-badge">⭐ הכי משתלם</div>}
-              {plan.recommendedVip && <div className="plan-badge vip-badge">🏆 הבחירה של המובילים</div>}
-
-              <h2 className={isVip ? "vip-title" : ""}>
-                {isVip ? <>VIP <span className="vip-crown">👑</span></> : plan.name}
-              </h2>
-
-              {price > 0 && <p>{price} ₪ / חודש</p>}
-
-              {plan.prices && (
-                <label>
-                  בחר תקופה:
-                  <select
-                    value={duration}
-                    onChange={e => handleDurationChange(planKey, e.target.value)}
-                  >
-                    <option value="1">חודש</option>
-                    <option value="3">3 חודשים ({plan.prices["3"]} ₪ לחודש)</option>
-                    <option value="12">שנה ({plan.prices["12"]} ₪ לחודש)</option>
-                  </select>
-                </label>
-              )}
-
-              <ul>
-                {plan.features.map((feat, idx) => (
-                  <li key={idx} className={feat.enabled ? "" : "no-feature"}>
-                    {feat.text}
-                  </li>
-                ))}
-              </ul>
-
-              <p className="plan-description">{plan.description}</p>
-
-              <button
-                className="select-button"
-                onClick={() => handleSelectPlan(planKey)}
-              >
-                {planKey === "free" && "🚀 התחילו עכשיו בחינם"}
-                {planKey === "advanced" && "✨ שדרגו לתקשורת ישירה"}
-                {planKey === "professional" && "💼 ניהול מקצועי מתחיל כאן"}
-                {planKey === "vip" && "👑 הצטרפו למנוי VIP"}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-
-      <button
-        className="toggle-comparison-button"
-        onClick={() => setShowComparison(prev => !prev)}
-      >
-        {showComparison ? "הסתר השוואת חבילות" : "השוואת חבילות"}
-      </button>
-
-      {showComparison && (
-        <div style={{ marginTop: "2rem" }}>
-          <PlanComparisonGrid onSelectPlan={handleSelectPlan} />
+          <button className="select-button" onClick={handleSelectPlan}>
+            הצטרפו עכשיו לחבילת עסקליק המלאה
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

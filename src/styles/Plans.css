@@ -1,4 +1,3 @@
-
 /* עיצוב כללי של העמוד */
 .plans-container {
     text-align: center;
@@ -51,358 +50,117 @@
     color: #444;
 }
 
-/* גריד החבילות */
-.plans-grid {
+/* גריד חבילה בודדת */
+.plans-grid.single-plan-grid {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
     align-items: stretch;
 }
 
-/* כרטיס חבילה */
-.plan-card {
-    background: white;
+/* כרטיס חבילה בודדת */
+.full-plan-card {
+    background: #ffcc00;
+    color: #5a4100;
     border-radius: 12px;
-    padding: 20px;
-    width: 280px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px 25px;
+    width: 320px;
+    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5);
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 480px;
+    min-height: 540px;
     position: relative;
+    font-weight: 600;
+    font-size: 16px;
 }
 
-.plan-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+/* כותרת החבילה */
+.full-plan-card h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    font-weight: 700;
 }
 
-/* מסגרות לפי סוג חבילה */
-.bordered-card.free {
-    border: 2px solid #c0c0c0;
-    background-color: #f0f0f0;
-}
-
-.bordered-card.advanced {
-    border: 2px solid #8a2be2;
-    background-color: #f8f2ff;
-}
-
-.bordered-card.professional {
-    border: 2px solid #ff8c00;
-    background-color: #fff7ec;
-}
-
-/* VIP זהב בוהק */
-.vip-background {
-    background-color: #ffcc00;
-    color: #5a4100;
-    border-radius: 12px;
-    padding: 20px;
-    width: 280px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-/* הדגשת VIP */
-.vip-highlight {
-    transform: scale(1.07);
-    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4);
-    border: 2px solid #d4af37;
-    animation: vipEntrance 0.8s ease forwards;
-    z-index: 2;
-}
-
-/* אנימציית כניסה */
-@keyframes vipEntrance {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1.07);
-  }
-}
-
-/* כותרת VIP עם כתר */
-.vip-title {
+/* מחיר */
+.plan-price {
     font-size: 24px;
-    font-weight: bold;
-    color: #5a4100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
+    margin-bottom: 25px;
+    font-weight: 700;
 }
 
-.vip-crown {
-    font-size: 22px;
-    line-height: 1;
-}
-
-/* תיאור מאפיינים */
-.plan-card ul {
+/* רשימת תכונות */
+.full-plan-card ul {
     list-style: none;
     padding: 0;
-    margin: 10px 0 0 0;
+    margin: 0 0 30px 0;
+    text-align: right;
 }
 
-.plan-card li {
-    font-size: 16px;
-    margin: 6px 0;
+.full-plan-card li {
+    margin: 10px 0;
     display: flex;
     align-items: center;
-    gap: 8px;
-    justify-content: center;
+    gap: 10px;
+    justify-content: flex-start;
+    position: relative;
+    padding-left: 25px;
+    font-size: 16px;
 }
 
-.plan-card li::before {
+.full-plan-card li::before {
     content: "✔️";
-    display: inline-block;
+    position: absolute;
+    left: 0;
+    font-size: 18px;
 }
 
-.plan-card li.no-feature::before {
-    content: "❌";
-    color: #d00;
-}
-
-.plan-description {
-    font-size: 14px;
-    color: #666;
-    margin-top: 10px;
-}
-
-.toggle-comparison-button {
-    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
-    color: #fff;
-    font-weight: bold;
-    font-size: 16px;
-    padding: 12px 28px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-block;
-    margin: 30px auto 0;
-    text-align: center;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-  }
-  
-  .toggle-comparison-button:hover {
-    background: linear-gradient(90deg, #5d0eca 0%, #1e63e9 100%);
-    transform: scale(1.05);
-  }
-  
-  
-
-/* כפתורי CTA לפי חבילה */
+/* כפתור בחירה */
 .select-button {
-    padding: 12px 15px;
+    padding: 15px 20px;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 700;
     cursor: pointer;
-    width: 100%;
-    display: block;
-    margin-top: auto;
-    transition: transform 0.2s ease, background-color 0.3s ease;
+    background-color: #5a4100;
+    color: white;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .select-button:hover {
-    transform: scale(1.04);
-}
-
-.free .select-button {
-    background-color: #1e90ff;
-    color: white;
-}
-.free .select-button:hover {
-    background-color: #1c7cd6;
-}
-
-.advanced .select-button {
-    background-color: #8a2be2;
-    color: white;
-}
-.advanced .select-button:hover {
-    background-color: #7326c8;
-}
-
-.professional .select-button {
-    background-color: #ff8c00;
-    color: white;
-}
-.professional .select-button:hover {
-    background-color: #e67600;
-}
-
-.vip-background .select-button {
-    background-color: #d4af37;
-    color: white;
-}
-.vip-background .select-button:hover {
-    background-color: #b8860b;
-}
-
-.plan-badge {
-    background-color: #ff4500;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 999px;
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-    animation: pulse 2s infinite;
-}
-
-.vip-badge {
-    background-color: #b8860b;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 6px 16px;
-    border-radius: 999px;
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-    animation: pulse 2s infinite;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.recommended-plan {
+    background-color: #7d5712;
     transform: scale(1.05);
-    box-shadow: 0 6px 14px rgba(255, 98, 0, 0.3);
-    z-index: 1;
-}
-
-@keyframes pulse {
-  0% {
-    transform: translateX(-50%) scale(1);
-  }
-  50% {
-    transform: translateX(-50%) scale(1.05);
-  }
-  100% {
-    transform: translateX(-50%) scale(1);
-  }
-}
-
-.comparison-table-wrapper {
-    margin-top: 3rem;
-    padding: 1.5rem;
-    background: #f8f8f8;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    direction: rtl;
-    overflow-x: auto;
-}
-
-.comparison-table {
-    direction: ltr;
-    margin: 0 auto;
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-    text-align: center;
-}
-
-/* פוטר */
-.footer {
-    margin-top: 30px;
-    padding: 20px;
-    background: #fff;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.footer-links {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-.footer-links li {
-    font-size: 14px;
-}
-
-.footer-links a {
-    text-decoration: none;
-    color: #6a11cb;
-    font-weight: bold;
-}
-
-.footer-links a:hover {
-    text-decoration: underline;
-}
-
-.copyright {
-    font-size: 12px;
-    margin-top: 10px;
-    color: #777;
 }
 
 /* רספונסיביות לנייד */
 @media (max-width: 768px) {
-  .plans-grid {
+  .plans-grid.single-plan-grid {
     flex-direction: column;
     align-items: center;
   }
 
-  .plan-card,
-  .vip-background {
-    width: 100%;
-    max-width: 90%;
-    margin-bottom: 20px;
+  .full-plan-card {
+    width: 90%;
+    min-height: auto;
+    padding: 20px 15px;
   }
 
-  .comparison-table {
-    font-size: 14px;
-    overflow-x: auto;
-    display: block;
-    width: 100%;
-  }
-
-  .comparison-table th,
-  .comparison-table td {
-    white-space: nowrap;
-    padding: 8px 12px;
-  }
-
-  .select-button {
-    font-size: 15px;
-    padding: 10px 14px;
-  }
-
-  .plans-title {
+  .full-plan-card h2 {
     font-size: 24px;
   }
 
-  .plans-subtitle {
+  .plan-price {
+    font-size: 20px;
+  }
+
+  .full-plan-card li {
+    font-size: 14px;
+    padding-left: 20px;
+  }
+
+  .select-button {
     font-size: 16px;
-  }
-
-  .navbar {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .nav-left, .nav-right {
-    justify-content: center;
+    padding: 12px 18px;
   }
 }
