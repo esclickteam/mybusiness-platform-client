@@ -1,12 +1,8 @@
-import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import "./CRMMain.css"; // אפשר גם Tailwind במקום CSS
-
 const crmTabs = [
   { path: "appointments", label: "📆 תיאומים" },
   { path: "clients", label: "👥 לקוחות" },
   { path: "services", label: "🛠️ שירותים" },
-  { path: "settings", label: "⚙️ הגדרות" },
+  // מחקנו את ההגדרות פה
 ];
 
 const CRMMain = () => {
