@@ -59,8 +59,9 @@
 /* גריד חבילה בודדת */
 .plans-grid.single-plan-grid {
     display: flex;
+    flex-direction: column; /* הוסף שורה זו */
     justify-content: center;
-    align-items: stretch;
+    align-items: center; /* מומלץ לשנות מ-stretch ל-center */
 }
 
 /* כרטיס חבילה בודדת */
