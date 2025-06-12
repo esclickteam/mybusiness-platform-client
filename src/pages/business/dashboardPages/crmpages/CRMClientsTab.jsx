@@ -40,7 +40,7 @@ const CRMClientsTab = ({ businessId }) => {
       client.phone.includes(search)
   );
 
-  const handleAddClient = () => {
+  const handleAddClient = async () => {
     if (!newClient.name || !newClient.phone) {
       alert("יש למלא שם וטלפון לפחות");
       return;
@@ -49,20 +49,34 @@ const CRMClientsTab = ({ businessId }) => {
     if (saving) return;
     setSaving(true);
 
-    setClients((prev) => [
-      ...prev,
-      {
-        fullName: newClient.name,
-        phone: newClient.phone,
+    try {
+      const res = await API.post('/clients', {
+        businessId,
+        clientName: newClient.name,
+        clientPhone: newClient.phone,
         email: newClient.email,
         address: newClient.address,
-        id: Date.now(),
-      },
-    ]);
+      });
 
-    setNewClient({ name: "", phone: "", email: "", address: "" });
-    setShowForm(false);
-    setSaving(false);
+      setClients((prev) => [
+        ...prev,
+        {
+          fullName: res.data.clientName || newClient.name,
+          phone: res.data.clientPhone || newClient.phone,
+          email: res.data.email || newClient.email,
+          address: res.data.address || newClient.address,
+          id: res.data._id || Date.now(),
+        },
+      ]);
+
+      setNewClient({ name: "", phone: "", email: "", address: "" });
+      setShowForm(false);
+    } catch (error) {
+      console.error("Error saving client:", error.response || error);
+      alert("שגיאה בשמירת הלקוח");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
