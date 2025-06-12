@@ -27,7 +27,8 @@ const CRMClientsTab = ({ businessId }) => {
           fullName: c.fullName || "",  // תואם לשם השדה מהשרת
           phone: (c.phone || "").replace(/\s/g, ""),
           email: (c.email || "").replace(/\s/g, ""),
-          id: c._id || Date.now(),      // שימוש ב-ID ייחודי אם קיים
+          address: c.address || "",         // הוספת שדה כתובת
+          id: c._id || Date.now(),          // שימוש ב-ID ייחודי אם קיים
         }));
         console.log("normalized clients:", normalizedClients); // לוג הנתונים לאחר הנרמול
         setClients(normalizedClients);
@@ -61,6 +62,7 @@ const CRMClientsTab = ({ businessId }) => {
         fullName: newClient.name,
         phone: newClient.phone,
         email: newClient.email,
+        address: "",               // אפשר להוסיף שדה כתובת גם כאן, כרגע ריק
         id: Date.now(),
       },
     ]);
@@ -121,19 +123,21 @@ const CRMClientsTab = ({ businessId }) => {
             <tr>
               <th>שם</th>
               <th>טלפון</th>
+              <th>כתובת</th> {/* הוספת כותרת לכתובת */}
               <th>אימייל</th>
             </tr>
           </thead>
           <tbody>
             {filteredClients.length === 0 ? (
               <tr>
-                <td colSpan="3">לא נמצאו לקוחות</td>
+                <td colSpan="4">לא נמצאו לקוחות</td>
               </tr>
             ) : (
               filteredClients.map((client) => (
                 <tr key={client.id}>
                   <td>{client.fullName}</td>
                   <td className="phone-cell">{client.phone}</td>
+                  <td className="address-cell">{client.address}</td> {/* הוספת הצגת כתובת */}
                   <td className="email-cell">{client.email}</td>
                 </tr>
               ))

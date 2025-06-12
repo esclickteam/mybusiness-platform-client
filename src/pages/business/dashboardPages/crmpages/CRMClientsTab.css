@@ -66,7 +66,7 @@
 .clients-table {
   width: 100%;
   border-collapse: collapse;
-  color: black; /* הוספתי פה - צבע טקסט שחור לכל הטבלה */
+  color: black; /* צבע טקסט שחור לכל הטבלה */
 }
 
 .clients-table th,
@@ -76,7 +76,7 @@
   text-align: right;
   white-space: normal;
   word-break: break-word;
-  color: black; /* ודא גם פה שהטקסט בתאים שחור */
+  color: black; /* טקסט שחור בתאים */
 }
 
 .clients-table th {
@@ -88,13 +88,14 @@
   background-color: #f1f1f1;
 }
 
-/* מחלקות לתאים של אימייל וטלפון כדי לאפשר רוחב מלא ושורות חדשות */
+/* מחלקות לתאים של אימייל, טלפון וכתובת */
 
 .clients-table td.phone-cell,
-.clients-table td.email-cell {
+.clients-table td.email-cell,
+.clients-table td.address-cell {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px; /* תתאים לפי הצורך */
-  color: black; /* גם כאן */
+  max-width: 200px; /* ניתן להתאים לפי הצורך */
+  color: black;
 }
