@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./CRMClientsTab.css";
 import API from "@api";
-import ClientAppointmentsHistory from "./ClientAppointmentsHistory"; // וודא שהנתיב נכון
+import ClientAppointmentsHistory from "./ClientAppointmentsHistory";
 
 const CRMClientsTab = ({ businessId }) => {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all"); // מצב סינון סטטוס
+  const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(false);
 
-  // מצב להצגת היסטוריית תורים של לקוח ספציפי
   const [selectedClient, setSelectedClient] = useState(null);
 
   useEffect(() => {
@@ -29,7 +28,7 @@ const CRMClientsTab = ({ businessId }) => {
               .replace(/\s/g, "") || "אין טלפון",
           email: (c.email || "").replace(/\s/g, "") || "-",
           address: c.address || "-",
-          status: c.status || "incomplete", // מצפה מהשרת סטטוס, אם יש
+          status: c.status || "incomplete",
           id: c._id || Date.now(),
         }));
         setClients(normalizedClients);
@@ -87,21 +86,17 @@ const CRMClientsTab = ({ businessId }) => {
                 <th>כתובת</th>
                 <th>אימייל</th>
                 <th>סטטוס</th>
+                <th>היסטוריית תורים</th> {/* עמודה חדשה לכפתור */}
               </tr>
             </thead>
             <tbody>
               {filteredClients.length === 0 ? (
                 <tr>
-                  <td colSpan="5">לא נמצאו לקוחות</td>
+                  <td colSpan="6">לא נמצאו לקוחות</td>
                 </tr>
               ) : (
                 filteredClients.map((client) => (
-                  <tr
-                    key={client.id}
-                    onClick={() => setSelectedClient(client)}
-                    style={{ cursor: "pointer" }}
-                    title="לחץ להצגת היסטוריית תורים"
-                  >
+                  <tr key={client.id}>
                     <td>{client.fullName}</td>
                     <td className="phone-cell">{client.phone}</td>
                     <td className="address-cell">{client.address}</td>
@@ -117,6 +112,15 @@ const CRMClientsTab = ({ businessId }) => {
                       }
                     >
                       {client.status === "completed" ? "הושלם" : "לא הושלם"}
+                    </td>
+                    <td>
+                      <button
+                        className="show-history-btn"
+                        onClick={() => setSelectedClient(client)}
+                        aria-label={`הצג היסטוריית תורים עבור ${client.fullName}`}
+                      >
+                        הצג היסטוריה
+                      </button>
                     </td>
                   </tr>
                 ))
