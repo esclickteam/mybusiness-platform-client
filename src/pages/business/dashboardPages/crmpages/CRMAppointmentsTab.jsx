@@ -4,7 +4,7 @@ import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api"; // תקן לנתיב הנכון
 import { useAuth } from "../../../../context/AuthContext";
 
-const statusCycle = ["new", "pending", "completed"];
+const statusCycle = ['not_completed', 'matched', 'completed'];
 const statusMap = {
   matched: 'תואם',
   not_completed: 'לא הושלם',
@@ -101,25 +101,24 @@ const CRMAppointmentsTab = () => {
   });
 
   const cycleStatus = async (id) => {
-    const apptToUpdate = appointments.find((appt) => appt._id === id);
-    if (!apptToUpdate) return;
+  const apptToUpdate = appointments.find((appt) => appt._id === id);
+  if (!apptToUpdate) return;
 
-    const currentIndex = statusCycle.indexOf(apptToUpdate.status);
-    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+  const currentIndex = statusCycle.indexOf(apptToUpdate.status);
+  const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
 
-    try {
-      const res = await API.patch(`/appointments/${id}/status`, { status: nextStatus });
-      console.log('PATCH status response:', res.data);
+  try {
+    const res = await API.patch(`/appointments/${id}/status`, { status: nextStatus });
+    const updatedAppt = res.data.appt;
 
-      const updatedAppt = res.data.appt;
+    setAppointments((prev) =>
+      prev.map((appt) => (appt._id === id ? updatedAppt : appt))
+    );
+  } catch {
+    alert("❌ שגיאה בעדכון סטטוס התיאום");
+  }
+};
 
-      setAppointments((prev) =>
-        prev.map((appt) => (appt._id === id ? updatedAppt : appt))
-      );
-    } catch {
-      alert("❌ שגיאה בעדכון סטטוס התיאום");
-    }
-  };
 
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
