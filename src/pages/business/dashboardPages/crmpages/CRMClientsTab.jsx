@@ -14,14 +14,19 @@ const CRMClientsTab = ({ businessId }) => {
     async function fetchClients() {
       setLoading(true);
       try {
-        // שליפת הלקוחות לפי סטטוס - שולחים status מהסטייט כדי שתתעדכן אוטומטית
-        const res = await API.get(`/clients/from-clients?businessId=${businessId}&status=${statusFilter === "all" ? "" : statusFilter}`);
-        const normalizedClients = res.data.map(c => ({
-          fullName: c.name || "",
-          phone: (c.phone || "").replace(/\s/g, ""),
-          email: (c.email || "").replace(/\s/g, ""),
+        // עדכון הנתיב לנתיב הנכון מהשרת
+        const res = await API.get(
+          `/appointments/clients-from-appointments?businessId=${businessId}`
+        );
+        const normalizedClients = res.data.map((c) => ({
+          fullName: c.fullName || c.clientName || "",
+          phone:
+            (c.phone || c.clientPhone || "")
+              .toString()
+              .replace(/\s/g, "") || "אין טלפון",
+          email: (c.email || "").replace(/\s/g, "") || "",
           address: c.address || "",
-          status: c.status || "incomplete", // מצפה מהשרת סטטוס
+          status: c.status || "incomplete", // מצפה מהשרת סטטוס, אם יש
           id: c._id || Date.now(),
         }));
         setClients(normalizedClients);
@@ -32,14 +37,13 @@ const CRMClientsTab = ({ businessId }) => {
       }
     }
     fetchClients();
-  }, [businessId, statusFilter]); // הוספת statusFilter לתלות useEffect כדי לעדכן בהתאם
+  }, [businessId, statusFilter]);
 
   // סינון לפי חיפוש וסטטוס
-  const filteredClients = clients.filter(client => {
+  const filteredClients = clients.filter((client) => {
     const matchesSearch =
       client.fullName.toLowerCase().includes(search.toLowerCase()) ||
       client.phone.includes(search);
-    // כאן הסינון בוצע כבר בצד שרת, אבל השארנו כפול גם פה להגנה
     const matchesStatus =
       statusFilter === "all" || client.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -57,7 +61,6 @@ const CRMClientsTab = ({ businessId }) => {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        {/* סינון סטטוס */}
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -95,7 +98,9 @@ const CRMClientsTab = ({ businessId }) => {
                   <td className="phone-cell">{client.phone}</td>
                   <td className="address-cell">{client.address}</td>
                   <td className="email-cell">{client.email}</td>
-                  <td>{client.status === "completed" ? "הושלם" : "לא הושלם"}</td>
+                  <td>
+                    {client.status === "completed" ? "הושלם" : "לא הושלם"}
+                  </td>
                 </tr>
               ))
             )}
