@@ -106,7 +106,18 @@ const CRMClientsTab = ({ businessId }) => {
                     <td className="phone-cell">{client.phone}</td>
                     <td className="address-cell">{client.address}</td>
                     <td className="email-cell">{client.email}</td>
-                    <td>{client.status === "completed" ? "הושלם" : "לא הושלם"}</td>
+                    <td
+                      className={`status-cell ${
+                        client.status === "completed" ? "completed" : "incomplete"
+                      }`}
+                      title={
+                        client.status === "completed"
+                          ? "הלקוח השלים תיאום"
+                          : "התיאום לא הושלם"
+                      }
+                    >
+                      {client.status === "completed" ? "הושלם" : "לא הושלם"}
+                    </td>
                   </tr>
                 ))
               )}

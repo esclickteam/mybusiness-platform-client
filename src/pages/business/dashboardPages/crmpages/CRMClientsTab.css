@@ -93,7 +93,6 @@
 }
 
 /* מחלקות לתאים של אימייל, טלפון וכתובת */
-
 .clients-table td.phone-cell,
 .clients-table td.email-cell,
 .clients-table td.address-cell {
@@ -102,6 +101,18 @@
   text-overflow: ellipsis;
   max-width: 200px; /* ניתן להתאים לפי הצורך */
   color: black;
+}
+
+/* סטטוס לסטטוס הושלם */
+.clients-table td.status-cell.completed {
+  color: #2a7a2a; /* ירוק כהה */
+  font-weight: 600;
+}
+
+/* סטטוס לסטטוס לא הושלם */
+.clients-table td.status-cell.incomplete {
+  color: #b33a3a; /* אדום כהה */
+  font-weight: 600;
 }
 
 /* רספונסיביות למסכים קטנים */
