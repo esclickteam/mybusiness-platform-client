@@ -1,36 +1,29 @@
 import React, { useState, useEffect } from "react";
 import "./CRMClientsTab.css";
-import API from "@api"; // נתיב ל־API שלך
+import API from "@api";
 
 const CRMClientsTab = ({ businessId }) => {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
-  const [newClient, setNewClient] = useState({ name: "", phone: "", email: "" });
+  const [newClient, setNewClient] = useState({ name: "", phone: "", email: "", address: "" });
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    console.log("CRMClientsTab useEffect triggered, businessId:", businessId);
-    if (!businessId) {
-      console.warn("No businessId provided, skipping fetchClients");
-      return;
-    }
+    if (!businessId) return;
 
     async function fetchClients() {
       setLoading(true);
       try {
-        console.log("Fetching clients for businessId:", businessId);
         const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
-        console.log("clients from API:", res.data);  // לוג נתוני הלקוחות שהתקבלו
         const normalizedClients = res.data.map(c => ({
-          fullName: c.fullName || "",               // שדה מתאים מה-API
-          phone: (c.phone || "").replace(/\s/g, ""),  // שדה מתאים מה-API
+          fullName: c.fullName || "",
+          phone: (c.phone || "").replace(/\s/g, ""),
           email: (c.email || "").replace(/\s/g, ""),
           address: c.address || "",
           id: c._id || Date.now(),
         }));
-        console.log("normalized clients:", normalizedClients); // לוג הנתונים לאחר הנרמול
         setClients(normalizedClients);
       } catch (error) {
         console.error("Error loading clients:", error.response || error);
@@ -62,12 +55,12 @@ const CRMClientsTab = ({ businessId }) => {
         fullName: newClient.name,
         phone: newClient.phone,
         email: newClient.email,
-        address: "",
+        address: newClient.address,
         id: Date.now(),
       },
     ]);
 
-    setNewClient({ name: "", phone: "", email: "" });
+    setNewClient({ name: "", phone: "", email: "", address: "" });
     setShowForm(false);
     setSaving(false);
   };
@@ -109,6 +102,13 @@ const CRMClientsTab = ({ businessId }) => {
             value={newClient.email}
             onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
           />
+          <input
+            type="text"
+            placeholder="כתובת"
+            className="address-input"
+            value={newClient.address}
+            onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+          />
           <button className="save-client-btn" onClick={handleAddClient} disabled={saving}>
             שמור לקוח
           </button>
@@ -133,17 +133,14 @@ const CRMClientsTab = ({ businessId }) => {
                 <td colSpan="4">לא נמצאו לקוחות</td>
               </tr>
             ) : (
-              filteredClients.map((client) => {
-                console.log("Rendering client phone:", client.phone);
-                return (
-                  <tr key={client.id}>
-                    <td>{client.fullName}</td>
-                    <td className="phone-cell">{client.phone}</td>
-                    <td className="address-cell">{client.address}</td>
-                    <td className="email-cell">{client.email}</td>
-                  </tr>
-                );
-              })
+              filteredClients.map((client) => (
+                <tr key={client.id}>
+                  <td>{client.fullName}</td>
+                  <td className="phone-cell">{client.phone}</td>
+                  <td className="address-cell">{client.address}</td>
+                  <td className="email-cell">{client.email}</td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>

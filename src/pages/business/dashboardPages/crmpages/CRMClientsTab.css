@@ -49,6 +49,12 @@
   min-width: 200px;
 }
 
+/* הוספת מחלקה מיוחדת לשדה כתובת שיתפוס יותר רוחב */
+.add-client-form input.address-input {
+  flex: 2;
+  min-width: 300px;
+}
+
 .save-client-btn {
   background: #4caf50;
   color: white;
@@ -98,4 +104,21 @@
   text-overflow: ellipsis;
   max-width: 200px; /* ניתן להתאים לפי הצורך */
   color: black;
+}
+
+/* רספונסיביות למסכים קטנים */
+@media (max-width: 480px) {
+  .add-client-form {
+    flex-direction: column;
+  }
+
+  .add-client-form input,
+  .add-client-form input.address-input {
+    min-width: 100%;
+    flex: none;
+  }
+
+  .save-client-btn {
+    width: 100%;
+  }
 }
