@@ -70,13 +70,16 @@
 
 /* כרטיס חבילה בודדת */
 .full-plan-card {
-    background: linear-gradient(135deg, #ffdb4d, #f8c500);
+    background: linear-gradient(135deg, #ffef8a, #f8c500); /* רקע בהיר ונעים */
     color: #5a4100;
     border-radius: 16px;
     padding: 30px 25px 40px;
     width: 100%;
     max-width: 320px;
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.55);
+
+    border: 2px solid #b38f00; /* מסגרת חומה עדינה */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* צל רך ועמוק */
+
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -85,12 +88,15 @@
     position: relative;
     font-weight: 600;
     font-size: 16px;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .full-plan-card:hover {
-    box-shadow: 0 12px 32px rgba(212, 175, 55, 0.85);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    border-color: #ffd700; /* מסגרת זוהרת בהובר */
+    cursor: pointer;
 }
+
 
 /* כותרת החבילה */
 .full-plan-card h2 {
