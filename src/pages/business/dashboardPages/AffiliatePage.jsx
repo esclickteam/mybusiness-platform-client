@@ -251,6 +251,9 @@ const AffiliatePage = () => {
             </tr>
           </tbody>
         </table>
+        <p style={{marginTop: "1rem", fontWeight: "bold", color: "#444"}}>
+          ⚠️ הבונוס האקסטרה יינתן רק פעם אחת בחודש, לפי הרף הגבוה ביותר של עסקאות שהושג באותו חודש.
+        </p>
       </section>
 
       {/* פעולות תשלום */}
