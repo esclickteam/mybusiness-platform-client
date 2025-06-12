@@ -43,6 +43,7 @@ const ClientAppointmentsHistory = ({ businessId, email, phone, onClose }) => {
       overflowY: "auto",
       boxShadow: "0 0 10px rgba(0,0,0,0.3)",
       zIndex: 1000,
+      color: "black", // הוספתי צבע טקסט שחור לכל הקונטיינר
     }}>
       <button 
         onClick={onClose} 
@@ -59,19 +60,19 @@ const ClientAppointmentsHistory = ({ businessId, email, phone, onClose }) => {
       {!loading && appointments.length === 0 && <p>אין תורים להציג</p>}
 
       {!loading && appointments.length > 0 && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", color: "black" }}>
           <thead>
             <tr style={{ backgroundColor: "#eee" }}>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>תאריך</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>שעה</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>שירות</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>סטטוס</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>הערות</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>תאריך</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>שעה</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>שירות</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>סטטוס</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>הערות</th>
             </tr>
           </thead>
           <tbody>
             {appointments.map((appt) => (
-              <tr key={appt._id} style={{ borderBottom: "1px solid #ddd" }}>
+              <tr key={appt._id} style={{ borderBottom: "1px solid #ddd", color: "black" }}>
                 <td style={{ padding: "8px", textAlign: "center" }}>{appt.date || "-"}</td>
                 <td style={{ padding: "8px", textAlign: "center" }}>{appt.time || "-"}</td>
                 <td style={{ padding: "8px", textAlign: "center" }}>{appt.serviceName || "-"}</td>
