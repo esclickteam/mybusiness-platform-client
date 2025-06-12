@@ -42,7 +42,8 @@ export default function Plans() {
 
       {/* כרטיס מתחת לכותרת */}
       <article className="plan-card full-plan-card" aria-labelledby="full-plan-title">
-        <h2 id="full-plan-title">הצטרפו למהפכת העסקים של עסקליק</h2>
+          <h2 id="full-plan-title">עסק מנצח מתחיל כאן</h2>
+
 
         <ul className="plan-features">
           <li>קבלת פניות ללא הגבלה</li>
