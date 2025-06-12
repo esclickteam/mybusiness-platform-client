@@ -7,7 +7,6 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
 import PartnershipAgreementForm from "../PartnershipAgreementForm";
-import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 import CreatePartnershipAgreementForm from "../../../../components/CreateAgreementForm";
 import "./CollabFindPartnerTab.css";
 
@@ -35,14 +34,6 @@ export default function CollabFindPartnerTab({
   const [chatTarget, setChatTarget] = useState(null);
   const [chatMessage, setChatMessage] = useState("");
   const [sending, setSending] = useState(false);
-
-  // מודאל חוזה
-  const [contractModalOpen, setContractModalOpen] = useState(false);
-  const [contractBusiness, setContractBusiness] = useState(null);
-
-  // מודאל הצגת והחתמת ההסכם
-  const [agreementModalOpen, setAgreementModalOpen] = useState(false);
-  const [agreementToShow, setAgreementToShow] = useState(null);
 
   // מודאל יצירת הסכם חדש
   const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
@@ -111,29 +102,6 @@ export default function CollabFindPartnerTab({
     }
   };
 
-  const openContractModal = (business) => {
-    setContractBusiness(business);
-    setContractModalOpen(true);
-  };
-  const closeContractModal = () => setContractModalOpen(false);
-
-  const openAgreementModal = (business) => {
-    if (!business.agreementId) {
-      setSnackbarMessage("לא נמצא הסכם זמין לעסק זה");
-      setSnackbarOpen(true);
-      return;
-    }
-    setAgreementToShow({
-      id: business.agreementId,
-      currentBusinessId: myBusinessId,
-    });
-    setAgreementModalOpen(true);
-  };
-  const closeAgreementModal = () => {
-    setAgreementModalOpen(false);
-    setAgreementToShow(null);
-  };
-
   const openCreateAgreementModal = (business) => {
     setCreateAgreementPartner(business);
     setCreateAgreementModalOpen(true);
@@ -190,18 +158,6 @@ export default function CollabFindPartnerTab({
                       צ'אט
                     </button>
                     <button
-                      className="message-box-button send-contract-button"
-                      onClick={() => openContractModal(business)}
-                    >
-                      📄 שלח חוזה
-                    </button>
-                    <button
-                      className="message-box-button show-agreement-button"
-                      onClick={() => openAgreementModal(business)}
-                    >
-                      הצג הסכם
-                    </button>
-                    <button
                       className="message-box-button create-agreement-button"
                       onClick={() => openCreateAgreementModal(business)}
                     >
@@ -236,44 +192,6 @@ export default function CollabFindPartnerTab({
           >
             שלח
           </Button>
-        </Box>
-      </Modal>
-
-      {/* Contract Modal */}
-      <Modal open={contractModalOpen} onClose={closeContractModal}>
-        <Box sx={{ ...modalStyle, maxWidth: 700 }}>
-          <PartnershipAgreementForm
-            currentUser={{ businessName: myBusinessName }}
-            partnerBusiness={contractBusiness || {}}
-            onSubmit={async (contractData) => {
-              setSending(true);
-              try {
-                await API.post("/collab-contracts/contract/send", contractData);
-                setSnackbarMessage("החוזה נשלח בהצלחה 📄");
-                setSnackbarOpen(true);
-                closeContractModal();
-              } catch (err) {
-                setSnackbarMessage(
-                  "שגיאה בשליחת החוזה: " + (err?.response?.data?.error || err.message)
-                );
-                setSnackbarOpen(true);
-              } finally {
-                setSending(false);
-              }
-            }}
-          />
-        </Box>
-      </Modal>
-
-      {/* Agreement Modal */}
-      <Modal open={agreementModalOpen} onClose={closeAgreementModal}>
-        <Box sx={{ ...modalStyle, maxWidth: 700, maxHeight: "85vh", overflowY: "auto" }}>
-          {agreementToShow && (
-            <PartnershipAgreementView
-              agreementId={agreementToShow.id}
-              currentBusinessId={agreementToShow.currentBusinessId}
-            />
-          )}
         </Box>
       </Modal>
 
