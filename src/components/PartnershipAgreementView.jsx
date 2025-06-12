@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import API from "../api"; // axios עם טוקן
-import "./PartnershipAgreementView.css"; // תוסיף קובץ CSS לעיצוב מקצועי
+import API from "../api"; 
+import "./PartnershipAgreementView.css";
 
 export default function PartnershipAgreementView({ agreementId, currentBusinessId }) {
   const [agreement, setAgreement] = useState(null);
@@ -18,9 +18,9 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     async function fetchAgreement() {
       setLoading(true);
       try {
-        const res = await API.get(`/agreements/${agreementId}`);
+        const res = await API.get(`/partnershipAgreements/${agreementId}`);  // <-- שים לב לנתיב
         setAgreement(res.data);
-      } catch (error) {
+      } catch {
         alert("שגיאה בטעינת ההסכם");
       }
       setLoading(false);
@@ -28,42 +28,43 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     fetchAgreement();
   }, [agreementId]);
 
-  const userSigned = agreement?.signatures?.[userSide]?.signed;
+  if (loading) return <div>טוען הסכם...</div>;
+  if (!agreement) return <div>הסכם לא נמצא</div>;
+
+  const userSigned = agreement.signatures?.[userSide]?.signed;
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleDateString("he-IL");
+  };
 
   async function handleSaveSignature() {
-    if (!sigPadRef.current) return alert("אנא חתום תחילה");
-
-    const signatureDataUrl = sigPadRef.current.toDataURL();
+    if (!sigPadRef.current || sigPadRef.current.isEmpty()) return alert("אנא חתום תחילה");
+    const signatureDataUrl = sigPadRef.current.getTrimmedCanvas().toDataURL();
     setSaving(true);
     try {
-      await API.post(`/agreements/${agreementId}/sign`, {
-        signatureDataUrl,
-      });
+      await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl });
       setShowSign(false);
-      const res = await API.get(`/agreements/${agreementId}`);
+      const res = await API.get(`/partnershipAgreements/${agreementId}`);
       setAgreement(res.data);
-    } catch (error) {
+    } catch {
       alert("שגיאה בשמירת החתימה");
     }
     setSaving(false);
   }
 
-  if (loading) return <div>טוען הסכם...</div>;
-  if (!agreement) return <div>הסכם לא נמצא</div>;
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "-";
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("he-IL");
-  };
-
   return (
     <div className="agreement-view-container">
       <h2 className="agreement-title">הסכם שיתוף פעולה: {agreement.title}</h2>
+      
       <p><strong>תיאור:</strong> {agreement.description}</p>
-      <p><strong>תנאים:</strong> {agreement.terms || "-"}</p>
-      <p><strong>תשלום:</strong> {agreement.paymentDetails || "-"}</p>
+      <p><strong>מה תספק במסגרת ההסכם:</strong> {agreement.giving}</p>
+      <p><strong>מה תקבל במסגרת ההסכם:</strong> {agreement.receiving}</p>
+      <p><strong>סוג שיתוף פעולה:</strong> {agreement.type}</p>
+      <p><strong>עמלות / תשלום:</strong> {agreement.paymentDetails || "-"}</p>
       <p><strong>תקופת ההסכם:</strong> {formatDate(agreement.startDate)} - {formatDate(agreement.endDate)}</p>
+      <p><strong>ניתן לבטל בכל שלב:</strong> {agreement.cancelAnytime ? "כן" : "לא"}</p>
+      <p><strong>סעיף סודיות:</strong> {agreement.confidentiality ? "כן" : "לא"}</p>
       <p><strong>סטטוס:</strong> <span className={`status status-${agreement.status}`}>{agreement.status}</span></p>
 
       <hr />
@@ -71,11 +72,11 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
       <h3>חתימות:</h3>
       <div className="signatures-container">
         <div>
-          <strong>צד שיצר:</strong><br />
+          <strong>חתימת היוצר:</strong><br />
           {agreement.signatures?.createdBy?.signed ? (
             <img
               src={agreement.signatures.createdBy.signatureDataUrl}
-              alt="חתימת יוצר"
+              alt="חתימת היוצר"
               className="signature-image"
             />
           ) : (
@@ -84,11 +85,11 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
         </div>
 
         <div>
-          <strong>צד מוזמן:</strong><br />
+          <strong>חתימת הצד השני:</strong><br />
           {agreement.signatures?.invitedBusiness?.signed ? (
             <img
               src={agreement.signatures.invitedBusiness.signatureDataUrl}
-              alt="חתימת מוזמן"
+              alt="חתימת הצד השני"
               className="signature-image"
             />
           ) : (
@@ -107,7 +108,7 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
         <div className="signature-pad-container">
           <SignatureCanvas
             penColor="black"
-            canvasProps={{ width: 400, height: 150, className: "sigCanvas", style: {border: "1px solid #000"} }}
+            canvasProps={{ width: 400, height: 150, className: "sigCanvas" }}
             ref={sigPadRef}
           />
           <div className="signature-buttons">
@@ -115,9 +116,7 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
             <button onClick={handleSaveSignature} disabled={saving}>
               {saving ? "שומר..." : "שמור חתימה"}
             </button>
-            <button onClick={() => setShowSign(false)} disabled={saving}>
-              בטל
-            </button>
+            <button onClick={() => setShowSign(false)} disabled={saving}>בטל</button>
           </div>
         </div>
       )}
