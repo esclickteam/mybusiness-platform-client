@@ -214,7 +214,7 @@ const CRMAppointmentsTab = () => {
     setEditData({ ...appt });
   };
 
-  // פונקציה לעדכון שדה יחיד אוטומטי
+  // פונקציה לעדכון שדה יחיד אוטומטי בזמן אמת
   const saveFieldEdit = async (field, value) => {
     if (!editId) return;
     try {
@@ -319,46 +319,41 @@ const CRMAppointmentsTab = () => {
             type="text"
             placeholder="שם מלא"
             value={newAppointment.clientName}
-            onChange={(e) => {
-              const val = e.target.value;
-              setNewAppointment((prev) => ({ ...prev, clientName: val }));
-            }}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, clientName: e.target.value })
+            }
           />
           <input
             type="tel"
             placeholder="טלפון"
             value={newAppointment.clientPhone}
-            onChange={(e) => {
-              const val = e.target.value;
-              setNewAppointment((prev) => ({ ...prev, clientPhone: val }));
-            }}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, clientPhone: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="כתובת"
             value={newAppointment.address}
-            onChange={(e) => {
-              const val = e.target.value;
-              setNewAppointment((prev) => ({ ...prev, address: val }));
-            }}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, address: e.target.value })
+            }
           />
           <input
             type="email"
             placeholder="אימייל (לשליחת אישור)"
             value={newAppointment.email}
-            onChange={(e) => {
-              const val = e.target.value;
-              setNewAppointment((prev) => ({ ...prev, email: val }));
-            }}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, email: e.target.value })
+            }
           />
           <textarea
             className="full-width"
             placeholder="הערה (לא חובה)"
             value={newAppointment.note}
-            onChange={(e) => {
-              const val = e.target.value;
-              setNewAppointment((prev) => ({ ...prev, note: val }));
-            }}
+            onChange={(e) =>
+              setNewAppointment({ ...newAppointment, note: e.target.value })
+            }
           />
           <select
             value={newAppointment.serviceId}
@@ -374,17 +369,12 @@ const CRMAppointmentsTab = () => {
           <input
             type="date"
             value={newAppointment.date}
-            onChange={(e) => {
-              const val = e.target.value;
-              setNewAppointment((prev) => ({ ...prev, date: val }));
-            }}
+            onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
           />
           <SelectTimeFromSlots
             date={newAppointment.date}
             selectedTime={newAppointment.time}
-            onChange={(time) => {
-              setNewAppointment((prev) => ({ ...prev, time }));
-            }}
+            onChange={(time) => setNewAppointment({ ...newAppointment, time })}
             businessId={businessId}
             serviceId={newAppointment.serviceId}
           />
@@ -493,7 +483,6 @@ const CRMAppointmentsTab = () => {
                       onChange={(e) => {
                         const val = e.target.value;
                         handleServiceChange(val, true);
-                        setEditData((prev) => ({ ...prev, serviceId: val }));
                         saveFieldEdit("serviceId", val);
                       }}
                     >
