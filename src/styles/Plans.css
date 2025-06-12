@@ -190,6 +190,12 @@
   color: #3a0ca3;
 }
 
+/* מיקום הבחירה והתשלום בתחתית הכרטיס */
+.plan-footer {
+  margin-top: auto;
+  text-align: center;
+}
+
 /* רספונסיביות לנייד */
 @media (max-width: 768px) {
   .plans-grid.single-plan-grid {
