@@ -44,7 +44,6 @@
   transition: background-color 0.2s ease;
   white-space: nowrap;
 }
-
 .add-btn:hover {
   background-color: #6a3edb;
 }
@@ -78,6 +77,7 @@
   min-width: 150px;
   max-width: 280px;
 }
+
 .add-form input:focus,
 .add-form textarea:focus,
 .add-form select:focus {
@@ -85,12 +85,20 @@
   outline: none;
 }
 
+/* textarea תופס שורה שלמה */
 .add-form textarea {
   flex-basis: 100%;
   min-height: 80px;
   resize: vertical;
 }
 
+/* class מיוחד לשדות שרוצים שיתפסו שורה מלאה */
+.add-form .full-width {
+  flex-basis: 100%;
+  max-width: 100%;
+}
+
+/* כפתור שמור */
 .add-form button {
   background-color: #4caf50;
   color: white;

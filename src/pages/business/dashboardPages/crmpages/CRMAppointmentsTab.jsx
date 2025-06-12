@@ -348,12 +348,13 @@ const CRMAppointmentsTab = () => {
             }
           />
           <textarea
-            placeholder="הערה (לא חובה)"
-            value={newAppointment.note}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, note: e.target.value })
-            }
-          />
+  className="full-width"
+  placeholder="הערה (לא חובה)"
+  value={newAppointment.note}
+  onChange={(e) =>
+    setNewAppointment({ ...newAppointment, note: e.target.value })
+  }
+/>
           <select
             value={newAppointment.serviceId}
             onChange={(e) => handleServiceChange(e.target.value)}
