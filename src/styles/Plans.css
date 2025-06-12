@@ -118,7 +118,7 @@
     gap: 12px;
     justify-content: flex-start;
     position: relative;
-    padding-left: 28px;
+    padding-right: 28px; /* עדכון מ-padding-left ל-padding-right */
     font-size: 16px;
     font-weight: 600;
     color: #4a3b00;
@@ -127,7 +127,7 @@
 .full-plan-card li::before {
     content: "✔";
     position: absolute;
-    left: 0;
+    right: 0; /* עדכון מ-left ל-right */
     font-size: 20px;
     color: #6a4700;
 }
@@ -178,7 +178,7 @@
 
   .full-plan-card li {
     font-size: 15px;
-    padding-left: 24px;
+    padding-right: 24px; /* עדכון גם כאן מ-padding-left ל-padding-right */
     margin: 12px 0;
   }
 
