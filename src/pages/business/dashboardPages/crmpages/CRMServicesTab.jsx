@@ -3,7 +3,7 @@ import "./CRMServicesTab.css";
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
 
-const CRMAppointmentsTab = () => {
+const CRMServicesTab = () => {
   const { user } = useAuth();
 
   const [search, setSearch] = useState("");
@@ -30,19 +30,20 @@ const CRMAppointmentsTab = () => {
   );
 
   return (
-    <div className="crm-appointments-tab">
+    <div className="crm-services-tab">
       <h2>🛠️ שירותים</h2>
-      <div className="appointments-header">
+      <div className="services-header">
         <input
           type="text"
           placeholder="חפש לפי שם השירות..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
+          className="services-search-input"
+          autoComplete="off"
         />
       </div>
 
-      <table className="appointments-table">
+      <table className="services-table">
         <thead>
           <tr>
             <th>שם + תמונה + תיאור</th>
@@ -67,18 +68,14 @@ const CRMAppointmentsTab = () => {
                     />
                   )}
                   <div className="service-name-desc">
-                    <div className="name">{service.name}</div>
-                    <div className="description">
+                    <div className="service-name">{service.name}</div>
+                    <div className="service-description">
                       {service.description || "-"}
                     </div>
                   </div>
                 </td>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                  {service.duration}
-                </td>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                  {service.price}
-                </td>
+                <td className="service-duration">{service.duration}</td>
+                <td className="service-price">{service.price}</td>
               </tr>
             ))
           )}
@@ -88,4 +85,4 @@ const CRMAppointmentsTab = () => {
   );
 };
 
-export default CRMAppointmentsTab;
+export default CRMServicesTab;
