@@ -2,11 +2,15 @@
 .plans-container {
     max-width: 480px;
     margin: 2rem auto;
-    text-align: center;
     padding: 20px;
     background: #f5f7fa;
     font-family: "Arial", sans-serif;
     color: #333;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 /* ניווט עליון */
@@ -59,9 +63,9 @@
 /* גריד חבילה בודדת */
 .plans-grid.single-plan-grid {
     display: flex;
-    flex-direction: column; /* הוסף שורה זו */
+    flex-direction: column;
     justify-content: center;
-    align-items: center; /* מומלץ לשנות מ-stretch ל-center */
+    align-items: center;
 }
 
 /* כרטיס חבילה בודדת */
@@ -70,7 +74,8 @@
     color: #5a4100;
     border-radius: 16px;
     padding: 30px 25px 40px;
-    width: 320px;
+    width: 100%;
+    max-width: 320px;
     box-shadow: 0 8px 20px rgba(212, 175, 55, 0.55);
     text-align: center;
     display: flex;
@@ -119,7 +124,7 @@
     gap: 12px;
     justify-content: flex-start;
     position: relative;
-    padding-right: 28px; /* עדכון מ-padding-left ל-padding-right */
+    padding-right: 28px;
     font-size: 16px;
     font-weight: 600;
     color: #4a3b00;
@@ -128,7 +133,7 @@
 .full-plan-card li::before {
     content: "✔";
     position: absolute;
-    right: 0; /* עדכון מ-left ל-right */
+    right: 0;
     font-size: 20px;
     color: #6a4700;
 }
@@ -158,83 +163,83 @@
 
 /* מחלקות לבחירת תוקף */
 .plan-duration-selector {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 .radio-label {
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  color: #5a4100;
-  padding: 6px 12px;
-  border-radius: 12px;
-  border: 2px solid transparent;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    color: #5a4100;
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .radio-label input[type="radio"] {
-  cursor: pointer;
-  accent-color: #6a11cb;
+    cursor: pointer;
+    accent-color: #6a11cb;
 }
 
 .radio-label.selected {
-  background-color: #ffe066;
-  border-color: #6a11cb;
-  color: #3a0ca3;
+    background-color: #ffe066;
+    border-color: #6a11cb;
+    color: #3a0ca3;
 }
 
 /* מיקום הבחירה והתשלום בתחתית הכרטיס */
 .plan-footer {
-  margin-top: auto;
-  text-align: center;
+    margin-top: auto;
+    text-align: center;
 }
 
 /* רספונסיביות לנייד */
 @media (max-width: 768px) {
-  .plans-grid.single-plan-grid {
-    flex-direction: column;
-    align-items: center;
-  }
+    .plans-grid.single-plan-grid {
+        flex-direction: column;
+        align-items: center;
+    }
 
-  .full-plan-card {
-    width: 90%;
-    min-height: auto;
-    padding: 25px 20px 35px;
-  }
+    .full-plan-card {
+        width: 90%;
+        min-height: auto;
+        padding: 25px 20px 35px;
+    }
 
-  .full-plan-card h2 {
-    font-size: 24px;
-  }
+    .full-plan-card h2 {
+        font-size: 24px;
+    }
 
-  .plan-price {
-    font-size: 22px;
-  }
+    .plan-price {
+        font-size: 22px;
+    }
 
-  .full-plan-card li {
-    font-size: 15px;
-    padding-right: 24px; /* עדכון גם כאן מ-padding-left ל-padding-right */
-    margin: 12px 0;
-  }
+    .full-plan-card li {
+        font-size: 15px;
+        padding-right: 24px;
+        margin: 12px 0;
+    }
 
-  .select-button {
-    font-size: 17px;
-    padding: 14px 20px;
-  }
+    .select-button {
+        font-size: 17px;
+        padding: 14px 20px;
+    }
 
-  .plan-duration-selector {
-    gap: 10px;
-  }
+    .plan-duration-selector {
+        gap: 10px;
+    }
 
-  .radio-label {
-    font-size: 15px;
-    padding: 5px 10px;
-  }
+    .radio-label {
+        font-size: 15px;
+        padding: 5px 10px;
+    }
 }
