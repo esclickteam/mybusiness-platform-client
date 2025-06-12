@@ -109,7 +109,7 @@ const CRMAppointmentsTab = () => {
 
     try {
       const res = await API.patch(`/appointments/${id}/status`, { status: nextStatus });
-      const updatedAppt = res.data.appt; // לפי מבנה התשובה שלך
+      const updatedAppt = res.data.appt;
 
       setAppointments((prev) =>
         prev.map((appt) => (appt._id === id ? updatedAppt : appt))
@@ -179,10 +179,10 @@ const CRMAppointmentsTab = () => {
 
     const service = services.find((s) => s._id === newAppointment.serviceId);
     const duration = service?.duration || 30;
-    const statusEnum = "new";
 
     try {
-      await API.post("/appointments", {
+      // יצירת תיאום עם סטטוס חדש
+      const res = await API.post("/appointments", {
         businessId,
         serviceId: newAppointment.serviceId,
         date: newAppointment.date,
@@ -193,8 +193,12 @@ const CRMAppointmentsTab = () => {
         email: newAppointment.email,
         note: newAppointment.note,
         duration,
-        status: statusEnum,
+        status: "new",
       });
+
+      // עדכון סטטוס ל"הושלם"
+      const appointmentId = res.data.appt._id;
+      await API.patch(`/appointments/${appointmentId}/status`, { status: "completed" });
 
       setShowAddForm(false);
       setNewAppointment({
@@ -208,8 +212,10 @@ const CRMAppointmentsTab = () => {
         date: "",
         time: "",
       });
+
+      // העדכון יגיע דרך socket.io, אין צורך לרענן ידנית
     } catch {
-      alert("❌ שגיאה ביצירת התיאום");
+      alert("❌ שגיאה ביצירת התיאום או עדכון הסטטוס");
     }
   };
 
