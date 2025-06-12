@@ -1,5 +1,3 @@
-// src/pages/Register.jsx
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import API from "../api";
@@ -50,7 +48,6 @@ const Register = () => {
 
     const { name, email, phone, password, confirmPassword, userType, businessName, referralCode } = formData;
 
-    // בדיקות בסיס
     if (!name || !email || !password || !confirmPassword) {
       setError("⚠️ יש למלא את כל השדות הנדרשים");
       return;
@@ -75,21 +72,18 @@ const Register = () => {
     }
 
     try {
-      // שליחה לשרת כולל referralCode
       await API.post("/auth/register", {
         name: name.trim(),
         email: email.trim().toLowerCase(),
         phone: userType === "business" ? phone.trim() : "",
         password,
-        userType, // ← שרת ישלוף role מתוך userType
+        userType,
         businessName: userType === "business" ? businessName.trim() : undefined,
-        referralCode: referralCode || undefined,
+        referralCode: userType === "customer" ? referralCode || undefined : undefined, // רק ללקוחות
       });
 
-      // אחרי הרשמה – מבצעים login דרך ה‐AuthContext
       const user = await login(email.trim(), password);
 
-      // ניתוב לפי תפקיד ו־businessId
       let dashboardPath = "/";
       switch (user.role) {
         case "admin":
@@ -113,8 +107,7 @@ const Register = () => {
           dashboardPath = "/";
       }
 
-      navigate(dashboardPath); // ניתוב לפי ה-role
-
+      navigate(dashboardPath);
     } catch (err) {
       console.error("❌ Registration error:", err.response?.data || err.message);
       if (err.response?.status === 400) {
@@ -168,7 +161,7 @@ const Register = () => {
             />
           </>
         )}
-        {/* שדה קוד הפניה - לקריאה בלבד */}
+        {/* שדה קוד הפניה לקריאה בלבד */}
         {formData.referralCode && (
           <input
             type="text"
