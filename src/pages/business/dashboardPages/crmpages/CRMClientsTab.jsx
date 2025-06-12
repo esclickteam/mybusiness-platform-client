@@ -1,3 +1,4 @@
+// CRMClientsTab.jsx
 import React, { useState, useEffect } from "react";
 import "./CRMClientsTab.css";
 import API from "@api"; // נתיב ל־API שלך
@@ -8,7 +9,7 @@ const CRMClientsTab = ({ businessId }) => {
   const [newClient, setNewClient] = useState({ name: "", phone: "", email: "" });
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false); // נעילת כפתור שמירה
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!businessId) return;
@@ -17,7 +18,6 @@ const CRMClientsTab = ({ businessId }) => {
       setLoading(true);
       try {
         const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
-        // המרה לשמות שדות אחידים בצד לקוח:
         const normalizedClients = res.data.map(c => ({
           fullName: c.clientName || "",
           phone: c.clientPhone || "",
@@ -45,7 +45,7 @@ const CRMClientsTab = ({ businessId }) => {
       return;
     }
 
-    if (saving) return; // חוסם לחיצות כפולות
+    if (saving) return;
     setSaving(true);
 
     setClients((prev) => [
@@ -126,8 +126,8 @@ const CRMClientsTab = ({ businessId }) => {
               filteredClients.map((client, idx) => (
                 <tr key={idx}>
                   <td>{client.fullName}</td>
-                  <td>{client.phone}</td>
-                  <td>{client.email}</td>
+                  <td className="phone-cell">{client.phone}</td>
+                  <td className="email-cell">{client.email}</td>
                 </tr>
               ))
             )}
