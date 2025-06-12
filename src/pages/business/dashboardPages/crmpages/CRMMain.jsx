@@ -1,3 +1,7 @@
+import React from "react";
+import { NavLink, Outlet } from "react-router-dom";
+import "./CRMMain.css";
+
 const crmTabs = [
   { path: "appointments", label: "📆 תיאומים" },
   { path: "clients", label: "👥 לקוחות" },
