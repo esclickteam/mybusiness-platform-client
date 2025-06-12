@@ -122,3 +122,12 @@
     width: 100%;
   }
 }
+
+.status-filter {
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  margin-left: 1rem;
+  cursor: pointer;
+}
