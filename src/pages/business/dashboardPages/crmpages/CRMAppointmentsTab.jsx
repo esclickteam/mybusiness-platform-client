@@ -214,6 +214,22 @@ const CRMAppointmentsTab = () => {
     setEditData({ ...appt });
   };
 
+  // פונקציה לעדכון שדה יחיד אוטומטי
+  const saveFieldEdit = async (field, value) => {
+    if (!editId) return;
+    try {
+      const updateData = { [field]: value };
+      await API.put(`/appointments/${editId}`, updateData);
+      setAppointments((prev) =>
+        prev.map((appt) =>
+          appt._id === editId ? { ...appt, [field]: value } : appt
+        )
+      );
+    } catch (error) {
+      alert("❌ שגיאה בעדכון השדה");
+    }
+  };
+
   const saveEdit = async () => {
     if (
       !editData.clientName ||
@@ -395,6 +411,7 @@ const CRMAppointmentsTab = () => {
                       onChange={(e) =>
                         setEditData({ ...editData, clientName: e.target.value })
                       }
+                      onBlur={() => saveFieldEdit("clientName", editData.clientName)}
                     />
                   ) : (
                     appt.clientName
@@ -407,6 +424,7 @@ const CRMAppointmentsTab = () => {
                       onChange={(e) =>
                         setEditData({ ...editData, clientPhone: e.target.value })
                       }
+                      onBlur={() => saveFieldEdit("clientPhone", editData.clientPhone)}
                     />
                   ) : (
                     appt.clientPhone
@@ -419,6 +437,7 @@ const CRMAppointmentsTab = () => {
                       onChange={(e) =>
                         setEditData({ ...editData, address: e.target.value })
                       }
+                      onBlur={() => saveFieldEdit("address", editData.address)}
                     />
                   ) : (
                     appt.address
@@ -432,6 +451,7 @@ const CRMAppointmentsTab = () => {
                       onChange={(e) =>
                         setEditData({ ...editData, email: e.target.value })
                       }
+                      onBlur={() => saveFieldEdit("email", editData.email)}
                     />
                   ) : (
                     appt.email
@@ -444,6 +464,7 @@ const CRMAppointmentsTab = () => {
                       onChange={(e) =>
                         setEditData({ ...editData, note: e.target.value })
                       }
+                      onBlur={() => saveFieldEdit("note", editData.note)}
                     />
                   ) : (
                     appt.note
@@ -453,7 +474,10 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <select
                       value={editData.serviceId}
-                      onChange={(e) => handleServiceChange(e.target.value, true)}
+                      onChange={(e) => {
+                        handleServiceChange(e.target.value, true);
+                        saveFieldEdit("serviceId", e.target.value);
+                      }}
                     >
                       <option value="">בחר שירות</option>
                       {services.map((s) => (
@@ -471,7 +495,10 @@ const CRMAppointmentsTab = () => {
                     <input
                       type="date"
                       value={editData.date}
-                      onChange={(e) => setEditData({ ...editData, date: e.target.value })}
+                      onChange={(e) => {
+                        setEditData({ ...editData, date: e.target.value });
+                        saveFieldEdit("date", e.target.value);
+                      }}
                     />
                   ) : (
                     appt.date
@@ -482,7 +509,10 @@ const CRMAppointmentsTab = () => {
                     <SelectTimeFromSlots
                       date={editData.date}
                       selectedTime={editData.time}
-                      onChange={(time) => setEditData({ ...editData, time })}
+                      onChange={(time) => {
+                        setEditData((prev) => ({ ...prev, time }));
+                        saveFieldEdit("time", time);
+                      }}
                       businessId={businessId}
                       serviceId={editData.serviceId}
                     />
