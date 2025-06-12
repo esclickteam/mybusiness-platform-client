@@ -119,7 +119,7 @@ const AffiliatePage = () => {
           <select
             id="month"
             value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
+            onChange={(e) =>  setSelectedMonth(e.target.value)}
           >
             <option value="2025-04">אפריל 2025</option>
             <option value="2025-03">מרץ 2025</option>
