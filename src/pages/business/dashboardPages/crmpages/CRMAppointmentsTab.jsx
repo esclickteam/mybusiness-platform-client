@@ -319,42 +319,47 @@ const CRMAppointmentsTab = () => {
             type="text"
             placeholder="שם מלא"
             value={newAppointment.clientName}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, clientName: e.target.value })
-            }
+            onChange={(e) => {
+              const val = e.target.value;
+              setNewAppointment((prev) => ({ ...prev, clientName: val }));
+            }}
           />
           <input
             type="tel"
             placeholder="טלפון"
             value={newAppointment.clientPhone}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, clientPhone: e.target.value })
-            }
+            onChange={(e) => {
+              const val = e.target.value;
+              setNewAppointment((prev) => ({ ...prev, clientPhone: val }));
+            }}
           />
           <input
             type="text"
             placeholder="כתובת"
             value={newAppointment.address}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, address: e.target.value })
-            }
+            onChange={(e) => {
+              const val = e.target.value;
+              setNewAppointment((prev) => ({ ...prev, address: val }));
+            }}
           />
           <input
             type="email"
             placeholder="אימייל (לשליחת אישור)"
             value={newAppointment.email}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, email: e.target.value })
-            }
+            onChange={(e) => {
+              const val = e.target.value;
+              setNewAppointment((prev) => ({ ...prev, email: val }));
+            }}
           />
           <textarea
-  className="full-width"
-  placeholder="הערה (לא חובה)"
-  value={newAppointment.note}
-  onChange={(e) =>
-    setNewAppointment({ ...newAppointment, note: e.target.value })
-  }
-/>
+            className="full-width"
+            placeholder="הערה (לא חובה)"
+            value={newAppointment.note}
+            onChange={(e) => {
+              const val = e.target.value;
+              setNewAppointment((prev) => ({ ...prev, note: val }));
+            }}
+          />
           <select
             value={newAppointment.serviceId}
             onChange={(e) => handleServiceChange(e.target.value)}
@@ -369,12 +374,17 @@ const CRMAppointmentsTab = () => {
           <input
             type="date"
             value={newAppointment.date}
-            onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
+            onChange={(e) => {
+              const val = e.target.value;
+              setNewAppointment((prev) => ({ ...prev, date: val }));
+            }}
           />
           <SelectTimeFromSlots
             date={newAppointment.date}
             selectedTime={newAppointment.time}
-            onChange={(time) => setNewAppointment({ ...newAppointment, time })}
+            onChange={(time) => {
+              setNewAppointment((prev) => ({ ...prev, time }));
+            }}
             businessId={businessId}
             serviceId={newAppointment.serviceId}
           />
@@ -409,10 +419,11 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <input
                       value={editData.clientName}
-                      onChange={(e) =>
-                        setEditData({ ...editData, clientName: e.target.value })
-                      }
-                      onBlur={() => saveFieldEdit("clientName", editData.clientName)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setEditData((prev) => ({ ...prev, clientName: val }));
+                        saveFieldEdit("clientName", val);
+                      }}
                     />
                   ) : (
                     appt.clientName
@@ -422,10 +433,11 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <input
                       value={editData.clientPhone}
-                      onChange={(e) =>
-                        setEditData({ ...editData, clientPhone: e.target.value })
-                      }
-                      onBlur={() => saveFieldEdit("clientPhone", editData.clientPhone)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setEditData((prev) => ({ ...prev, clientPhone: val }));
+                        saveFieldEdit("clientPhone", val);
+                      }}
                     />
                   ) : (
                     appt.clientPhone
@@ -435,10 +447,11 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <input
                       value={editData.address}
-                      onChange={(e) =>
-                        setEditData({ ...editData, address: e.target.value })
-                      }
-                      onBlur={() => saveFieldEdit("address", editData.address)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setEditData((prev) => ({ ...prev, address: val }));
+                        saveFieldEdit("address", val);
+                      }}
                     />
                   ) : (
                     appt.address
@@ -449,10 +462,11 @@ const CRMAppointmentsTab = () => {
                     <input
                       type="email"
                       value={editData.email}
-                      onChange={(e) =>
-                        setEditData({ ...editData, email: e.target.value })
-                      }
-                      onBlur={() => saveFieldEdit("email", editData.email)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setEditData((prev) => ({ ...prev, email: val }));
+                        saveFieldEdit("email", val);
+                      }}
                     />
                   ) : (
                     appt.email
@@ -462,10 +476,11 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <textarea
                       value={editData.note}
-                      onChange={(e) =>
-                        setEditData({ ...editData, note: e.target.value })
-                      }
-                      onBlur={() => saveFieldEdit("note", editData.note)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setEditData((prev) => ({ ...prev, note: val }));
+                        saveFieldEdit("note", val);
+                      }}
                     />
                   ) : (
                     appt.note
@@ -476,8 +491,10 @@ const CRMAppointmentsTab = () => {
                     <select
                       value={editData.serviceId}
                       onChange={(e) => {
-                        handleServiceChange(e.target.value, true);
-                        saveFieldEdit("serviceId", e.target.value);
+                        const val = e.target.value;
+                        handleServiceChange(val, true);
+                        setEditData((prev) => ({ ...prev, serviceId: val }));
+                        saveFieldEdit("serviceId", val);
                       }}
                     >
                       <option value="">בחר שירות</option>
@@ -497,8 +514,9 @@ const CRMAppointmentsTab = () => {
                       type="date"
                       value={editData.date}
                       onChange={(e) => {
-                        setEditData({ ...editData, date: e.target.value });
-                        saveFieldEdit("date", e.target.value);
+                        const val = e.target.value;
+                        setEditData((prev) => ({ ...prev, date: val }));
+                        saveFieldEdit("date", val);
                       }}
                     />
                   ) : (
