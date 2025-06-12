@@ -10,27 +10,32 @@ const AffiliatePage = () => {
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState("2025-04");
-  const [affiliateId, setAffiliateId] = useState(null);
+  const [businessId, setBusinessId] = useState(null);
 
-  // קורא את הפרמטר 'ref' מה-URL ושומר ב-localStorage וב-state
+  // מביא את businessId של המשתמש המחובר מ-API
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const ref = params.get("ref");
-    if (ref) {
-      localStorage.setItem("affiliateId", ref);
-      setAffiliateId(ref);
-    } else {
-      const storedRef = localStorage.getItem("affiliateId");
-      if (storedRef) setAffiliateId(storedRef);
+    async function fetchBusinessId() {
+      try {
+        const res = await axios.get("https://api.esclick.co.il/api/business/my", {
+          withCredentials: true,
+        });
+        setBusinessId(res.data.businessId);
+      } catch (error) {
+        console.error("Error fetching businessId:", error);
+        setErrorStats("לא הצלחנו לקבל מזהה עסק");
+      }
     }
+    fetchBusinessId();
   }, []);
 
-  const affiliateLink = affiliateId
-    ? `https://yourdomain.com/signup?ref=${affiliateId}`
-    : "לא זוהה מזהה שותף";
+  // בונה את קישור השותף לפי businessId
+  const affiliateLink = businessId
+    ? `https://esclick.co.il/signup?ref=${businessId}`
+    : "לא זוהה מזהה עסק";
 
+  // מושך סטטיסטיקות לפי businessId ו־month
   useEffect(() => {
-    if (!affiliateId) return;
+    if (!businessId) return;
 
     async function fetchAffiliateStats() {
       try {
@@ -38,7 +43,7 @@ const AffiliatePage = () => {
         const response = await axios.get(
           "https://api.esclick.co.il/api/affiliate/stats",
           {
-            params: { affiliateId, month: selectedMonth },
+            params: { affiliateId: businessId, month: selectedMonth },
             withCredentials: true,
           }
         );
@@ -51,7 +56,7 @@ const AffiliatePage = () => {
     }
 
     fetchAffiliateStats();
-  }, [affiliateId, selectedMonth]);
+  }, [businessId, selectedMonth]);
 
   const handleReceiptSubmit = (e) => {
     e.preventDefault();
@@ -78,15 +83,15 @@ const AffiliatePage = () => {
         />
         <button
           onClick={() =>
-            affiliateId && navigator.clipboard.writeText(affiliateLink)
+            businessId && navigator.clipboard.writeText(affiliateLink)
           }
-          disabled={!affiliateId}
+          disabled={!businessId}
         >
           📋 העתק קישור
         </button>
-        {!affiliateId && (
+        {!businessId && (
           <p style={{ color: "red", marginTop: 8 }}>
-            לא זוהה מזהה שותף. התחבר כדי לקבל קישור אישי.
+            לא זוהה מזהה עסק. התחבר כדי לקבל קישור אישי.
           </p>
         )}
       </section>
@@ -129,7 +134,6 @@ const AffiliatePage = () => {
             <option value="2025-04">אפריל 2025</option>
             <option value="2025-03">מרץ 2025</option>
             <option value="2025-02">פברואר 2025</option>
-            {/* אפשר להוסיף דינמיות בהמשך */}
           </select>
         </div>
       </section>
@@ -182,7 +186,7 @@ const AffiliatePage = () => {
         </table>
       </section>
 
-      {/* פעולות תשלום: ניהול חשבון בנק והעלאת קבלה */}
+      {/* פעולות תשלום */}
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
         <div className="payment-actions">
