@@ -1,7 +1,7 @@
 // src/pages/Register.jsx
 
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Register.css";
@@ -15,10 +15,28 @@ const Register = () => {
     confirmPassword: "",
     userType: "customer",
     businessName: "",
+    referralCode: "", // שדה לקוד ההפניה
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const [searchParams] = useSearchParams();
+
+  // בודקים אם יש פרמטר ref ב-URL ושומרים ב-localStorage וב-state
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("affiliate_referral", ref);
+      setFormData(prev => ({ ...prev, referralCode: ref }));
+    } else {
+      // אם אין ב-URL אבל יש ב-localStorage, נטען משם
+      const storedRef = localStorage.getItem("affiliate_referral") || "";
+      if (storedRef) {
+        setFormData(prev => ({ ...prev, referralCode: storedRef }));
+      }
+    }
+  }, [searchParams]);
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -30,7 +48,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
 
-    const { name, email, phone, password, confirmPassword, userType, businessName } = formData;
+    const { name, email, phone, password, confirmPassword, userType, businessName, referralCode } = formData;
 
     // בדיקות בסיס
     if (!name || !email || !password || !confirmPassword) {
@@ -57,7 +75,7 @@ const Register = () => {
     }
 
     try {
-      // שליחה לשרת להרשמה
+      // שליחה לשרת כולל referralCode
       await API.post("/auth/register", {
         name: name.trim(),
         email: email.trim().toLowerCase(),
@@ -65,6 +83,7 @@ const Register = () => {
         password,
         userType, // ← שרת ישלוף role מתוך userType
         businessName: userType === "business" ? businessName.trim() : undefined,
+        referralCode: referralCode || undefined,
       });
 
       // אחרי הרשמה – מבצעים login דרך ה‐AuthContext
@@ -148,6 +167,16 @@ const Register = () => {
               required
             />
           </>
+        )}
+        {/* שדה קוד הפניה - לקריאה בלבד */}
+        {formData.referralCode && (
+          <input
+            type="text"
+            name="referralCode"
+            value={formData.referralCode}
+            readOnly
+            placeholder="קוד הפניה"
+          />
         )}
         <input
           type="password"
