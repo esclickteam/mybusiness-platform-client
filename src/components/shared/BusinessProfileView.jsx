@@ -41,11 +41,11 @@ export default function BusinessProfileView() {
   const queryClient = useQueryClient();
 
   const [faqs, setFaqs] = useState([]);
-  const [services, setServices] = useState([]);  // הוספתי את ה-state של services
+  const [services, setServices] = useState([]);
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);  // הוספתי גם את זה
+  const [selectedService, setSelectedService] = useState(null);
   const [profileViewsCount, setProfileViewsCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -65,7 +65,6 @@ export default function BusinessProfileView() {
     onSuccess: (biz) => {
       setFaqs(biz.faqs || []);
       setServices(biz.services || []);
-      // Prefetch important related data on business load
       queryClient.prefetchQuery({
         queryKey: ['workHours', bizId],
         queryFn: () => fetchWorkHours(bizId),
@@ -93,7 +92,6 @@ export default function BusinessProfileView() {
     return sched;
   }, [workHoursData]);
 
-  // Check if favorite (runs on user or bizId change)
   React.useEffect(() => {
     if (!user || !bizId) return;
     (async () => {
@@ -107,7 +105,6 @@ export default function BusinessProfileView() {
     })();
   }, [user, bizId]);
 
-  // Increment views count once
   React.useEffect(() => {
     if (!bizId) return;
     if (hasIncrementedRef.current) return;
@@ -125,7 +122,6 @@ export default function BusinessProfileView() {
       });
   }, [bizId]);
 
-  // Update profile views count from socket stats
   const socketStats = useDashboardStats();
   React.useEffect(() => {
     if (socketStats?.views_count !== undefined && bizId) {
@@ -185,6 +181,12 @@ export default function BusinessProfileView() {
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const isOwner = user?.role === "business" && user.businessId === bizId;
+
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab);
+    setSelectedService(null);
+    console.log("Switched tab to:", tab);
+  };
 
   return (
     <div className="profile-page">
@@ -253,10 +255,7 @@ export default function BusinessProfileView() {
               <button
                 key={tab}
                 className={`tab ${tab === currentTab ? "active" : ""}`}
-                onClick={() => {
-                  setCurrentTab(tab);
-                  setSelectedService(null);
-                }}
+                onClick={() => handleTabChange(tab)}
               >
                 {tab}
               </button>
@@ -352,7 +351,13 @@ export default function BusinessProfileView() {
             )}
             {currentTab === "יומן" && (
               <div className="booking-tab">
-                <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
+                <ServicesSelector
+                  services={services}
+                  onSelect={(svc) => {
+                    console.log("Service selected:", svc);
+                    setSelectedService(svc);
+                  }}
+                />
                 {!selectedService ? (
                   <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
                 ) : (
