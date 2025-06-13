@@ -38,13 +38,9 @@ const CRMAppointmentsTab = () => {
     time: "",
   });
 
-  // ID של הטיוטה
   const [newApptId, setNewApptId] = useState(null);
-
-  // debounce לשמירת הטיוטה
   const saveTimeoutRef = useRef(null);
 
-  // טעינת תיאומים ושירותים
   useEffect(() => {
     async function fetchAppointmentsAndServices() {
       try {
@@ -61,7 +57,6 @@ const CRMAppointmentsTab = () => {
     fetchAppointmentsAndServices();
   }, []);
 
-  // מאזין ל-socket
   useEffect(() => {
     if (!socket) return;
 
@@ -197,22 +192,9 @@ const CRMAppointmentsTab = () => {
     });
   };
 
-  // שמירת עריכה (פשוט סוגר עריכה)
+  // שמירת עריכה (אפשר להוסיף קריאה מלאה ל-API אם רוצים)
   const saveEdit = () => {
     setEditId(null);
-  };
-
-  // פונקציה לטיפול בשינוי שדות בטופס
-  const handleInputChange = (field, value) => {
-    setNewAppointment((prev) => {
-      let newState = { ...prev, [field]: value };
-      if (field === "serviceId") {
-        const service = services.find((s) => s._id === value);
-        newState.serviceName = service ? service.name : "";
-        newState.time = "";
-      }
-      return newState;
-    });
   };
 
   // debounce לשמירת טיוטה אוטומטית
@@ -234,6 +216,7 @@ const CRMAppointmentsTab = () => {
             date: newAppointment.date,
             time: newAppointment.time,
             serviceName: newAppointment.serviceName,
+            // הוסר status
           });
           const updatedAppt = res.data.appt;
           setAppointments((prev) =>
@@ -252,6 +235,7 @@ const CRMAppointmentsTab = () => {
             time: newAppointment.time,
             serviceName: newAppointment.serviceName,
             duration: 0,
+            // הוסר status
           });
           const createdAppt = res.data.appt || res.data;
           setNewApptId(createdAppt._id);
@@ -277,29 +261,17 @@ const CRMAppointmentsTab = () => {
     businessId,
   ]);
 
-  // לחיצה על "קבע פגישה" - פשוט סוגר את הטופס
-  const handleConfirmAppointment = async () => {
-    if (!newApptId) {
-      alert("אנא מלא לפחות שם וטלפון כדי לשמור תיאום ראשוני");
-      return;
-    }
-    if (!newAppointment.date || !newAppointment.time || !newAppointment.serviceId) {
-      alert("אנא מלא שירות, תאריך ושעה");
-      return;
-    }
-    setShowAddForm(false);
-    setNewAppointment({
-      clientName: "",
-      clientPhone: "",
-      address: "",
-      email: "",
-      note: "",
-      serviceId: "",
-      serviceName: "",
-      date: "",
-      time: "",
+  // טיפול בשינוי שדות בטופס
+  const handleInputChange = (field, value) => {
+    setNewAppointment((prev) => {
+      let newState = { ...prev, [field]: value };
+      if (field === "serviceId") {
+        const service = services.find((s) => s._id === value);
+        newState.serviceName = service ? service.name : "";
+        newState.time = "";
+      }
+      return newState;
     });
-    setNewApptId(null);
   };
 
   return (
@@ -391,7 +363,34 @@ const CRMAppointmentsTab = () => {
             businessId={businessId}
             serviceId={newAppointment.serviceId}
           />
-          <button onClick={handleConfirmAppointment}>📅 קבע פגישה</button>
+          <button
+            onClick={() => {
+              if (!newApptId) {
+                alert("אנא מלא לפחות שם וטלפון כדי לשמור תיאום ראשוני");
+                return;
+              }
+              if (!newAppointment.date || !newAppointment.time || !newAppointment.serviceId) {
+                alert("אנא מלא שירות, תאריך ושעה");
+                return;
+              }
+              // פשוט סוגר את הטופס, לא עושה עדכון סטטוס
+              setNewAppointment({
+                clientName: "",
+                clientPhone: "",
+                address: "",
+                email: "",
+                note: "",
+                serviceId: "",
+                serviceName: "",
+                date: "",
+                time: "",
+              });
+              setNewApptId(null);
+              setShowAddForm(false);
+            }}
+          >
+            📅 קבע פגישה
+          </button>
         </div>
       )}
 
@@ -406,6 +405,7 @@ const CRMAppointmentsTab = () => {
             <th>שירות</th>
             <th>תאריך</th>
             <th>שעה</th>
+            {/* הסרנו את כותרת סטטוס */}
             <th>פעולות</th>
           </tr>
         </thead>
@@ -540,6 +540,7 @@ const CRMAppointmentsTab = () => {
                     appt.time
                   )}
                 </td>
+                {/* הסרנו עמודת סטטוס */}
                 <td className="actions-cell">
                   {editId === appt._id ? (
                     <>
