@@ -399,7 +399,7 @@ const CRMAppointmentsTab = () => {
 
   // טיפול בשינוי שדות בטופס
   const handleInputChange = (field, value) => {
-  console.log(`Input changed: ${field} = ${value}`);
+  console.log(`handleInputChange called: ${field} = ${value}`);
   setNewAppointment((prev) => {
     let newState = { ...prev, [field]: value };
 
@@ -409,9 +409,11 @@ const CRMAppointmentsTab = () => {
       newState.time = "";
     }
 
+    console.log('newAppointment state after change:', newState);
     return newState;
   });
 };
+
 
 
   return (
