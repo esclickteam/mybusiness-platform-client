@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, createRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import DashboardCards from "../../../components/DashboardCards";
 import BarChartComponent from "../../../components/dashboard/BarChart";
@@ -14,22 +15,13 @@ import WeeklySummary from "../../../components/dashboard/WeeklySummary";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
+import DashboardAlert from "../../../components/DashboardAlert";
 
 import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
 
 import "../../../styles/dashboard.css";
 
 const LOCAL_STORAGE_KEY = "dashboardStats";
-
-function mergeStats(oldStats, newStats) {
-  const isEmpty = Object.values(newStats).every(
-    (val) => val === 0 || val === null || val === undefined
-  );
-  if (isEmpty) {
-    return oldStats;
-  }
-  return { ...oldStats, ...newStats };
-}
 
 function enrichAppointment(appt, business) {
   const service = business.services?.find(
@@ -53,115 +45,90 @@ function countItemsInLastWeek(items, dateKey = "date") {
   }).length;
 }
 
+async function fetchDashboardStats(businessId, refreshAccessToken) {
+  const token = await refreshAccessToken();
+  if (!token) throw new Error("No token");
+
+  const res = await API.get(`/business/${businessId}/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+}
+
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
-
   const businessId = getBusinessId();
   const socketRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
 
-  const { resetMessagesCount, updateMessagesCount, unreadCount } = useUnreadMessages();
+  const { updateMessagesCount, unreadCount } = useUnreadMessages();
 
   const unreadCountRef = useRef(unreadCount);
   useEffect(() => {
     unreadCountRef.current = unreadCount;
   }, [unreadCount]);
 
-  // refs לכל קטע תוכן
-  const cardsRef = useRef(null);
-  const insightsRef = useRef(null);
-  const chartsRef = useRef(null);
-  const appointmentsRef = useRef(null);
-  const nextActionsRef = useRef(null);
-  const weeklySummaryRef = useRef(null);  
-
-  const [stats, setStats] = useState(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return saved
-        ? JSON.parse(saved)
-        : {
-            views_count: 0,
-            requests_count: 0,
-            orders_count: 0,
-            reviews_count: 0,
-            messages_count: 0,
-            appointments_count: 0,
-            todaysAppointments: [],
-            income_distribution: null,
-            monthly_comparison: null,
-            recent_activity: null,
-            appointments: [],
-            leads: [],
-            businessName: "",
-            services: [],
-            views: [],
-            reviews: [],
-            messages: [],
-          };
-    } catch {
-      return {
-        views_count: 0,
-        requests_count: 0,
-        orders_count: 0,
-        reviews_count: 0,
-        messages_count: 0,
-        appointments_count: 0,
-        todaysAppointments: [],
-        income_distribution: null,
-        monthly_comparison: null,
-        recent_activity: null,
-        appointments: [],
-        leads: [],
-        businessName: "",
-        services: [],
-        views: [],
-        reviews: [],
-        messages: [],
-      };
-    }
-  });
-
   const [selectedDate, setSelectedDate] = useState(null);
-  const [loading, setLoading] = useState(!stats || Object.keys(stats).length === 0);
-  const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // Ref to avoid multiple resets on unread count
-  const hasResetUnreadCount = useRef(false);
+  // React Query - fetch dashboard stats
+  const {
+    data: stats,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery(
+    ["dashboardStats", businessId],
+    () => fetchDashboardStats(businessId, refreshAccessToken),
+    {
+      enabled: !!businessId && initialized,
+      onSuccess: (data) => {
+        if (updateMessagesCount && data.messages_count !== undefined) {
+          updateMessagesCount(data.messages_count);
+        }
+        try {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+        } catch {}
+      },
+      onError: (error) => {
+        setAlert("❌ שגיאה בטעינת נתונים מהשרת");
+        if (error.message === "No token") logout();
+      },
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 30 * 60 * 1000,
+    }
+  );
 
+  // Unread messages reset on messages tab change
+  const hasResetUnreadCount = useRef(false);
   useEffect(() => {
     if (!socketRef.current) return;
 
     if (location.pathname.includes("/messages")) {
-      // Entered messages page — reset flag to allow counting
       hasResetUnreadCount.current = false;
       const conversationId = location.state?.conversationId || null;
-
       if (conversationId) {
         socketRef.current.emit("markMessagesRead", conversationId, (response) => {
           if (response.ok) {
             updateMessagesCount(response.unreadCount);
-            console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
           } else {
             console.error("Failed to mark messages as read:", response.error);
           }
         });
       }
     } else {
-      // Leaving messages page — reset unreadCount once with a slight delay
       if (!hasResetUnreadCount.current) {
         setTimeout(() => {
           if (!hasResetUnreadCount.current) {
             updateMessagesCount(0);
             hasResetUnreadCount.current = true;
-            console.log("Leaving /messages tab, unreadCount reset");
           }
         }, 200);
       }
     }
-  }, [location.pathname, resetMessagesCount, updateMessagesCount]);
+  }, [location.pathname, updateMessagesCount]);
 
   if (!initialized) {
     return <p className="loading-text">⏳ טוען נתונים…</p>;
@@ -170,71 +137,7 @@ const DashboardPage = () => {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   }
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stats));
-    } catch (e) {
-      console.warn("Failed to save dashboard stats to localStorage", e);
-    }
-  }, [stats]);
-
-  useEffect(() => {
-    if (!businessId) return;
-    setLoading(true);
-
-    async function fetchStats() {
-      try {
-        const token = await refreshAccessToken();
-        if (!token) {
-          logout();
-          return;
-        }
-        const res = await API.get(`/business/${businessId}/stats`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = res.data || {};
-
-        const enrichedAppointments = Array.isArray(data.appointments)
-          ? data.appointments.map((appt) => enrichAppointment(appt, data))
-          : [];
-
-        const safeData = {
-          views_count: data.views_count ?? 0,
-          requests_count: data.requests_count ?? 0,
-          orders_count: data.orders_count ?? 0,
-          reviews_count: data.reviews_count ?? 0,
-          messages_count: data.messages_count ?? 0,
-          appointments_count: Array.isArray(data.appointments)
-            ? data.appointments.length
-            : 0,
-          todaysAppointments: Array.isArray(data.todaysAppointments)
-            ? data.todaysAppointments
-            : [],
-          monthly_comparison: data.monthly_comparison ?? null,
-          recent_activity: data.recent_activity ?? null,
-          appointments: enrichedAppointments,
-          leads: Array.isArray(data.leads) ? data.leads : [],
-          businessName: data.businessName ?? "",
-          income_distribution: data.income_distribution ?? null,
-          services: data.services ?? [],
-          views: Array.isArray(data.views) ? data.views : [],
-          reviews: Array.isArray(data.reviews) ? data.reviews : [],
-          messages: Array.isArray(data.messages) ? data.messages : [],
-        };
-        setStats(safeData);
-
-        if (updateMessagesCount && safeData.messages_count !== undefined) {
-          updateMessagesCount(safeData.messages_count);
-        }
-      } catch (err) {
-        setError("❌ שגיאה בטעינת נתונים מהשרת");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchStats();
-  }, [businessId, refreshAccessToken, logout, updateMessagesCount]);
-
+  // Setup socket with real-time events
   useEffect(() => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
@@ -246,31 +149,24 @@ const DashboardPage = () => {
         return;
       }
       const sock = await createSocket(refreshAccessToken, logout, businessId);
-
-      if (!sock) {
-        return;
-      }
-
+      if (!sock) return;
       socketRef.current = sock;
 
       sock.on("connect", () => {
-        console.log("Dashboard socket connected with ID:", sock.id);
+        console.log("Dashboard socket connected:", sock.id);
       });
 
       sock.on("tokenExpired", async () => {
         const newToken = await refreshAccessToken();
-
         if (!newToken) {
           alert("Session expired. Please log in again.");
           logout();
           return;
         }
-
         sock.auth.token = newToken;
-
         sock.emit("authenticate", { token: newToken }, (ack) => {
           if (ack && ack.ok) {
-            console.log("✅ Socket re-authenticated successfully");
+            console.log("Socket re-authenticated");
           } else {
             alert("Session expired. Please log in again.");
             logout();
@@ -278,137 +174,65 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on("dashboardUpdate", (newStats) => {
-        if (newStats && typeof newStats === "object") {
-          const cleanedStats = {};
-          for (const key in newStats) {
-            if (newStats[key] !== undefined) {
-              cleanedStats[key] = newStats[key];
-            }
-          }
-
-          setStats((prevStats) => {
-            if (
-              unreadCountRef.current === 0 &&
-              cleanedStats.messages_count > 0
-            ) {
-              delete cleanedStats.messages_count;
-            }
-
-            const merged = mergeStats(prevStats, cleanedStats);
-
-            if (
-              updateMessagesCount &&
-              cleanedStats.messages_count !== undefined &&
-              cleanedStats.messages_count !== unreadCountRef.current
-            ) {
-              updateMessagesCount(cleanedStats.messages_count);
-            }
-
-            const isEqual = Object.keys(merged).every(
-              (key) => merged[key] === prevStats[key]
-            );
-            if (isEqual) return prevStats;
-            try {
-              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-            } catch (e) {}
-            return merged;
-          });
-        }
+      sock.on("dashboardUpdate", () => {
+        refetch();
       });
 
-      // --------- **הוספת טיפול באירוע appointmentCreated** ---------
       sock.on("appointmentCreated", (newAppointment) => {
-        const newBizId = newAppointment.business?.toString();
-        const currentBizId = businessId.toString();
+        if (newAppointment.business?.toString() !== businessId.toString()) return;
 
-        if (newBizId === currentBizId) {
-          setStats((prevStats) => {
-            const appointments = Array.isArray(prevStats.appointments)
-              ? [...prevStats.appointments]
-              : [];
+        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
+          if (!old) return old;
+          const enriched = enrichAppointment(newAppointment, old);
+          const newAppointments = [...(old.appointments || []), enriched];
+          return { ...old, appointments: newAppointments, appointments_count: newAppointments.length };
+        });
 
-            const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
-
-            appointments.push(enrichedNewAppointment);
-
-            return {
-              ...prevStats,
-              appointments,
-              appointments_count: appointments.length,
-            };
-          });
-
-          if (newAppointment.date) {
-            const apptDate = new Date(newAppointment.date)
-              .toISOString()
-              .split("T")[0];
-            if (apptDate === selectedDate) {
-              setSelectedDate(null);
-              setTimeout(() => setSelectedDate(apptDate), 10);
-            }
+        if (newAppointment.date) {
+          const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
+          if (apptDate === selectedDate) {
+            setSelectedDate(null);
+            setTimeout(() => setSelectedDate(apptDate), 10);
           }
         }
       });
-      // ---------------------------------------------------------------
 
-      sock.on("appointmentUpdated", (newAppointment) => {
-        const newBizId = newAppointment.business?.toString();
-        const currentBizId = businessId.toString();
+      sock.on("appointmentUpdated", (updatedAppointment) => {
+        if (updatedAppointment.business?.toString() !== businessId.toString()) return;
 
-        if (newBizId === currentBizId) {
-          setStats((prevStats) => {
-            const appointments = Array.isArray(prevStats.appointments)
-              ? [...prevStats.appointments]
-              : [];
+        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
+          if (!old) return old;
+          const enriched = enrichAppointment(updatedAppointment, old);
+          const updatedAppointments = (old.appointments || []).map((appt) =>
+            appt._id === updatedAppointment._id ? enriched : appt
+          );
+          if (!updatedAppointments.find(a => a._id === updatedAppointment._id)) {
+            updatedAppointments.push(enriched);
+          }
+          return { ...old, appointments: updatedAppointments, appointments_count: updatedAppointments.length };
+        });
 
-            const enrichedNewAppointment = enrichAppointment(newAppointment, prevStats);
-
-            const index = appointments.findIndex(
-              (a) => a._id === newAppointment._id
-            );
-
-            if (index !== -1) {
-              appointments[index] = enrichedNewAppointment;
-            } else {
-              appointments.push(enrichedNewAppointment);
-            }
-
-            return {
-              ...prevStats,
-              appointments,
-              appointments_count: appointments.length,
-            };
-          });
-
-          if (newAppointment.date) {
-            const apptDate = new Date(newAppointment.date)
-              .toISOString()
-              .split("T")[0];
-            if (apptDate === selectedDate) {
-              setSelectedDate(null);
-              setTimeout(() => setSelectedDate(apptDate), 10);
-            }
+        if (updatedAppointment.date) {
+          const apptDate = new Date(updatedAppointment.date).toISOString().split("T")[0];
+          if (apptDate === selectedDate) {
+            setSelectedDate(null);
+            setTimeout(() => setSelectedDate(apptDate), 10);
           }
         }
       });
 
       sock.on("allAppointmentsUpdated", (allAppointments) => {
-        setStats((prevStats) => {
-          const enrichedAppointments = Array.isArray(allAppointments)
-            ? allAppointments.map((appt) => enrichAppointment(appt, prevStats))
+        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
+          if (!old) return old;
+          const enriched = Array.isArray(allAppointments)
+            ? allAppointments.map((appt) => enrichAppointment(appt, old))
             : [];
-
-          return {
-            ...prevStats,
-            appointments: enrichedAppointments,
-            appointments_count: enrichedAppointments.length,
-          };
+          return { ...old, appointments: enriched, appointments_count: enriched.length };
         });
       });
 
       sock.on("disconnect", (reason) => {
-        console.log("Dashboard socket disconnected, reason:", reason);
+        console.log("Dashboard socket disconnected:", reason);
       });
 
       sock.on("connect_error", (err) => {
@@ -424,22 +248,13 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [
-    initialized,
-    businessId,
-    logout,
-    refreshAccessToken,
-    selectedDate,
-    updateMessagesCount,
-  ]);
+  }, [initialized, businessId, logout, refreshAccessToken, refetch, selectedDate, queryClient]);
 
-  if (loading) return <p className="loading-text">⏳ טוען נתונים…</p>;
-  if (error) return <p className="error-text">{error}</p>;
+  if (isLoading) return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
-  const todaysAppointments = Array.isArray(stats.todaysAppointments)
-    ? stats.todaysAppointments
-    : [];
-  const appointments = Array.isArray(stats.appointments) ? stats.appointments : [];
+  const todaysAppointments = Array.isArray(stats?.todaysAppointments) ? stats.todaysAppointments : [];
+  const appointments = Array.isArray(stats?.appointments) ? stats.appointments : [];
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
@@ -451,11 +266,18 @@ const DashboardPage = () => {
     }).length;
   };
 
-  // סנכרון סטטיסטיקות להצגה: משתמשים ב-unreadCount מהקונטקסט במקום stats.messages_count
   const syncedStats = {
     ...stats,
     messages_count: unreadCount,
   };
+
+  // Create refs for DashboardNav
+  const cardsRef = createRef();
+  const insightsRef = createRef();
+  const chartsRef = createRef();
+  const appointmentsRef = createRef();
+  const nextActionsRef = createRef();
+  const weeklySummaryRef = createRef();
 
   return (
     <div className="dashboard-container">
@@ -475,11 +297,10 @@ const DashboardPage = () => {
           chartsRef,
           appointmentsRef,
           nextActionsRef,
-          weeklySummaryRef, 
+          weeklySummaryRef,
         }}
       />
 
-      {/* העברת unreadCount כ-prop ל-DashboardCards */}
       <div ref={cardsRef}>
         <DashboardCards stats={syncedStats} unreadCount={unreadCount} />
       </div>
@@ -509,7 +330,6 @@ const DashboardPage = () => {
         {syncedStats.recent_activity && <RecentActivityTable activities={syncedStats.recent_activity} />}
       </div>
 
-      {/* הוספת ref לבלוק הפגישות */}
       <div ref={appointmentsRef} className="calendar-row">
         <div className="day-agenda-box">
           <DailyAgenda

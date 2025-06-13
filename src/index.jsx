@@ -6,17 +6,24 @@ import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/socketContext';
 import { UnreadMessagesProvider } from './context/UnreadMessagesContext'; 
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 // Polyfill ל-Buffer בדפדפן:
 import { Buffer } from 'buffer';
 window.Buffer = window.Buffer || Buffer;
+
+// יצירת QueryClient חדש
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <SocketProvider>
-          <UnreadMessagesProvider>  {/* הוסף עטיפה כאן */}
-            <App />
+          <UnreadMessagesProvider>
+            <QueryClientProvider client={queryClient}>
+              <App />
+            </QueryClientProvider>
           </UnreadMessagesProvider>
         </SocketProvider>
       </AuthProvider>
