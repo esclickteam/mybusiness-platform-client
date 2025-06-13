@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -7,7 +7,7 @@ import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 import { useDashboardStats } from "../../context/DashboardSocketContext";
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
@@ -38,11 +38,8 @@ export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
   const bizId = paramId || user?.businessId;
+  const queryClient = useQueryClient();
 
-  const token = user?.token;
-
-  const [faqs, setFaqs] = useState([]);
-  const [services, setServices] = useState([]);
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,23 +55,28 @@ export default function BusinessProfileView() {
     isLoading,
     error,
     refetch,
-  } = useQuery(['business', bizId], () => fetchBusiness(bizId), {
+  } = useQuery({
+    queryKey: ['business', bizId],
+    queryFn: () => fetchBusiness(bizId),
     enabled: !!bizId,
-    staleTime: 5 * 60 * 1000, // 5 דקות מטמון
+    staleTime: 5 * 60 * 1000,
     onSuccess: (biz) => {
-      setFaqs(biz.faqs || []);
-      setServices(biz.services || []);
+      // Prefetch important related data on business load
+      queryClient.prefetchQuery({
+        queryKey: ['workHours', bizId],
+        queryFn: () => fetchWorkHours(bizId),
+      });
     }
   });
 
   // React Query: Fetch work hours
-  const { data: workHoursData } = useQuery(
-    ['workHours', bizId],
-    () => fetchWorkHours(bizId),
-    { enabled: !!bizId }
-  );
+  const { data: workHoursData } = useQuery({
+    queryKey: ['workHours', bizId],
+    queryFn: () => fetchWorkHours(bizId),
+    enabled: !!bizId
+  });
 
-  const schedule = React.useMemo(() => {
+  const schedule = useMemo(() => {
     if (!workHoursData) return {};
     let sched = {};
     if (Array.isArray(workHoursData)) {
@@ -172,6 +174,7 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
+    faqs = [],
     address: { city = "" } = {},
   } = data;
 
@@ -256,6 +259,7 @@ export default function BusinessProfileView() {
               </button>
             ))}
           </div>
+
           <div className="tab-content">
             {currentTab === "ראשי" && (
               <div className="public-main-images">
