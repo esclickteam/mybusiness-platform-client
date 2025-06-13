@@ -11,11 +11,12 @@ export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
 
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const ws = useRef(null);
   const refreshingTokenPromise = useRef(null);
 
-  // רענון טוקן עם queue
+  // רענון טוקן עם queue כדי למנוע קריאות מקבילות
   const refreshAccessToken = async () => {
     if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
     refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
@@ -35,7 +36,7 @@ export function AuthProvider({ children }) {
     return refreshingTokenPromise.current;
   };
 
-  // יצירת socket.IO מוקדם עם הטוקן
+  // יצירת חיבור socket.IO עם הטוקן
   const createSocketConnection = (token, currentUser) => {
     if (ws.current) {
       ws.current.disconnect();
@@ -103,9 +104,9 @@ export function AuthProvider({ children }) {
     isError,
     refetch: refetchUser,
     isFetching,
-  } = useQuery(
-    ["authUser"],
-    async () => {
+  } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: async () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token");
 
@@ -113,38 +114,37 @@ export function AuthProvider({ children }) {
       const res = await API.get("/auth/me", { withCredentials: true });
       return res.data;
     },
-    {
-      refetchOnWindowFocus: false,
-      retry: false,
-      onSuccess: (data) => {
-        setUser({
-          userId: data.userId,
-          name: data.name,
-          email: data.email,
-          role: data.role,
-          subscriptionPlan: data.subscriptionPlan,
-          businessId: data.businessId || null,
-        });
-        createSocketConnection(localStorage.getItem("token"), data);
-      },
-      onError: async (error) => {
-        // נסיון רענון טוקן במקרה של שגיאה
-        try {
-          const newToken = await refreshAccessToken();
-          if (newToken) {
-            refetchUser();
-          } else {
-            logout();
-          }
-        } catch {
+    refetchOnWindowFocus: false,
+    retry: false,
+    enabled: !!localStorage.getItem("token"),
+    onSuccess: (data) => {
+      setUser({
+        userId: data.userId,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        subscriptionPlan: data.subscriptionPlan,
+        businessId: data.businessId || null,
+      });
+      createSocketConnection(localStorage.getItem("token"), data);
+    },
+    onError: async (error) => {
+      try {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          refetchUser();
+        } else {
           logout();
         }
-      },
-      enabled: !!localStorage.getItem("token"),
-    }
-  );
+      } catch {
+        logout();
+      }
+    },
+  });
 
   const login = async (email, password, options = { skipRedirect: false }) => {
+    setError(null);
+
     try {
       const response = await API.post(
         "/auth/login",
@@ -232,6 +232,7 @@ export function AuthProvider({ children }) {
         initialized: !isLoading && !!user,
       }}
     >
+      {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
   );
