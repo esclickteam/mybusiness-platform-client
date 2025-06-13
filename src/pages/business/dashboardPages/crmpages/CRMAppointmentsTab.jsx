@@ -396,18 +396,20 @@ const CRMAppointmentsTab = () => {
 
   // טיפול בשינוי שדות בטופס
   const handleInputChange = (field, value) => {
-    setNewAppointment((prev) => {
-      let newState = { ...prev, [field]: value };
+  console.log(`Input changed: ${field} = ${value}`);
+  setNewAppointment((prev) => {
+    let newState = { ...prev, [field]: value };
 
-      if (field === "serviceId") {
-        const service = services.find((s) => s._id === value);
-        newState.serviceName = service ? service.name : "";
-        newState.time = "";
-      }
+    if (field === "serviceId") {
+      const service = services.find((s) => s._id === value);
+      newState.serviceName = service ? service.name : "";
+      newState.time = "";
+    }
 
-      return newState;
-    });
-  };
+    return newState;
+  });
+};
+
 
   return (
     <div className="crm-appointments-tab">
