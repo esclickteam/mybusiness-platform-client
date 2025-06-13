@@ -1,24 +1,30 @@
-import React, { useEffect, useState, useRef, createRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  createRef,
+  lazy,
+  Suspense,
+} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-import DashboardCards from "../../../components/DashboardCards";
-import BarChartComponent from "../../../components/dashboard/BarChart";
-import RecentActivityTable from "../../../components/dashboard/RecentActivityTable";
-import Insights from "../../../components/dashboard/Insights";
-import NextActions from "../../../components/dashboard/NextActions";
-import WeeklySummary from "../../../components/dashboard/WeeklySummary";
-import CalendarView from "../../../components/dashboard/CalendarView";
-import DailyAgenda from "../../../components/dashboard/DailyAgenda";
-import DashboardNav from "../../../components/dashboard/DashboardNav";
-
 import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
-
 import "../../../styles/dashboard.css";
+
+// רכיבים דינמיים
+const DashboardCards = lazy(() => import("../../../components/DashboardCards"));
+const BarChartComponent = lazy(() => import("../../../components/dashboard/BarChart"));
+const RecentActivityTable = lazy(() => import("../../../components/dashboard/RecentActivityTable"));
+const Insights = lazy(() => import("../../../components/dashboard/Insights"));
+const NextActions = lazy(() => import("../../../components/dashboard/NextActions"));
+const WeeklySummary = lazy(() => import("../../../components/dashboard/WeeklySummary"));
+const CalendarView = lazy(() => import("../../../components/dashboard/CalendarView"));
+const DailyAgenda = lazy(() => import("../../../components/dashboard/DailyAgenda"));
+const DashboardNav = lazy(() => import("../../../components/dashboard/DashboardNav"));
 
 const LOCAL_STORAGE_KEY = "dashboardStats";
 
@@ -47,7 +53,6 @@ function countItemsInLastWeek(items, dateKey = "date") {
 async function fetchDashboardStats(businessId, refreshAccessToken) {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
-
   const res = await API.get(`/business/${businessId}/stats`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -63,7 +68,6 @@ const DashboardPage = () => {
   const queryClient = useQueryClient();
 
   const { updateMessagesCount, unreadCount } = useUnreadMessages();
-
   const unreadCountRef = useRef(unreadCount);
   useEffect(() => {
     unreadCountRef.current = unreadCount;
@@ -72,7 +76,6 @@ const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // טען קודם מה-localStorage
   const [localData, setLocalData] = useState(() => {
     try {
       const lsData = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -82,7 +85,6 @@ const DashboardPage = () => {
     }
   });
 
-  // React Query - fetch dashboard stats עם keepPreviousData ו-enabled
   const {
     data: stats,
     isLoading,
@@ -110,26 +112,18 @@ const DashboardPage = () => {
     keepPreviousData: true,
   });
 
-  // Prefetch לטאבים/נתונים נוספים
   useEffect(() => {
     if (!businessId) return;
-
     queryClient.prefetchQuery(
       ["dashboardStats", businessId],
       () => fetchDashboardStats(businessId, refreshAccessToken),
       { staleTime: 5 * 60 * 1000 }
     );
-
-    // לדוגמה, כאן אפשר להוסיף prefetch של נתונים נוספים רלוונטיים לדשבורד:
-    // queryClient.prefetchQuery(['appointments', businessId], () => fetchAppointments(businessId));
-    // queryClient.prefetchQuery(['messages', businessId], () => fetchMessages(businessId));
   }, [businessId, queryClient, refreshAccessToken]);
 
-  // Unread messages reset on messages tab change
   const hasResetUnreadCount = useRef(false);
   useEffect(() => {
     if (!socketRef.current) return;
-
     if (location.pathname.includes("/messages")) {
       hasResetUnreadCount.current = false;
       const conversationId = location.state?.conversationId || null;
@@ -154,11 +148,6 @@ const DashboardPage = () => {
     }
   }, [location.pathname, updateMessagesCount]);
 
-  if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
-  if (user?.role !== "business" || !businessId)
-    return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-
-  // Setup socket with real-time events
   useEffect(() => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
@@ -186,29 +175,23 @@ const DashboardPage = () => {
         }
         sock.auth.token = newToken;
         sock.emit("authenticate", { token: newToken }, (ack) => {
-          if (ack && ack.ok) {
-            console.log("Socket re-authenticated");
-          } else {
+          if (!ack?.ok) {
             alert("Session expired. Please log in again.");
             logout();
           }
         });
       });
 
-      sock.on("dashboardUpdate", () => {
-        refetch();
-      });
+      sock.on("dashboardUpdate", () => refetch());
 
       sock.on("appointmentCreated", (newAppointment) => {
         if (newAppointment.business?.toString() !== businessId.toString()) return;
-
         queryClient.setQueryData(["dashboardStats", businessId], (old) => {
           if (!old) return old;
           const enriched = enrichAppointment(newAppointment, old);
           const newAppointments = [...(old.appointments || []), enriched];
           return { ...old, appointments: newAppointments, appointments_count: newAppointments.length };
         });
-
         if (newAppointment.date) {
           const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
           if (apptDate === selectedDate) {
@@ -220,7 +203,6 @@ const DashboardPage = () => {
 
       sock.on("appointmentUpdated", (updatedAppointment) => {
         if (updatedAppointment.business?.toString() !== businessId.toString()) return;
-
         queryClient.setQueryData(["dashboardStats", businessId], (old) => {
           if (!old) return old;
           const enriched = enrichAppointment(updatedAppointment, old);
@@ -232,7 +214,6 @@ const DashboardPage = () => {
           }
           return { ...old, appointments: updatedAppointments, appointments_count: updatedAppointments.length };
         });
-
         if (updatedAppointment.date) {
           const apptDate = new Date(updatedAppointment.date).toISOString().split("T")[0];
           if (apptDate === selectedDate) {
@@ -271,17 +252,15 @@ const DashboardPage = () => {
     };
   }, [initialized, businessId, logout, refreshAccessToken, refetch, selectedDate, queryClient]);
 
+  if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (user?.role !== "business" || !businessId)
+    return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   if (isLoading && !localData) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
   const effectiveStats = stats || localData || {};
-
-  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments)
-    ? effectiveStats.todaysAppointments
-    : [];
-  const appointments = Array.isArray(effectiveStats?.appointments)
-    ? effectiveStats.appointments
-    : [];
+  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments) ? effectiveStats.todaysAppointments : [];
+  const appointments = Array.isArray(effectiveStats?.appointments) ? effectiveStats.appointments : [];
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
@@ -298,7 +277,6 @@ const DashboardPage = () => {
     messages_count: unreadCount,
   };
 
-  // Create refs for DashboardNav
   const cardsRef = createRef();
   const insightsRef = createRef();
   const chartsRef = createRef();
@@ -317,66 +295,73 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
-      <DashboardNav
-        refs={{
-          cardsRef,
-          insightsRef,
-          chartsRef,
-          appointmentsRef,
-          nextActionsRef,
-          weeklySummaryRef,
-        }}
-      />
+      <Suspense fallback={<div>🔄 טוען ניווט...</div>}>
+        <DashboardNav refs={{ cardsRef, insightsRef, chartsRef, appointmentsRef, nextActionsRef, weeklySummaryRef }} />
+      </Suspense>
 
-      <div ref={cardsRef}>
-        <DashboardCards stats={syncedStats} unreadCount={unreadCount} />
-      </div>
+      <Suspense fallback={<div>🔄 טוען כרטיסים...</div>}>
+        <div ref={cardsRef}>
+          <DashboardCards stats={syncedStats} unreadCount={unreadCount} />
+        </div>
+      </Suspense>
 
-      <div ref={insightsRef}>
-        <Insights
-          stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }}
-        />
-      </div>
-
-      <div ref={nextActionsRef}>
-        <NextActions
-          stats={{
-            weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
-            weekly_appointments_count: countItemsInLastWeek(appointments),
-            weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
-            weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
-          }}
-        />
-      </div>
-
-      <div ref={chartsRef}>
-        <BarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
-      </div>
-
-      <div>
-        {syncedStats.recent_activity && <RecentActivityTable activities={syncedStats.recent_activity} />}
-      </div>
-
-      <div ref={appointmentsRef} className="calendar-row">
-        <div className="day-agenda-box">
-          <DailyAgenda
-            date={selectedDate}
-            appointments={appointments}
-            businessName={syncedStats.businessName}
+      <Suspense fallback={<div>🔄 טוען תובנות...</div>}>
+        <div ref={insightsRef}>
+          <Insights
+            stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }}
           />
         </div>
-        <div className="calendar-container">
-          <CalendarView
-            appointments={appointments}
-            onDateClick={setSelectedDate}
-            selectedDate={selectedDate}
+      </Suspense>
+
+      <Suspense fallback={<div>🔄 טוען פעולות...</div>}>
+        <div ref={nextActionsRef}>
+          <NextActions
+            stats={{
+              weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
+              weekly_appointments_count: countItemsInLastWeek(appointments),
+              weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
+              weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
+            }}
           />
         </div>
-      </div>
+      </Suspense>
 
-      <div ref={weeklySummaryRef}>
-        <WeeklySummary stats={syncedStats} />
-      </div>
+      <Suspense fallback={<div>🔄 טוען גרפים...</div>}>
+        <div ref={chartsRef}>
+          <BarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
+        </div>
+      </Suspense>
+
+      <Suspense fallback={<div>🔄 טוען פעילות...</div>}>
+        <div>
+          {syncedStats.recent_activity && <RecentActivityTable activities={syncedStats.recent_activity} />}
+        </div>
+      </Suspense>
+
+      <Suspense fallback={<div>🔄 טוען יומן...</div>}>
+        <div ref={appointmentsRef} className="calendar-row">
+          <div className="day-agenda-box">
+            <DailyAgenda
+              date={selectedDate}
+              appointments={appointments}
+              businessName={syncedStats.businessName}
+            />
+          </div>
+          <div className="calendar-container">
+            <CalendarView
+              appointments={appointments}
+              onDateClick={setSelectedDate}
+              selectedDate={selectedDate}
+            />
+          </div>
+        </div>
+      </Suspense>
+
+      <Suspense fallback={<div>🔄 טוען סיכום שבועי...</div>}>
+        <div ref={weeklySummaryRef}>
+          <WeeklySummary stats={syncedStats} />
+        </div>
+      </Suspense>
     </div>
   );
 };
