@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api";
@@ -38,8 +38,7 @@ const CRMAppointmentsTab = () => {
     time: "",
   });
 
-  const [newApptId, setNewApptId] = useState(null);
-  const saveTimeoutRef = useRef(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     async function fetchAppointmentsAndServices() {
@@ -134,15 +133,6 @@ const CRMAppointmentsTab = () => {
     }
   };
 
-  useEffect(() => {
-    if (editId) {
-      setEditData((prev) => ({
-        ...prev,
-        time: "",
-      }));
-    }
-  }, [editData.date, editId]);
-
   const handleDelete = async (id) => {
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
@@ -191,89 +181,6 @@ const CRMAppointmentsTab = () => {
     setEditId(null);
   };
 
-  // debounce לשמירת טיוטה אוטומטית
-  useEffect(() => {
-    if (
-      !businessId ||
-      !newAppointment.clientName.trim() ||
-      !newAppointment.clientPhone.trim() ||
-      !newAppointment.date ||
-      !newAppointment.time ||
-      !newAppointment.serviceId
-    ) {
-      // לא שולחים בקשה אם שדות חיוניים חסרים
-      return;
-    }
-
-    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-
-    saveTimeoutRef.current = setTimeout(async () => {
-      try {
-        if (newApptId) {
-          // עדכון תיאום קיים
-          const res = await API.patch(`/appointments/${newApptId}`, {
-            name: newAppointment.clientName,
-            phone: newAppointment.clientPhone,
-            address: newAppointment.address,
-            email: newAppointment.email,
-            note: newAppointment.note,
-            serviceId: newAppointment.serviceId,
-            date: newAppointment.date,
-            time: newAppointment.time,
-            serviceName: newAppointment.serviceName,
-          });
-          const updatedAppt = res.data.appt;
-          setAppointments((prev) =>
-            prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
-          );
-        } else {
-          // יצירת תיאום חדש
-          const res = await API.post("/appointments", {
-            businessId: businessId,
-            name: newAppointment.clientName,
-            phone: newAppointment.clientPhone,
-            address: newAppointment.address,
-            email: newAppointment.email,
-            note: newAppointment.note,
-            serviceId: newAppointment.serviceId,
-            date: newAppointment.date,
-            time: newAppointment.time,
-            serviceName: newAppointment.serviceName,
-            duration: 0,
-          });
-
-          const createdAppt = res.data.appt || res.data;
-          setNewApptId(createdAppt._id);
-          // לא מוסיפים את createdAppt ל-appointments כאן כדי למנוע כפילות
-        }
-      } catch (err) {
-        if (
-          err.response &&
-          err.response.status === 400 &&
-          err.response.data.message.includes("Slot already booked")
-        ) {
-          alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
-        } else {
-          console.error("Error saving preliminary appointment:", err);
-        }
-      }
-    }, 1500);
-
-    return () => clearTimeout(saveTimeoutRef.current);
-  }, [
-    newAppointment.clientName,
-    newAppointment.clientPhone,
-    newAppointment.address,
-    newAppointment.email,
-    newAppointment.note,
-    newAppointment.serviceId,
-    newAppointment.date,
-    newAppointment.time,
-    newAppointment.serviceName,
-    newApptId,
-    businessId,
-  ]);
-
   const handleInputChange = (field, value) => {
     setNewAppointment((prev) => {
       let newState = { ...prev, [field]: value };
@@ -286,8 +193,13 @@ const CRMAppointmentsTab = () => {
     });
   };
 
-  // הפונקציה החדשה לאישור תיאום
+  // =====================
+  // כאן הורדתי את useEffect ששולח אוטומטית
+
+  // הפונקציה לאישור תיאום (יצירת פגישה) עם מניעת לחיצות כפולות
   const handleConfirmAppointment = async () => {
+    if (isSaving) return; // מונע לחיצות כפולות
+
     if (
       !newAppointment.clientName.trim() ||
       !newAppointment.clientPhone.trim() ||
@@ -299,52 +211,48 @@ const CRMAppointmentsTab = () => {
       return;
     }
 
-    if (!newApptId) {
-      try {
-        const res = await API.post("/appointments", {
-          businessId: businessId,
-          name: newAppointment.clientName,
-          phone: newAppointment.clientPhone,
-          address: newAppointment.address,
-          email: newAppointment.email,
-          note: newAppointment.note,
-          serviceId: newAppointment.serviceId,
-          date: newAppointment.date,
-          time: newAppointment.time,
-          serviceName: newAppointment.serviceName,
-          duration: 0,
-        });
-        const createdAppt = res.data.appt || res.data;
-        setNewApptId(createdAppt._id);
-        setAppointments((prev) => [...prev, createdAppt]);
-      } catch (error) {
-        if (
-          error.response &&
-          error.response.status === 400 &&
-          error.response.data.message.includes("Slot already booked")
-        ) {
-          alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
-        } else {
-          alert("שגיאה בשמירת התיאום, נסה שנית");
-        }
-        return;
+    setIsSaving(true);
+    try {
+      const res = await API.post("/appointments", {
+        businessId: businessId,
+        name: newAppointment.clientName,
+        phone: newAppointment.clientPhone,
+        address: newAppointment.address,
+        email: newAppointment.email,
+        note: newAppointment.note,
+        serviceId: newAppointment.serviceId,
+        date: newAppointment.date,
+        time: newAppointment.time,
+        serviceName: newAppointment.serviceName,
+        duration: 0,
+      });
+      const createdAppt = res.data.appt || res.data;
+      setAppointments((prev) => [...prev, createdAppt]);
+      setShowAddForm(false);
+      setNewAppointment({
+        clientName: "",
+        clientPhone: "",
+        address: "",
+        email: "",
+        note: "",
+        serviceId: "",
+        serviceName: "",
+        date: "",
+        time: "",
+      });
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data.message.includes("Slot already booked")
+      ) {
+        alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
+      } else {
+        alert("שגיאה בשמירת התיאום, נסה שנית");
       }
+    } finally {
+      setIsSaving(false);
     }
-
-    // סגירת הטופס וניקוי השדות
-    setNewAppointment({
-      clientName: "",
-      clientPhone: "",
-      address: "",
-      email: "",
-      note: "",
-      serviceId: "",
-      serviceName: "",
-      date: "",
-      time: "",
-    });
-    setNewApptId(null);
-    setShowAddForm(false);
   };
 
   return (
@@ -363,7 +271,6 @@ const CRMAppointmentsTab = () => {
           className="add-btn"
           onClick={() => {
             setShowAddForm((show) => !show);
-            setNewApptId(null);
             setNewAppointment({
               clientName: "",
               clientPhone: "",
@@ -436,7 +343,9 @@ const CRMAppointmentsTab = () => {
             businessId={businessId}
             serviceId={newAppointment.serviceId}
           />
-          <button onClick={handleConfirmAppointment}>📅 קבע פגישה</button>
+          <button onClick={handleConfirmAppointment} disabled={isSaving}>
+            📅 קבע פגישה
+          </button>
         </div>
       )}
 
