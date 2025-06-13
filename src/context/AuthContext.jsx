@@ -142,6 +142,7 @@ export function AuthProvider({ children }) {
     },
   });
 
+  // פונקציית התחברות עם שימוש בנתונים טריים מה־refetchUser
   const login = async (email, password, options = { skipRedirect: false }) => {
     setError(null);
 
@@ -159,13 +160,13 @@ export function AuthProvider({ children }) {
       API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
       // טען את פרטי המשתמש עם React Query מחדש
-      await refetchUser();
+      const { data: freshUserData } = await refetchUser();
 
-      if (!options.skipRedirect && userData) {
+      if (!options.skipRedirect && freshUserData) {
         let path = "/";
-        switch (userData.role) {
+        switch (freshUserData.role) {
           case "business":
-            path = `/business/${userData.businessId}/dashboard`;
+            path = `/business/${freshUserData.businessId}/dashboard`;
             break;
           case "customer":
             path = "/client/dashboard";
@@ -183,7 +184,7 @@ export function AuthProvider({ children }) {
         navigate(path, { replace: true });
       }
 
-      return userData;
+      return freshUserData;
     } catch (e) {
       if (e.response?.status === 401) {
         setError("❌ אימייל או סיסמה שגויים");
@@ -208,6 +209,8 @@ export function AuthProvider({ children }) {
       ws.current.disconnect();
       ws.current = null;
     }
+    // ניקוי cache של React Query
+    queryClient.clear();
     navigate("/", { replace: true });
   };
 
