@@ -10,7 +10,8 @@ const ForgotPassword = lazy(() => import("./ForgotPassword"));
 import { lazyWithPreload } from "../utils/lazyWithPreload";
 
 // טעינה מוקדמת של הדשבורד
-const DashboardPage = lazyWithPreload(() => import("./DashboardPage"));
+const DashboardPage = lazyWithPreload(() => import("./business/dashboardPages/DashboardPage"));
+
 
 export default function Login() {
   const { login, error: authError } = useAuth();
