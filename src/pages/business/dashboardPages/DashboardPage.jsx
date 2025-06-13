@@ -72,7 +72,17 @@ const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // React Query - fetch dashboard stats
+  // טען קודם מה-localStorage
+  const [localData, setLocalData] = useState(() => {
+    try {
+      const lsData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      return lsData ? JSON.parse(lsData) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // React Query - fetch dashboard stats עם keepPreviousData ו-enabled
   const {
     data: stats,
     isLoading,
@@ -88,6 +98,7 @@ const DashboardPage = () => {
       }
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+        setLocalData(data);
       } catch {}
     },
     onError: (error) => {
@@ -96,7 +107,21 @@ const DashboardPage = () => {
     },
     staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,
+    keepPreviousData: true,
   });
+
+  // Prefetch לטאבים נוספים שייתכן ויידרשו בקרוב
+  useEffect(() => {
+    if (!businessId) return;
+    queryClient.prefetchQuery(
+      ["dashboardStats", businessId],
+      () => fetchDashboardStats(businessId, refreshAccessToken),
+      { staleTime: 5 * 60 * 1000 }
+    );
+
+    // כאן אפשר להוסיף prefetch של API נוספים, לדוגמה:
+    // queryClient.prefetchQuery(['messages', businessId], ...);
+  }, [businessId, queryClient, refreshAccessToken]);
 
   // Unread messages reset on messages tab change
   const hasResetUnreadCount = useRef(false);
@@ -247,11 +272,14 @@ const DashboardPage = () => {
     };
   }, [initialized, businessId, logout, refreshAccessToken, refetch, selectedDate, queryClient]);
 
-  if (isLoading) return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (isLoading && !localData) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
-  const todaysAppointments = Array.isArray(stats?.todaysAppointments) ? stats.todaysAppointments : [];
-  const appointments = Array.isArray(stats?.appointments) ? stats.appointments : [];
+  // השתמש בנתונים מה־cache או מה־localStorage (אם קיימים)
+  const effectiveStats = stats || localData || {};
+
+  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments) ? effectiveStats.todaysAppointments : [];
+  const appointments = Array.isArray(effectiveStats?.appointments) ? effectiveStats.appointments : [];
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
@@ -264,7 +292,7 @@ const DashboardPage = () => {
   };
 
   const syncedStats = {
-    ...stats,
+    ...effectiveStats,
     messages_count: unreadCount,
   };
 

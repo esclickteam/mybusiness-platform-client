@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
 import ServicesSelector from "../ServicesSelector";
 import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
-// במקום useDashboardSocket – נייבא את ה־hook מתוך הקונטקסט
 import { useDashboardStats } from "../../context/DashboardSocketContext";
 
-// עיצובים
+import { useQuery } from '@tanstack/react-query';
+
 import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
 import "./BusinessProfileView.css";
@@ -22,18 +22,27 @@ const TABS = [
   "יומן",
 ];
 
-export default function   BusinessProfileView() {
+const fetchBusiness = async (businessId) => {
+  const res = await API.get(`/business/${businessId}`);
+  return res.data.business || res.data;
+};
+
+const fetchWorkHours = async (businessId) => {
+  const res = await API.get("/appointments/get-work-hours", {
+    params: { businessId },
+  });
+  return res.data.workHours;
+};
+
+export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
   const bizId = paramId || user?.businessId;
+
   const token = user?.token;
 
-  const [data, setData] = useState(null);
   const [faqs, setFaqs] = useState([]);
   const [services, setServices] = useState([]);
-  const [schedule, setSchedule] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,57 +50,59 @@ export default function   BusinessProfileView() {
   const [profileViewsCount, setProfileViewsCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 
-
-  // דגל כדי למנוע קריאה כפולה של ה-useEffect בשל React.StrictMode
   const hasIncrementedRef = useRef(false);
 
-  // הטען פרטי העסק ושעות עבודה
-  useEffect(() => {
-    if (!bizId) {
-      setError("Invalid business ID");
-      setLoading(false);
-      return;
+  // React Query: Fetch business data
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery(['business', bizId], () => fetchBusiness(bizId), {
+    enabled: !!bizId,
+    staleTime: 5 * 60 * 1000, // 5 דקות מטמון
+    onSuccess: (biz) => {
+      setFaqs(biz.faqs || []);
+      setServices(biz.services || []);
     }
+  });
 
-    setLoading(true);
+  // React Query: Fetch work hours
+  const { data: workHoursData } = useQuery(
+    ['workHours', bizId],
+    () => fetchWorkHours(bizId),
+    { enabled: !!bizId }
+  );
+
+  const schedule = React.useMemo(() => {
+    if (!workHoursData) return {};
+    let sched = {};
+    if (Array.isArray(workHoursData)) {
+      workHoursData.forEach((item) => {
+        sched[Number(item.day)] = item;
+      });
+    } else if (workHoursData && typeof workHoursData === "object") {
+      sched = workHoursData;
+    }
+    return sched;
+  }, [workHoursData]);
+
+  // Check if favorite (runs on user or bizId change)
+  React.useEffect(() => {
+    if (!user || !bizId) return;
     (async () => {
       try {
-        const resBiz = await API.get(`/business/${bizId}`);
-        const biz = resBiz.data.business || resBiz.data;
-        setData(biz);
-        setFaqs(biz.faqs || []);
-        setServices(biz.services || []);
-
-        // בדיקה אם העסק במועדפים של המשתמש
-        if (user) {
-          const favRes = await API.get("/users/me", { withCredentials: true });
-          const favList = favRes.data.favorites || [];
-          setIsFavorite(favList.includes(bizId));
-        }
-
-        const resWH = await API.get("/appointments/get-work-hours", {
-          params: { businessId: bizId },
-        });
-        let sched = {};
-        const wh = resWH.data.workHours;
-        if (Array.isArray(wh)) {
-          wh.forEach((item) => {
-            sched[Number(item.day)] = item;
-          });
-        } else if (wh && typeof wh === "object") {
-          sched = wh;
-        }
-        setSchedule(sched);
+        const favRes = await API.get("/users/me", { withCredentials: true });
+        const favList = favRes.data.favorites || [];
+        setIsFavorite(favList.includes(bizId));
       } catch (err) {
-        console.error(err);
-        setError("שגיאה בטעינת הנתונים");
-      } finally {
-        setLoading(false);
+        console.error("Error fetching favorites", err);
       }
     })();
-  }, [bizId, user]);
+  }, [user, bizId]);
 
-  useEffect(() => {
+  // Increment views count once
+  React.useEffect(() => {
     if (!bizId) return;
     if (hasIncrementedRef.current) return;
     hasIncrementedRef.current = true;
@@ -108,9 +119,9 @@ export default function   BusinessProfileView() {
       });
   }, [bizId]);
 
+  // Update profile views count from socket stats
   const socketStats = useDashboardStats();
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (socketStats?.views_count !== undefined && bizId) {
       setProfileViewsCount(socketStats.views_count);
     }
@@ -135,8 +146,21 @@ export default function   BusinessProfileView() {
     }
   };
 
-  if (loading) return <div className="loading">טוען…</div>;
-  if (error) return <div className="error">{error}</div>;
+  const handleReviewSubmit = async (formData) => {
+    setIsSubmitting(true);
+    try {
+      await API.post(`/business/${bizId}/reviews`, formData);
+      setShowReviewModal(false);
+      await refetch();
+    } catch {
+      alert("שגיאה בשליחת ביקורת");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) return <div className="loading">טוען…</div>;
+  if (error) return <div className="error">שגיאה בטעינת הנתונים</div>;
   if (!data) return <div className="error">העסק לא נמצא</div>;
 
   const {
@@ -156,21 +180,6 @@ export default function   BusinessProfileView() {
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
-  const handleReviewSubmit = async (formData) => {
-    setIsSubmitting(true);
-    try {
-      await API.post(`/business/${bizId}/reviews`, formData);
-      setShowReviewModal(false);
-      const res = await API.get(`/business/${bizId}`);
-      const biz = res.data.business || res.data;
-      setData(biz);
-    } catch {
-      alert("שגיאה בשליחת ביקורת");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
@@ -182,13 +191,12 @@ export default function   BusinessProfileView() {
           )}
           {logoUrl && (
             <div className="profile-logo-wrapper">
-              <img className="profile-logo" src={logoUrl} alt="לוגו העסק" />
+              <img className="profile-logo" src={logoUrl} alt="לוגו העסק" loading="lazy" />
             </div>
           )}
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <h1 className="business-name">{businessName}</h1>
-            {/* כפתור מועדפים */}
             <button
               onClick={toggleFavorite}
               className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
@@ -232,7 +240,6 @@ export default function   BusinessProfileView() {
             <span className="count">({reviews.length} ביקורות)</span>
           </div>
 
-
           <hr className="profile-divider" />
 
           <div className="profile-tabs">
@@ -254,7 +261,7 @@ export default function   BusinessProfileView() {
               <div className="public-main-images">
                 {mainImages.length ? (
                   mainImages.slice(0, 5).map((url, i) => (
-                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} />
+                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" />
                   ))
                 ) : (
                   <p className="no-data">אין תמונות להצגה</p>
@@ -265,7 +272,7 @@ export default function   BusinessProfileView() {
               <div className="public-main-images">
                 {gallery.length ? (
                   gallery.map((url, i) => (
-                    <img key={i} src={url} alt={`גלריה ${i + 1}`} />
+                    <img key={i} src={url} alt={`גלריה ${i + 1}`} loading="lazy" />
                   ))
                 ) : (
                   <p className="no-data">אין תמונות בגלריה</p>

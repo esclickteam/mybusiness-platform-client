@@ -1,8 +1,7 @@
-// src/pages/business/BusinessDashboardRoutes.jsx
-
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";  // הוסף ייבוא של useAuth
+import { useAuth } from "../../context/AuthContext";
+import { useQueryClient } from '@tanstack/react-query';
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 
 import BuildBusinessPage  from "./dashboardPages/build/Build";
@@ -28,6 +27,23 @@ import GoalsPage          from "./dashboardPages/GoalsPage";
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
   const businessId = user?.businessId;
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (businessId) {
+      // Prefetch בסיסי של נתונים שהמשתמש צפוי להשתמש בהם
+      queryClient.prefetchQuery(['businessProfile', businessId], () =>
+        fetch(`/api/business/${businessId}`).then(res => res.json())
+      );
+      queryClient.prefetchQuery(['businessServices', businessId], () =>
+        fetch(`/api/business/my/services`).then(res => res.json())
+      );
+      queryClient.prefetchQuery(['businessAppointments', businessId], () =>
+        fetch(`/api/appointments?businessId=${businessId}`).then(res => res.json())
+      );
+      // הוסף כאן prefetch לפי הצורך
+    }
+  }, [businessId, queryClient]);
 
   if (!businessId) {
     return <div>טוען מידע העסק...</div>;
@@ -35,46 +51,26 @@ const BusinessDashboardRoutes = () => {
 
   return (
     <Routes>
-      {/* Layout משותף לכל לשוניות בדשבורד */}
       <Route path="" element={<BusinessDashboardLayout />}>
-        {/* ברירת מחדל → תמצית */}
         <Route index element={<Navigate to="dashboard" replace />} />
-
-        {/* תמצית הדשבורד */}
         <Route path="dashboard" element={<DashboardPage />} />
-
-        {/* עריכת העסק */}
-        <Route path="edit"  element={<BuildBusinessPage />} />
+        <Route path="edit" element={<BuildBusinessPage />} />
         <Route path="build" element={<BuildBusinessPage />} />
-
-        {/* סל הקניות */}
         <Route path="cart" element={<CartPage />} />
-
-        {/* לשוניות נוספות */}
-        <Route path="collab"  element={<Collab />} />
+        <Route path="collab" element={<Collab />} />
         <Route path="upgrade" element={<Upgrade />} />
         <Route path="esclick" element={<EsclickAdvisor />} />
-        <Route path="goals"   element={<GoalsPage />} />
-
-        {/* לשונית ההודעות עם לקוחות */}
+        <Route path="goals" element={<GoalsPage />} />
         <Route path="messages" element={<BusinessChatPage />} />
-
-        {/* 🟢 הודעות עסקיות בין עסקים */}
         <Route path="business-messages" element={<CollabChat />} />
-
-        {/* שותפים ואפיליאייט */}
         <Route path="affiliate" element={<AffiliatePage />} />
-
-        {/* CRM nested */}
         <Route path="crm" element={<CRMMain />}>
           <Route index element={<Navigate to="appointments" replace />} />
           <Route path="appointments" element={<CRMAppointmentsTab businessId={businessId} />} />
-          <Route path="clients"      element={<CRMClientsTab businessId={businessId} />} />
-          <Route path="services"     element={<CRMServicesTab businessId={businessId} />} />
-          <Route path="settings"     element={<CRMSettingsTab businessId={businessId} />} />
+          <Route path="clients" element={<CRMClientsTab businessId={businessId} />} />
+          <Route path="services" element={<CRMServicesTab businessId={businessId} />} />
+          <Route path="settings" element={<CRMSettingsTab businessId={businessId} />} />
         </Route>
-
-        {/* כל נתיב אחר בתוך דשבורד → חזרה לתמצית */}
         <Route path="*" element={<Navigate to="dashboard" replace />} />
       </Route>
     </Routes>
