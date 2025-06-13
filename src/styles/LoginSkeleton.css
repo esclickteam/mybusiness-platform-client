@@ -1,73 +1,62 @@
 .login-skeleton {
-  width: 360px;
-  margin: 50px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.1);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  user-select: none;
+  gap: 16px;
+  padding: 24px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.skeleton-title,
+.skeleton-input,
+.skeleton-button,
+.skeleton-link,
+.skeleton-button-small {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite;
 }
 
 .skeleton-title {
-  width: 140px;
-  height: 28px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
-  margin-bottom: 12px;
+  height: 24px;
+  width: 60%;
+  margin-bottom: 8px;
 }
 
 .skeleton-input {
-  height: 44px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
+  height: 40px;
+  width: 100%;
 }
 
 .skeleton-button {
-  height: 48px;
-  border-radius: 24px;
-  background: linear-gradient(90deg, #d0d0d0 25%, #e8e8e8 50%, #d0d0d0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
-  margin-top: 10px;
+  height: 40px;
+  width: 100%;
 }
 
 .skeleton-extra-options {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 15px;
+  gap: 8px;
 }
 
 .skeleton-link {
-  width: 120px;
-  height: 18px;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
+  height: 16px;
+  width: 40%;
 }
 
 .skeleton-button-small {
-  width: 100px;
-  height: 36px;
-  border-radius: 20px;
-  background: linear-gradient(90deg, #d0d0d0 25%, #e8e8e8 50%, #d0d0d0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
+  height: 32px;
+  width: 30%;
 }
 
-@keyframes shimmer {
+@keyframes pulse {
   0% {
-    background-position: 200% 0;
+    background-color: #e0e0e0;
+  }
+  50% {
+    background-color: #f0f0f0;
   }
   100% {
-    background-position: -200% 0;
+    background-color: #e0e0e0;
   }
 }

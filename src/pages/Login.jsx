@@ -30,8 +30,6 @@ export default function Login() {
   const [showForgot, setShowForgot] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const navigate = useNavigate();
-
-  // שימוש ב-useRef לשמירת מצב טעינה מוקדמת
   const dashboardPreloaded = useRef(false);
 
   const handleInputChange = (setter) => (e) => {
@@ -56,7 +54,6 @@ export default function Login() {
     try {
       const cleanEmail = email.trim().toLowerCase();
       await login(cleanEmail, password);
-      // ניווט מתבצע בתוך login או ב-AuthContext
     } catch (err) {
       setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
     } finally {
@@ -64,7 +61,8 @@ export default function Login() {
     }
   };
 
-  if (dashboardLoading) {
+  // ✅ כאן הסקלטון מוצג גם אם dashboardLoading או loading פעיל
+  if (dashboardLoading || loading) {
     return <LoginSkeleton />;
   }
 

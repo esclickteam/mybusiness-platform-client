@@ -97,7 +97,8 @@ export default function App() {
     <>
       <Header />
       <ScrollToTop />
-      <Suspense fallback={<div>🔄 טוען…</div>}>
+      <Suspense fallback={<LoginSkeleton />}>
+
         <Routes>
           {/* דפים ציבוריים */}
           <Route path="/" element={<HomePage />} />
