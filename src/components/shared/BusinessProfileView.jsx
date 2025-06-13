@@ -41,11 +41,11 @@ export default function BusinessProfileView() {
   const queryClient = useQueryClient();
 
   const [faqs, setFaqs] = useState([]);
-  const [services, setServices] = useState([]);  // ← הוספתי את ה-state של services
+  const [services, setServices] = useState([]);  // הוספתי את ה-state של services
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);  // הוספתי גם את זה
   const [profileViewsCount, setProfileViewsCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -64,7 +64,7 @@ export default function BusinessProfileView() {
     staleTime: 5 * 60 * 1000,
     onSuccess: (biz) => {
       setFaqs(biz.faqs || []);
-      setServices(biz.services || []);  // ← מעדכן את services כאן
+      setServices(biz.services || []);
       // Prefetch important related data on business load
       queryClient.prefetchQuery({
         queryKey: ['workHours', bizId],
@@ -178,7 +178,6 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    faqs: faqsData = [],
     address: { city = "" } = {},
   } = data;
 
