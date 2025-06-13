@@ -225,18 +225,18 @@ const CRMAppointmentsTab = () => {
     } else {
       // יצירת תיאום חדש - אל תוסיף פה ל-state! תסמוך על ה-socket
       const res = await API.post("/appointments", {
-        businessId,
-        name: newAppointment.clientName,
-        phone: newAppointment.clientPhone,
-        address: newAppointment.address,
-        email: newAppointment.email,
-        note: newAppointment.note,
-        serviceId: newAppointment.serviceId,
-        date: newAppointment.date,
-        time: newAppointment.time,
-        serviceName: newAppointment.serviceName,
-        duration: 0,
-      });
+  business: businessId,           // לא businessId אלא business
+  clientName: newAppointment.clientName,  // לא name אלא clientName
+  clientPhone: newAppointment.clientPhone, // לא phone אלא clientPhone
+  address: newAppointment.address,
+  email: newAppointment.email,
+  note: newAppointment.note,
+  serviceId: newAppointment.serviceId,
+  date: newAppointment.date,
+  time: newAppointment.time,
+  serviceName: newAppointment.serviceName,
+  duration: 0,
+});
       const createdAppt = res.data.appt || res.data;
       setNewApptId(createdAppt._id);
       // הסרתי את setAppointments כאן כדי למנוע כפילות
