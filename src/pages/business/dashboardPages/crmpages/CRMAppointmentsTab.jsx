@@ -208,49 +208,56 @@ const CRMAppointmentsTab = () => {
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
 
     saveTimeoutRef.current = setTimeout(async () => {
-  try {
-    if (newApptId) {
-      // עדכון תיאום קיים
-      const res = await API.patch(`/appointments/${newApptId}`, {
-        name: newAppointment.clientName,
-        phone: newAppointment.clientPhone,
-        address: newAppointment.address,
-        email: newAppointment.email,
-        note: newAppointment.note,
-        serviceId: newAppointment.serviceId,
-        date: newAppointment.date,
-        time: newAppointment.time,
-        serviceName: newAppointment.serviceName,
-      });
-      const updatedAppt = res.data.appt;
-      setAppointments((prev) =>
-        prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
-      );
-    } else {
-      // יצירת תיאום חדש
-      const res = await API.post("/appointments", {
-        businessId: businessId,
-        name: newAppointment.clientName,
-        phone: newAppointment.clientPhone,
-        address: newAppointment.address,
-        email: newAppointment.email,
-        note: newAppointment.note,
-        serviceId: newAppointment.serviceId,
-        date: newAppointment.date,
-        time: newAppointment.time,
-        serviceName: newAppointment.serviceName,
-        duration: 0,
-      });
+      try {
+        if (newApptId) {
+          // עדכון תיאום קיים
+          const res = await API.patch(`/appointments/${newApptId}`, {
+            name: newAppointment.clientName,
+            phone: newAppointment.clientPhone,
+            address: newAppointment.address,
+            email: newAppointment.email,
+            note: newAppointment.note,
+            serviceId: newAppointment.serviceId,
+            date: newAppointment.date,
+            time: newAppointment.time,
+            serviceName: newAppointment.serviceName,
+          });
+          const updatedAppt = res.data.appt;
+          setAppointments((prev) =>
+            prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+          );
+        } else {
+          // יצירת תיאום חדש
+          const res = await API.post("/appointments", {
+            businessId: businessId,
+            name: newAppointment.clientName,
+            phone: newAppointment.clientPhone,
+            address: newAppointment.address,
+            email: newAppointment.email,
+            note: newAppointment.note,
+            serviceId: newAppointment.serviceId,
+            date: newAppointment.date,
+            time: newAppointment.time,
+            serviceName: newAppointment.serviceName,
+            duration: 0,
+          });
 
-      const createdAppt = res.data.appt || res.data;
-      setNewApptId(createdAppt._id);
-      // לא מוסיפים את createdAppt ל-appointments כאן כדי למנוע כפילות
-    }
-  } catch (err) {
-    console.error("Error saving preliminary appointment:", err);
-  }
-}, 1500);
-
+          const createdAppt = res.data.appt || res.data;
+          setNewApptId(createdAppt._id);
+          // לא מוסיפים את createdAppt ל-appointments כאן כדי למנוע כפילות
+        }
+      } catch (err) {
+        if (
+          err.response &&
+          err.response.status === 400 &&
+          err.response.data.message.includes("Slot already booked")
+        ) {
+          alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
+        } else {
+          console.error("Error saving preliminary appointment:", err);
+        }
+      }
+    }, 1500);
 
     return () => clearTimeout(saveTimeoutRef.current);
   }, [
@@ -311,7 +318,15 @@ const CRMAppointmentsTab = () => {
         setNewApptId(createdAppt._id);
         setAppointments((prev) => [...prev, createdAppt]);
       } catch (error) {
-        alert("שגיאה בשמירת התיאום, נסה שנית");
+        if (
+          error.response &&
+          error.response.status === 400 &&
+          error.response.data.message.includes("Slot already booked")
+        ) {
+          alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
+        } else {
+          alert("שגיאה בשמירת התיאום, נסה שנית");
+        }
         return;
       }
     }
