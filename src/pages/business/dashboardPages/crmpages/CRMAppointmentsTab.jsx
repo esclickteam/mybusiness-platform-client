@@ -284,7 +284,7 @@ const CRMAppointmentsTab = () => {
   useEffect(() => {
   console.log('useEffect triggered: saving draft appointment', newAppointment, newApptId);
 
-  if (!newAppointment.clientName || !newAppointment.clientPhone) {
+  if (!newAppointment.clientName.trim() || !newAppointment.clientPhone.trim()) {
     console.log('Missing clientName or clientPhone, skipping save');
     return;
   }
@@ -350,6 +350,7 @@ const CRMAppointmentsTab = () => {
   newApptId,
   businessId,
 ]);
+
 
 
   // לחיצה על "קבע פגישה" - עדכון סטטוס ל-pending (מאושר)
