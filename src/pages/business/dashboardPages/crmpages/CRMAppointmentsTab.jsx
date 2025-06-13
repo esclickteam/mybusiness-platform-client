@@ -4,14 +4,6 @@ import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
 
-const statusCycle = ['pending', 'not_completed', 'matched', 'completed'];
-const statusMap = {
-  pending: 'מאושר',
-  matched: 'תואם',
-  not_completed: 'לא הושלם',
-  completed: 'הושלם',
-};
-
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
   const businessId = user?.businessId || user?.business?._id || null;
@@ -101,28 +93,6 @@ const CRMAppointmentsTab = () => {
     };
   }, [socket]);
 
-  // עדכון סטטוס אוטומטי ל"הושלם" לאחר שעבר זמן הפגישה
-  useEffect(() => {
-    async function updateCompletedStatuses() {
-      const now = new Date();
-      for (const appt of appointments) {
-        const apptDateTime = new Date(`${appt.date}T${appt.time}:00`);
-        if (appt.status !== "completed" && now > apptDateTime) {
-          try {
-            const res = await API.patch(`/appointments/${appt._id}/status`, { status: "completed" });
-            const updatedAppt = res.data.appt;
-            setAppointments((prev) =>
-              prev.map((a) => (a._id === updatedAppt._id ? updatedAppt : a))
-            );
-          } catch (err) {
-            console.error("Error updating appointment status to completed", err);
-          }
-        }
-      }
-    }
-    if (appointments.length > 0) updateCompletedStatuses();
-  }, [appointments]);
-
   // סינון לפי חיפוש
   const filteredAppointments = appointments.filter((appt) => {
     const searchLower = search.toLowerCase();
@@ -131,26 +101,6 @@ const CRMAppointmentsTab = () => {
       appt.clientPhone?.toLowerCase().includes(searchLower)
     );
   });
-
-  // מחזור סטטוס בלחיצה
-  const cycleStatus = async (id) => {
-    const apptToUpdate = appointments.find((appt) => appt._id === id);
-    if (!apptToUpdate) return;
-
-    const currentIndex = statusCycle.indexOf(apptToUpdate.status);
-    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
-
-    try {
-      const res = await API.patch(`/appointments/${id}/status`, { status: nextStatus });
-      const updatedAppt = res.data.appt;
-
-      setAppointments((prev) =>
-        prev.map((appt) => (appt._id === id ? updatedAppt : appt))
-      );
-    } catch {
-      alert("❌ שגיאה בעדכון סטטוס התיאום");
-    }
-  };
 
   // שינוי שירות בטופס (הוספה/עריכה)
   const handleServiceChange = (serviceId, isEdit = false) => {
@@ -247,17 +197,9 @@ const CRMAppointmentsTab = () => {
     });
   };
 
-  // שמירת עריכה (אפשר להוסיף קריאה מלאה ל-API אם רוצים)
+  // שמירת עריכה (פשוט סוגר עריכה)
   const saveEdit = () => {
     setEditId(null);
-  };
-
-  // הצגת סטטוס (בהתאם לתאריך ולסטטוס)
-  const getStatusLabel = (appt) => {
-    const now = new Date();
-    const apptDateTime = new Date(`${appt.date}T${appt.time}:00`);
-    if (now > apptDateTime) return statusMap["completed"];
-    return statusMap[appt.status] || appt.status;
   };
 
   // debounce לשמירת טיוטה אוטומטית
@@ -279,7 +221,6 @@ const CRMAppointmentsTab = () => {
             date: newAppointment.date,
             time: newAppointment.time,
             serviceName: newAppointment.serviceName,
-            status: "not_completed",
           });
           const updatedAppt = res.data.appt;
           setAppointments((prev) =>
@@ -298,7 +239,6 @@ const CRMAppointmentsTab = () => {
             time: newAppointment.time,
             serviceName: newAppointment.serviceName,
             duration: 0,
-            status: "not_completed",
           });
           const createdAppt = res.data.appt || res.data;
           setNewApptId(createdAppt._id);
@@ -324,7 +264,7 @@ const CRMAppointmentsTab = () => {
     businessId,
   ]);
 
-  // לחיצה על "קבע פגישה" - עדכון סטטוס ל-"pending"
+  // לחיצה על "קבע פגישה" - פשוט סוגר את הטופס
   const handleConfirmAppointment = async () => {
     if (!newApptId) {
       alert("אנא מלא לפחות שם וטלפון כדי לשמור תיאום ראשוני");
@@ -334,43 +274,19 @@ const CRMAppointmentsTab = () => {
       alert("אנא מלא שירות, תאריך ושעה");
       return;
     }
-    try {
-      const res = await API.patch(`/appointments/${newApptId}/status`, { status: "pending" });
-      const updatedAppt = res.data.appt;
-      setAppointments((prev) =>
-        prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
-      );
-
-      setNewAppointment({
-        clientName: "",
-        clientPhone: "",
-        address: "",
-        email: "",
-        note: "",
-        serviceId: "",
-        serviceName: "",
-        date: "",
-        time: "",
-      });
-      setNewApptId(null);
-      setShowAddForm(false);
-    } catch (err) {
-      alert("❌ שגיאה בקביעת התיאום");
-      console.error(err);
-    }
-  };
-
-  // טיפול בשינוי שדות בטופס
-  const handleInputChange = (field, value) => {
-    setNewAppointment((prev) => {
-      let newState = { ...prev, [field]: value };
-      if (field === "serviceId") {
-        const service = services.find((s) => s._id === value);
-        newState.serviceName = service ? service.name : "";
-        newState.time = "";
-      }
-      return newState;
+    setShowAddForm(false);
+    setNewAppointment({
+      clientName: "",
+      clientPhone: "",
+      address: "",
+      email: "",
+      note: "",
+      serviceId: "",
+      serviceName: "",
+      date: "",
+      time: "",
     });
+    setNewApptId(null);
   };
 
   return (
@@ -477,14 +393,13 @@ const CRMAppointmentsTab = () => {
             <th>שירות</th>
             <th>תאריך</th>
             <th>שעה</th>
-            <th>סטטוס</th>
             <th>פעולות</th>
           </tr>
         </thead>
         <tbody>
           {filteredAppointments.length === 0 ? (
             <tr>
-              <td colSpan="10">לא נמצאו תיאומים</td>
+              <td colSpan="9">לא נמצאו תיאומים</td>
             </tr>
           ) : (
             filteredAppointments.map((appt) => (
@@ -611,14 +526,6 @@ const CRMAppointmentsTab = () => {
                   ) : (
                     appt.time
                   )}
-                </td>
-                <td>
-                  <button
-                    className={`status-btn status-${appt.status}`}
-                    onClick={() => cycleStatus(appt._id)}
-                  >
-                    {getStatusLabel(appt)}
-                  </button>
                 </td>
                 <td className="actions-cell">
                   {editId === appt._id ? (
