@@ -8,7 +8,7 @@ import { UnreadMessagesProvider } from './context/UnreadMessagesContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // ✅ ייבוא CSS ראשי — הכרחי לאנימציית spin
-import './index.css';
+import './styles/index.css'; // ✅ זה הנתיב הנכון
 
 // Polyfill ל-Buffer בדפדפן:
 import { Buffer } from 'buffer';
