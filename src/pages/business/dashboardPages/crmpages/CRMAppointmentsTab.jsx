@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api";
@@ -40,15 +40,15 @@ const CRMAppointmentsTab = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // טעינת תיאומים עם React Query
-  const { data: appointments = [], refetch: refetchAppointments } = useQuery(
+  // React Query - appointments
+  const { data: appointments = [], refetch: refetchAppointments, isLoading: isLoadingAppointments, isError: isErrorAppointments } = useQuery(
     ['appointments', 'all-with-services', businessId],
     () => API.get("/appointments/all-with-services").then(res => res.data),
     { enabled: !!businessId }
   );
 
-  // טעינת שירותים עם React Query
-  const { data: services = [] } = useQuery(
+  // React Query - services
+  const { data: services = [], isLoading: isLoadingServices, isError: isErrorServices } = useQuery(
     ['business', 'services', businessId],
     () => API.get("/business/my/services").then(res => res.data.services),
     { enabled: !!businessId }
@@ -87,29 +87,26 @@ const CRMAppointmentsTab = () => {
     };
   }, [socket, queryClient, businessId]);
 
-  // סינון כפילויות לפי _id
-  const uniqueAppointments = (arr) => {
+  // סינון כפילויות + חיפוש עם useMemo
+  const filteredUniqueAppointments = useMemo(() => {
     const seen = new Set();
-    return arr.filter((appt) => {
-      if (!appt._id) return true;
-      if (seen.has(appt._id)) return false;
-      seen.add(appt._id);
-      return true;
-    });
-  };
+    return appointments
+      .filter(appt => {
+        const searchLower = search.toLowerCase();
+        return (
+          appt.clientName?.toLowerCase().includes(searchLower) ||
+          appt.clientPhone?.toLowerCase().includes(searchLower)
+        );
+      })
+      .filter(appt => {
+        if (!appt._id) return true;
+        if (seen.has(appt._id)) return false;
+        seen.add(appt._id);
+        return true;
+      });
+  }, [appointments, search]);
 
-  // סינון לפי חיפוש
-  const filteredAppointments = appointments.filter((appt) => {
-    const searchLower = search.toLowerCase();
-    return (
-      appt.clientName?.toLowerCase().includes(searchLower) ||
-      appt.clientPhone?.toLowerCase().includes(searchLower)
-    );
-  });
-
-  // סינון כפילויות לפני הרינדור
-  const filteredUniqueAppointments = uniqueAppointments(filteredAppointments);
-
+  // שינוי שירות - מעדכן את state העריכה או היצירה
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
     if (service) {
@@ -151,28 +148,25 @@ const CRMAppointmentsTab = () => {
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
         await API.delete(`/appointments/${id}`);
-        // ריענון התיאומים
-        refetchAppointments();
+        await refetchAppointments();
       } catch {
         alert("❌ שגיאה במחיקת התיאום");
       }
     }
   };
 
-  const saveFieldEdit = async (field, value) => {
+  // שמירת עריכה רק בלחיצה על שמירה
+  const saveEdit = async () => {
     if (!editId) return;
+    setIsSaving(true);
     try {
-      const updatedData = { [field]: value };
-      if (field === "serviceId") {
-        const service = services.find((s) => s._id === value);
-        if (service) updatedData.serviceName = service.name;
-      }
-      const res = await API.patch(`/appointments/${editId}`, updatedData);
-      const updatedAppt = res.data.appt;
-      // ריענון התיאומים
-      refetchAppointments();
+      const res = await API.patch(`/appointments/${editId}`, editData);
+      await refetchAppointments();
+      setEditId(null);
     } catch (err) {
       alert("❌ שגיאה בשמירת השינוי");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -191,8 +185,16 @@ const CRMAppointmentsTab = () => {
     });
   };
 
-  const saveEdit = () => {
-    setEditId(null);
+  const handleEditInputChange = (field, value) => {
+    setEditData((prev) => {
+      let newState = { ...prev, [field]: value };
+      if (field === "serviceId") {
+        const service = services.find((s) => s._id === value);
+        newState.serviceName = service ? service.name : "";
+        newState.time = "";
+      }
+      return newState;
+    });
   };
 
   const handleInputChange = (field, value) => {
@@ -208,7 +210,7 @@ const CRMAppointmentsTab = () => {
   };
 
   const handleConfirmAppointment = async () => {
-    if (isSaving) return; // מונע לחיצות כפולות
+    if (isSaving) return;
 
     if (
       !newAppointment.clientName.trim() ||
@@ -223,7 +225,7 @@ const CRMAppointmentsTab = () => {
 
     setIsSaving(true);
     try {
-      const res = await API.post("/appointments", {
+      await API.post("/appointments", {
         businessId: businessId,
         name: newAppointment.clientName,
         phone: newAppointment.clientPhone,
@@ -234,11 +236,9 @@ const CRMAppointmentsTab = () => {
         date: newAppointment.date,
         time: newAppointment.time,
         serviceName: newAppointment.serviceName,
-        duration: 0,
+        duration: 30, // ברירת מחדל 30 דק'
       });
-      const createdAppt = res.data.appt || res.data;
-      // ריענון תיאומים אחרי יצירה
-      refetchAppointments();
+      await refetchAppointments();
       setShowAddForm(false);
       setNewAppointment({
         clientName: "",
@@ -265,6 +265,9 @@ const CRMAppointmentsTab = () => {
       setIsSaving(false);
     }
   };
+
+  if (isLoadingAppointments || isLoadingServices) return <p>טוען...</p>;
+  if (isErrorAppointments || isErrorServices) return <p>שגיאה בטעינת הנתונים</p>;
 
   return (
     <div className="crm-appointments-tab">
@@ -386,11 +389,7 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <input
                       value={editData.clientName}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setEditData((prev) => ({ ...prev, clientName: val }));
-                        saveFieldEdit("clientName", val);
-                      }}
+                      onChange={(e) => handleEditInputChange("clientName", e.target.value)}
                     />
                   ) : (
                     appt.clientName
@@ -400,11 +399,7 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <input
                       value={editData.clientPhone}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setEditData((prev) => ({ ...prev, clientPhone: val }));
-                        saveFieldEdit("clientPhone", val);
-                      }}
+                      onChange={(e) => handleEditInputChange("clientPhone", e.target.value)}
                     />
                   ) : (
                     appt.clientPhone
@@ -414,11 +409,7 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <input
                       value={editData.address}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setEditData((prev) => ({ ...prev, address: val }));
-                        saveFieldEdit("address", val);
-                      }}
+                      onChange={(e) => handleEditInputChange("address", e.target.value)}
                     />
                   ) : (
                     appt.address
@@ -429,11 +420,7 @@ const CRMAppointmentsTab = () => {
                     <input
                       type="email"
                       value={editData.email}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setEditData((prev) => ({ ...prev, email: val }));
-                        saveFieldEdit("email", val);
-                      }}
+                      onChange={(e) => handleEditInputChange("email", e.target.value)}
                     />
                   ) : (
                     appt.email
@@ -443,11 +430,7 @@ const CRMAppointmentsTab = () => {
                   {editId === appt._id ? (
                     <textarea
                       value={editData.note}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setEditData((prev) => ({ ...prev, note: val }));
-                        saveFieldEdit("note", val);
-                      }}
+                      onChange={(e) => handleEditInputChange("note", e.target.value)}
                     />
                   ) : (
                     appt.note
@@ -458,9 +441,8 @@ const CRMAppointmentsTab = () => {
                     <select
                       value={editData.serviceId}
                       onChange={(e) => {
-                        const val = e.target.value;
-                        handleServiceChange(val, true);
-                        saveFieldEdit("serviceId", val);
+                        handleServiceChange(e.target.value, true);
+                        handleEditInputChange("serviceId", e.target.value);
                       }}
                     >
                       <option value="">בחר שירות</option>
@@ -479,11 +461,7 @@ const CRMAppointmentsTab = () => {
                     <input
                       type="date"
                       value={editData.date}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setEditData((prev) => ({ ...prev, date: val }));
-                        saveFieldEdit("date", val);
-                      }}
+                      onChange={(e) => handleEditInputChange("date", e.target.value)}
                     />
                   ) : (
                     appt.date
@@ -494,10 +472,7 @@ const CRMAppointmentsTab = () => {
                     <SelectTimeFromSlots
                       date={editData.date}
                       selectedTime={editData.time}
-                      onChange={(time) => {
-                        setEditData((prev) => ({ ...prev, time }));
-                        saveFieldEdit("time", time);
-                      }}
+                      onChange={(time) => handleEditInputChange("time", time)}
                       businessId={businessId}
                       serviceId={editData.serviceId}
                     />
@@ -508,10 +483,18 @@ const CRMAppointmentsTab = () => {
                 <td className="actions-cell">
                   {editId === appt._id ? (
                     <>
-                      <button className="action-btn action-edit" onClick={saveEdit}>
+                      <button
+                        className="action-btn action-edit"
+                        onClick={saveEdit}
+                        disabled={isSaving}
+                      >
                         💾 שמור
                       </button>
-                      <button className="action-btn action-cancel" onClick={() => setEditId(null)}>
+                      <button
+                        className="action-btn action-cancel"
+                        onClick={() => setEditId(null)}
+                        disabled={isSaving}
+                      >
                         ❌ בטל
                       </button>
                     </>
