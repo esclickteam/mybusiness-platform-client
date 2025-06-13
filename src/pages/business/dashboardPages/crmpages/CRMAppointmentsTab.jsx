@@ -212,33 +212,48 @@ const CRMAppointmentsTab = () => {
     }
 
     setIsSaving(true);
-  try {
-    const res = await API.post("/appointments", {
-      // ... שאר הנתונים
-    });
-    const createdAppt = res.data.appt || res.data;
-    setAppointments((prev) => {
-      if (prev.some((a) => a._id === createdAppt._id)) return prev;
-      return [...prev, createdAppt];
-    });
-    setShowAddForm(false);
-    setNewAppointment({
-      clientName: "",
-      clientPhone: "",
-      address: "",
-      email: "",
-      note: "",
-      serviceId: "",
-      serviceName: "",
-      date: "",
-      time: "",
-    });
-  } catch (error) {
-    // ...
-  } finally {
-    setIsSaving(false);
-  }
-};
+    try {
+      const res = await API.post("/appointments", {
+        businessId: businessId,
+        name: newAppointment.clientName,
+        phone: newAppointment.clientPhone,
+        address: newAppointment.address,
+        email: newAppointment.email,
+        note: newAppointment.note,
+        serviceId: newAppointment.serviceId,
+        date: newAppointment.date,
+        time: newAppointment.time,
+        serviceName: newAppointment.serviceName,
+        duration: 0,
+      });
+      const createdAppt = res.data.appt || res.data;
+      setAppointments((prev) => [...prev, createdAppt]);
+      setShowAddForm(false);
+      setNewAppointment({
+        clientName: "",
+        clientPhone: "",
+        address: "",
+        email: "",
+        note: "",
+        serviceId: "",
+        serviceName: "",
+        date: "",
+        time: "",
+      });
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data.message.includes("Slot already booked")
+      ) {
+        alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
+      } else {
+        alert("שגיאה בשמירת התיאום, נסה שנית");
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="crm-appointments-tab">
