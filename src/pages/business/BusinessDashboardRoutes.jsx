@@ -8,7 +8,7 @@ import { lazyWithPreload } from '../../utils/lazyWithPreload';
 
 // רכיבים דינמיים
 const BuildBusinessPage  = lazy(() => import("./dashboardPages/build/Build"));
-const DashboardPage = lazyWithPreload(() => import('../pages/DashboardPage'));
+const DashboardPage = lazyWithPreload(() => import("./dashboardPages/DashboardPage"));
 const Collab             = lazy(() => import("./dashboardPages/Collab"));
 const Upgrade            = lazy(() => import("./dashboardPages/Upgrade"));
 const CartPage           = lazy(() => import("./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage"));
