@@ -55,20 +55,22 @@ const CRMAppointmentsTab = () => {
 
   // טעינת תיאומים ושירותים
   useEffect(() => {
-    async function fetchAppointmentsAndServices() {
-      try {
-        const [appointmentsRes, servicesRes] = await Promise.all([
-          API.get("/appointments/all-with-services"),
-          API.get("/business/my/services"),
-        ]);
-        setAppointments(appointmentsRes.data || []);
-        setServices(servicesRes.data.services || []);
-      } catch (err) {
-        console.error("Error loading appointments or services", err);
-      }
+  async function fetchAppointmentsAndServices() {
+    try {
+      const [appointmentsRes, servicesRes] = await Promise.all([
+        API.get("/appointments/all-with-services"),
+        API.get("/business/my/services"),
+      ]);
+      console.log("Appointments loaded:", appointmentsRes.data); // הוספת הדפסה
+      setAppointments(appointmentsRes.data || []);
+      setServices(servicesRes.data.services || []);
+    } catch (err) {
+      console.error("Error loading appointments or services", err);
     }
-    fetchAppointmentsAndServices();
-  }, []);
+  }
+  fetchAppointmentsAndServices();
+}, []);
+
 
   // מאזין לאירועי socket
   useEffect(() => {
