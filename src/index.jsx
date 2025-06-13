@@ -18,15 +18,15 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <SocketProvider>
-          <UnreadMessagesProvider>
-            <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SocketProvider>
+            <UnreadMessagesProvider>
               <App />
-            </QueryClientProvider>
-          </UnreadMessagesProvider>
-        </SocketProvider>
-      </AuthProvider>
+            </UnreadMessagesProvider>
+          </SocketProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
