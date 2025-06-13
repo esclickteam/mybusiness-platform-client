@@ -2,26 +2,22 @@ import React, { createContext, useContext, useState, useEffect, useRef } from "r
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 import { io } from "socket.io-client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [initialized, setInitialized] = useState(false);
-  const initRan = useRef(false);
+  const queryClient = useQueryClient();
 
+  const [user, setUser] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const ws = useRef(null);
   const refreshingTokenPromise = useRef(null);
 
-  // queue לרענון טוקן
+  // רענון טוקן עם queue
   const refreshAccessToken = async () => {
-    if (refreshingTokenPromise.current) {
-      return refreshingTokenPromise.current;
-    }
+    if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
     refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then(response => {
         const newToken = response.data.accessToken;
@@ -39,32 +35,32 @@ export function AuthProvider({ children }) {
     return refreshingTokenPromise.current;
   };
 
-  const createSocketConnection = (token, user) => {
+  // יצירת socket.IO מוקדם עם הטוקן
+  const createSocketConnection = (token, currentUser) => {
     if (ws.current) {
       ws.current.disconnect();
       ws.current = null;
     }
     if (!token) {
-      console.warn("No token available for Socket.IO connection");
+      console.warn("No token for Socket.IO");
       return;
     }
-
     ws.current = io("https://api.esclick.co.il", {
       path: "/socket.io",
       transports: ["websocket"],
       auth: {
         token,
-        role: user?.role,
-        businessId: user?.businessId || user?.business?._id,
+        role: currentUser?.role,
+        businessId: currentUser?.businessId || currentUser?.business?._id,
       },
     });
 
     ws.current.on("connect", () => {
-      console.log("✅ Socket.IO connected, socket id:", ws.current.id);
+      console.log("✅ Socket.IO connected", ws.current.id);
     });
 
     ws.current.on("disconnect", (reason) => {
-      console.log("🔴 Socket.IO disconnected, reason:", reason);
+      console.log("🔴 Socket.IO disconnected", reason);
     });
 
     ws.current.on("tokenExpired", async () => {
@@ -72,146 +68,104 @@ export function AuthProvider({ children }) {
       try {
         const newToken = await refreshAccessToken();
         if (newToken) {
-          console.log("🔄 Got new token, reconnecting socket");
           ws.current.auth.token = newToken;
           ws.current.disconnect();
           ws.current.connect();
         } else {
-          setUser(null);
-          localStorage.removeItem("token");
-          navigate("/login");
+          logout();
         }
       } catch {
-        setUser(null);
-        localStorage.removeItem("token");
-        navigate("/login");
+        logout();
       }
     });
 
     ws.current.on("connect_error", async (err) => {
-      console.error("Socket.IO connect error:", err.message);
+      console.error("Socket connect error:", err.message);
       if (err.message === "jwt expired") {
         try {
           const newToken = await refreshAccessToken();
           if (newToken) {
             createSocketConnection(newToken, user);
           } else {
-            setUser(null);
-            localStorage.removeItem("token");
-            navigate("/login");
+            logout();
           }
         } catch {
-          setUser(null);
-          localStorage.removeItem("token");
-          navigate("/login");
+          logout();
         }
       }
     });
   };
 
-  useEffect(() => {
-    if (initRan.current) return;
-    initRan.current = true;
+  // React Query - טעינת פרטי משתמש
+  const {
+    data: userData,
+    isLoading,
+    isError,
+    refetch: refetchUser,
+    isFetching,
+  } = useQuery(
+    ["authUser"],
+    async () => {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token");
 
-    const initialize = async () => {
-      setLoading(true);
-      let token = localStorage.getItem("token");
-
-      if (token) {
-        API.defaults.headers['Authorization'] = `Bearer ${token}`;
-
+      API.defaults.headers['Authorization'] = `Bearer ${token}`;
+      const res = await API.get("/auth/me", { withCredentials: true });
+      return res.data;
+    },
+    {
+      refetchOnWindowFocus: false,
+      retry: false,
+      onSuccess: (data) => {
+        setUser({
+          userId: data.userId,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          subscriptionPlan: data.subscriptionPlan,
+          businessId: data.businessId || null,
+        });
+        createSocketConnection(localStorage.getItem("token"), data);
+      },
+      onError: async (error) => {
+        // נסיון רענון טוקן במקרה של שגיאה
         try {
-          const { data } = await API.get("/auth/me", { withCredentials: true });
-          if (data.businessId) {
-            localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-          }
-          setUser({
-            userId: data.userId,
-            name: data.name,
-            email: data.email,
-            role: data.role,
-            subscriptionPlan: data.subscriptionPlan,
-            businessId: data.businessId || null,
-          });
-          createSocketConnection(token, data);
-        } catch {
           const newToken = await refreshAccessToken();
           if (newToken) {
-            try {
-              const { data } = await API.get("/auth/me", { withCredentials: true });
-              setUser({
-                userId: data.userId,
-                name: data.name,
-                email: data.email,
-                role: data.role,
-                subscriptionPlan: data.subscriptionPlan,
-                businessId: data.businessId || null,
-              });
-              token = newToken;
-              createSocketConnection(token, data);
-            } catch {
-              setUser(null);
-              localStorage.removeItem("token");
-              token = null;
-            }
+            refetchUser();
           } else {
-            setUser(null);
-            localStorage.removeItem("token");
-            token = null;
+            logout();
           }
+        } catch {
+          logout();
         }
-      } else {
-        setUser(null);
-        token = null;
-      }
-
-      setLoading(false);
-      setInitialized(true);
-    };
-
-    initialize();
-
-    return () => {
-      if (ws.current) {
-        ws.current.disconnect();
-      }
-    };
-  }, []);
+      },
+      enabled: !!localStorage.getItem("token"),
+    }
+  );
 
   const login = async (email, password, options = { skipRedirect: false }) => {
-    setLoading(true);
-    setError(null);
-
     try {
-      const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
+      const response = await API.post(
+        "/auth/login",
+        { email: email.trim().toLowerCase(), password },
+        { withCredentials: true }
+      );
       const { accessToken } = response.data;
 
-      if (!accessToken) throw new Error("No access token received");
+      if (!accessToken) throw new Error("No access token");
 
       localStorage.setItem("token", accessToken);
       API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
-      const { data } = await API.get("/auth/me", { withCredentials: true });
-      if (data.businessId) {
-        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-      }
+      // טען את פרטי המשתמש עם React Query מחדש
+      await refetchUser();
 
-      setUser({
-        userId: data.userId,
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        subscriptionPlan: data.subscriptionPlan,
-        businessId: data.businessId || null,
-      });
-
-      createSocketConnection(accessToken, data);
-
-      if (!options.skipRedirect && data) {
+      if (!options.skipRedirect && userData) {
         let path = "/";
-        switch (data.role) {
+        switch (userData.role) {
           case "business":
-            path = `/business/${data.businessId}/dashboard`;
+            path = `/business/${userData.businessId}/dashboard`;
             break;
           case "customer":
             path = "/client/dashboard";
@@ -229,67 +183,55 @@ export function AuthProvider({ children }) {
         navigate(path, { replace: true });
       }
 
-      return data;
+      return userData;
     } catch (e) {
       if (e.response?.status === 401) {
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
-          setError("❌ אימייל או סיסמה שגויים");
-          navigate("/login");
-        }
+        setError("❌ אימייל או סיסמה שגויים");
+        navigate("/login");
       } else {
         setError("❌ שגיאה בשרת, נסה שוב");
       }
       throw e;
-    } finally {
-      setLoading(false);
     }
   };
 
   const logout = async () => {
-    setLoading(true);
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
-      setUser(null);
-      localStorage.removeItem("token");
-      localStorage.removeItem("businessDetails");
-      delete API.defaults.headers['Authorization'];
-
-      if (ws.current) {
-        ws.current.disconnect();
-        ws.current = null;
-      }
-
-      setSuccessMessage("✅ נותקת בהצלחה");
-      navigate("/", { replace: true });
-    } catch (e) {
-      console.warn("Logout failed:", e.response?.data || e.message || e);
-    } finally {
-      setLoading(false);
+    } catch {
+      // התעלם משגיאות ביציאה
     }
+    setUser(null);
+    localStorage.removeItem("token");
+    delete API.defaults.headers['Authorization'];
+    if (ws.current) {
+      ws.current.disconnect();
+      ws.current = null;
+    }
+    navigate("/", { replace: true });
   };
 
   useEffect(() => {
-    if (successMessage) {
-      const t = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(t);
-    }
-  }, [successMessage]);
+    return () => {
+      if (ws.current) {
+        ws.current.disconnect();
+      }
+    };
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        loading,
-        initialized,
-        error,
+        loading: isLoading || isFetching,
+        error: isError,
         login,
         logout,
         refreshAccessToken,
-        socket: ws.current, // <-- הוספתי כאן את ה-socket
+        socket: ws.current,
+        initialized: !isLoading && !!user,
       }}
     >
-      {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
   );
