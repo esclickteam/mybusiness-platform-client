@@ -15,7 +15,6 @@ import WeeklySummary from "../../../components/dashboard/WeeklySummary";
 import CalendarView from "../../../components/dashboard/CalendarView";
 import DailyAgenda from "../../../components/dashboard/DailyAgenda";
 import DashboardNav from "../../../components/dashboard/DashboardNav";
-import DashboardAlert from "../../../components/DashboardAlert";
 
 import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
 
