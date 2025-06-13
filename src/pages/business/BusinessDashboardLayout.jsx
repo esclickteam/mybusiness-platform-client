@@ -13,9 +13,8 @@ const tabs = [
   { path: "collab", label: "🤝 שיתופי פעולה" },
   { path: "crm", label: "📇 מערכת CRM" },
   { path: "esclick", label: "🧠 יועץ עסקליק" },
-  { path: "goals", label: "🎯 היעדים שלי" },
   { path: "affiliate", label: "👥 תכנית שותפים" },
-  { path: "upgrade", label: "🚀 שדרוג חבילה" },
+  
 ];
 
 export default function BusinessDashboardLayout() {
