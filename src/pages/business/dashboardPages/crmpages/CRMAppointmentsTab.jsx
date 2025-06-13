@@ -40,19 +40,19 @@ const CRMAppointmentsTab = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // React Query - appointments
-  const { data: appointments = [], refetch: refetchAppointments, isLoading: isLoadingAppointments, isError: isErrorAppointments } = useQuery(
-    ['appointments', 'all-with-services', businessId],
-    () => API.get("/appointments/all-with-services").then(res => res.data),
-    { enabled: !!businessId }
-  );
+  //appointments
+const { data: appointments = [], refetch: refetchAppointments, isLoading: isLoadingAppointments, isError: isErrorAppointments } = useQuery({
+  queryKey: ['appointments', 'all-with-services', businessId],
+  queryFn: () => API.get("/appointments/all-with-services").then(res => res.data),
+  enabled: !!businessId,
+});
 
-  // React Query - services
-  const { data: services = [], isLoading: isLoadingServices, isError: isErrorServices } = useQuery(
-    ['business', 'services', businessId],
-    () => API.get("/business/my/services").then(res => res.data.services),
-    { enabled: !!businessId }
-  );
+//services
+const { data: services = [], isLoading: isLoadingServices, isError: isErrorServices } = useQuery({
+  queryKey: ['business', 'services', businessId],
+  queryFn: () => API.get("/business/my/services").then(res => res.data.services),
+  enabled: !!businessId,
+});
 
   useEffect(() => {
     if (!socket) return;
