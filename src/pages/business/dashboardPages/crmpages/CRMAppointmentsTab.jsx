@@ -87,6 +87,17 @@ const CRMAppointmentsTab = () => {
     };
   }, [socket]);
 
+  // פונקציה לסינון כפילויות לפי _id
+  const uniqueAppointments = (arr) => {
+    const seen = new Set();
+    return arr.filter((appt) => {
+      if (!appt._id) return true; // אם אין _id, נשאיר, אפשר לשנות בהתאם
+      if (seen.has(appt._id)) return false;
+      seen.add(appt._id);
+      return true;
+    });
+  };
+
   // סינון לפי חיפוש
   const filteredAppointments = appointments.filter((appt) => {
     const searchLower = search.toLowerCase();
@@ -95,6 +106,9 @@ const CRMAppointmentsTab = () => {
       appt.clientPhone?.toLowerCase().includes(searchLower)
     );
   });
+
+  // סינון כפילויות לפני הרינדור
+  const filteredUniqueAppointments = uniqueAppointments(filteredAppointments);
 
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
@@ -364,12 +378,12 @@ const CRMAppointmentsTab = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredAppointments.length === 0 ? (
+          {filteredUniqueAppointments.length === 0 ? (
             <tr>
               <td colSpan="9">לא נמצאו תיאומים</td>
             </tr>
           ) : (
-            filteredAppointments.map((appt) => (
+            filteredUniqueAppointments.map((appt) => (
               <tr key={appt._id} className={editId === appt._id ? "editing" : ""}>
                 <td>
                   {editId === appt._id ? (
