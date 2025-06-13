@@ -78,27 +78,25 @@ const DashboardPage = () => {
     isLoading,
     isError,
     refetch,
-  } = useQuery(
-    ["dashboardStats", businessId],
-    () => fetchDashboardStats(businessId, refreshAccessToken),
-    {
-      enabled: !!businessId && initialized,
-      onSuccess: (data) => {
-        if (updateMessagesCount && data.messages_count !== undefined) {
-          updateMessagesCount(data.messages_count);
-        }
-        try {
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
-        } catch {}
-      },
-      onError: (error) => {
-        setAlert("❌ שגיאה בטעינת נתונים מהשרת");
-        if (error.message === "No token") logout();
-      },
-      staleTime: 5 * 60 * 1000,
-      cacheTime: 30 * 60 * 1000,
-    }
-  );
+  } = useQuery({
+    queryKey: ["dashboardStats", businessId],
+    queryFn: () => fetchDashboardStats(businessId, refreshAccessToken),
+    enabled: !!businessId && initialized,
+    onSuccess: (data) => {
+      if (updateMessagesCount && data.messages_count !== undefined) {
+        updateMessagesCount(data.messages_count);
+      }
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+      } catch {}
+    },
+    onError: (error) => {
+      setAlert("❌ שגיאה בטעינת נתונים מהשרת");
+      if (error.message === "No token") logout();
+    },
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000,
+  });
 
   // Unread messages reset on messages tab change
   const hasResetUnreadCount = useRef(false);
@@ -287,7 +285,7 @@ const DashboardPage = () => {
         </span>
       </h2>
 
-      {alert && <DashboardAlert text={alert} type="info" />}
+      {alert && <p className="alert-text">{alert}</p>}
 
       <DashboardNav
         refs={{
