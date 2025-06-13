@@ -12,11 +12,12 @@ import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
+import debounce from "lodash.debounce";
 import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 
-// טעינת רכיבים עם אפשרות preload
+// רכיבים בדומה לקוד הקודם
 const DashboardCards = lazyWithPreload(() => import("../../../components/DashboardCards"));
 const BarChartComponent = lazyWithPreload(() => import("../../../components/dashboard/BarChart"));
 const RecentActivityTable = lazyWithPreload(() => import("../../../components/dashboard/RecentActivityTable"));
@@ -27,21 +28,17 @@ const CalendarView = lazyWithPreload(() => import("../../../components/dashboard
 const DailyAgenda = lazyWithPreload(() => import("../../../components/dashboard/DailyAgenda"));
 const DashboardNav = lazyWithPreload(() => import("../../../components/dashboard/DashboardNav"));
 
-// פונקציה לטעינת כל הרכיבים מראש (לקרוא אחרי לוגין)
-export function preloadDashboardComponents() {
-  DashboardCards.preload();
-  BarChartComponent.preload();
-  RecentActivityTable.preload();
-  Insights.preload();
-  NextActions.preload();
-  WeeklySummary.preload();
-  CalendarView.preload();
-  DailyAgenda.preload();
-  DashboardNav.preload();
-}
+const MemoizedDashboardCards = React.memo(DashboardCards);
+const MemoizedInsights = React.memo(Insights);
+const MemoizedNextActions = React.memo(NextActions);
+const MemoizedBarChartComponent = React.memo(BarChartComponent);
+const MemoizedRecentActivityTable = React.memo(RecentActivityTable);
+const MemoizedWeeklySummary = React.memo(WeeklySummary);
+const MemoizedCalendarView = React.memo(CalendarView);
+const MemoizedDailyAgenda = React.memo(DailyAgenda);
+const MemoizedDashboardNav = React.memo(DashboardNav);
 
-// -- פונקציות עזר --
-
+// פונקציות עזר כמו enrichAppointment וכו'
 function enrichAppointment(appt, business) {
   const service = business.services?.find(
     (s) => s._id.toString() === appt.serviceId.toString()
@@ -64,25 +61,25 @@ function countItemsInLastWeek(items, dateKey = "date") {
   }).length;
 }
 
-async function fetchDashboardStats(businessId, refreshAccessToken) {
+// קריאת API לפגישות
+async function fetchAppointments(businessId, refreshAccessToken) {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
-  const res = await API.get(`/business/${businessId}/stats`, {
+  const res = await API.get(`/business/${businessId}/appointments`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
 }
 
-// להוסיף React.memo לרכיבים שקיבלו stats - לשם הדוגמה כאן
-const MemoizedDashboardCards = React.memo(DashboardCards);
-const MemoizedInsights = React.memo(Insights);
-const MemoizedNextActions = React.memo(NextActions);
-const MemoizedBarChartComponent = React.memo(BarChartComponent);
-const MemoizedRecentActivityTable = React.memo(RecentActivityTable);
-const MemoizedWeeklySummary = React.memo(WeeklySummary);
-const MemoizedCalendarView = React.memo(CalendarView);
-const MemoizedDailyAgenda = React.memo(DailyAgenda);
-const MemoizedDashboardNav = React.memo(DashboardNav);
+// קריאת API למספר הודעות לא נקראות
+async function fetchMessagesCount(businessId, refreshAccessToken) {
+  const token = await refreshAccessToken();
+  if (!token) throw new Error("No token");
+  const res = await API.get(`/business/${businessId}/messages/count`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data.count;
+}
 
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
@@ -101,52 +98,54 @@ const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  const [localData, setLocalData] = useState(() => {
-    try {
-      const lsData = localStorage.getItem("dashboardStats");
-      return lsData ? JSON.parse(lsData) : null;
-    } catch {
-      return null;
-    }
-  });
-
+  // Query לפגישות
   const {
-    data: stats,
-    isLoading,
-    isError,
-    refetch,
+    data: appointments,
+    isLoading: loadingAppointments,
+    isError: errorAppointments,
+    refetch: refetchAppointments,
   } = useQuery({
-    queryKey: ["dashboardStats", businessId],
-    queryFn: () => fetchDashboardStats(businessId, refreshAccessToken),
+    queryKey: ["appointments", businessId],
+    queryFn: () => fetchAppointments(businessId, refreshAccessToken),
     enabled: !!businessId && initialized,
-    onSuccess: (data) => {
-      if (updateMessagesCount && data.messages_count !== undefined) {
-        updateMessagesCount(data.messages_count);
-      }
-      try {
-        localStorage.setItem("dashboardStats", JSON.stringify(data));
-        setLocalData(data);
-      } catch {}
-    },
-    onError: (error) => {
-      setAlert("❌ שגיאה בטעינת נתונים מהשרת");
-      if (error.message === "No token") logout();
-    },
     staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,
     keepPreviousData: true,
+    onError: (error) => {
+      setAlert("❌ שגיאה בטעינת פגישות");
+      if (error.message === "No token") logout();
+    },
   });
 
-  useEffect(() => {
-    if (!businessId) return;
-    queryClient.prefetchQuery(
-      ["dashboardStats", businessId],
-      () => fetchDashboardStats(businessId, refreshAccessToken),
-      { staleTime: 5 * 60 * 1000 }
-    );
-  }, [businessId, queryClient, refreshAccessToken]);
+  // Query למספר הודעות לא נקראות
+  const {
+    data: messagesCount,
+    isLoading: loadingMessages,
+    isError: errorMessages,
+    refetch: refetchMessagesCount,
+  } = useQuery({
+    queryKey: ["messagesCount", businessId],
+    queryFn: () => fetchMessagesCount(businessId, refreshAccessToken),
+    enabled: !!businessId && initialized,
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000,
+    keepPreviousData: true,
+    onSuccess: (count) => {
+      updateMessagesCount(count);
+    },
+    onError: (error) => {
+      setAlert("❌ שגיאה בטעינת הודעות");
+      if (error.message === "No token") logout();
+    },
+  });
 
-  // Socket.IO
+  // debounce לקריאות refetch מה-socket
+  const debouncedRefetchAppointments = useRef(
+    debounce(() => {
+      refetchAppointments();
+    }, 2000)
+  ).current;
+
   useEffect(() => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
@@ -181,54 +180,39 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on("dashboardUpdate", () => refetch());
+      sock.on("dashboardUpdate", () => {
+        debouncedRefetchAppointments();
+        refetchMessagesCount();
+      });
 
       sock.on("appointmentCreated", (newAppointment) => {
         if (newAppointment.business?.toString() !== businessId.toString()) return;
-        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
+        queryClient.setQueryData(["appointments", businessId], (old) => {
           if (!old) return old;
           const enriched = enrichAppointment(newAppointment, old);
-          const newAppointments = [...(old.appointments || []), enriched];
-          return { ...old, appointments: newAppointments, appointments_count: newAppointments.length };
+          return [...old, enriched];
         });
-        if (newAppointment.date) {
-          const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
-          if (apptDate === selectedDate) {
-            setSelectedDate(null);
-            setTimeout(() => setSelectedDate(apptDate), 10);
-          }
-        }
       });
 
       sock.on("appointmentUpdated", (updatedAppointment) => {
         if (updatedAppointment.business?.toString() !== businessId.toString()) return;
-        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
+        queryClient.setQueryData(["appointments", businessId], (old) => {
           if (!old) return old;
           const enriched = enrichAppointment(updatedAppointment, old);
-          const updatedAppointments = (old.appointments || []).map((appt) =>
+          const updatedAppointments = old.map((appt) =>
             appt._id === updatedAppointment._id ? enriched : appt
           );
-          if (!updatedAppointments.find(a => a._id === updatedAppointment._id)) {
+          if (!updatedAppointments.find((a) => a._id === updatedAppointment._id)) {
             updatedAppointments.push(enriched);
           }
-          return { ...old, appointments: updatedAppointments, appointments_count: updatedAppointments.length };
+          return updatedAppointments;
         });
-        if (updatedAppointment.date) {
-          const apptDate = new Date(updatedAppointment.date).toISOString().split("T")[0];
-          if (apptDate === selectedDate) {
-            setSelectedDate(null);
-            setTimeout(() => setSelectedDate(apptDate), 10);
-          }
-        }
       });
 
       sock.on("allAppointmentsUpdated", (allAppointments) => {
-        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
-          if (!old) return old;
-          const enriched = Array.isArray(allAppointments)
-            ? allAppointments.map((appt) => enrichAppointment(appt, old))
-            : [];
-          return { ...old, appointments: enriched, appointments_count: enriched.length };
+        queryClient.setQueryData(["appointments", businessId], () => {
+          if (!Array.isArray(allAppointments)) return [];
+          return allAppointments.map((appt) => enrichAppointment(appt, []));
         });
       });
 
@@ -249,7 +233,15 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, refetch, selectedDate, queryClient]);
+  }, [
+    initialized,
+    businessId,
+    logout,
+    refreshAccessToken,
+    queryClient,
+    refetchAppointments,
+    refetchMessagesCount,
+  ]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -274,26 +266,16 @@ const DashboardPage = () => {
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  if (isLoading && !localData) return <p className="loading-text">⏳ טוען נתונים…</p>;
-  if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
-  const effectiveStats = stats || localData || {};
-  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments) ? effectiveStats.todaysAppointments : [];
-  const appointments = Array.isArray(effectiveStats?.appointments) ? effectiveStats.appointments : [];
-
-  const getUpcomingAppointmentsCount = (appointments) => {
-    const now = new Date();
-    const endOfWeek = new Date();
-    endOfWeek.setDate(now.getDate() + 7);
-    return appointments.filter((appt) => {
-      const apptDate = new Date(appt.date);
-      return apptDate >= now && apptDate <= endOfWeek;
-    }).length;
-  };
+  if (loadingAppointments || loadingMessages)
+    return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (errorAppointments || errorMessages)
+    return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
   const syncedStats = {
-    ...effectiveStats,
-    messages_count: unreadCount,
+    appointments_count: appointments?.length ?? 0,
+    messages_count: messagesCount ?? 0,
+    // כאן אפשר להוסיף שדות נוספים שניתן לחשב או לקבל מ-API נוסף
   };
 
   const cardsRef = createRef();
@@ -302,6 +284,16 @@ const DashboardPage = () => {
   const appointmentsRef = createRef();
   const nextActionsRef = createRef();
   const weeklySummaryRef = createRef();
+
+  const getUpcomingAppointmentsCount = (appointmentsList) => {
+    const now = new Date();
+    const endOfWeek = new Date();
+    endOfWeek.setDate(now.getDate() + 7);
+    return (appointmentsList || []).filter((appt) => {
+      const apptDate = new Date(appt.date);
+      return apptDate >= now && apptDate <= endOfWeek;
+    }).length;
+  };
 
   return (
     <div className="dashboard-container">
@@ -315,7 +307,16 @@ const DashboardPage = () => {
       {alert && <p className="alert-text">{alert}</p>}
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען ניווט...</div>}>
-        <MemoizedDashboardNav refs={{ cardsRef, insightsRef, chartsRef, appointmentsRef, nextActionsRef, weeklySummaryRef }} />
+        <MemoizedDashboardNav
+          refs={{
+            cardsRef,
+            insightsRef,
+            chartsRef,
+            appointmentsRef,
+            nextActionsRef,
+            weeklySummaryRef,
+          }}
+        />
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
@@ -327,7 +328,10 @@ const DashboardPage = () => {
       <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
         <div ref={insightsRef}>
           <MemoizedInsights
-            stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }}
+            stats={{
+              ...syncedStats,
+              upcoming_appointments: getUpcomingAppointmentsCount(appointments),
+            }}
           />
         </div>
       </Suspense>
@@ -336,10 +340,10 @@ const DashboardPage = () => {
         <div ref={nextActionsRef}>
           <MemoizedNextActions
             stats={{
-              weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
+              weekly_views_count: countItemsInLastWeek(appointments, "date"),
               weekly_appointments_count: countItemsInLastWeek(appointments),
-              weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
-              weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
+              weekly_reviews_count: 0, // אפשר להוסיף אם יש
+              weekly_messages_count: 0, // אפשר להוסיף אם יש
             }}
           />
         </div>
@@ -347,13 +351,18 @@ const DashboardPage = () => {
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרפים...</div>}>
         <div ref={chartsRef}>
-          <MemoizedBarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
+          <MemoizedBarChartComponent
+            appointments={appointments}
+            title="לקוחות שהזמינו פגישות לפי חודשים 📊"
+          />
         </div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעילות...</div>}>
         <div>
-          {syncedStats.recent_activity && <MemoizedRecentActivityTable activities={syncedStats.recent_activity} />}
+          {appointments && (
+            <MemoizedRecentActivityTable activities={appointments} />
+          )}
         </div>
       </Suspense>
 
@@ -363,7 +372,7 @@ const DashboardPage = () => {
             <MemoizedDailyAgenda
               date={selectedDate}
               appointments={appointments}
-              businessName={syncedStats.businessName}
+              businessName={user.businessName}
             />
           </div>
           <div className="calendar-container">
