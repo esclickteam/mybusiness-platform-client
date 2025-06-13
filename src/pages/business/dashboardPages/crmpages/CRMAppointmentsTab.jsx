@@ -19,6 +19,8 @@ const CRMAppointmentsTab = () => {
   const [search, setSearch] = useState("");
   const [appointments, setAppointments] = useState([]);
   const [services, setServices] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+
 
   const [newAppointment, setNewAppointment] = useState({
     clientName: "",
