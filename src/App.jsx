@@ -17,6 +17,8 @@ import ChatPage from "./components/ChatPage";
 import { useAuth } from "./context/AuthContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
+import UserSkeleton from "./components/UserSkeleton";
+
 
 // ---- כל הייבוא הדינמי כפי שהיה ----
 const HomePage            = lazy(() => import("./pages/Home"));
@@ -88,7 +90,8 @@ export default function App() {
     setFreeText("");
   };
 
-  if (loading) return <div>טוען משתמש…</div>;
+  if (loading) return <UserSkeleton />;
+
 
   return (
     <>
@@ -348,7 +351,8 @@ export function BusinessChatWrapper() {
   const { state } = useLocation();
   const { user, loading } = useAuth();
 
-  if (loading) return <div>טוען...</div>;
+  if (loading) return <UserSkeleton />;
+
   if (!user || user.role !== "business") {
     return <Navigate to="/login" replace />;
   }
