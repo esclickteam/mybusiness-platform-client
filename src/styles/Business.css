@@ -99,7 +99,7 @@
   font-size: 1.15rem;
   line-height: 1.5;
   font-weight: 600;
-  text-align: center;
+  text-align: right;  /* שמור לימין כי עברית */
   color: inherit;
   max-width: 280px; /* מגבלת רוחב לרשימה */
 }
@@ -107,22 +107,22 @@
 .info-box li {
   position: relative;
   margin-bottom: 14px;
-  padding-right: 24px;
-  padding-left: 24px;
-  display: inline-block;
+  padding-right: 30px; /* מספיק רווח מימין לסימן ✔ */
+  display: block;
 }
 
-/* סימן ✔ יחיד ימני */
+/* סימן ✔ ימני */
 .info-box li::before {
   content: '✔';
   position: absolute;
-  right: 6px;
+  right: 0; /* צמוד לצד ימין */
   top: 50%;
   transform: translateY(-50%);
   color: #5c3d99;
   font-weight: 900;
   font-size: 1.25rem;
   text-shadow: 0 1px 3px rgba(92, 61, 153, 0.35);
+  pointer-events: none;
 }
 
 /* אזור קריאה לפעולה - הצטרפות */
