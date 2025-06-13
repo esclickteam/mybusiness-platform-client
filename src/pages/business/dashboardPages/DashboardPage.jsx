@@ -17,7 +17,6 @@ import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 
-// רכיבים בדומה לקוד הקודם
 const DashboardCards = lazyWithPreload(() => import("../../../components/DashboardCards"));
 const BarChartComponent = lazyWithPreload(() => import("../../../components/dashboard/BarChart"));
 const RecentActivityTable = lazyWithPreload(() => import("../../../components/dashboard/RecentActivityTable"));
@@ -38,10 +37,9 @@ const MemoizedCalendarView = React.memo(CalendarView);
 const MemoizedDailyAgenda = React.memo(DailyAgenda);
 const MemoizedDashboardNav = React.memo(DashboardNav);
 
-// פונקציות עזר כמו enrichAppointment וכו'
 function enrichAppointment(appt, business) {
   const service = business.services?.find(
-    (s) => s._id.toString() === appt.serviceId.toString()
+    (s) => s._id.toString() === appt.serviceId?.toString()
   );
   return {
     ...appt,
@@ -61,17 +59,15 @@ function countItemsInLastWeek(items, dateKey = "date") {
   }).length;
 }
 
-// קריאת API לפגישות
 async function fetchAppointments(businessId, refreshAccessToken) {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
-  const res = await API.get(`/business/${businessId}/appointments`, {
+  const res = await API.get(`/business/${businessId}/all-with-services`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
 }
 
-// קריאת API למספר הודעות לא נקראות
 async function fetchMessagesCount(businessId, refreshAccessToken) {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
@@ -98,7 +94,6 @@ const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  // Query לפגישות
   const {
     data: appointments,
     isLoading: loadingAppointments,
@@ -117,7 +112,6 @@ const DashboardPage = () => {
     },
   });
 
-  // Query למספר הודעות לא נקראות
   const {
     data: messagesCount,
     isLoading: loadingMessages,
@@ -139,7 +133,6 @@ const DashboardPage = () => {
     },
   });
 
-  // debounce לקריאות refetch מה-socket
   const debouncedRefetchAppointments = useRef(
     debounce(() => {
       refetchAppointments();
@@ -275,7 +268,6 @@ const DashboardPage = () => {
   const syncedStats = {
     appointments_count: appointments?.length ?? 0,
     messages_count: messagesCount ?? 0,
-    // כאן אפשר להוסיף שדות נוספים שניתן לחשב או לקבל מ-API נוסף
   };
 
   const cardsRef = createRef();
@@ -342,8 +334,8 @@ const DashboardPage = () => {
             stats={{
               weekly_views_count: countItemsInLastWeek(appointments, "date"),
               weekly_appointments_count: countItemsInLastWeek(appointments),
-              weekly_reviews_count: 0, // אפשר להוסיף אם יש
-              weekly_messages_count: 0, // אפשר להוסיף אם יש
+              weekly_reviews_count: 0,
+              weekly_messages_count: 0,
             }}
           />
         </div>
