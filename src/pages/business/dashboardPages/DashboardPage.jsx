@@ -3,7 +3,6 @@ import React, {
   useState,
   useRef,
   createRef,
-  lazy,
   Suspense,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -15,18 +14,33 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
 import "../../../styles/dashboard.css";
 
-// רכיבים דינמיים
-const DashboardCards = lazy(() => import("../../../components/DashboardCards"));
-const BarChartComponent = lazy(() => import("../../../components/dashboard/BarChart"));
-const RecentActivityTable = lazy(() => import("../../../components/dashboard/RecentActivityTable"));
-const Insights = lazy(() => import("../../../components/dashboard/Insights"));
-const NextActions = lazy(() => import("../../../components/dashboard/NextActions"));
-const WeeklySummary = lazy(() => import("../../../components/dashboard/WeeklySummary"));
-const CalendarView = lazy(() => import("../../../components/dashboard/CalendarView"));
-const DailyAgenda = lazy(() => import("../../../components/dashboard/DailyAgenda"));
-const DashboardNav = lazy(() => import("../../../components/dashboard/DashboardNav"));
+import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 
-const LOCAL_STORAGE_KEY = "dashboardStats";
+// טעינת רכיבים עם אפשרות preload
+const DashboardCards = lazyWithPreload(() => import("../../../components/DashboardCards"));
+const BarChartComponent = lazyWithPreload(() => import("../../../components/dashboard/BarChart"));
+const RecentActivityTable = lazyWithPreload(() => import("../../../components/dashboard/RecentActivityTable"));
+const Insights = lazyWithPreload(() => import("../../../components/dashboard/Insights"));
+const NextActions = lazyWithPreload(() => import("../../../components/dashboard/NextActions"));
+const WeeklySummary = lazyWithPreload(() => import("../../../components/dashboard/WeeklySummary"));
+const CalendarView = lazyWithPreload(() => import("../../../components/dashboard/CalendarView"));
+const DailyAgenda = lazyWithPreload(() => import("../../../components/dashboard/DailyAgenda"));
+const DashboardNav = lazyWithPreload(() => import("../../../components/dashboard/DashboardNav"));
+
+// פונקציה לטעינת כל הרכיבים מראש (לקרוא אחרי לוגין)
+export function preloadDashboardComponents() {
+  DashboardCards.preload();
+  BarChartComponent.preload();
+  RecentActivityTable.preload();
+  Insights.preload();
+  NextActions.preload();
+  WeeklySummary.preload();
+  CalendarView.preload();
+  DailyAgenda.preload();
+  DashboardNav.preload();
+}
+
+// -- פונקציות עזר --
 
 function enrichAppointment(appt, business) {
   const service = business.services?.find(
@@ -59,6 +73,17 @@ async function fetchDashboardStats(businessId, refreshAccessToken) {
   return res.data;
 }
 
+// להוסיף React.memo לרכיבים שקיבלו stats - לשם הדוגמה כאן
+const MemoizedDashboardCards = React.memo(DashboardCards);
+const MemoizedInsights = React.memo(Insights);
+const MemoizedNextActions = React.memo(NextActions);
+const MemoizedBarChartComponent = React.memo(BarChartComponent);
+const MemoizedRecentActivityTable = React.memo(RecentActivityTable);
+const MemoizedWeeklySummary = React.memo(WeeklySummary);
+const MemoizedCalendarView = React.memo(CalendarView);
+const MemoizedDailyAgenda = React.memo(DailyAgenda);
+const MemoizedDashboardNav = React.memo(DashboardNav);
+
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
   const businessId = getBusinessId();
@@ -78,7 +103,7 @@ const DashboardPage = () => {
 
   const [localData, setLocalData] = useState(() => {
     try {
-      const lsData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const lsData = localStorage.getItem("dashboardStats");
       return lsData ? JSON.parse(lsData) : null;
     } catch {
       return null;
@@ -99,7 +124,7 @@ const DashboardPage = () => {
         updateMessagesCount(data.messages_count);
       }
       try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+        localStorage.setItem("dashboardStats", JSON.stringify(data));
         setLocalData(data);
       } catch {}
     },
@@ -121,33 +146,7 @@ const DashboardPage = () => {
     );
   }, [businessId, queryClient, refreshAccessToken]);
 
-  const hasResetUnreadCount = useRef(false);
-  useEffect(() => {
-    if (!socketRef.current) return;
-    if (location.pathname.includes("/messages")) {
-      hasResetUnreadCount.current = false;
-      const conversationId = location.state?.conversationId || null;
-      if (conversationId) {
-        socketRef.current.emit("markMessagesRead", conversationId, (response) => {
-          if (response.ok) {
-            updateMessagesCount(response.unreadCount);
-          } else {
-            console.error("Failed to mark messages as read:", response.error);
-          }
-        });
-      }
-    } else {
-      if (!hasResetUnreadCount.current) {
-        setTimeout(() => {
-          if (!hasResetUnreadCount.current) {
-            updateMessagesCount(0);
-            hasResetUnreadCount.current = true;
-          }
-        }, 200);
-      }
-    }
-  }, [location.pathname, updateMessagesCount]);
-
+  // Socket.IO
   useEffect(() => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
@@ -252,6 +251,26 @@ const DashboardPage = () => {
     };
   }, [initialized, businessId, logout, refreshAccessToken, refetch, selectedDate, queryClient]);
 
+  useEffect(() => {
+    if (!socketRef.current) return;
+    if (location.pathname.includes("/messages")) {
+      const conversationId = location.state?.conversationId || null;
+      if (conversationId) {
+        socketRef.current.emit("markMessagesRead", conversationId, (response) => {
+          if (response.ok) {
+            updateMessagesCount(response.unreadCount);
+          } else {
+            console.error("Failed to mark messages as read:", response.error);
+          }
+        });
+      }
+    } else {
+      setTimeout(() => {
+        updateMessagesCount(0);
+      }, 200);
+    }
+  }, [location.pathname, updateMessagesCount]);
+
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
@@ -295,27 +314,27 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
-      <Suspense fallback={<div>🔄 טוען ניווט...</div>}>
-        <DashboardNav refs={{ cardsRef, insightsRef, chartsRef, appointmentsRef, nextActionsRef, weeklySummaryRef }} />
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען ניווט...</div>}>
+        <MemoizedDashboardNav refs={{ cardsRef, insightsRef, chartsRef, appointmentsRef, nextActionsRef, weeklySummaryRef }} />
       </Suspense>
 
-      <Suspense fallback={<div>🔄 טוען כרטיסים...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
         <div ref={cardsRef}>
-          <DashboardCards stats={syncedStats} unreadCount={unreadCount} />
+          <MemoizedDashboardCards stats={syncedStats} unreadCount={unreadCount} />
         </div>
       </Suspense>
 
-      <Suspense fallback={<div>🔄 טוען תובנות...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
         <div ref={insightsRef}>
-          <Insights
+          <MemoizedInsights
             stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }}
           />
         </div>
       </Suspense>
 
-      <Suspense fallback={<div>🔄 טוען פעולות...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
         <div ref={nextActionsRef}>
-          <NextActions
+          <MemoizedNextActions
             stats={{
               weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
               weekly_appointments_count: countItemsInLastWeek(appointments),
@@ -326,29 +345,29 @@ const DashboardPage = () => {
         </div>
       </Suspense>
 
-      <Suspense fallback={<div>🔄 טוען גרפים...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען גרפים...</div>}>
         <div ref={chartsRef}>
-          <BarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
+          <MemoizedBarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
         </div>
       </Suspense>
 
-      <Suspense fallback={<div>🔄 טוען פעילות...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען פעילות...</div>}>
         <div>
-          {syncedStats.recent_activity && <RecentActivityTable activities={syncedStats.recent_activity} />}
+          {syncedStats.recent_activity && <MemoizedRecentActivityTable activities={syncedStats.recent_activity} />}
         </div>
       </Suspense>
 
-      <Suspense fallback={<div>🔄 טוען יומן...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
         <div ref={appointmentsRef} className="calendar-row">
           <div className="day-agenda-box">
-            <DailyAgenda
+            <MemoizedDailyAgenda
               date={selectedDate}
               appointments={appointments}
               businessName={syncedStats.businessName}
             />
           </div>
           <div className="calendar-container">
-            <CalendarView
+            <MemoizedCalendarView
               appointments={appointments}
               onDateClick={setSelectedDate}
               selectedDate={selectedDate}
@@ -357,9 +376,9 @@ const DashboardPage = () => {
         </div>
       </Suspense>
 
-      <Suspense fallback={<div>🔄 טוען סיכום שבועי...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
         <div ref={weeklySummaryRef}>
-          <WeeklySummary stats={syncedStats} />
+          <MemoizedWeeklySummary stats={syncedStats} />
         </div>
       </Suspense>
     </div>

@@ -615,3 +615,10 @@
     padding: 10px 14px;
   }
 }
+
+.loading-spinner {
+  font-size: 1.2rem;
+  color: #6a1b9a;
+  padding: 10px;
+  text-align: center;
+}
