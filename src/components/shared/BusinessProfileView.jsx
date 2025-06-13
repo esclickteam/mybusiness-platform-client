@@ -62,21 +62,23 @@ export default function BusinessProfileView() {
     queryFn: () => fetchBusiness(bizId),
     enabled: !!bizId,
     staleTime: 5 * 60 * 1000,
-    onSuccess: (biz) => {
+    onSuccess: async (biz) => {
       setFaqs(biz.faqs || []);
       setServices(biz.services || []);
-      queryClient.prefetchQuery({
+      // prefetch workHours into cache, but do not update state here
+      await queryClient.prefetchQuery({
         queryKey: ['workHours', bizId],
         queryFn: () => fetchWorkHours(bizId),
       });
     }
   });
 
-  // React Query: Fetch work hours
+  // React Query: Fetch work hours (will read from cache or fetch if missing)
   const { data: workHoursData } = useQuery({
     queryKey: ['workHours', bizId],
     queryFn: () => fetchWorkHours(bizId),
-    enabled: !!bizId
+    enabled: !!bizId,
+    staleTime: 60 * 1000, // 1 minute stale time
   });
 
   const schedule = useMemo(() => {
