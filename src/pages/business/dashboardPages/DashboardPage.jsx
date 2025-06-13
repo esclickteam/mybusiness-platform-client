@@ -15,6 +15,8 @@ import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
 import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
+import DashboardSkeleton from "../../../components/DashboardSkeleton";
+
 
 // טעינת רכיבים עם אפשרות preload
 const DashboardCards = lazyWithPreload(() => import("../../../components/DashboardCards"));
@@ -274,7 +276,7 @@ const DashboardPage = () => {
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  if (isLoading && !localData) return <p className="loading-text">⏳ טוען נתונים…</p>;
+if (isLoading && !localData) return <DashboardSkeleton />;
   if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
   const effectiveStats = stats || localData || {};
