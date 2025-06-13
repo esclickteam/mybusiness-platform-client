@@ -90,7 +90,8 @@ export default function App() {
     setFreeText("");
   };
 
-  if (loading) return <UserSkeleton />;
+  if (loading) return <LoginSkeleton />;
+
 
 
   return (
@@ -351,7 +352,8 @@ export function BusinessChatWrapper() {
   const { state } = useLocation();
   const { user, loading } = useAuth();
 
-  if (loading) return <UserSkeleton />;
+  if (loading) return <LoginSkeleton />;
+
 
   if (!user || user.role !== "business") {
     return <Navigate to="/login" replace />;
