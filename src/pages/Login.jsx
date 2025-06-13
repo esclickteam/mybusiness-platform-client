@@ -1,16 +1,25 @@
 import React, { useState, lazy, Suspense, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import "../styles/Login.css";
+import { lazyWithPreload } from "../utils/lazyWithPreload";
 import { Link, useNavigate } from "react-router-dom";
+import "../styles/Login.css";
 
 // טופס שכחת סיסמה בטעינה דינמית
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
 
-// ייבוא lazyWithPreload
-import { lazyWithPreload } from "../utils/lazyWithPreload";
-
 // טעינה מוקדמת של הדשבורד
 const DashboardPage = lazyWithPreload(() => import("./business/dashboardPages/DashboardPage"));
+
+// Skeleton UI לטעינת התחברות
+function LoginSkeleton() {
+  return (
+    <div className="login-skeleton">
+      <div className="skeleton-input" />
+      <div className="skeleton-input" />
+      <div className="skeleton-button" />
+    </div>
+  );
+}
 
 export default function Login() {
   const { login, error: authError } = useAuth();
@@ -19,6 +28,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
   const navigate = useNavigate();
 
   // שימוש ב-useRef לשמירת מצב טעינה מוקדמת
@@ -26,7 +36,8 @@ export default function Login() {
 
   const handleInputChange = (setter) => (e) => {
     if (!dashboardPreloaded.current) {
-      DashboardPage.preload();
+      setDashboardLoading(true);
+      DashboardPage.preload().then(() => setDashboardLoading(false));
       dashboardPreloaded.current = true;
     }
     setter(e.target.value);
@@ -52,6 +63,10 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  if (dashboardLoading) {
+    return <LoginSkeleton />;
+  }
 
   return (
     <div className="login-container">
