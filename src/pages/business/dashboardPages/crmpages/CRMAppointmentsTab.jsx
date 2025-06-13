@@ -280,69 +280,75 @@ const CRMAppointmentsTab = () => {
 
   // debounce לשמירת תיאום ראשוני אוטומטית
   useEffect(() => {
-    if (!newAppointment.clientName || !newAppointment.clientPhone) return;
+  console.log('useEffect triggered: saving draft appointment', newAppointment, newApptId);
 
-    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+  if (!newAppointment.clientName || !newAppointment.clientPhone) {
+    console.log('Missing clientName or clientPhone, skipping save');
+    return;
+  }
 
-    saveTimeoutRef.current = setTimeout(async () => {
-      try {
-        if (newApptId) {
-          // עדכון תיאום קיים
-          const res = await API.patch(`/appointments/${newApptId}`, {
-            name: newAppointment.clientName,
-            phone: newAppointment.clientPhone,
-            address: newAppointment.address,
-            email: newAppointment.email,
-            note: newAppointment.note,
-            serviceId: newAppointment.serviceId,
-            date: newAppointment.date,
-            time: newAppointment.time,
-            serviceName: newAppointment.serviceName,
-            status: "not_completed",
-          });
-          const updatedAppt = res.data.appt;
-          setAppointments((prev) =>
-            prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
-          );
-        } else {
-          // יצירת תיאום חדש
-          const res = await API.post("/appointments", {
-            businessId,
-            name: newAppointment.clientName,
-            phone: newAppointment.clientPhone,
-            address: newAppointment.address,
-            email: newAppointment.email,
-            note: newAppointment.note,
-            serviceId: newAppointment.serviceId,
-            date: newAppointment.date,
-            time: newAppointment.time,
-            serviceName: newAppointment.serviceName,
-            duration: 0,
-            status: "not_completed",
-          });
-          const createdAppt = res.data.appt || res.data;
-          setNewApptId(createdAppt._id);
-          setAppointments((prev) => [...prev, createdAppt]);
-        }
-      } catch (err) {
-        console.error("Error saving preliminary appointment:", err);
+  if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+
+  saveTimeoutRef.current = setTimeout(async () => {
+    try {
+      if (newApptId) {
+        console.log('Updating appointment id:', newApptId);
+        const res = await API.patch(`/appointments/${newApptId}`, {
+          name: newAppointment.clientName,
+          phone: newAppointment.clientPhone,
+          address: newAppointment.address,
+          email: newAppointment.email,
+          note: newAppointment.note,
+          serviceId: newAppointment.serviceId,
+          date: newAppointment.date,
+          time: newAppointment.time,
+          serviceName: newAppointment.serviceName,
+          status: "not_completed",
+        });
+        const updatedAppt = res.data.appt;
+        setAppointments((prev) =>
+          prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+        );
+      } else {
+        console.log('Creating new appointment draft');
+        const res = await API.post("/appointments", {
+          businessId,
+          name: newAppointment.clientName,
+          phone: newAppointment.clientPhone,
+          address: newAppointment.address,
+          email: newAppointment.email,
+          note: newAppointment.note,
+          serviceId: newAppointment.serviceId,
+          date: newAppointment.date,
+          time: newAppointment.time,
+          serviceName: newAppointment.serviceName,
+          duration: 0,
+          status: "not_completed",
+        });
+        const createdAppt = res.data.appt || res.data;
+        setNewApptId(createdAppt._id);
+        setAppointments((prev) => [...prev, createdAppt]);
       }
-    }, 1500);
+    } catch (err) {
+      console.error("Error saving preliminary appointment:", err);
+    }
+  }, 1500);
 
-    return () => clearTimeout(saveTimeoutRef.current);
-  }, [
-    newAppointment.clientName,
-    newAppointment.clientPhone,
-    newAppointment.address,
-    newAppointment.email,
-    newAppointment.note,
-    newAppointment.serviceId,
-    newAppointment.date,
-    newAppointment.time,
-    newAppointment.serviceName,
-    newApptId,
-    businessId,
-  ]);
+  return () => clearTimeout(saveTimeoutRef.current);
+}, [
+  newAppointment.clientName,
+  newAppointment.clientPhone,
+  newAppointment.address,
+  newAppointment.email,
+  newAppointment.note,
+  newAppointment.serviceId,
+  newAppointment.date,
+  newAppointment.time,
+  newAppointment.serviceName,
+  newApptId,
+  businessId,
+]);
+
 
   // לחיצה על "קבע פגישה" - עדכון סטטוס ל-pending (מאושר)
   const handleConfirmAppointment = async () => {
