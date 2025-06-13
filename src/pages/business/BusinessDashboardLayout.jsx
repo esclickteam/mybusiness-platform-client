@@ -4,6 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { useSocket } from "../../context/socketContext";
 import { useUnreadMessages } from "../../context/UnreadMessagesContext";
+import { useQueryClient } from '@tanstack/react-query';
+import API from "../../api"; // ודא שיש לך את ההגדרה הזו
 import "../../styles/BusinessDashboardLayout.css";
 
 const tabs = [
@@ -14,7 +16,6 @@ const tabs = [
   { path: "crm", label: "📇 מערכת CRM" },
   { path: "esclick", label: "🧠 יועץ עסקליק" },
   { path: "affiliate", label: "👥 תכנית שותפים" },
-  
 ];
 
 export default function BusinessDashboardLayout() {
@@ -30,9 +31,29 @@ export default function BusinessDashboardLayout() {
     incrementMessagesCount,
   } = useUnreadMessages();
 
+  const queryClient = useQueryClient();
+
+  // Prefetch חשוב של נתונים מרכזיים
+  useEffect(() => {
+    if (!user?.businessId) return;
+
+    queryClient.prefetchQuery(['business-profile', user.businessId], () =>
+      API.get(`/business/${user.businessId}`).then(res => res.data)
+    );
+
+    queryClient.prefetchQuery(['unread-messages', user.businessId], () =>
+      API.get(`/messages/unread-count?businessId=${user.businessId}`).then(res => res.data)
+    );
+
+    queryClient.prefetchQuery(['crm-appointments', user.businessId], () =>
+      API.get(`/appointments/all-with-services?businessId=${user.businessId}`).then(res => res.data)
+    );
+  }, [user?.businessId, queryClient]);
+
   // חישוב כולל של כל ההודעות הלא נקראו מכל השיחות
   const unreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
 
+  // רספונסיביות וסיידבר
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
@@ -45,7 +66,6 @@ export default function BusinessDashboardLayout() {
     if (!socket) return;
 
     const handleNewClientMessage = (data) => {
-      console.log("Received newClientMessageNotification:", data);
       if (data?.conversationId) {
         incrementMessagesCount(data.conversationId);
       }
@@ -83,13 +103,9 @@ export default function BusinessDashboardLayout() {
       hasResetUnreadCount.current = false;
       const conversationId = location.state?.conversationId || null;
       if (conversationId) {
-        console.log("Calling markMessagesRead with conversationId:", conversationId);
         socket.emit("markMessagesRead", conversationId, (response) => {
           if (response.ok) {
             updateMessagesCount(conversationId, 0);
-            console.log("Messages marked as read, unreadCount updated:", response.unreadCount);
-          } else {
-            console.error("Failed to mark messages as read:", response.error);
           }
         });
       }
@@ -97,7 +113,6 @@ export default function BusinessDashboardLayout() {
       if (!hasResetUnreadCount.current) {
         setTimeout(() => {
           if (!hasResetUnreadCount.current) {
-            console.log("Leaving /messages tab, resetting all unread counts");
             Object.keys(unreadCountsByConversation).forEach((convId) =>
               updateMessagesCount(convId, 0)
             );
