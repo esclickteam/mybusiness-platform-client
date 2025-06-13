@@ -20,18 +20,18 @@ const CRMAppointmentsTab = () => {
   const [appointments, setAppointments] = useState([]);
   const [services, setServices] = useState([]);
 
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newAppointment, setNewAppointment] = useState({
-    clientName: "",
-    clientPhone: "",
-    address: "",
-    email: "",
-    note: "",
-    serviceId: "",
-    serviceName: "",
-    date: "",
-    time: "",
-  });
+  const [editId, setEditId] = useState(null);
+const [editData, setEditData] = useState({
+  clientName: "",
+  clientPhone: "",
+  address: "",
+  email: "",
+  note: "",
+  serviceId: "",
+  serviceName: "",
+  date: "",
+  time: "",
+});
 
   // שמירת ID של התיאום הראשוני (אם נוצר)
   const [newApptId, setNewApptId] = useState(null);
