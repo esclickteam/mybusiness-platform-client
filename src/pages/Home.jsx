@@ -1,18 +1,15 @@
 // src/pages/Home.jsx
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import "../styles/Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES    from "../data/cities";
 
-// ייבוא רכיב הסיכום שיצרנו
-
 export default function Home() {
   const navigate = useNavigate();
   const [category, setCategory] = useState("");
   const [city, setCity]         = useState("");
-  const [showAllUpdates, setShowAllUpdates] = useState(false);
 
   const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
   const cityOptions     = ALL_CITIES.map(c     => ({ value: c, label: c }));
@@ -78,13 +75,6 @@ export default function Home() {
         <button className="search-button" onClick={navigateToSearch}>
           🔍 חפש
         </button>
-      </div>
-
-      {/* Quick Jobs */}
-      <div className="quick-jobs-button-wrapper">
-        <Link to="/quick-jobs">
-          <button className="quick-jobs-button">⚡ לוח עבודות מהירות</button>
-        </Link>
       </div>
 
       {/* Bookmark Cards */}
