@@ -202,6 +202,19 @@ const CRMAppointmentsTab = () => {
     setEditId(null);
   };
 
+  // פונקציה לטיפול בשינוי שדות בטופס
+  const handleInputChange = (field, value) => {
+    setNewAppointment((prev) => {
+      let newState = { ...prev, [field]: value };
+      if (field === "serviceId") {
+        const service = services.find((s) => s._id === value);
+        newState.serviceName = service ? service.name : "";
+        newState.time = "";
+      }
+      return newState;
+    });
+  };
+
   // debounce לשמירת טיוטה אוטומטית
   useEffect(() => {
     if (!newAppointment.clientName.trim() || !newAppointment.clientPhone.trim()) return;
