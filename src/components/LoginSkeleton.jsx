@@ -1,4 +1,6 @@
-function LoginSkeleton() {
+import React from "react";
+
+export function LoginSkeleton() {
   return (
     <div className="login-skeleton">
       <div className="skeleton-title" />
