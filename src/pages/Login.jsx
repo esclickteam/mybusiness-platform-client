@@ -4,7 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import { Link, useNavigate } from "react-router-dom";
 
+// רכיב טופס שכחת סיסמה בטעינה דינמית
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
+
+// ייבוא lazyWithPreload (למשל מ- utils/lazyWithPreload.js)
+import { lazyWithPreload } from "../utils/lazyWithPreload";
+
+// דשבורד עם טעינה מוקדמת
+const DashboardPage = lazyWithPreload(() => import("./DashboardPage"));
 
 export default function Login() {
   const { login, error: authError } = useAuth();
@@ -14,6 +21,16 @@ export default function Login() {
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
+
+  // פונקציה לטיפול בשינוי קלט, שתפעיל גם preload לדשבורד
+  const handleInputChange = (setter) => (e) => {
+    // התחלת טעינת הדשבורד ברקע (רק פעם אחת)
+    if (!DashboardPage.preloaded) {
+      DashboardPage.preload();
+      DashboardPage.preloaded = true;
+    }
+    setter(e.target.value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,9 +45,8 @@ export default function Login() {
     try {
       const cleanEmail = email.trim().toLowerCase();
       await login(cleanEmail, password);
-      // הניווט מתבצע בתוך login או ב-AuthContext
+      // ניווט מתבצע בתוך login או ב-AuthContext
     } catch (err) {
-      // אם יש שגיאה מפורטת ב-authError - מציגים, אחרת ברירת מחדל
       setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
     } finally {
       setLoading(false);
@@ -46,7 +62,7 @@ export default function Login() {
             type="email"
             placeholder="אימייל"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleInputChange(setEmail)}
             disabled={loading}
             required
             autoComplete="email"
@@ -56,7 +72,7 @@ export default function Login() {
             type="password"
             placeholder="סיסמה"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleInputChange(setPassword)}
             disabled={loading}
             required
             autoComplete="current-password"

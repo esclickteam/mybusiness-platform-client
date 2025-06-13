@@ -3,10 +3,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useQueryClient } from '@tanstack/react-query';
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
+import { lazyWithPreload } from '../../utils/lazyWithPreload';
+
 
 // רכיבים דינמיים
 const BuildBusinessPage  = lazy(() => import("./dashboardPages/build/Build"));
-const DashboardPage      = lazy(() => import("./dashboardPages/DashboardPage"));
+const DashboardPage = lazyWithPreload(() => import('../pages/DashboardPage'));
 const Collab             = lazy(() => import("./dashboardPages/Collab"));
 const Upgrade            = lazy(() => import("./dashboardPages/Upgrade"));
 const CartPage           = lazy(() => import("./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage"));
