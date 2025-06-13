@@ -3,10 +3,13 @@ import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
+import { useQueryClient } from '@tanstack/react-query';
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
   const businessId = user?.businessId || user?.business?._id || null;
+
+  const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
   const [appointments, setAppointments] = useState([]);
@@ -41,6 +44,16 @@ const CRMAppointmentsTab = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    if (!businessId) return;
+
+    // Prefetch the queries before fetching and setting state
+    queryClient.prefetchQuery(['appointments', 'all-with-services'], () =>
+      API.get("/appointments/all-with-services").then(res => res.data)
+    );
+    queryClient.prefetchQuery(['business', 'services'], () =>
+      API.get("/business/my/services").then(res => res.data.services)
+    );
+
     async function fetchAppointmentsAndServices() {
       try {
         const [appointmentsRes, servicesRes] = await Promise.all([
@@ -54,7 +67,7 @@ const CRMAppointmentsTab = () => {
       }
     }
     fetchAppointmentsAndServices();
-  }, []);
+  }, [businessId, queryClient]);
 
   useEffect(() => {
     if (!socket) return;
@@ -91,7 +104,7 @@ const CRMAppointmentsTab = () => {
   const uniqueAppointments = (arr) => {
     const seen = new Set();
     return arr.filter((appt) => {
-      if (!appt._id) return true; // אם אין _id, נשאיר, אפשר לשנות בהתאם
+      if (!appt._id) return true;
       if (seen.has(appt._id)) return false;
       seen.add(appt._id);
       return true;
