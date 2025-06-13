@@ -40,8 +40,6 @@ export default function BusinessProfileView() {
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
-  const [faqs, setFaqs] = useState([]);
-  const [services, setServices] = useState([]);
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,8 +61,6 @@ export default function BusinessProfileView() {
     enabled: !!bizId,
     staleTime: 5 * 60 * 1000,
     onSuccess: (biz) => {
-      setFaqs(biz.faqs || []);
-      setServices(biz.services || []);
       // Prefetch important related data on business load
       queryClient.prefetchQuery({
         queryKey: ['workHours', bizId],
@@ -178,14 +174,9 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    faqs: faqsData = [],
+    faqs = [],
     address: { city = "" } = {},
   } = data;
-
-  // כאן מעדכן את המצב של faqs שנלקח גם מ־data כי יכול להיות לא סנכרן
-  React.useEffect(() => {
-    setFaqs(faqsData);
-  }, [faqsData]);
 
   const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
@@ -316,7 +307,7 @@ export default function BusinessProfileView() {
                 {reviews.length ? (
                   reviews.map((r, i) => (
                     <div key={r._id || i} className="review-card improved">
-                      {/* תוכן הביקורת */}
+                      {/* תוכן הביקורת */} 
                     </div>
                   ))
                 ) : (
