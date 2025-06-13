@@ -1,16 +1,15 @@
-// src/pages/Login.jsx
 import React, { useState, lazy, Suspense } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import { Link, useNavigate } from "react-router-dom";
 
-// רכיב טופס שכחת סיסמה בטעינה דינמית
+// טופס שכחת סיסמה בטעינה דינמית
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
 
-// ייבוא lazyWithPreload (למשל מ- utils/lazyWithPreload.js)
+// ייבוא lazyWithPreload - וודא שיש לך את הפונקציה הזו ב-../utils/lazyWithPreload.js
 import { lazyWithPreload } from "../utils/lazyWithPreload";
 
-// דשבורד עם טעינה מוקדמת
+// טעינה מוקדמת של הדשבורד
 const DashboardPage = lazyWithPreload(() => import("./DashboardPage"));
 
 export default function Login() {
@@ -22,9 +21,8 @@ export default function Login() {
   const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
 
-  // פונקציה לטיפול בשינוי קלט, שתפעיל גם preload לדשבורד
+  // בינתיים כשהמשתמש מקליד, מתחילים לטעון את הדשבורד ברקע (רק פעם אחת)
   const handleInputChange = (setter) => (e) => {
-    // התחלת טעינת הדשבורד ברקע (רק פעם אחת)
     if (!DashboardPage.preloaded) {
       DashboardPage.preload();
       DashboardPage.preloaded = true;
