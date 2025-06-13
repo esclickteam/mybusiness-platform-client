@@ -11,7 +11,7 @@ const ForgotPassword = lazy(() => import("./ForgotPassword"));
 const DashboardPage = lazyWithPreload(() => import("./business/dashboardPages/DashboardPage"));
 
 // Skeleton UI לטעינת התחברות
-function LoginSkeleton() {
+export function LoginSkeleton() {
   return (
     <div className="login-skeleton">
       <div className="skeleton-input" />

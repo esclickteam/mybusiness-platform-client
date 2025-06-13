@@ -17,7 +17,7 @@ import ChatPage from "./components/ChatPage";
 import { useAuth } from "./context/AuthContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
-import LoginSkeleton from "./components/LoginSkeleton";
+import { LoginSkeleton } from "./components/LoginSkeleton";
 
 
 // ---- כל הייבוא הדינמי כפי שהיה ----
