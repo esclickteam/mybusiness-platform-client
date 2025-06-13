@@ -1,157 +1,206 @@
-/* הגדרות כלליות של העמוד */
+/* Container כללי */
 .business-join-container {
-    text-align: center;
-    padding: 50px 20px;
-    background: linear-gradient(to bottom, #e0e4ff, #ffffff);
+  max-width: 900px;
+  margin: 60px auto 80px;
+  padding: 0 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fafaff;
+  color: #333;
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(90, 70, 150, 0.12);
+  direction: rtl;
 }
 
-/* אזור הכותרות */
+/* Header */
 .header-section {
-    max-width: 900px;
-    margin: 0 auto 40px;
+  text-align: center;
+  margin-bottom: 50px;
 }
 
 .title {
-    font-size: 36px;
-    color: #4a148c;
-    font-weight: bold;
-    margin-bottom: 10px;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #5c3d99;
+  margin-bottom: 12px;
 }
 
 .subtitle {
-    font-size: 20px;
-    color: #333;
-    line-height: 1.6;
-    margin-top: 15px;
+  font-size: 1.2rem;
+  color: #6a5a95;
+  max-width: 700px;
+  margin: 0 auto;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
-/* אזור הכרטיסיות */
+/* Grid layout - 2 כרטיסיות בשורה */
 .info-section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 25px;
-    margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px 30px;
+  margin-bottom: 70px;
+  padding: 0 10px;
 }
 
-/* עיצוב הכרטיסיות */
+/* רספונסיבי - 1 כרטיסיה בניידים */
+@media (max-width: 700px) {
+  .info-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* כרטיסיות */
 .info-box {
-    width: 45%;
-    min-width: 320px;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-    text-align: center; /* ממרכז את כל התוכן */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  background: #fff;
+  border-radius: 18px;
+  padding: 32px 28px;
+  box-shadow: 0 6px 20px rgba(92, 61, 153, 0.07);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 380px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  user-select: none;
+  word-break: keep-all;
 }
 
-/* צבעים לכרטיסיות */
+.info-box:hover {
+  box-shadow: 0 12px 35px rgba(92, 61, 153, 0.18);
+  transform: translateY(-7px);
+}
+
+/* כרטיסיות עם רקע סגול */
 .info-box.purple {
-    background: #f3e5f5;
-    color: #4a148c;
+  background: #f5ecff;
+  color: #5c3d99;
 }
 
-.info-box.white {
-    background: #ffffff;
-    color: #333;
-}
-
-/* עיצוב כותרות בכרטיסיות */
+/* כותרות */
 .info-box h2 {
-    font-size: 24px;
-    margin-bottom: 15px;
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-bottom: 18px;
+  border-bottom: 3px solid #5c3d99;
+  padding-bottom: 8px;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
 }
 
-/* עיצוב רשימות */
+/* רשימות */
 .info-box ul {
-    list-style: none;
-    padding: 0;
-    text-align: center;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  font-weight: 600;
+  text-align: right;
+  color: inherit;
 }
 
 .info-box li {
-    font-size: 18px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  margin-bottom: 14px;
+  padding-right: 34px;
 }
 
-/* כפתור הצטרפות */
+/* סימן ✔ יחיד ימני */
+.info-box li::before {
+  content: '✔';
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #5c3d99;
+  font-weight: 900;
+  font-size: 1.25rem;
+  text-shadow: 0 1px 3px rgba(92, 61, 153, 0.35);
+}
+
+/* אזור קריאה לפעולה - הצטרפות */
 .cta-section {
-    margin-top: 50px;
+  background: linear-gradient(90deg, #a694d1, #c7bcf0);
+  border-radius: 32px;
+  padding: 48px 30px;
+  text-align: center;
+  box-shadow: 0 6px 25px rgba(99, 84, 167, 0.25);
+  color: #4b3b8c;
+  font-weight: 700;
+  user-select: none;
+  transition: box-shadow 0.3s ease;
+  max-width: 700px;
+  margin: 0 auto 70px;
+}
+
+.cta-section:hover {
+  box-shadow: 0 10px 40px rgba(99, 84, 167, 0.4);
 }
 
 .cta-section h2 {
-    font-size: 26px;
-    color: #4a148c;
-    font-weight: bold;
+  font-size: 2.3rem;
+  margin-bottom: 20px;
+  letter-spacing: 1.2px;
 }
 
 .cta-section p {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 25px;
+  font-size: 1.2rem;
+  margin-bottom: 35px;
 }
 
-/* כפתור בולט */
+/* כפתור ההצטרפות */
 .join-button {
-    background: linear-gradient(90deg, #ff8c00, #ff3d00);
-    color: #fff;
-    font-size: 28px;
-    padding: 20px 50px;
-    border: none;
-    border-radius: 18px;
-    cursor: pointer;
-    font-weight: bold;
-    display: inline-block;
-    width: 350px;
-    text-align: center;
-    box-shadow: 0px 10px 20px rgba(255, 61, 0, 0.3);
-    transition: all 0.3s ease-in-out;
-    text-transform: uppercase;
+  background: #fff;
+  color: #5c3d99;
+  font-weight: 900;
+  font-size: 1.65rem;
+  padding: 18px 72px;
+  border-radius: 42px;
+  border: none;
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .join-button:hover {
-    background: linear-gradient(90deg, #ff3d00, #ff8c00);
-    transform: scale(1.1);
-    box-shadow: 0px 12px 25px rgba(255, 61, 0, 0.5);
+  background-color: #4a3181;
+  color: #fff;
+  box-shadow: 0 14px 36px rgba(74, 49, 129, 0.9);
+  transform: scale(1.1);
 }
 
-/* התאמה לנייד */
-@media (max-width: 768px) {
-    .info-section {
-        flex-direction: column;
-        align-items: center;
-    }
+/* Footer */
+.footer {
+  margin-top: 50px;
+  padding: 30px 20px 20px;
+  font-size: 0.9rem;
+  color: #6b5e8a;
+  text-align: center;
+  font-weight: 600;
+  user-select: none;
+  border-top: 1px solid #ddd;
+}
 
-    .info-box {
-        width: 95%;
-        text-align: center;
-    }
+.footer-links {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  list-style: none;
+  padding: 0;
+}
 
-    .info-box li {
-        justify-content: center;
-    }
+.footer-links li a {
+  color: #5c3d99;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.25s ease;
+}
 
-    .title {
-        font-size: 30px;
-    }
-
-    .subtitle {
-        font-size: 18px;
-    }
-
-    .cta-section h2 {
-        font-size: 24px;
-    }
-
-    .join-button {
-        font-size: 22px;
-        padding: 15px 40px;
-        width: 90%;
-    }
+.footer-links li a:hover {
+  color: #9e81f7;
 }
