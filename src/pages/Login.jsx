@@ -6,12 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
 
-// טוען את הדשבורד בצורה דינמית עם אפשרות preload
-const BusinessDashboardRoutes = lazy(() => import("../pages/business/BusinessDashboardRoutes"));
-BusinessDashboardRoutes.preload = () => import("../pages/business/BusinessDashboardRoutes");
-
 export default function Login() {
-  const { login, error: authError, user } = useAuth();
+  const { login, error: authError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,18 +28,9 @@ export default function Login() {
     try {
       const cleanEmail = email.trim().toLowerCase();
       await login(cleanEmail, password);
-
-      // טען מראש את הדשבורד ברקע כדי לזרז טעינה בהמשך
-      BusinessDashboardRoutes.preload();
-
-      // נווט לדשבורד עם businessId אם קיים
-      if (user?.businessId) {
-        navigate(`/business/${user.businessId}/dashboard`);
-      } else {
-        // ניווט ברירת מחדל אם אין businessId
-        navigate("/");
-      }
+      // הניווט מתבצע בתוך login או ב-AuthContext
     } catch (err) {
+      // אם יש שגיאה מפורטת ב-authError - מציגים, אחרת ברירת מחדל
       setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
     } finally {
       setLoading(false);
