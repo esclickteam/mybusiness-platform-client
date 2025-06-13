@@ -6,7 +6,6 @@ import ClientAppointmentsHistory from "./ClientAppointmentsHistory";
 const CRMClientsTab = ({ businessId }) => {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(false);
 
   const [selectedClient, setSelectedClient] = useState(null);
@@ -28,7 +27,6 @@ const CRMClientsTab = ({ businessId }) => {
               .replace(/\s/g, "") || "אין טלפון",
           email: (c.email || "").replace(/\s/g, "") || "-",
           address: c.address || "-",
-          status: c.status || "incomplete",
           id: c._id || Date.now(),
         }));
         setClients(normalizedClients);
@@ -39,15 +37,13 @@ const CRMClientsTab = ({ businessId }) => {
       }
     }
     fetchClients();
-  }, [businessId, statusFilter]);
+  }, [businessId]);
 
   const filteredClients = clients.filter((client) => {
     const matchesSearch =
       client.fullName.toLowerCase().includes(search.toLowerCase()) ||
       client.phone.includes(search);
-    const matchesStatus =
-      statusFilter === "all" || client.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
 
   return (
@@ -62,16 +58,7 @@ const CRMClientsTab = ({ businessId }) => {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="status-filter"
-          aria-label="Filter clients by status"
-        >
-          <option value="all">כל הלקוחות</option>
-          <option value="completed">הושלם</option>
-          <option value="incomplete">לא הושלם</option>
-        </select>
+        {/* הסרתי את סינון הסטטוס */}
       </div>
 
       {loading ? (
@@ -81,22 +68,19 @@ const CRMClientsTab = ({ businessId }) => {
           <table className="clients-table">
             <thead>
               <tr>
-                <th>שם</th><th>טלפון</th><th>כתובת</th><th>אימייל</th><th>סטטוס</th><th>היסטוריית תורים</th>
+                <th>שם</th><th>טלפון</th><th>כתובת</th><th>אימייל</th><th>היסטוריית תורים</th>
               </tr>
             </thead>
             <tbody>
               {filteredClients.length === 0 ? (
-                <tr><td colSpan="6">לא נמצאו לקוחות</td></tr>
+                <tr><td colSpan="5">לא נמצאו לקוחות</td></tr>
               ) : (
                 filteredClients.map((client) => (
                   <tr key={client.id}>
-                    <td>{client.fullName}</td><td className="phone-cell">{client.phone}</td><td className="address-cell">{client.address}</td><td className="email-cell">{client.email}</td>
-                    <td
-                      className={`status-cell ${client.status === "completed" ? "completed" : "incomplete"}`}
-                      title={client.status === "completed" ? "הלקוח השלים תיאום" : "התיאום לא הושלם"}
-                    >
-                      {client.status === "completed" ? "הושלם" : "לא הושלם"}
-                    </td>
+                    <td>{client.fullName}</td>
+                    <td className="phone-cell">{client.phone}</td>
+                    <td className="address-cell">{client.address}</td>
+                    <td className="email-cell">{client.email}</td>
                     <td>
                       <button
                         className="show-history-btn"
