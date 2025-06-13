@@ -1,19 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Suspense, lazy } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
 import { dedupeByPreview } from "../../../../utils/dedupe";
 
-
-import MainSection    from "../buildTabs/buildSections/MainSection";
-import GallerySection from "../buildTabs/buildSections/GallerySection";
-import ReviewsSection from "../buildTabs/buildSections/ReviewsSection";
-import ShopSection    from "../buildTabs/buildSections/ShopSection";
-import ChatSection    from "../buildTabs/buildSections/ChatSection";
-import FaqSection     from "../buildTabs/buildSections/FaqSection";
-
-
 import { useAuth } from "../../../../context/AuthContext";
+
+const MainSection    = lazy(() => import("../buildTabs/buildSections/MainSection"));
+const GallerySection = lazy(() => import("../buildTabs/buildSections/GallerySection"));
+const ReviewsSection = lazy(() => import("../buildTabs/buildSections/ReviewsSection"));
+const ShopSection    = lazy(() => import("../buildTabs/buildSections/ShopSection"));
+const ChatSection    = lazy(() => import("../buildTabs/buildSections/ChatSection"));
+const FaqSection     = lazy(() => import("../buildTabs/buildSections/FaqSection"));
 
 const TABS = [
   "ראשי",
@@ -49,23 +47,23 @@ export default function Build() {
     workHours:       {},
   });
 
-const [workHours, setWorkHours] = useState({});
-const [isSaving, setIsSaving] = useState(false);
-const [showViewProfile, setShowViewProfile] = useState(false);
-const [editIndex, setEditIndex] = useState(null);
-const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [workHours, setWorkHours] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [showViewProfile, setShowViewProfile] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-// Autosave setup
-const [firstLoad, setFirstLoad] = useState(true);
-const saveTimeout = useRef(null);
+  // Autosave setup
+  const [firstLoad, setFirstLoad] = useState(true);
+  const saveTimeout = useRef(null);
 
-const logoInputRef       = useRef();
-const mainImagesInputRef = useRef();
-const galleryInputRef    = useRef();
-const pendingUploadsRef  = useRef([]);
+  const logoInputRef       = useRef();
+  const mainImagesInputRef = useRef();
+  const galleryInputRef    = useRef();
+  const pendingUploadsRef  = useRef([]);
 
-// הוספת סטייט עבור shopMode
-const [shopMode, setShopMode] = useState(null);
+  // הוספת סטייט עבור shopMode
+  const [shopMode, setShopMode] = useState(null);
 
 
   function extractPublicIdFromUrl(url) {
@@ -83,85 +81,85 @@ const [shopMode, setShopMode] = useState(null);
 
   // טעינת הנתונים הראשונית
   useEffect(() => {
-  // Load business details
-  API.get("/business/my")
-    .then(res => {
-      if (res.status === 200) {
-        const data = res.data.business || res.data;
-        const rawAddress = data.address;
-        const city = typeof rawAddress === "string"
-          ? rawAddress
-          : rawAddress?.city || "";
+    // Load business details
+    API.get("/business/my")
+      .then(res => {
+        if (res.status === 200) {
+          const data = res.data.business || res.data;
+          const rawAddress = data.address;
+          const city = typeof rawAddress === "string"
+            ? rawAddress
+            : rawAddress?.city || "";
 
-        const urls        = data.mainImages     || [];
-        const galleryUrls = data.gallery        || [];
-        const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-          ? data.mainImageIds
-          : urls.map(extractPublicIdFromUrl);
-        const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-          ? data.galleryImageIds
-          : galleryUrls.map(extractPublicIdFromUrl);
+          const urls        = data.mainImages     || [];
+          const galleryUrls = data.gallery        || [];
+          const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
+            ? data.mainImageIds
+            : urls.map(extractPublicIdFromUrl);
+          const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
+            ? data.galleryImageIds
+            : galleryUrls.map(extractPublicIdFromUrl);
 
-        const logoObj = data.logo
-          ? { preview: data.logo, publicId: data.logoId }
-          : null;
+          const logoObj = data.logo
+            ? { preview: data.logo, publicId: data.logoId }
+            : null;
 
-        setBusinessDetails(prev => ({
-          ...prev,
-          businessName:    data.businessName    || "",
-          description:     data.description     || "",
-          phone:           data.phone           || "",
-          email:           data.email           || "",
-          category:        data.category        || "",
-          address:         { city },
-          logo:            logoObj,
-          logoId:          data.logoId          || null,
-          gallery:         galleryUrls,
-          galleryImageIds: galleryIds,
-          mainImages:      urls,
-          mainImageIds:    mainIds,
-          faqs:            data.faqs            || [],
-          reviews:         data.reviews         || [],
-          workHours:       data.workHours       || {}
-        }));
-      }
+          setBusinessDetails(prev => ({
+            ...prev,
+            businessName:    data.businessName    || "",
+            description:     data.description     || "",
+            phone:           data.phone           || "",
+            email:           data.email           || "",
+            category:        data.category        || "",
+            address:         { city },
+            logo:            logoObj,
+            logoId:          data.logoId          || null,
+            gallery:         galleryUrls,
+            galleryImageIds: galleryIds,
+            mainImages:      urls,
+            mainImageIds:    mainIds,
+            faqs:            data.faqs            || [],
+            reviews:         data.reviews         || [],
+            workHours:       data.workHours       || {}
+          }));
+        }
+      })
+      .catch(console.error)
+      .finally(() => setFirstLoad(false));
+
+    // Load work hours correctly - לא לעשות reduce!
+    API.get('/appointments/get-work-hours', {
+      params: { businessId: currentUser?.businessId || "" }
     })
-    .catch(console.error)
-    .finally(() => setFirstLoad(false));
+    .then(res => {
+      let map = {};
+      // אם המידע הגיע כמערך
+      if (Array.isArray(res.data.workHours)) {
+        res.data.workHours.forEach(item => {
+          map[Number(item.day)] = item;
+        });
+      }
+      // אם המידע הגיע כאובייקט (ולא מערך)
+      else if (
+        res.data.workHours &&
+        typeof res.data.workHours === "object" &&
+        !Array.isArray(res.data.workHours)
+      ) {
+        map = res.data.workHours;
+      }
+      // fallback: אולי כל התשובה היא מערך (נדיר אבל אפשרי)
+      else if (Array.isArray(res.data)) {
+        res.data.forEach(item => {
+          map[Number(item.day)] = item;
+        });
+      }
+      // אחרת (שום דבר תקין): משאירים map ריק
 
-  // Load work hours correctly - לא לעשות reduce!
-  API.get('/appointments/get-work-hours', {
-  params: { businessId: currentUser?.businessId || "" }
-})
-.then(res => {
-  let map = {};
-    // אם המידע הגיע כמערך
-    if (Array.isArray(res.data.workHours)) {
-      res.data.workHours.forEach(item => {
-        map[Number(item.day)] = item;
-      });
-    }
-    // אם המידע הגיע כאובייקט (ולא מערך)
-    else if (
-      res.data.workHours &&
-      typeof res.data.workHours === "object" &&
-      !Array.isArray(res.data.workHours)
-    ) {
-      map = res.data.workHours;
-    }
-    // fallback: אולי כל התשובה היא מערך (נדיר אבל אפשרי)
-    else if (Array.isArray(res.data)) {
-      res.data.forEach(item => {
-        map[Number(item.day)] = item;
-      });
-    }
-    // אחרת (שום דבר תקין): משאירים map ריק
-
-    setWorkHours(map);
-    setBusinessDetails(prev => ({ ...prev, workHours: map }));
-  })
-  .catch(err => console.warn('Error loading work-hours:', err));
-}, []);
+      setWorkHours(map);
+      setBusinessDetails(prev => ({ ...prev, workHours: map }));
+    })
+    .catch(err => console.warn('Error loading work-hours:', err));
+  }, []);
 
 
   // Autosave business details debounce
@@ -208,7 +206,7 @@ const [shopMode, setShopMode] = useState(null);
           
 
   // ===== INPUT CHANGE (supports nested fields) =====
-const handleInputChange = ({ target: { name, value } }) => {
+  const handleInputChange = ({ target: { name, value } }) => {
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       setBusinessDetails(prev => ({
@@ -223,155 +221,143 @@ const handleInputChange = ({ target: { name, value } }) => {
     }
   };
 
-// ===== LOGO UPLOAD =====
-const handleLogoClick = () => {
-  logoInputRef.current?.click();
-};
+  // ===== LOGO UPLOAD =====
+  const handleLogoClick = () => {
+    logoInputRef.current?.click();
+  };
 
-const handleLogoChange = async e => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  e.target.value = null;
+  const handleLogoChange = async e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = null;
 
-  // שחרור הזכרון של preview קודם אם היה blob
-  if (businessDetails.logo?.preview?.startsWith('blob:')) {
-    URL.revokeObjectURL(businessDetails.logo.preview);
-  }
-
-  // יצירת preview חדש
-  const preview = URL.createObjectURL(file);
-  setBusinessDetails(prev => ({
-    ...prev,
-    logo: { preview }
-  }));
-
-  // בניית FormData והעלאה לשרת
-  const fd = new FormData();
-  fd.append('logo', file);
-
-  try {
-    const res = await API.put('/business/my/logo', fd);
-    if (res.status === 200) {
-      // לאחר העלאה מוצלחת, עדכון preview ו-publicId מהשרת
-      setBusinessDetails(prev => ({
-        ...prev,
-        logo: {
-          preview:  res.data.logo,
-          publicId: res.data.logoId
-        }
-      }));
-    } else {
-      console.warn('Logo upload failed:', res);
+    // שחרור הזכרון של preview קודם אם היה blob
+    if (businessDetails.logo?.preview?.startsWith('blob:')) {
+      URL.revokeObjectURL(businessDetails.logo.preview);
     }
-  } catch (err) {
-    console.error('Error uploading logo:', err);
-  } finally {
-    // שחרור הזכרון של ה-blob URL שנוצר
-    URL.revokeObjectURL(preview);
-  }
-};
 
+    // יצירת preview חדש
+    const preview = URL.createObjectURL(file);
+    setBusinessDetails(prev => ({
+      ...prev,
+      logo: { preview }
+    }));
 
-  
-  
+    // בניית FormData והעלאה לשרת
+    const fd = new FormData();
+    fd.append('logo', file);
+
+    try {
+      const res = await API.put('/business/my/logo', fd);
+      if (res.status === 200) {
+        // לאחר העלאה מוצלחת, עדכון preview ו-publicId מהשרת
+        setBusinessDetails(prev => ({
+          ...prev,
+          logo: {
+            preview:  res.data.logo,
+            publicId: res.data.logoId
+          }
+        }));
+      } else {
+        console.warn('Logo upload failed:', res);
+      }
+    } catch (err) {
+      console.error('Error uploading logo:', err);
+    } finally {
+      // שחרור הזכרון של ה-blob URL שנוצר
+      URL.revokeObjectURL(preview);
+    }
+  };
 
 
   // ===== MAIN IMAGES =====
   // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
 
   const handleMainImagesChange = async e => {
-  // 1) קבצים (עד 5)
-  const files = Array.from(e.target.files || []).slice(0, 5);
-  if (!files.length) return;
-  e.target.value = null;
+    // 1) קבצים (עד 5)
+    const files = Array.from(e.target.files || []).slice(0, 5);
+    if (!files.length) return;
+    e.target.value = null;
 
-  // 2) פריוויו מקומי - עדכון state עם התמונות החדשות
-  const tempPreviews = files.map(f => URL.createObjectURL(f));
-  setBusinessDetails(prev => ({
-    ...prev,
-    mainImages: [...prev.mainImages, ...tempPreviews]  // הוספת התמונות לפריוויו
-  }));
+    // 2) פריוויו מקומי - עדכון state עם התמונות החדשות
+    const tempPreviews = files.map(f => URL.createObjectURL(f));
+    setBusinessDetails(prev => ({
+      ...prev,
+      mainImages: [...prev.mainImages, ...tempPreviews]  // הוספת התמונות לפריוויו
+    }));
 
-  // 3) בניית FormData לשליחה לשרת
-  const fd = new FormData();
-  files.forEach(f => fd.append("main-images", f));
+    // 3) בניית FormData לשליחה לשרת
+    const fd = new FormData();
+    files.forEach(f => fd.append("main-images", f));
 
-  try {
-    // 4) שליחה לשרת
-    const res = await API.put("/business/my/main-images", fd);
+    try {
+      // 4) שליחה לשרת
+      const res = await API.put("/business/my/main-images", fd);
 
-    if (res.status === 200) {
-      // 5) חילוץ URL-ים ו־publicIds מה-response
-      const urls = (res.data.mainImages || []).slice(0, 5);
-      const ids = (res.data.mainImageIds || []).slice(0, 5);
+      if (res.status === 200) {
+        // 5) חילוץ URL-ים ו־publicIds מה-response
+        const urls = (res.data.mainImages || []).slice(0, 5);
+        const ids = (res.data.mainImageIds || []).slice(0, 5);
 
-      // 6) עדכון ה-state עם התוצאות מהשרת
-      setBusinessDetails(prev => ({
-        ...prev,
-        mainImages: urls,  // עדכון עם הכתובות שהתקבלו מהשרת
-        mainImageIds: ids  // עדכון עם ה-publicIds
-      }));
-    } else {
-      console.warn("העלאת תמונות ראשיות נכשלה:", res);
+        // 6) עדכון ה-state עם התוצאות מהשרת
+        setBusinessDetails(prev => ({
+          ...prev,
+          mainImages: urls,  // עדכון עם הכתובות שהתקבלו מהשרת
+          mainImageIds: ids  // עדכון עם ה-publicIds
+        }));
+      } else {
+        console.warn("העלאת תמונות ראשיות נכשלה:", res);
+      }
+    } catch (err) {
+      console.error("שגיאה בהעלאת תמונות ראשיות:", err);
+    } finally {
+      // 7) שחרור הזיכרון של ה־blob URLs (לאחר סיום)
+      tempPreviews.forEach(URL.revokeObjectURL);
     }
-  } catch (err) {
-    console.error("שגיאה בהעלאת תמונות ראשיות:", err);
-  } finally {
-    // 7) שחרור הזיכרון של ה־blob URLs (לאחר סיום)
-    tempPreviews.forEach(URL.revokeObjectURL);
-  }
-};
-
-  
-  
-  
-  
-
-  
+  };
 
   // Build.jsx
 
-// קודם כל, נשנה את החתימה כך שהפונקציה תקבל כבר את ה-publicId
-const handleDeleteMainImage = async publicId => {
-  console.log("🔴 Deleting publicId:", publicId);
-  if (!publicId) {
-    console.warn("⚠️ No publicId passed");
-    return;
-  }
+  // קודם כל, נשנה את החתימה כך שהפונקציה תקבל כבר את ה-publicId
+  const handleDeleteMainImage = async publicId => {
+    console.log("🔴 Deleting publicId:", publicId);
+    if (!publicId) {
+      console.warn("⚠️ No publicId passed");
+      return;
+    }
 
-  try {
-    // encodeURIComponent ימיר "/" ל־"%2F" כך שניתן לשלוח ל־path פרמטר עם תת־תיקיה
-    const encodedId = encodeURIComponent(publicId);
-    const res = await API.delete(`/business/my/main-images/${encodedId}`);
+    try {
+      // encodeURIComponent ימיר "/" ל־"%2F" כך שניתן לשלוח ל־path פרמטר עם תת־תיקיה
+      const encodedId = encodeURIComponent(publicId);
+      const res = await API.delete(`/business/my/main-images/${encodedId}`);
 
-    console.log("🟢 DELETE status:", res.status);
-    if (res.status === 204) {
-      setBusinessDetails(prev => {
-        // מצא את האינדקס של התמונה שנמחקה
-        const idx = prev.mainImageIds.indexOf(publicId);
-        if (idx === -1) return prev;
-        // העתק שני המערכים ושחרר את הפריט המתאים בכל אחד
-        const mainImages   = [...prev.mainImages];
-        const mainImageIds = [...prev.mainImageIds];
-        mainImages.splice(idx, 1);
-        mainImageIds.splice(idx, 1);
-        return {
-          ...prev,
-          mainImages,
-          mainImageIds
-        };
-      });
-      console.log("✅ Removed:", publicId);
-    } else {
-      console.warn("❌ DELETE failed:", res);
+      console.log("🟢 DELETE status:", res.status);
+      if (res.status === 204) {
+        setBusinessDetails(prev => {
+          // מצא את האינדקס של התמונה שנמחקה
+          const idx = prev.mainImageIds.indexOf(publicId);
+          if (idx === -1) return prev;
+          // העתק שני המערכים ושחרר את הפריט המתאים בכל אחד
+          const mainImages   = [...prev.mainImages];
+          const mainImageIds = [...prev.mainImageIds];
+          mainImages.splice(idx, 1);
+          mainImageIds.splice(idx, 1);
+          return {
+            ...prev,
+            mainImages,
+            mainImageIds
+          };
+        });
+        console.log("✅ Removed:", publicId);
+      } else {
+        console.warn("❌ DELETE failed:", res);
+        alert("שגיאה במחיקת תמונה");
+      }
+    } catch (err) {
+      console.error("🚨 Error:", err);
       alert("שגיאה במחיקת תמונה");
     }
-  } catch (err) {
-    console.error("🚨 Error:", err);
-    alert("שגיאה במחיקת תמונה");
-  }
-};
-
+  };
 
 
   const openMainImageEdit = idx => {
@@ -403,60 +389,56 @@ const handleDeleteMainImage = async publicId => {
   // בתוך Build.jsx
 
   const handleGalleryChange = async e => {
-  const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
-  if (!files.length) return;
-  e.target.value = null;
+    const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
+    if (!files.length) return;
+    e.target.value = null;
 
-  // 1️⃣ פריוויו מקומי
-  const tempPreviews = files.map(f => URL.createObjectURL(f));
-  setBusinessDetails(prev => ({
-    ...prev,
-    gallery: [...prev.gallery, ...tempPreviews]
-  }));
+    // 1️⃣ פריוויו מקומי
+    const tempPreviews = files.map(f => URL.createObjectURL(f));
+    setBusinessDetails(prev => ({
+      ...prev,
+      gallery: [...prev.gallery, ...tempPreviews]
+    }));
 
-  // 2️⃣ ממשיכים להעלות לשרת
-  const fd = new FormData();
-  files.forEach(f => fd.append("gallery", f));
-  try {
-    const res = await API.put("/business/my/gallery", fd, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
-    if (res.status === 200) {
-      // 3️⃣ קבלת כתובות מהשרת + cache-busting
-      const urls = (res.data.gallery || []).map(u => `${u}?v=${Date.now()}`);
-      const ids  = res.data.galleryImageIds || [];
-      setBusinessDetails(prev => ({
-        ...prev,
-        gallery:         urls,
-        galleryImageIds: ids
-      }));
+    // 2️⃣ ממשיכים להעלות לשרת
+    const fd = new FormData();
+    files.forEach(f => fd.append("gallery", f));
+    try {
+      const res = await API.put("/business/my/gallery", fd, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      if (res.status === 200) {
+        // 3️⃣ קבלת כתובות מהשרת + cache-busting
+        const urls = (res.data.gallery || []).map(u => `${u}?v=${Date.now()}`);
+        const ids  = res.data.galleryImageIds || [];
+        setBusinessDetails(prev => ({
+          ...prev,
+          gallery:         urls,
+          galleryImageIds: ids
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ שגיאה בהעלאת גלריה");
+    } finally {
+      // 4️⃣ שחרור הזכרון של הפריוויוים המקומיים
+      tempPreviews.forEach(URL.revokeObjectURL);
     }
-  } catch (err) {
-    console.error(err);
-    alert("❌ שגיאה בהעלאת גלריה");
-  } finally {
-    // 4️⃣ שחרור הזכרון של הפריוויוים המקומיים
-    tempPreviews.forEach(URL.revokeObjectURL);
-  }
-};
+  };
 
-  
-   // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
-  
     
+  // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
   
-  
-    
-   const handleDeleteGalleryImage = async publicId => {
+
+  const handleDeleteGalleryImage = async publicId => {
     if (!publicId) return;
-  
+
     console.log("🔴 Deleting gallery publicId:", publicId);
-  
+
     try {
       const res = await API.delete(`/business/my/gallery/${encodeURIComponent(publicId)}`);
 
-
-        console.log("🟢 DELETE status:", res.status);
+      console.log("🟢 DELETE status:", res.status);
       if (res.status === 204) {
         setBusinessDetails(prev => {
           // מצא את האינדקס של התמונה בגלריה
@@ -483,13 +465,12 @@ const handleDeleteMainImage = async publicId => {
       alert("שגיאה במחיקת תמונה בגלריה");
     }
   };
-  
-                          
-  
+
+
   const handleEditImage = idx => {
     console.log("Edit gallery image:", idx);
   };
-  
+
 
   // ===== SAVE =====
   const handleSave = async () => {
@@ -534,33 +515,33 @@ const handleDeleteMainImage = async publicId => {
     }
   };
 
-      
+
   // ===== TOP BAR =====
   const renderTopBar = () => {
     const avg = businessDetails.reviews.length
       ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
       : 0;
-  
+
     return (
-  <div className="topbar-preview">
-    {/* לוגו */}
-    <div className="logo-circle" onClick={handleLogoClick}>
-      {businessDetails.logo?.preview ? (
-        <img src={businessDetails.logo.preview} className="logo-img" />
-      ) : businessDetails.logo ? (
-        <img src={businessDetails.logo} className="logo-img" />
-      ) : (
-        <span>לוגו</span>
-      )}
-      <input
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        ref={logoInputRef}
-        onChange={handleLogoChange}
+      <div className="topbar-preview">
+        {/* לוגו */}
+        <div className="logo-circle" onClick={handleLogoClick}>
+          {businessDetails.logo?.preview ? (
+            <img src={businessDetails.logo.preview} className="logo-img" />
+          ) : businessDetails.logo ? (
+            <img src={businessDetails.logo} className="logo-img" />
+          ) : (
+            <span>לוגו</span>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            ref={logoInputRef}
+            onChange={handleLogoChange}
           />
         </div>
-  
+
         {/* שם העסק + דירוג */}
         <div className="name-rating">
           <h2>{businessDetails.businessName || "שם העסק"}</h2> {/* הצגת שם העסק */}
@@ -569,14 +550,14 @@ const handleDeleteMainImage = async publicId => {
             <span>{avg.toFixed(1)} / 5</span>
           </div>
         </div>
-  
+
         {/* קטגוריה מתחת לשם */}
         {businessDetails.category && (
           <p className="preview-category">
             <strong>קטגוריה:</strong> {businessDetails.category}
           </p>
         )}
-  
+
         {/* תיאור וטלפון מתחת לשם */}
         {businessDetails.description && (
           <p className="preview-description">
@@ -594,10 +575,8 @@ const handleDeleteMainImage = async publicId => {
           </p>
         )}
 
+        <hr className="divider" />
 
-<hr className="divider" />
-
-  
         {/* כפתורי הטאבים */}
         <div className="tabs">
           {TABS.map(tab => (
@@ -614,77 +593,84 @@ const handleDeleteMainImage = async publicId => {
       </div>
     );
   };
-  
-  
+
+
+  const renderTabContent = () => {
+    switch (currentTab) {
+      case "ראשי":
+        return (
+          <MainSection
+            businessDetails={businessDetails}
+            handleInputChange={handleInputChange}
+            handleMainImagesChange={handleMainImagesChange}
+            handleDeleteImage={handleDeleteMainImage}
+            handleEditImage={openMainImageEdit}
+            handleSave={handleSave}
+            showViewProfile={showViewProfile}
+            navigate={navigate}
+            currentUser={currentUser}
+            renderTopBar={renderTopBar}
+            logoInputRef={logoInputRef}
+            mainImagesInputRef={mainImagesInputRef}
+            isSaving={isSaving}
+          />
+        );
+      case "גלריה":
+        return (
+          <GallerySection
+            businessDetails={businessDetails}
+            galleryInputRef={galleryInputRef}
+            handleGalleryChange={handleGalleryChange}
+            handleDeleteImage={handleDeleteGalleryImage}
+            handleEditImage={handleEditImage}
+            renderTopBar={renderTopBar}
+          />
+        );
+      case "ביקורות":
+        return (
+          <ReviewsSection
+            reviews={businessDetails.reviews}
+            setReviews={r => setBusinessDetails(prev => ({ ...prev, reviews: r }))}
+            currentUser={currentUser}
+            renderTopBar={renderTopBar}
+          />
+        );
+      case " יומן":
+        return (
+          <ShopSection
+            setBusinessDetails={setBusinessDetails}
+            renderTopBar={renderTopBar}
+            workHours={workHours}
+            setWorkHours={setWorkHours}
+          />
+        );
+      case "צ'אט עם העסק":
+        return (
+          <ChatSection
+            businessDetails={businessDetails}
+            setBusinessDetails={setBusinessDetails}
+            renderTopBar={renderTopBar}
+          />
+        );
+      case "שאלות ותשובות":
+        return (
+          <FaqSection
+            faqs={businessDetails.faqs}
+            setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
+            currentUser={currentUser}
+            renderTopBar={renderTopBar}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="build-wrapper">
-      {currentTab === "ראשי" && (
-        <MainSection
-          businessDetails={businessDetails}
-          handleInputChange={handleInputChange}
-          handleMainImagesChange={handleMainImagesChange}
-          handleDeleteImage={handleDeleteMainImage}
-          handleEditImage={openMainImageEdit}
-          handleSave={handleSave}
-          showViewProfile={showViewProfile}
-          navigate={navigate}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
-          logoInputRef={logoInputRef}
-          mainImagesInputRef={mainImagesInputRef}
-          isSaving={isSaving}
-        />
-      )}
-
-      {currentTab === "גלריה" && (
-        <GallerySection
-          businessDetails={businessDetails}
-          galleryInputRef={galleryInputRef}
-          handleGalleryChange={handleGalleryChange}
-          handleDeleteImage={handleDeleteGalleryImage}
-          handleEditImage={handleEditImage}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
-      {currentTab === "ביקורות" && (
-        <ReviewsSection
-          reviews={businessDetails.reviews}
-          setReviews={r => setBusinessDetails(prev => ({ ...prev, reviews: r }))}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
-      {currentTab === " יומן" && (
-  <ShopSection
-  setBusinessDetails={setBusinessDetails}
-  renderTopBar={renderTopBar}
-  workHours={workHours}
-  setWorkHours={setWorkHours}
-/>
-
-)}
-
-
-
-      {currentTab === "צ'אט עם העסק" && (
-        <ChatSection
-          businessDetails={businessDetails}
-          setBusinessDetails={setBusinessDetails}
-          renderTopBar={renderTopBar}
-        />
-      )}
-
-      {currentTab === "שאלות ותשובות" && (
-        <FaqSection
-          faqs={businessDetails.faqs}
-          setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
-          currentUser={currentUser}
-          renderTopBar={renderTopBar}
-        />
-      )}
+      <Suspense fallback={<div>טוען...</div>}>
+        {renderTabContent()}
+      </Suspense>
 
       {isPopupOpen && (
         <div className="popup-overlay">
