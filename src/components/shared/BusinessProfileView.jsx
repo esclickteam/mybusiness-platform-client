@@ -40,6 +40,8 @@ export default function BusinessProfileView() {
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
+  const [faqs, setFaqs] = useState([]);
+  const [services, setServices] = useState([]);  // ← הוספתי את ה-state של services
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,6 +63,8 @@ export default function BusinessProfileView() {
     enabled: !!bizId,
     staleTime: 5 * 60 * 1000,
     onSuccess: (biz) => {
+      setFaqs(biz.faqs || []);
+      setServices(biz.services || []);  // ← מעדכן את services כאן
       // Prefetch important related data on business load
       queryClient.prefetchQuery({
         queryKey: ['workHours', bizId],
@@ -174,7 +178,7 @@ export default function BusinessProfileView() {
     mainImages = [],
     gallery = [],
     reviews = [],
-    faqs = [],
+    faqs: faqsData = [],
     address: { city = "" } = {},
   } = data;
 
@@ -307,7 +311,7 @@ export default function BusinessProfileView() {
                 {reviews.length ? (
                   reviews.map((r, i) => (
                     <div key={r._id || i} className="review-card improved">
-                      {/* תוכן הביקורת */} 
+                      {/* תוכן הביקורת */}
                     </div>
                   ))
                 ) : (
