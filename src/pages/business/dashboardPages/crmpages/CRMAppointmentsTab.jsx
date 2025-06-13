@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
@@ -12,10 +12,7 @@ const CRMAppointmentsTab = () => {
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
-  const [appointments, setAppointments] = useState([]);
-  const [services, setServices] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-
   const [newAppointment, setNewAppointment] = useState({
     clientName: "",
     clientPhone: "",
@@ -43,50 +40,40 @@ const CRMAppointmentsTab = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (!businessId) return;
+  // טעינת תיאומים עם React Query
+  const { data: appointments = [], refetch: refetchAppointments } = useQuery(
+    ['appointments', 'all-with-services', businessId],
+    () => API.get("/appointments/all-with-services").then(res => res.data),
+    { enabled: !!businessId }
+  );
 
-    // Prefetch the queries before fetching and setting state
-    queryClient.prefetchQuery(['appointments', 'all-with-services'], () =>
-      API.get("/appointments/all-with-services").then(res => res.data)
-    );
-    queryClient.prefetchQuery(['business', 'services'], () =>
-      API.get("/business/my/services").then(res => res.data.services)
-    );
-
-    async function fetchAppointmentsAndServices() {
-      try {
-        const [appointmentsRes, servicesRes] = await Promise.all([
-          API.get("/appointments/all-with-services"),
-          API.get("/business/my/services"),
-        ]);
-        setAppointments(appointmentsRes.data || []);
-        setServices(servicesRes.data.services || []);
-      } catch (err) {
-        console.error("Error loading appointments or services", err);
-      }
-    }
-    fetchAppointmentsAndServices();
-  }, [businessId, queryClient]);
+  // טעינת שירותים עם React Query
+  const { data: services = [] } = useQuery(
+    ['business', 'services', businessId],
+    () => API.get("/business/my/services").then(res => res.data.services),
+    { enabled: !!businessId }
+  );
 
   useEffect(() => {
     if (!socket) return;
 
     const onCreated = (appt) => {
-      setAppointments((prev) => {
-        if (prev.some((a) => a._id === appt._id)) return prev;
-        return [...prev, appt];
+      queryClient.setQueryData(['appointments', 'all-with-services', businessId], (old = []) => {
+        if (old.some(a => a._id === appt._id)) return old;
+        return [...old, appt];
       });
     };
 
     const onUpdated = (updatedAppt) => {
-      setAppointments((prev) =>
-        prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+      queryClient.setQueryData(['appointments', 'all-with-services', businessId], (old = []) =>
+        old.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
       );
     };
 
     const onDeleted = ({ id }) => {
-      setAppointments((prev) => prev.filter((appt) => appt._id !== id));
+      queryClient.setQueryData(['appointments', 'all-with-services', businessId], (old = []) =>
+        old.filter((appt) => appt._id !== id)
+      );
     };
 
     socket.on("appointmentCreated", onCreated);
@@ -98,9 +85,9 @@ const CRMAppointmentsTab = () => {
       socket.off("appointmentUpdated", onUpdated);
       socket.off("appointmentDeleted", onDeleted);
     };
-  }, [socket]);
+  }, [socket, queryClient, businessId]);
 
-  // פונקציה לסינון כפילויות לפי _id
+  // סינון כפילויות לפי _id
   const uniqueAppointments = (arr) => {
     const seen = new Set();
     return arr.filter((appt) => {
@@ -164,7 +151,8 @@ const CRMAppointmentsTab = () => {
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
         await API.delete(`/appointments/${id}`);
-        setAppointments((prev) => prev.filter((appt) => appt._id !== id));
+        // ריענון התיאומים
+        refetchAppointments();
       } catch {
         alert("❌ שגיאה במחיקת התיאום");
       }
@@ -181,9 +169,8 @@ const CRMAppointmentsTab = () => {
       }
       const res = await API.patch(`/appointments/${editId}`, updatedData);
       const updatedAppt = res.data.appt;
-      setAppointments((prev) =>
-        prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
-      );
+      // ריענון התיאומים
+      refetchAppointments();
     } catch (err) {
       alert("❌ שגיאה בשמירת השינוי");
     }
@@ -220,10 +207,6 @@ const CRMAppointmentsTab = () => {
     });
   };
 
-  // =====================
-  // כאן הורדתי את useEffect ששולח אוטומטית
-
-  // הפונקציה לאישור תיאום (יצירת פגישה) עם מניעת לחיצות כפולות
   const handleConfirmAppointment = async () => {
     if (isSaving) return; // מונע לחיצות כפולות
 
@@ -254,7 +237,8 @@ const CRMAppointmentsTab = () => {
         duration: 0,
       });
       const createdAppt = res.data.appt || res.data;
-      setAppointments((prev) => [...prev, createdAppt]);
+      // ריענון תיאומים אחרי יצירה
+      refetchAppointments();
       setShowAddForm(false);
       setNewAppointment({
         clientName: "",
