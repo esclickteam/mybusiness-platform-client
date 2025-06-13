@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api";
@@ -33,18 +33,11 @@ const CRMAppointmentsTab = () => {
     time: "",
   });
 
-  const [editId, setEditId] = useState(null);
-  const [editData, setEditData] = useState({
-    clientName: "",
-    clientPhone: "",
-    address: "",
-    email: "",
-    note: "",
-    serviceId: "",
-    serviceName: "",
-    date: "",
-    time: "",
-  });
+  // שמירת ID של התיאום הראשוני (אם נוצר)
+  const [newApptId, setNewApptId] = useState(null);
+
+  // debounce ref לשמירת תיאום ראשוני
+  const saveTimeoutRef = useRef(null);
 
   // טעינת תיאומים ושירותים
   useEffect(() => {
@@ -201,55 +194,9 @@ const CRMAppointmentsTab = () => {
     }
   }, [editData.date, editId]);
 
-  // שמירת תיאום חדש
+  // שמירת תיאום חדש רגיל (כבר לא בשימוש, אפשר להחליף בלחיצה על "קבע פגישה")
   const handleAddAppointment = async () => {
-    if (
-      !newAppointment.clientName ||
-      !newAppointment.clientPhone ||
-      !newAppointment.date ||
-      !newAppointment.time ||
-      !newAppointment.serviceId
-    ) {
-      alert("יש למלא שם, טלפון, שירות, תאריך ושעה");
-      return;
-    }
-
-    const service = services.find((s) => s._id === newAppointment.serviceId);
-    const duration = service?.duration || 30;
-
-    try {
-      // יצירת תיאום עם סטטוס חדש
-      const res = await API.post("/appointments", {
-        businessId,
-        serviceId: newAppointment.serviceId,
-        date: newAppointment.date,
-        time: newAppointment.time,
-        name: newAppointment.clientName,
-        phone: newAppointment.clientPhone,
-        address: newAppointment.address,
-        email: newAppointment.email,
-        note: newAppointment.note,
-        duration,
-        status: "pending", // או "new" לפי מה שמתאים לך
-      });
-
-      setShowAddForm(false);
-      setNewAppointment({
-        clientName: "",
-        clientPhone: "",
-        address: "",
-        email: "",
-        note: "",
-        serviceId: "",
-        serviceName: "",
-        date: "",
-        time: "",
-      });
-
-      // העדכון יגיע דרך socket.io, אין צורך לרענן ידנית
-    } catch {
-      alert("❌ שגיאה ביצירת התיאום");
-    }
+    alert('אנא השתמש בכפתור "קבע פגישה" לשמירת התיאום.');
   };
 
   // מחיקת תיאום
@@ -317,6 +264,131 @@ const CRMAppointmentsTab = () => {
     return statusMap[appt.status] || appt.status;
   };
 
+  // debounce לשמירת תיאום ראשוני אוטומטית
+  useEffect(() => {
+    if (!newAppointment.clientName || !newAppointment.clientPhone) return;
+
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        if (newApptId) {
+          // עדכון תיאום קיים
+          const res = await API.patch(`/appointments/${newApptId}`, {
+            name: newAppointment.clientName,
+            phone: newAppointment.clientPhone,
+            address: newAppointment.address,
+            email: newAppointment.email,
+            note: newAppointment.note,
+            serviceId: newAppointment.serviceId,
+            date: newAppointment.date,
+            time: newAppointment.time,
+            serviceName: newAppointment.serviceName,
+            status: "not_completed",
+          });
+          const updatedAppt = res.data.appt;
+          setAppointments((prev) =>
+            prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+          );
+        } else {
+          // יצירת תיאום חדש
+          const res = await API.post("/appointments", {
+            businessId,
+            name: newAppointment.clientName,
+            phone: newAppointment.clientPhone,
+            address: newAppointment.address,
+            email: newAppointment.email,
+            note: newAppointment.note,
+            serviceId: newAppointment.serviceId,
+            date: newAppointment.date,
+            time: newAppointment.time,
+            serviceName: newAppointment.serviceName,
+            duration: 0,
+            status: "not_completed",
+          });
+          const createdAppt = res.data.appt || res.data;
+          setNewApptId(createdAppt._id);
+          setAppointments((prev) => [...prev, createdAppt]);
+        }
+      } catch (err) {
+        console.error("Error saving preliminary appointment:", err);
+      }
+    }, 1500);
+
+    return () => clearTimeout(saveTimeoutRef.current);
+  }, [
+    newAppointment.clientName,
+    newAppointment.clientPhone,
+    newAppointment.address,
+    newAppointment.email,
+    newAppointment.note,
+    newAppointment.serviceId,
+    newAppointment.date,
+    newAppointment.time,
+    newAppointment.serviceName,
+    newApptId,
+    businessId,
+  ]);
+
+  // לחיצה על "קבע פגישה" - עדכון סטטוס ל-pending (מאושר)
+  const handleConfirmAppointment = async () => {
+    if (!newApptId) {
+      alert("אנא מלא לפחות שם וטלפון כדי לשמור תיאום ראשוני");
+      return;
+    }
+    if (
+      !newAppointment.date ||
+      !newAppointment.time ||
+      !newAppointment.serviceId
+    ) {
+      alert("אנא מלא שירות, תאריך ושעה");
+      return;
+    }
+
+    try {
+      const res = await API.patch(`/appointments/${newApptId}/status`, {
+        status: "pending",
+      });
+      const updatedAppt = res.data.appt;
+
+      setAppointments((prev) =>
+        prev.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+      );
+
+      setNewAppointment({
+        clientName: "",
+        clientPhone: "",
+        address: "",
+        email: "",
+        note: "",
+        serviceId: "",
+        serviceName: "",
+        date: "",
+        time: "",
+      });
+      setNewApptId(null);
+      setShowAddForm(false);
+    } catch (err) {
+      alert("❌ שגיאה בקביעת התיאום");
+      console.error(err);
+    }
+  };
+
+  // טיפול בשינוי שדות בטופס
+  const handleInputChange = (field, value) => {
+    setNewAppointment((prev) => {
+      let newState = { ...prev, [field]: value };
+
+      if (field === "serviceId") {
+        const service = services.find((s) => s._id === value);
+        newState.serviceName = service ? service.name : "";
+        newState.time = "";
+      }
+
+      return newState;
+    });
+  };
+
   return (
     <div className="crm-appointments-tab">
       <h2>📆 תיאומים / הזמנות</h2>
@@ -329,7 +401,24 @@ const CRMAppointmentsTab = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        <button className="add-btn" onClick={() => setShowAddForm(!showAddForm)}>
+        <button
+          className="add-btn"
+          onClick={() => {
+            setShowAddForm((show) => !show);
+            setNewApptId(null);
+            setNewAppointment({
+              clientName: "",
+              clientPhone: "",
+              address: "",
+              email: "",
+              note: "",
+              serviceId: "",
+              serviceName: "",
+              date: "",
+              time: "",
+            });
+          }}
+        >
           ➕ הוסף תיאום
         </button>
       </div>
@@ -340,45 +429,35 @@ const CRMAppointmentsTab = () => {
             type="text"
             placeholder="שם מלא"
             value={newAppointment.clientName}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, clientName: e.target.value })
-            }
+            onChange={(e) => handleInputChange("clientName", e.target.value)}
           />
           <input
             type="tel"
             placeholder="טלפון"
             value={newAppointment.clientPhone}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, clientPhone: e.target.value })
-            }
+            onChange={(e) => handleInputChange("clientPhone", e.target.value)}
           />
           <input
             type="text"
             placeholder="כתובת"
             value={newAppointment.address}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, address: e.target.value })
-            }
+            onChange={(e) => handleInputChange("address", e.target.value)}
           />
           <input
             type="email"
             placeholder="אימייל (לשליחת אישור)"
             value={newAppointment.email}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, email: e.target.value })
-            }
+            onChange={(e) => handleInputChange("email", e.target.value)}
           />
           <textarea
             className="full-width"
             placeholder="הערה (לא חובה)"
             value={newAppointment.note}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, note: e.target.value })
-            }
+            onChange={(e) => handleInputChange("note", e.target.value)}
           />
           <select
             value={newAppointment.serviceId}
-            onChange={(e) => handleServiceChange(e.target.value)}
+            onChange={(e) => handleInputChange("serviceId", e.target.value)}
           >
             <option value="">בחר שירות</option>
             {services.map((s) => (
@@ -390,16 +469,16 @@ const CRMAppointmentsTab = () => {
           <input
             type="date"
             value={newAppointment.date}
-            onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
+            onChange={(e) => handleInputChange("date", e.target.value)}
           />
           <SelectTimeFromSlots
             date={newAppointment.date}
             selectedTime={newAppointment.time}
-            onChange={(time) => setNewAppointment({ ...newAppointment, time })}
+            onChange={(time) => handleInputChange("time", time)}
             businessId={businessId}
             serviceId={newAppointment.serviceId}
           />
-          <button onClick={handleAddAppointment}>📩 שמור תיאום</button>
+          <button onClick={handleConfirmAppointment}>📅 קבע פגישה</button>
         </div>
       )}
 
