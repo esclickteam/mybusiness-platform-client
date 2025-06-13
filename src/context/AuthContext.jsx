@@ -2,23 +2,26 @@ import React, { createContext, useContext, useState, useEffect, useRef } from "r
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 import { io } from "socket.io-client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [initialized, setInitialized] = useState(false);
+  const initRan = useRef(false);
+
   const ws = useRef(null);
   const refreshingTokenPromise = useRef(null);
 
-  // רענון טוקן עם queue כדי למנוע קריאות מקבילות
+  // queue לרענון טוקן
   const refreshAccessToken = async () => {
-    if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
+    if (refreshingTokenPromise.current) {
+      return refreshingTokenPromise.current;
+    }
     refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then(response => {
         const newToken = response.data.accessToken;
@@ -36,32 +39,32 @@ export function AuthProvider({ children }) {
     return refreshingTokenPromise.current;
   };
 
-  // יצירת חיבור socket.IO עם הטוקן
-  const createSocketConnection = (token, currentUser) => {
+  const createSocketConnection = (token, user) => {
     if (ws.current) {
       ws.current.disconnect();
       ws.current = null;
     }
     if (!token) {
-      console.warn("No token for Socket.IO");
+      console.warn("No token available for Socket.IO connection");
       return;
     }
+
     ws.current = io("https://api.esclick.co.il", {
       path: "/socket.io",
       transports: ["websocket"],
       auth: {
         token,
-        role: currentUser?.role,
-        businessId: currentUser?.businessId || currentUser?.business?._id,
+        role: user?.role,
+        businessId: user?.businessId || user?.business?._id,
       },
     });
 
     ws.current.on("connect", () => {
-      console.log("✅ Socket.IO connected", ws.current.id);
+      console.log("✅ Socket.IO connected, socket id:", ws.current.id);
     });
 
     ws.current.on("disconnect", (reason) => {
-      console.log("🔴 Socket.IO disconnected", reason);
+      console.log("🔴 Socket.IO disconnected, reason:", reason);
     });
 
     ws.current.on("tokenExpired", async () => {
@@ -69,55 +72,130 @@ export function AuthProvider({ children }) {
       try {
         const newToken = await refreshAccessToken();
         if (newToken) {
+          console.log("🔄 Got new token, reconnecting socket");
           ws.current.auth.token = newToken;
           ws.current.disconnect();
           ws.current.connect();
         } else {
-          logout();
+          setUser(null);
+          localStorage.removeItem("token");
+          navigate("/login");
         }
       } catch {
-        logout();
+        setUser(null);
+        localStorage.removeItem("token");
+        navigate("/login");
       }
     });
 
     ws.current.on("connect_error", async (err) => {
-      console.error("Socket connect error:", err.message);
+      console.error("Socket.IO connect error:", err.message);
       if (err.message === "jwt expired") {
         try {
           const newToken = await refreshAccessToken();
           if (newToken) {
             createSocketConnection(newToken, user);
           } else {
-            logout();
+            setUser(null);
+            localStorage.removeItem("token");
+            navigate("/login");
           }
         } catch {
-          logout();
+          setUser(null);
+          localStorage.removeItem("token");
+          navigate("/login");
         }
       }
     });
   };
 
-  // React Query - טעינת פרטי משתמש
-  const {
-    data: userData,
-    isLoading,
-    isError,
-    refetch: refetchUser,
-    isFetching,
-  } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token");
+  useEffect(() => {
+    if (initRan.current) return;
+    initRan.current = true;
 
-      API.defaults.headers['Authorization'] = `Bearer ${token}`;
-      const res = await API.get("/auth/me", { withCredentials: true });
-      return res.data;
-    },
-    refetchOnWindowFocus: false,
-    retry: false,
-    enabled: !!localStorage.getItem("token"),
-    onSuccess: (data) => {
+    const initialize = async () => {
+      setLoading(true);
+      let token = localStorage.getItem("token");
+
+      if (token) {
+        API.defaults.headers['Authorization'] = `Bearer ${token}`;
+
+        try {
+          const { data } = await API.get("/auth/me", { withCredentials: true });
+          if (data.businessId) {
+            localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+          }
+          setUser({
+            userId: data.userId,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            subscriptionPlan: data.subscriptionPlan,
+            businessId: data.businessId || null,
+          });
+          createSocketConnection(token, data);
+        } catch {
+          const newToken = await refreshAccessToken();
+          if (newToken) {
+            try {
+              const { data } = await API.get("/auth/me", { withCredentials: true });
+              setUser({
+                userId: data.userId,
+                name: data.name,
+                email: data.email,
+                role: data.role,
+                subscriptionPlan: data.subscriptionPlan,
+                businessId: data.businessId || null,
+              });
+              token = newToken;
+              createSocketConnection(token, data);
+            } catch {
+              setUser(null);
+              localStorage.removeItem("token");
+              token = null;
+            }
+          } else {
+            setUser(null);
+            localStorage.removeItem("token");
+            token = null;
+          }
+        }
+      } else {
+        setUser(null);
+        token = null;
+      }
+
+      setLoading(false);
+      setInitialized(true);
+    };
+
+    initialize();
+
+    return () => {
+      if (ws.current) {
+        ws.current.disconnect();
+      }
+    };
+  }, []);
+
+  const login = async (email, password, options = { skipRedirect: false }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
+      const { accessToken } = response.data;
+
+      if (!accessToken) throw new Error("No access token received");
+
+      localStorage.setItem("token", accessToken);
+      API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
+
+      const { data } = await API.get("/auth/me", { withCredentials: true });
+      if (data.businessId) {
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+      }
+
       setUser({
         userId: data.userId,
         name: data.name,
@@ -126,47 +204,14 @@ export function AuthProvider({ children }) {
         subscriptionPlan: data.subscriptionPlan,
         businessId: data.businessId || null,
       });
-      createSocketConnection(localStorage.getItem("token"), data);
-    },
-    onError: async (error) => {
-      try {
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          refetchUser();
-        } else {
-          logout();
-        }
-      } catch {
-        logout();
-      }
-    },
-  });
 
-  // פונקציית התחברות עם שימוש בנתונים טריים מה־refetchUser
-  const login = async (email, password, options = { skipRedirect: false }) => {
-    setError(null);
+      createSocketConnection(accessToken, data);
 
-    try {
-      const response = await API.post(
-        "/auth/login",
-        { email: email.trim().toLowerCase(), password },
-        { withCredentials: true }
-      );
-      const { accessToken } = response.data;
-
-      if (!accessToken) throw new Error("No access token");
-
-      localStorage.setItem("token", accessToken);
-      API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
-
-      // טען את פרטי המשתמש עם React Query מחדש
-      const { data: freshUserData } = await refetchUser();
-
-      if (!options.skipRedirect && freshUserData) {
+      if (!options.skipRedirect && data) {
         let path = "/";
-        switch (freshUserData.role) {
+        switch (data.role) {
           case "business":
-            path = `/business/${freshUserData.businessId}/dashboard`;
+            path = `/business/${data.businessId}/dashboard`;
             break;
           case "customer":
             path = "/client/dashboard";
@@ -184,55 +229,64 @@ export function AuthProvider({ children }) {
         navigate(path, { replace: true });
       }
 
-      return freshUserData;
+      return data;
     } catch (e) {
       if (e.response?.status === 401) {
-        setError("❌ אימייל או סיסמה שגויים");
-        navigate("/login");
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+          setError("❌ אימייל או סיסמה שגויים");
+          navigate("/login");
+        }
       } else {
         setError("❌ שגיאה בשרת, נסה שוב");
       }
       throw e;
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
+    setLoading(true);
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
-    } catch {
-      // התעלם משגיאות ביציאה
+      setUser(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("businessDetails");
+      delete API.defaults.headers['Authorization'];
+
+      if (ws.current) {
+        ws.current.disconnect();
+        ws.current = null;
+      }
+
+      setSuccessMessage("✅ נותקת בהצלחה");
+      navigate("/", { replace: true });
+    } catch (e) {
+      console.warn("Logout failed:", e.response?.data || e.message || e);
+    } finally {
+      setLoading(false);
     }
-    setUser(null);
-    localStorage.removeItem("token");
-    delete API.defaults.headers['Authorization'];
-    if (ws.current) {
-      ws.current.disconnect();
-      ws.current = null;
-    }
-    // ניקוי cache של React Query
-    queryClient.clear();
-    navigate("/", { replace: true });
   };
 
   useEffect(() => {
-    return () => {
-      if (ws.current) {
-        ws.current.disconnect();
-      }
-    };
-  }, []);
+    if (successMessage) {
+      const t = setTimeout(() => setSuccessMessage(null), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [successMessage]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        loading: isLoading || isFetching,
-        error: isError,
+        loading,
+        initialized,
+        error,
         login,
         logout,
         refreshAccessToken,
-        socket: ws.current,
-        initialized: !isLoading && !!user,
+        socket: ws.current, // <-- הוספתי כאן את ה-socket
       }}
     >
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
