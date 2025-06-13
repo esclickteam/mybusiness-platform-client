@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import ReviewForm from "../../pages/business/dashboardPages/buildTabs/ReviewForm";
-import ServicesSelector from "../ServicesSelector";
-import ClientCalendar from "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 import { useDashboardStats } from "../../context/DashboardSocketContext";
-
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
 import "./BusinessProfileView.css";
+
+const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildTabs/ReviewForm"));
+const ServicesSelector = lazy(() => import("../ServicesSelector"));
+const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
 
 const TABS = [
   "ראשי",
@@ -52,7 +52,6 @@ export default function BusinessProfileView() {
 
   const hasIncrementedRef = useRef(false);
 
-  // React Query: Fetch business data
   const {
     data,
     isLoading,
@@ -65,14 +64,12 @@ export default function BusinessProfileView() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // React Query: Fetch work hours
   const { data: workHoursData } = useQuery({
     queryKey: ['workHours', bizId],
     queryFn: () => fetchWorkHours(bizId),
     enabled: !!bizId
   });
 
-  // Prefetch work hours once bizId is set
   useEffect(() => {
     if (!bizId) return;
     queryClient.prefetchQuery({
@@ -81,14 +78,12 @@ export default function BusinessProfileView() {
     });
   }, [bizId, queryClient]);
 
-  // Sync state with fetched business data
   useEffect(() => {
     if (!data) return;
     setFaqs(data.faqs || []);
     setServices(data.services || []);
   }, [data]);
 
-  // Sync schedule state with fetched workHoursData
   useEffect(() => {
     if (!workHoursData) return;
     let sched = {};
@@ -102,7 +97,6 @@ export default function BusinessProfileView() {
     setSchedule(sched);
   }, [workHoursData]);
 
-  // Fetch favorite status
   useEffect(() => {
     if (!user || !bizId) return;
     (async () => {
@@ -116,7 +110,6 @@ export default function BusinessProfileView() {
     })();
   }, [user, bizId]);
 
-  // Increment views count once
   useEffect(() => {
     if (!bizId) return;
     if (hasIncrementedRef.current) return;
@@ -134,7 +127,6 @@ export default function BusinessProfileView() {
       });
   }, [bizId]);
 
-  // Update profile views count from socket stats
   const socketStats = useDashboardStats();
   useEffect(() => {
     if (socketStats?.views_count !== undefined && bizId) {
@@ -198,7 +190,6 @@ export default function BusinessProfileView() {
   const handleTabChange = (tab) => {
     setCurrentTab(tab);
     setSelectedService(null);
-    console.log("Switched tab to:", tab);
   };
 
   return (
@@ -308,11 +299,13 @@ export default function BusinessProfileView() {
                 {showReviewModal && (
                   <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
                     <div className="#modal-inner" onClick={(e) => e.stopPropagation()}>
-                      <ReviewForm
-                        businessId={bizId}
-                        onSubmit={handleReviewSubmit}
-                        isSubmitting={isSubmitting}
-                      />
+                      <Suspense fallback={<div>טוען טופס ביקורת...</div>}>
+                        <ReviewForm
+                          businessId={bizId}
+                          onSubmit={handleReviewSubmit}
+                          isSubmitting={isSubmitting}
+                        />
+                      </Suspense>
                       <button className="modal-close" onClick={() => setShowReviewModal(false)}>
                         סגור
                       </button>
@@ -363,8 +356,10 @@ export default function BusinessProfileView() {
               </div>
             )}
             {currentTab === "יומן" && (
-              <div className="booking-tab">
-                <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
+              <>
+                <Suspense fallback={<div>טוען בחירת שירות...</div>}>
+                  <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
+                </Suspense>
                 {!selectedService ? (
                   <p className="choose-prompt">אנא בחרי שירות כדי להציג את היומן</p>
                 ) : (
@@ -372,17 +367,17 @@ export default function BusinessProfileView() {
                     <button className="back-btn" onClick={() => setSelectedService(null)}>
                       ← שנה שירות
                     </button>
-                    <div className="calendar-fullwidth">
+                    <Suspense fallback={<div>טוען יומן תורים...</div>}>
                       <ClientCalendar
                         workHours={schedule}
                         selectedService={selectedService}
                         onBackToList={() => setSelectedService(null)}
                         businessId={bizId}
                       />
-                    </div>
+                    </Suspense>
                   </>
                 )}
-              </div>
+              </>
             )}
           </div>
         </div>
