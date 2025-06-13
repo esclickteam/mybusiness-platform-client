@@ -14,7 +14,6 @@ export function AuthProvider({ children }) {
   const ws = useRef(null);
   const refreshingTokenPromise = useRef(null);
 
-  // רענון Access Token - queue למניעת קריאות מקבילות
   const refreshAccessToken = async () => {
     if (refreshingTokenPromise.current) {
       return refreshingTokenPromise.current;
@@ -36,7 +35,6 @@ export function AuthProvider({ children }) {
     return refreshingTokenPromise.current;
   };
 
-  // יצירת חיבור Socket.IO
   const createSocketConnection = (token, user) => {
     if (ws.current) {
       ws.current.disconnect();
@@ -101,103 +99,96 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // useQuery לטעינת פרטי המשתמש
-  const { data: user, error, isLoading, refetch, isFetching } = useQuery(
-    ['authUser'],
-    async () => {
+  // useQuery לטעינת פרטי המשתמש (עדכון סינטקס)
+  const { data: user, error, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ['authUser'],
+    queryFn: async () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token");
       API.defaults.headers['Authorization'] = `Bearer ${token}`;
       const { data } = await API.get("/auth/me", { withCredentials: true });
       return data;
     },
-    {
-      staleTime: 5 * 60 * 1000, // 5 דקות
-      retry: false,
-      onSuccess: (data) => {
-        if (data.businessId) {
-          localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-        }
-        createSocketConnection(localStorage.getItem("token"), data);
-      },
-      onError: async () => {
-        try {
-          const newToken = await refreshAccessToken();
-          if (newToken) {
-            await refetch();
-          } else {
-            queryClient.setQueryData('authUser', null);
-            localStorage.removeItem("token");
-            navigate("/login");
-          }
-        } catch {
+    staleTime: 5 * 60 * 1000, // 5 דקות
+    retry: false,
+    onSuccess: (data) => {
+      if (data.businessId) {
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+      }
+      createSocketConnection(localStorage.getItem("token"), data);
+    },
+    onError: async () => {
+      try {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          await refetch();
+        } else {
           queryClient.setQueryData('authUser', null);
           localStorage.removeItem("token");
           navigate("/login");
         }
-      },
-      enabled: !!localStorage.getItem("token"),
-    }
-  );
+      } catch {
+        queryClient.setQueryData('authUser', null);
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
+    },
+    enabled: !!localStorage.getItem("token"),
+  });
 
-  // useMutation להתחברות
-  const loginMutation = useMutation(
-    async ({ email, password }) => {
+  // useMutation להתחברות (עדכון סינטקס)
+  const loginMutation = useMutation({
+    mutationFn: async ({ email, password }) => {
       const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
       if (!response.data.accessToken) throw new Error("No access token");
       localStorage.setItem("token", response.data.accessToken);
       API.defaults.headers['Authorization'] = `Bearer ${response.data.accessToken}`;
       return response.data.accessToken;
     },
-    {
-      onSuccess: async () => {
-        await refetch();
-        if (user) {
-          let path = "/";
-          switch (user.role) {
-            case "business":
-              path = `/business/${user.businessId}/dashboard`;
-              break;
-            case "customer":
-              path = "/client/dashboard";
-              break;
-            case "worker":
-              path = "/staff/dashboard";
-              break;
-            case "manager":
-              path = "/manager/dashboard";
-              break;
-            case "admin":
-              path = "/admin/dashboard";
-              break;
-          }
-          navigate(path, { replace: true });
+    onSuccess: async () => {
+      await refetch();
+      if (user) {
+        let path = "/";
+        switch (user.role) {
+          case "business":
+            path = `/business/${user.businessId}/dashboard`;
+            break;
+          case "customer":
+            path = "/client/dashboard";
+            break;
+          case "worker":
+            path = "/staff/dashboard";
+            break;
+          case "manager":
+            path = "/manager/dashboard";
+            break;
+          case "admin":
+            path = "/admin/dashboard";
+            break;
         }
-      },
-    }
-  );
+        navigate(path, { replace: true });
+      }
+    },
+  });
 
-  // useMutation להתנתקות
-  const logoutMutation = useMutation(
-    async () => {
+  // useMutation להתנתקות (עדכון סינטקס)
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
       await API.post("/auth/logout", {}, { withCredentials: true });
     },
-    {
-      onSuccess: () => {
-        queryClient.setQueryData('authUser', null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("businessDetails");
-        delete API.defaults.headers['Authorization'];
-        if (ws.current) {
-          ws.current.disconnect();
-          ws.current = null;
-        }
-        navigate("/", { replace: true });
+    onSuccess: () => {
+      queryClient.setQueryData('authUser', null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("businessDetails");
+      delete API.defaults.headers['Authorization'];
+      if (ws.current) {
+        ws.current.disconnect();
+        ws.current = null;
       }
+      navigate("/", { replace: true });
     }
-  );
+  });
 
-  // ניקוי חיבור Socket.IO כשקומפוננטה מתפרקת
   useEffect(() => {
     return () => {
       if (ws.current) {
