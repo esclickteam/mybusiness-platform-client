@@ -5,8 +5,10 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/socketContext';
 import { UnreadMessagesProvider } from './context/UnreadMessagesContext'; 
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// ✅ ייבוא CSS ראשי — הכרחי לאנימציית spin
+import './index.css';
 
 // Polyfill ל-Buffer בדפדפן:
 import { Buffer } from 'buffer';
