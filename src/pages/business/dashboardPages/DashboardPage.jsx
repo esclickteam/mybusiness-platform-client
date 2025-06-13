@@ -110,17 +110,19 @@ const DashboardPage = () => {
     keepPreviousData: true,
   });
 
-  // Prefetch לטאבים נוספים שייתכן ויידרשו בקרוב
+  // Prefetch לטאבים/נתונים נוספים
   useEffect(() => {
     if (!businessId) return;
+
     queryClient.prefetchQuery(
       ["dashboardStats", businessId],
       () => fetchDashboardStats(businessId, refreshAccessToken),
       { staleTime: 5 * 60 * 1000 }
     );
 
-    // כאן אפשר להוסיף prefetch של API נוספים, לדוגמה:
-    // queryClient.prefetchQuery(['messages', businessId], ...);
+    // לדוגמה, כאן אפשר להוסיף prefetch של נתונים נוספים רלוונטיים לדשבורד:
+    // queryClient.prefetchQuery(['appointments', businessId], () => fetchAppointments(businessId));
+    // queryClient.prefetchQuery(['messages', businessId], () => fetchMessages(businessId));
   }, [businessId, queryClient, refreshAccessToken]);
 
   // Unread messages reset on messages tab change
@@ -152,12 +154,9 @@ const DashboardPage = () => {
     }
   }, [location.pathname, updateMessagesCount]);
 
-  if (!initialized) {
-    return <p className="loading-text">⏳ טוען נתונים…</p>;
-  }
-  if (user?.role !== "business" || !businessId) {
+  if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
+  if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  }
 
   // Setup socket with real-time events
   useEffect(() => {
@@ -275,11 +274,14 @@ const DashboardPage = () => {
   if (isLoading && !localData) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
-  // השתמש בנתונים מה־cache או מה־localStorage (אם קיימים)
   const effectiveStats = stats || localData || {};
 
-  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments) ? effectiveStats.todaysAppointments : [];
-  const appointments = Array.isArray(effectiveStats?.appointments) ? effectiveStats.appointments : [];
+  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments)
+    ? effectiveStats.todaysAppointments
+    : [];
+  const appointments = Array.isArray(effectiveStats?.appointments)
+    ? effectiveStats.appointments
+    : [];
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
