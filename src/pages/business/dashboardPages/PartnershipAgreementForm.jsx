@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
-import SignAgreement from './SignAgreement';
-
 
 const partnershipAgreementFormInitial = {
   yourBusinessName: "",
   partnerBusinessName: "",
-  toBusinessId: "",            // חשוב! הוסף מזהה העסק השותף לשליחה
+  toBusinessId: "", // חשוב! מזהה העסק השותף לשליחה
   agreementTitle: "",
   partnershipDescription: "",
   agreementSupplies: "",
@@ -296,7 +294,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         </label>
       </div>
 
-      {/* חתימות - אפשר להחליף פה עם קומפוננטת SignAgreement אם תרצה */}
+      {/* חתימות */}
       <div style={{ marginTop: 20 }}>
         <label>חתימה (של החותם הראשון):</label>
         {isSender ? (
@@ -326,16 +324,14 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
               </>
             )}
           </>
+        ) : formData.senderSignature ? (
+          <img
+            src={formData.senderSignature}
+            alt="חתימת השולח"
+            style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
+          />
         ) : (
-          formData.senderSignature ? (
-            <img
-              src={formData.senderSignature}
-              alt="חתימת השולח"
-              style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
-            />
-          ) : (
-            <p>החותם הראשון עדיין לא חתם</p>
-          )
+          <p>החותם הראשון עדיין לא חתם</p>
         )}
       </div>
 
@@ -368,16 +364,14 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
               </>
             )}
           </>
+        ) : formData.receiverSignature ? (
+          <img
+            src={formData.receiverSignature}
+            alt="חתימת המקבל"
+            style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
+          />
         ) : (
-          formData.receiverSignature ? (
-            <img
-              src={formData.receiverSignature}
-              alt="חתימת המקבל"
-              style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
-            />
-          ) : (
-            <p>החותם השני עדיין לא חתם</p>
-          )
+          <p>החותם השני עדיין לא חתם</p>
         )}
       </div>
 
