@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
-import SignatureCanvas from "react-signature-canvas";
+import React, { useState, useEffect } from "react";
 import API from "@api";
 import "./CreateAgreementForm.css";
 
@@ -9,7 +8,7 @@ export default function CreateAgreementForm({
   fromBusinessName, 
   partnerBusiness, 
   currentUserBusinessId,
-  proposalId, // <-- הוסף כאן
+  proposalId, 
 }) {
   const [formData, setFormData] = useState({
     fromBusinessName: fromBusinessName || "",
@@ -36,7 +35,6 @@ export default function CreateAgreementForm({
 
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-  const sigPadRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -50,13 +48,10 @@ export default function CreateAgreementForm({
     }
   };
 
-  const clearSignature = () => sigPadRef.current?.clear();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // ולידציה בסיסית לשדות
     if (!formData.partnerBusinessName.trim()) {
       setError("יש להזין שם עסק שותף.");
       return;
@@ -97,24 +92,11 @@ export default function CreateAgreementForm({
     setSending(true);
 
     try {
-      const signatureDataUrl = sigPadRef.current.isEmpty()
-        ? ""
-        : sigPadRef.current.getTrimmedCanvas().toDataURL();
-
-      // קביעה מי החותם הנוכחי - השולח או המקבל
-      const isSender = fromBusinessId === currentUserBusinessId;
-
-      // בונה את ה-payload עם חתימה מתאימה לשולח או למקבל
       const payload = {
         ...formData,
         invitedBusinessId: partnerBusiness._id,
-        senderSignature: isSender ? signatureDataUrl : "",
-        receiverSignature: !isSender ? signatureDataUrl : "",
-        proposalId, // <-- שולח את מזהה ההצעה
+        proposalId,
       };
-
-      console.log("CreateAgreementForm received proposalId prop:", proposalId);
-      console.log("Sending partnership agreement payload:", payload);
 
       const res = await API.post("/partnershipAgreements", payload);
 
@@ -260,22 +242,6 @@ export default function CreateAgreementForm({
         />
         סעיף סודיות
       </label>
-
-      <div className="signature-container">
-        <label>חתימה (אופציונלי):</label>
-        <SignatureCanvas
-          ref={sigPadRef}
-          penColor="black"
-          canvasProps={{
-            className: "sigCanvas",
-            width: 400,
-            height: 150,
-          }}
-        />
-        <button type="button" onClick={clearSignature} className="clear-signature-btn">
-          נקה חתימה
-        </button>
-      </div>
 
       {error && <p className="error-message">{error}</p>}
 
