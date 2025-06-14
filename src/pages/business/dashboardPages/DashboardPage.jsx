@@ -335,7 +335,7 @@ if (isLoading && !localData) return <DashboardSkeleton />;
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
-        <div ref={nextActionsRef}>
+        <div ref={nextActionsRef} className="actions-container full-width">
           <MemoizedNextActions
             stats={{
               weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
