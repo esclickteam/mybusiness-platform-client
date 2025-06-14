@@ -230,6 +230,7 @@ export default function CollabFindPartnerTab({
         <Box sx={{ ...modalStyle, maxWidth: 600, maxHeight: "80vh", overflowY: "auto" }}>
           {createAgreementPartner && (
             <CreatePartnershipAgreementForm
+            fromBusinessName={myBusinessName} 
               partnerBusiness={createAgreementPartner}
               onCreated={(agreement) => {
                 setSnackbarMessage("ההסכם נוצר בהצלחה");
