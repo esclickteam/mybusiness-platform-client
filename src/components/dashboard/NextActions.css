@@ -5,8 +5,12 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   max-width: 400px;
   margin: auto;
-  width: 100%;        /* הוספתי כדי לתפוס רוחב מלא */
-  box-sizing: border-box; /* למנוע גלילה לא רצויה */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* מרכז אופקי */
+  justify-content: center; /* מרכז אנכי */
+  text-align: center;      /* מרכז טקסט */
 }
 
 .actions-container.full-width {
