@@ -240,7 +240,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
             {msg.agreementId && (
               <>
                 {/* העסק השולח תמיד רואה צפייה בהסכם */}
-                {userBusinessId === msg.fromBusinessId._id.toString() && (
+                {String(userBusinessId) === String(msg.fromBusinessId._id) && (
                   <button
                     onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
                     style={buttonStylePurple}
@@ -250,7 +250,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
                 )}
 
                 {/* העסק השני - אם חתם כבר, רואה צפייה בהסכם */}
-                {userBusinessId === msg.toBusinessId._id.toString() &&
+                {String(userBusinessId) === String(msg.toBusinessId._id) &&
                   msg.agreementId.signatures?.invitedBusiness?.signed && (
                     <button
                       onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
@@ -261,7 +261,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
                   )}
 
                 {/* העסק השני - אם לא חתם עדיין, רואה כפתור חתימה */}
-                {userBusinessId === msg.toBusinessId._id.toString() &&
+                {String(userBusinessId) === String(msg.toBusinessId._id) &&
                   !msg.agreementId.signatures?.invitedBusiness?.signed && (
                     <button
                       onClick={() => alert("כאן תפתח חתימה על ההסכם")}
