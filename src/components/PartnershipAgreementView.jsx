@@ -57,7 +57,11 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     const signatureDataUrl = sigPadRef.current.getTrimmedCanvas().toDataURL();
     setSaving(true);
     try {
-      await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl });
+      if (userSide === "invitedBusiness") {
+        await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl });
+      } else if (userSide === "createdBy") {
+        await API.patch(`/partnershipAgreements/${agreementId}`, { signatureDataUrl });
+      }
       setShowSign(false);
       const res = await API.get(`/partnershipAgreements/${agreementId}`);
       setAgreement(res.data);
@@ -116,7 +120,13 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
       <hr />
 
       {/* כפתורי פעולה לפי סוג משתמש ומצב חתימה */}
-      {userSide === "createdBy" && (
+      {userSide === "createdBy" && !userSigned && !showSign && (
+        <button className="sign-button" onClick={() => setShowSign(true)}>
+          חתום עכשיו
+        </button>
+      )}
+
+      {userSide === "createdBy" && userSigned && (
         <button
           className="view-agreement-button"
           onClick={() => alert("הצג הסכם במודאל או ניווט")}
@@ -148,13 +158,11 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
             ref={sigPadRef}
           />
           <div className="signature-buttons">
-            <button onClick={() => sigPadRef.current.clear()}>נקה</button>
+            <button onClick={() => sigPadRef.current.clear()} disabled={saving}>נקה</button>
             <button onClick={handleSaveSignature} disabled={saving}>
               {saving ? "שומר..." : "שמור חתימה"}
             </button>
-            <button onClick={() => setShowSign(false)} disabled={saving}>
-              בטל
-            </button>
+            <button onClick={() => setShowSign(false)} disabled={saving}>בטל</button>
           </div>
         </div>
       )}

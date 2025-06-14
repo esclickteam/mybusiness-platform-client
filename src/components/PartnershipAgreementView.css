@@ -29,16 +29,25 @@
   text-transform: capitalize;
 }
 
-.status-partially_signed {
+/* עדכון שמות סטטוסים כדי להתאים לסטטוס מהקוד */
+.status-ממתין {
   background-color: #f0ad4e;
   color: #fff;
 }
 
+.status-ממתין-לאישור,
+.status-ממתין-לחתימת-שותף {
+  background-color: #f0ad4e;
+  color: #fff;
+}
+
+.status-מאושר,
 .status-fully_signed {
   background-color: #5cb85c;
   color: #fff;
 }
 
+.status-בוטל,
 .status-cancelled {
   background-color: #d9534f;
   color: #fff;
@@ -53,7 +62,7 @@ hr {
 .signatures-container {
   display: flex;
   gap: 2rem;
-  justify-content: start;
+  justify-content: flex-start;
   flex-wrap: wrap;
 }
 
