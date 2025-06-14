@@ -1,32 +1,42 @@
 /* עיצוב עבור טאב 4 – שיתופי פעולה פעילים */
 .collab-tag {
-    margin-top: 0.5rem;
-    display: inline-block;
-    padding: 4px 10px;
-    background-color: #e3f2fd;
-    color: #1565c0;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border-radius: 12px;
-  }
-  
-  .collab-card p strong {
-    color: var(--accent);
-    font-weight: 600;
-  }
-  
-  .collab-card .collab-form-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    border-radius: 8px;
-    font-weight: 500;
-    background-color: #9b59b6;
-    color: white;
-    border: none;
-    transition: background-color 0.3s ease;
-  }
-  
-  .collab-card .collab-form-button:hover {
-    background-color: #6c5ce7;
-  }
-  
+  margin-top: 0.5rem;
+  display: inline-block;
+  padding: 4px 10px;
+  background-color: #e3f2fd;
+  color: #1565c0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 12px;
+}
+
+.collab-card p strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.collab-card {
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  direction: rtl;
+  text-align: right;
+}
+
+.collab-card .collab-form-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  font-weight: 500;
+  background-color: #9b59b6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.collab-card .collab-form-button:hover {
+  background-color: #6c5ce7;
+}

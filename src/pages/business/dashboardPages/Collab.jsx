@@ -7,7 +7,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import CollabActiveTab from "./collabtabs/CollabActiveTab";
+import CollabActiveTab from "./collabtabs/CollabActiveTab"; // ייבוא קיים
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
@@ -190,9 +190,10 @@ export default function Collab() {
       )}
 
       {tab === tabMap.collaborations && (
-        <CollaborationsTab
-          refreshSent={refreshSent}
-          refreshReceived={refreshReceived}
+        <CollabActiveTab
+          userBusinessId={user?.businessId}
+          token={user?.token}
+          isDevUser={isDevUser}
         />
       )}
 
@@ -243,62 +244,6 @@ function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
 
       {activeView === "agreements" && (
         <PartnershipAgreementsTab userBusinessId={userBusinessId} />
-      )}
-    </div>
-  );
-}
-
-// קומפוננטה פנימית לטאב שיתופי פעולה (שנשלחו והתקבלו)
-function CollaborationsTab({ refreshSent, refreshReceived }) {
-  const [sentProposals, setSentProposals] = useState([]);
-  const [receivedProposals, setReceivedProposals] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchProposals() {
-      setLoading(true);
-      try {
-        const sentRes = await API.get("/business/my/proposals/sent");
-        const receivedRes = await API.get("/business/my/proposals/received");
-        setSentProposals(sentRes.data.proposalsSent || []);
-        setReceivedProposals(receivedRes.data.proposalsReceived || []);
-      } catch (err) {
-        console.error("Error fetching proposals:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProposals();
-  }, [refreshSent, refreshReceived]);
-
-  if (loading) return <div className="p-6 text-center">🔄 טוען שיתופי פעולה...</div>;
-
-  return (
-    <div className="collaborations-container">
-      <h3>שיתופי פעולה שנשלחו</h3>
-      {sentProposals.length === 0 ? (
-        <p className="empty-message">לא נשלחו שיתופי פעולה</p>
-      ) : (
-        sentProposals.map((proposal) => (
-          <div key={proposal._id} className="collaboration-card">
-            <p><strong>אל:</strong> {proposal.toBusinessId?.businessName || "-"}</p>
-            <p><strong>סטטוס:</strong> {proposal.status}</p>
-            <p><strong>הודעה:</strong> {proposal.message || "-"}</p>
-          </div>
-        ))
-      )}
-
-      <h3 style={{ marginTop: 40 }}>שיתופי פעולה שהתקבלו</h3>
-      {receivedProposals.length === 0 ? (
-        <p className="empty-message">לא התקבלו שיתופי פעולה</p>
-      ) : (
-        receivedProposals.map((proposal) => (
-          <div key={proposal._id} className="collaboration-card">
-            <p><strong>מ:</strong> {proposal.fromBusinessId?.businessName || "-"}</p>
-            <p><strong>סטטוס:</strong> {proposal.status}</p>
-            <p><strong>הודעה:</strong> {proposal.message || "-"}</p>
-          </div>
-        ))
       )}
     </div>
   );
