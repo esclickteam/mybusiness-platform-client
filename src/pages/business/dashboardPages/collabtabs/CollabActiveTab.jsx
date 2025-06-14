@@ -10,22 +10,31 @@ export default function CollabActiveTab({ userBusinessId, token }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!userBusinessId || !token) return;
+    console.log("useEffect triggered with:", { userBusinessId, token });
+    if (!userBusinessId || !token) {
+      console.warn("Missing userBusinessId or token, abort fetching");
+      return;
+    }
 
     async function fetchProposals() {
       setLoading(true);
       setError(null);
       try {
+        console.log("Fetching active, sent and received proposals");
         const [activeRes, sentRes, receivedRes] = await Promise.all([
           API.get("/business/my/proposals/active"),
           API.get("/business/my/proposals/sent"),
           API.get("/business/my/proposals/received"),
         ]);
+        console.log("Active proposals response:", activeRes.data);
+        console.log("Sent proposals response:", sentRes.data);
+        console.log("Received proposals response:", receivedRes.data);
 
         setActiveProposals(activeRes.data.activeProposals || []);
         setSentProposals(sentRes.data.proposalsSent || []);
         setReceivedProposals(receivedRes.data.proposalsReceived || []);
       } catch (err) {
+        console.error("Error fetching proposals:", err);
         setError(err.message || "שגיאה בטעינת ההצעות");
       } finally {
         setLoading(false);
