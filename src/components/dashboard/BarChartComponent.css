@@ -7,7 +7,7 @@
   direction: rtl;
 
   width: 100%;
-  max-width: 750px;
+  max-width: 100%; /* ביטול ההגבלה של 750px */
   margin: 0 auto;
   padding-bottom: 3.5rem;
 
@@ -43,7 +43,7 @@
   }
 
   .graph-box .recharts-responsive-container {
-    min-width: 640px; /* מאפשר גלילה אופקית לגרפים צפופים */
+    min-width: 600px; /* מספיק כדי לאפשר גלילה אופקית מבלי להיות יותר מדי רחב */
   }
 
   .graph-title {
