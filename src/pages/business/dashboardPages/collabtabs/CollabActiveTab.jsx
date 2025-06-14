@@ -100,7 +100,7 @@ export default function CollabActiveTab({ userBusinessId, token }) {
               <b>עסק מקבל:</b> {proposal.toBusinessId?.businessName || ""}
             </div>
             <div>
-              <b>תוכן ההצעה:</b> {proposal.title || proposal.message || "-"}
+              <b>תוכן ההצעה:</b>  {proposal.title || proposal.message || "-"}
             </div>
             <div>
               <b>סטטוס:</b> {proposal.status}
