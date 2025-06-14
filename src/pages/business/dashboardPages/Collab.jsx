@@ -1,3 +1,4 @@
+// Collab.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import API from "@api";
@@ -7,7 +8,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import CollabActiveTab from "./collabtabs/CollabActiveTab"; // ייבוא קיים
+import CollabActiveTab from "./collabtabs/CollabActiveTab"; 
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
@@ -34,6 +35,8 @@ export default function Collab() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+
+  console.log("Collab component - user from AuthContext:", user);
 
   const devMode = true;
 
@@ -204,7 +207,7 @@ export default function Collab() {
 
 // קומפוננטה פנימית לטאב שיתופי פעולה והסכמים
 function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
-  const [activeView, setActiveView] = useState("active"); // 'active' | 'agreements'
+  const [activeView, setActiveView] = React.useState("active"); // 'active' | 'agreements'
 
   const tabStyle = (tab) => ({
     backgroundColor: activeView === tab ? "#6b46c1" : "#ccc",
