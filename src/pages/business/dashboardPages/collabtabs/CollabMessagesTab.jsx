@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
+import PartnershipAgreementsTab from "../../business/dashboardPages/PartnershipAgreementsTab";
 
-export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
+export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBusinessId }) {
   const [sentMessages, setSentMessages] = useState([]);
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("sent"); // 'sent', 'received', 'accepted'
+  const [selectedAgreementId, setSelectedAgreementId] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -31,6 +33,32 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
     fetchMessages();
   }, [refreshFlag]);
 
+  if (selectedAgreementId) {
+    return (
+      <div>
+        <button
+          onClick={() => setSelectedAgreementId(null)}
+          style={{
+            marginBottom: 12,
+            backgroundColor: "#ccc",
+            padding: "6px 12px",
+            borderRadius: 6,
+            border: "none",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          ← חזור להצעות
+        </button>
+        <PartnershipAgreementsTab
+          selectedId={selectedAgreementId}
+          userBusinessId={userBusinessId}
+          onClose={() => setSelectedAgreementId(null)}
+        />
+      </div>
+    );
+  }
+
   // סינון לפי הטאב הנבחר
   let messagesToShow = [];
   if (filter === "sent") messagesToShow = sentMessages;
@@ -38,7 +66,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
   else if (filter === "accepted")
     messagesToShow = [...sentMessages, ...receivedMessages].filter((m) => m.status === "accepted");
 
-  // פונקציות לשינוי סטטוס וביטול כפי שהיו (עדכן את הסטים המתאימים)
+  // פונקציות לשינוי סטטוס וביטול (כמו שהיו)
 
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
@@ -56,7 +84,6 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
   const handleAccept = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
-      // עדכון סטטוס בשתי הרשימות
       setSentMessages((prev) =>
         prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "accepted" } : p))
       );
@@ -222,6 +249,25 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
                   : "אושר ב־"}
                 {new Date(msg.createdAt).toLocaleDateString("he-IL")}
               </p>
+
+              {/* כפתור צפייה בהסכם */}
+              {filter === "accepted" && msg.agreementId && (
+                <button
+                  onClick={() => setSelectedAgreementId(msg.agreementId)}
+                  style={{
+                    marginTop: 12,
+                    backgroundColor: "#6b46c1",
+                    color: "white",
+                    padding: "8px 16px",
+                    borderRadius: 8,
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  צפייה בהסכם
+                </button>
+              )}
 
               <div
                 style={{
