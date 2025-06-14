@@ -1,85 +1,236 @@
 .howitworks-container {
-    text-align: center; /* ממרכז את כל הטקסט */
-    max-width: 900px; /* מגביל את הרוחב של התוכן */
-    margin: 0 auto; /* ממרכז את התוכן */
-    padding: 20px;
-    direction: rtl; /* קביעת כיוון הטקסט לימין */
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 50px 40px;
+  direction: rtl;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background: #fff;
+  color: #444;
+  letter-spacing: 0.02em;
+}
+
+.howitworks-title {
+  font-size: 3.5rem; /* 56px */
+  font-weight: 900;
+  color: #4b0082; /* אינדיגו עמוק */
+  margin-bottom: 40px;
+  text-align: center;
+  text-shadow: 1px 1px 5px rgba(75, 0, 130, 0.15);
+}
+
+.howitworks-subtitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 60px;
+  text-align: center;
+  line-height: 1.6;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.howitworks-section {
+  background: #faf9fc;
+  border-radius: 20px;
+  padding: 35px 45px;
+  margin-bottom: 50px;
+  box-shadow: 0 12px 30px rgba(75, 0, 130, 0.08);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  cursor: default;
+}
+
+.howitworks-section:hover {
+  box-shadow: 0 18px 48px rgba(75, 0, 130, 0.18);
+  transform: translateY(-8px);
+}
+
+.howitworks-section h2 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #4b0082;
+  border-bottom: 3.5px solid #a020f0;
+  padding-bottom: 14px;
+  margin-bottom: 32px;
+  letter-spacing: 0.02em;
+}
+
+.howitworks-section h3 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #3c3c3c;
+  margin-top: 30px;
+  margin-bottom: 16px;
+}
+
+.howitworks-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.howitworks-section ul li {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 18px;
+  padding-right: 38px;
+  position: relative;
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
+.howitworks-section ul li:hover {
+  color: #7a32cc;
+  font-weight: 600;
+}
+
+.howitworks-section ul li::before {
+  content: "✔";
+  position: absolute;
+  right: 0;
+  top: 4px;
+  font-size: 1.5rem;
+  color: #a020f0;
+  background: rgba(160, 32, 240, 0.15);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  text-align: center;
+  line-height: 26px;
+  font-weight: 900;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.howitworks-section ul li:hover::before {
+  background: #a020f0;
+  color: #fff;
+}
+
+b {
+  color: #4b0082;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 70px;
+  padding: 30px 20px;
+  border-top: 1px solid #ddd;
+  font-size: 0.9rem;
+  color: #666;
+  background-color: #f9f8fc;
+  letter-spacing: 0.02em;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 25px;
+}
+
+.footer-links li {
+  display: inline-block;
+  margin: 0 14px;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: #4b0082;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #7a32cc;
+  text-decoration: underline;
+}
+
+.footer .copyright {
+  font-size: 0.85rem;
+  color: #aaa;
+  font-weight: 400;
+}
+
+/* רספונסיביות למובייל קטן עד 480px */
+@media (max-width: 480px) {
+  .howitworks-container {
+    padding: 30px 15px;
+    margin: 30px 10px;
   }
-  
+
   .howitworks-title {
-    font-size: 36px;
-    font-weight: bold;
-    color: #800080;
-    margin-bottom: 20px;
+    font-size: 2.2rem; /* כ-35px */
+    margin-bottom: 25px;
   }
-  
+
   .howitworks-subtitle {
-    font-size: 20px;
-    color: #4a4a4a;
-    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 40px;
+  }
+
+  .howitworks-section {
+    padding: 25px 20px;
     margin-bottom: 30px;
   }
-  
-  .howitworks-section {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  .howitworks-section h2 {
+    font-size: 1.6rem; /* כ-26px */
     margin-bottom: 20px;
   }
-  
-  .howitworks-section h2 {
-    font-size: 24px;
-    color: #800080;
-  }
-  
+
   .howitworks-section h3 {
-    font-size: 20px;
-    color: #333;
+    font-size: 1.1rem;
+    margin-top: 18px;
+    margin-bottom: 12px;
   }
-  
-  .howitworks-section ul {
-    list-style: none;
-    padding: 0;
-  }
-  
+
   .howitworks-section ul li {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #555;
+    font-size: 1rem;
+    padding-right: 22px;
+    margin-bottom: 12px;
   }
-  
-  /* ממרכז את התחתית */
-  .footer {
-    text-align: center;
-    margin-top: 50px;
-    padding: 20px;
+
+  .howitworks-section ul li::before {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 1.1rem;
+    top: 3px;
   }
-  
-  .footer-links {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 10px;
+}
+
+/* טאבלט עד 768px */
+@media (max-width: 768px) {
+  .howitworks-container {
+    padding: 40px 25px;
+    margin: 40px 15px;
   }
-  
-  .footer-links li {
-    display: inline-block;
-    margin: 5px 10px;
-    color: #333;
-    cursor: pointer;
+
+  .howitworks-title {
+    font-size: 2.8rem; /* כ-45px */
   }
-  
-  .footer-links a {
-    text-decoration: none;
-    color: #333;
+
+  .howitworks-subtitle {
+    font-size: 1.15rem;
   }
-  
-  .footer-links a:hover {
-    text-decoration: underline;
+
+  .howitworks-section {
+    padding: 30px 30px;
+    margin-bottom: 40px;
   }
-  
-  .copyright {
-    font-size: 14px;
-    color: #000;
+
+  .howitworks-section h2 {
+    font-size: 1.9rem;
   }
-  
+
+  .howitworks-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .howitworks-section ul li {
+    font-size: 1.1rem;
+    padding-right: 28px;
+  }
+}
