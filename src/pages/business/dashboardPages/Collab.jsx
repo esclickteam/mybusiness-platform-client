@@ -16,8 +16,8 @@ const tabMap = {
   findPartner: 1,
   messages: 2,
   collabsAndAgreements: 3,
-  collaborations: 4,
-  market: 5,
+  // collaborations: 4,  // מחוק
+  market: 4,             // עדכנתי את המספור
 };
 
 const tabLabels = {
@@ -25,7 +25,7 @@ const tabLabels = {
   findPartner: "מצא שותף עסקי",
   messages: "הצעות",
   collabsAndAgreements: "שיתופי פעולה והסכמים",
-  collaborations: "שיתופי פעולה",
+  // collaborations: "שיתופי פעולה",  // מחוק
   market: "מרקט שיתופים",
 };
 
@@ -38,7 +38,7 @@ export default function Collab() {
   console.log("Collab component - user from AuthContext:", user);
 
   const devMode = true;
-  const token = localStorage.getItem("token"); // <-- משיכה מ-localStorage
+  const token = localStorage.getItem("token");
 
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
 
@@ -192,13 +192,13 @@ export default function Collab() {
         />
       )}
 
-      {tab === tabMap.collaborations && (
+      {/* {tab === tabMap.collaborations && (
         <CollabActiveTab
           userBusinessId={user?.businessId}
           token={token}  
           isDevUser={isDevUser}
         />
-      )}
+      )} */}
 
       {tab === tabMap.market && <CollabMarketTab isDevUser={isDevUser} />}
     </div>
