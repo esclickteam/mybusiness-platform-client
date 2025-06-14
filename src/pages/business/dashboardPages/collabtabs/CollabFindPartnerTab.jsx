@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";  // הוספת import של useNavigate
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -23,6 +24,7 @@ export default function CollabFindPartnerTab({
   isDevUser,
   handleSendProposal,
 }) {
+  const navigate = useNavigate(); // הוספת hook לניווט
   const myBusinessId = localStorage.getItem("myBusinessId");
   const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
@@ -73,8 +75,11 @@ export default function CollabFindPartnerTab({
     return true;
   });
 
+  // עדכון הפונקציה עם ניווט לפרופיל העסק
   const handleOpenProfile = (business) => {
-    // לוגיקה לפתיחת פרופיל אם צריך
+    if (business._id) {
+      navigate(`/business-profile/${business._id}`);
+    }
   };
 
   const openChatModal = (business) => {
