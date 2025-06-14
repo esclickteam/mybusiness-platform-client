@@ -185,6 +185,7 @@ export default function Collab() {
           refreshFlag={refreshSent + refreshReceived}
           onStatusChange={handleStatusChange}
           onOpenAgreement={openAgreementFromProposal} // העברת callback לפתיחת חוזה
+          userBusinessId={user?.businessId}
         />
       )}
 
