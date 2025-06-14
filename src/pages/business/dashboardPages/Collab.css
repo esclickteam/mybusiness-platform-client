@@ -1,5 +1,3 @@
-/* Collab.css – עיצוב חדש לפרופיל עסקי כולל טאבים וקטגוריות */
-
 :root {
   --main-bg: linear-gradient(145deg, #f5f2fc, #faf9ff);
   --card-bg: #ffffff;
@@ -20,8 +18,8 @@ body {
   background: var(--main-bg);
   font-family: 'Segoe UI', Tahoma, sans-serif;
   color: var(--text-dark);
-  direction: rtl;        /* הוספתי */
-  text-align: right;     /* הוספתי */
+  direction: rtl;
+  text-align: right;
 }
 
 /* טאבים עליונים */
@@ -35,7 +33,7 @@ body {
   padding: 1rem 0;
   background-color: #fbfaff;
   margin-bottom: 1rem;
-  direction: rtl;        /* הוספתי */
+  direction: rtl;
 }
 
 .tab {
@@ -74,7 +72,7 @@ body {
   gap: 12px;
   justify-content: center;
   margin: 1.5rem 0;
-  direction: rtl;        /* הוספתי */
+  direction: rtl;
 }
 
 .category-tab {
@@ -103,8 +101,8 @@ body {
   background: linear-gradient(to bottom right, #f5f2fc, #fdfbff);
   padding: 2rem;
   min-height: 100vh;
-  direction: rtl;       /* הוספתי */
-  text-align: right;    /* הוספתי */
+  direction: rtl;
+  text-align: right;
 }
 
 .collab-title {
@@ -127,7 +125,7 @@ body {
   flex-direction: column;
   gap: 1.5rem;
   transition: all 0.3s ease-in-out;
-  direction: rtl;      /* הוספתי */
+  direction: rtl;
 }
 
 .business-profile-card:hover {
@@ -141,7 +139,7 @@ body {
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
-  direction: rtl;      /* הוספתי */
+  direction: rtl;
 }
 
 .business-header-text {
@@ -191,6 +189,7 @@ body {
   list-style: disc;
 }
 
+/* עיצוב תיבת הודעה */
 .message-box textarea {
   width: 100%;
   padding: 0.8rem;
@@ -220,6 +219,7 @@ body {
   background-color: var(--accent);
 }
 
+/* תג סטטוס */
 .status-badge {
   padding: 4px 10px;
   border-radius: 10px;

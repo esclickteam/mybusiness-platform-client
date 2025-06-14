@@ -7,7 +7,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import CollabActiveTab from "./collabtabs/CollabActiveTab"; // ייבוא קיים
+import CollabActiveTab from "./collabtabs/CollabActiveTab";
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
@@ -274,35 +274,31 @@ function CollaborationsTab({ refreshSent, refreshReceived }) {
   if (loading) return <div className="p-6 text-center">🔄 טוען שיתופי פעולה...</div>;
 
   return (
-    <div style={{ maxWidth: 900, margin: "auto" }}>
+    <div className="collaborations-container">
       <h3>שיתופי פעולה שנשלחו</h3>
       {sentProposals.length === 0 ? (
-        <p>לא נשלחו שיתופי פעולה</p>
+        <p className="empty-message">לא נשלחו שיתופי פעולה</p>
       ) : (
-        <ul>
-          {sentProposals.map((proposal) => (
-            <li key={proposal._id} style={{ marginBottom: 10 }}>
-              <strong>אל: </strong> {proposal.toBusinessId?.businessName || "-"} <br />
-              <strong>סטטוס: </strong> {proposal.status} <br />
-              <strong>הודעה: </strong> {proposal.message || "-"}
-            </li>
-          ))}
-        </ul>
+        sentProposals.map((proposal) => (
+          <div key={proposal._id} className="collaboration-card">
+            <p><strong>אל:</strong> {proposal.toBusinessId?.businessName || "-"}</p>
+            <p><strong>סטטוס:</strong> {proposal.status}</p>
+            <p><strong>הודעה:</strong> {proposal.message || "-"}</p>
+          </div>
+        ))
       )}
 
       <h3 style={{ marginTop: 40 }}>שיתופי פעולה שהתקבלו</h3>
       {receivedProposals.length === 0 ? (
-        <p>לא התקבלו שיתופי פעולה</p>
+        <p className="empty-message">לא התקבלו שיתופי פעולה</p>
       ) : (
-        <ul>
-          {receivedProposals.map((proposal) => (
-            <li key={proposal._id} style={{ marginBottom: 10 }}>
-              <strong>מ: </strong> {proposal.fromBusinessId?.businessName || "-"} <br />
-              <strong>סטטוס: </strong> {proposal.status} <br />
-              <strong>הודעה: </strong> {proposal.message || "-"}
-            </li>
-          ))}
-        </ul>
+        receivedProposals.map((proposal) => (
+          <div key={proposal._id} className="collaboration-card">
+            <p><strong>מ:</strong> {proposal.fromBusinessId?.businessName || "-"}</p>
+            <p><strong>סטטוס:</strong> {proposal.status}</p>
+            <p><strong>הודעה:</strong> {proposal.message || "-"}</p>
+          </div>
+        ))
       )}
     </div>
   );
