@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import API from "../../../../api"; // עדכן אם נתיב ה-API שונה
+import API from "../../../../api";
 
 export default function CollabPendingTab({ isDevUser, userBusinessId, token }) {
   const [pendingCollabs, setPendingCollabs] = useState([]);
@@ -9,7 +9,8 @@ export default function CollabPendingTab({ isDevUser, userBusinessId, token }) {
   useEffect(() => {
     const fetchPendingCollabs = async () => {
       try {
-        const res = await API.get("/my/collaborations/pending", {
+        // עדכן את הנתיב לפי חיבור ה-router שלך בשרת
+        const res = await API.get("/collab-contracts/collaborations/pending", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
