@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import API from "@api"; // ייבוא ה-API
+import API from "@api";
 
 export default function CollabActiveTab({ userBusinessId, token }) {
-  const [view, setView] = useState("sent"); // "sent" | "received"
+  const [view, setView] = useState("active"); // "active" | "sent" | "received"
+  const [activeProposals, setActiveProposals] = useState([]);
   const [sentProposals, setSentProposals] = useState([]);
   const [receivedProposals, setReceivedProposals] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,8 +16,13 @@ export default function CollabActiveTab({ userBusinessId, token }) {
       setLoading(true);
       setError(null);
       try {
-        const sentRes = await API.get("/business/my/proposals/sent");
-        const receivedRes = await API.get("/business/my/proposals/received");
+        const [activeRes, sentRes, receivedRes] = await Promise.all([
+          API.get("/business/my/proposals/active"),
+          API.get("/business/my/proposals/sent"),
+          API.get("/business/my/proposals/received"),
+        ]);
+
+        setActiveProposals(activeRes.data.activeProposals || []);
         setSentProposals(sentRes.data.proposalsSent || []);
         setReceivedProposals(receivedRes.data.proposalsReceived || []);
       } catch (err) {
@@ -29,36 +35,29 @@ export default function CollabActiveTab({ userBusinessId, token }) {
     fetchProposals();
   }, [userBusinessId, token]);
 
-  const proposalsToShow = view === "sent" ? sentProposals : receivedProposals;
+  let proposalsToShow = [];
+  if (view === "active") proposalsToShow = activeProposals;
+  if (view === "sent") proposalsToShow = sentProposals;
+  if (view === "received") proposalsToShow = receivedProposals;
 
   return (
     <div>
       <div style={{ marginBottom: 20, display: "flex", justifyContent: "center", gap: 12 }}>
         <button
+          onClick={() => setView("active")}
+          style={buttonStyle(view === "active")}
+        >
+          שיתופי פעולה פעילים
+        </button>
+        <button
           onClick={() => setView("sent")}
-          style={{
-            backgroundColor: view === "sent" ? "#6b46c1" : "#ccc",
-            color: "white",
-            padding: "8px 16px",
-            border: "none",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
+          style={buttonStyle(view === "sent")}
         >
           הצעות שנשלחו
         </button>
         <button
           onClick={() => setView("received")}
-          style={{
-            backgroundColor: view === "received" ? "#6b46c1" : "#ccc",
-            color: "white",
-            padding: "8px 16px",
-            border: "none",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
+          style={buttonStyle(view === "received")}
         >
           הצעות שהתקבלו
         </button>
@@ -86,13 +85,13 @@ export default function CollabActiveTab({ userBusinessId, token }) {
             }}
           >
             <div>
-              <b>עסק שולח:</b> {proposal.fromBusinessId?.businessName || "לא ידוע"}
+              <b>עסק שולח:</b> {proposal.fromBusinessId?.businessName || proposal.partnerName || "לא ידוע"}
             </div>
             <div>
-              <b>עסק מקבל:</b> {proposal.toBusinessId?.businessName || "לא ידוע"}
+              <b>עסק מקבל:</b> {proposal.toBusinessId?.businessName || ""}
             </div>
             <div>
-              <b>כותרת הצעה:</b> {proposal.title || proposal.message || "-"}
+              <b>תוכן ההצעה:</b> {proposal.title || proposal.message || "-"}
             </div>
             <div>
               <b>סטטוס:</b> {proposal.status}
@@ -106,3 +105,13 @@ export default function CollabActiveTab({ userBusinessId, token }) {
     </div>
   );
 }
+
+const buttonStyle = (isActive) => ({
+  backgroundColor: isActive ? "#6b46c1" : "#ccc",
+  color: "white",
+  padding: "8px 16px",
+  border: "none",
+  borderRadius: 8,
+  cursor: "pointer",
+  fontWeight: "bold",
+});
