@@ -1,33 +1,54 @@
-// קומפוננטה מלאה לטאב 4 – שיתופי פעולה פעילים כולל נתוני דמו ובדיקה למשתמש דמו
-
 import React, { useEffect, useState } from "react";
 
-export default function CollabActiveTab({ isDevUser }) {
+export default function CollabActiveTab({ userBusinessId, token }) {
   const [activeCollabs, setActiveCollabs] = useState([]);
 
   useEffect(() => {
-    if (isDevUser) {
-      setActiveCollabs([
-        {
-          _id: "demo1",
-          partnerName: "מאיה שיווק דיגיטלי",
-          subject: "קמפיין קיץ",
-          startedAt: "2024-06-01"
-        },
-        {
-          _id: "demo2",
-          partnerName: "יוסי עיצוב גרפי",
-          subject: "קטלוג מוצרי סתיו",
-          startedAt: "2024-05-15"
-        }
-      ]);
-    } else {
-      fetch("/collab-requests/active")
-        .then((res) => res.json())
-        .then(setActiveCollabs)
-        .catch(console.error);
-    }
-  }, [isDevUser]);
+    if (!userBusinessId || !token) return;
+
+    // קריאות מקבילות לשני ה-API
+    const fetchSent = fetch("/my/proposals/sent", {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch sent proposals");
+      return res.json();
+    });
+
+    const fetchReceived = fetch("/my/proposals/received", {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch received proposals");
+      return res.json();
+    });
+
+    Promise.all([fetchSent, fetchReceived])
+      .then(([sentData, receivedData]) => {
+        const sentAccepted = (sentData.proposalsSent || []).filter(
+          (p) => p.status === "accepted"
+        );
+        const receivedAccepted = (receivedData.proposalsReceived || []).filter(
+          (p) => p.status === "accepted"
+        );
+
+        const combined = [...sentAccepted, ...receivedAccepted];
+
+        const mapped = combined.map((p) => ({
+          _id: p._id,
+          partnerName:
+            p.fromBusinessId._id === userBusinessId
+              ? p.toBusinessId.businessName
+              : p.fromBusinessId.businessName,
+          subject: p.title || p.subject || "ללא נושא",
+          startedAt: p.startedAt || p.createdAt || new Date().toISOString(),
+        }));
+
+        setActiveCollabs(mapped);
+      })
+      .catch((err) => {
+        console.error("Error loading collaborations:", err);
+        setActiveCollabs([]);
+      });
+  }, [userBusinessId, token]);
 
   return (
     <div className="collab-section">
@@ -37,9 +58,15 @@ export default function CollabActiveTab({ isDevUser }) {
       ) : (
         activeCollabs.map((collab) => (
           <div key={collab._id} className="collab-card">
-            <p><strong>עם:</strong> {collab.partnerName}</p>
-            <p><strong>נושא:</strong> {collab.subject}</p>
-            <p className="collab-tag">התחיל ב־{new Date(collab.startedAt).toLocaleDateString("he-IL")}</p>
+            <p>
+              <strong>עם:</strong> {collab.partnerName}
+            </p>
+            <p>
+              <strong>נושא:</strong> {collab.subject}
+            </p>
+            <p className="collab-tag">
+              התחיל ב־{new Date(collab.startedAt).toLocaleDateString("he-IL")}
+            </p>
             <div className="flex gap-2 mt-2">
               <button className="collab-form-button">📂 פתח פרויקט</button>
               <button className="collab-form-button">📞 צור קשר</button>

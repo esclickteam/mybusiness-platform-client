@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CollabActiveTab from "./collabtabs/CollabActiveTab";
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 
-export default function CollabCollaborationsTab({ isDevUser, userBusinessId }) {
+export default function CollabCollaborationsTab({ isDevUser, userBusinessId, token }) {
   const [activeView, setActiveView] = useState("active"); // 'active' או 'agreements'
 
   return (
@@ -38,7 +38,9 @@ export default function CollabCollaborationsTab({ isDevUser, userBusinessId }) {
         </button>
       </div>
 
-      {activeView === "active" && <CollabActiveTab isDevUser={isDevUser} />}
+      {activeView === "active" && (
+        <CollabActiveTab isDevUser={isDevUser} userBusinessId={userBusinessId} token={token} />
+      )}
       {activeView === "agreements" && <PartnershipAgreementsTab userBusinessId={userBusinessId} />}
     </div>
   );
