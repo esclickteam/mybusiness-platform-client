@@ -7,7 +7,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabActiveTab from "./collabtabs/CollabActiveTab";
-import CollabPendingTab from "./collabtabs/CollabPendingTab"; // הוסף ייבוא
+// import CollabPendingTab from "./collabtabs/CollabPendingTab"; // הייבוא הוסר
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
@@ -28,8 +28,8 @@ const tabLabels = {
   market: "מרקט שיתופים",
 };
 
-function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
-  const [activeView, setActiveView] = useState("active"); // 'active' | 'pending' | 'agreements'
+function CollabsAndAgreementsTab({ isDevUser, userBusinessId }) {
+  const [activeView, setActiveView] = useState("active"); // 'active' | 'agreements' בלבד כעת
 
   const tabStyle = (tab) => ({
     backgroundColor: activeView === tab ? "#6b46c1" : "#ccc",
@@ -54,20 +54,16 @@ function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
         <button style={tabStyle("active")} onClick={() => setActiveView("active")}>
           שיתופי פעולה פעילים
         </button>
-        <button style={tabStyle("pending")} onClick={() => setActiveView("pending")}>
-          שיתופי פעולה בהמתנה
-        </button>
+        {/* כפתור "שיתופי פעולה בהמתנה" הוסר */}
         <button style={tabStyle("agreements")} onClick={() => setActiveView("agreements")}>
           הסכמי שיתוף פעולה
         </button>
       </div>
 
       {activeView === "active" && (
-        <CollabActiveTab isDevUser={isDevUser} userBusinessId={userBusinessId} token={token} />
+        <CollabActiveTab isDevUser={isDevUser} userBusinessId={userBusinessId} />
       )}
-      {activeView === "pending" && (
-        <CollabPendingTab isDevUser={isDevUser} userBusinessId={userBusinessId} token={token} />
-      )}
+      {/* הסרת הצגת CollabPendingTab */}
       {activeView === "agreements" && (
         <PartnershipAgreementsTab userBusinessId={userBusinessId} />
       )}
@@ -231,7 +227,6 @@ export default function Collab() {
         <CollabsAndAgreementsTab
           isDevUser={isDevUser}
           userBusinessId={user?.businessId}
-          token={user?.token}
         />
       )}
 
