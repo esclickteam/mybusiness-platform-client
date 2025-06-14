@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
-import PartnershipAgreementsTab from "../PartnershipAgreementsTab";
 
-export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBusinessId, onOpenAgreement }) {
+export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBusinessId }) {
   const [sentMessages, setSentMessages] = useState([]);
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("sent"); // 'sent', 'received', 'accepted'
+
+  // מצב למודל ההסכם
+  const [selectedAgreement, setSelectedAgreement] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -30,7 +33,6 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
     fetchMessages();
   }, [refreshFlag]);
 
-  // פונקציות לשינוי סטטוס וביטול (כמו שהיו)
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
@@ -78,23 +80,22 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
     }
   };
 
-  const parseMessage = (message) => {
-    if (!message) return {};
-    const lines = message.split("\n").map((line) => line.trim());
-    const parsed = {};
-    lines.forEach((line) => {
-      if (line.startsWith("כותרת:")) parsed.title = line.replace("כותרת:", "").trim();
-      else if (line.startsWith("תיאור:")) parsed.description = line.replace("תיאור:", "").trim();
-      else if (line.startsWith("סכום:")) parsed.amount = line.replace("סכום:", "").trim();
-      else if (line.startsWith("תוקף עד:")) parsed.validUntil = line.replace("תוקף עד:", "").trim();
-    });
-    return parsed;
+  // פונקציה לפתיחת מודל הצגת הסכם
+  const onOpenAgreement = async (agreementId) => {
+    try {
+      const res = await API.get(`/partnershipAgreements/${agreementId}`);
+      setSelectedAgreement(res.data);
+      setModalOpen(true);
+    } catch {
+      alert("אין לך הרשאה לצפות בהסכם זה או שההסכם לא נמצא");
+    }
   };
 
-  if (loading) return <p>טוען הודעות...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedAgreement(null);
+  };
 
-  // סינון לפי הטאב הנבחר
   let messagesToShow = [];
   if (filter === "sent") messagesToShow = sentMessages;
   else if (filter === "received") messagesToShow = receivedMessages;
@@ -157,165 +158,204 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
             : "אין הצעות שאושרו להצגה."}
         </p>
       ) : (
-        messagesToShow.map((msg) => {
-          const { title, description, amount, validUntil } = parseMessage(msg.message);
-          return (
+        messagesToShow.map((msg) => (
+          <div
+            key={msg.proposalId || msg._id}
+            style={{
+              background: "#fff",
+              padding: 16,
+              borderRadius: 12,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              marginBottom: 16,
+              wordBreak: "break-word",
+              lineHeight: 1.6,
+            }}
+          >
+            <p>
+              <strong>עסק שולח:</strong>{" "}
+              <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "לא ידוע"}</span>
+            </p>
+            <p>
+              <strong>עסק מקבל:</strong>{" "}
+              <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
+            </p>
+            <p>
+              <strong>כותרת הצעה:</strong> <span style={{ marginLeft: 6 }}>{msg.message || "-"}</span>
+            </p>
+            <p>
+              <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
+            </p>
+
+            {/* כפתור צפייה בהסכם רק להצעות שאושרו ויש להן agreementId */}
+            {filter === "accepted" && msg.agreementId && (
+              <button
+                onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
+                style={{
+                  marginTop: 12,
+                  backgroundColor: "#6b46c1",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                צפייה בהסכם
+              </button>
+            )}
+
             <div
-              key={msg.proposalId || msg._id}
               style={{
-                background: "#fff",
-                padding: 16,
-                borderRadius: 12,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                marginBottom: 16,
-                wordBreak: "break-word",
-                lineHeight: 1.6,
+                marginTop: 12,
+                display: "flex",
+                gap: 12,
+                justifyContent: "flex-end",
               }}
             >
-              <p>
-                <strong>עסק שולח:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>
-                  {msg.fromBusinessId?.businessName || "לא ידוע"}
-                </span>
-              </p>
-              <p>
-                <strong>עסק מקבל:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>
-                  {msg.toBusinessId?.businessName || "לא ידוע"}
-                </span>
-              </p>
-              <p>
-                <strong>כותרת הצעה:</strong> <span style={{ marginLeft: 6 }}>{title || "-"}</span>
-              </p>
-              <p>
-                <strong>תיאור הצעה:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>{description || "-"}</span>
-              </p>
-              <p>
-                <strong>סכום:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>{amount != null ? amount + " ₪" : "-"}</span>
-              </p>
-              <p>
-                <strong>תוקף הצעה:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>
-                  {validUntil ? new Date(validUntil).toLocaleDateString("he-IL") : "-"}
-                </span>
-              </p>
-              <p>
-                <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
-              </p>
-              <p
-                style={{
-                  color: "#666",
-                  fontSize: "0.9rem",
-                  marginTop: 12,
-                  marginBottom: 0,
-                }}
-              >
-                {filter === "sent"
-                  ? "נשלח ב־"
-                  : filter === "received"
-                  ? "התקבל ב־"
-                  : "אושר ב־"}
-                {new Date(msg.createdAt).toLocaleDateString("he-IL")}
-              </p>
-
-              {/* כפתור צפייה בהסכם */}
-              {filter === "accepted" && msg.agreementId && (
-                <button
-                  onClick={() => onOpenAgreement(msg.agreementId)}
-                  style={{
-                    marginTop: 12,
-                    backgroundColor: "#6b46c1",
-                    color: "white",
-                    padding: "8px 16px",
-                    borderRadius: 8,
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
-                >
-                  צפייה בהסכם
-                </button>
+              {filter === "sent" ? (
+                <>
+                  <button
+                    style={{
+                      backgroundColor: "#6b46c1",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 16px",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => alert("שלח שוב (טרם מיושם)")}
+                  >
+                    📨 שלח שוב
+                  </button>
+                  <button
+                    style={{
+                      backgroundColor: "#d53f8c",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 16px",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
+                  >
+                    🗑️ ביטול
+                  </button>
+                </>
+              ) : filter === "received" && msg.status === "pending" ? (
+                <>
+                  <button
+                    style={{
+                      backgroundColor: "#6b46c1",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 16px",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => handleAccept(msg.proposalId || msg._id)}
+                  >
+                    ✅ אשר
+                  </button>
+                  <button
+                    style={{
+                      backgroundColor: "#d53f8c",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 16px",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => handleReject(msg.proposalId || msg._id)}
+                  >
+                    ❌ דחה
+                  </button>
+                </>
+              ) : (
+                <p style={{ alignSelf: "center" }}>סטטוס: {msg.status}</p>
               )}
-
-              <div
-                style={{
-                  marginTop: 12,
-                  display: "flex",
-                  gap: 12,
-                  justifyContent: "flex-end",
-                }}
-              >
-                {filter === "sent" ? (
-                  <>
-                    <button
-                      style={{
-                        backgroundColor: "#6b46c1",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => handleResendProposal && handleResendProposal(msg)}
-                    >
-                      📨 שלח שוב
-                    </button>
-                    <button
-                      style={{
-                        backgroundColor: "#d53f8c",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
-                    >
-                      🗑️ ביטול
-                    </button>
-                  </>
-                ) : filter === "received" && msg.status === "pending" ? (
-                  <>
-                    <button
-                      style={{
-                        backgroundColor: "#6b46c1",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => handleAccept(msg.proposalId || msg._id)}
-                    >
-                      ✅ אשר
-                    </button>
-                    <button
-                      style={{
-                        backgroundColor: "#d53f8c",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => handleReject(msg.proposalId || msg._id)}
-                    >
-                      ❌ דחה
-                    </button>
-                  </>
-                ) : (
-                  <p style={{ alignSelf: "center" }}>סטטוס: {msg.status}</p>
-                )}
-              </div>
             </div>
-          );
-        })
+          </div>
+        ))
+      )}
+
+      {/* מודל הצגת הסכם */}
+      {modalOpen && selectedAgreement && (
+        <div
+          onClick={closeModal}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.6)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "white",
+              borderRadius: 12,
+              padding: 24,
+              maxWidth: 600,
+              width: "90%",
+              maxHeight: "80vh",
+              overflowY: "auto",
+              direction: "rtl",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            }}
+          >
+            <h3>{selectedAgreement.title}</h3>
+            <p>
+              <strong>תיאור:</strong> {selectedAgreement.description || "-"}
+            </p>
+            <p>
+              <strong>מצב:</strong> {selectedAgreement.status}
+            </p>
+            <p>
+              <strong>עסק ששלח:</strong> {selectedAgreement.sender?.businessName || "-"}
+            </p>
+            <p>
+              <strong>עסק מקבל:</strong> {selectedAgreement.receiver?.businessName || "-"}
+            </p>
+            <p>
+              <strong>מתחיל בתאריך:</strong>{" "}
+              {selectedAgreement.startDate
+                ? new Date(selectedAgreement.startDate).toLocaleDateString("he-IL")
+                : "-"}
+            </p>
+            <p>
+              <strong>מסתיים בתאריך:</strong>{" "}
+              {selectedAgreement.endDate
+                ? new Date(selectedAgreement.endDate).toLocaleDateString("he-IL")
+                : "-"}
+            </p>
+            <button
+              onClick={closeModal}
+              style={{
+                marginTop: 20,
+                padding: "10px 20px",
+                borderRadius: 8,
+                border: "none",
+                backgroundColor: "#6b46c1",
+                color: "white",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              סגור
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
