@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API from "@api"; // ייבוא ה-API
 
 export default function CollabActiveTab({ userBusinessId, token }) {
   const [view, setView] = useState("sent"); // "sent" | "received"
@@ -13,27 +14,16 @@ export default function CollabActiveTab({ userBusinessId, token }) {
     setLoading(true);
     setError(null);
 
-    const fetchSent = fetch("/my/proposals/sent", {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch sent proposals");
-      return res.json();
-    });
-
-    const fetchReceived = fetch("/my/proposals/received", {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch received proposals");
-      return res.json();
-    });
+    const fetchSent = API.get("/business/my/proposals/sent");
+    const fetchReceived = API.get("/business/my/proposals/received");
 
     Promise.all([fetchSent, fetchReceived])
-      .then(([sentData, receivedData]) => {
-        setSentProposals(sentData.proposalsSent || []);
-        setReceivedProposals(receivedData.proposalsReceived || []);
+      .then(([sentRes, receivedRes]) => {
+        setSentProposals(sentRes.data.proposalsSent || []);
+        setReceivedProposals(receivedRes.data.proposalsReceived || []);
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err.message || "שגיאה בטעינת ההצעות");
       })
       .finally(() => setLoading(false));
   }, [userBusinessId, token]);
@@ -95,10 +85,10 @@ export default function CollabActiveTab({ userBusinessId, token }) {
             }}
           >
             <div>
-              <b>עסק שולח:</b> {proposal.fromBusiness?.businessName || "לא ידוע"}
+              <b>עסק שולח:</b> {proposal.fromBusinessId?.businessName || "לא ידוע"}
             </div>
             <div>
-              <b>עסק מקבל:</b> {proposal.toBusiness?.businessName || "לא ידוע"}
+              <b>עסק מקבל:</b> {proposal.toBusinessId?.businessName || "לא ידוע"}
             </div>
             <div>
               <b>כותרת הצעה:</b> {proposal.title || proposal.message || "-"}
