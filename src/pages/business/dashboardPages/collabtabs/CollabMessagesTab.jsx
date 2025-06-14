@@ -33,6 +33,34 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
     fetchMessages();
   }, [refreshFlag]);
 
+  const createAgreementFromProposal = async (proposalId, agreementData) => {
+    try {
+      const payload = {
+        ...agreementData,
+        invitedBusinessId: agreementData.invitedBusinessId, // וודא שאתה שולח את המזהה הנכון
+        title: agreementData.title,
+        description: agreementData.description,
+        giving: agreementData.giving,
+        receiving: agreementData.receiving,
+        type: agreementData.type,
+        payment: agreementData.payment,
+        startDate: agreementData.startDate,
+        endDate: agreementData.endDate,
+        cancelAnytime: agreementData.cancelAnytime,
+        confidentiality: agreementData.confidentiality,
+        signatureDataUrl: agreementData.signatureDataUrl || "", 
+        proposalId,  // מזהה ההצעה
+      };
+      const res = await API.post('/partnershipAgreements', payload);
+      alert('ההסכם נוצר בהצלחה!');
+      onStatusChange?.();  // ריענון ההצעות אחרי יצירת הסכם
+      return res.data;
+    } catch (err) {
+      console.error('Error creating agreement:', err);
+      alert('שגיאה ביצירת ההסכם');
+    }
+  };
+
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
@@ -40,6 +68,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
       setSentMessages((prev) => prev.filter((p) => p.proposalId !== proposalId && p._id !== proposalId));
       setReceivedMessages((prev) => prev.filter((p) => p.proposalId !== proposalId && p._id !== proposalId));
       alert("ההצעה בוטלה בהצלחה");
+      onStatusChange?.();
     } catch (err) {
       console.error("שגיאה בביטול ההצעה:", err);
       alert("שגיאה בביטול ההצעה");
@@ -185,6 +214,42 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
             <p>
               <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
             </p>
+
+            {/* כפתור יצירת הסכם רק להצעות שהסטטוס שלהן הוא accepted */}
+            {filter === "received" && msg.status === "accepted" && !msg.agreementId && (
+              <button
+                onClick={async () => {
+                  // כאן אפשר לפתוח טופס להזנת פרטי ההסכם, כרגע שולחים דמה
+                  const dummyAgreementData = {
+                    invitedBusinessId: msg.fromBusinessId._id,
+                    title: "הסכם שותפות לדוגמה",
+                    description: "תיאור לדוגמה",
+                    giving: "מה שהעסק נותן",
+                    receiving: "מה שהעסק מקבל",
+                    type: "שותפות",
+                    payment: "תשלום",
+                    startDate: new Date().toISOString(),
+                    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    cancelAnytime: true,
+                    confidentiality: false,
+                    signatureDataUrl: "",
+                  };
+                  await createAgreementFromProposal(msg.proposalId || msg._id, dummyAgreementData);
+                }}
+                style={{
+                  marginTop: 12,
+                  backgroundColor: "#38a169",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                צור הסכם
+              </button>
+            )}
 
             {/* כפתור צפייה בהסכם רק להצעות שאושרו ויש להן agreementId */}
             {filter === "accepted" && msg.agreementId && (
