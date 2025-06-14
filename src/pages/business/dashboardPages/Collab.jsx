@@ -16,8 +16,7 @@ const tabMap = {
   findPartner: 1,
   messages: 2,
   collabsAndAgreements: 3,
-  // collaborations: 4,  // מחוק
-  market: 4,             // עדכנתי את המספור
+  market: 4,
 };
 
 const tabLabels = {
@@ -25,22 +24,19 @@ const tabLabels = {
   findPartner: "מצא שותף עסקי",
   messages: "הצעות",
   collabsAndAgreements: "שיתופי פעולה והסכמים",
-  // collaborations: "שיתופי פעולה",  // מחוק
   market: "מרקט שיתופים",
 };
 
 export default function Collab() {
   const { tab: tabParam } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-
-  console.log("Collab component - user from AuthContext:", user);
 
   const devMode = true;
   const token = localStorage.getItem("token");
 
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
+  const [selectedAgreementId, setSelectedAgreementId] = useState(null);
 
   useEffect(() => {
     if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
@@ -118,6 +114,12 @@ export default function Collab() {
     console.log("פותח צ׳אט עם:", businessWithMessage);
   };
 
+  // פונקציה לפתיחת חוזה מטאב ההצעות
+  const openAgreementFromProposal = (agreementId) => {
+    setSelectedAgreementId(agreementId);
+    setTab(tabMap.collabsAndAgreements);
+  };
+
   if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
   if (!user && !devMode) {
     return (
@@ -142,6 +144,7 @@ export default function Collab() {
             className={`tab ${tab === tabMap[key] ? "active" : ""}`}
             onClick={() => {
               setTab(tabMap[key]);
+              setSelectedAgreementId(null); // לנקות בחירת חוזה בטאבים אחרים
               navigate(`/business/collaborations/${key}`, { replace: true });
             }}
           >
@@ -181,6 +184,7 @@ export default function Collab() {
         <CollabMessagesTab
           refreshFlag={refreshSent + refreshReceived}
           onStatusChange={handleStatusChange}
+          onOpenAgreement={openAgreementFromProposal} // העברת callback לפתיחת חוזה
         />
       )}
 
@@ -188,17 +192,11 @@ export default function Collab() {
         <CollabsAndAgreementsTab
           isDevUser={isDevUser}
           userBusinessId={user?.businessId}
-          token={token}  
+          token={token}
+          selectedAgreementId={selectedAgreementId}
+          clearSelectedAgreementId={() => setSelectedAgreementId(null)}
         />
       )}
-
-      {/* {tab === tabMap.collaborations && (
-        <CollabActiveTab
-          userBusinessId={user?.businessId}
-          token={token}  
-          isDevUser={isDevUser}
-        />
-      )} */}
 
       {tab === tabMap.market && <CollabMarketTab isDevUser={isDevUser} />}
     </div>
@@ -206,8 +204,20 @@ export default function Collab() {
 }
 
 // קומפוננטה פנימית לטאב שיתופי פעולה והסכמים
-function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
+function CollabsAndAgreementsTab({
+  isDevUser,
+  userBusinessId,
+  token,
+  selectedAgreementId,
+  clearSelectedAgreementId,
+}) {
   const [activeView, setActiveView] = React.useState("active"); // 'active' | 'agreements'
+
+  React.useEffect(() => {
+    if (selectedAgreementId) {
+      setActiveView("agreements");
+    }
+  }, [selectedAgreementId]);
 
   const tabStyle = (tab) => ({
     backgroundColor: activeView === tab ? "#6b46c1" : "#ccc",
@@ -229,7 +239,13 @@ function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
           marginBottom: 20,
         }}
       >
-        <button style={tabStyle("active")} onClick={() => setActiveView("active")}>
+        <button
+          style={tabStyle("active")}
+          onClick={() => {
+            setActiveView("active");
+            clearSelectedAgreementId();
+          }}
+        >
           שיתופי פעולה פעילים
         </button>
         <button style={tabStyle("agreements")} onClick={() => setActiveView("agreements")}>
@@ -238,15 +254,15 @@ function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
       </div>
 
       {activeView === "active" && (
-        <CollabActiveTab
-          isDevUser={isDevUser}
-          userBusinessId={userBusinessId}
-          token={token}
-        />
+        <CollabActiveTab isDevUser={isDevUser} userBusinessId={userBusinessId} token={token} />
       )}
 
       {activeView === "agreements" && (
-        <PartnershipAgreementsTab userBusinessId={userBusinessId} />
+        <PartnershipAgreementsTab
+          userBusinessId={userBusinessId}
+          selectedId={selectedAgreementId} // מציג את החוזה הרלוונטי
+          onClose={clearSelectedAgreementId}
+        />
       )}
     </div>
   );
