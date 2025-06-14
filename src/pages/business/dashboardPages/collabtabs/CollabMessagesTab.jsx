@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
-import PartnershipAgreementsTab from "../../business/dashboardPages/PartnershipAgreementsTab";
+import PartnershipAgreementsTab from "../PartnershipAgreementsTab";
 
 export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBusinessId }) {
   const [sentMessages, setSentMessages] = useState([]);
