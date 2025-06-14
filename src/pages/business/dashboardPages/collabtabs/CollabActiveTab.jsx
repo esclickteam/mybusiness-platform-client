@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "@api";
+import "./CollabActiveTab.css";
+
 
 export default function CollabActiveTab({ userBusinessId, token }) {
   const [view, setView] = useState("active"); // "active" | "sent" | "received"
