@@ -6,7 +6,6 @@ import UpgradeBanner from "../../../components/UpgradeBanner";
 import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
-import CollabsAndAgreementsTab from "./CollabsAndAgreementsTab"; // מייבאים את הקומפוננטה החדשה
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import "./Collab.css";
 
@@ -191,15 +190,8 @@ export default function Collab() {
   );
 }
 
-// -------------------------------------------
-// קובץ נפרד: CollabsAndAgreementsTab.jsx
-// -------------------------------------------
-
-import React, { useState } from "react";
-import CollabActiveTab from "./collabtabs/CollabActiveTab";
-import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
-
-export default function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
+// קומפוננטה פנימית, לא default export
+function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
   const [activeView, setActiveView] = useState("active"); // 'active' | 'agreements'
 
   const tabStyle = (tab) => ({
