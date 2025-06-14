@@ -10,8 +10,9 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
   const [saving, setSaving] = useState(false);
   const sigPadRef = useRef(null);
 
+  // השוואת מזהים כמחרוזות, כדי למנוע בעיות השוואה בין אובייקטים
   const userSide = agreement
-    ? (agreement.createdByBusinessId === currentBusinessId ? "createdBy" : "invitedBusiness")
+    ? (String(agreement.createdByBusinessId) === String(currentBusinessId) ? "createdBy" : "invitedBusiness")
     : null;
 
   useEffect(() => {
@@ -20,13 +21,23 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
       try {
         const res = await API.get(`/partnershipAgreements/${agreementId}`);
         setAgreement(res.data);
-      } catch {
+      } catch (err) {
+        console.error("Error loading agreement:", err);
         alert("שגיאה בטעינת ההסכם");
       }
       setLoading(false);
     }
     fetchAgreement();
   }, [agreementId]);
+
+  // לוגים לעזרה בדיבוג
+  useEffect(() => {
+    if (agreement) {
+      console.log("Agreement data:", agreement);
+      console.log("Current business ID:", currentBusinessId);
+      console.log("User side:", userSide);
+    }
+  }, [agreement, currentBusinessId, userSide]);
 
   if (loading) return <div>טוען הסכם...</div>;
   if (!agreement) return <div>הסכם לא נמצא</div>;
@@ -39,7 +50,10 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
   };
 
   async function handleSaveSignature() {
-    if (!sigPadRef.current || sigPadRef.current.isEmpty()) return alert("אנא חתום תחילה");
+    if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
+      alert("אנא חתום תחילה");
+      return;
+    }
     const signatureDataUrl = sigPadRef.current.getTrimmedCanvas().toDataURL();
     setSaving(true);
     try {
@@ -47,7 +61,8 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
       setShowSign(false);
       const res = await API.get(`/partnershipAgreements/${agreementId}`);
       setAgreement(res.data);
-    } catch {
+    } catch (err) {
+      console.error("Error saving signature:", err);
       alert("שגיאה בשמירת החתימה");
     }
     setSaving(false);
