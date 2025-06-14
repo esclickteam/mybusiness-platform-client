@@ -1,14 +1,14 @@
+/* קופסת הגרף */
 .graph-box {
   padding: 1rem;
-  background: #fff;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   direction: rtl;
 
   width: 100%;
-  max-width: 700px;  /* בדסקטופ בלבד */
+  max-width: 750px;
   margin: 0 auto;
-  height: auto;
   padding-bottom: 3.5rem;
 
   overflow-x: auto;
@@ -16,21 +16,24 @@
   scroll-behavior: smooth;
 }
 
+/* כותרת הגרף */
 .graph-title {
   text-align: center;
-  margin-top: 10px;
-  margin-bottom: 12px;
+  margin: 10px 0 14px;
   color: #4b0082;
-  font-weight: 700;
-  font-size: 1.2rem;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.4px;
 }
 
+/* התאמה לגרף מגיב */
 .graph-box .recharts-responsive-container {
   width: 100% !important;
   height: 100% !important;
+  min-height: 300px;
 }
 
-/* התאמות למובייל */
+/* מובייל */
 @media (max-width: 768px) {
   .graph-box {
     padding: 0.5rem 1rem 2.5rem 1rem;
@@ -40,11 +43,11 @@
   }
 
   .graph-box .recharts-responsive-container {
-    min-width: 600px;
+    min-width: 640px; /* מאפשר גלילה אופקית לגרפים צפופים */
   }
 
   .graph-title {
-    font-size: 1rem;
+    font-size: 1.05rem;
     margin-top: 8px;
     margin-bottom: 8px;
   }

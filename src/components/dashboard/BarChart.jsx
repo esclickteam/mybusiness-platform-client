@@ -48,7 +48,6 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
   }, [appointments]);
 
   const showLegend = data.some(d => d.customers > 0);
-
   const total = data.reduce((sum, d) => sum + d.customers, 0);
   const average = total / 12;
   const maxMonth = data.reduce((max, curr) =>
@@ -69,7 +68,7 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
             <BarChart
               data={data}
               layout="horizontal"
-              margin={{ top: 20, right: 20, left: 20, bottom: 60 }}
+              margin={{ top: 20, right: 20, left: 20, bottom: 80 }}
               barCategoryGap="40%"
               barSize={20}
               animationDuration={800}
@@ -78,9 +77,11 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               <XAxis
                 dataKey="name"
                 interval={0}
-                tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 700, angle: 0, textAnchor: "middle" }}
-                height={40}
-                tickMargin={10}
+                angle={-40} // ✅ הסיבוב החשוב
+                textAnchor="end"
+                tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 700 }}
+                height={70}
+                tickMargin={8}
                 axisLine={{ stroke: "#4b0082" }}
                 tickLine={false}
               />
@@ -124,9 +125,11 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               <XAxis
                 dataKey="name"
                 interval={0}
+                angle={-40}
+                textAnchor="end"
                 tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 700 }}
-                height={40}
-                tickMargin={10}
+                height={70}
+                tickMargin={8}
                 axisLine={{ stroke: "#4b0082" }}
                 tickLine={false}
               />
@@ -147,7 +150,7 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               <Line
                 type="monotone"
                 dataKey="customers"
-                name="לקוחות"  
+                name="לקוחות"
                 stroke="#4b0082"
                 strokeWidth={2}
                 activeDot={{ r: 6 }}
