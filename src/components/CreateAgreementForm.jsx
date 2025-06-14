@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
-import "./CreateAgreementForm.css"; // <-- ייבוא CSS
+import "./CreateAgreementForm.css";
 
-export default function CreateAgreementForm({ onCreated, fromBusinessName, partnerBusiness }) {
+export default function CreateAgreementForm({ onCreated, fromBusinessId, fromBusinessName, partnerBusiness }) {
   const [formData, setFormData] = useState({
     fromBusinessName: fromBusinessName || "",
     partnerBusinessName: partnerBusiness?.businessName || "",
@@ -19,12 +19,11 @@ export default function CreateAgreementForm({ onCreated, fromBusinessName, partn
     confidentiality: false,
   });
 
-  // אם הפרופס משתנים, נעדכן את ה-state בהתאם
   useEffect(() => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       fromBusinessName: fromBusinessName || "",
-      partnerBusinessName: partnerBusiness?.businessName || ""
+      partnerBusinessName: partnerBusiness?.businessName || "",
     }));
   }, [fromBusinessName, partnerBusiness]);
 
@@ -78,6 +77,14 @@ export default function CreateAgreementForm({ onCreated, fromBusinessName, partn
       setError("נא למלא תאריכי התחלה וסיום או לבחור 'ניתן לבטל בכל שלב'.");
       return;
     }
+    if (!fromBusinessId) {
+      setError("מזהה העסק השולח אינו תקין.");
+      return;
+    }
+    if (!partnerBusiness?._id) {
+      setError("מזהה העסק השותף אינו תקין.");
+      return;
+    }
 
     setSending(true);
 
@@ -86,10 +93,14 @@ export default function CreateAgreementForm({ onCreated, fromBusinessName, partn
         ? ""
         : sigPadRef.current.getTrimmedCanvas().toDataURL();
 
-      const res = await API.post("/partnershipAgreements", {
+      const payload = {
         ...formData,
+        fromBusinessId,
+        partnerBusinessId: partnerBusiness._id,
         signatureDataUrl,
-      });
+      };
+
+      const res = await API.post("/partnershipAgreements", payload);
 
       alert("ההסכם נוצר ונשלח לחתימה של הצד השני!");
       if (onCreated) onCreated(res.data);
@@ -101,96 +112,42 @@ export default function CreateAgreementForm({ onCreated, fromBusinessName, partn
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="create-agreement-form"
-      dir="rtl"
-    >
+    <form onSubmit={handleSubmit} className="create-agreement-form" dir="rtl">
       <h2 className="form-title">הסכם שיתוף פעולה</h2>
 
       <label>
         שם העסק השולח:
-        <input
-          type="text"
-          name="fromBusinessName"
-          value={formData.fromBusinessName}
-          disabled
-          className="form-input"
-        />
+        <input type="text" name="fromBusinessName" value={formData.fromBusinessName} disabled className="form-input" />
       </label>
 
       <label>
         שם העסק השותף:
-        <input
-          type="text"
-          name="partnerBusinessName"
-          value={formData.partnerBusinessName}
-          disabled
-          className="form-input"
-        />
+        <input type="text" name="partnerBusinessName" value={formData.partnerBusinessName} disabled className="form-input" />
       </label>
 
       <label>
         כותרת ההסכם:
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          placeholder="כותרת ההסכם"
-          className="form-input"
-        />
+        <input type="text" name="title" value={formData.title} onChange={handleChange} required placeholder="כותרת ההסכם" className="form-input" />
       </label>
 
       <label>
         תיאור ההסכם:
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          required
-          rows={4}
-          placeholder="תיאור ההסכם"
-          className="form-textarea"
-        />
+        <textarea name="description" value={formData.description} onChange={handleChange} required rows={4} placeholder="תיאור ההסכם" className="form-textarea" />
       </label>
 
       <label>
         מה תספק במסגרת ההסכם:
-        <textarea
-          name="giving"
-          value={formData.giving}
-          onChange={handleChange}
-          required
-          rows={2}
-          placeholder="מה תספק במסגרת ההסכם"
-          className="form-textarea"
-        />
+        <textarea name="giving" value={formData.giving} onChange={handleChange} required rows={2} placeholder="מה תספק במסגרת ההסכם" className="form-textarea" />
       </label>
 
       <label>
         מה תקבל במסגרת ההסכם:
-        <textarea
-          name="receiving"
-          value={formData.receiving}
-          onChange={handleChange}
-          required
-          rows={2}
-          placeholder="מה תקבל במסגרת ההסכם"
-          className="form-textarea"
-        />
+        <textarea name="receiving" value={formData.receiving} onChange={handleChange} required rows={2} placeholder="מה תקבל במסגרת ההסכם" className="form-textarea" />
       </label>
 
       <label>
         סוג שיתוף פעולה:
-        <select
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          required
-          className="form-input"
-        >
+        <select name="type" value={formData.type} onChange={handleChange} required className="form-input">
           <option value="">בחר סוג</option>
           <option value="חד צדדי">חד צדדי</option>
           <option value="דו צדדי">דו צדדי</option>
@@ -200,53 +157,22 @@ export default function CreateAgreementForm({ onCreated, fromBusinessName, partn
 
       <label>
         עמלות / תשלום (אם יש):
-        <input
-          type="text"
-          name="payment"
-          value={formData.payment}
-          onChange={handleChange}
-          placeholder="עמלות / תשלום"
-          className="form-input"
-        />
+        <input type="text" name="payment" value={formData.payment} onChange={handleChange} placeholder="עמלות / תשלום" className="form-input" />
       </label>
 
       <label>תוקף ההסכם:</label>
       <div className="date-inputs">
-        <input
-          type="date"
-          name="startDate"
-          value={formData.startDate}
-          onChange={handleChange}
-          disabled={formData.cancelAnytime}
-          className="form-input"
-        />
-        <input
-          type="date"
-          name="endDate"
-          value={formData.endDate}
-          onChange={handleChange}
-          disabled={formData.cancelAnytime}
-          className="form-input"
-        />
+        <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} disabled={formData.cancelAnytime} className="form-input" />
+        <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} disabled={formData.cancelAnytime} className="form-input" />
       </div>
 
       <label className="checkbox-label">
-        <input
-          type="checkbox"
-          name="cancelAnytime"
-          checked={formData.cancelAnytime}
-          onChange={handleChange}
-        />
+        <input type="checkbox" name="cancelAnytime" checked={formData.cancelAnytime} onChange={handleChange} />
         ניתן לבטל את ההסכם בכל שלב
       </label>
 
       <label className="checkbox-label">
-        <input
-          type="checkbox"
-          name="confidentiality"
-          checked={formData.confidentiality}
-          onChange={handleChange}
-        />
+        <input type="checkbox" name="confidentiality" checked={formData.confidentiality} onChange={handleChange} />
         סעיף סודיות
       </label>
 
