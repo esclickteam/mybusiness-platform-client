@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
@@ -11,6 +11,7 @@ import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
+// מיפוי הטאבים הראשיים בעמוד
 const tabMap = {
   profile: 0,
   findPartner: 1,
@@ -19,31 +20,92 @@ const tabMap = {
   market: 4,
 };
 
+// שמות הטאבים שיוצגו למשתמש
 const tabLabels = {
   profile: "פרופיל עסקי",
   findPartner: "מצא שותף עסקי",
-  messages: "הצעות",  
+  messages: "הצעות",
   collabsAndAgreements: "שיתופי פעולה והסכמים",
   market: "מרקט שיתופים",
 };
 
+// קומפוננטה פנימית לטאב המאוחד של שיתופי פעולה והסכמים
+function CollabsAndAgreementsTab({ isDevUser, userBusinessId }) {
+  // ניהול תצוגת הטאב הפנימי - 'active' או 'agreements'
+  const [activeView, setActiveView] = useState("active");
+
+  return (
+    <div style={{ maxWidth: 900, margin: "auto" }}>
+      {/* כפתורים למעבר בין שיתופי פעולה פעילים להסכמים */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 12,
+          marginBottom: 20,
+        }}
+      >
+        <button
+          style={{
+            backgroundColor: activeView === "active" ? "#6b46c1" : "#ccc",
+            color: "white",
+            border: "none",
+            padding: "8px 16px",
+            borderRadius: 8,
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+          onClick={() => setActiveView("active")}
+        >
+          שיתופי פעולה פעילים
+        </button>
+        <button
+          style={{
+            backgroundColor: activeView === "agreements" ? "#6b46c1" : "#ccc",
+            color: "white",
+            border: "none",
+            padding: "8px 16px",
+            borderRadius: 8,
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+          onClick={() => setActiveView("agreements")}
+        >
+          הסכמי שיתוף פעולה
+        </button>
+      </div>
+
+      {/* הצגת התצוגה לפי הבחירה */}
+      {activeView === "active" && <CollabActiveTab isDevUser={isDevUser} />}
+      {activeView === "agreements" && (
+        <PartnershipAgreementsTab userBusinessId={userBusinessId} />
+      )}
+    </div>
+  );
+}
+
+// הקומפוננטה הראשית של שיתוף הפעולה
 export default function Collab() {
   const { tab: tabParam } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const devMode = true; // אפשרות פיתוח
+  const devMode = true; // מצב פיתוח
 
+  // ניהול הטאב שנבחר לפי ה-URL
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
+
   useEffect(() => {
     if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
       setTab(tabMap[tabParam]);
     }
   }, [tabParam]);
 
+  // רענון לטאבים של הצעות שנשלחו והתקבלו
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
 
+  // נתוני פרופיל העסק
   const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -71,9 +133,12 @@ export default function Collab() {
     fetchProfile();
   }, []);
 
+  // בדיקות הרשאות וגישה
   const isDevUser = user?.email === "newuser@example.com";
-  const hasCollabAccess = isDevUser || user?.subscriptionPlan?.includes("collaboration");
+  const hasCollabAccess =
+    isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
+  // שמירת פרופיל חדש
   const handleSaveProfile = (e) => {
     e.preventDefault();
     const form = e.target;
@@ -91,6 +156,7 @@ export default function Collab() {
     alert("✅ פרטי הפרופיל נשמרו");
   };
 
+  // שליחת הצעה חדשה
   const handleSendProposal = async (toBusinessId, message) => {
     try {
       await API.post("/business/my/proposals", { toBusinessId, message });
@@ -101,18 +167,23 @@ export default function Collab() {
     }
   };
 
+  // רענון הצעות לאחר שינויים
   const handleStatusChange = () => {
     setRefreshSent((f) => f + 1);
     setRefreshReceived((f) => f + 1);
   };
 
+  // פתיחת צ'אט (ממשק)
   const handleOpenChat = (businessWithMessage) => {
     console.log("פותח צ׳אט עם:", businessWithMessage);
   };
 
+  // בדיקות טעינה והרשאות
   if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
   if (!user && !devMode) {
-    return <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>;
+    return (
+      <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>
+    );
   }
   if (!hasCollabAccess && !devMode) {
     return (
@@ -123,6 +194,7 @@ export default function Collab() {
     );
   }
 
+  // ממשק המשתמש עם הטאבים
   return (
     <div className="p-6 collab-container">
       <div className="tab-header">
@@ -140,7 +212,7 @@ export default function Collab() {
         ))}
       </div>
 
-      {/* פרופיל עסק */}
+      {/* הצגת הטאב לפי הבחירה */}
       {tab === 0 &&
         (loadingProfile ? (
           <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
@@ -152,7 +224,6 @@ export default function Collab() {
           />
         ))}
 
-      {/* מצא שותף */}
       {tab === 1 && (
         <CollabFindPartnerTab
           searchMode="category"
@@ -169,7 +240,6 @@ export default function Collab() {
         />
       )}
 
-      {/* הודעות - טאב מאוחד */}
       {tab === 2 && (
         <CollabMessagesTab
           refreshFlag={refreshSent + refreshReceived}
@@ -177,15 +247,14 @@ export default function Collab() {
         />
       )}
 
-      {/* שיתופי פעולה פעילים והסכמי שיתוף פעולה - טאב מאוחד */}
+      {/* כאן טאב מאוחד לשיתופי פעולה פעילים והסכמים */}
       {tab === 3 && (
-        <>
-          <CollabActiveTab isDevUser={isDevUser} />
-          <PartnershipAgreementsTab userBusinessId={user?.businessId} />
-        </>
+        <CollabsAndAgreementsTab
+          isDevUser={isDevUser}
+          userBusinessId={user?.businessId}
+        />
       )}
 
-      {/* מרקט שיתופים */}
       {tab === 4 && <CollabMarketTab isDevUser={isDevUser} />}
     </div>
   );
