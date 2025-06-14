@@ -2,7 +2,8 @@
 
 /* סגנון כללי לטופס */
 form {
-  max-width: 600px;
+  max-width: 700px;      /* הגדלנו ל-700 פיקסלים */
+  width: 100%;           /* רוחב מלא, מותאם למיכל האב */
   margin: 20px auto;
   padding: 20px;
   background-color: #fff;
@@ -107,7 +108,7 @@ input[readonly] {
 }
 
 /* רספונסיביות למובייל */
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   form {
     padding: 15px;
     margin: 10px;
