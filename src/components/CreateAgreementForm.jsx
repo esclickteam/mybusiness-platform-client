@@ -3,7 +3,13 @@ import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
 import "./CreateAgreementForm.css";
 
-export default function CreateAgreementForm({ onCreated, fromBusinessId, fromBusinessName, partnerBusiness }) {
+export default function CreateAgreementForm({ 
+  onCreated, 
+  fromBusinessId, 
+  fromBusinessName, 
+  partnerBusiness, 
+  currentUserBusinessId // מזהה העסק של המשתמש הנוכחי, חשוב להעביר כדי לדעת מי חותם
+}) {
   const [formData, setFormData] = useState({
     fromBusinessName: fromBusinessName || "",
     partnerBusinessName: partnerBusiness?.businessName || "",
@@ -49,6 +55,7 @@ export default function CreateAgreementForm({ onCreated, fromBusinessId, fromBus
     e.preventDefault();
     setError("");
 
+    // ולידציה בסיסית לשדות
     if (!formData.partnerBusinessName.trim()) {
       setError("יש להזין שם עסק שותף.");
       return;
@@ -93,11 +100,17 @@ export default function CreateAgreementForm({ onCreated, fromBusinessId, fromBus
         ? ""
         : sigPadRef.current.getTrimmedCanvas().toDataURL();
 
+      // קביעה מי החותם הנוכחי - השולח או המקבל
+      const isSender = fromBusinessId === currentUserBusinessId;
+
+      // בונה את ה-payload עם חתימה מתאימה לשולח או למקבל
       const payload = {
-  ...formData,
-  invitedBusinessId: partnerBusiness._id,   // מזהה העסק השותף
-  signatureDataUrl,
-};
+        ...formData,
+        invitedBusinessId: partnerBusiness._id,
+        // נשלח חתימה בהתאם למי החותם
+        senderSignature: isSender ? signatureDataUrl : "",
+        receiverSignature: !isSender ? signatureDataUrl : "",
+      };
 
       console.log("Sending partnership agreement payload:", payload);
 
@@ -128,27 +141,65 @@ export default function CreateAgreementForm({ onCreated, fromBusinessId, fromBus
 
       <label>
         כותרת ההסכם:
-        <input type="text" name="title" value={formData.title} onChange={handleChange} required placeholder="כותרת ההסכם" className="form-input" />
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          required
+          placeholder="כותרת ההסכם"
+          className="form-input"
+        />
       </label>
 
       <label>
         תיאור ההסכם:
-        <textarea name="description" value={formData.description} onChange={handleChange} required rows={4} placeholder="תיאור ההסכם" className="form-textarea" />
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          required
+          rows={4}
+          placeholder="תיאור ההסכם"
+          className="form-textarea"
+        />
       </label>
 
       <label>
         מה תספק במסגרת ההסכם:
-        <textarea name="giving" value={formData.giving} onChange={handleChange} required rows={2} placeholder="מה תספק במסגרת ההסכם" className="form-textarea" />
+        <textarea
+          name="giving"
+          value={formData.giving}
+          onChange={handleChange}
+          required
+          rows={2}
+          placeholder="מה תספק במסגרת ההסכם"
+          className="form-textarea"
+        />
       </label>
 
       <label>
         מה תקבל במסגרת ההסכם:
-        <textarea name="receiving" value={formData.receiving} onChange={handleChange} required rows={2} placeholder="מה תקבל במסגרת ההסכם" className="form-textarea" />
+        <textarea
+          name="receiving"
+          value={formData.receiving}
+          onChange={handleChange}
+          required
+          rows={2}
+          placeholder="מה תקבל במסגרת ההסכם"
+          className="form-textarea"
+        />
       </label>
 
       <label>
         סוג שיתוף פעולה:
-        <select name="type" value={formData.type} onChange={handleChange} required className="form-input">
+        <select
+          name="type"
+          value={formData.type}
+          onChange={handleChange}
+          required
+          className="form-input"
+        >
           <option value="">בחר סוג</option>
           <option value="חד צדדי">חד צדדי</option>
           <option value="דו צדדי">דו צדדי</option>
@@ -158,27 +209,58 @@ export default function CreateAgreementForm({ onCreated, fromBusinessId, fromBus
 
       <label>
         עמלות / תשלום (אם יש):
-        <input type="text" name="payment" value={formData.payment} onChange={handleChange} placeholder="עמלות / תשלום" className="form-input" />
+        <input
+          type="text"
+          name="payment"
+          value={formData.payment}
+          onChange={handleChange}
+          placeholder="עמלות / תשלום"
+          className="form-input"
+        />
       </label>
 
       <label>תוקף ההסכם:</label>
       <div className="date-inputs">
-        <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} disabled={formData.cancelAnytime} className="form-input" />
-        <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} disabled={formData.cancelAnytime} className="form-input" />
+        <input
+          type="date"
+          name="startDate"
+          value={formData.startDate}
+          onChange={handleChange}
+          disabled={formData.cancelAnytime}
+          className="form-input"
+        />
+        <input
+          type="date"
+          name="endDate"
+          value={formData.endDate}
+          onChange={handleChange}
+          disabled={formData.cancelAnytime}
+          className="form-input"
+        />
       </div>
 
       <label className="checkbox-label">
-        <input type="checkbox" name="cancelAnytime" checked={formData.cancelAnytime} onChange={handleChange} />
+        <input
+          type="checkbox"
+          name="cancelAnytime"
+          checked={formData.cancelAnytime}
+          onChange={handleChange}
+        />
         ניתן לבטל את ההסכם בכל שלב
       </label>
 
       <label className="checkbox-label">
-        <input type="checkbox" name="confidentiality" checked={formData.confidentiality} onChange={handleChange} />
+        <input
+          type="checkbox"
+          name="confidentiality"
+          checked={formData.confidentiality}
+          onChange={handleChange}
+        />
         סעיף סודיות
       </label>
 
       <div className="signature-container">
-        <label>חתימה ראשונית (אופציונלי):</label>
+        <label>חתימה (אופציונלי):</label>
         <SignatureCanvas
           ref={sigPadRef}
           penColor="black"

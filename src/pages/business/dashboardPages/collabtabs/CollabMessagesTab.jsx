@@ -8,7 +8,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("sent"); // 'sent', 'received', 'accepted'
 
-  // מצב למודל ההסכם
+  // מצב למודל הצגת הסכם
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
