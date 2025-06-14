@@ -16,7 +16,7 @@
 }
 
 .collab-card p {
-  margin: 10px 0;
+  margin: 6px 0; /* הקטנתי את המרווחים כדי להיות דחוס יותר */
   word-break: break-word;
   font-size: 1rem;
 }
@@ -36,6 +36,7 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  user-select: none;
 }
 
 .collab-form-button-accept {

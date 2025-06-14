@@ -11,11 +11,7 @@ export default function CollabActiveTab({ userBusinessId, token }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("CollabActiveTab props:", { userBusinessId, token });
-    if (!userBusinessId || !token) {
-      console.warn("Missing userBusinessId or token, abort fetching");
-      return;
-    }
+    if (!userBusinessId || !token) return;
 
     async function fetchProposals() {
       setLoading(true);
@@ -45,7 +41,6 @@ export default function CollabActiveTab({ userBusinessId, token }) {
   else if (view === "sent") proposalsToShow = sentProposals;
   else if (view === "received") proposalsToShow = receivedProposals;
 
-  // פונקציות לאישור, דחייה וביטול הצעה
   async function handleAccept(id) {
     try {
       await API.put(`/business/my/proposals/${id}/status`, { status: "accepted" });
@@ -123,27 +118,61 @@ export default function CollabActiveTab({ userBusinessId, token }) {
       {!loading &&
         proposalsToShow.map((proposal) => (
           <div key={proposal._id} className="collab-card">
-            <p><strong>עסק שולח:</strong> {proposal.fromBusinessId?.businessName || proposal.partnerName || "לא ידוע"}</p>
-            <p><strong>עסק מקבל:</strong> {proposal.toBusinessId?.businessName || "-"}</p>
-            <p><strong>כותרת הצעה:</strong> {proposal.title || "-"}</p>
-            <p><strong>תיאור הצעה:</strong> {proposal.message || "-"}</p>
-            <p><strong>סכום:</strong> {proposal.amount ? `${proposal.amount} ₪` : "-"}</p>
-            <p><strong>תוקף הצעה:</strong> {proposal.expiryDate ? new Date(proposal.expiryDate).toLocaleDateString("he-IL") : "-"}</p>
-            <p><strong>סטטוס:</strong> {proposal.status || "-"}</p>
-            <p><strong>תאריך יצירה:</strong> {proposal.createdAt ? new Date(proposal.createdAt).toLocaleDateString("he-IL") : "-"}</p>
+            <p>
+              <strong>עסק שולח:</strong> {proposal.fromBusinessId?.businessName || proposal.partnerName || "-"}
+            </p>
+            <p>
+              <strong>עסק מקבל:</strong> {proposal.toBusinessId?.businessName || "-"}
+            </p>
+            <p>
+              <strong>כותרת הצעה:</strong> {proposal.title || "-"}
+            </p>
+            <p>
+              <strong>תיאור הצעה:</strong> {proposal.message || "-"}
+            </p>
+            <p>
+              <strong>סכום:</strong> {proposal.amount ? `${proposal.amount} ₪` : "-"}
+            </p>
+            <p>
+              <strong>תוקף הצעה:</strong>{" "}
+              {proposal.expiryDate ? new Date(proposal.expiryDate).toLocaleDateString("he-IL") : "-"}
+            </p>
+            <p>
+              <strong>סטטוס:</strong> {proposal.status || "-"}
+            </p>
+            <p>
+              <strong>תאריך יצירה:</strong>{" "}
+              {proposal.createdAt ? new Date(proposal.createdAt).toLocaleDateString("he-IL") : "-"}
+            </p>
 
-            <div style={{ marginTop: 12, display: "flex", gap: 12, justifyContent: "flex-end" }}>
+            <div
+              style={{
+                marginTop: 12,
+                display: "flex",
+                gap: 12,
+                justifyContent: "flex-end",
+              }}
+            >
               {view === "sent" && (
-                <button onClick={() => handleCancel(proposal._id)} className="collab-form-button collab-form-button-danger">
+                <button
+                  onClick={() => handleCancel(proposal._id)}
+                  className="collab-form-button collab-form-button-danger"
+                >
                   ביטול
                 </button>
               )}
               {view === "received" && proposal.status === "pending" && (
                 <>
-                  <button onClick={() => handleAccept(proposal._id)} className="collab-form-button collab-form-button-accept">
+                  <button
+                    onClick={() => handleAccept(proposal._id)}
+                    className="collab-form-button collab-form-button-accept"
+                  >
                     אשר
                   </button>
-                  <button onClick={() => handleReject(proposal._id)} className="collab-form-button collab-form-button-reject">
+                  <button
+                    onClick={() => handleReject(proposal._id)}
+                    className="collab-form-button collab-form-button-reject"
+                  >
                     דחה
                   </button>
                 </>
@@ -164,4 +193,3 @@ const buttonStyle = (isActive) => ({
   cursor: "pointer",
   fontWeight: "bold",
 });
-
