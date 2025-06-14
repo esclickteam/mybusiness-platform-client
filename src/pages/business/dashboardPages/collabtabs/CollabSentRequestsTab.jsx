@@ -6,7 +6,6 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // טען הצעות שנשלחו מהשרת, ורענן בכל שינוי של refreshFlag
   useEffect(() => {
     setLoading(true);
     async function fetchSentRequests() {
@@ -24,18 +23,11 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     fetchSentRequests();
   }, [refreshFlag]);
 
-  // ביטול הצעה לפי proposalId (שימו לב: זה צריך להיות ה-GUID של ההצעה)
   const handleCancelProposal = async (proposalId) => {
-    console.log("מנסה לבטל הצעה עם proposalId:", proposalId);
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
-      const response = await API.delete(`/business/my/proposals/${proposalId}`);
-      console.log("תגובה מביטול הצעה:", response.data);
-
-      // הסרת ההצעה מהרשימה בממשק המשתמש
-      setSentRequests((prev) =>
-        prev.filter((p) => p.proposalId !== proposalId)
-      );
+      await API.delete(`/business/my/proposals/${proposalId}`);
+      setSentRequests((prev) => prev.filter((p) => p.proposalId !== proposalId));
       alert("ההצעה בוטלה בהצלחה");
     } catch (err) {
       console.error("שגיאה בביטול ההצעה:", err.response || err.message || err);
@@ -43,60 +35,75 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     }
   };
 
-  // פונקציית שליחה מחדש (דמו)
   const handleResendProposal = (proposal) => {
     alert(
       `פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${
         proposal.toBusinessId?.businessName || "לא ידוע"
       }`
     );
-    // ניתן לממש כאן פתיחת טופס עריכה או שליחה מחדש
+    // כאן אפשר לממש פתיחת טופס עריכה/שליחה מחדש
   };
 
   if (loading) return <p>טוען הצעות שנשלחו...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div className="collab-section">
-      <h3 className="collab-title">📤 הצעות שנשלחו</h3>
+    <div className="collab-section" style={{ direction: 'rtl', fontFamily: 'Arial, sans-serif', maxWidth: 700, margin: 'auto' }}>
+      <h3 className="collab-title" style={{ color: '#6b46c1', marginBottom: 20, textAlign: 'center' }}>📤 הצעות שנשלחו</h3>
       {sentRequests.length === 0 ? (
-        <p>לא נשלחו עדיין הצעות.</p>
+        <p style={{ textAlign: 'center' }}>לא נשלחו עדיין הצעות.</p>
       ) : (
-        sentRequests.map((req) => {
-          const key = req.proposalId; // מזהה ההצעה - חשוב שזו המחרוזת GUID
-          return (
-            <div key={key} className="collab-card">
-              <p>
-                <strong>אל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}
-              </p>
-              <p>
-                <strong>הודעה:</strong> {req.message || "-"}
-              </p>
-              <p>
-                <strong>סטטוס:</strong> {req.status || "לא ידוע"}
-              </p>
-              <p className="collab-tag">
-                נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
-              </p>
-              <div className="flex gap-2 mt-2">
-                <button
-                  className="collab-form-button"
-                  type="button"
-                  onClick={() => handleResendProposal(req)}
-                >
-                  📨 שלח שוב
-                </button>
-                <button
-                  className="collab-form-button"
-                  type="button"
-                  onClick={() => handleCancelProposal(key)}
-                >
-                  🗑️ ביטול
-                </button>
-              </div>
+        sentRequests.map((req) => (
+          <div
+            key={req.proposalId}
+            className="collab-card"
+            style={{
+              background: '#fff',
+              padding: 16,
+              borderRadius: 12,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              marginBottom: 16,
+              wordBreak: 'break-word'
+            }}
+          >
+            <p><strong>אל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}</p>
+            <p><strong>הודעה:</strong> {req.message || "-"}</p>
+            <p><strong>סטטוס:</strong> {req.status || "לא ידוע"}</p>
+            <p style={{ color: '#666', fontSize: '0.9rem' }}>
+              נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
+            </p>
+            <div style={{ marginTop: 12, display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                style={{
+                  backgroundColor: '#6b46c1',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => handleResendProposal(req)}
+              >
+                📨 שלח שוב
+              </button>
+              <button
+                style={{
+                  backgroundColor: '#d53f8c',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                }}
+                onClick={() => handleCancelProposal(req.proposalId)}
+              >
+                🗑️ ביטול
+              </button>
             </div>
-          );
-        })
+          </div>
+        ))
       )}
     </div>
   );

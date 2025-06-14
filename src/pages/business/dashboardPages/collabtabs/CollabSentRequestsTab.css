@@ -1,32 +1,40 @@
 /* עיצוב עבור טאב 2 – הצעות שנשלחו */
 .collab-tag {
-    margin-top: 0.5rem;
-    display: inline-block;
-    padding: 4px 10px;
-    background-color: #f3e5f5;
-    color: #6a1b9a;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border-radius: 12px;
-  }
-  
-  .collab-card p strong {
-    color: var(--accent);
-    font-weight: 600;
-  }
-  
-  .collab-card .collab-form-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    border-radius: 8px;
-    font-weight: 500;
-    background-color: #9b59b6;
-    color: white;
-    border: none;
-    transition: background-color 0.3s ease;
-  }
-  
-  .collab-card .collab-form-button:hover {
-    background-color: #6c5ce7;
-  }
-  
+  margin-top: 0.5rem;
+  display: inline-block;
+  padding: 4px 10px;
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 12px;
+}
+
+.collab-card p strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* עיצוב הכפתורים */
+.collab-card .collab-form-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  font-weight: 500;
+  background-color: #9b59b6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 0.5rem; /* רווח בין הכפתורים */
+}
+
+.collab-card .collab-form-button:hover {
+  background-color: #6c5ce7;
+}
+
+/* למכולת כפתורים לשורות נפרדות אם צריכה */
+.collab-card .flex {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
