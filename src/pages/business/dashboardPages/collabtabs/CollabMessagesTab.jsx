@@ -209,50 +209,45 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
             : "אין הצעות שאושרו להצגה."}
         </p>
       ) : (
-        messagesToShow.map((msg) => (
-          <div
-            key={msg.proposalId || msg._id}
-            style={{
-              background: "#fff",
-              padding: 16,
-              borderRadius: 12,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              marginBottom: 16,
-              wordBreak: "break-word",
-              lineHeight: 1.6,
-            }}
-          >
-            <p>
-              <strong>עסק שולח:</strong>{" "}
-              <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "לא ידוע"}</span>
-            </p>
-            <p>
-              <strong>עסק מקבל:</strong>{" "}
-              <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
-            </p>
-            <p>
-              <strong>כותרת הצעה:</strong> <span style={{ marginLeft: 6 }}>{msg.message || "-"}</span>
-            </p>
-            <p>
-              <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
-            </p>
+        messagesToShow.map((msg) => {
+          console.log("userBusinessId:", userBusinessId);
+          console.log("msg.fromBusinessId?._id:", msg.fromBusinessId?._id);
+          console.log("msg.agreementId:", msg.agreementId);
+          console.log("show view button condition:", msg.agreementId && String(userBusinessId) === String(msg.fromBusinessId?._id));
 
-            {/* כפתורים קשורים להסכם */}
-            {msg.agreementId && (
-              <>
-                {/* העסק השולח תמיד רואה צפייה בהסכם */}
-                {String(userBusinessId) === String(msg.fromBusinessId._id) && (
-                  <button
-                    onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
-                    style={buttonStylePurple}
-                  >
-                    צפייה בהסכם
-                  </button>
-                )}
+          return (
+            <div
+              key={msg.proposalId || msg._id}
+              style={{
+                background: "#fff",
+                padding: 16,
+                borderRadius: 12,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                marginBottom: 16,
+                wordBreak: "break-word",
+                lineHeight: 1.6,
+              }}
+            >
+              <p>
+                <strong>עסק שולח:</strong>{" "}
+                <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "לא ידוע"}</span>
+              </p>
+              <p>
+                <strong>עסק מקבל:</strong>{" "}
+                <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
+              </p>
+              <p>
+                <strong>כותרת הצעה:</strong> <span style={{ marginLeft: 6 }}>{msg.message || "-"}</span>
+              </p>
+              <p>
+                <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
+              </p>
 
-                {/* העסק השני - אם חתם כבר, רואה צפייה בהסכם */}
-                {String(userBusinessId) === String(msg.toBusinessId._id) &&
-                  msg.agreementId.signatures?.invitedBusiness?.signed && (
+              {/* כפתורים קשורים להסכם */}
+              {msg.agreementId && (
+                <>
+                  {/* העסק השולח תמיד רואה צפייה בהסכם */}
+                  {String(userBusinessId) === String(msg.fromBusinessId?._id) && (
                     <button
                       onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
                       style={buttonStylePurple}
@@ -261,130 +256,142 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
                     </button>
                   )}
 
-                {/* העסק השני - אם לא חתם עדיין, רואה כפתור חתימה */}
-                {String(userBusinessId) === String(msg.toBusinessId._id) &&
-                  !msg.agreementId.signatures?.invitedBusiness?.signed && (
-                    <button
-                      onClick={() => alert("כאן תפתח חתימה על ההסכם")}
-                      style={buttonStyleBlue}
-                    >
-                      חתום על ההסכם
-                    </button>
-                  )}
-              </>
-            )}
+                  {/* העסק השני - אם חתם כבר, רואה צפייה בהסכם */}
+                  {String(userBusinessId) === String(msg.toBusinessId?._id) &&
+                    msg.agreementId.signatures?.invitedBusiness?.signed && (
+                      <button
+                        onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
+                        style={buttonStylePurple}
+                      >
+                        צפייה בהסכם
+                      </button>
+                    )}
 
-            {/* כפתור יצירת הסכם רק להצעות שהסטטוס שלהן הוא accepted ואין עדיין agreementId */}
-            {filter === "received" && msg.status === "accepted" && !msg.agreementId && (
-              <button
-                onClick={async () => {
-                  const dummyAgreementData = {
-                    invitedBusinessId: msg.fromBusinessId._id,
-                    title: "הסכם שותפות לדוגמה",
-                    description: "תיאור לדוגמה",
-                    giving: "מה שהעסק נותן",
-                    receiving: "מה שהעסק מקבל",
-                    type: "שותפות",
-                    payment: "תשלום",
-                    startDate: new Date().toISOString(),
-                    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    cancelAnytime: true,
-                    confidentiality: false,
-                    signatureDataUrl: "",
-                  };
-                  await createAgreementFromProposal(msg.proposalId || msg._id, dummyAgreementData);
-                }}
+                  {/* העסק השני - אם לא חתם עדיין, רואה כפתור חתימה */}
+                  {String(userBusinessId) === String(msg.toBusinessId?._id) &&
+                    !msg.agreementId.signatures?.invitedBusiness?.signed && (
+                      <button
+                        onClick={() => alert("כאן תפתח חתימה על ההסכם")}
+                        style={buttonStyleBlue}
+                      >
+                        חתום על ההסכם
+                      </button>
+                    )}
+                </>
+              )}
+
+              {/* כפתור יצירת הסכם רק להצעות שהסטטוס שלהן הוא accepted ואין עדיין agreementId */}
+              {filter === "received" && msg.status === "accepted" && !msg.agreementId && (
+                <button
+                  onClick={async () => {
+                    const dummyAgreementData = {
+                      invitedBusinessId: msg.fromBusinessId._id,
+                      title: "הסכם שותפות לדוגמה",
+                      description: "תיאור לדוגמה",
+                      giving: "מה שהעסק נותן",
+                      receiving: "מה שהעסק מקבל",
+                      type: "שותפות",
+                      payment: "תשלום",
+                      startDate: new Date().toISOString(),
+                      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                      cancelAnytime: true,
+                      confidentiality: false,
+                      signatureDataUrl: "",
+                    };
+                    await createAgreementFromProposal(msg.proposalId || msg._id, dummyAgreementData);
+                  }}
+                  style={{
+                    marginTop: 12,
+                    backgroundColor: "#38a169",
+                    color: "white",
+                    padding: "8px 16px",
+                    borderRadius: 8,
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  צור הסכם
+                </button>
+              )}
+
+              <div
                 style={{
                   marginTop: 12,
-                  backgroundColor: "#38a169",
-                  color: "white",
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: "bold",
+                  display: "flex",
+                  gap: 12,
+                  justifyContent: "flex-end",
                 }}
               >
-                צור הסכם
-              </button>
-            )}
-
-            <div
-              style={{
-                marginTop: 12,
-                display: "flex",
-                gap: 12,
-                justifyContent: "flex-end",
-              }}
-            >
-              {filter === "sent" ? (
-                <>
-                  <button
-                    style={{
-                      backgroundColor: "#6b46c1",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => alert("שלח שוב (טרם מיושם)")}
-                  >
-                    📨 שלח שוב
-                  </button>
-                  <button
-                    style={{
-                      backgroundColor: "#d53f8c",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
-                  >
-                    🗑️ ביטול
-                  </button>
-                </>
-              ) : filter === "received" && msg.status === "pending" ? (
-                <>
-                  <button
-                    style={{
-                      backgroundColor: "#6b46c1",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => handleAccept(msg.proposalId || msg._id)}
-                  >
-                    ✅ אשר
-                  </button>
-                  <button
-                    style={{
-                      backgroundColor: "#d53f8c",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => handleReject(msg.proposalId || msg._id)}
-                  >
-                    ❌ דחה
-                  </button>
-                </>
-              ) : (
-                <p style={{ alignSelf: "center" }}>סטטוס: {msg.status}</p>
-              )}
+                {filter === "sent" ? (
+                  <>
+                    <button
+                      style={{
+                        backgroundColor: "#6b46c1",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => alert("שלח שוב (טרם מיושם)")}
+                    >
+                      📨 שלח שוב
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: "#d53f8c",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
+                    >
+                      🗑️ ביטול
+                    </button>
+                  </>
+                ) : filter === "received" && msg.status === "pending" ? (
+                  <>
+                    <button
+                      style={{
+                        backgroundColor: "#6b46c1",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => handleAccept(msg.proposalId || msg._id)}
+                    >
+                      ✅ אשר
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: "#d53f8c",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => handleReject(msg.proposalId || msg._id)}
+                    >
+                      ❌ דחה
+                    </button>
+                  </>
+                ) : (
+                  <p style={{ alignSelf: "center" }}>סטטוס: {msg.status}</p>
+                )}
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
 
       {/* מודל הצגת ההסכם */}
