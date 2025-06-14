@@ -7,6 +7,8 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
+import CollabActiveTab from "./collabtabs/CollabActiveTab"; // הוספת ייבוא חסר
+import PartnershipAgreementsTab from "./PartnershipAgreementsTab"; // הוספת ייבוא חסר
 import "./Collab.css";
 
 const tabMap = {
