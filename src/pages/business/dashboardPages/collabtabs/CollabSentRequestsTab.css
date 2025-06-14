@@ -33,8 +33,10 @@
   background-color: #6c5ce7;
 }
 
-/* למכולת כפתורים לשורות נפרדות אם צריכה */
+/* מכולת כפתורים לשורות נפרדות אם צריך */
 .collab-card .flex {
+  display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  justify-content: flex-end; /* מיושר לימין */
 }

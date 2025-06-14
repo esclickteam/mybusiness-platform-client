@@ -44,6 +44,19 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     // כאן אפשר לממש פתיחת טופס עריכה/שליחה מחדש
   };
 
+  const parseMessage = (message) => {
+    if (!message) return {};
+    const lines = message.split('\n').map(line => line.trim());
+    const parsed = {};
+    lines.forEach(line => {
+      if (line.startsWith('כותרת:')) parsed.title = line.replace('כותרת:', '').trim();
+      else if (line.startsWith('תיאור:')) parsed.description = line.replace('תיאור:', '').trim();
+      else if (line.startsWith('סכום:')) parsed.amount = line.replace('סכום:', '').trim();
+      else if (line.startsWith('תוקף עד:')) parsed.validUntil = line.replace('תוקף עד:', '').trim();
+    });
+    return parsed;
+  };
+
   if (loading) return <p>טוען הצעות שנשלחו...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
@@ -53,57 +66,63 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
       {sentRequests.length === 0 ? (
         <p style={{ textAlign: 'center' }}>לא נשלחו עדיין הצעות.</p>
       ) : (
-        sentRequests.map((req) => (
-          <div
-            key={req.proposalId}
-            className="collab-card"
-            style={{
-              background: '#fff',
-              padding: 16,
-              borderRadius: 12,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              marginBottom: 16,
-              wordBreak: 'break-word'
-            }}
-          >
-            <p><strong>אל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}</p>
-            <p><strong>הודעה:</strong> {req.message || "-"}</p>
-            <p><strong>סטטוס:</strong> {req.status || "לא ידוע"}</p>
-            <p style={{ color: '#666', fontSize: '0.9rem' }}>
-              נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
-            </p>
-            <div style={{ marginTop: 12, display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-              <button
-                style={{
-                  backgroundColor: '#6b46c1',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => handleResendProposal(req)}
-              >
-                📨 שלח שוב
-              </button>
-              <button
-                style={{
-                  backgroundColor: '#d53f8c',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                }}
-                onClick={() => handleCancelProposal(req.proposalId)}
-              >
-                🗑️ ביטול
-              </button>
+        sentRequests.map((req) => {
+          const { title, description, amount, validUntil } = parseMessage(req.message);
+          return (
+            <div
+              key={req.proposalId}
+              className="collab-card"
+              style={{
+                background: '#fff',
+                padding: 16,
+                borderRadius: 12,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                marginBottom: 16,
+                wordBreak: 'break-word'
+              }}
+            >
+              <p><strong>אל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}</p>
+              <p><strong>כותרת הצעה:</strong> {title || "-"}</p>
+              <p><strong>תיאור הצעה:</strong> {description || "-"}</p>
+              <p><strong>סכום:</strong> {amount || "-"}</p>
+              <p><strong>תוקף עד:</strong> {validUntil || "-"}</p>
+              <p><strong>סטטוס:</strong> {req.status || "לא ידוע"}</p>
+              <p style={{ color: '#666', fontSize: '0.9rem' }}>
+                נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
+              </p>
+              <div style={{ marginTop: 12, display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+                <button
+                  style={{
+                    backgroundColor: '#6b46c1',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                  }}
+                  onClick={() => handleResendProposal(req)}
+                >
+                  📨 שלח שוב
+                </button>
+                <button
+                  style={{
+                    backgroundColor: '#d53f8c',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                  }}
+                  onClick={() => handleCancelProposal(req.proposalId)}
+                >
+                  🗑️ ביטול
+                </button>
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );
