@@ -8,7 +8,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import API from "../../../../api";
-import "./ProposalForm.css";  
+import "./ProposalForm.css";
 
 export default function ProposalForm({ fromBusinessId, toBusiness, onClose, onSent }) {
   const [formData, setFormData] = useState({
@@ -97,10 +97,10 @@ export default function ProposalForm({ fromBusinessId, toBusiness, onClose, onSe
         fullWidth
       />
 
+      {/* שדה רק לקריאה להצגת שם העסק בלבד */}
       <TextField
         label="עסק מקבל (אל)"
-        name="toBusinessId"
-        value={formData.toBusinessId}
+        value={toBusiness?.businessName || ""}
         disabled
         fullWidth
       />
