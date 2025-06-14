@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./CollabActiveTab.css";
 
-
 export default function CollabActiveTab({ userBusinessId, token }) {
   const [view, setView] = useState("active"); // "active" | "sent" | "received"
   const [activeProposals, setActiveProposals] = useState([]);
@@ -12,11 +11,11 @@ export default function CollabActiveTab({ userBusinessId, token }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-  console.log("CollabActiveTab props:", { userBusinessId, token });
-  if (!userBusinessId || !token) {
-    console.warn("Missing userBusinessId or token, abort fetching");
-    return;
-  }
+    console.log("CollabActiveTab props:", { userBusinessId, token });
+    if (!userBusinessId || !token) {
+      console.warn("Missing userBusinessId or token, abort fetching");
+      return;
+    }
 
     async function fetchProposals() {
       setLoading(true);
@@ -43,8 +42,8 @@ export default function CollabActiveTab({ userBusinessId, token }) {
 
   let proposalsToShow = [];
   if (view === "active") proposalsToShow = activeProposals;
-  if (view === "sent") proposalsToShow = sentProposals;
-  if (view === "received") proposalsToShow = receivedProposals;
+  else if (view === "sent") proposalsToShow = sentProposals;
+  else if (view === "received") proposalsToShow = receivedProposals;
 
   // פונקציות לאישור, דחייה וביטול הצעה
   async function handleAccept(id) {
@@ -95,7 +94,14 @@ export default function CollabActiveTab({ userBusinessId, token }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 20, display: "flex", justifyContent: "center", gap: 12 }}>
+      <div
+        style={{
+          marginBottom: 20,
+          display: "flex",
+          justifyContent: "center",
+          gap: 12,
+        }}
+      >
         <button onClick={() => setView("active")} style={buttonStyle(view === "active")}>
           שיתופי פעולה פעילים
         </button>
@@ -129,7 +135,8 @@ export default function CollabActiveTab({ userBusinessId, token }) {
             }}
           >
             <div>
-              <b>עסק שולח:</b> {proposal.fromBusinessId?.businessName || proposal.partnerName || "לא ידוע"}
+              <b>עסק שולח:</b>{" "}
+              {proposal.fromBusinessId?.businessName || proposal.partnerName || "לא ידוע"}
             </div>
             <div>
               <b>עסק מקבל:</b> {proposal.toBusinessId?.businessName || ""}
@@ -141,30 +148,29 @@ export default function CollabActiveTab({ userBusinessId, token }) {
               <b>סטטוס:</b> {proposal.status}
             </div>
             <div>
-              <b>תאריך יצירה:</b> {new Date(proposal.createdAt).toLocaleDateString("he-IL")}
+              <b>תאריך יצירה:</b>{" "}
+              {new Date(proposal.createdAt).toLocaleDateString("he-IL")}
             </div>
 
-            <div style={{ marginTop: 12, display: "flex", gap: 12, justifyContent: "flex-end" }}>
+            <div
+              style={{
+                marginTop: 12,
+                display: "flex",
+                gap: 12,
+                justifyContent: "flex-end",
+              }}
+            >
               {view === "sent" && (
-                <button
-                  onClick={() => handleCancel(proposal._id)}
-                  style={buttonDangerStyle}
-                >
+                <button onClick={() => handleCancel(proposal._id)} style={buttonDangerStyle}>
                   ביטול
                 </button>
               )}
               {view === "received" && proposal.status === "pending" && (
                 <>
-                  <button
-                    onClick={() => handleAccept(proposal._id)}
-                    style={buttonAcceptStyle}
-                  >
+                  <button onClick={() => handleAccept(proposal._id)} style={buttonAcceptStyle}>
                     אשר
                   </button>
-                  <button
-                    onClick={() => handleReject(proposal._id)}
-                    style={buttonRejectStyle}
-                  >
+                  <button onClick={() => handleReject(proposal._id)} style={buttonRejectStyle}>
                     דחה
                   </button>
                 </>
