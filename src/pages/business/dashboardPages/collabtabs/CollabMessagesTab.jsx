@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
+import PartnershipAgreementView from "../../../components/PartnershipAgreementView"; // עדכן נתיב לפי מבנה הפרויקט שלך
 
 export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBusinessId }) {
   const [sentMessages, setSentMessages] = useState([]);
@@ -386,7 +387,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
         ))
       )}
 
-      {/* מודל הצגת הסכם */}
+      {/* מודל הצגת ההסכם */}
       {modalOpen && selectedAgreement && (
         <div
           onClick={closeModal}
@@ -417,31 +418,10 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
               boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
             }}
           >
-            <h3>{selectedAgreement.title}</h3>
-            <p>
-              <strong>תיאור:</strong> {selectedAgreement.description || "-"}
-            </p>
-            <p>
-              <strong>מצב:</strong> {selectedAgreement.status}
-            </p>
-            <p>
-              <strong>עסק ששלח:</strong> {selectedAgreement.sender?.businessName || "-"}
-            </p>
-            <p>
-              <strong>עסק מקבל:</strong> {selectedAgreement.receiver?.businessName || "-"}
-            </p>
-            <p>
-              <strong>מתחיל בתאריך:</strong>{" "}
-              {selectedAgreement.startDate
-                ? new Date(selectedAgreement.startDate).toLocaleDateString("he-IL")
-                : "-"}
-            </p>
-            <p>
-              <strong>מסתיים בתאריך:</strong>{" "}
-              {selectedAgreement.endDate
-                ? new Date(selectedAgreement.endDate).toLocaleDateString("he-IL")
-                : "-"}
-            </p>
+            <PartnershipAgreementView
+              agreementId={selectedAgreement._id || selectedAgreement.agreementId}
+              currentBusinessId={userBusinessId}
+            />
             <button
               onClick={closeModal}
               style={{

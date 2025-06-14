@@ -18,7 +18,7 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     async function fetchAgreement() {
       setLoading(true);
       try {
-        const res = await API.get(`/partnershipAgreements/${agreementId}`);  // <-- שים לב לנתיב
+        const res = await API.get(`/partnershipAgreements/${agreementId}`);
         setAgreement(res.data);
       } catch {
         alert("שגיאה בטעינת ההסכם");
@@ -100,8 +100,29 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
 
       <hr />
 
-      {!userSigned && !showSign && (
-        <button className="sign-button" onClick={() => setShowSign(true)}>חתום עכשיו</button>
+      {/* כפתורי פעולה לפי סוג משתמש ומצב חתימה */}
+      {userSide === "createdBy" && (
+        <button
+          className="view-agreement-button"
+          onClick={() => alert("הצג הסכם במודאל או ניווט")}
+        >
+          צפייה בהסכם
+        </button>
+      )}
+
+      {userSide === "invitedBusiness" && !userSigned && !showSign && (
+        <button className="sign-button" onClick={() => setShowSign(true)}>
+          חתום עכשיו
+        </button>
+      )}
+
+      {userSide === "invitedBusiness" && userSigned && (
+        <button
+          className="view-agreement-button"
+          onClick={() => alert("הצג הסכם במודאל או ניווט")}
+        >
+          צפייה בהסכם
+        </button>
       )}
 
       {showSign && (
@@ -116,7 +137,9 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
             <button onClick={handleSaveSignature} disabled={saving}>
               {saving ? "שומר..." : "שמור חתימה"}
             </button>
-            <button onClick={() => setShowSign(false)} disabled={saving}>בטל</button>
+            <button onClick={() => setShowSign(false)} disabled={saving}>
+              בטל
+            </button>
           </div>
         </div>
       )}
