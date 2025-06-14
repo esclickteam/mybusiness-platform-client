@@ -11,21 +11,22 @@ export default function CollabActiveTab({ userBusinessId, token }) {
   useEffect(() => {
     if (!userBusinessId || !token) return;
 
-    setLoading(true);
-    setError(null);
-
-    const fetchSent = API.get("/business/my/proposals/sent");
-    const fetchReceived = API.get("/business/my/proposals/received");
-
-    Promise.all([fetchSent, fetchReceived])
-      .then(([sentRes, receivedRes]) => {
+    async function fetchProposals() {
+      setLoading(true);
+      setError(null);
+      try {
+        const sentRes = await API.get("/business/my/proposals/sent");
+        const receivedRes = await API.get("/business/my/proposals/received");
         setSentProposals(sentRes.data.proposalsSent || []);
         setReceivedProposals(receivedRes.data.proposalsReceived || []);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError(err.message || "שגיאה בטעינת ההצעות");
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProposals();
   }, [userBusinessId, token]);
 
   const proposalsToShow = view === "sent" ? sentProposals : receivedProposals;
