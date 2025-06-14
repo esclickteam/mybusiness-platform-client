@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
-import PartnershipAgreementView from "../../../components/PartnershipAgreementView"; // עדכן נתיב לפי מבנה הפרויקט שלך
+import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 
 export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBusinessId }) {
   const [sentMessages, setSentMessages] = useState([]);
