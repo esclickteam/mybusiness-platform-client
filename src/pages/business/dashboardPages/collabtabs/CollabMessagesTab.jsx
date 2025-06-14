@@ -37,7 +37,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
     try {
       const payload = {
         ...agreementData,
-        invitedBusinessId: agreementData.invitedBusinessId, 
+        invitedBusinessId: agreementData.invitedBusinessId,
         title: agreementData.title,
         description: agreementData.description,
         giving: agreementData.giving,
@@ -48,12 +48,12 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
         endDate: agreementData.endDate,
         cancelAnytime: agreementData.cancelAnytime,
         confidentiality: agreementData.confidentiality,
-        signatureDataUrl: agreementData.signatureDataUrl || "", 
+        signatureDataUrl: agreementData.signatureDataUrl || "",
         proposalId,
       };
       const res = await API.post('/partnershipAgreements', payload);
       alert('ההסכם נוצר בהצלחה!');
-      onStatusChange?.();  
+      onStatusChange?.();
       return res.data;
     } catch (err) {
       console.error('Error creating agreement:', err);
@@ -129,6 +129,28 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
   else if (filter === "received") messagesToShow = receivedMessages;
   else if (filter === "accepted")
     messagesToShow = [...sentMessages, ...receivedMessages].filter((m) => m.status === "accepted");
+
+  const buttonStylePurple = {
+    marginTop: 12,
+    backgroundColor: "#6b46c1",
+    color: "white",
+    padding: "8px 16px",
+    borderRadius: 8,
+    border: "none",
+    cursor: "pointer",
+    fontWeight: "bold",
+  };
+
+  const buttonStyleBlue = {
+    marginTop: 12,
+    backgroundColor: "#3182ce",
+    color: "white",
+    padding: "8px 16px",
+    borderRadius: 8,
+    border: "none",
+    cursor: "pointer",
+    fontWeight: "bold",
+  };
 
   return (
     <div style={{ direction: "rtl", fontFamily: "Arial, sans-serif", maxWidth: 700, margin: "auto" }}>
@@ -215,64 +237,37 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
             </p>
 
             {/* כפתורים קשורים להסכם */}
-            {filter === "accepted" && msg.agreementId && (
+            {msg.agreementId && (
               <>
-                {/* העסק השולח תמיד יכול לראות את ההסכם */}
+                {/* העסק השולח תמיד רואה צפייה בהסכם */}
                 {userBusinessId === msg.fromBusinessId._id.toString() && (
                   <button
                     onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
-                    style={{
-                      marginTop: 12,
-                      backgroundColor: "#6b46c1",
-                      color: "white",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
+                    style={buttonStylePurple}
                   >
                     צפייה בהסכם
                   </button>
                 )}
 
-                {/* העסק השני רואה כפתור חתימה אם לא חתם עדיין */}
-                {userBusinessId === msg.toBusinessId._id.toString() &&
-                  !msg.agreementId.signatures?.invitedBusiness?.signed && (
-                    <button
-                      onClick={() => alert("כאן תפתח חתימה על ההסכם")}
-                      style={{
-                        marginTop: 12,
-                        backgroundColor: "#3182ce",
-                        color: "white",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        border: "none",
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      חתום על ההסכם
-                    </button>
-                  )}
-
-                {/* העסק השני אחרי שחתם - גם הוא יכול לראות את ההסכם */}
+                {/* העסק השני - אם חתם כבר, רואה צפייה בהסכם */}
                 {userBusinessId === msg.toBusinessId._id.toString() &&
                   msg.agreementId.signatures?.invitedBusiness?.signed && (
                     <button
                       onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
-                      style={{
-                        marginTop: 12,
-                        backgroundColor: "#6b46c1",
-                        color: "white",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        border: "none",
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
+                      style={buttonStylePurple}
                     >
                       צפייה בהסכם
+                    </button>
+                  )}
+
+                {/* העסק השני - אם לא חתם עדיין, רואה כפתור חתימה */}
+                {userBusinessId === msg.toBusinessId._id.toString() &&
+                  !msg.agreementId.signatures?.invitedBusiness?.signed && (
+                    <button
+                      onClick={() => alert("כאן תפתח חתימה על ההסכם")}
+                      style={buttonStyleBlue}
+                    >
+                      חתום על ההסכם
                     </button>
                   )}
               </>
