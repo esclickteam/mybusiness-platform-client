@@ -7,8 +7,8 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import CollabActiveTab from "./collabtabs/CollabActiveTab"; // הוספת ייבוא חסר
-import PartnershipAgreementsTab from "./PartnershipAgreementsTab"; // הוספת ייבוא חסר
+import CollabActiveTab from "./collabtabs/CollabActiveTab";
+import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
 const tabMap = {
@@ -29,30 +29,51 @@ const tabLabels = {
 
 export default function Collab() {
   const { tab: tabParam } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
-  const devMode = true; // מצב פיתוח
-
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
+  const [businessId, setBusinessId] = useState(null);
+  const [profileData, setProfileData] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
+  // ניהול שינויים ב-URL
   useEffect(() => {
     if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
       setTab(tabMap[tabParam]);
     }
   }, [tabParam]);
 
-  const [refreshSent, setRefreshSent] = useState(0);
-  const [refreshReceived, setRefreshReceived] = useState(0);
+  // בדיקה ולוגים של user - עזר לזיהוי מזהה העסק
+  useEffect(() => {
+    console.log("User object from context:", user);
+  }, [user]);
 
-  const [profileImage, setProfileImage] = useState(null);
-  const [profileData, setProfileData] = useState(null);
-  const [loadingProfile, setLoadingProfile] = useState(true);
+  // קבלת מזהה העסק מתוך user או מה-API
+  useEffect(() => {
+    if (user?.business?._id) {
+      console.log("Setting businessId from user.business._id:", user.business._id);
+      setBusinessId(user.business._id);
+    } else {
+      async function fetchBusinessId() {
+        try {
+          console.log("Fetching businessId from /business/my API...");
+          const { data } = await API.get("/business/my");
+          console.log("Received business data:", data);
+          setBusinessId(data._id);
+        } catch (err) {
+          console.error("Failed to fetch business ID:", err);
+        }
+      }
+      fetchBusinessId();
+    }
+  }, [user]);
 
+  // טעינת פרופיל העסק לפרופיל עסקי
   useEffect(() => {
     async function fetchProfile() {
       try {
+        setLoadingProfile(true);
         const { data } = await API.get("/business/my");
         setProfileData({
           businessName: data.businessName || data.name || "",
@@ -74,52 +95,11 @@ export default function Collab() {
   }, []);
 
   const isDevUser = user?.email === "newuser@example.com";
-  const hasCollabAccess =
-    isDevUser || user?.subscriptionPlan?.includes("collaboration");
-
-  const handleSaveProfile = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const newData = {
-      businessName: form.businessName.value,
-      category: form.category.value,
-      area: form.area.value,
-      about: form.about.value,
-      collabPref: form.collabPref.value,
-      contact: form.contact.value,
-      phone: form.phone.value,
-      email: form.email.value,
-    };
-    setProfileData(newData);
-    alert("✅ פרטי הפרופיל נשמרו");
-  };
-
-  const handleSendProposal = async (toBusinessId, message) => {
-    try {
-      await API.post("/business/my/proposals", { toBusinessId, message });
-      setRefreshSent((f) => f + 1);
-    } catch (err) {
-      console.error(err);
-      alert("❌ שגיאה בשליחת ההצעה");
-    }
-  };
-
-  const handleStatusChange = () => {
-    setRefreshSent((f) => f + 1);
-    setRefreshReceived((f) => f + 1);
-  };
-
-  const handleOpenChat = (businessWithMessage) => {
-    console.log("פותח צ׳אט עם:", businessWithMessage);
-  };
+  const hasCollabAccess = isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
   if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
-  if (!user && !devMode) {
-    return (
-      <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>
-    );
-  }
-  if (!hasCollabAccess && !devMode) {
+  if (!user) return <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>;
+  if (!hasCollabAccess) {
     return (
       <div className="p-6 text-center">
         <h2>שיתופי פעולה זמינים רק בחבילה מתקדמת</h2>
@@ -151,38 +131,29 @@ export default function Collab() {
         ) : (
           <CollabBusinessProfileTab
             profileData={profileData}
-            profileImage={profileImage}
-            handleSaveProfile={handleSaveProfile}
+            handleSaveProfile={() => alert("שמירת פרופיל - יש להוסיף לוגיקה")}
           />
         ))}
 
       {tab === 1 && (
         <CollabFindPartnerTab
-          searchMode="category"
-          setSearchMode={() => {}}
-          searchCategory={""}
-          setSearchCategory={() => {}}
-          freeText={""}
-          setFreeText={() => {}}
-          categories={[]}
-          setSelectedBusiness={() => {}}
-          handleSendProposal={handleSendProposal}
-          handleOpenChat={handleOpenChat}
           isDevUser={isDevUser}
+          handleSendProposal={() => alert("שליחת הצעה - יש להוסיף לוגיקה")}
+          handleOpenChat={() => alert("פתיחת צ׳אט - יש להוסיף לוגיקה")}
         />
       )}
 
       {tab === 2 && (
         <CollabMessagesTab
-          refreshFlag={refreshSent + refreshReceived}
-          onStatusChange={handleStatusChange}
+          refreshFlag={0}
+          onStatusChange={() => console.log("Status changed")}
         />
       )}
 
-      {tab === 3 && (
+      {tab === 3 && businessId && (
         <CollabsAndAgreementsTab
           isDevUser={isDevUser}
-          userBusinessId={user?.businessId}
+          userBusinessId={businessId}
           token={user?.token}
         />
       )}
@@ -192,9 +163,9 @@ export default function Collab() {
   );
 }
 
-// קומפוננטה פנימית, לא default export
+// קומפוננטה פנימית לשיתופי פעולה והסכמים
 function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
-  const [activeView, setActiveView] = useState("active"); // 'active' | 'agreements'
+  const [activeView, setActiveView] = React.useState("active"); // 'active' | 'agreements'
 
   const tabStyle = (tab) => ({
     backgroundColor: activeView === tab ? "#6b46c1" : "#ccc",
