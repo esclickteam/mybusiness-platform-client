@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
-export default function CollabPendingTab({ isDevUser, userBusinessId, token }) {
+export default function CollabPendingTab({ token }) {
   const [pendingCollabs, setPendingCollabs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -9,11 +9,8 @@ export default function CollabPendingTab({ isDevUser, userBusinessId, token }) {
   useEffect(() => {
     const fetchPendingCollabs = async () => {
       try {
-        // עדכן את הנתיב לפי חיבור ה-router שלך בשרת
         const res = await API.get("/collab-contracts/collaborations/pending", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setPendingCollabs(res.data.pendingCollaborations);
       } catch (err) {
@@ -32,7 +29,7 @@ export default function CollabPendingTab({ isDevUser, userBusinessId, token }) {
   if (pendingCollabs.length === 0) return <p>אין שיתופי פעולה בהמתנה.</p>;
 
   return (
-    <div style={{ display: "flex",  flexDirection: "column", gap: "16px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       {pendingCollabs.map((collab) => (
         <div
           key={collab._id}
@@ -46,10 +43,10 @@ export default function CollabPendingTab({ isDevUser, userBusinessId, token }) {
         >
           <p><strong>שולח:</strong> {collab.fromBusinessId?.businessName}</p>
           <p><strong>מקבל:</strong> {collab.toBusinessId?.businessName}</p>
-          <p><strong>כותרת:</strong> {collab.title}</p>
-          <p><strong>תיאור:</strong> {collab.message}</p>
-          <p><strong>תוקף:</strong> {new Date(collab.expiresAt).toLocaleDateString("he-IL")}</p>
-          <p><strong>סטטוס:</strong> בהמתנה</p>
+          <p><strong>כותרת:</strong> {collab.subject}</p>
+          <p><strong>תיאור:</strong> {collab.description}</p>
+          <p><strong>תוקף:</strong> {collab.expiresAt ? new Date(collab.expiresAt).toLocaleDateString("he-IL") : "לא זמין"}</p>
+          <p><strong>סטטוס:</strong> {collab.status || "בהמתנה"}</p>
         </div>
       ))}
     </div>
