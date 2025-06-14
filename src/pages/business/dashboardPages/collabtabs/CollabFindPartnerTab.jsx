@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
 import CreatePartnershipAgreementForm from "../../../../components/CreateAgreementForm";
+import ProposalForm from "../../../pages/business/dashboardPages/collabtabs/ProposalForm";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
@@ -36,11 +35,9 @@ export default function CollabFindPartnerTab({
   const [chatMessage, setChatMessage] = useState("");
   const [sending, setSending] = useState(false);
 
-  // מודאל יצירת הסכם חדש
   const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
   const [createAgreementPartner, setCreateAgreementPartner] = useState(null);
 
-  // מודאל שליחת הצעה
   const [sendProposalModalOpen, setSendProposalModalOpen] = useState(false);
   const [selectedBusinessForProposal, setSelectedBusinessForProposal] = useState(null);
 
@@ -125,114 +122,6 @@ export default function CollabFindPartnerTab({
   const closeSendProposalModal = () => {
     setSendProposalModalOpen(false);
     setSelectedBusinessForProposal(null);
-  };
-
-  // טופס שליחת הצעה עם כל השדות המורחבים
-  const SendProposalForm = ({ business, onClose, onSent }) => {
-    const myBusinessId = localStorage.getItem("myBusinessId") || "";
-    const [formData, setFormData] = useState({
-      fromBusinessId: myBusinessId,
-      toBusinessId: business?._id || "",
-      title: "",
-      description: "",
-      amount: "",
-      validUntil: "",
-    });
-    const [sendingProposal, setSendingProposal] = useState(false);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-      setFormData(prev => ({
-        ...prev,
-        toBusinessId: business?._id || "",
-      }));
-    }, [business]);
-
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
-      setError(null);
-    };
-
-    const handleSubmit = async () => {
-      if (!formData.title.trim()) {
-        setError("נא למלא כותרת הצעה");
-        return;
-      }
-      if (!formData.description.trim()) {
-        setError("נא למלא תיאור הצעה");
-        return;
-      }
-      if (!formData.validUntil) {
-        setError("נא למלא תאריך תוקף");
-        return;
-      }
-
-      setSendingProposal(true);
-      try {
-        await API.post("/business/proposals/send", formData);
-        onSent();
-      } catch (err) {
-        setError("שגיאה בשליחת ההצעה: " + (err?.response?.data?.error || err.message));
-      } finally {
-        setSendingProposal(false);
-      }
-    };
-
-    return (
-      <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <h3>שליחת הצעה ל{business.businessName}</h3>
-
-        <TextField
-          label="כותרת הצעה"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-        />
-        <TextField
-          label="תיאור הצעה"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          multiline
-          minRows={4}
-          required
-        />
-        <TextField
-          label="סכום (אם רלוונטי)"
-          name="amount"
-          value={formData.amount}
-          onChange={handleChange}
-          type="number"
-          inputProps={{ min: 0, step: 0.01 }}
-        />
-        <TextField
-          label="תאריך תוקף"
-          name="validUntil"
-          value={formData.validUntil}
-          onChange={handleChange}
-          type="date"
-          InputLabelProps={{ shrink: true }}
-          required
-        />
-
-        {error && <Alert severity="error">{error}</Alert>}
-
-        <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-          <Button onClick={onClose} disabled={sendingProposal}>
-            ביטול
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            disabled={sendingProposal}
-          >
-            {sendingProposal ? "שולח..." : "שלח הצעה"}
-          </Button>
-        </Box>
-      </Box>
-    );
   };
 
   return (
@@ -339,8 +228,9 @@ export default function CollabFindPartnerTab({
       <Modal open={sendProposalModalOpen} onClose={closeSendProposalModal}>
         <Box sx={modalStyle}>
           {selectedBusinessForProposal && (
-            <SendProposalForm
-              business={selectedBusinessForProposal}
+            <ProposalForm
+              fromBusinessId={myBusinessId}
+              toBusiness={selectedBusinessForProposal}
               onClose={closeSendProposalModal}
               onSent={() => {
                 closeSendProposalModal();
