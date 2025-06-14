@@ -348,9 +348,9 @@ if (isLoading && !localData) return <DashboardSkeleton />;
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרפים...</div>}>
-        <div ref={chartsRef}>
-          <MemoizedBarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
-        </div>
+        <div ref={chartsRef} className="graph-box full-width">
+  <MemoizedBarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
+</div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעילות...</div>}>

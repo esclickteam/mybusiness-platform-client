@@ -134,6 +134,13 @@
     height: 200px !important;
   }
   
+.graph-box.full-width {
+  flex: 1 1 100% !important;
+  max-width: 100% !important;
+  min-width: auto !important;
+}
+
+
   .chart-container h3,
   .graph-box h4 {
     text-align: center;
