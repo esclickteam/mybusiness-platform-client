@@ -1,4 +1,3 @@
-// Collab.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import API from "@api";
@@ -39,6 +38,7 @@ export default function Collab() {
   console.log("Collab component - user from AuthContext:", user);
 
   const devMode = true;
+  const token = localStorage.getItem("token"); // <-- משיכה מ-localStorage
 
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
 
@@ -188,14 +188,14 @@ export default function Collab() {
         <CollabsAndAgreementsTab
           isDevUser={isDevUser}
           userBusinessId={user?.businessId}
-          token={user?.token}
+          token={token}  
         />
       )}
 
       {tab === tabMap.collaborations && (
         <CollabActiveTab
           userBusinessId={user?.businessId}
-          token={user?.token}
+          token={token}  
           isDevUser={isDevUser}
         />
       )}
