@@ -94,11 +94,10 @@ export default function CreateAgreementForm({ onCreated, fromBusinessId, fromBus
         : sigPadRef.current.getTrimmedCanvas().toDataURL();
 
       const payload = {
-        ...formData,
-        fromBusinessId,
-        partnerBusinessId: partnerBusiness._id,
-        signatureDataUrl,
-      };
+  ...formData,
+  invitedBusinessId: partnerBusiness._id,   // מזהה העסק השותף
+  signatureDataUrl,
+};
 
       console.log("Sending partnership agreement payload:", payload);
 
