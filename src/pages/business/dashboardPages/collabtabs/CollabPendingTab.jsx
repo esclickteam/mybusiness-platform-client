@@ -32,7 +32,7 @@ export default function CollabPendingTab({ isDevUser, userBusinessId, token }) {
   if (pendingCollabs.length === 0) return <p>אין שיתופי פעולה בהמתנה.</p>;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <div style={{ display: "flex",  flexDirection: "column", gap: "16px" }}>
       {pendingCollabs.map((collab) => (
         <div
           key={collab._id}
