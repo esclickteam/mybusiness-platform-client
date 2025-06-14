@@ -7,6 +7,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabActiveTab from "./collabtabs/CollabActiveTab";
+import CollabPendingTab from "./collabtabs/CollabPendingTab"; // הוסף ייבוא
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
@@ -28,7 +29,17 @@ const tabLabels = {
 };
 
 function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
-  const [activeView, setActiveView] = useState("active");
+  const [activeView, setActiveView] = useState("active"); // 'active' | 'pending' | 'agreements'
+
+  const tabStyle = (tab) => ({
+    backgroundColor: activeView === tab ? "#6b46c1" : "#ccc",
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: 8,
+    cursor: "pointer",
+    fontWeight: "bold",
+  });
 
   return (
     <div style={{ maxWidth: 900, margin: "auto" }}>
@@ -40,42 +51,22 @@ function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
           marginBottom: 20,
         }}
       >
-        <button
-          style={{
-            backgroundColor: activeView === "active" ? "#6b46c1" : "#ccc",
-            color: "white",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-          onClick={() => setActiveView("active")}
-        >
+        <button style={tabStyle("active")} onClick={() => setActiveView("active")}>
           שיתופי פעולה פעילים
         </button>
-        <button
-          style={{
-            backgroundColor: activeView === "agreements" ? "#6b46c1" : "#ccc",
-            color: "white",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-          onClick={() => setActiveView("agreements")}
-        >
+        <button style={tabStyle("pending")} onClick={() => setActiveView("pending")}>
+          שיתופי פעולה בהמתנה
+        </button>
+        <button style={tabStyle("agreements")} onClick={() => setActiveView("agreements")}>
           הסכמי שיתוף פעולה
         </button>
       </div>
 
       {activeView === "active" && (
-        <CollabActiveTab
-          isDevUser={isDevUser}
-          userBusinessId={userBusinessId}
-          token={token}
-        />
+        <CollabActiveTab isDevUser={isDevUser} userBusinessId={userBusinessId} token={token} />
+      )}
+      {activeView === "pending" && (
+        <CollabPendingTab isDevUser={isDevUser} userBusinessId={userBusinessId} token={token} />
       )}
       {activeView === "agreements" && (
         <PartnershipAgreementsTab userBusinessId={userBusinessId} />
