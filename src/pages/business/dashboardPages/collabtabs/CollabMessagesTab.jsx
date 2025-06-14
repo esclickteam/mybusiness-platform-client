@@ -37,7 +37,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
     try {
       const payload = {
         ...agreementData,
-        invitedBusinessId: agreementData.invitedBusinessId, // וודא שאתה שולח את המזהה הנכון
+        invitedBusinessId: agreementData.invitedBusinessId, 
         title: agreementData.title,
         description: agreementData.description,
         giving: agreementData.giving,
@@ -49,11 +49,11 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
         cancelAnytime: agreementData.cancelAnytime,
         confidentiality: agreementData.confidentiality,
         signatureDataUrl: agreementData.signatureDataUrl || "", 
-        proposalId,  // מזהה ההצעה
+        proposalId,
       };
       const res = await API.post('/partnershipAgreements', payload);
       alert('ההסכם נוצר בהצלחה!');
-      onStatusChange?.();  // ריענון ההצעות אחרי יצירת הסכם
+      onStatusChange?.();  
       return res.data;
     } catch (err) {
       console.error('Error creating agreement:', err);
@@ -109,7 +109,6 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
     }
   };
 
-  // פונקציה לפתיחת מודל הצגת הסכם
   const onOpenAgreement = async (agreementId) => {
     try {
       const res = await API.get(`/partnershipAgreements/${agreementId}`);
@@ -215,11 +214,74 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
               <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
             </p>
 
-            {/* כפתור יצירת הסכם רק להצעות שהסטטוס שלהן הוא accepted */}
+            {/* כפתורים קשורים להסכם */}
+            {filter === "accepted" && msg.agreementId && (
+              <>
+                {/* העסק השולח תמיד יכול לראות את ההסכם */}
+                {userBusinessId === msg.fromBusinessId._id.toString() && (
+                  <button
+                    onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
+                    style={{
+                      marginTop: 12,
+                      backgroundColor: "#6b46c1",
+                      color: "white",
+                      padding: "8px 16px",
+                      borderRadius: 8,
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    צפייה בהסכם
+                  </button>
+                )}
+
+                {/* העסק השני רואה כפתור חתימה אם לא חתם עדיין */}
+                {userBusinessId === msg.toBusinessId._id.toString() &&
+                  !msg.agreementId.signatures?.invitedBusiness?.signed && (
+                    <button
+                      onClick={() => alert("כאן תפתח חתימה על ההסכם")}
+                      style={{
+                        marginTop: 12,
+                        backgroundColor: "#3182ce",
+                        color: "white",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      חתום על ההסכם
+                    </button>
+                  )}
+
+                {/* העסק השני אחרי שחתם - גם הוא יכול לראות את ההסכם */}
+                {userBusinessId === msg.toBusinessId._id.toString() &&
+                  msg.agreementId.signatures?.invitedBusiness?.signed && (
+                    <button
+                      onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
+                      style={{
+                        marginTop: 12,
+                        backgroundColor: "#6b46c1",
+                        color: "white",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      צפייה בהסכם
+                    </button>
+                  )}
+              </>
+            )}
+
+            {/* כפתור יצירת הסכם רק להצעות שהסטטוס שלהן הוא accepted ואין עדיין agreementId */}
             {filter === "received" && msg.status === "accepted" && !msg.agreementId && (
               <button
                 onClick={async () => {
-                  // כאן אפשר לפתוח טופס להזנת פרטי ההסכם, כרגע שולחים דמה
                   const dummyAgreementData = {
                     invitedBusinessId: msg.fromBusinessId._id,
                     title: "הסכם שותפות לדוגמה",
@@ -248,25 +310,6 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
                 }}
               >
                 צור הסכם
-              </button>
-            )}
-
-            {/* כפתור צפייה בהסכם רק להצעות שאושרו ויש להן agreementId */}
-            {filter === "accepted" && msg.agreementId && (
-              <button
-                onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
-                style={{
-                  marginTop: 12,
-                  backgroundColor: "#6b46c1",
-                  color: "white",
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                צפייה בהסכם
               </button>
             )}
 
