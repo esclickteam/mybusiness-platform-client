@@ -6,51 +6,26 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // טען הצעות שהתקבלו מהשרת, ורענן כש-isDevUser ו-refreshFlag משתנים
   useEffect(() => {
     setLoading(true);
-    if (isDevUser) {
-      setReceivedRequests([
-        {
-          _id: "demo-recv-1",
-          fromBusiness: { businessName: "מעצבת גרפית" },
-          message: "עיצוב משותף לחוברת",
-          status: "pending",
-          createdAt: "2024-05-30"
-        },
-        {
-          _id: "demo-recv-2",
-          fromBusiness: { businessName: "מפיקת אירועים" },
-          message: "שיתוף פעולה לאירוע נשים",
-          status: "rejected",
-          createdAt: "2024-05-28"
-        }
-      ]);
-      setError(null);
-      setLoading(false);
-    } else {
-      async function fetchReceivedRequests() {
-        try {
-          const res = await API.get("/business/my/proposals/received");
- 
-          setReceivedRequests(res.data.proposalsReceived || []);
-          setError(null);
-        } catch (err) {
-          console.error(err);
-          setError("שגיאה בטעינת הצעות שהתקבלו");
-        } finally {
-          setLoading(false);
-        }
+    async function fetchReceivedRequests() {
+      try {
+        const res = await API.get("/business/my/proposals/received");
+        setReceivedRequests(res.data.proposalsReceived || []);
+        setError(null);
+      } catch (err) {
+        console.error(err);
+        setError("שגיאה בטעינת הצעות שהתקבלו");
+      } finally {
+        setLoading(false);
       }
-      fetchReceivedRequests();
     }
+    fetchReceivedRequests();
   }, [isDevUser, refreshFlag]);
 
-  // אישור הצעה
   const handleAccept = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
- 
       setReceivedRequests(prev =>
         prev.map(p =>
           (p.proposalId === proposalId || p._id === proposalId)
@@ -66,11 +41,9 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
     }
   };
 
-  // דחיית הצעה
   const handleReject = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
- 
       setReceivedRequests(prev =>
         prev.map(p =>
           (p.proposalId === proposalId || p._id === proposalId)
@@ -87,42 +60,71 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
   };
 
   if (loading) return <p>טוען הצעות שהתקבלו...</p>;
-  if (error)   return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div className="collab-section">
-      <h3 className="collab-title">📥 הצעות שהתקבלו</h3>
+    <div className="collab-section" style={{ direction: 'rtl', fontFamily: 'Arial, sans-serif', maxWidth: 700, margin: 'auto' }}>
+      <h3 className="collab-title" style={{ color: '#6b46c1', marginBottom: 20, textAlign: 'center' }}>📥 הצעות שהתקבלו</h3>
       {receivedRequests.length === 0 ? (
-        <p>לא התקבלו עדיין הצעות.</p>
+        <p style={{ textAlign: 'center' }}>לא התקבלו עדיין הצעות.</p>
       ) : (
         receivedRequests.map(req => (
-          <div key={req.proposalId || req._id} className="collab-card">
-            <p><strong>מאת:</strong> {req.fromBusinessId?.businessName || "לא ידוע"}</p>
-            <p><strong>הודעה:</strong> {req.message || "-"}</p>
+          <div
+            key={req.proposalId || req._id}
+            className="collab-card"
+            style={{
+              background: '#fff',
+              padding: 16,
+              borderRadius: 12,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              marginBottom: 16,
+              wordBreak: 'break-word'
+            }}
+          >
+            <p><strong>עסק שולח:</strong> {req.fromBusinessId?.businessName || "לא ידוע"}</p>
+            <p><strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}</p>
+            <p><strong>כותרת הצעה:</strong> {req.title || "-"}</p>
+            <p><strong>תיאור הצעה:</strong> {req.description || "-"}</p>
+            <p><strong>סכום:</strong> {req.amount != null ? req.amount + " ₪" : "-"}</p>
+            <p><strong>תוקף הצעה:</strong> {req.validUntil ? new Date(req.validUntil).toLocaleDateString("he-IL") : "-"}</p>
             <p><strong>סטטוס:</strong> {req.status}</p>
-            <p className="collab-tag">
+            <p className="collab-tag" style={{ color: '#666', fontSize: '0.9rem' }}>
               התקבל ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
             </p>
-            <div className="flex gap-2 mt-2">
+            <div style={{ marginTop: 12, display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
               {req.status === "pending" ? (
                 <>
                   <button
-                    className="collab-form-button"
-                    type="button"
+                    style={{
+                      backgroundColor: '#6b46c1',
+                      color: 'white',
+                      border: 'none',
+                      padding: '8px 16px',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                    }}
                     onClick={() => handleAccept(req.proposalId || req._id)}
                   >
                     ✅ אשר
                   </button>
                   <button
-                    className="collab-form-button"
-                    type="button"
+                    style={{
+                      backgroundColor: '#d53f8c',
+                      color: 'white',
+                      border: 'none',
+                      padding: '8px 16px',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                    }}
                     onClick={() => handleReject(req.proposalId || req._id)}
                   >
                     ❌ דחה
                   </button>
                 </>
               ) : (
-                <p>סטטוס: {req.status}</p>
+                <p style={{ alignSelf: 'center' }}>סטטוס: {req.status}</p>
               )}
             </div>
           </div>
