@@ -23,11 +23,24 @@ export default function ProposalForm({ fromBusinessId, fromBusinessName, toBusin
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
 
+  // סנכרון formData עם הפרופס כאשר משתנים
   useEffect(() => {
-    if (toBusiness?._id) {
-      setFormData((prev) => ({ ...prev, toBusinessId: toBusiness._id }));
-    }
-  }, [toBusiness]);
+    setFormData((prev) => ({
+      ...prev,
+      fromBusinessId: fromBusinessId || "",
+      toBusinessId: toBusiness?._id || "",
+    }));
+  }, [fromBusinessId, toBusiness]);
+
+  if (!fromBusinessName) {
+    // אפשר להראות טעינה או הודעה עד שהשם מגיע
+    return (
+      <Box sx={{ p: 3, textAlign: "center" }}>
+        <CircularProgress />
+        <Typography>טוען פרטי העסק השולח...</Typography>
+      </Box>
+    );
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,7 +104,7 @@ export default function ProposalForm({ fromBusinessId, fromBusinessName, toBusin
 
       <TextField
         label="עסק שולח (מאת)"
-        value={fromBusinessName || ""}
+        value={fromBusinessName}
         disabled
         fullWidth
       />
