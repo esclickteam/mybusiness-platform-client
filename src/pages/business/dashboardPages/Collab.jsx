@@ -7,8 +7,8 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import CollabActiveTab from "./collabtabs/CollabActiveTab"; // הוספת ייבוא חסר
-import PartnershipAgreementsTab from "./PartnershipAgreementsTab"; // הוספת ייבוא חסר
+import CollabActiveTab from "./collabtabs/CollabActiveTab";
+import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
 const tabMap = {
@@ -179,12 +179,16 @@ export default function Collab() {
         />
       )}
 
-      {tab === 3 && (
+      {tab === 3 &&
+      user?.businessId &&
+      user?.token ? (
         <CollabsAndAgreementsTab
           isDevUser={isDevUser}
-          userBusinessId={user?.businessId}
-          token={user?.token}
+          userBusinessId={user.businessId}
+          token={user.token}
         />
+      ) : (
+        <div className="p-6 text-center">טוען פרטי משתמש...</div>
       )}
 
       {tab === 4 && <CollabMarketTab isDevUser={isDevUser} />}
