@@ -15,7 +15,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         setSentRequests(res.data.proposalsSent || []);
         setError(null);
       } catch (err) {
-        console.error(err);
+        console.error("Error loading sent proposals:", err);
         setError("שגיאה בטעינת הצעות שנשלחו");
       } finally {
         setLoading(false);
@@ -24,30 +24,33 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     fetchSentRequests();
   }, [refreshFlag]);
 
-  // ביטול הצעה לפי proposalId
+  // ביטול הצעה לפי proposalId (שימו לב: זה צריך להיות ה-GUID של ההצעה)
   const handleCancelProposal = async (proposalId) => {
+    console.log("מנסה לבטל הצעה עם proposalId:", proposalId);
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
-      await API.delete(`/business/my/proposals/${proposalId}`);
- 
+      const response = await API.delete(`/business/my/proposals/${proposalId}`);
+      console.log("תגובה מביטול הצעה:", response.data);
+
+      // הסרת ההצעה מהרשימה בממשק המשתמש
       setSentRequests((prev) =>
         prev.filter((p) => p.proposalId !== proposalId)
       );
       alert("ההצעה בוטלה בהצלחה");
     } catch (err) {
-      console.error(err);
+      console.error("שגיאה בביטול ההצעה:", err.response || err.message || err);
       alert("שגיאה בביטול ההצעה");
     }
   };
 
-  // שליחה מחדש (דמו)
+  // פונקציית שליחה מחדש (דמו)
   const handleResendProposal = (proposal) => {
     alert(
       `פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${
         proposal.toBusinessId?.businessName || "לא ידוע"
       }`
     );
-    // כאן אפשר לממש לוגיקה לשליחה מחדש או פתיחת טופס עריכה
+    // ניתן לממש כאן פתיחת טופס עריכה או שליחה מחדש
   };
 
   if (loading) return <p>טוען הצעות שנשלחו...</p>;
@@ -60,12 +63,11 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         <p>לא נשלחו עדיין הצעות.</p>
       ) : (
         sentRequests.map((req) => {
-          const key = req.proposalId;
+          const key = req.proposalId; // מזהה ההצעה - חשוב שזו המחרוזת GUID
           return (
             <div key={key} className="collab-card">
               <p>
-                <strong>אל:</strong>{" "}
-                {req.toBusinessId?.businessName || "לא ידוע"}
+                <strong>אל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}
               </p>
               <p>
                 <strong>הודעה:</strong> {req.message || "-"}
@@ -74,8 +76,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                 <strong>סטטוס:</strong> {req.status || "לא ידוע"}
               </p>
               <p className="collab-tag">
-                נשלח ב־
-                {new Date(req.createdAt).toLocaleDateString("he-IL")}
+                נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
               </p>
               <div className="flex gap-2 mt-2">
                 <button
