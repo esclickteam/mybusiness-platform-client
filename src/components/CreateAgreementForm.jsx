@@ -100,6 +100,8 @@ export default function CreateAgreementForm({ onCreated, fromBusinessId, fromBus
         signatureDataUrl,
       };
 
+      console.log("Sending partnership agreement payload:", payload);
+
       const res = await API.post("/partnershipAgreements", payload);
 
       alert("ההסכם נוצר ונשלח לחתימה של הצד השני!");
