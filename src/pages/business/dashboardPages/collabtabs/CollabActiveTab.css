@@ -1,42 +1,59 @@
-/* עיצוב עבור טאב 4 – שיתופי פעולה פעילים */
-.collab-tag {
-  margin-top: 0.5rem;
-  display: inline-block;
-  padding: 4px 10px;
-  background-color: #e3f2fd;
-  color: #1565c0;
-  font-size: 0.85rem;
-  font-weight: 500;
-  border-radius: 12px;
-}
-
-.collab-card p strong {
-  color: var(--accent);
-  font-weight: 600;
-}
-
+/* CollabActiveTab.css */
 .collab-card {
   background-color: #fff;
   border-radius: 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   padding: 16px 20px;
   margin-bottom: 16px;
   direction: rtl;
   text-align: right;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: Arial, sans-serif;
 }
 
-.collab-card .collab-form-button {
+.collab-card p {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+.collab-card strong {
+  color: #5a2d82;
+  font-weight: 700;
+}
+
+.collab-form-button {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   border-radius: 8px;
-  font-weight: 500;
-  background-color: #9b59b6;
+  font-weight: 600;
   color: white;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.collab-card .collab-form-button:hover {
-  background-color: #6c5ce7;
+.collab-form-button-accept {
+  background-color: #38a169;
+}
+
+.collab-form-button-accept:hover {
+  background-color: #2f855a;
+}
+
+.collab-form-button-reject {
+  background-color: #e53e3e;
+}
+
+.collab-form-button-reject:hover {
+  background-color: #c53030;
+}
+
+.collab-form-button-danger {
+  background-color: #d53f8c;
+}
+
+.collab-form-button-danger:hover {
+  background-color: #b83279;
 }

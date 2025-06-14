@@ -122,55 +122,28 @@ export default function CollabActiveTab({ userBusinessId, token }) {
 
       {!loading &&
         proposalsToShow.map((proposal) => (
-          <div
-            key={proposal._id}
-            style={{
-              border: "1px solid #ddd",
-              padding: 16,
-              marginBottom: 16,
-              borderRadius: 8,
-              backgroundColor: "#fff",
-              maxWidth: 700,
-              margin: "auto",
-            }}
-          >
-            <div>
-              <b>עסק שולח:</b>{" "}
-              {proposal.fromBusinessId?.businessName || proposal.partnerName || "לא ידוע"}
-            </div>
-            <div>
-              <b>עסק מקבל:</b> {proposal.toBusinessId?.businessName || ""}
-            </div>
-            <div>
-              <b>תוכן ההצעה:</b> {proposal.title || proposal.message || "-"}
-            </div>
-            <div>
-              <b>סטטוס:</b> {proposal.status}
-            </div>
-            <div>
-              <b>תאריך יצירה:</b>{" "}
-              {new Date(proposal.createdAt).toLocaleDateString("he-IL")}
-            </div>
+          <div key={proposal._id} className="collab-card">
+            <p><strong>עסק שולח:</strong> {proposal.fromBusinessId?.businessName || proposal.partnerName || "לא ידוע"}</p>
+            <p><strong>עסק מקבל:</strong> {proposal.toBusinessId?.businessName || "-"}</p>
+            <p><strong>כותרת הצעה:</strong> {proposal.title || "-"}</p>
+            <p><strong>תיאור הצעה:</strong> {proposal.message || "-"}</p>
+            <p><strong>סכום:</strong> {proposal.amount ? `${proposal.amount} ₪` : "-"}</p>
+            <p><strong>תוקף הצעה:</strong> {proposal.expiryDate ? new Date(proposal.expiryDate).toLocaleDateString("he-IL") : "-"}</p>
+            <p><strong>סטטוס:</strong> {proposal.status || "-"}</p>
+            <p><strong>תאריך יצירה:</strong> {proposal.createdAt ? new Date(proposal.createdAt).toLocaleDateString("he-IL") : "-"}</p>
 
-            <div
-              style={{
-                marginTop: 12,
-                display: "flex",
-                gap: 12,
-                justifyContent: "flex-end",
-              }}
-            >
+            <div style={{ marginTop: 12, display: "flex", gap: 12, justifyContent: "flex-end" }}>
               {view === "sent" && (
-                <button onClick={() => handleCancel(proposal._id)} style={buttonDangerStyle}>
+                <button onClick={() => handleCancel(proposal._id)} className="collab-form-button collab-form-button-danger">
                   ביטול
                 </button>
               )}
               {view === "received" && proposal.status === "pending" && (
                 <>
-                  <button onClick={() => handleAccept(proposal._id)} style={buttonAcceptStyle}>
+                  <button onClick={() => handleAccept(proposal._id)} className="collab-form-button collab-form-button-accept">
                     אשר
                   </button>
-                  <button onClick={() => handleReject(proposal._id)} style={buttonRejectStyle}>
+                  <button onClick={() => handleReject(proposal._id)} className="collab-form-button collab-form-button-reject">
                     דחה
                   </button>
                 </>
@@ -192,32 +165,3 @@ const buttonStyle = (isActive) => ({
   fontWeight: "bold",
 });
 
-const buttonDangerStyle = {
-  backgroundColor: "#d53f8c",
-  color: "white",
-  border: "none",
-  borderRadius: 8,
-  padding: "8px 16px",
-  cursor: "pointer",
-  fontWeight: "bold",
-};
-
-const buttonAcceptStyle = {
-  backgroundColor: "#38a169",
-  color: "white",
-  border: "none",
-  borderRadius: 8,
-  padding: "8px 16px",
-  cursor: "pointer",
-  fontWeight: "bold",
-};
-
-const buttonRejectStyle = {
-  backgroundColor: "#e53e3e",
-  color: "white",
-  border: "none",
-  borderRadius: 8,
-  padding: "8px 16px",
-  cursor: "pointer",
-  fontWeight: "bold",
-};
