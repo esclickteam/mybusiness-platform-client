@@ -11,16 +11,14 @@ import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
-// מיפוי הטאבים הראשיים בעמוד
 const tabMap = {
   profile: 0,
   findPartner: 1,
   messages: 2,
-  collabsAndAgreements: 3, // טאב מאוחד לשיתופי פעולה פעילים והסכמים
+  collabsAndAgreements: 3,
   market: 4,
 };
 
-// שמות הטאבים שיוצגו למשתמש
 const tabLabels = {
   profile: "פרופיל עסקי",
   findPartner: "מצא שותף עסקי",
@@ -29,14 +27,11 @@ const tabLabels = {
   market: "מרקט שיתופים",
 };
 
-// קומפוננטה פנימית לטאב המאוחד של שיתופי פעולה והסכמים
-function CollabsAndAgreementsTab({ isDevUser, userBusinessId }) {
-  // ניהול תצוגת הטאב הפנימי - 'active' או 'agreements'
+function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
   const [activeView, setActiveView] = useState("active");
 
   return (
     <div style={{ maxWidth: 900, margin: "auto" }}>
-      {/* כפתורים למעבר בין שיתופי פעולה פעילים להסכמים */}
       <div
         style={{
           display: "flex",
@@ -75,8 +70,13 @@ function CollabsAndAgreementsTab({ isDevUser, userBusinessId }) {
         </button>
       </div>
 
-      {/* הצגת התצוגה לפי הבחירה */}
-      {activeView === "active" && <CollabActiveTab isDevUser={isDevUser} />}
+      {activeView === "active" && (
+        <CollabActiveTab
+          isDevUser={isDevUser}
+          userBusinessId={userBusinessId}
+          token={token}
+        />
+      )}
       {activeView === "agreements" && (
         <PartnershipAgreementsTab userBusinessId={userBusinessId} />
       )}
@@ -84,15 +84,14 @@ function CollabsAndAgreementsTab({ isDevUser, userBusinessId }) {
   );
 }
 
-// הקומפוננטה הראשית של שיתוף הפעולה
 export default function Collab() {
   const { tab: tabParam } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+
   const devMode = true; // מצב פיתוח
 
-  // ניהול הטאב שנבחר לפי ה-URL
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
 
   useEffect(() => {
@@ -101,11 +100,9 @@ export default function Collab() {
     }
   }, [tabParam]);
 
-  // רענון לטאבים של הצעות שנשלחו והתקבלו
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
 
-  // נתוני פרופיל העסק
   const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -133,12 +130,10 @@ export default function Collab() {
     fetchProfile();
   }, []);
 
-  // בדיקות הרשאות וגישה
   const isDevUser = user?.email === "newuser@example.com";
   const hasCollabAccess =
     isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
-  // שמירת פרופיל חדש
   const handleSaveProfile = (e) => {
     e.preventDefault();
     const form = e.target;
@@ -156,7 +151,6 @@ export default function Collab() {
     alert("✅ פרטי הפרופיל נשמרו");
   };
 
-  // שליחת הצעה חדשה
   const handleSendProposal = async (toBusinessId, message) => {
     try {
       await API.post("/business/my/proposals", { toBusinessId, message });
@@ -167,18 +161,15 @@ export default function Collab() {
     }
   };
 
-  // רענון הצעות לאחר שינויים
   const handleStatusChange = () => {
     setRefreshSent((f) => f + 1);
     setRefreshReceived((f) => f + 1);
   };
 
-  // פתיחת צ'אט (ממשק)
   const handleOpenChat = (businessWithMessage) => {
     console.log("פותח צ׳אט עם:", businessWithMessage);
   };
 
-  // בדיקות טעינה והרשאות
   if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
   if (!user && !devMode) {
     return (
@@ -194,7 +185,6 @@ export default function Collab() {
     );
   }
 
-  // ממשק המשתמש עם הטאבים
   return (
     <div className="p-6 collab-container">
       <div className="tab-header">
@@ -212,7 +202,6 @@ export default function Collab() {
         ))}
       </div>
 
-      {/* הצגת הטאב לפי הבחירה */}
       {tab === 0 &&
         (loadingProfile ? (
           <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
@@ -247,11 +236,11 @@ export default function Collab() {
         />
       )}
 
-      {/* כאן טאב מאוחד לשיתופי פעולה פעילים והסכמים */}
       {tab === 3 && (
         <CollabsAndAgreementsTab
           isDevUser={isDevUser}
           userBusinessId={user?.businessId}
+          token={user?.token}
         />
       )}
 
