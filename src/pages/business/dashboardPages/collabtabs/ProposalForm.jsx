@@ -10,7 +10,7 @@ import {
 import API from "../../../../api";
 import "./ProposalForm.css";
 
-export default function ProposalForm({ fromBusinessId, toBusiness, onClose, onSent }) {
+export default function ProposalForm({ fromBusinessId, fromBusinessName, toBusiness, onClose, onSent }) {
   const [formData, setFormData] = useState({
     fromBusinessId: fromBusinessId || "",
     toBusinessId: toBusiness?._id || "",
@@ -91,13 +91,11 @@ export default function ProposalForm({ fromBusinessId, toBusiness, onClose, onSe
 
       <TextField
         label="עסק שולח (מאת)"
-        name="fromBusinessId"
-        value={formData.fromBusinessId}
+        value={fromBusinessName || ""}
         disabled
         fullWidth
       />
 
-      {/* שדה רק לקריאה להצגת שם העסק בלבד */}
       <TextField
         label="עסק מקבל (אל)"
         value={toBusiness?.businessName || ""}

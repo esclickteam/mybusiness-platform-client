@@ -232,6 +232,7 @@ export default function CollabFindPartnerTab({
           {selectedBusinessForProposal && (
             <ProposalForm
               fromBusinessId={myBusinessId}
+              fromBusinessName={myBusinessName}
               toBusiness={selectedBusinessForProposal}
               onClose={closeSendProposalModal}
               onSent={() => {
