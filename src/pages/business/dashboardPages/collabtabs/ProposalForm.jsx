@@ -49,7 +49,12 @@ export default function ProposalForm({ fromBusinessId, fromBusinessName, toBusin
     }
 
     try {
-      const res = await API.post("/proposals", formData);
+      // שולח רק את השדות שהשרת מכיר: toBusinessId ו-message
+      const res = await API.post("/business/my/proposals", {
+        toBusinessId: formData.toBusinessId,
+        message: `כותרת: ${formData.title}\nתיאור: ${formData.description}\nסכום: ${formData.amount || "-"}\nתוקף עד: ${formData.validUntil}`,
+      });
+
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage("ההצעה נשלחה בהצלחה!");
         setFormData((prev) => ({
