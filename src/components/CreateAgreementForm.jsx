@@ -1,11 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
 import "./CreateAgreementForm.css"; // <-- ייבוא CSS
 
-export default function CreateAgreementForm({ onCreated }) {
+export default function CreateAgreementForm({ onCreated, fromBusinessName, partnerBusiness }) {
   const [formData, setFormData] = useState({
-    partnerBusinessName: "",
+    fromBusinessName: fromBusinessName || "",
+    partnerBusinessName: partnerBusiness?.businessName || "",
     title: "",
     description: "",
     giving: "",
@@ -17,6 +18,16 @@ export default function CreateAgreementForm({ onCreated }) {
     cancelAnytime: false,
     confidentiality: false,
   });
+
+  // אם הפרופס משתנים, נעדכן את ה-state בהתאם
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      fromBusinessName: fromBusinessName || "",
+      partnerBusinessName: partnerBusiness?.businessName || ""
+    }));
+  }, [fromBusinessName, partnerBusiness]);
+
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const sigPadRef = useRef(null);
@@ -98,14 +109,23 @@ export default function CreateAgreementForm({ onCreated }) {
       <h2 className="form-title">הסכם שיתוף פעולה</h2>
 
       <label>
+        שם העסק השולח:
+        <input
+          type="text"
+          name="fromBusinessName"
+          value={formData.fromBusinessName}
+          disabled
+          className="form-input"
+        />
+      </label>
+
+      <label>
         שם העסק השותף:
         <input
           type="text"
           name="partnerBusinessName"
           value={formData.partnerBusinessName}
-          onChange={handleChange}
-          required
-          placeholder="הזן שם עסק שותף"
+          disabled
           className="form-input"
         />
       </label>
