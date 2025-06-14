@@ -211,8 +211,8 @@ function CollaborationsTab({ refreshSent, refreshReceived }) {
     async function fetchProposals() {
       setLoading(true);
       try {
-        const sentRes = await API.get("/my/proposals/sent");
-        const receivedRes = await API.get("/my/proposals/received");
+        const sentRes = await API.get("/business/my/proposals/sent");
+        const receivedRes = await API.get("/business/my/proposals/received");
         setSentProposals(sentRes.data.proposalsSent || []);
         setReceivedProposals(receivedRes.data.proposalsReceived || []);
       } catch (err) {
