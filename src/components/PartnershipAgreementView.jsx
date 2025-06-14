@@ -75,6 +75,10 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
   return (
     <div className="agreement-view-container">
       <h2 className="agreement-title">הסכם שיתוף פעולה: {agreement.title}</h2>
+
+      {/* הוספת עסק שולח ועסק מקבל */}
+      <p><strong>עסק שולח:</strong> {agreement.sender?.businessName || "-"}</p>
+      <p><strong>עסק מקבל:</strong> {agreement.receiver?.businessName || "-"}</p>
       
       <p><strong>תיאור:</strong> {agreement.description}</p>
       <p><strong>מה תספק במסגרת ההסכם:</strong> {agreement.giving}</p>
