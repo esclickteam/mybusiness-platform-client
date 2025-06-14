@@ -113,6 +113,7 @@ export default function CreateAgreementForm({
         proposalId, // <-- שולח את מזהה ההצעה
       };
 
+      console.log("CreateAgreementForm received proposalId prop:", proposalId);
       console.log("Sending partnership agreement payload:", payload);
 
       const res = await API.post("/partnershipAgreements", payload);

@@ -144,6 +144,8 @@ export default function CollabFindPartnerTab({
 
   // קולבק שיקבל מזהה הצעה אחרי יצירת הצעה מוצלחת
   const handleProposalSent = (proposalId) => {
+  console.log("Received proposalId in handleProposalSent:", proposalId);
+  
     setCurrentProposalId(proposalId);
     closeSendProposalModal();
     setSnackbarMessage("ההצעה נשלחה בהצלחה");
