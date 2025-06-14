@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
 import API from "../../../../api";
+import "./ProposalForm.css";  
 
 export default function ProposalForm({ fromBusinessId, toBusiness, onClose, onSent }) {
   const [formData, setFormData] = useState({
@@ -20,22 +29,30 @@ export default function ProposalForm({ fromBusinessId, toBusiness, onClose, onSe
     }
   }, [toBusiness]);
 
-  function handleChange(e) {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setError(null);
+    setSuccessMessage("");
+  };
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setSuccessMessage("");
 
+    if (!formData.title.trim() || !formData.description.trim() || !formData.validUntil) {
+      setError("נא למלא את כל השדות הנדרשים");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await API.post("/proposals", formData);
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage("ההצעה נשלחה בהצלחה!");
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           title: "",
           description: "",
@@ -52,88 +69,94 @@ export default function ProposalForm({ fromBusinessId, toBusiness, onClose, onSe
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "auto" }}>
-      <h2>טופס הצעה בין עסק לעסק</h2>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        maxWidth: 600,
+        mx: "auto",
+        p: 3,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        direction: "rtl",
+      }}
+    >
+      <Typography variant="h5" component="h2" textAlign="center" gutterBottom>
+        טופס הצעה בין עסק לעסק
+      </Typography>
 
-      <label>
-        עסק שולח (מאת):
-        <input
-          type="text"
-          name="fromBusinessId"
-          value={formData.fromBusinessId}
-          disabled
-          readOnly
-        />
-      </label>
+      <TextField
+        label="עסק שולח (מאת)"
+        name="fromBusinessId"
+        value={formData.fromBusinessId}
+        disabled
+        fullWidth
+      />
 
-      <label>
-        עסק מקבל (אל):
-        <input
-          type="text"
-          name="toBusinessId"
-          value={formData.toBusinessId}
-          disabled
-          readOnly
-        />
-      </label>
+      <TextField
+        label="עסק מקבל (אל)"
+        name="toBusinessId"
+        value={formData.toBusinessId}
+        disabled
+        fullWidth
+      />
 
-      <label>
-        כותרת הצעה:
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          placeholder="לדוגמה: שיתוף פעולה לקידום משותף"
-          required
-        />
-      </label>
+      <TextField
+        label="כותרת הצעה"
+        name="title"
+        value={formData.title}
+        onChange={handleChange}
+        required
+        fullWidth
+      />
 
-      <label>
-        תיאור הצעה:
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          placeholder="פרט את ההצעה בצורה מפורטת"
-          rows={5}
-          required
-        />
-      </label>
+      <TextField
+        label="תיאור הצעה"
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+        multiline
+        minRows={4}
+        required
+        fullWidth
+      />
 
-      <label>
-        סכום (אם רלוונטי):
-        <input
-          type="number"
-          name="amount"
-          value={formData.amount}
-          onChange={handleChange}
-          placeholder="סכום הצעה (בחר אם יש)"
-          min="0"
-          step="0.01"
-        />
-      </label>
+      <TextField
+        label="סכום (אם רלוונטי)"
+        name="amount"
+        type="number"
+        inputProps={{ min: 0, step: 0.01 }}
+        value={formData.amount}
+        onChange={handleChange}
+        fullWidth
+      />
 
-      <label>
-        תאריך תוקף:
-        <input
-          type="date"
-          name="validUntil"
-          value={formData.validUntil}
-          onChange={handleChange}
-          required
-        />
-      </label>
+      <TextField
+        label="תאריך תוקף"
+        name="validUntil"
+        type="date"
+        InputLabelProps={{ shrink: true }}
+        value={formData.validUntil}
+        onChange={handleChange}
+        required
+        fullWidth
+      />
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+      {error && <Alert severity="error">{error}</Alert>}
+      {successMessage && <Alert severity="success">{successMessage}</Alert>}
 
-      <button type="submit" disabled={loading}>
-        {loading ? "שולח..." : "שלח הצעה"}
-      </button>
-    </form>
+      <Button
+        type="submit"
+        variant="contained"
+        disabled={loading}
+        sx={{ mt: 2 }}
+      >
+        {loading ? <CircularProgress size={24} color="inherit" /> : "שלח הצעה"}
+      </Button>
+    </Box>
   );
 }
