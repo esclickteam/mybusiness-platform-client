@@ -238,13 +238,16 @@ const AppointmentsMain = ({
       <CalendarSetup
         initialHours={workHours}
         onSave={async newHours => {
-          const hoursArray = Object.entries(newHours).map(([day, item]) => ({
-            day,
-            start: item?.start || '',
-            end: item?.end || ''
-          }));
-          try {
-            await API.post('/appointments/update-work-hours', { workHours: hoursArray });
+          const hoursArray = Object.entries(newHours)
+    .map(([day, item]) => ({
+      day,
+      start: item?.start || '',
+      end: item?.end || ''
+    }))
+    .filter(({ start, end }) => start.trim() !== '' && end.trim() !== '');
+
+  try {
+    await API.post('/appointments/update-work-hours', { workHours: hoursArray });
             const updatedMap = {};
             hoursArray.forEach(({ day, start, end }) => {
               updatedMap[Number(day)] = { start, end };
