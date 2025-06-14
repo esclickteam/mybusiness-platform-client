@@ -26,14 +26,23 @@ export default function CollabFindPartnerTab({
 }) {
   const navigate = useNavigate();
 
-  // הוצאתי את הלוגים כאן
-  const myBusinessId = localStorage.getItem("myBusinessId");
-  const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
-  const myBusinessName = businessDetails.businessName || "";
+  // עדכון: שמירת העסק שלי ב-state וטעינת הנתונים מהשרת
+  const [myBusinessId, setMyBusinessId] = useState(null);
+  const [myBusinessName, setMyBusinessName] = useState("");
 
-  // לוגים לבדיקה
-  console.log("myBusinessId:", myBusinessId);
-  console.log("myBusinessName:", myBusinessName);
+  useEffect(() => {
+  async function fetchMyBusiness() {
+    try {
+      const res = await API.get("/business/my");
+      setMyBusinessId(res.data.business._id);
+      setMyBusinessName(res.data.business.businessName);
+    } catch (err) {
+      console.error("Error fetching my business:", err);
+    }
+  }
+  fetchMyBusiness();
+}, []);
+
 
   const [partners, setPartners] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
