@@ -4,15 +4,13 @@ const WeeklySummary = ({ stats }) => {
   if (!stats) return null;
 
   // נתונים נוכחיים
-  const currentMessages = stats.messages_count || 0;
-  const currentViews = stats.views_count || 0;
   const currentReviews = stats.reviews_count || 0;
+  const currentViews = stats.views_count || 0;
   const currentAppointments = stats.appointments_count || 0; // פגישות נוכחיות
 
   // נתוני שבוע שעבר (אם קיימים)
-  const lastMessages = stats.messages_last_week || 0;
-  const lastViews = stats.views_last_week || 0;
   const lastReviews = stats.reviews_last_week || 0;
+  const lastViews = stats.views_last_week || 0;
   const lastAppointments = stats.appointments_last_week || 0; // פגישות שבוע שעבר
 
   // חישוב שינוי באחוזים
@@ -25,7 +23,6 @@ const WeeklySummary = ({ stats }) => {
     return { text: "0%", color: "gray", arrow: "" };
   };
 
-  const messagesChange = getChange(currentMessages, lastMessages);
   const reviewsChange = getChange(currentReviews, lastReviews);
   const viewsChange = getChange(currentViews, lastViews);
   const appointmentsChange = getChange(currentAppointments, lastAppointments);
@@ -34,14 +31,6 @@ const WeeklySummary = ({ stats }) => {
     <div>
       <h4 style={{ textAlign: "center", marginBottom: 16 }}>סיכום שבועי חכם 📅</h4>
       <div style={{ display: "flex", justifyContent: "space-around", gap: 16, textAlign: "center" }}>
-        <div style={{ backgroundColor: "#D6E8FF", padding: 20, borderRadius: 12, flex: 1 }}>
-          <div style={{ fontSize: 14, marginBottom: 8 }}>💬 הודעות מלקוחות</div>
-          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentMessages}</div>
-          <div style={{ fontSize: 12, color: messagesChange.color }}>
-            {messagesChange.arrow} {messagesChange.text}
-          </div>
-        </div>
-
         <div style={{ backgroundColor: "#FFF7CC", padding: 20, borderRadius: 12, flex: 1 }}>
           <div style={{ fontSize: 14, marginBottom: 8 }}>⭐ ביקורות חיוביות</div>
           <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentReviews}</div>
