@@ -7,7 +7,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import CollabActiveTab from "./collabtabs/CollabActiveTab"; // <-- ייבוא כאן
+import CollabActiveTab from "./collabtabs/CollabActiveTab"; // ייבוא קיים
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
@@ -201,7 +201,7 @@ export default function Collab() {
   );
 }
 
-// קומפוננטה פנימית, לא default export
+// קומפוננטה פנימית לטאב שיתופי פעולה והסכמים
 function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
   const [activeView, setActiveView] = useState("active"); // 'active' | 'agreements'
 
@@ -243,6 +243,66 @@ function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
 
       {activeView === "agreements" && (
         <PartnershipAgreementsTab userBusinessId={userBusinessId} />
+      )}
+    </div>
+  );
+}
+
+// קומפוננטה פנימית לטאב שיתופי פעולה (שנשלחו והתקבלו)
+function CollaborationsTab({ refreshSent, refreshReceived }) {
+  const [sentProposals, setSentProposals] = useState([]);
+  const [receivedProposals, setReceivedProposals] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProposals() {
+      setLoading(true);
+      try {
+        const sentRes = await API.get("/business/my/proposals/sent");
+        const receivedRes = await API.get("/business/my/proposals/received");
+        setSentProposals(sentRes.data.proposalsSent || []);
+        setReceivedProposals(receivedRes.data.proposalsReceived || []);
+      } catch (err) {
+        console.error("Error fetching proposals:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProposals();
+  }, [refreshSent, refreshReceived]);
+
+  if (loading) return <div className="p-6 text-center">🔄 טוען שיתופי פעולה...</div>;
+
+  return (
+    <div style={{ maxWidth: 900, margin: "auto" }}>
+      <h3>שיתופי פעולה שנשלחו</h3>
+      {sentProposals.length === 0 ? (
+        <p>לא נשלחו שיתופי פעולה</p>
+      ) : (
+        <ul>
+          {sentProposals.map((proposal) => (
+            <li key={proposal._id} style={{ marginBottom: 10 }}>
+              <strong>אל: </strong> {proposal.toBusinessId?.businessName || "-"} <br />
+              <strong>סטטוס: </strong> {proposal.status} <br />
+              <strong>הודעה: </strong> {proposal.message || "-"}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h3 style={{ marginTop: 40 }}>שיתופי פעולה שהתקבלו</h3>
+      {receivedProposals.length === 0 ? (
+        <p>לא התקבלו שיתופי פעולה</p>
+      ) : (
+        <ul>
+          {receivedProposals.map((proposal) => (
+            <li key={proposal._id} style={{ marginBottom: 10 }}>
+              <strong>מ: </strong> {proposal.fromBusinessId?.businessName || "-"} <br />
+              <strong>סטטוס: </strong> {proposal.status} <br />
+              <strong>הודעה: </strong> {proposal.message || "-"}
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
