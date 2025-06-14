@@ -54,6 +54,18 @@ export default function ProposalForm({ fromBusinessId, fromBusinessName, toBusin
         message: `כותרת: ${formData.title}\nתיאור: ${formData.description}\nסכום: ${formData.amount || "-"}\nתוקף עד: ${formData.validUntil}`,
       });
 
+      console.log("Proposal POST response data:", res.data);
+
+      // בדיקה אם ההצעה בתוך res.data או בתוך שדה משנה:
+      let proposalIdToSend = null;
+      if (res.data.proposal && res.data.proposal._id) {
+        proposalIdToSend = res.data.proposal._id;
+      } else if (res.data._id) {
+        proposalIdToSend = res.data._id;
+      } else if (Array.isArray(res.data.proposalsSent) && res.data.proposalsSent.length > 0) {
+        proposalIdToSend = res.data.proposalsSent[0]._id;
+      }
+
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage("ההצעה נשלחה בהצלחה!");
         setFormData((prev) => ({
@@ -63,7 +75,10 @@ export default function ProposalForm({ fromBusinessId, fromBusinessName, toBusin
           amount: "",
           validUntil: "",
         }));
-        if (onSent) onSent(res.data._id); // <-- מחזיר את מזהה ההצעה למעלה
+        if (onSent) {
+          console.log("Sending proposal ID to parent:", proposalIdToSend);
+          onSent(proposalIdToSend);
+        }
         onClose();
       } else {
         setError("שליחה נכשלה, נסה שוב.");
