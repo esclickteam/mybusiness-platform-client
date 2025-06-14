@@ -34,34 +34,6 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
     fetchMessages();
   }, [refreshFlag]);
 
-  const createAgreementFromProposal = async (proposalId, agreementData) => {
-    try {
-      const payload = {
-        ...agreementData,
-        invitedBusinessId: agreementData.invitedBusinessId,
-        title: agreementData.title,
-        description: agreementData.description,
-        giving: agreementData.giving,
-        receiving: agreementData.receiving,
-        type: agreementData.type,
-        payment: agreementData.payment,
-        startDate: agreementData.startDate,
-        endDate: agreementData.endDate,
-        cancelAnytime: agreementData.cancelAnytime,
-        confidentiality: agreementData.confidentiality,
-        signatureDataUrl: agreementData.signatureDataUrl || "",
-        proposalId,
-      };
-      const res = await API.post('/partnershipAgreements', payload);
-      alert('ההסכם נוצר בהצלחה!');
-      onStatusChange?.();
-      return res.data;
-    } catch (err) {
-      console.error('Error creating agreement:', err);
-      alert('שגיאה ביצירת ההסכם');
-    }
-  };
-
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
@@ -272,41 +244,6 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
                     </button>
                   )}
               </>
-            )}
-
-            {/* כפתור יצירת הסכם רק להצעות שהסטטוס שלהן הוא accepted ואין עדיין agreementId */}
-            {filter === "received" && msg.status === "accepted" && !msg.agreementId && (
-              <button
-                onClick={async () => {
-                  const dummyAgreementData = {
-                    invitedBusinessId: msg.fromBusinessId._id,
-                    title: "הסכם שותפות לדוגמה",
-                    description: "תיאור לדוגמה",
-                    giving: "מה שהעסק נותן",
-                    receiving: "מה שהעסק מקבל",
-                    type: "שותפות",
-                    payment: "תשלום",
-                    startDate: new Date().toISOString(),
-                    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    cancelAnytime: true,
-                    confidentiality: false,
-                    signatureDataUrl: "",
-                  };
-                  await createAgreementFromProposal(msg.proposalId || msg._id, dummyAgreementData);
-                }}
-                style={{
-                  marginTop: 12,
-                  backgroundColor: "#38a169",
-                  color: "white",
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                צור הסכם
-              </button>
             )}
 
             <div
