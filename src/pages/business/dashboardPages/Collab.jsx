@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
@@ -7,23 +7,19 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import CollabActiveTab from "./collabtabs/CollabActiveTab"; 
-import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
 const tabMap = {
   profile: 0,
   findPartner: 1,
   messages: 2,
-  collabsAndAgreements: 3,
-  market: 4,
+  market: 3,
 };
 
 const tabLabels = {
   profile: "פרופיל עסקי",
   findPartner: "מצא שותף עסקי",
   messages: "הצעות",
-  collabsAndAgreements: "שיתופי פעולה והסכמים",
   market: "מרקט שיתופים",
 };
 
@@ -33,16 +29,14 @@ export default function Collab() {
   const { user, loading } = useAuth();
 
   const devMode = true;
-  const token = localStorage.getItem("token");
 
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
-  const [selectedAgreementId, setSelectedAgreementId] = useState(null);
 
   useEffect(() => {
     if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
       setTab(tabMap[tabParam]);
     }
-  }, [tabParam]);
+  }, [tabParam, tab]);
 
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
@@ -114,12 +108,6 @@ export default function Collab() {
     console.log("פותח צ׳אט עם:", businessWithMessage);
   };
 
-  // פונקציה לפתיחת חוזה מטאב ההצעות
-  const openAgreementFromProposal = (agreementId) => {
-    setSelectedAgreementId(agreementId);
-    setTab(tabMap.collabsAndAgreements);
-  };
-
   if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
   if (!user && !devMode) {
     return (
@@ -144,7 +132,6 @@ export default function Collab() {
             className={`tab ${tab === tabMap[key] ? "active" : ""}`}
             onClick={() => {
               setTab(tabMap[key]);
-              setSelectedAgreementId(null); // לנקות בחירת חוזה בטאבים אחרים
               navigate(`/business/collaborations/${key}`, { replace: true });
             }}
           >
@@ -184,87 +171,11 @@ export default function Collab() {
         <CollabMessagesTab
           refreshFlag={refreshSent + refreshReceived}
           onStatusChange={handleStatusChange}
-          onOpenAgreement={openAgreementFromProposal} // העברת callback לפתיחת חוזה
           userBusinessId={user?.businessId}
-        />
-      )}
-
-      {tab === tabMap.collabsAndAgreements && (
-        <CollabsAndAgreementsTab
-          isDevUser={isDevUser}
-          userBusinessId={user?.businessId}
-          token={token}
-          selectedAgreementId={selectedAgreementId}
-          clearSelectedAgreementId={() => setSelectedAgreementId(null)}
         />
       )}
 
       {tab === tabMap.market && <CollabMarketTab isDevUser={isDevUser} />}
-    </div>
-  );
-}
-
-// קומפוננטה פנימית לטאב שיתופי פעולה והסכמים
-function CollabsAndAgreementsTab({
-  isDevUser,
-  userBusinessId,
-  token,
-  selectedAgreementId,
-  clearSelectedAgreementId,
-}) {
-  const [activeView, setActiveView] = React.useState("active"); // 'active' | 'agreements'
-
-  React.useEffect(() => {
-    if (selectedAgreementId) {
-      setActiveView("agreements");
-    }
-  }, [selectedAgreementId]);
-
-  const tabStyle = (tab) => ({
-    backgroundColor: activeView === tab ? "#6b46c1" : "#ccc",
-    color: "white",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: 8,
-    cursor: "pointer",
-    fontWeight: "bold",
-  });
-
-  return (
-    <div style={{ maxWidth: 900, margin: "auto" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 12,
-          marginBottom: 20,
-        }}
-      >
-        <button
-          style={tabStyle("active")}
-          onClick={() => {
-            setActiveView("active");
-            clearSelectedAgreementId();
-          }}
-        >
-          שיתופי פעולה פעילים
-        </button>
-        <button style={tabStyle("agreements")} onClick={() => setActiveView("agreements")}>
-          הסכמי שיתוף פעולה
-        </button>
-      </div>
-
-      {activeView === "active" && (
-        <CollabActiveTab isDevUser={isDevUser} userBusinessId={userBusinessId} token={token} />
-      )}
-
-      {activeView === "agreements" && (
-        <PartnershipAgreementsTab
-          userBusinessId={userBusinessId}
-          selectedId={selectedAgreementId} // מציג את החוזה הרלוונטי
-          onClose={clearSelectedAgreementId}
-        />
-      )}
     </div>
   );
 }
