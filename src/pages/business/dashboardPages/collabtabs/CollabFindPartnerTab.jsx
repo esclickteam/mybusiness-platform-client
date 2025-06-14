@@ -25,9 +25,15 @@ export default function CollabFindPartnerTab({
   handleSendProposal,
 }) {
   const navigate = useNavigate();
+
+  // הוצאתי את הלוגים כאן
   const myBusinessId = localStorage.getItem("myBusinessId");
   const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
+
+  // לוגים לבדיקה
+  console.log("myBusinessId:", myBusinessId);
+  console.log("myBusinessName:", myBusinessName);
 
   const [partners, setPartners] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
