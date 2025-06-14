@@ -26,23 +26,24 @@ export default function CollabFindPartnerTab({
 }) {
   const navigate = useNavigate();
 
-  // עדכון: שמירת העסק שלי ב-state וטעינת הנתונים מהשרת
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
 
-  useEffect(() => {
-  async function fetchMyBusiness() {
-    try {
-      const res = await API.get("/business/my");
-      setMyBusinessId(res.data.business._id);
-      setMyBusinessName(res.data.business.businessName);
-    } catch (err) {
-      console.error("Error fetching my business:", err);
-    }
-  }
-  fetchMyBusiness();
-}, []);
+  // שמירת מזהה ההצעה שיצרת לאחרונה
+  const [currentProposalId, setCurrentProposalId] = useState(null);
 
+  useEffect(() => {
+    async function fetchMyBusiness() {
+      try {
+        const res = await API.get("/business/my");
+        setMyBusinessId(res.data.business._id);
+        setMyBusinessName(res.data.business.businessName);
+      } catch (err) {
+        console.error("Error fetching my business:", err);
+      }
+    }
+    fetchMyBusiness();
+  }, []);
 
   const [partners, setPartners] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -141,6 +142,14 @@ export default function CollabFindPartnerTab({
     setSelectedBusinessForProposal(null);
   };
 
+  // קולבק שיקבל מזהה הצעה אחרי יצירת הצעה מוצלחת
+  const handleProposalSent = (proposalId) => {
+    setCurrentProposalId(proposalId);
+    closeSendProposalModal();
+    setSnackbarMessage("ההצעה נשלחה בהצלחה");
+    setSnackbarOpen(true);
+  };
+
   return (
     <div>
       {/* Search Bar */}
@@ -230,9 +239,11 @@ export default function CollabFindPartnerTab({
         <Box sx={{ ...modalStyle, maxWidth: 600, maxHeight: "80vh", overflowY: "auto" }}>
           {createAgreementPartner && (
             <CreatePartnershipAgreementForm
-            fromBusinessId={myBusinessId} 
-            fromBusinessName={myBusinessName} 
+              fromBusinessId={myBusinessId}
+              fromBusinessName={myBusinessName}
               partnerBusiness={createAgreementPartner}
+              currentUserBusinessId={myBusinessId}
+              proposalId={currentProposalId} // חשוב להעביר את מזהה ההצעה
               onCreated={(agreement) => {
                 setSnackbarMessage("ההסכם נוצר בהצלחה");
                 setSnackbarOpen(true);
@@ -252,11 +263,7 @@ export default function CollabFindPartnerTab({
               fromBusinessName={myBusinessName}
               toBusiness={selectedBusinessForProposal}
               onClose={closeSendProposalModal}
-              onSent={() => {
-                closeSendProposalModal();
-                setSnackbarMessage("ההצעה נשלחה בהצלחה");
-                setSnackbarOpen(true);
-              }}
+              onSent={handleProposalSent} // מחזיר את מזהה ההצעה שקיבלנו מ- ProposalForm
             />
           )}
         </Box>

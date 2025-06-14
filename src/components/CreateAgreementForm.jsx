@@ -8,7 +8,8 @@ export default function CreateAgreementForm({
   fromBusinessId, 
   fromBusinessName, 
   partnerBusiness, 
-  currentUserBusinessId // מזהה העסק של המשתמש הנוכחי, חשוב להעביר כדי לדעת מי חותם
+  currentUserBusinessId,
+  proposalId, // <-- הוסף כאן
 }) {
   const [formData, setFormData] = useState({
     fromBusinessName: fromBusinessName || "",
@@ -107,9 +108,9 @@ export default function CreateAgreementForm({
       const payload = {
         ...formData,
         invitedBusinessId: partnerBusiness._id,
-        // נשלח חתימה בהתאם למי החותם
         senderSignature: isSender ? signatureDataUrl : "",
         receiverSignature: !isSender ? signatureDataUrl : "",
+        proposalId, // <-- שולח את מזהה ההצעה
       };
 
       console.log("Sending partnership agreement payload:", payload);

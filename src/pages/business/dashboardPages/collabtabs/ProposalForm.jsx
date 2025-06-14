@@ -49,7 +49,6 @@ export default function ProposalForm({ fromBusinessId, fromBusinessName, toBusin
     }
 
     try {
-      // שולח רק את השדות שהשרת מכיר: toBusinessId ו-message
       const res = await API.post("/business/my/proposals", {
         toBusinessId: formData.toBusinessId,
         message: `כותרת: ${formData.title}\nתיאור: ${formData.description}\nסכום: ${formData.amount || "-"}\nתוקף עד: ${formData.validUntil}`,
@@ -64,13 +63,13 @@ export default function ProposalForm({ fromBusinessId, fromBusinessName, toBusin
           amount: "",
           validUntil: "",
         }));
-        onSent();
+        if (onSent) onSent(res.data._id); // <-- מחזיר את מזהה ההצעה למעלה
         onClose();
       } else {
         setError("שליחה נכשלה, נסה שוב.");
       }
     } catch (err) {
-      setError("שגיאה בשליחה: " + err.message);
+      setError("שגיאה בשליחה: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
