@@ -85,32 +85,32 @@ const AppointmentsMain = ({
   };
 
   const fetchBookedSlots = async (businessId, dateStr) => {
-  if (!businessId || !dateStr) return [];
-  try {
-    const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
-    // מניחים שקיבלנו מערך של אובייקטים עם זמן ומשך
-    // נרחיב כל פגישה לזמנים תפוסים לפי משך
-    const slots = [];
-    res.data.forEach(appt => {
-      const startParts = appt.time.split(':').map(Number);
-      let startMinutes = startParts[0] * 60 + startParts[1];
-      const duration = appt.duration || 30;
-      const increments = duration / 30; // נניח שכל פרק זמן הוא 30 דק'
+    if (!businessId || !dateStr) return [];
+    try {
+      const res = await API.get('/appointments/by-date', { params: { businessId, date: dateStr } });
+      // מניחים שקיבלנו מערך של אובייקטים עם זמן ומשך
+      // נרחיב כל פגישה לזמנים תפוסים לפי משך
+      const slots = [];
+      res.data.forEach(appt => {
+        const startParts = appt.time.split(':').map(Number);
+        let startMinutes = startParts[0] * 60 + startParts[1];
+        const duration = appt.duration || 30;
+        const increments = duration / 30; // נניח שכל פרק זמן הוא 30 דק'
 
-      for (let i = 0; i < increments; i++) {
-        const h = Math.floor(startMinutes / 60).toString().padStart(2, '0');
-        const m = (startMinutes % 60).toString().padStart(2, '0');
-        slots.push(`${h}:${m}`);
-        startMinutes += 30;
-      }
-    });
-    // הסר כפילויות
-    return [...new Set(slots)];
-  } catch (err) {
-    console.error("Error fetching booked slots:", err);
-    return [];
-  }
-};
+        for (let i = 0; i < increments; i++) {
+          const h = Math.floor(startMinutes / 60).toString().padStart(2, '0');
+          const m = (startMinutes % 60).toString().padStart(2, '0');
+          slots.push(`${h}:${m}`);
+          startMinutes += 30;
+        }
+      });
+      // הסר כפילויות
+      return [...new Set(slots)];
+    } catch (err) {
+      console.error("Error fetching booked slots:", err);
+      return [];
+    }
+  };
 
 
   const computeAvailableSlots = () => {
@@ -239,21 +239,23 @@ const AppointmentsMain = ({
         initialHours={workHours}
         onSave={async newHours => {
           const hoursArray = Object.entries(newHours)
-    .map(([day, item]) => ({
-      day,
-      start: item?.start || '',
-      end: item?.end || ''
-    }))
-    .filter(({ start, end }) => start.trim() !== '' && end.trim() !== '');
+            .map(([day, item]) => ({
+              day,
+              start: item?.start || '',
+              end: item?.end || ''
+            }))
+            .filter(({ start, end }) => start.trim() !== '' && end.trim() !== '');
 
-  try {
-    await API.post('/appointments/update-work-hours', { workHours: hoursArray });
-            const updatedMap = {};
-            hoursArray.forEach(({ day, start, end }) => {
-              updatedMap[Number(day)] = { start, end };
-            });
-            setWorkHours(updatedMap);
-            setBusinessDetails(prev => ({ ...prev, workHours: updatedMap }));
+          // כאן התיקון - לבנות אובייקט במקום מערך
+          const cleanSchedule = {};
+          hoursArray.forEach(({ day, start, end }) => {
+            cleanSchedule[day] = { start, end };
+          });
+
+          try {
+            await API.post('/appointments/update-work-hours', { workHours: cleanSchedule });
+            setWorkHours(cleanSchedule);
+            setBusinessDetails(prev => ({ ...prev, workHours: cleanSchedule }));
             setShowCalendarSetup(false);
             alert('שעות הפעילות נשמרו בהצלחה!');
           } catch {
