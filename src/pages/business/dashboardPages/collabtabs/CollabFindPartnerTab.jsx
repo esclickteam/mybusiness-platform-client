@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";  // הוספת import של useNavigate
+import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -7,7 +7,6 @@ import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import API from "../../../../api";
-import PartnershipAgreementForm from "../PartnershipAgreementForm";
 import CreatePartnershipAgreementForm from "../../../../components/CreateAgreementForm";
 import "./CollabFindPartnerTab.css";
 
@@ -24,7 +23,7 @@ export default function CollabFindPartnerTab({
   isDevUser,
   handleSendProposal,
 }) {
-  const navigate = useNavigate(); // הוספת hook לניווט
+  const navigate = useNavigate();
   const myBusinessId = localStorage.getItem("myBusinessId");
   const businessDetails = JSON.parse(localStorage.getItem("businessDetails") || "{}");
   const myBusinessName = businessDetails.businessName || "";
@@ -40,6 +39,10 @@ export default function CollabFindPartnerTab({
   // מודאל יצירת הסכם חדש
   const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
   const [createAgreementPartner, setCreateAgreementPartner] = useState(null);
+
+  // מודאל שליחת הצעה
+  const [sendProposalModalOpen, setSendProposalModalOpen] = useState(false);
+  const [selectedBusinessForProposal, setSelectedBusinessForProposal] = useState(null);
 
   useEffect(() => {
     async function fetchPartners() {
@@ -75,7 +78,6 @@ export default function CollabFindPartnerTab({
     return true;
   });
 
-  // עדכון הפונקציה עם ניווט לפרופיל העסק
   const handleOpenProfile = (business) => {
     if (business._id) {
       navigate(`/business-profile/${business._id}`);
@@ -116,6 +118,73 @@ export default function CollabFindPartnerTab({
     setCreateAgreementPartner(null);
   };
 
+  // פתיחת מודאל שליחת הצעה
+  const openSendProposalModal = (business) => {
+    setSelectedBusinessForProposal(business);
+    setSendProposalModalOpen(true);
+  };
+  const closeSendProposalModal = () => {
+    setSendProposalModalOpen(false);
+    setSelectedBusinessForProposal(null);
+  };
+
+  // קומפוננטת טופס שליחת הצעה
+  const SendProposalForm = ({ business, onClose, onSent }) => {
+    const [message, setMessage] = useState("");
+    const [sendingProposal, setSendingProposal] = useState(false);
+    const [error, setError] = useState(null);
+
+    const handleSubmit = async () => {
+      if (!message.trim()) {
+        setError("נא להקליד הודעה");
+        return;
+      }
+      setSendingProposal(true);
+      try {
+        await API.post("/business/proposals/send", {
+          toBusinessId: business._id,
+          message: message.trim(),
+        });
+        onSent();
+      } catch (err) {
+        setError("שגיאה בשליחת ההצעה");
+      } finally {
+        setSendingProposal(false);
+      }
+    };
+
+    return (
+      <div>
+        <h3>שליחת הצעה ל{business.businessName}</h3>
+        <TextField
+          label="הודעה"
+          multiline
+          rows={4}
+          fullWidth
+          value={message}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            setError(null);
+          }}
+          error={!!error}
+          helperText={error}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={sendingProposal}
+          sx={{ mt: 2 }}
+        >
+          שלח הצעה
+        </Button>
+        <Button onClick={onClose} sx={{ mt: 1 }}>
+          ביטול
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div>
       {/* Search Bar */}
@@ -146,7 +215,7 @@ export default function CollabFindPartnerTab({
                   <>
                     <button
                       className="message-box-button"
-                      onClick={() => navigate("/business/collaborations/sent")}
+                      onClick={() => openSendProposalModal(business)}
                     >
                       שלח הצעה 📨
                     </button>
@@ -210,7 +279,23 @@ export default function CollabFindPartnerTab({
                 setSnackbarMessage("ההסכם נוצר בהצלחה");
                 setSnackbarOpen(true);
                 closeCreateAgreementModal();
-                // אפשר להוסיף כאן רענון או פתיחת ההסכם החדש
+              }}
+            />
+          )}
+        </Box>
+      </Modal>
+
+      {/* Send Proposal Modal */}
+      <Modal open={sendProposalModalOpen} onClose={closeSendProposalModal}>
+        <Box sx={modalStyle}>
+          {selectedBusinessForProposal && (
+            <SendProposalForm
+              business={selectedBusinessForProposal}
+              onClose={closeSendProposalModal}
+              onSent={() => {
+                closeSendProposalModal();
+                setSnackbarMessage("ההצעה נשלחה בהצלחה");
+                setSnackbarOpen(true);
               }}
             />
           )}
