@@ -22,7 +22,7 @@ const tabMap = {
 const tabLabels = {
   profile: "פרופיל עסקי",
   findPartner: "מצא שותף עסקי",
-  messages: "הודעות",
+  messages: "הצעות",  
   collabsAndAgreements: "שיתופי פעולה והסכמים",
   market: "מרקט שיתופים",
 };
