@@ -4,6 +4,8 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import API from "../../../../api";
@@ -26,7 +28,6 @@ export default function CollabFindPartnerTab({
 }) {
   const navigate = useNavigate();
 
-  // שמירת פרטי העסק שלי ב-state
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
 
@@ -134,6 +135,10 @@ export default function CollabFindPartnerTab({
   };
 
   const openSendProposalModal = (business) => {
+    if (!myBusinessId || !myBusinessName) {
+      alert("אנא המתן, טוען פרטי העסק שלך...");
+      return;
+    }
     setSelectedBusinessForProposal(business);
     setSendProposalModalOpen(true);
   };
@@ -245,18 +250,27 @@ export default function CollabFindPartnerTab({
       {/* Send Proposal Modal */}
       <Modal open={sendProposalModalOpen} onClose={closeSendProposalModal}>
         <Box sx={modalStyle}>
-          {selectedBusinessForProposal && (
-            <ProposalForm
-              fromBusinessId={myBusinessId}
-              fromBusinessName={myBusinessName}
-              toBusiness={selectedBusinessForProposal}
-              onClose={closeSendProposalModal}
-              onSent={() => {
-                closeSendProposalModal();
-                setSnackbarMessage("ההצעה נשלחה בהצלחה");
-                setSnackbarOpen(true);
-              }}
-            />
+          {!myBusinessId || !myBusinessName ? (
+            <>
+              <CircularProgress />
+              <Typography sx={{ mt: 2, textAlign: "center" }}>
+                טוען פרטי העסק השולח...
+              </Typography>
+            </>
+          ) : (
+            selectedBusinessForProposal && (
+              <ProposalForm
+                fromBusinessId={myBusinessId}
+                fromBusinessName={myBusinessName}
+                toBusiness={selectedBusinessForProposal}
+                onClose={closeSendProposalModal}
+                onSent={() => {
+                  closeSendProposalModal();
+                  setSnackbarMessage("ההצעה נשלחה בהצלחה");
+                  setSnackbarOpen(true);
+                }}
+              />
+            )
           )}
         </Box>
       </Modal>
