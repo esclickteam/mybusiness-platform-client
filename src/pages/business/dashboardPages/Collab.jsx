@@ -5,6 +5,7 @@ import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
 import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
+import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabActiveTab from "./collabtabs/CollabActiveTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
@@ -13,230 +14,18 @@ import "./Collab.css";
 const tabMap = {
   profile: 0,
   findPartner: 1,
-  messages: 2, // טאב אחד חדש שמאחד את הצעות שנשלחו והתקבלו
-  activeCollabs: 3,
+  messages: 2,
+  collabsAndAgreements: 3, // טאב מאוחד לשיתופי פעולה פעילים והסכמים
   market: 4,
-  agreements: 5,
 };
 
 const tabLabels = {
   profile: "פרופיל עסקי",
   findPartner: "מצא שותף עסקי",
   messages: "הודעות",
-  activeCollabs: "שיתופי פעולה פעילים",
+  collabsAndAgreements: "שיתופי פעולה והסכמים",
   market: "מרקט שיתופים",
-  agreements: "הסכמי שיתוף פעולה",
 };
-
-function CollabMessagesTab({ refreshFlag, onStatusChange }) {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("sent"); // 'sent' או 'received'
-
-  useEffect(() => {
-    setLoading(true);
-    async function fetchMessages() {
-      try {
-        const endpoint = filter === "sent" ? "/business/my/proposals/sent" : "/business/my/proposals/received";
-        const res = await API.get(endpoint);
-        setMessages(res.data[filter === "sent" ? "proposalsSent" : "proposalsReceived"] || []);
-        setError(null);
-      } catch (err) {
-        console.error("Error loading proposals:", err);
-        setError("שגיאה בטעינת ההודעות");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMessages();
-  }, [filter, refreshFlag]);
-
-  const handleCancelProposal = async (proposalId) => {
-    if (!window.confirm("האם למחוק את ההצעה?")) return;
-    try {
-      await API.delete(`/business/my/proposals/${proposalId}`);
-      setMessages((prev) => prev.filter((p) => p.proposalId !== proposalId));
-      alert("ההצעה בוטלה בהצלחה");
-    } catch (err) {
-      console.error("שגיאה בביטול ההצעה:", err.response || err.message || err);
-      alert("שגיאה בביטול ההצעה");
-    }
-  };
-
-  const handleAccept = async (proposalId) => {
-    try {
-      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
-      setMessages(prev =>
-        prev.map(p =>
-          (p.proposalId === proposalId || p._id === proposalId)
-            ? { ...p, status: "accepted" }
-            : p
-        )
-      );
-      alert("ההצעה אושרה בהצלחה");
-      onStatusChange?.();
-    } catch (err) {
-      console.error(err);
-      alert("שגיאה באישור ההצעה");
-    }
-  };
-
-  const handleReject = async (proposalId) => {
-    try {
-      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
-      setMessages(prev =>
-        prev.map(p =>
-          (p.proposalId === proposalId || p._id === proposalId)
-            ? { ...p, status: "rejected" }
-            : p
-        )
-      );
-      alert("ההצעה נדחתה בהצלחה");
-      onStatusChange?.();
-    } catch (err) {
-      console.error(err);
-      alert("שגיאה בדחיית ההצעה");
-    }
-  };
-
-  const parseMessage = (message) => {
-    if (!message) return {};
-    const lines = message.split('\n').map(line => line.trim());
-    const parsed = {};
-    lines.forEach(line => {
-      if (line.startsWith('כותרת:')) parsed.title = line.replace('כותרת:', '').trim();
-      else if (line.startsWith('תיאור:')) parsed.description = line.replace('תיאור:', '').trim();
-      else if (line.startsWith('סכום:')) parsed.amount = line.replace('סכום:', '').trim();
-      else if (line.startsWith('תוקף עד:')) parsed.validUntil = line.replace('תוקף עד:', '').trim();
-    });
-    return parsed;
-  };
-
-  if (loading) return <p>טוען הודעות...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-
-  return (
-    <div style={{ direction: "rtl", maxWidth: 700, margin: "auto", fontFamily: "Arial, sans-serif" }}>
-      <h3 style={{ color: "#6b46c1", marginBottom: 20, textAlign: "center" }}>📩 הודעות</h3>
-
-      {/* סינון בין נשלחו להתקבלו */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 12, marginBottom: 20 }}>
-        <button
-          style={{
-            backgroundColor: filter === "sent" ? "#6b46c1" : "#ccc",
-            color: "white",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-          onClick={() => setFilter("sent")}
-        >
-          הצעות שנשלחו
-        </button>
-        <button
-          style={{
-            backgroundColor: filter === "received" ? "#6b46c1" : "#ccc",
-            color: "white",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-          onClick={() => setFilter("received")}
-        >
-          הצעות שהתקבלו
-        </button>
-      </div>
-
-      {messages.length === 0 ? (
-        <p style={{ textAlign: "center" }}>אין הודעות להצגה.</p>
-      ) : (
-        messages.map((req) => {
-          const { title, description, amount, validUntil } = parseMessage(req.message);
-          return (
-            <div
-              key={req.proposalId || req._id}
-              style={{
-                background: "#fff",
-                padding: 16,
-                borderRadius: 12,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                marginBottom: 16,
-                wordBreak: "break-word",
-                lineHeight: 1.6,
-              }}
-            >
-              <p><strong>עסק שולח:</strong> {req.fromBusinessId?.businessName || "לא ידוע"}</p>
-              <p><strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}</p>
-              <p><strong>כותרת הצעה:</strong> {title || "-"}</p>
-              <p><strong>תיאור הצעה:</strong> {description || "-"}</p>
-              <p><strong>סכום:</strong> {amount != null ? amount + " ₪" : "-"}</p>
-              <p><strong>תוקף הצעה:</strong> {validUntil ? new Date(validUntil).toLocaleDateString("he-IL") : "-"}</p>
-              <p><strong>סטטוס:</strong> {req.status}</p>
-              <p style={{ color: "#666", fontSize: "0.9rem", marginTop: 12 }}>
-                נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
-              </p>
-
-              <div style={{ marginTop: 12, display: "flex", gap: 12, justifyContent: "flex-end" }}>
-                {req.status === "pending" && filter === "received" ? (
-                  <>
-                    <button
-                      style={{
-                        backgroundColor: "#6b46c1",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => handleAccept(req.proposalId || req._id)}
-                    >
-                      ✅ אשר
-                    </button>
-                    <button
-                      style={{
-                        backgroundColor: "#d53f8c",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => handleReject(req.proposalId || req._id)}
-                    >
-                      ❌ דחה
-                    </button>
-                  </>
-                ) : filter === "sent" ? (
-                  <button
-                    style={{
-                      backgroundColor: "#d53f8c",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => handleCancelProposal(req.proposalId)}
-                  >
-                    🗑️ ביטול
-                  </button>
-                ) : null}
-              </div>
-            </div>
-          );
-        })
-      )}
-    </div>
-  );
-}
 
 export default function Collab() {
   const { tab: tabParam } = useParams();
@@ -388,14 +177,16 @@ export default function Collab() {
         />
       )}
 
-      {/* שיתופי פעולה פעילים */}
-      {tab === 3 && <CollabActiveTab isDevUser={isDevUser} />}
+      {/* שיתופי פעולה פעילים והסכמי שיתוף פעולה - טאב מאוחד */}
+      {tab === 3 && (
+        <>
+          <CollabActiveTab isDevUser={isDevUser} />
+          <PartnershipAgreementsTab userBusinessId={user?.businessId} />
+        </>
+      )}
 
       {/* מרקט שיתופים */}
       {tab === 4 && <CollabMarketTab isDevUser={isDevUser} />}
-
-      {/* הסכמי שיתוף פעולה */}
-      {tab === 5 && <PartnershipAgreementsTab userBusinessId={user?.businessId} />}
     </div>
   );
 }
