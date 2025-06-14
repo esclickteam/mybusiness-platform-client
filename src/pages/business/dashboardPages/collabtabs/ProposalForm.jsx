@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import API from "../api"; // נתיב ל־API שלך, עדכן לפי הצורך
+import API from "../../../../api";
 
 export default function ProposalForm({ currentBusinessId }) {
   const [formData, setFormData] = useState({
