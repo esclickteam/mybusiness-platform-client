@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import API from "../../../../api";
 
-export default function ProposalForm({ currentBusinessId }) {
+export default function ProposalForm({ fromBusinessId, toBusiness, onClose, onSent }) {
   const [formData, setFormData] = useState({
-    fromBusinessId: currentBusinessId || "",
-    toBusinessId: "",
+    fromBusinessId: fromBusinessId || "",
+    toBusinessId: toBusiness?._id || "",
     title: "",
     description: "",
     amount: "",
@@ -13,6 +13,12 @@ export default function ProposalForm({ currentBusinessId }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    if (toBusiness?._id) {
+      setFormData((prev) => ({ ...prev, toBusinessId: toBusiness._id }));
+    }
+  }, [toBusiness]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -26,18 +32,18 @@ export default function ProposalForm({ currentBusinessId }) {
     setSuccessMessage("");
 
     try {
-      // נניח שיש לך API שמקבל את ההצעה בכתובת POST /proposals
       const res = await API.post("/proposals", formData);
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage("ההצעה נשלחה בהצלחה!");
         setFormData(prev => ({
           ...prev,
-          toBusinessId: "",
           title: "",
           description: "",
           amount: "",
           validUntil: "",
         }));
+        onSent();
+        onClose();
       } else {
         setError("שליחה נכשלה, נסה שוב.");
       }
@@ -69,9 +75,8 @@ export default function ProposalForm({ currentBusinessId }) {
           type="text"
           name="toBusinessId"
           value={formData.toBusinessId}
-          onChange={handleChange}
-          placeholder="הקלד מזהה עסק או שם עסק"
-          required
+          disabled
+          readOnly
         />
       </label>
 
@@ -106,7 +111,7 @@ export default function ProposalForm({ currentBusinessId }) {
           name="amount"
           value={formData.amount}
           onChange={handleChange}
-          placeholder="סכום הצעה (בחרי אם יש)"
+          placeholder="סכום הצעה (בחר אם יש)"
           min="0"
           step="0.01"
         />

@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import TextField from "@mui/material/TextField";
 import API from "../../../../api";
 import CreatePartnershipAgreementForm from "../../../../components/CreateAgreementForm";
 import ProposalForm from "./ProposalForm";
