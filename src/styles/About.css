@@ -1,81 +1,129 @@
-/* 🌟 עיצוב עמוד "אודות" */
 .about-container {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 30px;
-    text-align: center;
-    direction: rtl;
-    background: linear-gradient(to bottom, #e0e4ff, #ffffff); /* רקע רך ונעים */
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: 60px auto 80px;
+  padding: 50px 40px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+  border-radius: 30px;
+  box-shadow: 0 15px 40px rgba(150, 140, 180, 0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #4a3181;
+  direction: rtl;
+  text-align: center;
+  user-select: none;
+  overflow: hidden;
 }
 
-/* 🌟 כותרת ראשית */
 .about-title {
-    font-size: 36px;
-    color: #4a148c;
-    font-weight: bold;
-    margin-bottom: 20px;
+  font-size: 3.4rem;
+  font-weight: 900;
+  color: #6b4cae;
+  margin-bottom: 30px;
+  letter-spacing: 1.2px;
+  text-shadow: 0 1px 2px rgba(107, 76, 174, 0.15);
 }
 
-/* 🌟 פסקאות */
-.about-paragraph {
-    font-size: 20px;
-    color: #333;
-    line-height: 1.8;
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-/* 🌟 כותרות ביניים */
 .about-section-title {
-    font-size: 26px;
-    color: #4a148c;
-    margin-bottom: 15px;
-    font-weight: bold;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #7a57ca;
+  margin: 50px 0 20px;
+  border-bottom: 4px solid #b19eea;
+  padding-bottom: 12px;
+  letter-spacing: 0.8px;
 }
 
-/* 🌟 רשימה */
+.about-paragraph {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  max-width: 720px;
+  margin: 0 auto 40px;
+  font-weight: 600;
+  color: #5b468d;
+  text-shadow: 0 1px 3px rgba(130, 110, 180, 0.1);
+}
+
 .about-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 20px;
-    text-align: center;
+  max-width: 750px;
+  margin: 0 auto 60px;
+  padding: 0;
+  list-style: none;
+  text-align: right;
 }
 
 .about-list li {
-    font-size: 18px;
-    color: #555;
-    margin-bottom: 12px;
-    padding: 10px;
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: inline-block;
-    width: 80%;
+  background: #f1edff;
+  padding: 18px 25px;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #6c52bb;
+  box-shadow: 0 6px 15px rgba(141, 126, 210, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+  user-select: none;
 }
 
-/* 🌟 התאמה לנייד */
+.about-list li:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(141, 126, 210, 0.35);
+}
+
+/* Footer */
+.footer {
+  margin-top: 50px;
+  padding: 30px 20px 20px;
+  font-size: 1rem;
+  color: #8a79c6;
+  text-align: center;
+  font-weight: 700;
+  user-select: none;
+  border-top: 1px solid #dedcff;
+  letter-spacing: 0.3px;
+}
+
+.footer-links {
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 22px;
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li a {
+  color: #7a57ca;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.25s ease;
+}
+
+.footer-links li a:hover {
+  color: #b6a1f7;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    .about-container {
-        width: 90%;
-        padding: 20px;
-    }
+  .about-container {
+    padding: 30px 20px;
+  }
 
-    .about-title {
-        font-size: 30px;
-    }
+  .about-title {
+    font-size: 2.4rem;
+  }
 
-    .about-paragraph {
-        font-size: 18px;
-    }
+  .about-section-title {
+    font-size: 1.6rem;
+  }
 
-    .about-section-title {
-        font-size: 22px;
-    }
+  .about-paragraph {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
 
-    .about-list li {
-        font-size: 16px;
-        width: 100%;
-    }
+  .about-list li {
+    font-size: 1rem;
+    padding: 14px 18px;
+  }
 }
