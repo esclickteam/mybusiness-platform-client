@@ -146,7 +146,7 @@ export default function CollabFindPartnerTab({
                   <>
                     <button
                       className="message-box-button"
-                      onClick={() => setSelectedBusiness(business)}
+                      onClick={() => navigate("/business/collaborations/sent")}
                     >
                       שלח הצעה 📨
                     </button>
