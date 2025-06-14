@@ -81,7 +81,8 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                 wordBreak: 'break-word'
               }}
             >
-              <p><strong>אל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}</p>
+              <p><strong>עסק שולח:</strong> {req.fromBusinessId?.businessName || "לא ידוע"}</p>
+              <p><strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}</p>
               <p><strong>כותרת הצעה:</strong> {title || "-"}</p>
               <p><strong>תיאור הצעה:</strong> {description || "-"}</p>
               <p><strong>סכום:</strong> {amount || "-"}</p>
