@@ -1,3 +1,4 @@
+// Collab.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import API from "@api";
@@ -7,7 +8,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import CollabActiveTab from "./collabtabs/CollabActiveTab";
+import CollabActiveTab from "./collabtabs/CollabActiveTab"; 
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 import "./Collab.css";
 
@@ -31,10 +32,14 @@ const tabLabels = {
 
 export default function Collab() {
   const { tab: tabParam } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
+  console.log("Collab component - user from AuthContext:", user);
+
   const devMode = true;
+
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
 
   useEffect(() => {
@@ -77,9 +82,6 @@ export default function Collab() {
   const hasCollabAccess =
     isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
-  // דגל שמוודא שיש לנו businessId ו-token לפני טעינת Tab פעיל שיתופי פעולה
-  const canShowCollabActiveTab = Boolean(user?.businessId && user?.token);
-
   const handleSaveProfile = (e) => {
     e.preventDefault();
     const form = e.target;
@@ -117,11 +119,11 @@ export default function Collab() {
   };
 
   if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
-
   if (!user && !devMode) {
-    return <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>;
+    return (
+      <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>
+    );
   }
-
   if (!hasCollabAccess && !devMode) {
     return (
       <div className="p-6 text-center">
@@ -129,11 +131,6 @@ export default function Collab() {
         <UpgradeBanner />
       </div>
     );
-  }
-
-  // אם בחרו טאב שיתופי פעולה ולא קיבלנו עדיין businessId ו-token, מראים הודעת טעינה
-  if (!canShowCollabActiveTab && tab === tabMap.collaborations) {
-    return <div className="p-6 text-center">🔄 טוען שיתופי פעולה...</div>;
   }
 
   return (
@@ -195,10 +192,10 @@ export default function Collab() {
         />
       )}
 
-      {tab === tabMap.collaborations && canShowCollabActiveTab && (
+      {tab === tabMap.collaborations && (
         <CollabActiveTab
-          userBusinessId={user.businessId}
-          token={user.token}
+          userBusinessId={user?.businessId}
+          token={user?.token}
           isDevUser={isDevUser}
         />
       )}
@@ -210,7 +207,7 @@ export default function Collab() {
 
 // קומפוננטה פנימית לטאב שיתופי פעולה והסכמים
 function CollabsAndAgreementsTab({ isDevUser, userBusinessId, token }) {
-  const [activeView, setActiveView] = useState("active"); // 'active' | 'agreements'
+  const [activeView, setActiveView] = React.useState("active"); // 'active' | 'agreements'
 
   const tabStyle = (tab) => ({
     backgroundColor: activeView === tab ? "#6b46c1" : "#ccc",
