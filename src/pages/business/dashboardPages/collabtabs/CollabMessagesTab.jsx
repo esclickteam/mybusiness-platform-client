@@ -2,19 +2,24 @@ import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
 export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
-  const [messages, setMessages] = useState([]);
+  const [sentMessages, setSentMessages] = useState([]);
+  const [receivedMessages, setReceivedMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("sent"); // 'sent' או 'received'
+  const [filter, setFilter] = useState("sent"); // 'sent', 'received', 'accepted'
 
   useEffect(() => {
     setLoading(true);
 
     async function fetchMessages() {
       try {
-        const endpoint = filter === "sent" ? "/business/my/proposals/sent" : "/business/my/proposals/received";
-        const res = await API.get(endpoint);
-        setMessages(res.data[filter === "sent" ? "proposalsSent" : "proposalsReceived"] || []);
+        const [sentRes, receivedRes] = await Promise.all([
+          API.get("/business/my/proposals/sent"),
+          API.get("/business/my/proposals/received"),
+        ]);
+
+        setSentMessages(sentRes.data.proposalsSent || []);
+        setReceivedMessages(receivedRes.data.proposalsReceived || []);
         setError(null);
       } catch (err) {
         console.error("Error loading proposals:", err);
@@ -24,16 +29,26 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
       }
     }
     fetchMessages();
-  }, [filter, refreshFlag]);
+  }, [refreshFlag]);
+
+  // סינון לפי הטאב הנבחר
+  let messagesToShow = [];
+  if (filter === "sent") messagesToShow = sentMessages;
+  else if (filter === "received") messagesToShow = receivedMessages;
+  else if (filter === "accepted")
+    messagesToShow = [...sentMessages, ...receivedMessages].filter((m) => m.status === "accepted");
+
+  // פונקציות לשינוי סטטוס וביטול כפי שהיו (עדכן את הסטים המתאימים)
 
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
       await API.delete(`/business/my/proposals/${proposalId}`);
-      setMessages((prev) => prev.filter((p) => p.proposalId !== proposalId));
+      setSentMessages((prev) => prev.filter((p) => p.proposalId !== proposalId && p._id !== proposalId));
+      setReceivedMessages((prev) => prev.filter((p) => p.proposalId !== proposalId && p._id !== proposalId));
       alert("ההצעה בוטלה בהצלחה");
     } catch (err) {
-      console.error("שגיאה בביטול ההצעה:", err.response || err.message || err);
+      console.error("שגיאה בביטול ההצעה:", err);
       alert("שגיאה בביטול ההצעה");
     }
   };
@@ -41,10 +56,12 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
   const handleAccept = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
-      setMessages((prev) =>
-        prev.map((p) =>
-          p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "accepted" } : p
-        )
+      // עדכון סטטוס בשתי הרשימות
+      setSentMessages((prev) =>
+        prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "accepted" } : p))
+      );
+      setReceivedMessages((prev) =>
+        prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "accepted" } : p))
       );
       alert("ההצעה אושרה בהצלחה");
       onStatusChange?.();
@@ -57,10 +74,11 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
   const handleReject = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
-      setMessages((prev) =>
-        prev.map((p) =>
-          p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "rejected" } : p
-        )
+      setSentMessages((prev) =>
+        prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "rejected" } : p))
+      );
+      setReceivedMessages((prev) =>
+        prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "rejected" } : p))
       );
       alert("ההצעה נדחתה בהצלחה");
       onStatusChange?.();
@@ -117,14 +135,32 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
         >
           הצעות שהתקבלו
         </button>
+        <button
+          onClick={() => setFilter("accepted")}
+          style={{
+            padding: "8px 20px",
+            borderRadius: 8,
+            border: "none",
+            cursor: "pointer",
+            fontWeight: "bold",
+            backgroundColor: filter === "accepted" ? "#6b46c1" : "#ccc",
+            color: filter === "accepted" ? "white" : "black",
+          }}
+        >
+          הצעות שאושרו
+        </button>
       </div>
 
-      {messages.length === 0 ? (
+      {messagesToShow.length === 0 ? (
         <p style={{ textAlign: "center" }}>
-          {filter === "sent" ? "לא נשלחו עדיין הצעות." : "לא התקבלו עדיין הצעות."}
+          {filter === "sent"
+            ? "לא נשלחו עדיין הצעות."
+            : filter === "received"
+            ? "לא התקבלו עדיין הצעות."
+            : "אין הצעות שאושרו להצגה."}
         </p>
       ) : (
-        messages.map((msg) => {
+        messagesToShow.map((msg) => {
           const { title, description, amount, validUntil } = parseMessage(msg.message);
           return (
             <div
@@ -139,38 +175,18 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
                 lineHeight: 1.6,
               }}
             >
-              {filter === "sent" ? (
-                <>
-                  <p>
-                    <strong>עסק שולח:</strong>{" "}
-                    <span style={{ marginLeft: 6 }}>
-                      {msg.fromBusinessId?.businessName || "לא ידוע"}
-                    </span>
-                  </p>
-                  <p>
-                    <strong>עסק מקבל:</strong>{" "}
-                    <span style={{ marginLeft: 6 }}>
-                      {msg.toBusinessId?.businessName || "לא ידוע"}
-                    </span>
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p>
-                    <strong>עסק שולח:</strong>{" "}
-                    <span style={{ marginLeft: 6 }}>
-                      {msg.fromBusinessId?.businessName || "לא ידוע"}
-                    </span>
-                  </p>
-                  <p>
-                    <strong>עסק מקבל:</strong>{" "}
-                    <span style={{ marginLeft: 6 }}>
-                      {msg.toBusinessId?.businessName || "לא ידוע"}
-                    </span>
-                  </p>
-                </>
-              )}
-
+              <p>
+                <strong>עסק שולח:</strong>{" "}
+                <span style={{ marginLeft: 6 }}>
+                  {msg.fromBusinessId?.businessName || "לא ידוע"}
+                </span>
+              </p>
+              <p>
+                <strong>עסק מקבל:</strong>{" "}
+                <span style={{ marginLeft: 6 }}>
+                  {msg.toBusinessId?.businessName || "לא ידוע"}
+                </span>
+              </p>
               <p>
                 <strong>כותרת הצעה:</strong> <span style={{ marginLeft: 6 }}>{title || "-"}</span>
               </p>
@@ -180,9 +196,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
               </p>
               <p>
                 <strong>סכום:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>
-                  {amount != null ? amount + " ₪" : "-"}
-                </span>
+                <span style={{ marginLeft: 6 }}>{amount != null ? amount + " ₪" : "-"}</span>
               </p>
               <p>
                 <strong>תוקף הצעה:</strong>{" "}
@@ -201,7 +215,11 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
                   marginBottom: 0,
                 }}
               >
-                {filter === "sent" ? "נשלח ב־" : "התקבל ב־"}
+                {filter === "sent"
+                  ? "נשלח ב־"
+                  : filter === "received"
+                  ? "התקבל ב־"
+                  : "אושר ב־"}
                 {new Date(msg.createdAt).toLocaleDateString("he-IL")}
               </p>
 
@@ -225,7 +243,7 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
                         cursor: "pointer",
                         fontWeight: "bold",
                       }}
-                      onClick={() => handleResendProposal(msg)}
+                      onClick={() => handleResendProposal && handleResendProposal(msg)}
                     >
                       📨 שלח שוב
                     </button>
@@ -239,12 +257,12 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange }) {
                         cursor: "pointer",
                         fontWeight: "bold",
                       }}
-                      onClick={() => handleCancelProposal(msg.proposalId)}
+                      onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
                     >
                       🗑️ ביטול
                     </button>
                   </>
-                ) : msg.status === "pending" ? (
+                ) : filter === "received" && msg.status === "pending" ? (
                   <>
                     <button
                       style={{
