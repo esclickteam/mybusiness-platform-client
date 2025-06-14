@@ -12,10 +12,11 @@ export default function CollabActiveTab({ userBusinessId, token }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!userBusinessId || !token) {
-      console.warn("Missing userBusinessId or token, abort fetching");
-      return;
-    }
+  console.log("CollabActiveTab props:", { userBusinessId, token });
+  if (!userBusinessId || !token) {
+    console.warn("Missing userBusinessId or token, abort fetching");
+    return;
+  }
 
     async function fetchProposals() {
       setLoading(true);
