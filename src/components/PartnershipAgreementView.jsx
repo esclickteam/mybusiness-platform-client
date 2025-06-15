@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../api"; 
+import html2pdf from "html2pdf.js";  // הוספת הספרייה
 import "./PartnershipAgreementView.css";
 
 export default function PartnershipAgreementView({ agreementId, currentBusinessId }) {
@@ -10,7 +11,6 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
   const [saving, setSaving] = useState(false);
   const sigPadRef = useRef(null);
 
-  // השוואת מזהים כמחרוזות, כדי למנוע בעיות השוואה בין אובייקטים
   const userSide = agreement
     ? (String(agreement.createdByBusinessId) === String(currentBusinessId) ? "createdBy" : "invitedBusiness")
     : null;
@@ -29,20 +29,6 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     }
     fetchAgreement();
   }, [agreementId]);
-
-  // לוגים לעזרה בדיבוג
-  useEffect(() => {
-    if (agreement) {
-      console.log("Agreement data:", agreement);
-      console.log("Current business ID:", currentBusinessId);
-      console.log("User side:", userSide);
-    }
-  }, [agreement, currentBusinessId, userSide]);
-
-  if (loading) return <div>טוען הסכם...</div>;
-  if (!agreement) return <div>הסכם לא נמצא</div>;
-
-  const userSigned = agreement.signatures?.[userSide]?.signed;
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "-";
@@ -72,58 +58,86 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     setSaving(false);
   }
 
+  // פונקציה להורדת ה-PDF
+  const downloadPdf = () => {
+    const element = document.getElementById("agreement-content");
+    if (!element) {
+      alert("ההסכם לא נטען עדיין");
+      return;
+    }
+
+    const options = {
+      margin: 0.5,
+      filename: `agreement_${agreementId}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+    };
+
+    html2pdf().set(options).from(element).save();
+  };
+
+  if (loading) return <div>טוען הסכם...</div>;
+  if (!agreement) return <div>הסכם לא נמצא</div>;
+
+  const userSigned = agreement.signatures?.[userSide]?.signed;
+
   return (
     <div className="agreement-view-container">
-      <h2 className="agreement-title">הסכם שיתוף פעולה: {agreement.title}</h2>
+      <div id="agreement-content" style={{ direction: "rtl" }}>
+        <h2 className="agreement-title">הסכם שיתוף פעולה: {agreement.title}</h2>
 
-      {/* הוספת עסק שולח ועסק מקבל */}
-      <p><strong>עסק שולח:</strong> {agreement.sender?.businessName || "-"}</p>
-      <p><strong>עסק מקבל:</strong> {agreement.receiver?.businessName || "-"}</p>
-      
-      <p><strong>תיאור:</strong> {agreement.description}</p>
-      <p><strong>מה תספק במסגרת ההסכם:</strong> {agreement.giving}</p>
-      <p><strong>מה תקבל במסגרת ההסכם:</strong> {agreement.receiving}</p>
-      <p><strong>סוג שיתוף פעולה:</strong> {agreement.type}</p>
-      <p><strong>עמלות / תשלום:</strong> {agreement.paymentDetails || "-"}</p>
-      <p><strong>תקופת ההסכם:</strong> {formatDate(agreement.startDate)} - {formatDate(agreement.endDate)}</p>
-      <p><strong>ניתן לבטל בכל שלב:</strong> {agreement.cancelAnytime ? "כן" : "לא"}</p>
-      <p><strong>סעיף סודיות:</strong> {agreement.confidentiality ? "כן" : "לא"}</p>
-      <p><strong>סטטוס:</strong> <span className={`status status-${agreement.status}`}>{agreement.status}</span></p>
+        <p><strong>עסק שולח:</strong> {agreement.sender?.businessName || "-"}</p>
+        <p><strong>עסק מקבל:</strong> {agreement.receiver?.businessName || "-"}</p>
+        <p><strong>תיאור:</strong> {agreement.description}</p>
+        <p><strong>מה תספק במסגרת ההסכם:</strong> {agreement.giving}</p>
+        <p><strong>מה תקבל במסגרת ההסכם:</strong> {agreement.receiving}</p>
+        <p><strong>סוג שיתוף פעולה:</strong> {agreement.type}</p>
+        <p><strong>עמלות / תשלום:</strong> {agreement.paymentDetails || "-"}</p>
+        <p><strong>תקופת ההסכם:</strong> {formatDate(agreement.startDate)} - {formatDate(agreement.endDate)}</p>
+        <p><strong>ניתן לבטל בכל שלב:</strong> {agreement.cancelAnytime ? "כן" : "לא"}</p>
+        <p><strong>סעיף סודיות:</strong> {agreement.confidentiality ? "כן" : "לא"}</p>
+        <p><strong>סטטוס:</strong> <span className={`status status-${agreement.status}`}>{agreement.status}</span></p>
 
-      <hr />
+        <hr />
 
-      <h3>חתימות:</h3>
-      <div className="signatures-container">
-        <div>
-          <strong>חתימת היוצר:</strong><br />
-          {agreement.signatures?.createdBy?.signed ? (
-            <img
-              src={agreement.signatures.createdBy.signatureDataUrl}
-              alt="חתימת היוצר"
-              className="signature-image"
-            />
-          ) : (
-            "לא חתום"
-          )}
-        </div>
+        <h3>חתימות:</h3>
+        <div className="signatures-container">
+          <div>
+            <strong>חתימת היוצר:</strong><br />
+            {agreement.signatures?.createdBy?.signed ? (
+              <img
+                src={agreement.signatures.createdBy.signatureDataUrl}
+                alt="חתימת היוצר"
+                className="signature-image"
+              />
+            ) : (
+              "לא חתום"
+            )}
+          </div>
 
-        <div>
-          <strong>חתימת הצד השני:</strong><br />
-          {agreement.signatures?.invitedBusiness?.signed ? (
-            <img
-              src={agreement.signatures.invitedBusiness.signatureDataUrl}
-              alt="חתימת הצד השני"
-              className="signature-image"
-            />
-          ) : (
-            "לא חתום"
-          )}
+          <div>
+            <strong>חתימת הצד השני:</strong><br />
+            {agreement.signatures?.invitedBusiness?.signed ? (
+              <img
+                src={agreement.signatures.invitedBusiness.signatureDataUrl}
+                alt="חתימת הצד השני"
+                className="signature-image"
+              />
+            ) : (
+              "לא חתום"
+            )}
+          </div>
         </div>
       </div>
 
       <hr />
 
-      {/* כפתורי פעולה לפי סוג משתמש ומצב חתימה */}
+      <button onClick={downloadPdf} style={{ marginBottom: 20, padding: "10px 20px", borderRadius: 8, cursor: "pointer" }}>
+        הורד חוזה כ-PDF
+      </button>
+
+      {/* כפתורי חתימה */}
       {userSide === "createdBy" && !userSigned && !showSign && (
         <button className="sign-button" onClick={() => setShowSign(true)}>
           חתום עכשיו
