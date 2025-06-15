@@ -180,14 +180,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!token || !myBusinessId) return;
 
       const sock = io(SOCKET_URL, {
-        path: "/socket.io",
-        auth: {
-          token,
-          role: "business",
-          businessId: myBusinessId,
-          businessName: myBusinessName,
-        },
-      });
+  path: "/socket.io",
+  auth: {
+    token,
+    role: "business",
+    businessId: myBusinessId,
+    businessName: myBusinessName,
+  },
+  transports: ["websocket"], // הוסף שורה זו
+});
 
       socketRef.current = sock;
 
