@@ -157,6 +157,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       setConversations(convs);
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
+        console.log("Default selectedConversation set to:", convs[0]._id);
       }
     } catch (err) {
       console.error("Failed fetching conversations:", err);
