@@ -258,12 +258,13 @@ console.log("myBusinessId:", myBusinessId);
 
 
 
-const isCurrentConversation = selectedConvId
-  ? normalized.conversationId === selectedConvId
-  : (
-      (normalized.fromBusinessId === myBusinessId && normalized.toBusinessId === partnerBusinessId) ||
-      (normalized.toBusinessId === myBusinessId && normalized.fromBusinessId === partnerBusinessId)
-    );
+const isCurrentConversation =
+  normalized.conversationId === selectedConvId ||
+  // אם אין conversationId או לא תואם, בדוק לפי המשתתפים
+  (
+    (normalized.fromBusinessId === myBusinessId && normalized.toBusinessId === partnerBusinessId) ||
+    (normalized.toBusinessId === myBusinessId && normalized.fromBusinessId === partnerBusinessId)
+  );
 
     if (isCurrentConversation) {
       setMessages((prev) => {
@@ -358,18 +359,18 @@ const isCurrentConversation = selectedConvId
   const sendMessage = (content) => {
   if (!content || !selectedConversation || !socketRef.current) return;
 
-  // וודא ש־otherId הוא מזהה בלבד (string)
-  let otherId = selectedConversation.participants.find(id => id !== myBusinessId);
-  if (typeof otherId === "object" && otherId !== null) {
-    otherId = otherId._id || otherId.toString();
-  }
+  // המרת מזהים למחרוזות והשוואה נכונה
+  let otherId = selectedConversation.participants.find(
+    (id) => String(id) !== String(myBusinessId)
+  );
+  otherId = String(otherId);
 
   let payload;
   if (typeof content === "string") {
     payload = {
       conversationId: selectedConversation._id,
       from: myBusinessId,
-      to: otherId, // מזהה בלבד
+      to: otherId,
       text: content,
     };
   } else if (content.type === "contract") {
@@ -393,41 +394,42 @@ const isCurrentConversation = selectedConvId
     return;
   }
 
-    const optimistic = {
-      ...payload,
-      timestamp: new Date().toISOString(),
-      _id: "pending-" + Math.random().toString(36).substr(2, 9),
-      fromBusinessId: payload.from,
-      toBusinessId: payload.to,
-    };
-
-    setMessages((prev) => [...prev, optimistic]);
-    console.log("[Client] Sending message payload:", payload);
-    socketRef.current.emit("sendMessage", payload, (ack) => {
-      if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + ack.error);
-        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
-      } else if (ack.message?._id) {
-        const real = {
-          ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-          toBusinessId: ack.message.toBusinessId || ack.message.to,
-        };
-        setMessages((prev) => [
-          ...prev.filter((m) => m._id !== optimistic._id),
-          real,
-        ]);
-      }
-    });
-
-    API.post(
-      `/business-chat/${selectedConversation._id}/message`,
-      { text: payload.text },
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    ).catch((err) => {
-      console.error("שליחת הודעה ל־API נכשלה", err);
-    });
+  const optimistic = {
+    ...payload,
+    timestamp: new Date().toISOString(),
+    _id: "pending-" + Math.random().toString(36).substr(2, 9),
+    fromBusinessId: payload.from,
+    toBusinessId: payload.to,
   };
+
+  setMessages((prev) => [...prev, optimistic]);
+  console.log("[Client] Sending message payload:", payload);
+  socketRef.current.emit("sendMessage", payload, (ack) => {
+    if (!ack.ok) {
+      alert("שליחת הודעה נכשלה: " + ack.error);
+      setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
+    } else if (ack.message?._id) {
+      const real = {
+        ...ack.message,
+        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+        toBusinessId: ack.message.toBusinessId || ack.message.to,
+      };
+      setMessages((prev) => [
+        ...prev.filter((m) => m._id !== optimistic._id),
+        real,
+      ]);
+    }
+  });
+
+  API.post(
+    `/business-chat/${selectedConversation._id}/message`,
+    { text: payload.text },
+    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  ).catch((err) => {
+    console.error("שליחת הודעה ל־API נכשלה", err);
+  });
+};
+
 
   const sendFileMessage = async (file) => {
     if (!file || !selectedConversation || !socketRef.current) return;
