@@ -34,7 +34,8 @@ function CreateCollabForm({ onSuccess }) {
         expiryDate:  expiryDate ? new Date(expiryDate).toISOString() : undefined,
       };
 
-      await API.post("/api/business/my/proposals", {
+      await API.post("/business/my/proposals", {
+
         toBusinessId: null,
         message,
         contactName:  contactName.trim(),
