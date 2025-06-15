@@ -10,6 +10,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il
 
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketRef = useRef(null);
+  const socketInitializedRef = useRef(false); // דגל התחברות
   const messagesEndRef = useRef(null);
 
   const { refreshAccessToken, logout } = useAuth();
@@ -21,7 +22,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  // טען שיחות עסקיות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -40,12 +40,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // אתחול חיבור לסוקט וטעינת שיחות - עם מניעת התחברות כפולה
   useEffect(() => {
-    if (socketRef.current) {
+    if (socketInitializedRef.current) {
       console.log("Socket already initialized, skipping setup");
       return;
     }
+    socketInitializedRef.current = true;
+
     console.log("Setting up socket connection");
 
     async function setupSocket() {
@@ -96,11 +97,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         console.log("Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
+        socketInitializedRef.current = false;
       }
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
-  // הצטרפות/עזיבת שיחות וטעינת היסטוריית הודעות
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -137,7 +138,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation, refreshAccessToken]);
 
-  // הקשבה להודעות חדשות - מאזינים ומתעדכנים בהתאם לשיחה הנבחרת
   useEffect(() => {
     if (!socketRef.current) return;
     if (!selectedConversation) return;
@@ -175,12 +175,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation]);
 
-  // גלילה אוטומטית על הודעה חדשה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה עם מניעת שידור כפול
   const sendMessage = () => {
     console.log("sendMessage triggered", { input, isSending });
     if (isSending) {
@@ -235,7 +233,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   };
 
-  // הוצאת שם השותף בשיחה
   const getPartnerBusiness = (conv) => {
     const idx = conv.participants.findIndex((id) => id !== myBusinessId);
     return conv.participantsInfo?.[idx] || { businessName: "עסק" };
@@ -254,7 +251,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         overflow: "hidden",
       }}
     >
-      {/* רשימת שיחות */}
       <Box
         sx={{
           width: 270,
@@ -312,7 +308,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         })}
       </Box>
 
-      {/* אזור הצ'אט */}
       <Box
         sx={{
           flex: 1,
@@ -378,7 +373,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
-        {/* אזור הזנת הודעה - כטופס */}
         {selectedConversation && (
           <form
             onSubmit={(e) => {
