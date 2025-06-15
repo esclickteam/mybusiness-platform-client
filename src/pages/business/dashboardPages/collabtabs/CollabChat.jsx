@@ -563,12 +563,23 @@ const isCurrentConversation = selectedConvId
   };
 
   const getPartnerBusiness = (conv) => {
-  const idx = conv.participants.findIndex((id) => id !== myBusinessId);
+  if (!conv) return { businessName: "עסק", businessId: null };
+
+  // מצא אינדקס של המשתתף שהוא לא העסק שלי, בהשוואה כמחרוזת
+  const idx = conv.participants.findIndex(
+    (id) => String(id) !== String(myBusinessId)
+  );
+
+  if (idx === -1) {
+    return { businessName: "עסק", businessId: null };
+  }
+
   return {
-    businessId: conv.participants[idx],
-    ...conv.participantsInfo?.[idx],
-  } || { businessName: "עסק", businessId: null };
+    businessId: String(conv.participants[idx]),
+    ...(conv.participantsInfo?.[idx] || {}),
+  };
 };
+
 
   return (
     <Box
