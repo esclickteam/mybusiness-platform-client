@@ -30,6 +30,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
 
+  // דה-דופליקציה הודעות לפי _id
+  const uniqueMessages = (msgs) => {
+    const seen = new Set();
+    return msgs.filter((m) => {
+      const id = m._id?.toString() || m.tempId || m.timestamp;
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  };
+
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -72,7 +83,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           businessId: myBusinessId,
           businessName: myBusinessName,
         },
-        transports: ["websocket"], // חשוב לשים כאן transports
+        transports: ["websocket"],
       });
 
       socketRef.current = sock;
@@ -134,7 +145,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           toBusinessId: msg.toBusinessId || msg.to,
         }));
         console.log(`Fetched ${normMsgs.length} messages for conversation ${convId}`);
-        setMessages(normMsgs);
+        setMessages(uniqueMessages(normMsgs));
       } catch (err) {
         console.error("Fetch messages failed:", err);
         setMessages([]);
@@ -170,9 +181,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       });
 
       if (normalized.conversationId === selectedConversation._id) {
-        setMessages((prev) =>
-          prev.some((m) => m._id === messageId) ? prev : [...prev, normalized]
-        );
+        setMessages((prev) => uniqueMessages([...prev, normalized]));
       }
 
       setConversations((prev) =>
@@ -229,7 +238,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       toBusinessId: payload.to,
     };
 
-    setMessages((prev) => [...prev, optimistic]);
+    setMessages((prev) => uniqueMessages([...prev, optimistic]));
     setInput("");
 
     socketRef.current.emit("sendMessage", payload, (ack) => {
@@ -243,10 +252,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           fromBusinessId: ack.message.fromBusinessId || ack.message.from,
           toBusinessId: ack.message.toBusinessId || ack.message.to,
         };
-        setMessages((prev) => [
-          ...prev.filter((m) => m._id !== optimistic._id),
-          real,
-        ]);
+        setMessages((prev) => uniqueMessages([...prev.filter((m) => m._id !== optimistic._id), real]));
       }
     });
   };
