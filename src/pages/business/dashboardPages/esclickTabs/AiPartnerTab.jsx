@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { io } from "socket.io-client";
 import "./AiPartnerTab.css";
 
-const AiPartnerTab = () => {
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
+
+const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   const [businessProfile, setBusinessProfile] = useState({
     name: "",
     type: "",
@@ -9,26 +12,67 @@ const AiPartnerTab = () => {
     audience: "",
     goal: "",
   });
-
   const [dailyTip, setDailyTip] = useState("");
   const [chat, setChat] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL;
-  if (!apiBaseUrl) {
-    throw new Error("Missing VITE_API_URL environment variable");
-  }
-
-  // טען פרופיל עסק + שיחות מהשרת בהתחלה
+  // יצירת החיבור ל- Socket עם auth
+  const [socket, setSocket] = useState(null);
   useEffect(() => {
-    const fetchProfileAndChat = async () => {
+    if (!businessId || !token) return;
+
+    const s = io(SOCKET_URL, {
+      auth: { token, businessId, role: "client" }, // תפקיד client - לשנות לפי צורך
+      transports: ["websocket"],
+    });
+
+    s.on("connect", () => {
+      console.log("Connected to socket with id:", s.id);
+    });
+
+    // מאזין להמלצות חדשות - כאן אפשר לראות המלצות שהעסק קיבל מהשרת
+    s.on("newRecommendation", ({ recommendationId, message, recommendation }) => {
+      setChat((prev) => [
+        ...prev,
+        {
+          sender: "ai",
+          text: `הודעת לקוח: ${message}\nהמלצה AI: ${recommendation}`,
+          recommendationId,
+        },
+      ]);
+    });
+
+    // הודעות מאושרות מהעסק (העסק אישר ושלח)
+    s.on("approvedRecommendationMessage", (data) => {
+      setChat((prev) => [
+        ...prev,
+        { sender: "business", text: `העסק אישר ושלח:\n${data.recommendation}` },
+      ]);
+    });
+
+    s.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
+
+    setSocket(s);
+
+    return () => {
+      s.disconnect();
+    };
+  }, [businessId, token]);
+
+  // טעינת פרופיל העסק והצ'אט ההיסטורי
+  useEffect(() => {
+    async function fetchProfileAndChat() {
       try {
+        const apiBaseUrl = import.meta.env.VITE_API_URL;
         const [profileRes, chatRes] = await Promise.all([
           fetch(`${apiBaseUrl}/business/profile`),
-          fetch(`${apiBaseUrl}/partner-ai/chat-history`)
+          fetch(`${apiBaseUrl}/partner-ai/chat-history`),
         ]);
-        if (!profileRes.ok || !chatRes.ok) throw new Error("Failed to fetch data");
+        if (!profileRes.ok || !chatRes.ok) throw new Error("Failed to load");
 
         const profileData = await profileRes.json();
         const chatData = await chatRes.json();
@@ -37,19 +81,24 @@ const AiPartnerTab = () => {
         setChat(chatData);
 
         if (profileData.goal) {
-          setDailyTip(`"${profileData.goal}" מתקרב – אולי היום תשתף פוסט עם ערך לקהל שלך?`);
+          setDailyTip(
+            `"${profileData.goal}" מתקרב – אולי היום תשתף פוסט עם ערך לקהל שלך?`
+          );
         }
       } catch (err) {
-        console.error("Error loading profile or chat:", err);
+        console.error(err);
       }
-    };
-
+    }
     fetchProfileAndChat();
-  }, [apiBaseUrl]);
+  }, []);
 
-  // שמירת פרופיל העסק בשרת
+  const handleProfileChange = (e) => {
+    setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
+  };
+
   const handleSaveProfile = async () => {
     try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiBaseUrl}/business/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -57,8 +106,10 @@ const AiPartnerTab = () => {
       });
       if (!res.ok) throw new Error("Failed to save profile");
 
-      alert("✅ פרטי העסק נשמרו בהצלחה!");
       const data = await res.json();
+
+      alert("✅ פרטי העסק נשמרו בהצלחה!");
+
       if (data.goal) {
         setDailyTip(`"${data.goal}" מתקרב – אולי היום תשתף פוסט עם ערך לקהל שלך?`);
       }
@@ -68,96 +119,43 @@ const AiPartnerTab = () => {
     }
   };
 
-  // ביצוע פעולה לפי ה-action שמוחזר מהשרת
-  const executeAction = async (action) => {
-    if (!action || !action.type) return;
+  // שליחת הודעה לקבלת המלצה דרך Socket
+  const sendMessageForRecommendation = (text) => {
+    if (!text.trim() || !socket) return;
 
-    try {
-      switch (action.type) {
-        case "schedule_appointment":
-          await fetch(`${apiBaseUrl}/crm/appointments`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(action.data),
-          });
-          alert("התור נקבע בהצלחה!");
-          break;
-
-        case "send_chat_message":
-          await fetch(`${apiBaseUrl}/chat/send`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(action.data),
-          });
-          break;
-
-        case "create_collab_alert":
-          await fetch(`${apiBaseUrl}/collabs/alerts`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(action.data),
-          });
-          break;
-
-        case "send_reminder":
-          await fetch(`${apiBaseUrl}/notifications/reminders`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(action.data),
-          });
-          alert("התזכורת נשלחה בהצלחה!");
-          break;
-
-        default:
-          console.warn("פעולה לא מוכרת:", action.type);
-      }
-    } catch (err) {
-      console.error("Error executing action:", err);
-      alert("❌ שגיאה בביצוע פעולה מהשרת");
-    }
-  };
-
-  // שליחת הודעה לשרת, וקליטת תשובה עם פעולה אפשרית
-  const handleSend = async (customPrompt) => {
-    const finalPrompt = customPrompt || input;
-    if (!finalPrompt.trim()) return;
-
-    const newChat = [...chat, { sender: "user", text: finalPrompt }];
-    setChat(newChat);
+    setChat((prev) => [...prev, { sender: "user", text }]);
     setInput("");
     setLoading(true);
 
-    try {
-      const response = await fetch(`${apiBaseUrl}/partner-ai`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: finalPrompt, profile: businessProfile }),
-      });
-
-      if (!response.ok) throw new Error("Network response was not ok");
-
-      const data = await response.json();
-      const aiReply = data.answer || "⚠️ לא התקבלה תשובה מהשרת.";
-
-      // הוספת תשובת AI לשיחה
-      setChat((prev) => [...prev, { sender: "ai", text: aiReply }]);
-
-      // ביצוע פעולה אם קיימת
-      if (data.action) {
-        await executeAction(data.action);
+    socket.emit(
+      "clientSendMessageForRecommendation",
+      { message: text, clientSocketId: socket.id, conversationId },
+      (response) => {
+        setLoading(false);
+        if (!response.ok) {
+          alert("שגיאה בשליחת הודעה לקבלת המלצה: " + response.error);
+        }
       }
-    } catch (error) {
-      console.error("שגיאה בשליחת שאלה ל-AI:", error);
-      setChat((prev) => [...prev, { sender: "ai", text: "❌ שגיאה בשליחה לשרת." }]);
-    } finally {
-      setLoading(false);
+    );
+  };
+
+  // לחיצה על שליחה
+  const handleSendClick = () => {
+    sendMessageForRecommendation(input);
+  };
+
+  // שליחה בלחיצה על Enter
+  const handleInputKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessageForRecommendation(input);
     }
   };
 
-  // שינוי בפרופיל העסק (עדכון סטייט)
-  const handleProfileChange = (e) => {
-    setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
-  };
+  // גלילה לתחתית הצ'אט
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat]);
 
   const quickActions = [
     "תנסח לי פוסט שיווקי",
@@ -213,43 +211,40 @@ const AiPartnerTab = () => {
         </div>
         <div className="chat-section">
           {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
+
           <div className="quick-buttons">
-            {quickActions.map((text, index) => (
+            {quickActions.map((text, idx) => (
               <button
-                key={index}
+                key={idx}
                 className="quick-button"
-                onClick={() => handleSend(text)}
+                onClick={() => sendMessageForRecommendation(text)}
+                disabled={loading}
               >
                 {text}
               </button>
             ))}
           </div>
+
           <div className="chat-box">
-            {chat.map((msg, i) => (
-              <div key={i} className={`bubble ${msg.sender}`}>
+            {chat.map((msg, idx) => (
+              <div key={idx} className={`bubble ${msg.sender}`}>
                 {msg.text}
               </div>
             ))}
             {loading && <div className="bubble ai">⌛ מחשב תשובה...</div>}
+            <div ref={bottomRef} style={{ height: 1 }} />
           </div>
-          <div className="summary-button-wrapper">
-            <button
-              className="summary-button"
-              onClick={() => handleSend("תן לי סיכום של השיחה הזו בבקשה")}
-            >
-              🧾 תן לי סיכום של השיחה
-            </button>
-          </div>
+
           <div className="chat-input">
-            <input
-              type="text"
+            <textarea
               placeholder="כתבי כאן כל שאלה או בקשה..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+              onKeyDown={handleInputKeyDown}
               disabled={loading}
+              rows={2}
             />
-            <button onClick={() => handleSend()} disabled={loading}>
+            <button onClick={handleSendClick} disabled={loading}>
               שליחה
             </button>
           </div>

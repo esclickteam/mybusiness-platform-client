@@ -17,19 +17,34 @@ import "../../../styles/dashboard.css";
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
 
+const DashboardCards = lazyWithPreload(() =>
+  import("../../../components/DashboardCards")
+);
+const BarChartComponent = lazyWithPreload(() =>
+  import("../../../components/dashboard/BarChart")
+);
+const RecentActivityTable = lazyWithPreload(() =>
+  import("../../../components/dashboard/RecentActivityTable")
+);
+const Insights = lazyWithPreload(() =>
+  import("../../../components/dashboard/Insights")
+);
+const NextActions = lazyWithPreload(() =>
+  import("../../../components/dashboard/NextActions")
+);
+const WeeklySummary = lazyWithPreload(() =>
+  import("../../../components/dashboard/WeeklySummary")
+);
+const CalendarView = lazyWithPreload(() =>
+  import("../../../components/dashboard/CalendarView")
+);
+const DailyAgenda = lazyWithPreload(() =>
+  import("../../../components/dashboard/DailyAgenda")
+);
+const DashboardNav = lazyWithPreload(() =>
+  import("../../../components/dashboard/DashboardNav")
+);
 
-// טעינת רכיבים עם אפשרות preload
-const DashboardCards = lazyWithPreload(() => import("../../../components/DashboardCards"));
-const BarChartComponent = lazyWithPreload(() => import("../../../components/dashboard/BarChart"));
-const RecentActivityTable = lazyWithPreload(() => import("../../../components/dashboard/RecentActivityTable"));
-const Insights = lazyWithPreload(() => import("../../../components/dashboard/Insights"));
-const NextActions = lazyWithPreload(() => import("../../../components/dashboard/NextActions"));
-const WeeklySummary = lazyWithPreload(() => import("../../../components/dashboard/WeeklySummary"));
-const CalendarView = lazyWithPreload(() => import("../../../components/dashboard/CalendarView"));
-const DailyAgenda = lazyWithPreload(() => import("../../../components/dashboard/DailyAgenda"));
-const DashboardNav = lazyWithPreload(() => import("../../../components/dashboard/DashboardNav"));
-
-// פונקציה לטעינת כל הרכיבים מראש (לקרוא אחרי לוגין)
 export function preloadDashboardComponents() {
   DashboardCards.preload();
   BarChartComponent.preload();
@@ -41,8 +56,6 @@ export function preloadDashboardComponents() {
   DailyAgenda.preload();
   DashboardNav.preload();
 }
-
-// -- פונקציות עזר --
 
 function enrichAppointment(appt, business) {
   const service = business.services?.find(
@@ -75,7 +88,6 @@ async function fetchDashboardStats(businessId, refreshAccessToken) {
   return res.data;
 }
 
-// להוסיף React.memo לרכיבים שקיבלו stats - לשם הדוגמה כאן
 const MemoizedDashboardCards = React.memo(DashboardCards);
 const MemoizedInsights = React.memo(Insights);
 const MemoizedNextActions = React.memo(NextActions);
@@ -102,6 +114,7 @@ const DashboardPage = () => {
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [alert, setAlert] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
 
   const [localData, setLocalData] = useState(() => {
     try {
@@ -148,7 +161,7 @@ const DashboardPage = () => {
     );
   }, [businessId, queryClient, refreshAccessToken]);
 
-  // Socket.IO
+  // Socket.IO setup
   useEffect(() => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
@@ -234,6 +247,11 @@ const DashboardPage = () => {
         });
       });
 
+      // ** NEW: Listen to AI recommendations **
+      sock.on("newRecommendation", (recommendation) => {
+        setRecommendations((prev) => [...prev, recommendation]);
+      });
+
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
       });
@@ -276,12 +294,16 @@ const DashboardPage = () => {
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-if (isLoading && !localData) return <DashboardSkeleton />;
+  if (isLoading && !localData) return <DashboardSkeleton />;
   if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
   const effectiveStats = stats || localData || {};
-  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments) ? effectiveStats.todaysAppointments : [];
-  const appointments = Array.isArray(effectiveStats?.appointments) ? effectiveStats.appointments : [];
+  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments)
+    ? effectiveStats.todaysAppointments
+    : [];
+  const appointments = Array.isArray(effectiveStats?.appointments)
+    ? effectiveStats.appointments
+    : [];
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
@@ -316,8 +338,48 @@ if (isLoading && !localData) return <DashboardSkeleton />;
 
       {alert && <p className="alert-text">{alert}</p>}
 
+      {/* NEW: AI Recommendations Section */}
+      {recommendations.length > 0 && (
+        <section className="recommendations-section" style={{ marginBottom: 20, padding: 15, border: "1px solid #ccc", borderRadius: 6, backgroundColor: "#f9f9f9" }}>
+          <h3>המלצות AI חדשות לקבלת אישור</h3>
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {recommendations.map(({ recommendationId, message, recommendation }) => (
+              <li key={recommendationId} style={{ marginBottom: 15, paddingBottom: 10, borderBottom: "1px solid #ddd" }}>
+                <p><b>הודעת לקוח:</b> {message}</p>
+                <p><b>המלצה AI:</b> {recommendation}</p>
+                <button
+                  style={{ backgroundColor: "#4caf50", color: "white", border: "none", padding: "8px 12px", borderRadius: 4, cursor: "pointer" }}
+                  onClick={() => {
+                    if (!socketRef.current) return;
+                    socketRef.current.emit("businessApproveRecommendation", { recommendationId }, (res) => {
+                      if (res.ok) {
+                        alert("ההמלצה אושרה ונשלחה ללקוח");
+                        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
+                      } else {
+                        alert("שגיאה באישור ההמלצה: " + res.error);
+                      }
+                    });
+                  }}
+                >
+                  אשר ושלח
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <Suspense fallback={<div className="loading-spinner">🔄 טוען ניווט...</div>}>
-        <MemoizedDashboardNav refs={{ cardsRef, insightsRef, chartsRef, appointmentsRef, nextActionsRef, weeklySummaryRef }} />
+        <MemoizedDashboardNav
+          refs={{
+            cardsRef,
+            insightsRef,
+            chartsRef,
+            appointmentsRef,
+            nextActionsRef,
+            weeklySummaryRef,
+          }}
+        />
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
@@ -329,7 +391,10 @@ if (isLoading && !localData) return <DashboardSkeleton />;
       <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
         <div ref={insightsRef}>
           <MemoizedInsights
-            stats={{ ...syncedStats, upcoming_appointments: getUpcomingAppointmentsCount(appointments) }}
+            stats={{
+              ...syncedStats,
+              upcoming_appointments: getUpcomingAppointmentsCount(appointments),
+            }}
           />
         </div>
       </Suspense>
@@ -349,31 +414,21 @@ if (isLoading && !localData) return <DashboardSkeleton />;
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרפים...</div>}>
         <div ref={chartsRef} className="graph-box full-width">
-  <MemoizedBarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
-</div>
+          <MemoizedBarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
+        </div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעילות...</div>}>
-        <div>
-          {syncedStats.recent_activity && <MemoizedRecentActivityTable activities={syncedStats.recent_activity} />}
-        </div>
+        <div>{syncedStats.recent_activity && <MemoizedRecentActivityTable activities={syncedStats.recent_activity} />}</div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
         <div ref={appointmentsRef} className="calendar-row">
           <div className="day-agenda-box">
-            <MemoizedDailyAgenda
-              date={selectedDate}
-              appointments={appointments}
-              businessName={syncedStats.businessName}
-            />
+            <MemoizedDailyAgenda date={selectedDate} appointments={appointments} businessName={syncedStats.businessName} />
           </div>
           <div className="calendar-container">
-            <MemoizedCalendarView
-              appointments={appointments}
-              onDateClick={setSelectedDate}
-              selectedDate={selectedDate}
-            />
+            <MemoizedCalendarView appointments={appointments} onDateClick={setSelectedDate} selectedDate={selectedDate} />
           </div>
         </div>
       </Suspense>
