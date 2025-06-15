@@ -220,7 +220,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   if (!socketRef.current) return;
 
   const handler = (msg) => {
-    console.log("Received newMessage raw:", msg);
+  console.log("Received newMessage raw:", msg);
+  console.log("to field as JSON:", JSON.stringify(msg.to, null, 2));
 
     const normalized = {
   ...msg,
