@@ -234,11 +234,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     : typeof msg.to === "object" && msg.to !== null
     ? String(msg.to._id || msg.to.id || "")
     : String(msg.to || ""),
-  conversationId: msg.conversationId
-    ? String(msg.conversationId)
-    : String(msg.conversation?._id || ""),
+  conversationId:
+    msg.conversationId && msg.conversationId !== "" ? String(msg.conversationId) : null,
   _id: msg._id ? String(msg._id) : "",
 };
+
 
 
     const selectedConvId = selectedConversation?._id ? String(selectedConversation._id) : "";
@@ -251,9 +251,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     console.log("myBusinessIdStr:", myBusinessIdStr, typeof myBusinessIdStr);
 
     const isCurrentConversation =
-      normalized.conversationId === selectedConvId ||
-      ((normalized.fromBusinessId === myBusinessIdStr && normalized.toBusinessId === partnerBusinessId) ||
-        (normalized.toBusinessId === myBusinessIdStr && normalized.fromBusinessId === partnerBusinessId));
+  (normalized.conversationId && normalized.conversationId === selectedConvId) ||
+  (!normalized.conversationId &&
+    ((normalized.fromBusinessId === myBusinessIdStr && normalized.toBusinessId === partnerBusinessId) ||
+      (normalized.toBusinessId === myBusinessIdStr && normalized.fromBusinessId === partnerBusinessId)));
+
 
     console.log("isCurrentConversation:", isCurrentConversation);
 
