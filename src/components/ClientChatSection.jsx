@@ -28,7 +28,7 @@ export default function ClientChatSection() {
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      transports: ["polling", "websocket"],
+      transports: ['websocket'],
       auth: { token, role: "chat", businessId },
       withCredentials: true,
     });

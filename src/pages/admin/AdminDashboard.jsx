@@ -42,7 +42,7 @@ function AdminDashboard() {
           token,
           role: "admin",
         },
-        transports: ["websocket", "polling"],
+        transports: ['websocket'],
       });
 
       socketRef.current.on("connect", () => {
