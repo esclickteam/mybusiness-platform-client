@@ -140,12 +140,12 @@ export default function CollabMarketTab({ isDevUser }) {
             const msg = item.message || {};
             return {
               _id: item._id,
-              title: msg.כותרת || msg.title || "שיתוף פעולה",
-              category: msg.קטגוריה || item.category || "כללי",
-              description: msg.תיאור || msg.description || "",
-              contactName: item.fromBusinessId?.businessName || "שותף עסקי",
-              phone: msg.טלפון || msg.phone || "",
-              image: item.fromBusinessId?.logo || "",
+              title: msg.title || "שיתוף פעולה",
+              category: msg.category || item.category || "כללי",
+              description: msg.description || "",
+              contactName: item.businessName || "שותף עסקי",
+              phone: msg.phone || "",
+              image: item.logo || "",
             };
           });
           setCollabMarket(collabs);
