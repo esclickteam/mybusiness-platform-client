@@ -40,9 +40,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // אתחול חיבור לסוקט וטעינת שיחות
+  // אתחול חיבור לסוקט וטעינת שיחות - עם מניעת התחברות כפולה
   useEffect(() => {
+    if (socketRef.current) {
+      console.log("Socket already initialized, skipping setup");
+      return;
+    }
     console.log("Setting up socket connection");
+
     async function setupSocket() {
       const token = await refreshAccessToken();
       if (!token || !myBusinessId) {
@@ -90,6 +95,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (socketRef.current) {
         console.log("Disconnecting socket");
         socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
