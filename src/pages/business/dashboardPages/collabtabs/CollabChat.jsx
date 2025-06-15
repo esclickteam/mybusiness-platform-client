@@ -217,76 +217,80 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [myBusinessIdStr, myBusinessName, refreshAccessToken, logout]);
 
   useEffect(() => {
-    if (!socketRef.current) return;
+  if (!socketRef.current) return;
 
-    const handler = (msg) => {
-      console.log("Received newMessage:", msg);
+  const handler = (msg) => {
+    console.log("Received newMessage raw:", msg);
 
-      const normalized = {
-        ...msg,
-        fromBusinessId: msg.fromBusinessId ? String(msg.fromBusinessId) : String(msg.from),
-        toBusinessId: msg.toBusinessId ? String(msg.toBusinessId) : String(msg.to),
-        conversationId: msg.conversationId ? String(msg.conversationId) : String(msg.conversation?._id || ""),
-      };
-
-      const selectedConvId = selectedConversation?._id
-        ? String(selectedConversation._id)
-        : "";
-
-      const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId || "";
-
-      console.log("normalized.conversationId:", normalized.conversationId);
-      console.log("selectedConvId:", selectedConvId);
-      console.log("partnerBusinessId:", partnerBusinessId);
-      console.log("myBusinessId:", myBusinessIdStr);
-
-      const isCurrentConversation =
-        normalized.conversationId === selectedConvId ||
-        ((normalized.fromBusinessId === myBusinessIdStr && normalized.toBusinessId === partnerBusinessId) ||
-          (normalized.toBusinessId === myBusinessIdStr && normalized.fromBusinessId === partnerBusinessId));
-
-      if (isCurrentConversation) {
-        setMessages((prev) => {
-          if (prev.some((m) => m._id === normalized._id)) {
-            return prev;
-          }
-
-          const pendingIndex = prev.findIndex(
-            (m) =>
-              m._id?.startsWith("pending-") &&
-              m.text === normalized.text &&
-              m.fromBusinessId === normalized.fromBusinessId
-          );
-
-          if (pendingIndex !== -1) {
-            const newArr = [...prev];
-            newArr[pendingIndex] = normalized;
-            return newArr;
-          }
-
-          return [...prev, normalized];
-        });
-
-        console.log("Message added to messages state");
-      } else {
-        console.log("Message ignored - different conversation");
-      }
-
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === normalized.conversationId
-            ? { ...conv, messages: [...(conv.messages || []), normalized] }
-            : conv
-        )
-      );
+    const normalized = {
+      ...msg,
+      fromBusinessId: msg.fromBusinessId ? String(msg.fromBusinessId) : String(msg.from),
+      toBusinessId: msg.toBusinessId ? String(msg.toBusinessId) : String(msg.to),
+      conversationId: msg.conversationId ? String(msg.conversationId) : String(msg.conversation?._id || ""),
+      _id: msg._id ? String(msg._id) : "",
     };
 
-    socketRef.current.on("newMessage", handler);
+    const selectedConvId = selectedConversation?._id ? String(selectedConversation._id) : "";
 
-    return () => {
-      socketRef.current.off("newMessage", handler);
-    };
-  }, [selectedConversation, myBusinessIdStr]);
+    const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId || "";
+
+    console.log("Normalized message:", normalized);
+    console.log("selectedConvId:", selectedConvId, typeof selectedConvId);
+    console.log("partnerBusinessId:", partnerBusinessId, typeof partnerBusinessId);
+    console.log("myBusinessIdStr:", myBusinessIdStr, typeof myBusinessIdStr);
+
+    const isCurrentConversation =
+      normalized.conversationId === selectedConvId ||
+      ((normalized.fromBusinessId === myBusinessIdStr && normalized.toBusinessId === partnerBusinessId) ||
+        (normalized.toBusinessId === myBusinessIdStr && normalized.fromBusinessId === partnerBusinessId));
+
+    console.log("isCurrentConversation:", isCurrentConversation);
+
+    if (isCurrentConversation) {
+      setMessages((prev) => {
+        if (prev.some((m) => m._id === normalized._id)) {
+          console.log("Message already exists, ignoring duplicate.");
+          return prev;
+        }
+
+        const pendingIndex = prev.findIndex(
+          (m) =>
+            m._id?.startsWith("pending-") &&
+            m.text === normalized.text &&
+            m.fromBusinessId === normalized.fromBusinessId
+        );
+
+        if (pendingIndex !== -1) {
+          console.log("Replacing pending message at index:", pendingIndex);
+          const newArr = [...prev];
+          newArr[pendingIndex] = normalized;
+          return newArr;
+        }
+
+        console.log("Adding new message to state");
+        return [...prev, normalized];
+      });
+    } else {
+      console.log("Message ignored - different conversation");
+    }
+
+    // תמיד לעדכן את השיחות עם ההודעה החדשה (לפי conversationId)
+    setConversations((prev) =>
+      prev.map((conv) =>
+        String(conv._id) === normalized.conversationId
+          ? { ...conv, messages: [...(conv.messages || []), normalized] }
+          : conv
+      )
+    );
+  };
+
+  socketRef.current.on("newMessage", handler);
+
+  return () => {
+    socketRef.current.off("newMessage", handler);
+  };
+}, [selectedConversation, myBusinessIdStr]);
+
 
   useEffect(() => {
     const sock = socketRef.current;
