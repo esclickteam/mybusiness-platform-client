@@ -15,7 +15,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
 
-  // עטיפה ב-useCallback כדי למנוע שינוי הפונקציות בין רינדורים
   const refreshAccessToken = useCallback(async () => {
     return await refreshAccessTokenOriginal();
   }, [refreshAccessTokenOriginal]);
@@ -31,7 +30,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  // טוען שיחות עסקיות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -50,17 +48,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   };
 
-  // יצירת חיבור Socket.IO פעם אחת בלבד
   useEffect(() => {
-    if (!myBusinessId) return; // מחכים ל־businessId
+    if (!myBusinessId) return;
 
     if (socketInitializedRef.current) {
       console.log("Socket already initialized, skipping setup");
       return;
     }
     socketInitializedRef.current = true;
-
-    console.log("Setting up socket connection");
 
     async function setupSocket() {
       const token = await refreshAccessToken();
@@ -115,7 +110,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
-  // טעינת הודעות בשיחה נבחרת והצטרפות לשיחה
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -152,12 +146,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation, refreshAccessToken]);
 
-  // מאזין להודעות חדשות
   useEffect(() => {
     if (!socketRef.current) return;
     if (!selectedConversation) return;
 
     const handler = (msg) => {
+      console.log("Received newMessage event full msg:", msg);
       console.log("Received newMessage event:", msg._id, msg.text, new Date().toISOString());
 
       const normalized = {
@@ -181,7 +175,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       );
     };
 
-    // ניקוי מאזין קודם לפני הוספה (מניעת כפילות)
     socketRef.current.off("newMessage", handler);
     socketRef.current.on("newMessage", handler);
 
@@ -191,12 +184,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation]);
 
-  // גלילה אוטומטית להודעה האחרונה
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה
   const sendMessage = () => {
     console.log("sendMessage triggered", { input, isSending });
     if (isSending) {
