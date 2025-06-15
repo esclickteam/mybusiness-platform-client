@@ -140,6 +140,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
 
+  // המרה ל-String של myBusinessId פעם אחת מראש
+  const myBusinessIdStr = myBusinessId ? String(myBusinessId) : null;
+
   useEffect(() => {
     selectedConversationRef.current = selectedConversation;
     console.log("selectedConversationRef updated:", selectedConversation?._id);
@@ -165,14 +168,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   useEffect(() => {
     async function setupSocket() {
       const token = await refreshAccessToken();
-      if (!token || !myBusinessId) return;
+      if (!token || !myBusinessIdStr) return;
 
       const sock = io(SOCKET_URL, {
         path: "/socket.io",
         auth: {
           token,
           role: "business",
-          businessId: myBusinessId,
+          businessId: myBusinessIdStr,
           businessName: myBusinessName,
         },
         transports: ["websocket"],
@@ -211,7 +214,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         socketRef.current.disconnect();
       }
     };
-  }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
+  }, [myBusinessIdStr, myBusinessName, refreshAccessToken, logout]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -221,28 +224,26 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
       const normalized = {
         ...msg,
-        fromBusinessId: String(msg.fromBusinessId || msg.from),
-        toBusinessId: String(msg.toBusinessId || msg.to),
-        conversationId: String(msg.conversationId || (msg.conversation?._id ?? "")),
+        fromBusinessId: msg.fromBusinessId ? String(msg.fromBusinessId) : String(msg.from),
+        toBusinessId: msg.toBusinessId ? String(msg.toBusinessId) : String(msg.to),
+        conversationId: msg.conversationId ? String(msg.conversationId) : String(msg.conversation?._id || ""),
       };
 
       const selectedConvId = selectedConversation?._id
         ? String(selectedConversation._id)
         : "";
 
-      const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId
-        ? String(getPartnerBusiness(selectedConversation).businessId)
-        : "";
+      const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId || "";
 
       console.log("normalized.conversationId:", normalized.conversationId);
       console.log("selectedConvId:", selectedConvId);
       console.log("partnerBusinessId:", partnerBusinessId);
-      console.log("myBusinessId:", myBusinessId);
+      console.log("myBusinessId:", myBusinessIdStr);
 
       const isCurrentConversation =
         normalized.conversationId === selectedConvId ||
-        ((normalized.fromBusinessId === myBusinessId && normalized.toBusinessId === partnerBusinessId) ||
-          (normalized.toBusinessId === myBusinessId && normalized.fromBusinessId === partnerBusinessId));
+        ((normalized.fromBusinessId === myBusinessIdStr && normalized.toBusinessId === partnerBusinessId) ||
+          (normalized.toBusinessId === myBusinessIdStr && normalized.fromBusinessId === partnerBusinessId));
 
       if (isCurrentConversation) {
         setMessages((prev) => {
@@ -285,7 +286,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     return () => {
       socketRef.current.off("newMessage", handler);
     };
-  }, [selectedConversation, myBusinessId]);
+  }, [selectedConversation, myBusinessIdStr]);
 
   useEffect(() => {
     const sock = socketRef.current;
@@ -311,8 +312,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         });
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
-          fromBusinessId: msg.fromBusinessId || msg.from,
-          toBusinessId: msg.toBusinessId || msg.to,
+          fromBusinessId: msg.fromBusinessId ? String(msg.fromBusinessId) : msg.from,
+          toBusinessId: msg.toBusinessId ? String(msg.toBusinessId) : msg.to,
         }));
         setMessages(normMsgs);
         console.log("Loaded messages for conversation:", selectedConversation._id);
@@ -333,7 +334,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!content || !selectedConversation || !socketRef.current) return;
 
     let otherId = selectedConversation.participants.find(
-      (id) => String(id) !== String(myBusinessId)
+      (id) => String(id) !== myBusinessIdStr
     );
     otherId = String(otherId);
 
@@ -341,14 +342,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (typeof content === "string") {
       payload = {
         conversationId: selectedConversation._id,
-        from: myBusinessId,
+        from: myBusinessIdStr,
         to: otherId,
         text: content,
       };
     } else if (content.type === "info") {
       payload = {
         conversationId: selectedConversation._id,
-        from: myBusinessId,
+        from: myBusinessIdStr,
         to: otherId,
         text: content.text,
         type: "info",
@@ -374,8 +375,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       } else if (ack.message?._id) {
         const real = {
           ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-          toBusinessId: ack.message.toBusinessId || ack.message.to,
+          fromBusinessId: ack.message.fromBusinessId ? String(ack.message.fromBusinessId) : ack.message.from,
+          toBusinessId: ack.message.toBusinessId ? String(ack.message.toBusinessId) : ack.message.to,
         };
         setMessages((prev) => [...prev.filter((m) => m._id !== optimistic._id), real]);
       }
@@ -397,8 +398,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("conversationId", selectedConversation._id);
-      formData.append("from", myBusinessId);
-      formData.append("to", selectedConversation.participants.find((id) => id !== myBusinessId));
+      formData.append("from", myBusinessIdStr);
+      formData.append("to", selectedConversation.participants.find((id) => String(id) !== myBusinessIdStr));
 
       const token = await refreshAccessToken();
 
@@ -414,11 +415,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
       const data = await res.json();
 
-      const otherId = selectedConversation.participants.find((id) => id !== myBusinessId);
+      const otherId = selectedConversation.participants.find((id) => String(id) !== myBusinessIdStr);
 
       const payload = {
         conversationId: selectedConversation._id,
-        from: myBusinessId,
+        from: myBusinessIdStr,
         to: otherId,
         fileUrl: data.fileUrl,
         text: file.name,
@@ -438,7 +439,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!conv) return { businessName: "עסק", businessId: null };
 
     const idx = conv.participants.findIndex(
-      (id) => String(id) !== String(myBusinessId)
+      (id) => String(id) !== myBusinessIdStr
     );
 
     if (idx === -1) {
@@ -447,7 +448,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     return {
       businessId: String(conv.participants[idx]),
-      ...(conv.participantsInfo?.[idx] || {}),
+      businessName: conv.participantsInfo?.[idx]?.businessName || "עסק",
     };
   };
 
@@ -550,9 +551,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   key={msg._id || i}
                   sx={{
                     background:
-                      msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                      msg.fromBusinessId === myBusinessIdStr ? "#e6ddff" : "#fff",
                     alignSelf:
-                      msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
+                      msg.fromBusinessId === myBusinessIdStr ? "flex-end" : "flex-start",
                     p: 1.2,
                     borderRadius: 2,
                     mb: 1,
