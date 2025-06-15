@@ -349,112 +349,128 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = (content) => {
-    if (!content || !selectedConversation || !socketRef.current) return;
+  if (!content || !selectedConversation || !socketRef.current) return;
 
-    let otherId = selectedConversation.participants.find((id) => String(id) !== myBusinessIdStr);
+  let otherId = selectedConversation.participants.find((id) => {
+    if (typeof id === "string") return id !== myBusinessIdStr;
+    if (typeof id === "object" && id !== null) return (id._id || id.id || "") !== myBusinessIdStr;
+    return false;
+  });
+
+  if (typeof otherId === "object" && otherId !== null) {
+    otherId = otherId._id || otherId.id || "";
+  }
+  otherId = String(otherId);
+
+  let payload;
+  if (typeof content === "string") {
+    payload = {
+      conversationId: selectedConversation._id,
+      from: myBusinessIdStr,
+      to: otherId,
+      text: content,
+    };
+  } else if (content.type === "info") {
+    payload = {
+      conversationId: selectedConversation._id,
+      from: myBusinessIdStr,
+      to: otherId,
+      text: content.text,
+      type: "info",
+    };
+  } else {
+    return;
+  }
+
+  const optimistic = {
+    ...payload,
+    timestamp: new Date().toISOString(),
+    _id: "pending-" + Math.random().toString(36).substr(2, 9),
+    fromBusinessId: payload.from,
+    toBusinessId: payload.to,
+  };
+
+  setMessages((prev) => [...prev, optimistic]);
+  console.log("[Client] Sending message payload:", payload);
+  socketRef.current.emit("sendMessage", payload, (ack) => {
+    if (!ack.ok) {
+      alert("שליחת הודעה נכשלה: " + ack.error);
+      setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
+    } else if (ack.message?._id) {
+      const real = {
+        ...ack.message,
+        fromBusinessId: ack.message.fromBusinessId
+          ? String(ack.message.fromBusinessId)
+          : ack.message.from,
+        toBusinessId: ack.message.toBusinessId ? String(ack.message.toBusinessId) : ack.message.to,
+      };
+      setMessages((prev) => [...prev.filter((m) => m._id !== optimistic._id), real]);
+    }
+  });
+
+  API.post(
+    `/business-chat/${selectedConversation._id}/message`,
+    { text: payload.text },
+    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  ).catch((err) => {
+    console.error("שליחת הודעה ל־API נכשלה", err);
+  });
+};
+
+const sendFileMessage = async (file) => {
+  if (!file || !selectedConversation || !socketRef.current) return;
+  setUploading(true);
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("conversationId", selectedConversation._id);
+    formData.append("from", myBusinessIdStr);
+
+    let otherId = selectedConversation.participants.find((id) => {
+      if (typeof id === "string") return id !== myBusinessIdStr;
+      if (typeof id === "object" && id !== null) return (id._id || id.id || "") !== myBusinessIdStr;
+      return false;
+    });
+
+    if (typeof otherId === "object" && otherId !== null) {
+      otherId = otherId._id || otherId.id || "";
+    }
     otherId = String(otherId);
 
-    let payload;
-    if (typeof content === "string") {
-      payload = {
-        conversationId: selectedConversation._id,
-        from: myBusinessIdStr,
-        to: otherId,
-        text: content,
-      };
-    } else if (content.type === "info") {
-      payload = {
-        conversationId: selectedConversation._id,
-        from: myBusinessIdStr,
-        to: otherId,
-        text: content.text,
-        type: "info",
-      };
-    } else {
-      return;
-    }
+    formData.append("to", otherId);
 
-    const optimistic = {
-      ...payload,
-      timestamp: new Date().toISOString(),
-      _id: "pending-" + Math.random().toString(36).substr(2, 9),
-      fromBusinessId: payload.from,
-      toBusinessId: payload.to,
+    const token = await refreshAccessToken();
+
+    const res = await fetch(`${API.baseURL || ""}/business-chat/upload-file`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error("Failed to upload file");
+
+    const data = await res.json();
+
+    const payload = {
+      conversationId: selectedConversation._id,
+      from: myBusinessIdStr,
+      to: otherId,
+      fileUrl: data.fileUrl,
+      text: file.name,
+      isFile: true,
     };
 
-    setMessages((prev) => [...prev, optimistic]);
-    console.log("[Client] Sending message payload:", payload);
-    socketRef.current.emit("sendMessage", payload, (ack) => {
-      if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + ack.error);
-        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
-      } else if (ack.message?._id) {
-        const real = {
-          ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId
-            ? String(ack.message.fromBusinessId)
-            : ack.message.from,
-          toBusinessId: ack.message.toBusinessId ? String(ack.message.toBusinessId) : ack.message.to,
-        };
-        setMessages((prev) => [...prev.filter((m) => m._id !== optimistic._id), real]);
-      }
-    });
+    socketRef.current.emit("sendMessage", payload);
+  } catch (err) {
+    alert("שגיאה בהעלאת הקובץ");
+    console.error(err);
+  } finally {
+    setUploading(false);
+  }
+};
 
-    API.post(
-      `/business-chat/${selectedConversation._id}/message`,
-      { text: payload.text },
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    ).catch((err) => {
-      console.error("שליחת הודעה ל־API נכשלה", err);
-    });
-  };
-
-  const sendFileMessage = async (file) => {
-    if (!file || !selectedConversation || !socketRef.current) return;
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("conversationId", selectedConversation._id);
-      formData.append("from", myBusinessIdStr);
-      formData.append(
-        "to",
-        selectedConversation.participants.find((id) => String(id) !== myBusinessIdStr)
-      );
-
-      const token = await refreshAccessToken();
-
-      const res = await fetch(`${API.baseURL || ""}/business-chat/upload-file`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Failed to upload file");
-
-      const data = await res.json();
-
-      const otherId = selectedConversation.participants.find((id) => String(id) !== myBusinessIdStr);
-
-      const payload = {
-        conversationId: selectedConversation._id,
-        from: myBusinessIdStr,
-        to: otherId,
-        fileUrl: data.fileUrl,
-        text: file.name,
-        isFile: true,
-      };
-
-      socketRef.current.emit("sendMessage", payload);
-    } catch (err) {
-      alert("שגיאה בהעלאת הקובץ");
-      console.error(err);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const getPartnerBusiness = (conv) => {
     if (!conv) return { businessName: "עסק", businessId: null };
