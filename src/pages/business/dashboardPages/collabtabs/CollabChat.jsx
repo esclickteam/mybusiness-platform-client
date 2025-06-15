@@ -453,27 +453,36 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const getPartnerBusiness = (conv) => {
   if (!conv) return { businessName: "עסק", businessId: null };
 
-  const idx = conv.participants.findIndex(
-    (id) => String(id) !== myBusinessIdStr
-  );
+  // מנסים למצוא שותף שהוא שונה ממך
+  let partnerId = conv.participants.find((id) => String(id) !== myBusinessIdStr);
 
-  if (idx === -1) {
+  // אם לא נמצא, נבחר את הראשון (אם קיים)
+  if (!partnerId) {
+    partnerId = conv.participants.length > 0 ? conv.participants[0] : null;
+  }
+
+  if (!partnerId) {
     return { businessName: "עסק", businessId: null };
   }
 
-  // ודא שמחזירים מזהה מסוג מחרוזת
-  let partnerId = conv.participants[idx];
+  // המרה למחרוזת במקרה שהשותף הוא אובייקט
   if (typeof partnerId === "object" && partnerId !== null) {
     partnerId = partnerId._id || partnerId.toString();
   } else {
     partnerId = String(partnerId);
   }
 
+  // מחפשים את שם העסק במשתתפים לפי מזהה
+  const partnerName =
+    conv.participantsInfo?.find((p) => String(p.businessId) === partnerId)?.businessName ||
+    "עסק";
+
   return {
     businessId: partnerId,
-    businessName: conv.participantsInfo?.[idx]?.businessName || "עסק",
+    businessName: partnerName,
   };
 };
+
 
 
   return (
