@@ -16,21 +16,13 @@ function ChatInput({ onSendText, onSendFile, uploading, disabled }) {
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
 
-  const openMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const closeMenu = () => {
-    setAnchorEl(null);
-  };
+  const openMenu = (event) => setAnchorEl(event.currentTarget);
+  const closeMenu = () => setAnchorEl(null);
 
   const handleMenuClick = (option) => {
     closeMenu();
-    if (option === "file") {
-      fileInputRef.current.click();
-    } else if (option === "image") {
-      imageInputRef.current.click();
-    }
+    if (option === "file") fileInputRef.current.click();
+    else if (option === "image") imageInputRef.current.click();
   };
 
   const onFileChange = (e) => {
@@ -48,15 +40,7 @@ function ChatInput({ onSendText, onSendFile, uploading, disabled }) {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-        p: 2,
-        borderTop: "1px solid #eee",
-      }}
-    >
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, p: 2, borderTop: "1px solid #eee" }}>
       <Button
         onClick={openMenu}
         disabled={uploading || disabled}
@@ -69,15 +53,11 @@ function ChatInput({ onSendText, onSendFile, uploading, disabled }) {
           border: "2px solid #764ae6",
           padding: "4px 0",
           lineHeight: 1,
-          "&:hover": {
-            backgroundColor: "#764ae6",
-            color: "#fff",
-          },
+          "&:hover": { backgroundColor: "#764ae6", color: "#fff" },
         }}
       >
         +
       </Button>
-
       <TextField
         fullWidth
         size="small"
@@ -92,13 +72,7 @@ function ChatInput({ onSendText, onSendFile, uploading, disabled }) {
         }}
         disabled={uploading || disabled}
       />
-
-      <Button
-        variant="contained"
-        sx={{ fontWeight: 600 }}
-        onClick={handleSendClick}
-        disabled={input.trim() === "" || uploading || disabled}
-      >
+      <Button variant="contained" sx={{ fontWeight: 600 }} onClick={handleSendClick} disabled={input.trim() === "" || uploading || disabled}>
         שלח
       </Button>
 
@@ -107,22 +81,8 @@ function ChatInput({ onSendText, onSendFile, uploading, disabled }) {
         <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
       </Menu>
 
-      <input
-        type="file"
-        style={{ display: "none" }}
-        ref={fileInputRef}
-        onChange={onFileChange}
-        accept="*/*"
-        disabled={uploading || disabled}
-      />
-      <input
-        type="file"
-        style={{ display: "none" }}
-        ref={imageInputRef}
-        onChange={onFileChange}
-        accept="image/*"
-        disabled={uploading || disabled}
-      />
+      <input type="file" style={{ display: "none" }} ref={fileInputRef} onChange={onFileChange} accept="*/*" disabled={uploading || disabled} />
+      <input type="file" style={{ display: "none" }} ref={imageInputRef} onChange={onFileChange} accept="image/*" disabled={uploading || disabled} />
     </Box>
   );
 }
@@ -210,9 +170,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     setupSocket();
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
+      if (socketRef.current) socketRef.current.disconnect();
     };
   }, [myBusinessIdStr, myBusinessName, refreshAccessToken, logout]);
 
@@ -220,23 +178,19 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!socketRef.current) return;
 
     const handler = (msg) => {
-      console.log("Received newMessage raw:", msg);
-      console.log("to field as JSON:", JSON.stringify(msg.to, null, 2));
-
       const normalized = {
         ...msg,
-        fromBusinessId: msg.fromBusinessId
-          ? String(msg.fromBusinessId)
-          : typeof msg.from === "object" && msg.from !== null
-          ? String(msg.from._id || msg.from.id || "")
-          : String(msg.from || ""),
-        toBusinessId: msg.toBusinessId
-          ? String(msg.toBusinessId)
-          : typeof msg.to === "object" && msg.to !== null
-          ? String(msg.to._id || msg.to.id || "")
-          : String(msg.to || ""),
-        conversationId:
-          msg.conversationId && msg.conversationId !== "" ? String(msg.conversationId) : null,
+        fromBusinessId:
+          msg.fromBusinessId ??
+          (typeof msg.from === "object" && msg.from !== null
+            ? String(msg.from._id || msg.from.id || "")
+            : String(msg.from || "")),
+        toBusinessId:
+          msg.toBusinessId ??
+          (typeof msg.to === "object" && msg.to !== null
+            ? String(msg.to._id || msg.to.id || "")
+            : String(msg.to || "")),
+        conversationId: msg.conversationId ? String(msg.conversationId) : "",
         _id: msg._id ? String(msg._id) : "",
       };
 
@@ -244,25 +198,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
       const partnerBusinessId = getPartnerBusiness(selectedConversationRef.current)?.businessId || "";
 
-      console.log("Normalized message:", normalized);
-      console.log("selectedConvId:", selectedConvId, typeof selectedConvId);
-      console.log("partnerBusinessId:", partnerBusinessId, typeof partnerBusinessId);
-      console.log("myBusinessIdStr:", myBusinessIdStr, typeof myBusinessIdStr);
-
       const isCurrentConversation =
         (normalized.conversationId && normalized.conversationId === selectedConvId) ||
         (!normalized.conversationId &&
           ((normalized.fromBusinessId === myBusinessIdStr && normalized.toBusinessId === partnerBusinessId) ||
             (normalized.toBusinessId === myBusinessIdStr && normalized.fromBusinessId === partnerBusinessId)));
 
-      console.log("isCurrentConversation:", isCurrentConversation);
-
       if (isCurrentConversation) {
         setMessages((prev) => {
-          if (prev.some((m) => m._id === normalized._id)) {
-            console.log("Message already exists, ignoring duplicate.");
-            return prev;
-          }
+          if (prev.some((m) => m._id === normalized._id)) return prev;
 
           const pendingIndex = prev.findIndex(
             (m) =>
@@ -272,27 +216,20 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           );
 
           if (pendingIndex !== -1) {
-            console.log("Replacing pending message at index:", pendingIndex);
             const newArr = [...prev];
             newArr[pendingIndex] = normalized;
             return newArr;
           }
 
-          console.log("Adding new message to state");
           return [...prev, normalized];
         });
-      } else {
-        console.log("Message ignored - different conversation");
       }
 
-      // תמיד לעדכן את השיחות עם ההודעה החדשה (לפי conversationId)
       setConversations((prev) =>
         prev.map((conv) => {
           if (String(conv._id) === normalized.conversationId) {
             const exists = (conv.messages || []).some((m) => m._id === normalized._id);
-            if (!exists) {
-              return { ...conv, messages: [...(conv.messages || []), normalized] };
-            }
+            if (!exists) return { ...conv, messages: [...(conv.messages || []), normalized] };
           }
           return conv;
         })
@@ -300,11 +237,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
 
     socketRef.current.on("newMessage", handler);
-
-    return () => {
-      socketRef.current.off("newMessage", handler);
-    };
-  }, [myBusinessIdStr]); // לא תלות ב-selectedConversation!
+    return () => socketRef.current.off("newMessage", handler);
+  }, [myBusinessIdStr]);
 
   useEffect(() => {
     const sock = socketRef.current;
@@ -315,12 +249,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const prevId = selectedConversationRef.current?._id;
     if (prevId && prevId !== selectedConversation._id) {
-      console.log("Leaving previous conversation:", prevId);
       sock.emit("leaveConversation", prevId);
+      console.log("Leaving previous conversation:", prevId);
     }
 
-    console.log("Joining conversation:", selectedConversation._id);
     sock.emit("joinConversation", selectedConversation._id);
+    console.log("Joining conversation:", selectedConversation._id);
 
     (async () => {
       try {
@@ -349,82 +283,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = (content) => {
-  if (!content || !selectedConversation || !socketRef.current) return;
-
-  let otherId = selectedConversation.participants.find((id) => {
-    if (typeof id === "string") return id !== myBusinessIdStr;
-    if (typeof id === "object" && id !== null) return (id._id || id.id || "") !== myBusinessIdStr;
-    return false;
-  });
-
-  if (typeof otherId === "object" && otherId !== null) {
-    otherId = otherId._id || otherId.id || "";
-  }
-  otherId = String(otherId);
-
-  let payload;
-  if (typeof content === "string") {
-    payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessIdStr,
-      to: otherId,
-      text: content,
-    };
-  } else if (content.type === "info") {
-    payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessIdStr,
-      to: otherId,
-      text: content.text,
-      type: "info",
-    };
-  } else {
-    return;
-  }
-
-  const optimistic = {
-    ...payload,
-    timestamp: new Date().toISOString(),
-    _id: "pending-" + Math.random().toString(36).substr(2, 9),
-    fromBusinessId: payload.from,
-    toBusinessId: payload.to,
-  };
-
-  setMessages((prev) => [...prev, optimistic]);
-  console.log("[Client] Sending message payload:", payload);
-  socketRef.current.emit("sendMessage", payload, (ack) => {
-    if (!ack.ok) {
-      alert("שליחת הודעה נכשלה: " + ack.error);
-      setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
-    } else if (ack.message?._id) {
-      const real = {
-        ...ack.message,
-        fromBusinessId: ack.message.fromBusinessId
-          ? String(ack.message.fromBusinessId)
-          : ack.message.from,
-        toBusinessId: ack.message.toBusinessId ? String(ack.message.toBusinessId) : ack.message.to,
-      };
-      setMessages((prev) => [...prev.filter((m) => m._id !== optimistic._id), real]);
-    }
-  });
-
-  API.post(
-    `/business-chat/${selectedConversation._id}/message`,
-    { text: payload.text },
-    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-  ).catch((err) => {
-    console.error("שליחת הודעה ל־API נכשלה", err);
-  });
-};
-
-const sendFileMessage = async (file) => {
-  if (!file || !selectedConversation || !socketRef.current) return;
-  setUploading(true);
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("conversationId", selectedConversation._id);
-    formData.append("from", myBusinessIdStr);
+    if (!content || !selectedConversation || !socketRef.current) return;
 
     let otherId = selectedConversation.participants.find((id) => {
       if (typeof id === "string") return id !== myBusinessIdStr;
@@ -437,53 +296,118 @@ const sendFileMessage = async (file) => {
     }
     otherId = String(otherId);
 
-    formData.append("to", otherId);
+    let payload;
+    if (typeof content === "string") {
+      payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessIdStr,
+        to: otherId,
+        text: content,
+      };
+    } else if (content.type === "info") {
+      payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessIdStr,
+        to: otherId,
+        text: content.text,
+        type: "info",
+      };
+    } else return;
 
-    const token = await refreshAccessToken();
-
-    const res = await fetch(`${API.baseURL || ""}/business-chat/upload-file`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!res.ok) throw new Error("Failed to upload file");
-
-    const data = await res.json();
-
-    const payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessIdStr,
-      to: otherId,
-      fileUrl: data.fileUrl,
-      text: file.name,
-      isFile: true,
+    const optimistic = {
+      ...payload,
+      timestamp: new Date().toISOString(),
+      _id: "pending-" + Math.random().toString(36).substr(2, 9),
+      fromBusinessId: payload.from,
+      toBusinessId: payload.to,
     };
 
-    socketRef.current.emit("sendMessage", payload);
-  } catch (err) {
-    alert("שגיאה בהעלאת הקובץ");
-    console.error(err);
-  } finally {
-    setUploading(false);
-  }
-};
+    setMessages((prev) => [...prev, optimistic]);
+    socketRef.current.emit("sendMessage", payload, (ack) => {
+      if (!ack.ok) {
+        alert("שליחת הודעה נכשלה: " + ack.error);
+        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
+      } else if (ack.message?._id) {
+        const real = {
+          ...ack.message,
+          fromBusinessId: ack.message.fromBusinessId
+            ? String(ack.message.fromBusinessId)
+            : ack.message.from,
+          toBusinessId: ack.message.toBusinessId ? String(ack.message.toBusinessId) : ack.message.to,
+        };
+        setMessages((prev) => [...prev.filter((m) => m._id !== optimistic._id), real]);
+      }
+    });
 
+    API.post(
+      `/business-chat/${selectedConversation._id}/message`,
+      { text: payload.text },
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+    ).catch((err) => {
+      console.error("שליחת הודעה ל־API נכשלה", err);
+    });
+  };
+
+  const sendFileMessage = async (file) => {
+    if (!file || !selectedConversation || !socketRef.current) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("conversationId", selectedConversation._id);
+      formData.append("from", myBusinessIdStr);
+
+      let otherId = selectedConversation.participants.find((id) => {
+        if (typeof id === "string") return id !== myBusinessIdStr;
+        if (typeof id === "object" && id !== null) return (id._id || id.id || "") !== myBusinessIdStr;
+        return false;
+      });
+
+      if (typeof otherId === "object" && otherId !== null) {
+        otherId = otherId._id || otherId.id || "";
+      }
+      otherId = String(otherId);
+
+      formData.append("to", otherId);
+
+      const token = await refreshAccessToken();
+
+      const res = await fetch(`${API.baseURL || ""}/business-chat/upload-file`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to upload file");
+
+      const data = await res.json();
+
+      const payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessIdStr,
+        to: otherId,
+        fileUrl: data.fileUrl,
+        text: file.name,
+        isFile: true,
+      };
+
+      socketRef.current.emit("sendMessage", payload);
+    } catch (err) {
+      alert("שגיאה בהעלאת הקובץ");
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const getPartnerBusiness = (conv) => {
     if (!conv) return { businessName: "עסק", businessId: null };
 
     let partnerId = conv.participants.find((id) => String(id) !== myBusinessIdStr);
 
-    if (!partnerId) {
-      partnerId = conv.participants.length > 0 ? conv.participants[0] : null;
-    }
+    if (!partnerId) partnerId = conv.participants.length > 0 ? conv.participants[0] : null;
 
-    if (!partnerId) {
-      return { businessName: "עסק", businessId: null };
-    }
+    if (!partnerId) return { businessName: "עסק", businessId: null };
 
     if (typeof partnerId === "object" && partnerId !== null) {
       partnerId = partnerId._id || partnerId.toString();
@@ -491,8 +415,7 @@ const sendFileMessage = async (file) => {
       partnerId = String(partnerId);
     }
 
-    const partnerName =
-      conv.participantsInfo?.find((p) => String(p.businessId) === partnerId)?.businessName || "עסק";
+    const partnerName = conv.participantsInfo?.find((p) => String(p.businessId) === partnerId)?.businessName || "עסק";
 
     return {
       businessId: partnerId,
@@ -522,20 +445,8 @@ const sendFileMessage = async (file) => {
           overflowY: "auto",
         }}
       >
-        <Box
-          sx={{
-            fontWeight: 700,
-            color: "#764ae6",
-            fontSize: 19,
-            px: 2.5,
-            py: 2,
-          }}
-        >
-          הודעות עסקיות
-        </Box>
-        {conversations.length === 0 && (
-          <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>אין שיחות עסקיות</Box>
-        )}
+        <Box sx={{ fontWeight: 700, color: "#764ae6", fontSize: 19, px: 2.5, py: 2 }}>הודעות עסקיות</Box>
+        {conversations.length === 0 && <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>אין שיחות עסקיות</Box>}
         {conversations.map((conv) => {
           const partner = getPartnerBusiness(conv);
           const lastMsg = conv.messages?.slice(-1)[0]?.text || "";
@@ -581,14 +492,7 @@ const sendFileMessage = async (file) => {
         <Box sx={{ flex: 1, px: 2, pt: 2, overflowY: "auto" }}>
           {selectedConversation ? (
             <>
-              <Box
-                sx={{
-                  mb: 2,
-                  color: "#6d4fc4",
-                  fontWeight: 600,
-                  fontSize: 17,
-                }}
-              >
+              <Box sx={{ mb: 2, color: "#6d4fc4", fontWeight: 600, fontSize: 17 }}>
                 שיחה עם {getPartnerBusiness(selectedConversation).businessName}
               </Box>
               {messages.map((msg, i) => (
@@ -607,11 +511,7 @@ const sendFileMessage = async (file) => {
                 >
                   {msg.isFile ? (
                     msg.fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                      <img
-                        src={msg.fileUrl}
-                        alt={msg.text || "קובץ"}
-                        style={{ maxWidth: "100%", borderRadius: 8 }}
-                      />
+                      <img src={msg.fileUrl} alt={msg.text || "קובץ"} style={{ maxWidth: "100%", borderRadius: 8 }} />
                     ) : (
                       <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
                         {msg.text || "קובץ להורדה"}
@@ -620,14 +520,7 @@ const sendFileMessage = async (file) => {
                   ) : (
                     <Box>{msg.text}</Box>
                   )}
-                  <Box
-                    sx={{
-                      fontSize: 11,
-                      color: "#888",
-                      mt: 0.5,
-                      textAlign: "left",
-                    }}
-                  >
+                  <Box sx={{ fontSize: 11, color: "#888", mt: 0.5, textAlign: "left" }}>
                     {msg.timestamp &&
                       new Date(msg.timestamp).toLocaleTimeString("he-IL", {
                         hour: "2-digit",
@@ -639,19 +532,12 @@ const sendFileMessage = async (file) => {
               <div ref={messagesEndRef} />
             </>
           ) : (
-            <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-              בחרי שיחה עסקית מהעמודה הימנית
-            </Box>
+            <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>בחרי שיחה עסקית מהעמודה הימנית</Box>
           )}
         </Box>
 
         {selectedConversation && (
-          <ChatInput
-            onSendText={sendMessage}
-            onSendFile={sendFileMessage}
-            uploading={uploading}
-            disabled={false}
-          />
+          <ChatInput onSendText={sendMessage} onSendFile={sendFileMessage} uploading={uploading} disabled={false} />
         )}
 
         {onClose && (
