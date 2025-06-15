@@ -159,7 +159,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     toBusinessId: fullMsg.toBusinessId || fullMsg.to,
   };
 
-  const messageId = fullMsg._id || normalized._id || fullMsg.id;
+  // השתמש ב־_id מה־fullMsg ישירות
+  const messageId = fullMsg._id;
 
   console.log("Received newMessage event:", {
     id: messageId,
@@ -182,6 +183,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     )
   );
 };
+
 
 
     socketRef.current.off("newMessage", handler);
