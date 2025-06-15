@@ -1,12 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
 /* === רקע דף הבית חדש ומיוחד === */
 body {
   margin: 0;
   padding: 0;
   background: linear-gradient(135deg, #f0ebff 0%, #d9d0ff 100%);
   direction: rtl;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #3a1f7d;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* === מבנה כללי מרכזי רחב עם מרווחים גדולים === */
@@ -26,6 +30,7 @@ body {
   margin-bottom: 0.8rem;
   letter-spacing: 0.06em;
   line-height: 1.2;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* === תת כותרת עם צבע דהוי אלגנטי === */
@@ -35,6 +40,7 @@ body {
   color: #5e4bb7cc;
   margin-bottom: 3rem;
   letter-spacing: 0.02em;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* === סקשן חיפוש עם קופסה מודרנית === */
@@ -129,11 +135,15 @@ body {
   box-shadow:
     0 6px 15px rgba(124, 58, 237, 0.1),
     0 10px 30px rgba(124, 58, 237, 0.15);
-  text-align: right;
+  text-align: center;  /* יישור למרכז */
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
   border-right: 6px solid #7c3aed; /* קו דק וסגול מצד ימין */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 230px;
 }
 
 .bookmark-card:hover {
@@ -148,9 +158,9 @@ body {
   color: #5a2ca0;
   font-size: 1.7rem;
   font-weight: 800;
+  justify-content: center; /* יישור למרכז */
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 0.6rem;
   position: relative;
   z-index: 5;
@@ -159,21 +169,30 @@ body {
   margin-bottom: 1.3rem;
 }
 
+/* אימוג'י אחד בלבד מימין */
 .bookmark-card h3::before {
-  content: "💡";
+  content: attr(data-emoji);
   font-size: 1.8rem;
   color: #9f7cffcc;
   filter: drop-shadow(0 0 3px #a679ff);
+  position: absolute;
+  right: 1.5rem;
+}
+
+/* הסרת ::after */
+.bookmark-card h3::after {
+  content: "";
 }
 
 .bookmark-card p {
   color: #4a3a7fdd;
   font-size: 1.1rem;
   line-height: 1.5;
-  margin-bottom: 1.8rem;
-  min-height: 80px;
+  margin-bottom: 0;
   position: relative;
   z-index: 5;
+  user-select: text;
+  padding: 0 1rem;
 }
 
 .bookmark-card button {
@@ -190,6 +209,9 @@ body {
   transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.25s ease;
   position: relative;
   z-index: 5;
+  width: 200px; /* רוחב אחיד לכפתורים */
+  margin: 0 auto; /* יישור מרכזי לכפתור */
+  margin-top: 1.5rem; /* רווח מעל הכפתור */
 }
 
 .bookmark-card button:hover {
