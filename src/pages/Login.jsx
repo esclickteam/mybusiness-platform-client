@@ -53,16 +53,16 @@ export default function Login() {
 
     setLoading(true);
 
-    // ניווט מיידי לדשבורד (Optimistic UI)
-    navigate("/dashboard");
-
     try {
       const cleanEmail = email.trim().toLowerCase();
       const userData = await login(cleanEmail, password);
       setUser(userData); // עדכן את הקונטקסט עם המשתמש המחובר
+
+      // ניווט רק אחרי התחברות מוצלחת
+      navigate("/dashboard");
     } catch (err) {
       setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
-      navigate("/login"); // חזור לעמוד התחברות במקרה של שגיאה
+      // לא צריך לנווט כאן כי אנחנו כבר בעמוד התחברות
     } finally {
       setLoading(false);
     }
