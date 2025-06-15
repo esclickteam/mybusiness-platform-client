@@ -233,42 +233,43 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // מאזין להודעות חדשות מהסוקט
   useEffect(() => {
-    if (!socketRef.current) return;
+  if (!socketRef.current) return;
 
-    const handler = (msg) => {
-      console.log("Received newMessage:", msg);
+  const handler = (msg) => {
+    console.log("Received newMessage:", msg);
 
-      const normalized = {
-        ...msg,
-        fromBusinessId: msg.fromBusinessId || msg.from,
-        toBusinessId: msg.toBusinessId || msg.to,
-      };
+    const normalized = {
+      ...msg,
+      fromBusinessId: msg.fromBusinessId || msg.from,
+      toBusinessId: msg.toBusinessId || msg.to,
+    };
 
-      console.log("Selected conversation ID:", selectedConversationRef.current?._id);
-      if (normalized.conversationId === selectedConversationRef.current?._id) {
-        setMessages((prev) =>
-          prev.some((m) => m._id === normalized._id) ? prev : [...prev, normalized]
-        );
-        console.log("Message added to messages state");
-      } else {
-        console.log("Message ignored - different conversation");
-      }
-
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === normalized.conversationId
-            ? { ...conv, messages: [...(conv.messages || []), normalized] }
-            : conv
-        )
+    console.log("Selected conversation ID:", selectedConversation?._id);
+    if (normalized.conversationId === selectedConversation?._id) {
+      setMessages((prev) =>
+        prev.some((m) => m._id === normalized._id) ? prev : [...prev, normalized]
       );
-    };
+      console.log("Message added to messages state");
+    } else {
+      console.log("Message ignored - different conversation");
+    }
 
-    socketRef.current.on("newMessage", handler);
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv._id === normalized.conversationId
+          ? { ...conv, messages: [...(conv.messages || []), normalized] }
+          : conv
+      )
+    );
+  };
 
-    return () => {
-      socketRef.current.off("newMessage", handler);
-    };
-  }, []);
+  socketRef.current.on("newMessage", handler);
+
+  return () => {
+    socketRef.current.off("newMessage", handler);
+  };
+}, [selectedConversation]);
+
 
   // טעינת הודעות לפי שיחה נבחרת
   useEffect(() => {
