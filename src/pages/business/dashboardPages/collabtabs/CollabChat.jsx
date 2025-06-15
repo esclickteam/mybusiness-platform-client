@@ -223,12 +223,23 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     console.log("Received newMessage raw:", msg);
 
     const normalized = {
-      ...msg,
-      fromBusinessId: msg.fromBusinessId ? String(msg.fromBusinessId) : String(msg.from),
-      toBusinessId: msg.toBusinessId ? String(msg.toBusinessId) : String(msg.to),
-      conversationId: msg.conversationId ? String(msg.conversationId) : String(msg.conversation?._id || ""),
-      _id: msg._id ? String(msg._id) : "",
-    };
+  ...msg,
+  fromBusinessId: msg.fromBusinessId
+    ? String(msg.fromBusinessId)
+    : typeof msg.from === "object" && msg.from !== null
+    ? String(msg.from._id || msg.from.id || "")
+    : String(msg.from || ""),
+  toBusinessId: msg.toBusinessId
+    ? String(msg.toBusinessId)
+    : typeof msg.to === "object" && msg.to !== null
+    ? String(msg.to._id || msg.to.id || "")
+    : String(msg.to || ""),
+  conversationId: msg.conversationId
+    ? String(msg.conversationId)
+    : String(msg.conversation?._id || ""),
+  _id: msg._id ? String(msg._id) : "",
+};
+
 
     const selectedConvId = selectedConversation?._id ? String(selectedConversation._id) : "";
 
