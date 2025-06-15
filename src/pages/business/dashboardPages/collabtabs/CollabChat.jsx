@@ -8,18 +8,9 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useAuth } from "../../../../context/AuthContext";
 
-import CollabContractForm from "../CollabContractForm";
-import CollabContractView from "../CollabContractView";
-
 const SOCKET_URL = "https://api.esclick.co.il";
 
-function ChatInput({
-  onSendText,
-  onSendFile,
-  onOpenCollabForm,
-  uploading,
-  disabled,
-}) {
+function ChatInput({ onSendText, onSendFile, uploading, disabled }) {
   const [input, setInput] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const fileInputRef = useRef(null);
@@ -35,9 +26,7 @@ function ChatInput({
 
   const handleMenuClick = (option) => {
     closeMenu();
-    if (option === "collab") {
-      onOpenCollabForm();
-    } else if (option === "file") {
+    if (option === "file") {
       fileInputRef.current.click();
     } else if (option === "image") {
       imageInputRef.current.click();
@@ -114,9 +103,6 @@ function ChatInput({
       </Button>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
-        <MenuItem onClick={() => handleMenuClick("collab")}>
-          הסכם שיתוף פעולה
-        </MenuItem>
         <MenuItem onClick={() => handleMenuClick("file")}>קובץ</MenuItem>
         <MenuItem onClick={() => handleMenuClick("image")}>תמונה</MenuItem>
       </Menu>
@@ -153,16 +139,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [showCollabForm, setShowCollabForm] = useState(false);
-  const [viewContract, setViewContract] = useState(null); // contract object לצפיה/חתימה
 
-  // עדכון ref כששיחה נבחרת משתנה
   useEffect(() => {
     selectedConversationRef.current = selectedConversation;
     console.log("selectedConversationRef updated:", selectedConversation?._id);
   }, [selectedConversation]);
 
-  // טען שיחות
   const fetchConversations = async (token) => {
     try {
       const res = await API.get("/business-chat/my-conversations", {
@@ -186,18 +168,18 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!token || !myBusinessId) return;
 
       const sock = io(SOCKET_URL, {
-  path: "/socket.io",
-  auth: {
-    token,
-    role: "business",
-    businessId: myBusinessId,
-    businessName: myBusinessName,
-  },
-  transports: ["websocket"],
-  reconnection: true,           // אפשר חיבור מחדש אוטומטי
-  reconnectionAttempts: 5,      // מקסימום ניסיונות חיבור מחדש
-  reconnectionDelay: 1000,      // זמן המתנה בין ניסיון חיבור לחיבור
-});
+        path: "/socket.io",
+        auth: {
+          token,
+          role: "business",
+          businessId: myBusinessId,
+          businessName: myBusinessName,
+        },
+        transports: ["websocket"],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      });
 
       socketRef.current = sock;
 
@@ -231,87 +213,80 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
-  // מאזין להודעות חדשות מהסוקט
   useEffect(() => {
-  if (!socketRef.current) return;
+    if (!socketRef.current) return;
 
-  const handler = (msg) => {
-    console.log("Received newMessage:", msg);
+    const handler = (msg) => {
+      console.log("Received newMessage:", msg);
 
-    const normalized = {
-  ...msg,
-  fromBusinessId: String(msg.fromBusinessId || msg.from),
-  toBusinessId: String(msg.toBusinessId || msg.to),
-  conversationId: String(msg.conversationId || msg.conversation?._id || ""),
-};
+      const normalized = {
+        ...msg,
+        fromBusinessId: String(msg.fromBusinessId || msg.from),
+        toBusinessId: String(msg.toBusinessId || msg.to),
+        conversationId: String(msg.conversationId || msg.conversation?._id || ""),
+      };
 
-const selectedConvId = selectedConversation?._id ? String(selectedConversation._id) : "";
+      const selectedConvId = selectedConversation?._id
+        ? String(selectedConversation._id)
+        : "";
 
-const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId
-  ? String(getPartnerBusiness(selectedConversation).businessId)
-  : "";
+      const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId
+        ? String(getPartnerBusiness(selectedConversation).businessId)
+        : "";
 
-console.log("normalized.conversationId:", normalized.conversationId);
-console.log("selectedConvId:", selectedConvId);
-console.log("partnerBusinessId:", partnerBusinessId);
-console.log("myBusinessId:", myBusinessId);
+      console.log("normalized.conversationId:", normalized.conversationId);
+      console.log("selectedConvId:", selectedConvId);
+      console.log("partnerBusinessId:", partnerBusinessId);
+      console.log("myBusinessId:", myBusinessId);
 
+      const isCurrentConversation =
+        normalized.conversationId === selectedConvId ||
+        ((normalized.fromBusinessId === myBusinessId && normalized.toBusinessId === partnerBusinessId) ||
+          (normalized.toBusinessId === myBusinessId && normalized.fromBusinessId === partnerBusinessId));
 
+      if (isCurrentConversation) {
+        setMessages((prev) => {
+          if (prev.some((m) => m._id === normalized._id)) {
+            return prev;
+          }
 
-const isCurrentConversation =
-  normalized.conversationId === selectedConvId ||
-  // אם אין conversationId או לא תואם, בדוק לפי המשתתפים
-  (
-    (normalized.fromBusinessId === myBusinessId && normalized.toBusinessId === partnerBusinessId) ||
-    (normalized.toBusinessId === myBusinessId && normalized.fromBusinessId === partnerBusinessId)
-  );
+          const pendingIndex = prev.findIndex(
+            (m) =>
+              m._id?.startsWith("pending-") &&
+              m.text === normalized.text &&
+              m.fromBusinessId === normalized.fromBusinessId
+          );
 
-    if (isCurrentConversation) {
-      setMessages((prev) => {
-        if (prev.some((m) => m._id === normalized._id)) {
-          return prev;
-        }
+          if (pendingIndex !== -1) {
+            const newArr = [...prev];
+            newArr[pendingIndex] = normalized;
+            return newArr;
+          }
 
-        const pendingIndex = prev.findIndex(
-          (m) =>
-            m._id?.startsWith("pending-") &&
-            m.text === normalized.text &&
-            m.fromBusinessId === normalized.fromBusinessId
-        );
+          return [...prev, normalized];
+        });
 
-        if (pendingIndex !== -1) {
-          const newArr = [...prev];
-          newArr[pendingIndex] = normalized;
-          return newArr;
-        }
+        console.log("Message added to messages state");
+      } else {
+        console.log("Message ignored - different conversation");
+      }
 
-        return [...prev, normalized];
-      });
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === normalized.conversationId
+            ? { ...conv, messages: [...(conv.messages || []), normalized] }
+            : conv
+        )
+      );
+    };
 
-      console.log("Message added to messages state");
-    } else {
-      console.log("Message ignored - different conversation");
-    }
+    socketRef.current.on("newMessage", handler);
 
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv._id === normalized.conversationId
-          ? { ...conv, messages: [...(conv.messages || []), normalized] }
-          : conv
-      )
-    );
-  };
+    return () => {
+      socketRef.current.off("newMessage", handler);
+    };
+  }, [selectedConversation, myBusinessId]);
 
-  socketRef.current.on("newMessage", handler);
-
-  return () => {
-    socketRef.current.off("newMessage", handler);
-  };
-}, [selectedConversation, myBusinessId]);
-
-
-
-  // טעינת הודעות לפי שיחה נבחרת
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -331,10 +306,9 @@ const isCurrentConversation =
     (async () => {
       try {
         const token = await refreshAccessToken();
-        const res = await API.get(
-          `/business-chat/${selectedConversation._id}/messages`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await API.get(`/business-chat/${selectedConversation._id}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
           fromBusinessId: msg.fromBusinessId || msg.from,
@@ -355,81 +329,66 @@ const isCurrentConversation =
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שדרוג sendMessage לתמיכה גם בשליחת אובייקט הסכם ולא רק טקסט
   const sendMessage = (content) => {
-  if (!content || !selectedConversation || !socketRef.current) return;
+    if (!content || !selectedConversation || !socketRef.current) return;
 
-  // המרת מזהים למחרוזות והשוואה נכונה
-  let otherId = selectedConversation.participants.find(
-    (id) => String(id) !== String(myBusinessId)
-  );
-  otherId = String(otherId);
+    let otherId = selectedConversation.participants.find(
+      (id) => String(id) !== String(myBusinessId)
+    );
+    otherId = String(otherId);
 
-  let payload;
-  if (typeof content === "string") {
-    payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessId,
-      to: otherId,
-      text: content,
-    };
-  } else if (content.type === "contract") {
-    payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessId,
-      to: otherId,
-      text: content.text || "הסכם שיתוף פעולה",
-      type: "contract",
-      contractData: content.contractData,
-    };
-  } else if (content.type === "info") {
-    payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessId,
-      to: otherId,
-      text: content.text,
-      type: "info",
-    };
-  } else {
-    return;
-  }
-
-  const optimistic = {
-    ...payload,
-    timestamp: new Date().toISOString(),
-    _id: "pending-" + Math.random().toString(36).substr(2, 9),
-    fromBusinessId: payload.from,
-    toBusinessId: payload.to,
-  };
-
-  setMessages((prev) => [...prev, optimistic]);
-  console.log("[Client] Sending message payload:", payload);
-  socketRef.current.emit("sendMessage", payload, (ack) => {
-    if (!ack.ok) {
-      alert("שליחת הודעה נכשלה: " + ack.error);
-      setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
-    } else if (ack.message?._id) {
-      const real = {
-        ...ack.message,
-        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-        toBusinessId: ack.message.toBusinessId || ack.message.to,
+    let payload;
+    if (typeof content === "string") {
+      payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessId,
+        to: otherId,
+        text: content,
       };
-      setMessages((prev) => [
-        ...prev.filter((m) => m._id !== optimistic._id),
-        real,
-      ]);
+    } else if (content.type === "info") {
+      payload = {
+        conversationId: selectedConversation._id,
+        from: myBusinessId,
+        to: otherId,
+        text: content.text,
+        type: "info",
+      };
+    } else {
+      return;
     }
-  });
 
-  API.post(
-    `/business-chat/${selectedConversation._id}/message`,
-    { text: payload.text },
-    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-  ).catch((err) => {
-    console.error("שליחת הודעה ל־API נכשלה", err);
-  });
-};
+    const optimistic = {
+      ...payload,
+      timestamp: new Date().toISOString(),
+      _id: "pending-" + Math.random().toString(36).substr(2, 9),
+      fromBusinessId: payload.from,
+      toBusinessId: payload.to,
+    };
 
+    setMessages((prev) => [...prev, optimistic]);
+    console.log("[Client] Sending message payload:", payload);
+    socketRef.current.emit("sendMessage", payload, (ack) => {
+      if (!ack.ok) {
+        alert("שליחת הודעה נכשלה: " + ack.error);
+        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
+      } else if (ack.message?._id) {
+        const real = {
+          ...ack.message,
+          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+          toBusinessId: ack.message.toBusinessId || ack.message.to,
+        };
+        setMessages((prev) => [...prev.filter((m) => m._id !== optimistic._id), real]);
+      }
+    });
+
+    API.post(
+      `/business-chat/${selectedConversation._id}/message`,
+      { text: payload.text },
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+    ).catch((err) => {
+      console.error("שליחת הודעה ל־API נכשלה", err);
+    });
+  };
 
   const sendFileMessage = async (file) => {
     if (!file || !selectedConversation || !socketRef.current) return;
@@ -439,7 +398,7 @@ const isCurrentConversation =
       formData.append("file", file);
       formData.append("conversationId", selectedConversation._id);
       formData.append("from", myBusinessId);
-      formData.append("to", selectedConversation.participants.find(id => id !== myBusinessId));
+      formData.append("to", selectedConversation.participants.find((id) => id !== myBusinessId));
 
       const token = await refreshAccessToken();
 
@@ -455,7 +414,7 @@ const isCurrentConversation =
 
       const data = await res.json();
 
-      const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
+      const otherId = selectedConversation.participants.find((id) => id !== myBusinessId);
 
       const payload = {
         conversationId: selectedConversation._id,
@@ -475,113 +434,22 @@ const isCurrentConversation =
     }
   };
 
-  const openCollabForm = () => {
-    setShowCollabForm(true);
-  };
-
-  const closeCollabForm = () => {
-    setShowCollabForm(false);
-  };
-
-  // עדכון שליחת טופס ההסכם - עכשיו שולח את ההסכם כאובייקט הודעה
-  const handleCollabSubmit = async (formData) => {
-    try {
-      const token = await refreshAccessToken();
-
-      console.log("Sending contract data:", formData); // לוג לפני שליחה
-
-      const res = await API.post(
-        "/collab-contracts",
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      console.log("Response from server:", res); // לוג אחרי שליחה
-
-      if (!res.data || !res.data.contractId) {
-        alert("התרחשה שגיאה ביצירת ההסכם");
-        return;
-      }
-
-      // שלח את ההסכם כאובייקט הודעה
-      sendMessage({
-        type: "contract",
-        text: `הסכם שיתוף פעולה נוצר: ${window.location.origin}/business/collab-contracts/${res.data.contractId}`,
-        contractData: res.data,
-      });
-
-      setShowCollabForm(false);
-    } catch (err) {
-      console.error("שגיאה ביצירת ההסכם:", err);
-      alert("שגיאה ביצירת ההסכם, נסה שנית.");
-    }
-  };
-
-  // פתיחת הצגה / חתימה על הסכם
-  const openContractView = (contract) => {
-    setViewContract(contract);
-  };
-
-  // סגירת הצגת הסכם
-  const closeContractView = () => {
-    setViewContract(null);
-  };
-
-  // אישור הסכם (חתימה שנייה)
-  const handleApproveContract = async (update) => {
-    try {
-      const token = await refreshAccessToken();
-      // שלח עדכון חתימה לשרת (עדכן את הAPI שלך בהתאם)
-      const res = await API.put(
-        `/collab-contracts/${update._id}`,
-        update,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (!res.data) throw new Error("Update failed");
-
-      // עדכן את ההודעה בצ'אט עם סטטוס וחתימה חדשים
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.contractData?._id === update._id
-            ? { ...msg, contractData: { ...msg.contractData, ...update } }
-            : msg
-        )
-      );
-      closeContractView();
-
-      // שלח הודעת מידע לצ'אט שמסמנת אישור חתימה
-      const approvalMessage = {
-        conversationId: selectedConversation._id,
-        from: myBusinessId,
-        to: selectedConversation.participants.find(id => id !== myBusinessId),
-        text: `ההסכם עם ID ${update._id} אושר על ידי ${myBusinessName}`,
-        type: "info",
-      };
-      socketRef.current.emit("sendMessage", approvalMessage);
-    } catch (err) {
-      alert("שגיאה באישור ההסכם, נסה שנית.");
-      console.error(err);
-    }
-  };
-
   const getPartnerBusiness = (conv) => {
-  if (!conv) return { businessName: "עסק", businessId: null };
+    if (!conv) return { businessName: "עסק", businessId: null };
 
-  // מצא אינדקס של המשתתף שהוא לא העסק שלי, בהשוואה כמחרוזת
-  const idx = conv.participants.findIndex(
-    (id) => String(id) !== String(myBusinessId)
-  );
+    const idx = conv.participants.findIndex(
+      (id) => String(id) !== String(myBusinessId)
+    );
 
-  if (idx === -1) {
-    return { businessName: "עסק", businessId: null };
-  }
+    if (idx === -1) {
+      return { businessName: "עסק", businessId: null };
+    }
 
-  return {
-    businessId: String(conv.participants[idx]),
-    ...(conv.participantsInfo?.[idx] || {}),
+    return {
+      businessId: String(conv.participants[idx]),
+      ...(conv.participantsInfo?.[idx] || {}),
+    };
   };
-};
-
 
   return (
     <Box
@@ -677,102 +545,53 @@ const isCurrentConversation =
               >
                 שיחה עם {getPartnerBusiness(selectedConversation).businessName}
               </Box>
-              {messages.map((msg, i) => {
-                if (msg.type === "contract" && msg.contractData) {
-                  return (
-                    <Box
-                      key={msg._id || i}
-                      sx={{
-                        background:
-                          msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-                        alignSelf:
-                          msg.fromBusinessId === myBusinessId
-                            ? "flex-end"
-                            : "flex-start",
-                        p: 1.2,
-                        borderRadius: 2,
-                        mb: 1,
-                        maxWidth: 340,
-                        boxShadow: 1,
-                        wordBreak: "break-word",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => openContractView(msg.contractData)}
-                      title="לחץ לצפייה / חתימה על ההסכם"
-                    >
-                      📄 {msg.text || "הסכם שיתוף פעולה"}
-                      <Box
-                        sx={{
-                          fontSize: 11,
-                          color: "#888",
-                          mt: 0.5,
-                          textAlign: "left",
-                        }}
-                      >
-                        {msg.timestamp &&
-                          new Date(msg.timestamp).toLocaleTimeString("he-IL", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                      </Box>
-                    </Box>
-                  );
-                }
-
-                return (
+              {messages.map((msg, i) => (
+                <Box
+                  key={msg._id || i}
+                  sx={{
+                    background:
+                      msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                    alignSelf:
+                      msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
+                    p: 1.2,
+                    borderRadius: 2,
+                    mb: 1,
+                    maxWidth: 340,
+                    boxShadow: 1,
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {msg.isFile ? (
+                    msg.fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                      <img
+                        src={msg.fileUrl}
+                        alt={msg.text || "קובץ"}
+                        style={{ maxWidth: "100%", borderRadius: 8 }}
+                      />
+                    ) : (
+                      <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
+                        {msg.text || "קובץ להורדה"}
+                      </a>
+                    )
+                  ) : (
+                    <Box>{msg.text}</Box>
+                  )}
                   <Box
-                    key={msg._id || i}
                     sx={{
-                      background:
-                        msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-                      alignSelf:
-                        msg.fromBusinessId === myBusinessId
-                          ? "flex-end"
-                          : "flex-start",
-                      p: 1.2,
-                      borderRadius: 2,
-                      mb: 1,
-                      maxWidth: 340,
-                      boxShadow: 1,
-                      wordBreak: "break-word",
+                      fontSize: 11,
+                      color: "#888",
+                      mt: 0.5,
+                      textAlign: "left",
                     }}
                   >
-                    {msg.isFile ? (
-                      msg.fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                        <img
-                          src={msg.fileUrl}
-                          alt={msg.text || "קובץ"}
-                          style={{ maxWidth: "100%", borderRadius: 8 }}
-                        />
-                      ) : (
-                        <a
-                          href={msg.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {msg.text || "קובץ להורדה"}
-                        </a>
-                      )
-                    ) : (
-                      <Box>{msg.text}</Box>
-                    )}
-                    <Box
-                      sx={{
-                        fontSize: 11,
-                        color: "#888",
-                        mt: 0.5,
-                        textAlign: "left",
-                      }}
-                    >
-                      {msg.timestamp &&
-                        new Date(msg.timestamp).toLocaleTimeString("he-IL", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                    </Box>
+                    {msg.timestamp &&
+                      new Date(msg.timestamp).toLocaleTimeString("he-IL", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                   </Box>
-                );
-              })}
+                </Box>
+              ))}
               <div ref={messagesEndRef} />
             </>
           ) : (
@@ -782,39 +601,17 @@ const isCurrentConversation =
           )}
         </Box>
 
-        {selectedConversation && !showCollabForm && !viewContract && (
+        {selectedConversation && (
           <ChatInput
             onSendText={sendMessage}
             onSendFile={sendFileMessage}
-            onOpenCollabForm={openCollabForm}
             uploading={uploading}
             disabled={false}
           />
         )}
 
-        {showCollabForm && (
-          <CollabContractForm
-            currentUser={{ businessName: myBusinessName }}
-            partnerBusiness={getPartnerBusiness(selectedConversation)}
-            onSubmit={handleCollabSubmit}
-            onClose={closeCollabForm}
-          />
-        )}
-
-        {viewContract && (
-          <CollabContractView
-            contract={viewContract}
-            currentUser={{ businessName: myBusinessName }}
-            onApprove={handleApproveContract}
-            onClose={closeContractView}
-          />
-        )}
-
         {onClose && (
-          <Button
-            sx={{ position: "absolute", top: 13, left: 18 }}
-            onClick={onClose}
-          >
+          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
             ✖
           </Button>
         )}
