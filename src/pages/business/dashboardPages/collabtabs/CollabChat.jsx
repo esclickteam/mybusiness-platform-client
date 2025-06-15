@@ -140,7 +140,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  // המרה ל-String של myBusinessId פעם אחת מראש
   const myBusinessIdStr = myBusinessId ? String(myBusinessId) : null;
 
   useEffect(() => {
@@ -218,94 +217,94 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [myBusinessIdStr, myBusinessName, refreshAccessToken, logout]);
 
   useEffect(() => {
-  if (!socketRef.current) return;
+    if (!socketRef.current) return;
 
-  const handler = (msg) => {
-  console.log("Received newMessage raw:", msg);
-  console.log("to field as JSON:", JSON.stringify(msg.to, null, 2));
+    const handler = (msg) => {
+      console.log("Received newMessage raw:", msg);
+      console.log("to field as JSON:", JSON.stringify(msg.to, null, 2));
 
-    const normalized = {
-  ...msg,
-  fromBusinessId: msg.fromBusinessId
-    ? String(msg.fromBusinessId)
-    : typeof msg.from === "object" && msg.from !== null
-    ? String(msg.from._id || msg.from.id || "")
-    : String(msg.from || ""),
-  toBusinessId: msg.toBusinessId
-    ? String(msg.toBusinessId)
-    : typeof msg.to === "object" && msg.to !== null
-    ? String(msg.to._id || msg.to.id || "")
-    : String(msg.to || ""),
-  conversationId:
-    msg.conversationId && msg.conversationId !== "" ? String(msg.conversationId) : null,
-  _id: msg._id ? String(msg._id) : "",
-};
+      const normalized = {
+        ...msg,
+        fromBusinessId: msg.fromBusinessId
+          ? String(msg.fromBusinessId)
+          : typeof msg.from === "object" && msg.from !== null
+          ? String(msg.from._id || msg.from.id || "")
+          : String(msg.from || ""),
+        toBusinessId: msg.toBusinessId
+          ? String(msg.toBusinessId)
+          : typeof msg.to === "object" && msg.to !== null
+          ? String(msg.to._id || msg.to.id || "")
+          : String(msg.to || ""),
+        conversationId:
+          msg.conversationId && msg.conversationId !== "" ? String(msg.conversationId) : null,
+        _id: msg._id ? String(msg._id) : "",
+      };
 
+      const selectedConvId = selectedConversationRef.current?._id ? String(selectedConversationRef.current._id) : "";
 
+      const partnerBusinessId = getPartnerBusiness(selectedConversationRef.current)?.businessId || "";
 
-    const selectedConvId = selectedConversation?._id ? String(selectedConversation._id) : "";
+      console.log("Normalized message:", normalized);
+      console.log("selectedConvId:", selectedConvId, typeof selectedConvId);
+      console.log("partnerBusinessId:", partnerBusinessId, typeof partnerBusinessId);
+      console.log("myBusinessIdStr:", myBusinessIdStr, typeof myBusinessIdStr);
 
-    const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId || "";
+      const isCurrentConversation =
+        (normalized.conversationId && normalized.conversationId === selectedConvId) ||
+        (!normalized.conversationId &&
+          ((normalized.fromBusinessId === myBusinessIdStr && normalized.toBusinessId === partnerBusinessId) ||
+            (normalized.toBusinessId === myBusinessIdStr && normalized.fromBusinessId === partnerBusinessId)));
 
-    console.log("Normalized message:", normalized);
-    console.log("selectedConvId:", selectedConvId, typeof selectedConvId);
-    console.log("partnerBusinessId:", partnerBusinessId, typeof partnerBusinessId);
-    console.log("myBusinessIdStr:", myBusinessIdStr, typeof myBusinessIdStr);
+      console.log("isCurrentConversation:", isCurrentConversation);
 
-    const isCurrentConversation =
-  (normalized.conversationId && normalized.conversationId === selectedConvId) ||
-  (!normalized.conversationId &&
-    ((normalized.fromBusinessId === myBusinessIdStr && normalized.toBusinessId === partnerBusinessId) ||
-      (normalized.toBusinessId === myBusinessIdStr && normalized.fromBusinessId === partnerBusinessId)));
+      if (isCurrentConversation) {
+        setMessages((prev) => {
+          if (prev.some((m) => m._id === normalized._id)) {
+            console.log("Message already exists, ignoring duplicate.");
+            return prev;
+          }
 
+          const pendingIndex = prev.findIndex(
+            (m) =>
+              m._id?.startsWith("pending-") &&
+              m.text === normalized.text &&
+              m.fromBusinessId === normalized.fromBusinessId
+          );
 
-    console.log("isCurrentConversation:", isCurrentConversation);
+          if (pendingIndex !== -1) {
+            console.log("Replacing pending message at index:", pendingIndex);
+            const newArr = [...prev];
+            newArr[pendingIndex] = normalized;
+            return newArr;
+          }
 
-    if (isCurrentConversation) {
-      setMessages((prev) => {
-        if (prev.some((m) => m._id === normalized._id)) {
-          console.log("Message already exists, ignoring duplicate.");
-          return prev;
-        }
+          console.log("Adding new message to state");
+          return [...prev, normalized];
+        });
+      } else {
+        console.log("Message ignored - different conversation");
+      }
 
-        const pendingIndex = prev.findIndex(
-          (m) =>
-            m._id?.startsWith("pending-") &&
-            m.text === normalized.text &&
-            m.fromBusinessId === normalized.fromBusinessId
-        );
+      // תמיד לעדכן את השיחות עם ההודעה החדשה (לפי conversationId)
+      setConversations((prev) =>
+        prev.map((conv) => {
+          if (String(conv._id) === normalized.conversationId) {
+            const exists = (conv.messages || []).some((m) => m._id === normalized._id);
+            if (!exists) {
+              return { ...conv, messages: [...(conv.messages || []), normalized] };
+            }
+          }
+          return conv;
+        })
+      );
+    };
 
-        if (pendingIndex !== -1) {
-          console.log("Replacing pending message at index:", pendingIndex);
-          const newArr = [...prev];
-          newArr[pendingIndex] = normalized;
-          return newArr;
-        }
+    socketRef.current.on("newMessage", handler);
 
-        console.log("Adding new message to state");
-        return [...prev, normalized];
-      });
-    } else {
-      console.log("Message ignored - different conversation");
-    }
-
-    // תמיד לעדכן את השיחות עם ההודעה החדשה (לפי conversationId)
-    setConversations((prev) =>
-      prev.map((conv) =>
-        String(conv._id) === normalized.conversationId
-          ? { ...conv, messages: [...(conv.messages || []), normalized] }
-          : conv
-      )
-    );
-  };
-
-  socketRef.current.on("newMessage", handler);
-
-  return () => {
-    socketRef.current.off("newMessage", handler);
-  };
-}, [selectedConversation, myBusinessIdStr]);
-
+    return () => {
+      socketRef.current.off("newMessage", handler);
+    };
+  }, [myBusinessIdStr]); // לא תלות ב-selectedConversation!
 
   useEffect(() => {
     const sock = socketRef.current;
@@ -352,9 +351,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const sendMessage = (content) => {
     if (!content || !selectedConversation || !socketRef.current) return;
 
-    let otherId = selectedConversation.participants.find(
-      (id) => String(id) !== myBusinessIdStr
-    );
+    let otherId = selectedConversation.participants.find((id) => String(id) !== myBusinessIdStr);
     otherId = String(otherId);
 
     let payload;
@@ -394,7 +391,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       } else if (ack.message?._id) {
         const real = {
           ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId ? String(ack.message.fromBusinessId) : ack.message.from,
+          fromBusinessId: ack.message.fromBusinessId
+            ? String(ack.message.fromBusinessId)
+            : ack.message.from,
           toBusinessId: ack.message.toBusinessId ? String(ack.message.toBusinessId) : ack.message.to,
         };
         setMessages((prev) => [...prev.filter((m) => m._id !== optimistic._id), real]);
@@ -418,7 +417,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       formData.append("file", file);
       formData.append("conversationId", selectedConversation._id);
       formData.append("from", myBusinessIdStr);
-      formData.append("to", selectedConversation.participants.find((id) => String(id) !== myBusinessIdStr));
+      formData.append(
+        "to",
+        selectedConversation.participants.find((id) => String(id) !== myBusinessIdStr)
+      );
 
       const token = await refreshAccessToken();
 
@@ -455,39 +457,32 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   };
 
   const getPartnerBusiness = (conv) => {
-  if (!conv) return { businessName: "עסק", businessId: null };
+    if (!conv) return { businessName: "עסק", businessId: null };
 
-  // מנסים למצוא שותף שהוא שונה ממך
-  let partnerId = conv.participants.find((id) => String(id) !== myBusinessIdStr);
+    let partnerId = conv.participants.find((id) => String(id) !== myBusinessIdStr);
 
-  // אם לא נמצא, נבחר את הראשון (אם קיים)
-  if (!partnerId) {
-    partnerId = conv.participants.length > 0 ? conv.participants[0] : null;
-  }
+    if (!partnerId) {
+      partnerId = conv.participants.length > 0 ? conv.participants[0] : null;
+    }
 
-  if (!partnerId) {
-    return { businessName: "עסק", businessId: null };
-  }
+    if (!partnerId) {
+      return { businessName: "עסק", businessId: null };
+    }
 
-  // המרה למחרוזת במקרה שהשותף הוא אובייקט
-  if (typeof partnerId === "object" && partnerId !== null) {
-    partnerId = partnerId._id || partnerId.toString();
-  } else {
-    partnerId = String(partnerId);
-  }
+    if (typeof partnerId === "object" && partnerId !== null) {
+      partnerId = partnerId._id || partnerId.toString();
+    } else {
+      partnerId = String(partnerId);
+    }
 
-  // מחפשים את שם העסק במשתתפים לפי מזהה
-  const partnerName =
-    conv.participantsInfo?.find((p) => String(p.businessId) === partnerId)?.businessName ||
-    "עסק";
+    const partnerName =
+      conv.participantsInfo?.find((p) => String(p.businessId) === partnerId)?.businessName || "עסק";
 
-  return {
-    businessId: partnerId,
-    businessName: partnerName,
+    return {
+      businessId: partnerId,
+      businessName: partnerName,
+    };
   };
-};
-
-
 
   return (
     <Box
@@ -523,9 +518,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           הודעות עסקיות
         </Box>
         {conversations.length === 0 && (
-          <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>
-            אין שיחות עסקיות
-          </Box>
+          <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>אין שיחות עסקיות</Box>
         )}
         {conversations.map((conv) => {
           const partner = getPartnerBusiness(conv);
@@ -538,8 +531,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 py: 1.5,
                 cursor: "pointer",
                 borderBottom: "1px solid #f3f0fa",
-                background:
-                  selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
               }}
               onClick={() => setSelectedConversation(conv)}
             >
@@ -587,10 +579,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 <Box
                   key={msg._id || i}
                   sx={{
-                    background:
-                      msg.fromBusinessId === myBusinessIdStr ? "#e6ddff" : "#fff",
-                    alignSelf:
-                      msg.fromBusinessId === myBusinessIdStr ? "flex-end" : "flex-start",
+                    background: msg.fromBusinessId === myBusinessIdStr ? "#e6ddff" : "#fff",
+                    alignSelf: msg.fromBusinessId === myBusinessIdStr ? "flex-end" : "flex-start",
                     p: 1.2,
                     borderRadius: 2,
                     mb: 1,
