@@ -28,6 +28,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const convs = res.data.conversations || [];
+      console.log("Fetched conversations:", convs.length);
       setConversations(convs);
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
@@ -41,9 +42,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // אתחול חיבור לסוקט וטעינת שיחות
   useEffect(() => {
+    console.log("Setting up socket connection");
     async function setupSocket() {
       const token = await refreshAccessToken();
-      if (!token || !myBusinessId) return;
+      if (!token || !myBusinessId) {
+        console.warn("No token or businessId, aborting socket setup");
+        return;
+      }
 
       const sock = io(SOCKET_URL, {
         path: "/socket.io",
@@ -83,6 +88,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     return () => {
       if (socketRef.current) {
+        console.log("Disconnecting socket");
         socketRef.current.disconnect();
       }
     };
@@ -97,20 +103,21 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
 
     const prevId = selectedConversation?._id;
+    console.log("Joining conversation:", prevId);
     sock.emit("joinConversation", prevId);
 
     (async () => {
       try {
         const token = await refreshAccessToken();
-        const res = await API.get(
-          `/business-chat/${prevId}/messages`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await API.get(`/business-chat/${prevId}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
           fromBusinessId: msg.fromBusinessId || msg.from,
           toBusinessId: msg.toBusinessId || msg.to,
         }));
+        console.log(`Fetched ${normMsgs.length} messages for conversation ${prevId}`);
         setMessages(normMsgs);
       } catch (err) {
         console.error("Fetch messages failed:", err);
@@ -119,6 +126,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     })();
 
     return () => {
+      console.log("Leaving conversation:", prevId);
       sock.emit("leaveConversation", prevId);
     };
   }, [selectedConversation, refreshAccessToken]);
@@ -129,6 +137,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!selectedConversation) return;
 
     const handler = (msg) => {
+      console.log("Received newMessage event:", msg._id, msg.text);
+
       const normalized = {
         ...msg,
         fromBusinessId: msg.fromBusinessId || msg.from,
@@ -150,9 +160,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       );
     };
 
+    console.log("Registering newMessage listener");
     socketRef.current.on("newMessage", handler);
 
     return () => {
+      console.log("Removing newMessage listener");
       socketRef.current.off("newMessage", handler);
     };
   }, [selectedConversation]);
@@ -164,8 +176,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // שליחת הודעה עם מניעת שידור כפול
   const sendMessage = () => {
-    if (isSending) return;
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+    console.log("sendMessage triggered", { input, isSending });
+    if (isSending) {
+      console.warn("sendMessage ignored, already sending");
+      return;
+    }
+    if (!input.trim() || !selectedConversation || !socketRef.current) {
+      console.warn("sendMessage aborted, missing input or selectedConversation or socket");
+      return;
+    }
 
     setIsSending(true);
 
