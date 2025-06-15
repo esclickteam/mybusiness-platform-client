@@ -208,14 +208,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         ]);
       }
     });
-
-    API.post(
-      `/business-chat/${selectedConversation._id}/message`,
-      { text: optimistic.text },
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    ).catch((err) => {
-      console.error("שליחת הודעה ל־API נכשלה", err);
-    });
   };
 
   // הוצאת שם השותף בשיחה
