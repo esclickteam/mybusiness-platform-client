@@ -223,7 +223,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         ...msg,
         fromBusinessId: String(msg.fromBusinessId || msg.from),
         toBusinessId: String(msg.toBusinessId || msg.to),
-        conversationId: String(msg.conversationId || msg.conversation?._id || ""),
+        conversationId: String(msg.conversationId || (msg.conversation?._id ?? "")),
       };
 
       const selectedConvId = selectedConversation?._id
