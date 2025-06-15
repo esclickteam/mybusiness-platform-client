@@ -345,41 +345,42 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // שדרוג sendMessage לתמיכה גם בשליחת אובייקט הסכם ולא רק טקסט
   const sendMessage = (content) => {
-    if (!content || !selectedConversation || !socketRef.current) return;
+  if (!content || !selectedConversation || !socketRef.current) return;
 
-    const otherId = selectedConversation.participants.find(id => id !== myBusinessId);
+  // וודא ש־otherId הוא מזהה בלבד (string)
+  let otherId = selectedConversation.participants.find(id => id !== myBusinessId);
+  if (typeof otherId === "object" && otherId !== null) {
+    otherId = otherId._id || otherId.toString();
+  }
 
-    let payload;
-    if (typeof content === "string") {
-      // הודעה רגילה טקסט
-      payload = {
-        conversationId: selectedConversation._id,
-        from: myBusinessId,
-        to: otherId,
-        text: content,
-      };
-    } else if (content.type === "contract") {
-      // הודעת הסכם
-      payload = {
-        conversationId: selectedConversation._id,
-        from: myBusinessId,
-        to: otherId,
-        text: content.text || "הסכם שיתוף פעולה",
-        type: "contract",
-        contractData: content.contractData,
-      };
-    } else if (content.type === "info") {
-      // הודעות מידע פנימיות, כמו אישור חתימה
-      payload = {
-        conversationId: selectedConversation._id,
-        from: myBusinessId,
-        to: otherId,
-        text: content.text,
-        type: "info",
-      };
-    } else {
-      return;
-    }
+  let payload;
+  if (typeof content === "string") {
+    payload = {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: otherId, // מזהה בלבד
+      text: content,
+    };
+  } else if (content.type === "contract") {
+    payload = {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: otherId,
+      text: content.text || "הסכם שיתוף פעולה",
+      type: "contract",
+      contractData: content.contractData,
+    };
+  } else if (content.type === "info") {
+    payload = {
+      conversationId: selectedConversation._id,
+      from: myBusinessId,
+      to: otherId,
+      text: content.text,
+      type: "info",
+    };
+  } else {
+    return;
+  }
 
     const optimistic = {
       ...payload,
