@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API from "../../../../api"; // הנתיב שלך ל-API
 import "./CollabMarketTab.css";
+import { useNavigate } from "react-router-dom";
 
 function CreateCollabForm({ onSuccess }) {
   const [title, setTitle] = useState("");
@@ -161,6 +162,8 @@ export default function CollabMarketTab({ isDevUser }) {
   const [error, setError] = useState(null);
   const [refreshFlag, setRefreshFlag] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     async function fetchCollabs() {
       setLoading(true);
@@ -174,6 +177,7 @@ export default function CollabMarketTab({ isDevUser }) {
             const msg = item.message || {};
             return {
               _id:         item._id,
+              businessId:  item.fromBusinessId,
               title:       msg.title,
               description: msg.description,
               needs:       msg.needs || [],
@@ -182,7 +186,6 @@ export default function CollabMarketTab({ isDevUser }) {
               expiryDate:  msg.expiryDate,
               contactName: item.contactName,
               phone:       item.phone,
-              // image:       item.logo,  // הוסר
             };
           });
           setCollabMarket(collabs);
@@ -214,7 +217,6 @@ export default function CollabMarketTab({ isDevUser }) {
 
       {collabMarket.map(item => (
         <div key={item._id} className="collab-card">
-          {/* התמונה הוסרה */}
           <h4>{item.title}</h4>
           <p><strong>תיאור:</strong> {item.description}</p>
           <p><strong>מה העסק צריך:</strong> {item.needs.join(', ')}</p>
@@ -225,8 +227,11 @@ export default function CollabMarketTab({ isDevUser }) {
             <p><strong>איש קשר:</strong> {item.contactName}</p>
             <p><strong>טלפון:</strong> {item.phone}</p>
           </div>
-          <button className="contact-button" onClick={() => alert(`פותח צ'אט עם ${item.contactName}`)}>
-            📩 פנה בצ'אט
+          <button
+            className="contact-button"
+            onClick={() => navigate(`/business/${item.businessId}`)}
+          >
+            👁️ צפייה בפרופיל
           </button>
         </div>
       ))}
