@@ -72,6 +72,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           businessId: myBusinessId,
           businessName: myBusinessName,
         },
+        transports: ["websocket"], // חשוב לשים כאן transports
       });
 
       socketRef.current = sock;
@@ -151,40 +152,37 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!selectedConversation) return;
 
     const handler = (msg) => {
-  const fullMsg = msg.fullMsg || msg;
+      const fullMsg = msg.fullMsg || msg;
 
-  const normalized = {
-    ...fullMsg,
-    fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-    toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-  };
+      const normalized = {
+        ...fullMsg,
+        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+      };
 
-  // השתמש ב־_id מה־fullMsg ישירות
-  const messageId = fullMsg._id;
+      const messageId = fullMsg._id;
 
-  console.log("Received newMessage event:", {
-    id: messageId,
-    text: normalized.text,
-    time: new Date().toISOString(),
-    fullMsg,
-  });
+      console.log("Received newMessage event:", {
+        id: messageId,
+        text: normalized.text,
+        time: new Date().toISOString(),
+        fullMsg,
+      });
 
-  if (normalized.conversationId === selectedConversation._id) {
-    setMessages((prev) =>
-      prev.some((m) => m._id === messageId) ? prev : [...prev, normalized]
-    );
-  }
+      if (normalized.conversationId === selectedConversation._id) {
+        setMessages((prev) =>
+          prev.some((m) => m._id === messageId) ? prev : [...prev, normalized]
+        );
+      }
 
-  setConversations((prev) =>
-    prev.map((conv) =>
-      conv._id === normalized.conversationId
-        ? { ...conv, messages: [...(conv.messages || []), normalized] }
-        : conv
-    )
-  );
-};
-
-
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === normalized.conversationId
+            ? { ...conv, messages: [...(conv.messages || []), normalized] }
+            : conv
+        )
+      );
+    };
 
     socketRef.current.off("newMessage", handler);
     socketRef.current.on("newMessage", handler);
@@ -354,7 +352,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               </Box>
               {messages.map((msg, i) => (
                 <Box
-                  key={msg._id || i}
+                  key={msg._id ? msg._id.toString() : `pending-${i}`}
                   sx={{
                     background:
                       msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
