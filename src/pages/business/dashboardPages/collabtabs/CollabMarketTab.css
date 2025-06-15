@@ -127,6 +127,10 @@
   cursor: pointer;
 }
 
+.save-button:hover {
+  background-color: #563fb0;
+}
+
 .cancel-button {
   background-color: #eee;
   color: #333;
@@ -135,4 +139,8 @@
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: #ddd;
 }
