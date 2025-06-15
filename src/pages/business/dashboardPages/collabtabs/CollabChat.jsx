@@ -239,20 +239,24 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     console.log("Received newMessage:", msg);
 
     const normalized = {
-      ...msg,
-      fromBusinessId: msg.fromBusinessId || msg.from,
-      toBusinessId: msg.toBusinessId || msg.to,
-      conversationId: msg.conversationId || msg.conversation?._id || null,
-    };
+  ...msg,
+  fromBusinessId: String(msg.fromBusinessId || msg.from),
+  toBusinessId: String(msg.toBusinessId || msg.to),
+  conversationId: String(msg.conversationId || msg.conversation?._id || ""),
+};
 
-    console.log("Selected conversation ID:", selectedConversation?._id);
+const selectedConvId = selectedConversation?._id ? String(selectedConversation._id) : "";
 
-    const isCurrentConversation = normalized.conversationId
-      ? String(normalized.conversationId) === String(selectedConversation?._id)
-      : (
-          (normalized.fromBusinessId === myBusinessId && normalized.toBusinessId === getPartnerBusiness(selectedConversation)?.businessId) ||
-          (normalized.toBusinessId === myBusinessId && normalized.fromBusinessId === getPartnerBusiness(selectedConversation)?.businessId)
-        );
+const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId
+  ? String(getPartnerBusiness(selectedConversation).businessId)
+  : "";
+
+const isCurrentConversation = selectedConvId
+  ? normalized.conversationId === selectedConvId
+  : (
+      (normalized.fromBusinessId === myBusinessId && normalized.toBusinessId === partnerBusinessId) ||
+      (normalized.toBusinessId === myBusinessId && normalized.fromBusinessId === partnerBusinessId)
+    );
 
     if (isCurrentConversation) {
       setMessages((prev) => {
