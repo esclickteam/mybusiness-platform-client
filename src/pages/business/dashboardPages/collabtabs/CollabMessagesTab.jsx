@@ -195,30 +195,26 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
             }}
           >
             <p>
-  <strong>עסק שולח:</strong>{" "}
-  <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "לא ידוע"}</span>
-</p>
-<p>
-  <strong>עסק מקבל:</strong>{" "}
-  <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
-</p>
-<p>
-  <strong>כותרת הצעה:</strong>{" "}
-  <span style={{ marginLeft: 6 }}>{msg.message || "-"}</span>
-</p>
-<p>
-  <strong>סכום:</strong>{" "}
-  <span style={{ marginLeft: 6 }}>{msg.amount || "-"}</span>
-</p>
-<p>
-  <strong>תוקף עד:</strong>{" "}
-  <span style={{ marginLeft: 6 }}>{msg.expiryDate || "-"}</span>
-</p>
-<p>
-  <strong>סטטוס:</strong>{" "}
-  <span style={{ marginLeft: 6 }}>{msg.status}</span>
-</p>
+              <strong>עסק שולח:</strong>{" "}
+              <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "לא ידוע"}</span>
+            </p>
+            <p>
+              <strong>עסק מקבל:</strong>{" "}
+              <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
+            </p>
 
+            {/* פיצול שדה message לשורות */}
+            {msg.message &&
+              msg.message.split("\n").map((line, i) => (
+                <p key={i} style={{ marginBottom: 4 }}>
+                  {line.trim()}
+                </p>
+              ))}
+
+            <p>
+              <strong>סטטוס:</strong>{" "}
+              <span style={{ marginLeft: 6 }}>{msg.status}</span>
+            </p>
 
             {/* כפתורים קשורים להסכם */}
             {msg.agreementId && (
