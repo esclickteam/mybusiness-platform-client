@@ -164,7 +164,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // שליחת הודעה עם מניעת שידור כפול
   const sendMessage = () => {
-    if (isSending) return; // מונע שידור כפול
+    if (isSending) return;
     if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
     setIsSending(true);
@@ -361,14 +361,20 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
-        {/* אזור הזנת הודעה */}
+        {/* אזור הזנת הודעה - כטופס */}
         {selectedConversation && (
-          <Box
-            sx={{
-              p: 2,
-              borderTop: "1px solid #eee",
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!isSending && input.trim()) {
+                sendMessage();
+              }
+            }}
+            style={{
               display: "flex",
-              gap: 1,
+              gap: 8,
+              padding: 16,
+              borderTop: "1px solid #eee",
             }}
           >
             <TextField
@@ -377,22 +383,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               placeholder="כתוב הודעה..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
+              autoComplete="off"
             />
             <Button
+              type="submit"
               variant="contained"
               sx={{ fontWeight: 600 }}
-              onClick={sendMessage}
               disabled={!input.trim() || isSending}
             >
               שלח
             </Button>
-          </Box>
+          </form>
         )}
 
         {onClose && (
