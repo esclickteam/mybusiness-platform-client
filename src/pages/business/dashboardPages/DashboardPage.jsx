@@ -433,7 +433,7 @@ const DashboardPage = () => {
         </div>
       </Suspense>
 
-      <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄  טוען סיכום שבועי...</div>}>
         <div ref={weeklySummaryRef}>
           <MemoizedWeeklySummary stats={syncedStats} />
         </div>
