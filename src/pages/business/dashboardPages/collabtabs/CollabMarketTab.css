@@ -79,10 +79,15 @@
   color: #6b4fc4;
   border: none;
   border-radius: 12px;
-  padding: 6px 14px;
+  padding: 8px 20px;
   font-weight: 600;
   margin-top: 0.5rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.collab-card .contact-button:hover {
+  background-color: #d8c9f6;
 }
 
 /* 🌟 מודל הוספת שיתוף */
