@@ -186,15 +186,18 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!token || !myBusinessId) return;
 
       const sock = io(SOCKET_URL, {
-        path: "/socket.io",
-        auth: {
-          token,
-          role: "business",
-          businessId: myBusinessId,
-          businessName: myBusinessName,
-        },
-        transports: ["websocket"], // הוסף שורה זו
-      });
+  path: "/socket.io",
+  auth: {
+    token,
+    role: "business",
+    businessId: myBusinessId,
+    businessName: myBusinessName,
+  },
+  transports: ["websocket"],
+  reconnection: true,           // אפשר חיבור מחדש אוטומטי
+  reconnectionAttempts: 5,      // מקסימום ניסיונות חיבור מחדש
+  reconnectionDelay: 1000,      // זמן המתנה בין ניסיון חיבור לחיבור
+});
 
       socketRef.current = sock;
 
