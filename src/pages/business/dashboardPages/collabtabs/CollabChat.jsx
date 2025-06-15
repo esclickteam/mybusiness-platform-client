@@ -251,6 +251,13 @@ const partnerBusinessId = getPartnerBusiness(selectedConversation)?.businessId
   ? String(getPartnerBusiness(selectedConversation).businessId)
   : "";
 
+console.log("normalized.conversationId:", normalized.conversationId);
+console.log("selectedConvId:", selectedConvId);
+console.log("partnerBusinessId:", partnerBusinessId);
+console.log("myBusinessId:", myBusinessId);
+
+
+
 const isCurrentConversation = selectedConvId
   ? normalized.conversationId === selectedConvId
   : (
