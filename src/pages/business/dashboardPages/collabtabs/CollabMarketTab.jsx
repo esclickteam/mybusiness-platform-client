@@ -1,70 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import API from "../../../../api"; // הנתיב שלך ל-API
 import "./CollabMarketTab.css";
 
 export default function CollabMarketTab({ isDevUser }) {
-  const [collabMarket, setCollabMarket] = useState([
-    {
-      _id: "market-1",
-      title: "קמפיין קיץ משותף",
-      category: "שיווק",
-      description: "שיתוף פעולה לקידום עסקים מקומיים ברשתות.",
-      contactName: "ליאת בן דוד",
-      phone: "052-1111111",
-      image: "https://via.placeholder.com/600x200"
-    },
-    {
-      _id: "market-2",
-      title: "ערב נטוורקינג לנשים עצמאיות",
-      category: "הפקת אירועים",
-      description: "אירוע נטוורקינג כולל הרצאות ושיתופים.",
-      contactName: "נועה רז",
-      phone: "054-2222222",
-      image: "https://via.placeholder.com/600x200"
+  const [collabMarket, setCollabMarket] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchCollabs() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await API.get("/business/my/proposals/active");  // עדכון הנתיב כאן
+        // הנתונים ב-res.data.activeProposals לפי שרת
+        if (res.data.activeProposals) {
+          // המרה למבנה המותאם לתצוגה
+          const collabs = res.data.activeProposals.map(item => ({
+            _id: item._id,
+            title: item.message.כותרת || item.message.title || "שיתוף פעולה",
+            category: item.message.קטגוריה || item.category || "כללי",
+            description: item.message.תיאור || item.message.description || "",
+            contactName: item.partnerName || "שותף עסקי",
+            phone: item.message.טלפון || item.phone || "",
+            image: item.message.image || "", // אם יש שדה תמונה
+          }));
+
+          setCollabMarket(collabs);
+        } else {
+          setError("שגיאה בטעינת שיתופי פעולה");
+        }
+      } catch (err) {
+        setError("שגיאה בטעינת שיתופי פעולה");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     }
-  ]);
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    category: "",
-    description: "",
-    contactName: "",
-    phone: "",
-    image: ""
-  });
-
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
-  const handleSubmit = () => {
-    const newItem = {
-      ...formData,
-      _id: Date.now().toString()
-    };
-    setCollabMarket((prev) => [newItem, ...prev]);
-    setFormData({
-      title: "",
-      category: "",
-      description: "",
-      contactName: "",
-      phone: "",
-      image: ""
-    });
-    setModalOpen(false);
-  };
+    fetchCollabs();
+  }, []);
 
   return (
     <div className="collab-market-container">
       <div className="flex justify-between items-center mb-4">
         <h3 className="collab-title">📣 מרקט שיתופים</h3>
-        <button className="add-collab-button" onClick={() => setModalOpen(true)}>
-          + הוספת שיתוף פעולה
-        </button>
       </div>
+
+      {loading && <p>טוען שיתופי פעולה...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {!loading && collabMarket.length === 0 && (
+        <div>אין שיתופי פעולה להצגה</div>
+      )}
 
       {collabMarket.map((item) => (
         <div key={item._id} className="collab-card">
@@ -84,24 +71,6 @@ export default function CollabMarketTab({ isDevUser }) {
           </button>
         </div>
       ))}
-
-      {modalOpen && (
-        <div className="collab-modal-overlay" onClick={() => setModalOpen(false)}>
-          <div className="collab-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>✨ הוספת שיתוף חדש</h3>
-            <input name="title" value={formData.title} onChange={handleChange} placeholder="כותרת" />
-            <input name="category" value={formData.category} onChange={handleChange} placeholder="קטגוריה" />
-            <textarea name="description" value={formData.description} onChange={handleChange} placeholder="תיאור"></textarea>
-            <input name="contactName" value={formData.contactName} onChange={handleChange} placeholder="איש קשר" />
-            <input name="phone" value={formData.phone} onChange={handleChange} placeholder="טלפון" />
-            <input name="image" value={formData.image} onChange={handleChange} placeholder="לינק לתמונה (לא חובה)" />
-            <div className="modal-buttons">
-              <button onClick={handleSubmit} className="save-button">שמור</button>
-              <button onClick={() => setModalOpen(false)} className="cancel-button">ביטול</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
