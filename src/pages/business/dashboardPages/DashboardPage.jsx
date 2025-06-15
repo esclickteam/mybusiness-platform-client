@@ -4,7 +4,6 @@ import React, {
   useRef,
   createRef,
   Suspense,
-  useMemo,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
@@ -13,7 +12,6 @@ import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
-import { useOnScreen } from "../../../hooks/useOnScreen"; // import hook
 import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
@@ -84,11 +82,9 @@ function countItemsInLastWeek(items, dateKey = "date") {
 async function fetchDashboardStats(businessId, refreshAccessToken) {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
-  const start = performance.now();
   const res = await API.get(`/business/${businessId}/stats`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  console.log("⏱️ זמן תגובה API /business/stats:", performance.now() - start, "ms");
   return res.data;
 }
 
@@ -120,15 +116,14 @@ const DashboardPage = () => {
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
 
-  // useMemo לטעינת cached data מה־localStorage
-  const cachedLocalData = useMemo(() => {
+  const [localData, setLocalData] = useState(() => {
     try {
       const lsData = localStorage.getItem("dashboardStats");
       return lsData ? JSON.parse(lsData) : null;
     } catch {
       return null;
     }
-  }, []);
+  });
 
   const {
     data: stats,
@@ -156,8 +151,6 @@ const DashboardPage = () => {
     cacheTime: 30 * 60 * 1000,
     keepPreviousData: true,
   });
-
-  const [localData, setLocalData] = useState(cachedLocalData);
 
   useEffect(() => {
     if (!businessId) return;
@@ -254,6 +247,7 @@ const DashboardPage = () => {
         });
       });
 
+      // ** NEW: Listen to AI recommendations **
       sock.on("newRecommendation", (recommendation) => {
         setRecommendations((prev) => [...prev, recommendation]);
       });
@@ -300,6 +294,8 @@ const DashboardPage = () => {
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
+  if (isLoading && !localData) return <DashboardSkeleton />;
+  if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
   const effectiveStats = stats || localData || {};
   const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments)
@@ -324,22 +320,12 @@ const DashboardPage = () => {
     messages_count: unreadCount,
   };
 
-  // Refs and useOnScreen hooks for lazy loading heavy components
   const cardsRef = createRef();
-
-  const insightsRef = useRef();
-  const isInsightsVisible = useOnScreen(insightsRef, "200px");
-
-  const nextActionsRef = useRef();
-  const isNextActionsVisible = useOnScreen(nextActionsRef, "200px");
-
-  const weeklySummaryRef = useRef();
-  const isWeeklySummaryVisible = useOnScreen(weeklySummaryRef, "200px");
-
+  const insightsRef = createRef();
   const chartsRef = createRef();
-
-  const appointmentsRef = useRef();
-  const isAppointmentsVisible = useOnScreen(appointmentsRef, "100px");
+  const appointmentsRef = createRef();
+  const nextActionsRef = createRef();
+  const weeklySummaryRef = createRef();
 
   return (
     <div className="dashboard-container">
@@ -352,59 +338,27 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
+      {/* NEW: AI Recommendations Section */}
       {recommendations.length > 0 && (
-        <section
-          className="recommendations-section"
-          style={{
-            marginBottom: 20,
-            padding: 15,
-            border: "1px solid #ccc",
-            borderRadius: 6,
-            backgroundColor: "#f9f9f9",
-          }}
-        >
+        <section className="recommendations-section" style={{ marginBottom: 20, padding: 15, border: "1px solid #ccc", borderRadius: 6, backgroundColor: "#f9f9f9" }}>
           <h3>המלצות AI חדשות לקבלת אישור</h3>
           <ul style={{ listStyle: "none", padding: 0 }}>
             {recommendations.map(({ recommendationId, message, recommendation }) => (
-              <li
-                key={recommendationId}
-                style={{
-                  marginBottom: 15,
-                  paddingBottom: 10,
-                  borderBottom: "1px solid #ddd",
-                }}
-              >
-                <p>
-                  <b>הודעת לקוח:</b> {message}
-                </p>
-                <p>
-                  <b>המלצה AI:</b> {recommendation}
-                </p>
+              <li key={recommendationId} style={{ marginBottom: 15, paddingBottom: 10, borderBottom: "1px solid #ddd" }}>
+                <p><b>הודעת לקוח:</b> {message}</p>
+                <p><b>המלצה AI:</b> {recommendation}</p>
                 <button
-                  style={{
-                    backgroundColor: "#4caf50",
-                    color: "white",
-                    border: "none",
-                    padding: "8px 12px",
-                    borderRadius: 4,
-                    cursor: "pointer",
-                  }}
+                  style={{ backgroundColor: "#4caf50", color: "white", border: "none", padding: "8px 12px", borderRadius: 4, cursor: "pointer" }}
                   onClick={() => {
                     if (!socketRef.current) return;
-                    socketRef.current.emit(
-                      "businessApproveRecommendation",
-                      { recommendationId },
-                      (res) => {
-                        if (res.ok) {
-                          alert("ההמלצה אושרה ונשלחה ללקוח");
-                          setRecommendations((prev) =>
-                            prev.filter((r) => r.recommendationId !== recommendationId)
-                          );
-                        } else {
-                          alert("שגיאה באישור ההמלצה: " + res.error);
-                        }
+                    socketRef.current.emit("businessApproveRecommendation", { recommendationId }, (res) => {
+                      if (res.ok) {
+                        alert("ההמלצה אושרה ונשלחה ללקוח");
+                        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
+                      } else {
+                        alert("שגיאה באישור ההמלצה: " + res.error);
                       }
-                    );
+                    });
                   }}
                 >
                   אשר ושלח
@@ -436,85 +390,52 @@ const DashboardPage = () => {
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
         <div ref={insightsRef}>
-          {isInsightsVisible ? (
-            <MemoizedInsights
-              stats={{
-                ...syncedStats,
-                upcoming_appointments: getUpcomingAppointmentsCount(appointments),
-              }}
-            />
-          ) : (
-            <DashboardSkeleton />
-          )}
+          <MemoizedInsights
+            stats={{
+              ...syncedStats,
+              upcoming_appointments: getUpcomingAppointmentsCount(appointments),
+            }}
+          />
         </div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
         <div ref={nextActionsRef} className="actions-container full-width">
-          {isNextActionsVisible ? (
-            <MemoizedNextActions
-              stats={{
-                weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
-                weekly_appointments_count: countItemsInLastWeek(appointments),
-                weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
-                weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
-              }}
-            />
-          ) : (
-            <DashboardSkeleton />
-          )}
+          <MemoizedNextActions
+            stats={{
+              weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
+              weekly_appointments_count: countItemsInLastWeek(appointments),
+              weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
+              weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
+            }}
+          />
         </div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרפים...</div>}>
         <div ref={chartsRef} className="graph-box full-width">
-          <MemoizedBarChartComponent
-            appointments={syncedStats.appointments}
-            title="לקוחות שהזמינו פגישות לפי חודשים 📊"
-          />
+          <MemoizedBarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
         </div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעילות...</div>}>
-        <div>
-          {syncedStats.recent_activity && (
-            <MemoizedRecentActivityTable activities={syncedStats.recent_activity} />
-          )}
-        </div>
+        <div>{syncedStats.recent_activity && <MemoizedRecentActivityTable activities={syncedStats.recent_activity} />}</div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
         <div ref={appointmentsRef} className="calendar-row">
-          {isAppointmentsVisible ? (
-            <>
-              <div className="day-agenda-box">
-                <MemoizedDailyAgenda
-                  date={selectedDate}
-                  appointments={appointments}
-                  businessName={syncedStats.businessName}
-                />
-              </div>
-              <div className="calendar-container">
-                <MemoizedCalendarView
-                  appointments={appointments}
-                  onDateClick={setSelectedDate}
-                  selectedDate={selectedDate}
-                />
-              </div>
-            </>
-          ) : (
-            <DashboardSkeleton />
-          )}
+          <div className="day-agenda-box">
+            <MemoizedDailyAgenda date={selectedDate} appointments={appointments} businessName={syncedStats.businessName} />
+          </div>
+          <div className="calendar-container">
+            <MemoizedCalendarView appointments={appointments} onDateClick={setSelectedDate} selectedDate={selectedDate} />
+          </div>
         </div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
         <div ref={weeklySummaryRef}>
-          {isWeeklySummaryVisible ? (
-            <MemoizedWeeklySummary stats={syncedStats} />
-          ) : (
-            <DashboardSkeleton />
-          )}
+          <MemoizedWeeklySummary stats={syncedStats} />
         </div>
       </Suspense>
     </div>
