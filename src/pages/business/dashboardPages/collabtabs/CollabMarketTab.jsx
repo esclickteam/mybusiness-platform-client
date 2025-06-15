@@ -182,7 +182,7 @@ export default function CollabMarketTab({ isDevUser }) {
               expiryDate:  msg.expiryDate,
               contactName: item.contactName,
               phone:       item.phone,
-              image:       item.logo,
+              // image:       item.logo,  // הוסר
             };
           });
           setCollabMarket(collabs);
@@ -214,9 +214,7 @@ export default function CollabMarketTab({ isDevUser }) {
 
       {collabMarket.map(item => (
         <div key={item._id} className="collab-card">
-          {item.image && (
-            <img src={item.image} alt={item.title} className="collab-market-image" />
-          )}
+          {/* התמונה הוסרה */}
           <h4>{item.title}</h4>
           <p><strong>תיאור:</strong> {item.description}</p>
           <p><strong>מה העסק צריך:</strong> {item.needs.join(', ')}</p>
