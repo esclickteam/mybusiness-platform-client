@@ -12,20 +12,20 @@ export default function CollabMarketTab({ isDevUser }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await API.get("/business/my/proposals/active");  // עדכון הנתיב כאן
-        // הנתונים ב-res.data.activeProposals לפי שרת
-        if (res.data.activeProposals) {
-          // המרה למבנה המותאם לתצוגה
-          const collabs = res.data.activeProposals.map(item => ({
-            _id: item._id,
-            title: item.message.כותרת || item.message.title || "שיתוף פעולה",
-            category: item.message.קטגוריה || item.category || "כללי",
-            description: item.message.תיאור || item.message.description || "",
-            contactName: item.partnerName || "שותף עסקי",
-            phone: item.message.טלפון || item.phone || "",
-            image: item.message.image || "", // אם יש שדה תמונה
-          }));
-
+        const res = await API.get("/business/proposals/market");  // עדכון הנתיב להצעות פומביות מרקט
+        if (res.data.proposals && Array.isArray(res.data.proposals)) {
+          const collabs = res.data.proposals.map(item => {
+            const msg = item.message || {};
+            return {
+              _id: item._id,
+              title: msg.כותרת || msg.title || "שיתוף פעולה",
+              category: msg.קטגוריה || item.category || "כללי",
+              description: msg.תיאור || msg.description || "",
+              contactName: item.fromBusinessId?.businessName || "שותף עסקי",
+              phone: msg.טלפון || msg.phone || "",
+              image: item.fromBusinessId?.logo || "", // לוגו העסק שפרסם
+            };
+          });
           setCollabMarket(collabs);
         } else {
           setError("שגיאה בטעינת שיתופי פעולה");
@@ -56,7 +56,11 @@ export default function CollabMarketTab({ isDevUser }) {
       {collabMarket.map((item) => (
         <div key={item._id} className="collab-card">
           {item.image && (
-            <img src={item.image} alt={item.title} className="collab-market-image" />
+            <img
+              src={item.image}
+              alt={item.title}
+              className="collab-market-image"
+            />
           )}
           <h4>{item.title}</h4>
           <p><strong>קטגוריה:</strong> {item.category}</p>
