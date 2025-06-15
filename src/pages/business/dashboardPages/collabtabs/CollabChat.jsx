@@ -19,6 +19,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   // טען שיחות עסקיות
   const fetchConversations = async (token) => {
@@ -96,7 +97,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
 
     const prevId = selectedConversation?._id;
-    // מצטרפים לחדר השיחה
     sock.emit("joinConversation", prevId);
 
     (async () => {
@@ -162,9 +162,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה
+  // שליחת הודעה עם מניעת שידור כפול
   const sendMessage = () => {
+    if (isSending) return; // מונע שידור כפול
     if (!input.trim() || !selectedConversation || !socketRef.current) return;
+
+    setIsSending(true);
 
     const otherId =
       selectedConversation.participantsInfo?.find((b) => b._id !== myBusinessId)?._id ||
@@ -189,6 +192,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     setInput("");
 
     socketRef.current.emit("sendMessage", payload, (ack) => {
+      setIsSending(false);
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
         setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
@@ -384,7 +388,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               variant="contained"
               sx={{ fontWeight: 600 }}
               onClick={sendMessage}
-              disabled={!input.trim()}
+              disabled={!input.trim() || isSending}
             >
               שלח
             </Button>
