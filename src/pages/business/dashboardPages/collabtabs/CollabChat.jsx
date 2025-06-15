@@ -246,7 +246,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   console.log("Selected conversation ID:", selectedConversation?._id);
 
-  if (normalized.conversationId === selectedConversation?._id) {
+  if (String(normalized.conversationId) === String(selectedConversation?._id)) {
+
     setMessages((prev) => {
       // אם כבר יש הודעה עם אותו _id - אל תוסיף כפול
       if (prev.some((m) => m._id === normalized._id)) {
