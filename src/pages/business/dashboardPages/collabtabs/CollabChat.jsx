@@ -390,7 +390,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
 
     setMessages((prev) => [...prev, optimistic]);
-
+    console.log("[Client] Sending message payload:", payload);
     socketRef.current.emit("sendMessage", payload, (ack) => {
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
