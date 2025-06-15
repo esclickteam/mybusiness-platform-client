@@ -151,8 +151,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!selectedConversation) return;
 
     const handler = (msg) => {
-      console.log("Received newMessage event full msg:", msg);
-      console.log("Received newMessage event:", msg._id, msg.text, new Date().toISOString());
+      console.log("Received newMessage event:", {
+        id: msg._id,
+        text: msg.text,
+        time: new Date().toISOString(),
+        fullMsg: msg,
+      });
 
       const normalized = {
         ...msg,
