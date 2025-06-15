@@ -156,6 +156,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [showCollabForm, setShowCollabForm] = useState(false);
   const [viewContract, setViewContract] = useState(null); // contract object לצפיה/חתימה
 
+  // עדכון ref כששיחה נבחרת משתנה
+  useEffect(() => {
+    selectedConversationRef.current = selectedConversation;
+    console.log("selectedConversationRef updated:", selectedConversation?._id);
+  }, [selectedConversation]);
+
   // טען שיחות
   const fetchConversations = async (token) => {
     try {
@@ -180,15 +186,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!token || !myBusinessId) return;
 
       const sock = io(SOCKET_URL, {
-  path: "/socket.io",
-  auth: {
-    token,
-    role: "business",
-    businessId: myBusinessId,
-    businessName: myBusinessName,
-  },
-  transports: ["websocket"], // הוסף שורה זו
-});
+        path: "/socket.io",
+        auth: {
+          token,
+          role: "business",
+          businessId: myBusinessId,
+          businessName: myBusinessName,
+        },
+        transports: ["websocket"], // הוסף שורה זו
+      });
 
       socketRef.current = sock;
 
@@ -222,20 +228,27 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout]);
 
+  // מאזין להודעות חדשות מהסוקט
   useEffect(() => {
     if (!socketRef.current) return;
 
     const handler = (msg) => {
+      console.log("Received newMessage:", msg);
+
       const normalized = {
         ...msg,
         fromBusinessId: msg.fromBusinessId || msg.from,
         toBusinessId: msg.toBusinessId || msg.to,
       };
 
+      console.log("Selected conversation ID:", selectedConversationRef.current?._id);
       if (normalized.conversationId === selectedConversationRef.current?._id) {
         setMessages((prev) =>
           prev.some((m) => m._id === normalized._id) ? prev : [...prev, normalized]
         );
+        console.log("Message added to messages state");
+      } else {
+        console.log("Message ignored - different conversation");
       }
 
       setConversations((prev) =>
@@ -254,6 +267,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, []);
 
+  // טעינת הודעות לפי שיחה נבחרת
   useEffect(() => {
     const sock = socketRef.current;
     if (!sock || !selectedConversation) {
@@ -263,9 +277,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const prevId = selectedConversationRef.current?._id;
     if (prevId && prevId !== selectedConversation._id) {
+      console.log("Leaving previous conversation:", prevId);
       sock.emit("leaveConversation", prevId);
     }
 
+    console.log("Joining conversation:", selectedConversation._id);
     sock.emit("joinConversation", selectedConversation._id);
 
     (async () => {
@@ -281,6 +297,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           toBusinessId: msg.toBusinessId || msg.to,
         }));
         setMessages(normMsgs);
+        console.log("Loaded messages for conversation:", selectedConversation._id);
       } catch (err) {
         console.error("Fetch messages failed:", err);
         setMessages([]);
@@ -601,7 +618,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 שיחה עם {getPartnerBusiness(selectedConversation).businessName}
               </Box>
               {messages.map((msg, i) => {
-                // הצגה מיוחדת להודעות הסכם (אם מזהים שההודעה מכילה אובייקט הסכם)
                 if (msg.type === "contract" && msg.contractData) {
                   return (
                     <Box
@@ -669,7 +685,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                           style={{ maxWidth: "100%", borderRadius: 8 }}
                         />
                       ) : (
-                        <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
+                        <a
+                          href={msg.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           {msg.text || "קובץ להורדה"}
                         </a>
                       )
@@ -702,7 +722,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           )}
         </Box>
 
-        {/* תיבת קלט + כפתורים */}
         {selectedConversation && !showCollabForm && !viewContract && (
           <ChatInput
             onSendText={sendMessage}
@@ -713,7 +732,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           />
         )}
 
-        {/* מודאל טופס הסכם שיתוף פעולה */}
         {showCollabForm && (
           <CollabContractForm
             currentUser={{ businessName: myBusinessName }}
@@ -723,7 +741,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           />
         )}
 
-        {/* מודאל צפייה וחתימה על ההסכם */}
         {viewContract && (
           <CollabContractView
             contract={viewContract}
