@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
   const refreshingTokenPromise = useRef(null);
   const ws = useRef(null);
 
-  // רענון טוקן עם queue
+  // רענון טוקן עם queue למניעת קריאות מרובות במקביל
   const refreshAccessToken = async () => {
     if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
     refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
@@ -250,8 +250,13 @@ export function AuthProvider({ children }) {
       return data;
     } catch (e) {
       if (e.response?.status === 401) {
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
+        try {
+          const newToken = await refreshAccessToken();
+          if (!newToken) {
+            setError("❌ אימייל או סיסמה שגויים");
+            navigate("/login");
+          }
+        } catch {
           setError("❌ אימייל או סיסמה שגויים");
           navigate("/login");
         }
@@ -281,6 +286,7 @@ export function AuthProvider({ children }) {
         logout,
         refreshAccessToken,
         socket: ws.current,
+        setUser,
       }}
     >
       {successMessage && <div className="global-success-toast">{successMessage}</div>}

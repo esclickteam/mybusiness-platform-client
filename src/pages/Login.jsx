@@ -22,7 +22,7 @@ export function LoginSkeleton() {
 }
 
 export default function Login() {
-  const { login, error: authError } = useAuth();
+  const { login, error: authError, setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,7 @@ export default function Login() {
   const navigate = useNavigate();
   const dashboardPreloaded = useRef(false);
 
+  // טען מוקדם את הדשבורד ברגע שהמשתמש מתחיל להקליד
   const handleInputChange = (setter) => (e) => {
     if (!dashboardPreloaded.current) {
       setDashboardLoading(true);
@@ -51,17 +52,23 @@ export default function Login() {
     }
 
     setLoading(true);
+
+    // ניווט מיידי לדשבורד (Optimistic UI)
+    navigate("/dashboard");
+
     try {
       const cleanEmail = email.trim().toLowerCase();
-      await login(cleanEmail, password);
+      const userData = await login(cleanEmail, password);
+      setUser(userData); // עדכן את הקונטקסט עם המשתמש המחובר
     } catch (err) {
       setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
+      navigate("/login"); // חזור לעמוד התחברות במקרה של שגיאה
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ כאן הסקלטון מוצג גם אם dashboardLoading או loading פעיל
+  // הצג Skeleton אם טוען דשבורד או טוען התחברות
   if (dashboardLoading || loading) {
     return <LoginSkeleton />;
   }
