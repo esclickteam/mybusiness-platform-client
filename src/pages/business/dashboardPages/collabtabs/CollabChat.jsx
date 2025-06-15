@@ -30,7 +30,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  // דה-דופליקציה הודעות לפי _id
+  // דה-דופליקציה הודעות לפי _id או tempId
   const uniqueMessages = (msgs) => {
     const seen = new Set();
     return msgs.filter((m) => {
@@ -187,7 +187,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === normalized.conversationId
-            ? { ...conv, messages: [...(conv.messages || []), normalized] }
+            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
             : conv
         )
       );
@@ -311,8 +311,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 py: 1.5,
                 cursor: "pointer",
                 borderBottom: "1px solid #f3f0fa",
-                background:
-                  selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
               }}
               onClick={() => setSelectedConversation(conv)}
             >
@@ -360,12 +359,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 <Box
                   key={msg._id ? msg._id.toString() : `pending-${i}`}
                   sx={{
-                    background:
-                      msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-                    alignSelf:
-                      msg.fromBusinessId === myBusinessId
-                        ? "flex-end"
-                        : "flex-start",
+                    background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                    alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
                     p: 1.2,
                     borderRadius: 2,
                     mb: 1,
@@ -422,22 +417,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               onChange={(e) => setInput(e.target.value)}
               autoComplete="off"
             />
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{ fontWeight: 600 }}
-              disabled={!input.trim() || isSending}
-            >
+            <Button type="submit" variant="contained" sx={{ fontWeight: 600 }} disabled={!input.trim() || isSending}>
               שלח
             </Button>
           </form>
         )}
 
         {onClose && (
-          <Button
-            sx={{ position: "absolute", top: 13, left: 18 }}
-            onClick={onClose}
-          >
+          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
             ✖
           </Button>
         )}
