@@ -18,26 +18,26 @@ function CreateCollabForm({ onSuccess }) {
     e.preventDefault();
     setError(null);
     if (!title.trim() || !description.trim() || !contactName.trim() || !phone.trim()) {
-      setError("אנא מלא את הכותרת, התיאור, שם איש הקשר ומספר טלפון");
+      setError("אנא מלא את כותרת ההצעה, תיאור, איש קשר וטלפון");
       return;
     }
 
     setLoading(true);
     try {
       const message = {
-        title: title.trim(),
+        title:       title.trim(),
         description: description.trim(),
-        needs: needs.split(",").map(s => s.trim()).filter(Boolean),
-        offers: offers.split(",").map(s => s.trim()).filter(Boolean),
-        budget: budget ? Number(budget) : undefined,
-        expiryDate: expiryDate ? new Date(expiryDate).toISOString() : undefined,
+        needs:       needs.split(",").map(s => s.trim()).filter(Boolean),
+        offers:      offers.split(",").map(s => s.trim()).filter(Boolean),
+        budget:      budget ? Number(budget) : undefined,
+        expiryDate:  expiryDate ? new Date(expiryDate).toISOString() : undefined,
       };
 
       await API.post("/business/my/proposals", {
         toBusinessId: null,
         message,
-        contactName: contactName.trim(),
-        phone: phone.trim(),
+        contactName:  contactName.trim(),
+        phone:        phone.trim(),
       });
 
       // נקה שדות
@@ -173,9 +173,9 @@ export default function CollabMarketTab({ isDevUser }) {
           const collabs = res.data.proposals.map(item => {
             const msg = item.message || {};
             return {
-              _id:        item._id,
-              title:      msg.title,
-              description:msg.description,
+              _id:         item._id,
+              title:       msg.title,
+              description: msg.description,
               needs:       msg.needs || [],
               offers:      msg.offers || [],
               budget:      msg.budget,
@@ -229,8 +229,11 @@ export default function CollabMarketTab({ isDevUser }) {
           <p><strong>מה העסק נותן:</strong> {item.offers.join(', ')}</p>
           <p><strong>תקציב:</strong> ₪{item.budget}</p>
           <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
-          <p><strong>איש קשר:</strong> {item.contactName}</p>
-          <p><strong>טלפון:</strong> {item.phone}</p>
+          {/* מרכזים את איש קשר וטלפון */}
+          <div style={{ textAlign: 'center', margin: '1em 0' }}>
+            <p><strong>איש קשר:</strong> {item.contactName}</p>
+            <p><strong>טלפון:</strong> {item.phone}</p>
+          </div>
           <button className="contact-button" onClick={() => alert(`פותח צ'אט עם ${item.contactName}`)}>
             📩 פנה בצ'אט
           </button>

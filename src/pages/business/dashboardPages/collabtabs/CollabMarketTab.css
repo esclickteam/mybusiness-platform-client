@@ -46,6 +46,12 @@
   font-weight: 600;
 }
 
+/* מרכזים איש קשר וטלפון בתוך הכרטיס */
+.collab-card > div {
+  text-align: center;
+  margin: 1rem 0;
+}
+
 /* 🔘 כפתור הוספת שיתוף */
 .add-collab-button {
   background-color: #6b4fc4;
