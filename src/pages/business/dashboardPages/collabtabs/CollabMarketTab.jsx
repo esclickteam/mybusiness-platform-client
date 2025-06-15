@@ -30,20 +30,24 @@ function CreateCollabForm({ onSuccess }) {
         budget: budget ? Number(budget) : undefined,
         expiryDate: expiryDate ? new Date(expiryDate).toISOString() : undefined,
       };
+
       await API.post("/business/my/proposals", {
         toBusinessId: null,
         message,
       });
+
+      // נקה שדות
       setTitle("");
       setDescription("");
       setNeeds("");
       setOffers("");
       setBudget("");
       setExpiryDate("");
+
       if (onSuccess) onSuccess();
     } catch (err) {
       console.error(err);
-      setError("שגיאה בפרסום ההצעה");
+      setError("❌ שגיאה בפרסום ההצעה");
     } finally {
       setLoading(false);
     }
@@ -137,17 +141,20 @@ export default function CollabMarketTab({ isDevUser }) {
         const res = await API.get("/business/proposals/market");
         console.log("Response from /business/proposals/market:", res.data);
 
-        if (res.data.proposals && Array.isArray(res.data.proposals)) {
+        if (Array.isArray(res.data.proposals)) {
           const collabs = res.data.proposals.map(item => {
             const msg = item.message || {};
             return {
-              _id: item._id,
-              title: msg.title || "שיתוף פעולה",
-              category: msg.category || item.category || "כללי",
-              description: msg.description || "",
-              contactName: item.businessName || "שותף עסקי",
-              phone: msg.phone || "",
-              image: item.logo || "",
+              _id:        item._id,
+              title:      msg.title,
+              description:msg.description,
+              needs:       msg.needs || [],
+              offers:      msg.offers || [],
+              budget:      msg.budget,
+              expiryDate:  msg.expiryDate,
+              contactName: item.contactName,
+              phone:       item.phone,
+              image:       item.logo,
             };
           });
           setCollabMarket(collabs);
@@ -155,8 +162,8 @@ export default function CollabMarketTab({ isDevUser }) {
           setError("שגיאה בטעינת שיתופי פעולה");
         }
       } catch (err) {
-        setError("שגיאה בטעינת שיתופי פעולה");
         console.error(err);
+        setError("שגיאה בטעינת שיתופי פעולה");
       } finally {
         setLoading(false);
       }
@@ -179,7 +186,7 @@ export default function CollabMarketTab({ isDevUser }) {
         <div>אין שיתופי פעולה להצגה</div>
       )}
 
-      {collabMarket.map((item) => (
+      {collabMarket.map(item => (
         <div key={item._id} className="collab-card">
           {item.image && (
             <img
@@ -189,8 +196,11 @@ export default function CollabMarketTab({ isDevUser }) {
             />
           )}
           <h4>{item.title}</h4>
-          <p><strong>קטגוריה:</strong> {item.category}</p>
-          <p>{item.description}</p>
+          <p><strong>תיאור:</strong> {item.description}</p>
+          <p><strong>מה העסק צריך:</strong> {item.needs.join(', ')}</p>
+          <p><strong>מה העסק נותן:</strong> {item.offers.join(', ')}</p>
+          <p><strong>תקציב:</strong> ₪{item.budget}</p>
+          <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
           <p><strong>איש קשר:</strong> {item.contactName}</p>
           <p><strong>טלפון:</strong> {item.phone}</p>
           <button
