@@ -135,6 +135,8 @@ export default function CollabMarketTab({ isDevUser }) {
       setError(null);
       try {
         const res = await API.get("/business/proposals/market");
+        console.log("Response from /business/proposals/market:", res.data);
+
         if (res.data.proposals && Array.isArray(res.data.proposals)) {
           const collabs = res.data.proposals.map(item => {
             const msg = item.message || {};
