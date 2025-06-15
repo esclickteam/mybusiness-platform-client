@@ -7,6 +7,7 @@ function CreateCollabForm({ onSuccess }) {
   const [description, setDescription] = useState("");
   const [needs, setNeeds] = useState("");
   const [offers, setOffers] = useState("");
+  const [contactName, setContactName] = useState("");
   const [budget, setBudget] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [error, setError] = useState(null);
@@ -15,8 +16,8 @@ function CreateCollabForm({ onSuccess }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
-    if (!title.trim() || !description.trim()) {
-      setError("אנא מלא את הכותרת והתיאור");
+    if (!title.trim() || !description.trim() || !contactName.trim()) {
+      setError("אנא מלא את הכותרת, התיאור ושם איש הקשר");
       return;
     }
 
@@ -34,6 +35,7 @@ function CreateCollabForm({ onSuccess }) {
       await API.post("/business/my/proposals", {
         toBusinessId: null,
         message,
+        contactName: contactName.trim(),
       });
 
       // נקה שדות
@@ -41,6 +43,7 @@ function CreateCollabForm({ onSuccess }) {
       setDescription("");
       setNeeds("");
       setOffers("");
+      setContactName("");
       setBudget("");
       setExpiryDate("");
 
@@ -95,6 +98,17 @@ function CreateCollabForm({ onSuccess }) {
           value={offers}
           onChange={e => setOffers(e.target.value)}
           placeholder="למשל: שותפות ברווח, פרסום משותף"
+        />
+      </label>
+
+      <label>
+        איש קשר*:
+        <input
+          type="text"
+          value={contactName}
+          onChange={e => setContactName(e.target.value)}
+          required
+          placeholder="שם איש קשר"
         />
       </label>
 
@@ -203,10 +217,7 @@ export default function CollabMarketTab({ isDevUser }) {
           <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
           <p><strong>איש קשר:</strong> {item.contactName}</p>
           <p><strong>טלפון:</strong> {item.phone}</p>
-          <button
-            className="contact-button"
-            onClick={() => alert(`פותח צ'אט עם ${item.contactName}`)}
-          >
+          <button className="contact-button" onClick={() => alert(`פותח צ'אט עם ${item.contactName}`)}>
             📩 פנה בצ'אט
           </button>
         </div>
