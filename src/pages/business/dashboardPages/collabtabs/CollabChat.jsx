@@ -151,33 +151,38 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!selectedConversation) return;
 
     const handler = (msg) => {
-      console.log("Received newMessage event:", {
-        id: msg._id,
-        text: msg.text,
-        time: new Date().toISOString(),
-        fullMsg: msg,
-      });
+  const fullMsg = msg.fullMsg || msg;
 
-      const normalized = {
-        ...msg,
-        fromBusinessId: msg.fromBusinessId || msg.from,
-        toBusinessId: msg.toBusinessId || msg.to,
-      };
+  const normalized = {
+    ...fullMsg,
+    fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+    toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+  };
 
-      if (normalized.conversationId === selectedConversation._id) {
-        setMessages((prev) =>
-          prev.some((m) => m._id === normalized._id) ? prev : [...prev, normalized]
-        );
-      }
+  const messageId = fullMsg._id || normalized._id || fullMsg.id;
 
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === normalized.conversationId
-            ? { ...conv, messages: [...(conv.messages || []), normalized] }
-            : conv
-        )
-      );
-    };
+  console.log("Received newMessage event:", {
+    id: messageId,
+    text: normalized.text,
+    time: new Date().toISOString(),
+    fullMsg,
+  });
+
+  if (normalized.conversationId === selectedConversation._id) {
+    setMessages((prev) =>
+      prev.some((m) => m._id === messageId) ? prev : [...prev, normalized]
+    );
+  }
+
+  setConversations((prev) =>
+    prev.map((conv) =>
+      conv._id === normalized.conversationId
+        ? { ...conv, messages: [...(conv.messages || []), normalized] }
+        : conv
+    )
+  );
+};
+
 
     socketRef.current.off("newMessage", handler);
     socketRef.current.on("newMessage", handler);
