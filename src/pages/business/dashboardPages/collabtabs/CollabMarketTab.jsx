@@ -33,7 +33,7 @@ function CreateCollabForm({ onSuccess }) {
         expiryDate:  expiryDate ? new Date(expiryDate).toISOString() : undefined,
       };
 
-      await API.post("/business/my/proposals", {
+      await API.post("/api/business/my/proposals", {
         toBusinessId: null,
         message,
         contactName:  contactName.trim(),
@@ -146,9 +146,9 @@ function CreateCollabForm({ onSuccess }) {
         />
       </label>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error-text">{error}</p>}
 
-      <button type="submit" disabled={loading}>
+      <button type="submit" disabled={loading} className="save-button">
         {loading ? "שולח..." : "פרסם שיתוף פעולה"}
       </button>
     </form>
@@ -166,8 +166,8 @@ export default function CollabMarketTab({ isDevUser }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await API.get("/business/proposals/market");
-        console.log("Response from /business/proposals/market:", res.data);
+        const res = await API.get("/api/business/proposals/market");
+        console.log("Response from /api/business/proposals/market:", res.data);
 
         if (Array.isArray(res.data.proposals)) {
           const collabs = res.data.proposals.map(item => {
@@ -203,12 +203,10 @@ export default function CollabMarketTab({ isDevUser }) {
     <div className="collab-market-container">
       <CreateCollabForm onSuccess={() => setRefreshFlag(f => !f)} />
 
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="collab-title">📣 מרקט שיתופים</h3>
-      </div>
+      <h3 className="collab-title">📣 מרקט שיתופים</h3>
 
       {loading && <p>טוען שיתופי פעולה...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error-text">{error}</p>}
 
       {!loading && collabMarket.length === 0 && (
         <div>אין שיתופי פעולה להצגה</div>
@@ -217,11 +215,7 @@ export default function CollabMarketTab({ isDevUser }) {
       {collabMarket.map(item => (
         <div key={item._id} className="collab-card">
           {item.image && (
-            <img
-              src={item.image}
-              alt={item.title}
-              className="collab-market-image"
-            />
+            <img src={item.image} alt={item.title} className="collab-market-image" />
           )}
           <h4>{item.title}</h4>
           <p><strong>תיאור:</strong> {item.description}</p>
@@ -229,8 +223,7 @@ export default function CollabMarketTab({ isDevUser }) {
           <p><strong>מה העסק נותן:</strong> {item.offers.join(', ')}</p>
           <p><strong>תקציב:</strong> ₪{item.budget}</p>
           <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
-          {/* מרכזים את איש קשר וטלפון */}
-          <div style={{ textAlign: 'center', margin: '1em 0' }}>
+          <div className="contact-info">
             <p><strong>איש קשר:</strong> {item.contactName}</p>
             <p><strong>טלפון:</strong> {item.phone}</p>
           </div>
