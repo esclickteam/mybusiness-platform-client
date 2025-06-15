@@ -8,6 +8,7 @@ function CreateCollabForm({ onSuccess }) {
   const [needs, setNeeds] = useState("");
   const [offers, setOffers] = useState("");
   const [contactName, setContactName] = useState("");
+  const [phone, setPhone] = useState("");
   const [budget, setBudget] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [error, setError] = useState(null);
@@ -16,8 +17,8 @@ function CreateCollabForm({ onSuccess }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
-    if (!title.trim() || !description.trim() || !contactName.trim()) {
-      setError("אנא מלא את הכותרת, התיאור ושם איש הקשר");
+    if (!title.trim() || !description.trim() || !contactName.trim() || !phone.trim()) {
+      setError("אנא מלא את הכותרת, התיאור, שם איש הקשר ומספר טלפון");
       return;
     }
 
@@ -36,6 +37,7 @@ function CreateCollabForm({ onSuccess }) {
         toBusinessId: null,
         message,
         contactName: contactName.trim(),
+        phone: phone.trim(),
       });
 
       // נקה שדות
@@ -44,6 +46,7 @@ function CreateCollabForm({ onSuccess }) {
       setNeeds("");
       setOffers("");
       setContactName("");
+      setPhone("");
       setBudget("");
       setExpiryDate("");
 
@@ -109,6 +112,17 @@ function CreateCollabForm({ onSuccess }) {
           onChange={e => setContactName(e.target.value)}
           required
           placeholder="שם איש קשר"
+        />
+      </label>
+
+      <label>
+        טלפון*:
+        <input
+          type="tel"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+          required
+          placeholder="טלפון ליצירת קשר"
         />
       </label>
 
