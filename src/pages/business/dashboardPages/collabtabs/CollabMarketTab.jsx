@@ -166,7 +166,7 @@ export default function CollabMarketTab({ isDevUser }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await API.get("/api/business/proposals/market");
+        const res = await API.get("/business/proposals/market");
         console.log("Response from /api/business/proposals/market:", res.data);
 
         if (Array.isArray(res.data.proposals)) {
