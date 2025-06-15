@@ -1,3 +1,4 @@
+// src/pages/BusinessChatPage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useOutletContext } from "react-router-dom";
@@ -6,6 +7,7 @@ import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import API from "../api";
 import { useSocket } from "../context/socketContext";
+import { useOnScreen } from "../hooks/useOnScreen";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
@@ -44,11 +46,10 @@ export default function BusinessChatPage() {
       .then(({ data }) => {
         setConvos(data);
 
-        // אתחל ספירת הודעות לא נקראות לכל שיחה (אם יש מידע בשיחות)
         const initialUnread = {};
         data.forEach((convo) => {
           const id = convo.conversationId || convo._id;
-          const unread = convo.unreadCount || 0; // ודא שיש שדה כזה מהשרת
+          const unread = convo.unreadCount || 0;
           if (unread > 0) initialUnread[id] = unread;
         });
         setUnreadCountsByConversation(initialUnread);
@@ -66,19 +67,23 @@ export default function BusinessChatPage() {
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // ניהול כניסה לשיחה, סימון הודעות כנקראות ואיפוס ספירה בשיחה זו
+  // שימוש ב-useOnScreen עבור אזור התצוגה של ההודעות
+  const messagesAreaRef = useRef();
+  const messagesAreaOnScreen = useOnScreen(messagesAreaRef, "200px");
+
+  // ניהול טעינת ההודעות רק כשהאזור נראה במסך
   useEffect(() => {
     if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
       return;
     }
+    if (!messagesAreaOnScreen) return; // מחכים עד שהאזור נראה
 
-    // סימון השיחה שנכנסנו אליה כנקראת בשרת
+    // סימון השיחה כנקראה בשרת
     socket.emit("markMessagesRead", selected.conversationId, (response) => {
       if (!response.ok) {
         console.error("Failed to mark messages as read:", response.error);
       } else {
-        // אפס ספירת הודעות לא נקראות בשיחה שנכנסנו אליה
         setUnreadCountsByConversation((prev) => {
           const updated = { ...prev };
           delete updated[selected.conversationId];
@@ -116,16 +121,15 @@ export default function BusinessChatPage() {
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, socket]);
+  }, [selected, socket, messagesAreaOnScreen]);
 
-  // מאזין להודעות חדשות שמגיעות דרך websocket
+  // מאזין להודעות חדשות
   useEffect(() => {
     if (!socket) return;
 
     const handleNewMessage = (message) => {
       const convoId = message.conversationId || message.conversation_id;
 
-      // אם ההודעה היא לשיחה שלא פתוחה כרגע, הגדל ספירת לא נקראו
       if (convoId && convoId !== selected?.conversationId) {
         setUnreadCountsByConversation((prev) => {
           const prevCount = prev[convoId] || 0;
@@ -160,14 +164,14 @@ export default function BusinessChatPage() {
             businessId={businessId}
             selectedConversationId={selected?.conversationId}
             onSelect={handleSelect}
-            unreadCountsByConversation={unreadCountsByConversation} // העבר ספירה לפי שיחה להצגה ברשימה
+            unreadCountsByConversation={unreadCountsByConversation}
             isBusiness
           />
         )}
         {error && <p className={styles.error}>{error}</p>}
       </aside>
 
-      <section className={styles.chatArea}>
+      <section ref={messagesAreaRef} className={styles.chatArea}>
         {selected ? (
           <BusinessChatTab
             conversationId={selected.conversationId}
