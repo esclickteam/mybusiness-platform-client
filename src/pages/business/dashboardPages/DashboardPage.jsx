@@ -324,16 +324,22 @@ const DashboardPage = () => {
     messages_count: unreadCount,
   };
 
+  // Refs and useOnScreen hooks for lazy loading heavy components
   const cardsRef = createRef();
-  const insightsRef = createRef();
+
+  const insightsRef = useRef();
+  const isInsightsVisible = useOnScreen(insightsRef, "200px");
+
+  const nextActionsRef = useRef();
+  const isNextActionsVisible = useOnScreen(nextActionsRef, "200px");
+
+  const weeklySummaryRef = useRef();
+  const isWeeklySummaryVisible = useOnScreen(weeklySummaryRef, "200px");
+
   const chartsRef = createRef();
 
-  // useRef + useOnScreen עבור דחיית טעינת רכיבי היומן והלוח
   const appointmentsRef = useRef();
   const isAppointmentsVisible = useOnScreen(appointmentsRef, "100px");
-
-  const nextActionsRef = createRef();
-  const weeklySummaryRef = createRef();
 
   return (
     <div className="dashboard-container">
@@ -430,25 +436,33 @@ const DashboardPage = () => {
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
         <div ref={insightsRef}>
-          <MemoizedInsights
-            stats={{
-              ...syncedStats,
-              upcoming_appointments: getUpcomingAppointmentsCount(appointments),
-            }}
-          />
+          {isInsightsVisible ? (
+            <MemoizedInsights
+              stats={{
+                ...syncedStats,
+                upcoming_appointments: getUpcomingAppointmentsCount(appointments),
+              }}
+            />
+          ) : (
+            <DashboardSkeleton />
+          )}
         </div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
         <div ref={nextActionsRef} className="actions-container full-width">
-          <MemoizedNextActions
-            stats={{
-              weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
-              weekly_appointments_count: countItemsInLastWeek(appointments),
-              weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
-              weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
-            }}
-          />
+          {isNextActionsVisible ? (
+            <MemoizedNextActions
+              stats={{
+                weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
+                weekly_appointments_count: countItemsInLastWeek(appointments),
+                weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
+                weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
+              }}
+            />
+          ) : (
+            <DashboardSkeleton />
+          )}
         </div>
       </Suspense>
 
@@ -496,7 +510,11 @@ const DashboardPage = () => {
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
         <div ref={weeklySummaryRef}>
-          <MemoizedWeeklySummary stats={syncedStats} />
+          {isWeeklySummaryVisible ? (
+            <MemoizedWeeklySummary stats={syncedStats} />
+          ) : (
+            <DashboardSkeleton />
+          )}
         </div>
       </Suspense>
     </div>
