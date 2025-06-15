@@ -236,32 +236,55 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   if (!socketRef.current) return;
 
   const handler = (msg) => {
-    console.log("Received newMessage:", msg);
+  console.log("Received newMessage:", msg);
 
-    const normalized = {
-      ...msg,
-      fromBusinessId: msg.fromBusinessId || msg.from,
-      toBusinessId: msg.toBusinessId || msg.to,
-    };
-
-    console.log("Selected conversation ID:", selectedConversation?._id);
-    if (normalized.conversationId === selectedConversation?._id) {
-      setMessages((prev) =>
-        prev.some((m) => m._id === normalized._id) ? prev : [...prev, normalized]
-      );
-      console.log("Message added to messages state");
-    } else {
-      console.log("Message ignored - different conversation");
-    }
-
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv._id === normalized.conversationId
-          ? { ...conv, messages: [...(conv.messages || []), normalized] }
-          : conv
-      )
-    );
+  const normalized = {
+    ...msg,
+    fromBusinessId: msg.fromBusinessId || msg.from,
+    toBusinessId: msg.toBusinessId || msg.to,
   };
+
+  console.log("Selected conversation ID:", selectedConversation?._id);
+
+  if (normalized.conversationId === selectedConversation?._id) {
+    setMessages((prev) => {
+      // אם כבר יש הודעה עם אותו _id - אל תוסיף כפול
+      if (prev.some((m) => m._id === normalized._id)) {
+        return prev;
+      }
+
+      // חפש הודעה זמנית עם אותו טקסט ושולח כדי להחליף אותה
+      const pendingIndex = prev.findIndex(
+        (m) =>
+          m._id?.startsWith("pending-") &&
+          m.text === normalized.text &&
+          m.fromBusinessId === normalized.fromBusinessId
+      );
+
+      if (pendingIndex !== -1) {
+        const newArr = [...prev];
+        newArr[pendingIndex] = normalized; // החלף הודעה זמנית בהודעה אמיתית
+        return newArr;
+      }
+
+      // הוסף הודעה חדשה רגילה
+      return [...prev, normalized];
+    });
+
+    console.log("Message added to messages state");
+  } else {
+    console.log("Message ignored - different conversation");
+  }
+
+  setConversations((prev) =>
+    prev.map((conv) =>
+      conv._id === normalized.conversationId
+        ? { ...conv, messages: [...(conv.messages || []), normalized] }
+        : conv
+    )
+  );
+};
+
 
   socketRef.current.on("newMessage", handler);
 
