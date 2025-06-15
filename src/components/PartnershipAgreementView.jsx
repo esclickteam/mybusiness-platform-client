@@ -58,7 +58,6 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     setSaving(false);
   }
 
-  // פונקציה להורדת ה-PDF
   const downloadPdf = () => {
     const element = document.getElementById("agreement-content");
     if (!element) {
@@ -144,27 +143,9 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
         </button>
       )}
 
-      {userSide === "createdBy" && userSigned && (
-        <button
-          className="view-agreement-button"
-          onClick={() => alert("הצג הסכם במודאל או ניווט")}
-        >
-          צפייה בהסכם
-        </button>
-      )}
-
       {userSide === "invitedBusiness" && !userSigned && !showSign && (
         <button className="sign-button" onClick={() => setShowSign(true)}>
           חתום עכשיו
-        </button>
-      )}
-
-      {userSide === "invitedBusiness" && userSigned && (
-        <button
-          className="view-agreement-button"
-          onClick={() => alert("הצג הסכם במודאל או ניווט")}
-        >
-          צפייה בהסכם
         </button>
       )}
 
