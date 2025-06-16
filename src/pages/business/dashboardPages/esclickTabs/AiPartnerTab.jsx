@@ -42,10 +42,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     });
 
     // קבלת המלצות AI חדשות לעסק
-    s.on("newAiSuggestion", (suggestion) => {
-      console.log("New AI suggestion received:", suggestion);
-      setSuggestions((prev) => [...prev, suggestion]);
-    });
+    s.on("newRecommendation", (suggestion) => {
+  console.log("New AI suggestion received:", suggestion);
+  setSuggestions((prev) => [...prev, suggestion]);
+});
 
     // קבלת הודעות חדשות (למשל אישור שלח להודעה ללקוח או הודעות מהלקוח)
     s.on("newMessage", (msg) => {
