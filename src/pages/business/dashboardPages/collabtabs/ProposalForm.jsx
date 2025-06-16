@@ -58,8 +58,8 @@ export default function ProposalForm({
   message: {
     title: formData.title,
     description: formData.description,
-    amount: formData.amount,
-    validUntil: formData.validUntil,
+    budget: formData.amount,        // שם השדה כפי שמצופה בשרת
+    expiryDate: formData.validUntil, // שם השדה כפי שמצופה בשרת
   }
 });
 
