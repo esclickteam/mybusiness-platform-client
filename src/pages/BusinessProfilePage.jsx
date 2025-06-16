@@ -30,6 +30,21 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
 
   const isOwnerViewingOther = currentUserBusinessId && currentUserBusinessId !== businessId;
 
+  const handleStartChat = () => {
+    // ניווט לדף צ'אט עם העסק הנבחר (עדכן נתיב לפי הצורך)
+    navigate(`/chat/${businessId}`);
+  };
+
+  const handleSendProposal = () => {
+    // ניווט לטופס שליחת הצעה לעסק הנבחר (עדכן נתיב לפי הצורך)
+    navigate(`/proposals/new?toBusinessId=${businessId}`);
+  };
+
+  const handleCreateAgreement = () => {
+    // ניווט לטופס יצירת הסכם חדש (עדכן נתיב לפי הצורך)
+    navigate(`/agreements/new?partnerBusinessId=${businessId}`);
+  };
+
   return (
     <div
       style={{
@@ -40,7 +55,7 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
         textAlign: "right",
       }}
     >
-      {/* כפתור חזרה לשיתופי פעולה - מחוץ לכרטיסיה */}
+      {/* כפתור חזרה לשיתופי פעולה */}
       {isOwnerViewingOther && (
         <button
           onClick={() => {
@@ -145,24 +160,78 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
           )}
         </div>
 
-        <button
-          style={{
-            marginTop: 30,
-            backgroundColor: "#8e44ad",
-            color: "white",
-            border: "none",
-            padding: "12px 28px",
-            borderRadius: 30,
-            cursor: "pointer",
-            fontSize: 16,
-            boxShadow: "0 4px 14px rgba(142, 68, 173, 0.4)",
-            transition: "background-color 0.3s ease"
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#732d91")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#8e44ad")}
-        >
-          צור קשר עם העסק
-        </button>
+        {/* כפתורי פעולה */}
+        <div style={{ marginTop: 30, display: "flex", gap: 10, justifyContent: "center" }}>
+          <button
+            onClick={handleSendProposal}
+            style={{
+              backgroundColor: "#8e44ad",
+              color: "white",
+              border: "none",
+              padding: "12px 20px",
+              borderRadius: 30,
+              cursor: "pointer",
+              fontWeight: "600",
+              fontSize: 16,
+              boxShadow: "0 4px 14px rgba(142, 68, 173, 0.4)",
+              transition: "background-color 0.3s ease"
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#732d91")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#8e44ad")}
+          >
+            שלח הצעה
+          </button>
+
+          <button
+            onClick={handleStartChat}
+            style={{
+              backgroundColor: "transparent",
+              border: "2px solid #8e44ad",
+              color: "#8e44ad",
+              padding: "12px 20px",
+              borderRadius: 30,
+              cursor: "pointer",
+              fontWeight: "600",
+              fontSize: 16,
+              transition: "background-color 0.3s ease"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = "#8e44ad";
+              e.currentTarget.style.color = "white";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#8e44ad";
+            }}
+          >
+            צ'אט
+          </button>
+
+          <button
+            onClick={handleCreateAgreement}
+            style={{
+              backgroundColor: "transparent",
+              border: "2px solid #8e44ad",
+              color: "#8e44ad",
+              padding: "12px 20px",
+              borderRadius: 30,
+              cursor: "pointer",
+              fontWeight: "600",
+              fontSize: 16,
+              transition: "background-color 0.3s ease"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = "#8e44ad";
+              e.currentTarget.style.color = "white";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#8e44ad";
+            }}
+          >
+            צור הסכם חדש
+          </button>
+        </div>
       </div>
     </div>
   );
