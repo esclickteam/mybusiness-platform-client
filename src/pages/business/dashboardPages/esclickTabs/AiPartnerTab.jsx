@@ -22,10 +22,15 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   // יצירת החיבור ל- Socket עם auth
   const [socket, setSocket] = useState(null);
   useEffect(() => {
-    if (!businessId || !token) return;
+    if (!businessId || !token) {
+      console.log("Missing businessId or token, skipping socket connection.");
+      return;
+    }
+
+    console.log("Connecting socket with:", { businessId, token });
 
     const s = io(SOCKET_URL, {
-      auth: { token, businessId, role: "client" }, // תפקיד client - לשנות לפי צורך
+      auth: { token, businessId, role: "client" },
       transports: ["websocket"],
     });
 
@@ -33,8 +38,13 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       console.log("Connected to socket with id:", s.id);
     });
 
+    s.on("connect_error", (err) => {
+      console.error("Socket connection error:", err.message);
+    });
+
     // מאזין להמלצות חדשות - כאן אפשר לראות המלצות שהעסק קיבל מהשרת
     s.on("newRecommendation", ({ recommendationId, message, recommendation }) => {
+      console.log("Received newRecommendation:", { recommendationId, message, recommendation });
       setPendingRecommendation({ recommendationId, message, recommendation });
       setChat((prev) => [
         ...prev,
@@ -48,19 +58,21 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
     // הודעות מאושרות מהעסק (העסק אישר ושלח)
     s.on("approvedRecommendationMessage", (data) => {
+      console.log("Received approvedRecommendationMessage:", data);
       setChat((prev) => [
         ...prev,
         { sender: "business", text: `העסק אישר ושלח:\n${data.recommendation}` },
       ]);
     });
 
-    s.on("disconnect", () => {
-      console.log("Socket disconnected");
+    s.on("disconnect", (reason) => {
+      console.log("Socket disconnected, reason:", reason);
     });
 
     setSocket(s);
 
     return () => {
+      console.log("Disconnecting socket");
       s.disconnect();
     };
   }, [businessId, token]);
@@ -70,6 +82,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     async function fetchProfileAndChat() {
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
+        console.log("Fetching profile and chat history...");
         const [profileRes, chatRes] = await Promise.all([
           fetch(`${apiBaseUrl}/business/profile`),
           fetch(`${apiBaseUrl}/partner-ai/chat-history`),
@@ -78,6 +91,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
         const profileData = await profileRes.json();
         const chatData = await chatRes.json();
+
+        console.log("Profile data:", profileData);
+        console.log("Chat history data:", chatData);
 
         setBusinessProfile(profileData);
         setChat(chatData);
@@ -88,7 +104,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
           );
         }
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching profile or chat history:", err);
       }
     }
     fetchProfileAndChat();
@@ -101,6 +117,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   const handleSaveProfile = async () => {
     try {
       const apiBaseUrl = import.meta.env.VITE_API_URL;
+      console.log("Saving profile:", businessProfile);
       const res = await fetch(`${apiBaseUrl}/business/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -123,7 +140,20 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
   // שליחת הודעה לקבלת המלצה דרך Socket
   const sendMessageForRecommendation = (text) => {
-    if (!text.trim() || !socket) return;
+    if (!text.trim()) {
+      console.log("Ignoring empty message");
+      return;
+    }
+    if (!socket) {
+      console.log("Socket not connected yet");
+      return;
+    }
+    if (socket.disconnected) {
+      console.log("Socket is disconnected");
+      return;
+    }
+
+    console.log("Sending message for recommendation:", text);
 
     setChat((prev) => [...prev, { sender: "user", text }]);
     setInput("");
@@ -134,6 +164,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       { message: text, clientSocketId: socket.id, conversationId },
       (response) => {
         setLoading(false);
+        console.log("Response from server on recommendation request:", response);
         if (!response.ok) {
           alert("שגיאה בשליחת הודעה לקבלת המלצה: " + response.error);
         }
@@ -143,12 +174,18 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
   // אישור המלצה ושליחתה ללקוח
   const handleApproveRecommendation = () => {
-    if (!pendingRecommendation || !socket) return;
+    if (!pendingRecommendation || !socket) {
+      console.log("No pending recommendation or socket not connected");
+      return;
+    }
+
+    console.log("Approving recommendation:", pendingRecommendation);
 
     socket.emit(
       "approveRecommendation",
       { recommendationId: pendingRecommendation.recommendationId },
       (response) => {
+        console.log("Response from server on approveRecommendation:", response);
         if (response.ok) {
           setChat((prev) => [
             ...prev,
@@ -163,6 +200,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   };
 
   const handleRejectRecommendation = () => {
+    console.log("Recommendation rejected:", pendingRecommendation);
     setPendingRecommendation(null);
   };
 
