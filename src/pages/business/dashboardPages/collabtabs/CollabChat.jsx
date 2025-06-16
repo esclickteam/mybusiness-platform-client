@@ -17,10 +17,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
 
   const refreshAccessToken = useCallback(async () => {
-    return await refreshAccessTokenOriginal();
+    console.log("[CollabChat] Refreshing token...");
+    const token = await refreshAccessTokenOriginal();
+    console.log("[CollabChat] Token refreshed:", token ? "YES" : "NO");
+    return token;
   }, [refreshAccessTokenOriginal]);
 
   const logout = useCallback(() => {
+    console.log("[CollabChat] Logging out user");
     logoutOriginal();
   }, [logoutOriginal]);
 
@@ -33,18 +37,24 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
-    return msgs.filter((m) => {
+    const filtered = msgs.filter((m) => {
       const id = m._id?.toString() || m.tempId || m.timestamp;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
+    console.log("[CollabChat] uniqueMessages filtered count:", filtered.length);
+    return filtered;
   }, []);
 
   const fetchConversations = useCallback(async () => {
     try {
+      console.log("[CollabChat] Fetching conversations...");
       const token = await refreshAccessToken();
-      if (!token) return;
+      if (!token) {
+        console.warn("[CollabChat] No token, aborting fetchConversations");
+        return;
+      }
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -54,9 +64,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         ...c,
         messages: Array.isArray(c.messages) ? c.messages : [],
       }));
-      console.log("[CollabChat] Safe conversations after messages check:", convs);
+      console.log("[CollabChat] Conversations with safe messages:", convs);
       setConversations(convs);
-      if (!selectedConversation && convs.length > 0) setSelectedConversation(convs[0]);
+      if (!selectedConversation && convs.length > 0) {
+        console.log("[CollabChat] Setting first conversation as selected");
+        setSelectedConversation(convs[0]);
+      }
     } catch (err) {
       console.error("[CollabChat] Failed fetching conversations:", err);
       setConversations([]);
@@ -65,7 +78,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [refreshAccessToken, selectedConversation]);
 
   useEffect(() => {
-    if (!myBusinessId) return;
+    if (!myBusinessId) {
+      console.warn("[CollabChat] No business ID, aborting socket setup");
+      return;
+    }
 
     if (socketInitializedRef.current) {
       console.log("[CollabChat] Socket already initialized, skipping setup");
@@ -129,6 +145,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) {
+      console.log("[CollabChat] No socket or no selectedConversation, clearing messages");
       setMessages([]);
       return;
     }
@@ -140,7 +157,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     (async () => {
       try {
         const token = await refreshAccessToken();
-        if (!token) return;
+        if (!token) {
+          console.warn("[CollabChat] No token, aborting message fetch");
+          return;
+        }
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -205,6 +225,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [selectedConversation, uniqueMessages]);
 
   useEffect(() => {
+    console.log("[CollabChat] Scrolling to bottom");
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -365,6 +386,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   };
 
   useEffect(() => {
+    console.log("[CollabChat] Scrolling to bottom");
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -453,90 +475,89 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         }}
       >
         <Box sx={{ flex: 1, px: 2, pt: 2, overflowY: "auto" }}>
-  {selectedConversation ? (
-    Array.isArray(messages) && messages.length > 0 ? (
-      <>
-        <Box
-          sx={{
-            mb: 2,
-            color: "#6d4fc4",
-            fontWeight: 600,
-            fontSize: 17,
-          }}
-        >
-          שיחה עם{" "}
-          {selectedConversation.participantsInfo?.find(
-            (b) => b._id !== myBusinessId
-          )?.businessName || "עסק"}
-        </Box>
-        {messages.map((msg, i) => (
-          <Box
-            key={msg._id ? msg._id.toString() : `pending-${i}`}
-            sx={{
-              background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-              alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
-              p: 1.2,
-              borderRadius: 2,
-              mb: 1,
-              maxWidth: 340,
-              boxShadow: 1,
-              wordBreak: "break-word",
-            }}
-          >
-            {msg.fileUrl ? (
-              msg.fileType && msg.fileType.startsWith("audio") ? (
-                <audio controls src={msg.fileUrl} />
-              ) : msg.fileType && msg.fileType.startsWith("image") ? (
-                <img
-                  src={msg.fileUrl}
-                  alt={msg.fileName || "image"}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
-              ) : (
-                <a
-                  href={msg.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
+          {selectedConversation ? (
+            Array.isArray(messages) && messages.length > 0 ? (
+              <>
+                <Box
+                  sx={{
+                    mb: 2,
+                    color: "#6d4fc4",
+                    fontWeight: 600,
+                    fontSize: 17,
+                  }}
                 >
-                  {msg.fileName || "קובץ להורדה"}
-                </a>
-              )
+                  שיחה עם{" "}
+                  {selectedConversation.participantsInfo?.find(
+                    (b) => b._id !== myBusinessId
+                  )?.businessName || "עסק"}
+                </Box>
+                {messages.map((msg, i) => (
+                  <Box
+                    key={msg._id ? msg._id.toString() : `pending-${i}`}
+                    sx={{
+                      background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                      alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
+                      p: 1.2,
+                      borderRadius: 2,
+                      mb: 1,
+                      maxWidth: 340,
+                      boxShadow: 1,
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {msg.fileUrl ? (
+                      msg.fileType && msg.fileType.startsWith("audio") ? (
+                        <audio controls src={msg.fileUrl} />
+                      ) : msg.fileType && msg.fileType.startsWith("image") ? (
+                        <img
+                          src={msg.fileUrl}
+                          alt={msg.fileName || "image"}
+                          style={{ maxWidth: 200, borderRadius: 8 }}
+                        />
+                      ) : (
+                        <a
+                          href={msg.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                        >
+                          {msg.fileName || "קובץ להורדה"}
+                        </a>
+                      )
+                    ) : (
+                      <Box>{msg.text}</Box>
+                    )}
+                    <Box
+                      sx={{
+                        fontSize: 11,
+                        color: "#888",
+                        mt: 0.5,
+                        textAlign: "left",
+                      }}
+                    >
+                      {msg.timestamp &&
+                        new Date(msg.timestamp).toLocaleTimeString("he-IL", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      {msg.sending && <span> ⏳</span>}
+                      {msg.failed && <span> ❌</span>}
+                    </Box>
+                  </Box>
+                ))}
+                <div ref={messagesEndRef} />
+              </>
             ) : (
-              <Box>{msg.text}</Box>
-            )}
-            <Box
-              sx={{
-                fontSize: 11,
-                color: "#888",
-                mt: 0.5,
-                textAlign: "left",
-              }}
-            >
-              {msg.timestamp &&
-                new Date(msg.timestamp).toLocaleTimeString("he-IL", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              {msg.sending && <span> ⏳</span>}
-              {msg.failed && <span> ❌</span>}
+              <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
+                {error || "אין הודעות בשיחה זו"}
+              </Box>
+            )
+          ) : (
+            <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
+              בחרי שיחה עסקית מהעמודה הימנית
             </Box>
-          </Box>
-        ))}
-        <div ref={messagesEndRef} />
-      </>
-    ) : (
-      <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-        אין הודעות בשיחה זו
-      </Box>
-    )
-  ) : (
-    <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-      בחרי שיחה עסקית מהעמודה הימנית
-    </Box>
-  )}
-</Box>
-
+          )}
+        </Box>
 
         {selectedConversation && (
           <form
