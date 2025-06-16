@@ -5,12 +5,15 @@ import Box from "@mui/material/Box";
 import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 
-export default function BusinessProfilePage({ currentUserBusinessId, resetSearchFilters }) {
+export default function BusinessProfilePage({ currentUserBusinessId: propBusinessId, resetSearchFilters }) {
   const { businessId } = useParams();
 
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // מזהה העסק הנוכחי
+  const [currentUserBusinessId, setCurrentUserBusinessId] = useState(propBusinessId || null);
 
   // מצב למודאל הצעה
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
@@ -29,6 +32,21 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
     fetchBusiness();
   }, [businessId]);
 
+  // אם לא קיבלנו מזהה עסק כפרופ, טוענים אותו כאן (פעם אחת בלבד)
+  useEffect(() => {
+    if (!propBusinessId) {
+      async function fetchMyBusinessId() {
+        try {
+          const res = await API.get("/business/my");
+          setCurrentUserBusinessId(res.data.business._id);
+        } catch {
+          setCurrentUserBusinessId(null);
+        }
+      }
+      fetchMyBusinessId();
+    }
+  }, [propBusinessId]);
+
   if (loading) return <p style={{ textAlign: "center", marginTop: 50 }}>טוען פרופיל...</p>;
   if (error) return <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>{error}</p>;
   if (!business) return <p style={{ textAlign: "center", marginTop: 50 }}>העסק לא נמצא.</p>;
@@ -36,7 +54,6 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
   const isOwnerViewingOther = currentUserBusinessId && currentUserBusinessId !== businessId;
 
   const handleStartChat = () => {
-    // כאן תשאיר ניווט לדף צ'אט
     window.location.href = `/chat/${businessId}`;
   };
 
