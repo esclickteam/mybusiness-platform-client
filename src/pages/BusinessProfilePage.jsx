@@ -34,20 +34,23 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
   }, [businessId]);
 
   useEffect(() => {
-    if (!propBusinessId) {
-      async function fetchMyBusiness() {
-        try {
-          const res = await API.get("/business/my");
-          setCurrentUserBusinessId(res.data.business._id);
-          setCurrentUserBusinessName(res.data.business.businessName || "");
-        } catch {
-          setCurrentUserBusinessId(null);
-          setCurrentUserBusinessName("");
-        }
+  if (!propBusinessId) {
+    async function fetchMyBusiness() {
+      try {
+        const res = await API.get("/business/my");
+        console.log("fetchMyBusiness response:", res.data.business);
+        setCurrentUserBusinessId(res.data.business._id);
+        setCurrentUserBusinessName(res.data.business.businessName || "");
+      } catch (error) {
+        console.error("fetchMyBusiness error:", error);
+        setCurrentUserBusinessId(null);
+        setCurrentUserBusinessName("");
       }
-      fetchMyBusiness();
     }
-  }, [propBusinessId]);
+    fetchMyBusiness();
+  }
+}, [propBusinessId]);
+
 
   if (loading) return <p style={{ textAlign: "center", marginTop: 50 }}>טוען פרופיל...</p>;
   if (error) return <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>{error}</p>;
