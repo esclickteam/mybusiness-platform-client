@@ -16,10 +16,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   const [chat, setChat] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState([]); // המלצות AI ממתינות
+  const [suggestions, setSuggestions] = useState([]);
   const bottomRef = useRef(null);
 
-  // יצירת חיבור Socket וארועים
+  // חיבור Socket.IO עם auth
   const [socket, setSocket] = useState(null);
   useEffect(() => {
     if (!businessId || !token) {
@@ -53,7 +53,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     };
   }, [businessId, token]);
 
-  // טעינת פרופיל העסק
+  // טעינת פרופיל העסק עם Authorization header
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -76,7 +76,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     fetchProfile();
   }, [token]);
 
-  // שמירת פרופיל העסק
+  // שמירת פרופיל עם Authorization header
   const handleSaveProfile = async () => {
     try {
       const apiBaseUrl = import.meta.env.VITE_API_URL;
@@ -104,7 +104,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
   };
 
-  // שליחת הודעה לקבלת המלצה דרך API
+  // שליחת הודעה לקבלת המלצה
   const sendMessageForRecommendation = (text) => {
     if (!text.trim() || !socket || socket.disconnected) return;
 
@@ -128,7 +128,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       });
   };
 
-  // אישור המלצה ושליחתה ללקוח דרך API
+  // אישור המלצה ושליחתה ללקוח
   const approveSuggestion = async (id) => {
     setLoading(true);
     try {
@@ -151,12 +151,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     }
   };
 
-  // דחיית המלצה (הסרה מהרשימה)
+  // דחיית המלצה
   const rejectSuggestion = (id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
   };
 
-  // גלילה אוטומטית לתחתית הצ'אט
+  // גלילה אוטומטית לתחתית הצ'אט וההמלצות
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
@@ -231,12 +231,14 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
           </div>
 
           <div className="chat-box" style={{ maxHeight: 300, overflowY: "auto" }}>
-            {[...chat, ...suggestions.map(s => ({ sender: "aiSuggestion", text: s.text, status: s.status, id: s.id }))].map((msg, i) => (
-              <div key={i} className={`bubble ${msg.sender}`}>
-                {msg.text}
-                {msg.status && <span> ({msg.status})</span>}
-              </div>
-            ))}
+            {[...chat, ...suggestions.map((s) => ({ sender: "aiSuggestion", text: s.text, status: s.status, id: s.id }))].map(
+              (msg, i) => (
+                <div key={i} className={`bubble ${msg.sender}`}>
+                  {msg.text}
+                  {msg.status && <span> ({msg.status})</span>}
+                </div>
+              )
+            )}
             <div ref={bottomRef} />
           </div>
 
