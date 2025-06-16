@@ -39,7 +39,6 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
       async function fetchMyBusiness() {
         try {
           const res = await API.get("/business/my");
-          console.log("fetchMyBusiness response:", res.data.business.businessName);
           setCurrentUserBusinessId(res.data.business._id);
           setCurrentUserBusinessName(res.data.business.businessName);
         } catch {
@@ -259,31 +258,30 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
         </div>
       </div>
 
-      {isProposalModalOpen && currentUserBusinessName && (
-        <Modal open={isProposalModalOpen} onClose={closeProposalModal}>
-          <Box
-            sx={{
-              backgroundColor: "#fff",
-              p: 4,
-              borderRadius: 2,
-              maxWidth: 600,
-              margin: "10% auto",
-              maxHeight: "80vh",
-              overflowY: "auto",
+      <Modal open={isProposalModalOpen} onClose={closeProposalModal}>
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            p: 4,
+            borderRadius: 2,
+            maxWidth: 600,
+            margin: "10% auto",
+            maxHeight: "80vh",
+            overflowY: "auto",
+          }}
+        >
+          <ProposalForm
+            fromBusinessId={currentUserBusinessId}
+            fromBusinessName={currentUserBusinessName} // <-- העבר את שם העסק
+            toBusiness={business}
+            onClose={closeProposalModal}
+            onSent={() => {
+              closeProposalModal();
+              // אפשר להוסיף התראה פה אם רוצים
             }}
-          >
-            <ProposalForm
-              fromBusinessId={currentUserBusinessId}
-              fromBusinessName={currentUserBusinessName} // <-- שם העסק
-              toBusiness={business}
-              onClose={closeProposalModal}
-              onSent={() => {
-                closeProposalModal();
-              }}
-            />
-          </Box>
-        </Modal>
-      )}
+          />
+        </Box>
+      </Modal>
     </div>
   );
 }
