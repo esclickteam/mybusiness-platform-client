@@ -151,8 +151,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
   // שליחת הודעה דרך 'sendMessage' עם role של לקוח
   const sendMessageForRecommendation = (text) => {
-  console.log("sendMessageForRecommendation called. socket:", socket, "disconnected:", socket?.disconnected);
-  
+    console.log("sendMessageForRecommendation called. socket:", socket, "disconnected:", socket?.disconnected);
+
     if (!text || !text.trim() || !socket || socket.disconnected) return;
 
     const msg = {
@@ -175,7 +175,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     });
   };
 
-  // אישור ושליחת המלצה ללקוח
+  // אישור ושליחת המלצה ללקוח + שליחה אוטומטית לצ'אט
   const approveSuggestion = async (id) => {
     setLoading(true);
     try {
@@ -193,6 +193,23 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       );
       alert("ההמלצה אושרה ונשלחה ללקוח!");
       setActiveSuggestion(null);
+
+      // שליחת ההודעה לצ'אט דרך socket
+      const approvedSuggestion = suggestions.find((s) => s.id === id);
+      if (approvedSuggestion && socket && !socket.disconnected) {
+        const msg = {
+          conversationId: approvedSuggestion.conversationId,
+          from: socket.id,
+          to: businessId, // לפי הצורך - אפשר לשנות למזהה הלקוח אם יש
+          text: approvedSuggestion.text,
+          role: "business",
+        };
+        socket.emit("sendMessage", msg, (response) => {
+          if (!response.ok) {
+            alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
+          }
+        });
+      }
     } catch (err) {
       setLoading(false);
       alert("שגיאה באישור ההמלצה: " + err.message);
@@ -338,7 +355,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       {/* מודאל התראה חכמה */}
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>הודעת AI חדשה</h3>
             <p>{activeSuggestion.text}</p>
             <div style={{ marginTop: 10 }}>
