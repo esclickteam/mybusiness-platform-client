@@ -453,83 +453,90 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         }}
       >
         <Box sx={{ flex: 1, px: 2, pt: 2, overflowY: "auto" }}>
-          {selectedConversation && Array.isArray(messages) ? (
-            <>
-              <Box
-                sx={{
-                  mb: 2,
-                  color: "#6d4fc4",
-                  fontWeight: 600,
-                  fontSize: 17,
-                }}
-              >
-                שיחה עם{" "}
-                {selectedConversation.participantsInfo?.find(
-                  (b) => b._id !== myBusinessId
-                )?.businessName || "עסק"}
-              </Box>
-              {messages.map((msg, i) => (
-                <Box
-                  key={msg._id ? msg._id.toString() : `pending-${i}`}
-                  sx={{
-                    background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-                    alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
-                    p: 1.2,
-                    borderRadius: 2,
-                    mb: 1,
-                    maxWidth: 340,
-                    boxShadow: 1,
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {msg.fileUrl ? (
-                    msg.fileType && msg.fileType.startsWith("audio") ? (
-                      <audio controls src={msg.fileUrl} />
-                    ) : msg.fileType && msg.fileType.startsWith("image") ? (
-                      <img
-                        src={msg.fileUrl}
-                        alt={msg.fileName || "image"}
-                        style={{ maxWidth: 200, borderRadius: 8 }}
-                      />
-                    ) : (
-                      <a
-                        href={msg.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        download
-                      >
-                        {msg.fileName || "קובץ להורדה"}
-                      </a>
-                    )
-                  ) : (
-                    <Box>{msg.text}</Box>
-                  )}
-                  <Box
-                    sx={{
-                      fontSize: 11,
-                      color: "#888",
-                      mt: 0.5,
-                      textAlign: "left",
-                    }}
-                  >
-                    {msg.timestamp &&
-                      new Date(msg.timestamp).toLocaleTimeString("he-IL", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    {msg.sending && <span> ⏳</span>}
-                    {msg.failed && <span> ❌</span>}
-                  </Box>
-                </Box>
-              ))}
-              <div ref={messagesEndRef} />
-            </>
-          ) : (
-            <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-              בחרי שיחה עסקית מהעמודה הימנית
-            </Box>
-          )}
+  {selectedConversation ? (
+    Array.isArray(messages) && messages.length > 0 ? (
+      <>
+        <Box
+          sx={{
+            mb: 2,
+            color: "#6d4fc4",
+            fontWeight: 600,
+            fontSize: 17,
+          }}
+        >
+          שיחה עם{" "}
+          {selectedConversation.participantsInfo?.find(
+            (b) => b._id !== myBusinessId
+          )?.businessName || "עסק"}
         </Box>
+        {messages.map((msg, i) => (
+          <Box
+            key={msg._id ? msg._id.toString() : `pending-${i}`}
+            sx={{
+              background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+              alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
+              p: 1.2,
+              borderRadius: 2,
+              mb: 1,
+              maxWidth: 340,
+              boxShadow: 1,
+              wordBreak: "break-word",
+            }}
+          >
+            {msg.fileUrl ? (
+              msg.fileType && msg.fileType.startsWith("audio") ? (
+                <audio controls src={msg.fileUrl} />
+              ) : msg.fileType && msg.fileType.startsWith("image") ? (
+                <img
+                  src={msg.fileUrl}
+                  alt={msg.fileName || "image"}
+                  style={{ maxWidth: 200, borderRadius: 8 }}
+                />
+              ) : (
+                <a
+                  href={msg.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
+                  {msg.fileName || "קובץ להורדה"}
+                </a>
+              )
+            ) : (
+              <Box>{msg.text}</Box>
+            )}
+            <Box
+              sx={{
+                fontSize: 11,
+                color: "#888",
+                mt: 0.5,
+                textAlign: "left",
+              }}
+            >
+              {msg.timestamp &&
+                new Date(msg.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              {msg.sending && <span> ⏳</span>}
+              {msg.failed && <span> ❌</span>}
+            </Box>
+          </Box>
+        ))}
+        <div ref={messagesEndRef} />
+      </>
+    ) : (
+      <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
+        אין הודעות בשיחה זו
+      </Box>
+    )
+  ) : (
+    <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
+      בחרי שיחה עסקית מהעמודה הימנית
+    </Box>
+  )}
+</Box>
+
 
         {selectedConversation && (
           <form
