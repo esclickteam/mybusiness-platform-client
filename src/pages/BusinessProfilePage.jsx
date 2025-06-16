@@ -6,6 +6,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
+import CreateAgreementForm from "./business/dashboardPages/collabtabs/CreateAgreementForm"; // <-- הוסף את זה עם הנתיב הנכון
 
 export default function BusinessProfilePage({ currentUserBusinessId: propBusinessId, resetSearchFilters }) {
   const { businessId } = useParams();
@@ -25,6 +26,9 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [sending, setSending] = useState(false);
+
+  // מצב למודאל יצירת הסכם
+  const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchBusiness() {
@@ -99,8 +103,13 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     }
   };
 
+  // כאן במקום ניווט פותחים את מודאל יצירת ההסכם
   const handleCreateAgreement = () => {
-    window.location.href = `/agreements/new?partnerBusinessId=${businessId}`;
+    setCreateAgreementModalOpen(true);
+  };
+
+  const closeCreateAgreementModal = () => {
+    setCreateAgreementModalOpen(false);
   };
 
   return (
@@ -347,6 +356,28 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
           >
             שלח
           </Button>
+        </Box>
+      </Modal>
+
+      {/* Create Agreement Modal */}
+      <Modal open={createAgreementModalOpen} onClose={closeCreateAgreementModal}>
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            p: 4,
+            borderRadius: 2,
+            maxWidth: 600,
+            margin: "10% auto",
+            maxHeight: "80vh",
+            overflowY: "auto",
+          }}
+        >
+          <CreateAgreementForm
+            fromBusinessId={currentUserBusinessId}
+            fromBusinessName={currentUserBusinessName}
+            partnerBusiness={business}
+            onClose={closeCreateAgreementModal}
+          />
         </Box>
       </Modal>
     </div>
