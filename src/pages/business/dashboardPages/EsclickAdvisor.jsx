@@ -1,23 +1,36 @@
 import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext"; // הנתיב תתאים למבנה שלך
 import BusinessAdvisorTab from "./esclickTabs/BusinessAdvisorTab";
 import MarketingAdvisorTab from "./esclickTabs/MarketingAdvisorTab";
 import BusinessXrayWrapper from "./esclickTabs/BusinessXrayWrapper";
 import AiPartnerTab from "./esclickTabs/AiPartnerTab";
 import "./EsclickAdvisor.css";
 
-
 const EsclickAdvisor = () => {
   const [activeTab, setActiveTab] = useState("business");
 
+  // שליפת token ו-businessId מתוך הקונטקסט
+  const { user, loading } = useAuth();
+  const token = localStorage.getItem("token"); // או תוכל להעביר אותו גם בקונטקסט אם שמרת שם
+
   const renderTab = () => {
     switch (activeTab) {
-      case "business": return <BusinessAdvisorTab />;
-      case "marketing": return <MarketingAdvisorTab />;
-      case "xray": return <BusinessXrayWrapper />;
-      case "partner": return <AiPartnerTab />;
-      default: return null;
+      case "business":
+        return <BusinessAdvisorTab />;
+      case "marketing":
+        return <MarketingAdvisorTab />;
+      case "xray":
+        return <BusinessXrayWrapper />;
+      case "partner":
+        return <AiPartnerTab businessId={user?.businessId} token={token} />;
+      default:
+        return null;
     }
   };
+
+  if (loading) {
+    return <div>טוען...</div>;
+  }
 
   return (
     <div className="esclick-container">
@@ -50,9 +63,7 @@ const EsclickAdvisor = () => {
         </button>
       </div>
 
-      <div className="tab-content">
-        {renderTab()}
-      </div>
+      <div className="tab-content">{renderTab()}</div>
     </div>
   );
 };
