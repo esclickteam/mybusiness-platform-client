@@ -114,7 +114,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
   // שליחת הודעה לקבלת המלצה
   const sendMessageForRecommendation = (text) => {
-    if (!text.trim() || !socket || socket.disconnected) return;
+    console.log("sendMessageForRecommendation called with:", text);
+    if (!text || !text.trim() || !socket || socket.disconnected) return;
 
     setChat((prev) => [...prev, { sender: "user", text }]);
     setInput("");
@@ -254,17 +255,28 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
             <textarea
               rows={2}
               value={input || ""}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                console.log("onChange input value:", val);
+                setInput(val === undefined || val === null ? "" : val);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
+                  console.log("Sending message with input:", input);
                   sendMessageForRecommendation(input);
                 }
               }}
               placeholder="הקלד הודעה או בקשה..."
               disabled={loading}
             />
-            <button onClick={() => sendMessageForRecommendation(input)} disabled={loading || !input.trim()}>
+            <button
+              onClick={() => {
+                console.log("Button clicked to send message with input:", input);
+                sendMessageForRecommendation(input);
+              }}
+              disabled={loading || !input.trim()}
+            >
               שלח
             </button>
           </div>
