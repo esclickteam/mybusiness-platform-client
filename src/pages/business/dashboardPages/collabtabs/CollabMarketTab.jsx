@@ -35,7 +35,6 @@ function CreateCollabForm({ onSuccess }) {
       };
 
       await API.post("/business/my/proposals", {
-
         toBusinessId: null,
         message,
         contactName:  contactName.trim(),
