@@ -45,7 +45,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     // אפשר לממש כאן טופס עריכה/שליחה מחדש
   };
 
-  // פונקציה לניקוי גרשים כפולים מסביב למחרוזת
+  // ניקוי גרשים כפולים מהכותרת והתיאור
   const cleanString = (str) => {
     if (!str) return "";
     return str.replace(/^"+|"+$/g, "");
@@ -108,10 +108,10 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                 <strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "-"}
               </p>
               <p>
-                <strong>כותרת הצעה:</strong> {cleanTitle || "-"}
+                <strong>כותרת:</strong> {cleanTitle || "-"}
               </p>
               <p>
-                <strong>תיאור הצעה:</strong> {cleanDescription || "-"}
+                <strong>תיאור:</strong> {cleanDescription || "-"}
               </p>
               <p>
                 <strong>סכום:</strong> {amount !== undefined && amount !== null ? amount : "-"}
