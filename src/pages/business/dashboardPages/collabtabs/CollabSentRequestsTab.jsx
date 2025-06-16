@@ -69,6 +69,8 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         <p style={{ textAlign: "center" }}>לא נשלחו עדיין הצעות.</p>
       ) : (
         sentRequests.map((req) => {
+          console.log("Proposal message:", req.message);
+
           const {
             title,
             description,
@@ -107,9 +109,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
               </p>
               <p>
                 <strong>תאריך תוקף:</strong>{" "}
-                {validUntil
-                  ? new Date(validUntil).toLocaleDateString("he-IL")
-                  : "-"}
+                {validUntil ? new Date(validUntil).toLocaleDateString("he-IL") : "-"}
               </p>
               <p>
                 <strong>סטטוס:</strong> {req.status || "לא ידוע"}
