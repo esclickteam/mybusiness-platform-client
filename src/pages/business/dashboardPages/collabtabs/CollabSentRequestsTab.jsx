@@ -38,69 +38,91 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   const handleResendProposal = (proposal) => {
     alert(
       `פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${
-        proposal.toBusinessId?.businessName || "לא ידוע"
+        proposal.toBusinessId?.businessName || "הצעה ציבורית"
       }`
     );
     // כאן אפשר לממש פתיחת טופס עריכה/שליחה מחדש
-  };
-
-  const parseMessage = (message) => {
-    if (!message) return {};
-    const lines = message.split('\n').map(line => line.trim());
-    const parsed = {};
-    lines.forEach(line => {
-      if (line.startsWith('כותרת:')) parsed.title = line.replace('כותרת:', '').trim();
-      else if (line.startsWith('תיאור:')) parsed.description = line.replace('תיאור:', '').trim();
-      else if (line.startsWith('סכום:')) parsed.amount = line.replace('סכום:', '').trim();
-      else if (line.startsWith('תוקף עד:')) parsed.validUntil = line.replace('תוקף עד:', '').trim();
-    });
-    return parsed;
   };
 
   if (loading) return <p>טוען הצעות שנשלחו...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div className="collab-section" style={{ direction: 'rtl', fontFamily: 'Arial, sans-serif', maxWidth: 700, margin: 'auto' }}>
-      <h3 className="collab-title" style={{ color: '#6b46c1', marginBottom: 20, textAlign: 'center' }}>📤 הצעות שנשלחו</h3>
+    <div
+      className="collab-section"
+      style={{ direction: "rtl", fontFamily: "Arial, sans-serif", maxWidth: 700, margin: "auto" }}
+    >
+      <h3
+        className="collab-title"
+        style={{ color: "#6b46c1", marginBottom: 20, textAlign: "center" }}
+      >
+        📤 הצעות שנשלחו
+      </h3>
       {sentRequests.length === 0 ? (
-        <p style={{ textAlign: 'center' }}>לא נשלחו עדיין הצעות.</p>
+        <p style={{ textAlign: "center" }}>לא נשלחו עדיין הצעות.</p>
       ) : (
         sentRequests.map((req) => {
-          const { title, description, amount, validUntil } = parseMessage(req.message);
+          const { title, description, budget, expiryDate } = req.message || {};
+          const validUntil = expiryDate
+            ? new Date(expiryDate).toLocaleDateString("he-IL")
+            : "-";
+          const amount = budget !== undefined && budget !== null ? budget : "-";
+          const toBusinessName = req.toBusinessId?.businessName || "הצעה ציבורית";
+
           return (
             <div
               key={req.proposalId}
               className="collab-card"
               style={{
-                background: '#fff',
+                background: "#fff",
                 padding: 16,
                 borderRadius: 12,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 marginBottom: 16,
-                wordBreak: 'break-word'
+                wordBreak: "break-word",
               }}
             >
-              <p><strong>עסק שולח:</strong> {req.fromBusinessId?.businessName || "לא ידוע"}</p>
-              <p><strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "לא ידוע"}</p>
-              <p><strong>כותרת הצעה:</strong> {title || "-"}</p>
-              <p><strong>תיאור הצעה:</strong> {description || "-"}</p>
-              <p><strong>סכום:</strong> {amount || "-"}</p>
-              <p><strong>תוקף עד:</strong> {validUntil || "-"}</p>
-              <p><strong>סטטוס:</strong> {req.status || "לא ידוע"}</p>
-              <p style={{ color: '#666', fontSize: '0.9rem' }}>
+              <p>
+                <strong>עסק שולח:</strong> {req.fromBusinessId?.businessName || "לא ידוע"}
+              </p>
+              <p>
+                <strong>עסק מקבל:</strong> {toBusinessName}
+              </p>
+              <p>
+                <strong>כותרת הצעה:</strong> {title || "-"}
+              </p>
+              <p>
+                <strong>תיאור הצעה:</strong> {description || "-"}
+              </p>
+              <p>
+                <strong>סכום:</strong> {amount}
+              </p>
+              <p>
+                <strong>תוקף עד:</strong> {validUntil}
+              </p>
+              <p>
+                <strong>סטטוס:</strong> {req.status || "לא ידוע"}
+              </p>
+              <p style={{ color: "#666", fontSize: "0.9rem" }}>
                 נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
               </p>
-              <div style={{ marginTop: 12, display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <div
+                style={{
+                  marginTop: 12,
+                  display: "flex",
+                  gap: 12,
+                  justifyContent: "flex-end",
+                }}
+              >
                 <button
                   style={{
-                    backgroundColor: '#6b46c1',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
+                    backgroundColor: "#6b46c1",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 16px",
                     borderRadius: 8,
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
+                    cursor: "pointer",
+                    fontWeight: "bold",
                   }}
                   onClick={() => handleResendProposal(req)}
                 >
@@ -108,13 +130,13 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                 </button>
                 <button
                   style={{
-                    backgroundColor: '#d53f8c',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
+                    backgroundColor: "#d53f8c",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 16px",
                     borderRadius: 8,
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
+                    cursor: "pointer",
+                    fontWeight: "bold",
                   }}
                   onClick={() => handleCancelProposal(req.proposalId)}
                 >
