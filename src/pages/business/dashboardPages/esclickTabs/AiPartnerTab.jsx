@@ -176,45 +176,46 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   };
 
   // אישור ושליחת המלצה ללקוח + שליחה אוטומטית לצ'אט
-  const approveSuggestion = async (id) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/send-approved`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ businessId, recommendationId: id }),
+const approveSuggestion = async ({ id, conversationId, text }) => {
+  setLoading(true);
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/send-approved`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ businessId, recommendationId: id }),
+    });
+    const data = await res.json();
+    setLoading(false);
+    if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+    setSuggestions((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
+    );
+    alert("ההמלצה אושרה ונשלחה ללקוח!");
+    setActiveSuggestion(null);
+
+    // שליחת ההודעה לצ'אט דרך socket
+    if (socket && !socket.disconnected) {
+      const msg = {
+        conversationId,
+        from: socket.id,
+        to: businessId, // כאן אפשר לשים את מזהה הלקוח אם יש לך
+        text,
+        role: "business",
+      };
+      socket.emit("sendMessage", msg, (response) => {
+        if (!response.ok) {
+          alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
+        }
       });
-      const data = await res.json();
-      setLoading(false);
-      if (!res.ok) throw new Error(data.error || "Failed to approve");
-
-      setSuggestions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
-      );
-      alert("ההמלצה אושרה ונשלחה ללקוח!");
-      setActiveSuggestion(null);
-
-      // שליחת ההודעה לצ'אט דרך socket
-      const approvedSuggestion = suggestions.find((s) => s.id === id);
-      if (approvedSuggestion && socket && !socket.disconnected) {
-        const msg = {
-          conversationId: approvedSuggestion.conversationId,
-          from: socket.id,
-          to: businessId, // לפי הצורך - אפשר לשנות למזהה הלקוח אם יש
-          text: approvedSuggestion.text,
-          role: "business",
-        };
-        socket.emit("sendMessage", msg, (response) => {
-          if (!response.ok) {
-            alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
-          }
-        });
-      }
-    } catch (err) {
-      setLoading(false);
-      alert("שגיאה באישור ההמלצה: " + err.message);
     }
-  };
+  } catch (err) {
+    setLoading(false);
+    alert("שגיאה באישור ההמלצה: " + err.message);
+  }
+};
+
+
 
   // דחיית המלצה
   const rejectSuggestion = (id) => {
@@ -331,21 +332,21 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
           </div>
 
           <div className="suggestions-list" style={{ marginTop: 20 }}>
-            {suggestions.map(({ id, text, status }) => (
-              <div key={id} style={{ marginBottom: 10, padding: 10, border: "1px solid #ccc" }}>
-                <p>{text}</p>
-                <p>סטטוס: {status || "ממתין"}</p>
-                {status !== "sent" && (
-                  <>
-                    <button onClick={() => approveSuggestion(id)} disabled={loading}>
-                      אשר ושלח
-                    </button>
-                    <button onClick={() => rejectSuggestion(id)} disabled={loading} style={{ marginLeft: 8 }}>
-                      דחה
-                    </button>
-                  </>
-                )}
-                {status === "sent" && <span style={{ color: "green" }}>✅ נשלח ללקוח</span>}
+            {suggestions.map(({ id, text, status, conversationId }) => (
+  <div key={id} style={{ marginBottom: 10, padding: 10, border: "1px solid #ccc" }}>
+    <p>{text}</p>
+    <p>סטטוס: {status || "ממתין"}</p>
+    {status !== "sent" && (
+      <>
+        <button onClick={() => approveSuggestion({ id, conversationId, text })} disabled={loading}>
+          אשר ושלח
+        </button>
+        <button onClick={() => rejectSuggestion(id)} disabled={loading} style={{ marginLeft: 8 }}>
+          דחה
+        </button>
+      </>
+    )}
+    {status === "sent" && <span style={{ color: "green" }}>✅ נשלח ללקוח</span>}
               </div>
             ))}
           </div>
@@ -354,16 +355,29 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
       {/* מודאל התראה חכמה */}
       {activeSuggestion && (
-        <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>הודעת AI חדשה</h3>
-            <p>{activeSuggestion.text}</p>
-            <div style={{ marginTop: 10 }}>
-              <button onClick={() => approveSuggestion(activeSuggestion.id)} disabled={loading}>
-                אשר ושלח
-              </button>
-              <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading} style={{ marginLeft: 8 }}>
-                דחה
+  <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
+    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <h3>הודעת AI חדשה</h3>
+      <p>{activeSuggestion.text}</p>
+      <div style={{ marginTop: 10 }}>
+        <button
+          onClick={() =>
+            approveSuggestion({
+              id: activeSuggestion.id,
+              conversationId: activeSuggestion.conversationId,
+              text: activeSuggestion.text,
+            })
+          }
+          disabled={loading}
+        >
+          אשר ושלח
+        </button>
+        <button
+          onClick={() => rejectSuggestion(activeSuggestion.id)}
+          disabled={loading}
+          style={{ marginLeft: 8 }}
+        >
+          דחה
               </button>
             </div>
           </div>
