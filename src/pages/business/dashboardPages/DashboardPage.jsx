@@ -354,26 +354,23 @@ const DashboardPage = () => {
                 <p><b>הודעת לקוח:</b> {message}</p>
                 <p><b>המלצה AI:</b> {recommendation}</p>
                 <button
-  style={{ backgroundColor: "#4caf50", color: "white", border: "none", padding: "8px 12px", borderRadius: 4, cursor: "pointer" }}
-  onClick={() => {
-    if (!socketRef.current) {
-      console.error("Socket not connected!");
-      return;
-    }
-    console.log("Sending businessApproveRecommendation for", recommendationId);
-    socketRef.current.emit("businessApproveRecommendation", { recommendationId }, (res) => {
-      console.log("Response from server:", res);
-      if (res.ok) {
-        alert("ההמלצה אושרה ונשלחה ללקוח");
-        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
-      } else {
-        alert("שגיאה באישור ההמלצה: " + res.error);
-      }
-    });
-  }}
->
-  אשר ושלח
-</button>
+                  style={{ backgroundColor: "#4caf50", color: "white", border: "none", padding: "8px 12px", borderRadius: 4, cursor: "pointer" }}
+                  onClick={() => {
+                    if (!socketRef.current) return;
+                    console.error("Socket not connected!");
+                    socketRef.current.emit("businessApproveRecommendation", { recommendationId }, (res) => {
+                      console.log("Response from server:", res);
+                      if (res.ok) {
+                        alert("ההמלצה אושרה ונשלחה ללקוח");
+                        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
+                      } else {
+                        alert("שגיאה באישור ההמלצה: " + res.error);
+                      }
+                    });
+                  }}
+                >
+                  אשר ושלח
+                </button>
               </li>
             ))}
           </ul>
