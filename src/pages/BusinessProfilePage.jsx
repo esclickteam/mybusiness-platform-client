@@ -12,9 +12,11 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // מזהה העסק הנוכחי ושם העסק
+  // מזהה העסק הנוכחי
   const [currentUserBusinessId, setCurrentUserBusinessId] = useState(propBusinessId || null);
-  const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
+
+  // מצב למודאל הצעה
+  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchBusiness() {
@@ -33,17 +35,15 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
   // אם לא קיבלנו מזהה עסק כפרופ, טוענים אותו כאן (פעם אחת בלבד)
   useEffect(() => {
     if (!propBusinessId) {
-      async function fetchMyBusiness() {
+      async function fetchMyBusinessId() {
         try {
           const res = await API.get("/business/my");
           setCurrentUserBusinessId(res.data.business._id);
-          setCurrentUserBusinessName(res.data.business.businessName);
         } catch {
           setCurrentUserBusinessId(null);
-          setCurrentUserBusinessName("");
         }
       }
-      fetchMyBusiness();
+      fetchMyBusinessId();
     }
   }, [propBusinessId]);
 
@@ -57,9 +57,13 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     window.location.href = `/chat/${businessId}`;
   };
 
-  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
-  const openProposalModal = () => setIsProposalModalOpen(true);
-  const closeProposalModal = () => setIsProposalModalOpen(false);
+  const openProposalModal = () => {
+    setIsProposalModalOpen(true);
+  };
+
+  const closeProposalModal = () => {
+    setIsProposalModalOpen(false);
+  };
 
   const handleCreateAgreement = () => {
     window.location.href = `/agreements/new?partnerBusinessId=${businessId}`;
@@ -108,7 +112,6 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
           padding: 30,
         }}
       >
-        {/* תוכן העסק */}
         <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
           <img
             src={business.logo || "/default-logo.png"}
@@ -133,7 +136,6 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
           </div>
         </div>
 
-        {/* שאר פרטי העסק */}
         <div style={{ lineHeight: 1.6, fontSize: 16 }}>
           <p><b>📍 אזור פעילות:</b> {business.area || "לא מוגדר"}</p>
           <p><b>📝 תיאור העסק:</b></p>
@@ -180,7 +182,6 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
           )}
         </div>
 
-        {/* כפתורי פעולה */}
         <div style={{ marginTop: 30, display: "flex", gap: 10, justifyContent: "center" }}>
           <button
             onClick={openProposalModal}
@@ -268,7 +269,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
         >
           <ProposalForm
             fromBusinessId={currentUserBusinessId}
-            fromBusinessName={currentUserBusinessName} // <-- העבר את שם העסק
+            fromBusinessName={currentUserBusinessName} // ודא שזה מועבר
             toBusiness={business}
             onClose={closeProposalModal}
             onSent={() => {
