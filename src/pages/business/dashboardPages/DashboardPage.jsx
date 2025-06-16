@@ -249,8 +249,14 @@ const DashboardPage = () => {
 
       // ** NEW: Listen to AI recommendations **
       sock.on("newRecommendation", (recommendation) => {
-        setRecommendations((prev) => [...prev, recommendation]);
-      });
+  setRecommendations((prev) => {
+    if (prev.find(r => r.recommendationId === recommendation.recommendationId)) {
+      // כבר קיים - לא מוסיפים
+      return prev;
+    }
+    return [...prev, recommendation];
+  });
+});
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);

@@ -43,6 +43,7 @@ export function AiProvider({ children }) {
     return () => window.removeEventListener("storage", onStorage);
   }, [activeSuggestion]);
 
+  // חיבור וסנכרון socket
   useEffect(() => {
     if (!token || !user?.businessId) return;
 
@@ -74,7 +75,6 @@ export function AiProvider({ children }) {
 
       // שמור רק המלצה אחת – מחליף את הרשימה בהמלצה החדשה בלבד
       setSuggestions([newSuggestion]);
-
       setActiveSuggestion(newSuggestion);
     });
 
@@ -141,10 +141,65 @@ export function AiProvider({ children }) {
       }}
     >
       {children}
+      <AiModal />
     </AiContext.Provider>
   );
 }
 
 export function useAi() {
   return useContext(AiContext);
+}
+
+// רכיב modal להצגת ההמלצה
+function AiModal() {
+  const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading } = useAi();
+
+  if (!activeSuggestion) return null;
+
+  return (
+    <div
+      onClick={closeModal}
+      style={{
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
+        justifyContent: "center", alignItems: "center", zIndex: 1000
+      }}
+      aria-modal="true"
+      role="dialog"
+      tabIndex={-1}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: "white",
+          padding: 20,
+          borderRadius: 8,
+          maxWidth: 400,
+          width: "90%",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
+          textAlign: "right",
+          direction: "rtl",
+        }}
+      >
+        <h2>הודעת AI חדשה</h2>
+        <p>{activeSuggestion.text}</p>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
+          <button
+            onClick={() => approveSuggestion(activeSuggestion.id)}
+            disabled={loading}
+            style={{ padding: "8px 16px" }}
+          >
+            אשר ושלח
+          </button>
+          <button
+            onClick={() => rejectSuggestion(activeSuggestion.id)}
+            disabled={loading}
+            style={{ padding: "8px 16px" }}
+          >
+            דחה
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
