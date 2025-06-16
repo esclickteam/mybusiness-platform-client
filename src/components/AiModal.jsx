@@ -1,5 +1,5 @@
 import React from "react";
-import { useAi } from "./AiContext"; // נתיב מתאים אל הקונטקסט שלך
+import { useAi } from "../context/AiContext";
 
 export default function AiModal() {
   const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading } = useAi();
