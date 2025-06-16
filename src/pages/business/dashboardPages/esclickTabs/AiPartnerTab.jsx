@@ -60,20 +60,16 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
         });
       }
 
-      setSuggestions((prev) => {
-        const exists = prev.some((s) => s.id === suggestion.recommendationId);
-        if (exists) return prev;
-        return [
-          ...prev,
-          {
-            id: suggestion.recommendationId,
-            text: suggestion.recommendation,
-            status: suggestion.status || "ממתין",
-            conversationId: suggestion.conversationId,
-            clientSocketId: suggestion.clientSocketId,
-          },
-        ];
-      });
+      // מחליפים את הרשימה עם המלצה אחת בלבד
+      setSuggestions([
+        {
+          id: suggestion.recommendationId,
+          text: suggestion.recommendation,
+          status: suggestion.status || "ממתין",
+          conversationId: suggestion.conversationId,
+          clientSocketId: suggestion.clientSocketId,
+        },
+      ]);
     });
 
     // קבלת הודעות חדשות לצ'אט
@@ -96,7 +92,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   // הצגת המודאל להתראה חכמה
   useEffect(() => {
     if (suggestions.length > 0) {
-      setActiveSuggestion(suggestions[suggestions.length - 1]);
+      setActiveSuggestion(suggestions[0]); // תמיד ההמלצה היחידה
     }
   }, [suggestions]);
 
@@ -159,10 +155,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
     const msg = {
       conversationId,
-      from: socket.id,      // או מזהה אחר לפי הלוגיקה שלך
+      from: socket.id,
       to: businessId,
       text,
-      role: "client",       // חשוב! כדי שהשרת יזהה כהודעת לקוח
+      role: "client",
     };
 
     setChat((prev) => [...prev, { sender: "user", text }]);
@@ -203,7 +199,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
   // דחיית המלצה
   const rejectSuggestion = (id) => {
-    setSuggestions((prev) => prev.filter((s) => s.id !== id));
+    setSuggestions([]);
     setActiveSuggestion(null);
   };
 

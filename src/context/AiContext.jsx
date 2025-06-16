@@ -72,13 +72,8 @@ export function AiProvider({ children }) {
         clientSocketId: suggestion.clientSocketId,
       };
 
-      setSuggestions((prev) => {
-        // בדיקה אם ההמלצה כבר קיימת
-        if (prev.find(s => s.id === newSuggestion.id)) {
-          return prev; // אל תוסיף כפילויות
-        }
-        return [...prev, newSuggestion];
-      });
+      // שמור רק המלצה אחת – מחליף את הרשימה בהמלצה החדשה בלבד
+      setSuggestions([newSuggestion]);
 
       setActiveSuggestion(newSuggestion);
     });
