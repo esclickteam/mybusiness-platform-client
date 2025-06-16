@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 
@@ -19,6 +21,11 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
   // מצב למודאל הצעה
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
 
+  // מצב למודאל צ'אט
+  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
+  const [sending, setSending] = useState(false);
+
   useEffect(() => {
     async function fetchBusiness() {
       try {
@@ -33,32 +40,25 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     fetchBusiness();
   }, [businessId]);
 
-  // טען תמיד את העסק שלי (לשם זיהוי השולח)
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
         const res = await API.get("/business/my");
-        console.log("fetchMyBusiness response:", res.data.business);
         setCurrentUserBusinessId(res.data.business._id);
         setCurrentUserBusinessName(res.data.business.businessName || "");
       } catch (error) {
-        console.error("fetchMyBusiness error:", error);
         setCurrentUserBusinessId(null);
         setCurrentUserBusinessName("");
       }
     }
     fetchMyBusiness();
-  }, []); // רץ פעם אחת בלבד בעת טעינת הקומפוננטה
+  }, []);
 
   if (loading) return <p style={{ textAlign: "center", marginTop: 50 }}>טוען פרופיל...</p>;
   if (error) return <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>{error}</p>;
   if (!business) return <p style={{ textAlign: "center", marginTop: 50 }}>העסק לא נמצא.</p>;
 
   const isOwnerViewingOther = currentUserBusinessId && currentUserBusinessId !== businessId;
-
-  const handleStartChat = () => {
-    window.location.href = `/chat/${businessId}`;
-  };
 
   const openProposalModal = () => {
     if (!currentUserBusinessName) {
@@ -70,6 +70,33 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
 
   const closeProposalModal = () => {
     setIsProposalModalOpen(false);
+  };
+
+  const openChatModal = () => {
+    setChatModalOpen(true);
+    setChatMessage("");
+  };
+
+  const closeChatModal = () => {
+    setChatModalOpen(false);
+    setChatMessage("");
+  };
+
+  const handleSendBusinessMessage = async () => {
+    if (!chatMessage.trim()) return;
+    setSending(true);
+    try {
+      await API.post("/business-chat/start", {
+        otherBusinessId: business._id,
+        text: chatMessage.trim(),
+      });
+      alert("ההודעה נשלחה בהצלחה!");
+      closeChatModal();
+    } catch (err) {
+      alert("שגיאה בשליחת ההודעה");
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleCreateAgreement = () => {
@@ -211,7 +238,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
           </button>
 
           <button
-            onClick={handleStartChat}
+            onClick={openChatModal}
             style={{
               backgroundColor: "transparent",
               border: "2px solid #8e44ad",
@@ -262,6 +289,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
         </div>
       </div>
 
+      {/* Proposal Modal */}
       <Modal open={isProposalModalOpen} onClose={closeProposalModal}>
         <Box
           sx={{
@@ -283,6 +311,42 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
               closeProposalModal();
             }}
           />
+        </Box>
+      </Modal>
+
+      {/* Chat Modal */}
+      <Modal open={chatModalOpen} onClose={closeChatModal}>
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            p: 4,
+            borderRadius: 2,
+            maxWidth: 420,
+            margin: "10% auto",
+            maxHeight: "80vh",
+            overflowY: "auto",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <h3>שלח הודעה אל {business.businessName}</h3>
+          <TextField
+            autoFocus
+            multiline
+            minRows={3}
+            fullWidth
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+            placeholder="הקלד הודעה ראשונה לעסק…"
+            sx={{ mb: 2 }}
+          />
+          <Button
+            variant="contained"
+            onClick={handleSendBusinessMessage}
+            disabled={!chatMessage.trim() || sending}
+          >
+            שלח
+          </Button>
         </Box>
       </Modal>
     </div>
