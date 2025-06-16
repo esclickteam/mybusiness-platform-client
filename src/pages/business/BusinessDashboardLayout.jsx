@@ -9,7 +9,7 @@ import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 
 // הוספת ייבוא useAi ו-AiModal
-import { useAi } from "../../contexts/AiContext";
+import { useAi } from "../../context/AiContext";
 import AiModal from "../../components/AiModal";
 
 const tabs = [
