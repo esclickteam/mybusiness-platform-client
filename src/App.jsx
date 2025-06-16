@@ -20,7 +20,7 @@ import { useOnceLogger } from "./utils/useOnceLogger";
 import { LoginSkeleton } from "./components/LoginSkeleton";
 
 // הוספת ייבוא AiProvider ו-AiModal
-import { AiProvider } from "./contexts/AiContext";
+import { AiProvider } from "./context/AiContext";
 import AiModal from "./components/AiModal";
 
 
