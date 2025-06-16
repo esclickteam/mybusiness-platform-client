@@ -53,12 +53,16 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     };
   }, [businessId, token]);
 
-  // טעינת פרופיל העסק עם Authorization header
+  // טעינת פרופיל העסק עם businessId ב-URL
   useEffect(() => {
     async function fetchProfile() {
+      if (!businessId || !token) {
+        console.log("Missing businessId or token, skipping fetch");
+        return;
+      }
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const res = await fetch(`${apiBaseUrl}/business/profile`, {
+        const res = await fetch(`${apiBaseUrl}/business/${businessId}/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Failed to load profile");
@@ -74,7 +78,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       }
     }
     fetchProfile();
-  }, [token]);
+  }, [businessId, token]);
 
   // שמירת פרופיל עם Authorization header
   const handleSaveProfile = async () => {
