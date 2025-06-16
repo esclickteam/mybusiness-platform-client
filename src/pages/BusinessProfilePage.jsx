@@ -33,8 +33,8 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     fetchBusiness();
   }, [businessId]);
 
+  // טען תמיד את העסק שלי (לשם זיהוי השולח)
   useEffect(() => {
-  if (!propBusinessId) {
     async function fetchMyBusiness() {
       try {
         const res = await API.get("/business/my");
@@ -48,9 +48,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
       }
     }
     fetchMyBusiness();
-  }
-}, [propBusinessId]);
-
+  }, []); // רץ פעם אחת בלבד בעת טעינת הקומפוננטה
 
   if (loading) return <p style={{ textAlign: "center", marginTop: 50 }}>טוען פרופיל...</p>;
   if (error) return <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>{error}</p>;
