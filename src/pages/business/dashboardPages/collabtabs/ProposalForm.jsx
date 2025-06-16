@@ -55,10 +55,12 @@ export default function ProposalForm({
     try {
       const res = await API.post("/business/my/proposals", {
   toBusinessId: formData.toBusinessId,
-  title: formData.title,
-  description: formData.description,
-  amount: formData.amount,
-  validUntil: formData.validUntil,
+  message: {
+    title: formData.title,
+    description: formData.description,
+    amount: formData.amount,
+    validUntil: formData.validUntil,
+  }
 });
 
       console.log("Proposal POST response data:", res.data);
