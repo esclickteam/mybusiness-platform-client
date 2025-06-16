@@ -2,22 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
-
-const chatModalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  borderRadius: 2,
-  boxShadow: 24,
-  p: 4,
-};
 
 export default function BusinessProfilePage({ currentUserBusinessId: propBusinessId, resetSearchFilters }) {
   const { businessId } = useParams();
@@ -26,14 +12,12 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // מזהה העסק הנוכחי ושם העסק
   const [currentUserBusinessId, setCurrentUserBusinessId] = useState(propBusinessId || null);
   const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
 
+  // מצב למודאל הצעה
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
-
-  // סטייט וניהול מודאל צ'אט
-  const [chatModalOpen, setChatModalOpen] = useState(false);
-  const [chatMessage, setChatMessage] = useState("");
 
   useEffect(() => {
     async function fetchBusiness() {
@@ -49,25 +33,32 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     fetchBusiness();
   }, [businessId]);
 
+  // טען תמיד את העסק שלי (לשם זיהוי השולח)
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
         const res = await API.get("/business/my");
+        console.log("fetchMyBusiness response:", res.data.business);
         setCurrentUserBusinessId(res.data.business._id);
         setCurrentUserBusinessName(res.data.business.businessName || "");
       } catch (error) {
+        console.error("fetchMyBusiness error:", error);
         setCurrentUserBusinessId(null);
         setCurrentUserBusinessName("");
       }
     }
     fetchMyBusiness();
-  }, []);
+  }, []); // רץ פעם אחת בלבד בעת טעינת הקומפוננטה
 
   if (loading) return <p style={{ textAlign: "center", marginTop: 50 }}>טוען פרופיל...</p>;
   if (error) return <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>{error}</p>;
   if (!business) return <p style={{ textAlign: "center", marginTop: 50 }}>העסק לא נמצא.</p>;
 
   const isOwnerViewingOther = currentUserBusinessId && currentUserBusinessId !== businessId;
+
+  const handleStartChat = () => {
+    window.location.href = `/chat/${businessId}`;
+  };
 
   const openProposalModal = () => {
     if (!currentUserBusinessName) {
@@ -77,23 +68,12 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     setIsProposalModalOpen(true);
   };
 
-  const closeProposalModal = () => setIsProposalModalOpen(false);
-
-  const openChatModal = () => setChatModalOpen(true);
-
-  const closeChatModal = () => {
-    setChatModalOpen(false);
-    setChatMessage("");
+  const closeProposalModal = () => {
+    setIsProposalModalOpen(false);
   };
 
   const handleCreateAgreement = () => {
     window.location.href = `/agreements/new?partnerBusinessId=${businessId}`;
-  };
-
-  const handleSendChatMessage = () => {
-    // כאן אפשר להוסיף לוגיקה לשליחת ההודעה לשרת (API או WebSocket)
-    console.log("Sending chat message:", chatMessage);
-    closeChatModal();
   };
 
   return (
@@ -139,7 +119,75 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
           padding: 30,
         }}
       >
-        {/* כל התוכן הקיים שלך... */}
+        <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
+          <img
+            src={business.logo || "/default-logo.png"}
+            alt={`${business.businessName} לוגו`}
+            style={{
+              width: 140,
+              height: 140,
+              objectFit: "cover",
+              borderRadius: "50%",
+              border: "4px solid #9b59b6",
+              marginRight: 24,
+              boxShadow: "0 4px 12px rgba(155,89,182,0.4)",
+            }}
+          />
+          <div>
+            <h1 style={{ fontSize: 28, marginBottom: 4, color: "#6c3483" }}>
+              {business.businessName}
+            </h1>
+            <p style={{ fontSize: 18, color: "#9b59b6", fontWeight: "600" }}>
+              {business.category}
+            </p>
+          </div>
+        </div>
+
+        <div style={{ lineHeight: 1.6, fontSize: 16 }}>
+          <p><b>📍 אזור פעילות:</b> {business.area || "לא מוגדר"}</p>
+          <p><b>📝 תיאור העסק:</b></p>
+          <p style={{ marginTop: 8, color: "#555" }}>
+            {business.description || "אין תיאור זמין"}
+          </p>
+
+          {(business.collabPref || (business.lookingFor && business.lookingFor.length) || (business.complementaryCategories && business.complementaryCategories.length)) && (
+            <div style={{ marginTop: 20 }}>
+              <h3 style={{ color: "#6c3483" }}>🤝 שיתופי פעולה רצויים:</h3>
+              {business.collabPref && <p><b>העדפה כללית:</b> {business.collabPref}</p>}
+              {business.lookingFor && business.lookingFor.length > 0 && (
+                <>
+                  <p><b>מחפש שיתופי פעולה בתחומים:</b></p>
+                  <ul style={{ paddingLeft: 20 }}>
+                    {business.lookingFor.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {business.complementaryCategories && business.complementaryCategories.length > 0 && (
+                <>
+                  <p><b>קטגוריות משלימות:</b></p>
+                  <ul style={{ paddingLeft: 20 }}>
+                    {business.complementaryCategories.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          )}
+
+          {business.contact && (
+            <div style={{ marginTop: 20 }}>
+              <h3 style={{ color: "#6c3483" }}>📞 פרטי איש הקשר:</h3>
+              <p>{business.contact}</p>
+              <div style={{ marginTop: 12 }}>
+                {business.phone && <p><b>טלפון:</b> {business.phone}</p>}
+                {business.email && <p><b>אימייל:</b> {business.email}</p>}
+              </div>
+            </div>
+          )}
+        </div>
 
         <div style={{ marginTop: 30, display: "flex", gap: 10, justifyContent: "center" }}>
           <button
@@ -163,7 +211,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
           </button>
 
           <button
-            onClick={openChatModal}
+            onClick={handleStartChat}
             style={{
               backgroundColor: "transparent",
               border: "2px solid #8e44ad",
@@ -235,30 +283,6 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
               closeProposalModal();
             }}
           />
-        </Box>
-      </Modal>
-
-      {/* מודאל צ'אט */}
-      <Modal open={chatModalOpen} onClose={closeChatModal}>
-        <Box sx={chatModalStyle}>
-          <h3>שלח הודעה אל {business.businessName}</h3>
-          <TextField
-            autoFocus
-            multiline
-            minRows={3}
-            fullWidth
-            value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
-            placeholder="הקלד הודעה ראשונה לעסק…"
-          />
-          <Button
-            variant="contained"
-            sx={{ mt: 2 }}
-            disabled={!chatMessage.trim()}
-            onClick={handleSendChatMessage}
-          >
-            שלח
-          </Button>
         </Box>
       </Modal>
     </div>
