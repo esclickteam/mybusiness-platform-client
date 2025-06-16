@@ -37,6 +37,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       s.emit("joinRoom", businessId);
     });
 
+    s.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
+    });
+
     s.on("newAiSuggestion", (suggestion) => {
       console.log("New AI suggestion received:", suggestion);
       setSuggestions((prev) => [...prev, suggestion]);
@@ -49,7 +53,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     setSocket(s);
 
     return () => {
-      s.disconnect();
+      if (s.connected) s.disconnect();
     };
   }, [businessId, token]);
 
@@ -249,7 +253,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
           <div>
             <textarea
               rows={2}
-              value={input}
+              value={input || ""}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
