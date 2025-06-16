@@ -46,8 +46,18 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const convs = res.data.conversations || [];
-      console.log("Fetched conversations:", convs.length);
+      const convsRaw = res.data.conversations || [];
+      // לוג נתונים לפני סינון
+      console.log("Raw conversations fetched:", convsRaw);
+
+      // סינון ואבטחת שדות messages
+      const convs = convsRaw.map(c => ({
+        ...c,
+        messages: Array.isArray(c.messages) ? c.messages : [],
+      }));
+
+      console.log("Safe conversations after messages check:", convs);
+
       setConversations(convs);
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
@@ -144,7 +154,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           fromBusinessId: msg.fromBusinessId || msg.from,
           toBusinessId: msg.toBusinessId || msg.to,
         }));
+
         console.log(`Fetched ${normMsgs.length} messages for conversation ${convId}`);
+
         setMessages(uniqueMessages(normMsgs));
       } catch (err) {
         console.error("Fetch messages failed:", err);
@@ -255,115 +267,108 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   };
 
-  // צרף קובץ - פותח חלון בחירת קובץ
   const handleAttach = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.value = null; // איפוס בחירה קודמת
+      fileInputRef.current.value = null;
       fileInputRef.current.click();
     }
   };
 
-  // טיפול בבחירת קובץ ושליחתו דרך socket
   const handleFileChange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file || !socketRef.current || !selectedConversation) return;
+    const file = e.target.files?.[0];
+    if (!file || !socketRef.current || !selectedConversation) return;
 
-  setIsSending(true);
+    setIsSending(true);
 
-  const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
-  const toBusinessId = selectedConversation.participants.find(id => id !== myBusinessId);
+    const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
+    const toBusinessId = selectedConversation.participants.find(id => id !== myBusinessId);
 
-  const optimisticMsg = {
-    _id: tempId,
-    conversationId: selectedConversation._id,
-    fromBusinessId: myBusinessId,
-    toBusinessId,
-    fileUrl: URL.createObjectURL(file),
-    fileName: file.name,
-    fileType: file.type,
-    timestamp: new Date().toISOString(),
-    sending: true,
-    tempId,
-  };
+    const optimisticMsg = {
+      _id: tempId,
+      conversationId: selectedConversation._id,
+      fromBusinessId: myBusinessId,
+      toBusinessId,
+      fileUrl: URL.createObjectURL(file),
+      fileName: file.name,
+      fileType: file.type,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
 
-  // עדכון הודעות בלבד
-  setMessages((prev) => uniqueMessages([...prev, optimisticMsg]));
+    setMessages((prev) => uniqueMessages([...prev, optimisticMsg]));
 
-  // עדכון השיחה המתאימה בתוך conversations
-  setConversations((prevConvs) =>
-    prevConvs.map((conv) => {
-      if (conv._id === selectedConversation._id) {
-        const msgs = Array.isArray(conv.messages) ? conv.messages : [];
-        return {
-          ...conv,
-          messages: uniqueMessages([...msgs, optimisticMsg]),
-        };
-      }
-      return conv;
-    })
-  );
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    socketRef.current.emit(
-      "sendFile",
-      {
-        conversationId: selectedConversation._id,
-        from: myBusinessId,
-        to: toBusinessId,
-        fileType: file.type,
-        buffer: reader.result,
-        fileName: file.name,
-        tempId,
-      },
-      (ack) => {
-        setIsSending(false);
-        if (!ack.ok) {
-          alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה לא ידועה"));
-          // הסרת ההודעה האופטימית מ-messages ו-conversations
-          setMessages((prev) => prev.filter((m) => m._id !== tempId));
-          setConversations((prevConvs) =>
-            prevConvs.map((conv) => {
-              if (conv._id === selectedConversation._id) {
-                const msgs = Array.isArray(conv.messages)
-                  ? conv.messages.filter((m) => m._id !== tempId)
-                  : [];
-                return { ...conv, messages: msgs };
-              }
-              return conv;
-            })
-          );
-        } else if (ack.message?._id) {
-          const realMsg = {
-            ...ack.message,
-            fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-            toBusinessId: ack.message.toBusinessId || ack.message.to,
+    setConversations((prevConvs) =>
+      prevConvs.map((conv) => {
+        if (conv._id === selectedConversation._id) {
+          const msgs = Array.isArray(conv.messages) ? conv.messages : [];
+          return {
+            ...conv,
+            messages: uniqueMessages([...msgs, optimisticMsg]),
           };
-          // החלפה בהודעה אמיתית
-          setMessages((prev) =>
-            uniqueMessages([...prev.filter((m) => m._id !== tempId), realMsg])
-          );
-          setConversations((prevConvs) =>
-            prevConvs.map((conv) => {
-              if (conv._id === selectedConversation._id) {
-                const msgs = Array.isArray(conv.messages)
-                  ? conv.messages.filter((m) => m._id !== tempId)
-                  : [];
-                return {
-                  ...conv,
-                  messages: uniqueMessages([...msgs, realMsg]),
-                };
-              }
-              return conv;
-            })
-          );
         }
-      }
+        return conv;
+      })
     );
-  };
-  reader.readAsArrayBuffer(file);
-};
 
+    const reader = new FileReader();
+    reader.onload = () => {
+      socketRef.current.emit(
+        "sendFile",
+        {
+          conversationId: selectedConversation._id,
+          from: myBusinessId,
+          to: toBusinessId,
+          fileType: file.type,
+          buffer: reader.result,
+          fileName: file.name,
+          tempId,
+        },
+        (ack) => {
+          setIsSending(false);
+          if (!ack.ok) {
+            alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה לא ידועה"));
+            setMessages((prev) => prev.filter((m) => m._id !== tempId));
+            setConversations((prevConvs) =>
+              prevConvs.map((conv) => {
+                if (conv._id === selectedConversation._id) {
+                  const msgs = Array.isArray(conv.messages)
+                    ? conv.messages.filter((m) => m._id !== tempId)
+                    : [];
+                  return { ...conv, messages: msgs };
+                }
+                return conv;
+              })
+            );
+          } else if (ack.message?._id) {
+            const realMsg = {
+              ...ack.message,
+              fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+              toBusinessId: ack.message.toBusinessId || ack.message.to,
+            };
+            setMessages((prev) =>
+              uniqueMessages([...prev.filter((m) => m._id !== tempId), realMsg])
+            );
+            setConversations((prevConvs) =>
+              prevConvs.map((conv) => {
+                if (conv._id === selectedConversation._id) {
+                  const msgs = Array.isArray(conv.messages)
+                    ? conv.messages.filter((m) => m._id !== tempId)
+                    : [];
+                  return {
+                    ...conv,
+                    messages: uniqueMessages([...msgs, realMsg]),
+                  };
+                }
+                return conv;
+              })
+            );
+          }
+        }
+      );
+    };
+    reader.readAsArrayBuffer(file);
+  };
 
   return (
     <Box
@@ -403,40 +408,39 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             אין שיחות עסקיות
           </Box>
         )}
-        {conversations.map((conv) => {
-  const idx = conv.participants.findIndex((id) => id !== myBusinessId);
-  const partner = conv.participantsInfo?.[idx] || { businessName: "עסק" };
-  // בדיקה אם messages הוא מערך לא ריק לפני שימוש
-  const lastMsg = Array.isArray(conv.messages) && conv.messages.length > 0
-    ? conv.messages[conv.messages.length - 1].text
-    : "";
-  return (
-    <Box
-      key={conv._id}
-      sx={{
-        px: 2.5,
-        py: 1.5,
-        cursor: "pointer",
-        borderBottom: "1px solid #f3f0fa",
-        background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
-      }}
-      onClick={() => setSelectedConversation(conv)}
-    >
-      <Box sx={{ fontWeight: 600 }}>{partner.businessName}</Box>
-      <Box
-        sx={{
-          color: "#7c6ae6",
-          fontSize: 13,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {lastMsg || "אין הודעות"}
+        {conversations
+          .filter(conv => conv && Array.isArray(conv.messages))
+          .map((conv) => {
+            const idx = conv.participants.findIndex((id) => id !== myBusinessId);
+            const partner = conv.participantsInfo?.[idx] || { businessName: "עסק" };
+            const lastMsg = conv.messages.length > 0 ? conv.messages[conv.messages.length - 1].text : "";
+            return (
+              <Box
+                key={conv._id}
+                sx={{
+                  px: 2.5,
+                  py: 1.5,
+                  cursor: "pointer",
+                  borderBottom: "1px solid #f3f0fa",
+                  background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                }}
+                onClick={() => setSelectedConversation(conv)}
+              >
+                <Box sx={{ fontWeight: 600 }}>{partner.businessName}</Box>
+                <Box
+                  sx={{
+                    color: "#7c6ae6",
+                    fontSize: 13,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {lastMsg || "אין הודעות"}
+                </Box>
               </Box>
-            </Box>
-          );
-        })}
+            );
+          })}
       </Box>
 
       {/* עמודת הודעות */}
@@ -450,7 +454,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         }}
       >
         <Box sx={{ flex: 1, px: 2, pt: 2, overflowY: "auto" }}>
-          {selectedConversation ? (
+          {selectedConversation && Array.isArray(messages) ? (
             <>
               <Box
                 sx={{
