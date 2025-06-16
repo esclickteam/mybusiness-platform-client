@@ -1,10 +1,17 @@
 import React from "react";
 import { useAi } from "../context/AiContext";
+import { useLocation } from "react-router-dom";
 
 export default function AiModal() {
   const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading } = useAi();
+  const location = useLocation();
 
-  if (!activeSuggestion) return null;
+  // בדיקה האם מיקום ה-URL מתאים לטאבים של ניהול העסק
+  const isBusinessManagementTab =
+    location.pathname.startsWith("/business/") &&
+    (location.pathname.includes("/dashboard") || location.pathname.includes("/chat"));
+
+  if (!activeSuggestion || !isBusinessManagementTab) return null;
 
   return (
     <div

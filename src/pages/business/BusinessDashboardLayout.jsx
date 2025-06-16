@@ -5,8 +5,12 @@ import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { useSocket } from "../../context/socketContext";
 import { useUnreadMessages } from "../../context/UnreadMessagesContext";
 import { useQueryClient } from '@tanstack/react-query';
-import API from "../../api"; // ודא שיש לך את ההגדרה הזו
+import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
+
+// הוספת ייבוא useAi ו-AiModal
+import { useAi } from "../../contexts/AiContext";
+import AiModal from "../../components/AiModal";
 
 const tabs = [
   { path: "dashboard", label: "📊 דשבורד" },
@@ -25,13 +29,11 @@ export default function BusinessDashboardLayout() {
   const { businessId } = useParams();
   const location = useLocation();
 
-  const {
-    unreadCountsByConversation,
-    updateMessagesCount,
-    incrementMessagesCount,
-  } = useUnreadMessages();
-
+  const { unreadCountsByConversation, updateMessagesCount, incrementMessagesCount } = useUnreadMessages();
   const queryClient = useQueryClient();
+
+  // לקבלת הנתונים של מודאל AI
+  const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading: aiLoading } = useAi();
 
   // Prefetch חשוב של נתונים מרכזיים
   useEffect(() => {
@@ -50,18 +52,14 @@ export default function BusinessDashboardLayout() {
     );
   }, [user?.businessId, queryClient]);
 
-  // חישוב כולל של כל ההודעות הלא נקראו מכל השיחות
   const unreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
 
-  // רספונסיביות וסיידבר
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
-
   const hasResetUnreadCount = useRef(false);
 
-  // מאזין להודעות חדשות מהשרת ומעדכן ספירה לפי conversationId מדויק
   useEffect(() => {
     if (!socket) return;
 
@@ -77,7 +75,6 @@ export default function BusinessDashboardLayout() {
     };
   }, [socket, incrementMessagesCount]);
 
-  // מאזין לעדכון ספירות הודעות לא נקראות מדויק מהשרת
   useEffect(() => {
     if (!socket) return;
 
@@ -95,7 +92,6 @@ export default function BusinessDashboardLayout() {
     };
   }, [socket, updateMessagesCount]);
 
-  // סימון הודעות כנקראות כשנכנסים לטאב הודעות ועדכון ספירת ההודעות לפי השרת
   useEffect(() => {
     if (!socket || !businessId) return;
 
@@ -123,7 +119,6 @@ export default function BusinessDashboardLayout() {
     }
   }, [location.pathname, socket, businessId, updateMessagesCount, location.state, unreadCountsByConversation]);
 
-  // ניהול רספונסיביות לסיידבר
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -134,7 +129,6 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ניווט ראשוני לפי טאב בשורת הכתובת או סטייט
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -151,7 +145,6 @@ export default function BusinessDashboardLayout() {
     }
   }, [user, loading, location.search, location.state, navigate]);
 
-  // ניהול התמקדות וסגירת סיידבר במובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
 
@@ -298,6 +291,9 @@ export default function BusinessDashboardLayout() {
               }}
             />
           </main>
+
+          {/* הוספת מודאל AI גלובלי */}
+          <AiModal />
         </div>
       </div>
     </BusinessServicesProvider>

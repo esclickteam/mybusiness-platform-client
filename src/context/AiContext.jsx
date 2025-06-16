@@ -8,10 +8,40 @@ const AiContext = createContext();
 
 export function AiProvider({ children }) {
   const { token, user } = useAuth(); // משתמשים בקונטקסט האותנטיקציה לקבלת token ו-user
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState(() => {
+    try {
+      const stored = localStorage.getItem("aiSuggestions");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [loading, setLoading] = useState(false);
   const [socket, setSocket] = useState(null);
+
+  // שמירת suggestions ב-localStorage בכל שינוי
+  useEffect(() => {
+    localStorage.setItem("aiSuggestions", JSON.stringify(suggestions));
+  }, [suggestions]);
+
+  // מאזין לאירוע storage כדי לסנכרן בין טאבים
+  useEffect(() => {
+    function onStorage(e) {
+      if (e.key === "aiSuggestions") {
+        try {
+          const newSuggestions = e.newValue ? JSON.parse(e.newValue) : [];
+          setSuggestions(newSuggestions);
+
+          if (activeSuggestion && !newSuggestions.find(s => s.id === activeSuggestion.id)) {
+            setActiveSuggestion(null);
+          }
+        } catch {}
+      }
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [activeSuggestion]);
 
   useEffect(() => {
     if (!token || !user?.businessId) return;
@@ -36,17 +66,15 @@ export function AiProvider({ children }) {
 
     // מאזין לאירוע newRecommendation מהשרת
     s.on("newRecommendation", (suggestion) => {
-      setSuggestions((prev) => [
-        ...prev,
-        {
-          id: suggestion.recommendationId,
-          text: suggestion.recommendation,
-          status: suggestion.status || "ממתין",
-          conversationId: suggestion.conversationId,
-          clientSocketId: suggestion.clientSocketId,
-        },
-      ]);
-      setActiveSuggestion(suggestion);
+      const newSuggestion = {
+        id: suggestion.recommendationId,
+        text: suggestion.recommendation,
+        status: suggestion.status || "ממתין",
+        conversationId: suggestion.conversationId,
+        clientSocketId: suggestion.clientSocketId,
+      };
+      setSuggestions((prev) => [...prev, newSuggestion]);
+      setActiveSuggestion(newSuggestion);
     });
 
     setSocket(s);
