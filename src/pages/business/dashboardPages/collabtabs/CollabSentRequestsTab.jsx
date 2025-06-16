@@ -45,6 +45,12 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     // אפשר לממש כאן טופס עריכה/שליחה מחדש
   };
 
+  // פונקציה לניקוי גרשים כפולים מסביב למחרוזת
+  const cleanString = (str) => {
+    if (!str) return "";
+    return str.replace(/^"+|"+$/g, "");
+  };
+
   if (loading) return <p>טוען הצעות שנשלחו...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
@@ -78,6 +84,9 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
             expiryDate: validUntil,
           } = req.message || {};
 
+          const cleanTitle = cleanString(title);
+          const cleanDescription = cleanString(description);
+
           return (
             <div
               key={req._id}
@@ -99,10 +108,10 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                 <strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "-"}
               </p>
               <p>
-                <strong>כותרת הצעה:</strong> {title || "-"}
+                <strong>כותרת הצעה:</strong> {cleanTitle || "-"}
               </p>
               <p>
-                <strong>תיאור הצעה:</strong> {description || "-"}
+                <strong>תיאור הצעה:</strong> {cleanDescription || "-"}
               </p>
               <p>
                 <strong>סכום:</strong> {amount !== undefined && amount !== null ? amount : "-"}
