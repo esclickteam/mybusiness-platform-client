@@ -1,7 +1,7 @@
 import React from "react";
 import { useAi } from "../context/AiContext";
 import { useLocation } from "react-router-dom";
-import "./AiModal.css";  // וודא שיש לך קובץ CSS עם הסגנונות
+import "./AiModal.css";  
 
 export default function AiModal() {
   const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading } = useAi();

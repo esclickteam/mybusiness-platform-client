@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { io } from "socket.io-client";
-import { useAuth } from "../context/AuthContext"; // נתיב מותאם
+import { useAuth } from "../context/AuthContext";
 
-const SOCKET_URL = "https://api.esclick.co.il"; // או מה שהגדרת
+const SOCKET_URL = "https://api.esclick.co.il";
 
 const AiContext = createContext();
 
 export function AiProvider({ children }) {
-  const { token, user } = useAuth(); // משתמשים בקונטקסט האותנטיקציה לקבלת token ו-user
+  const { token, user } = useAuth();
   const [suggestions, setSuggestions] = useState(() => {
     try {
       const stored = localStorage.getItem("aiSuggestions");
@@ -46,7 +46,6 @@ export function AiProvider({ children }) {
   useEffect(() => {
     if (!token || !user?.businessId) return;
 
-    // יצירת חיבור socket עם auth
     const s = io(SOCKET_URL, {
       path: "/socket.io",
       transports: ["websocket"],
@@ -64,7 +63,6 @@ export function AiProvider({ children }) {
       console.log("AI Socket disconnected:", reason);
     });
 
-    // מאזין לאירוע newRecommendation מהשרת
     s.on("newRecommendation", (suggestion) => {
       const newSuggestion = {
         id: suggestion.recommendationId,
@@ -73,7 +71,15 @@ export function AiProvider({ children }) {
         conversationId: suggestion.conversationId,
         clientSocketId: suggestion.clientSocketId,
       };
-      setSuggestions((prev) => [...prev, newSuggestion]);
+
+      setSuggestions((prev) => {
+        // בדיקה אם ההמלצה כבר קיימת
+        if (prev.find(s => s.id === newSuggestion.id)) {
+          return prev; // אל תוסיף כפילויות
+        }
+        return [...prev, newSuggestion];
+      });
+
       setActiveSuggestion(newSuggestion);
     });
 
@@ -86,7 +92,12 @@ export function AiProvider({ children }) {
   }, [token, user?.businessId]);
 
   const addSuggestion = (suggestion) => {
-    setSuggestions((prev) => [...prev, suggestion]);
+    setSuggestions((prev) => {
+      if (prev.find(s => s.id === suggestion.id)) {
+        return prev;
+      }
+      return [...prev, suggestion];
+    });
     setActiveSuggestion(suggestion);
   };
 
