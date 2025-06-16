@@ -16,6 +16,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   const [chat, setChat] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pendingRecommendation, setPendingRecommendation] = useState(null);
   const bottomRef = useRef(null);
 
   // יצירת החיבור ל- Socket עם auth
@@ -34,6 +35,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
     // מאזין להמלצות חדשות - כאן אפשר לראות המלצות שהעסק קיבל מהשרת
     s.on("newRecommendation", ({ recommendationId, message, recommendation }) => {
+      setPendingRecommendation({ recommendationId, message, recommendation });
       setChat((prev) => [
         ...prev,
         {
@@ -139,6 +141,31 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     );
   };
 
+  // אישור המלצה ושליחתה ללקוח
+  const handleApproveRecommendation = () => {
+    if (!pendingRecommendation || !socket) return;
+
+    socket.emit(
+      "approveRecommendation",
+      { recommendationId: pendingRecommendation.recommendationId },
+      (response) => {
+        if (response.ok) {
+          setChat((prev) => [
+            ...prev,
+            { sender: "business", text: `העסק אישר ושלח:\n${pendingRecommendation.recommendation}` },
+          ]);
+          setPendingRecommendation(null);
+        } else {
+          alert("שגיאה בשליחת ההמלצה המאושרת: " + response.error);
+        }
+      }
+    );
+  };
+
+  const handleRejectRecommendation = () => {
+    setPendingRecommendation(null);
+  };
+
   // לחיצה על שליחה
   const handleSendClick = () => {
     sendMessageForRecommendation(input);
@@ -234,6 +261,16 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
             {loading && <div className="bubble ai">⌛ מחשב תשובה...</div>}
             <div ref={bottomRef} style={{ height: 1 }} />
           </div>
+
+          {/* אזור אישור המלצה */}
+          {pendingRecommendation && (
+            <div className="approve-recommendation-box">
+              <h4>המלצה מ-AI:</h4>
+              <p>{pendingRecommendation.recommendation}</p>
+              <button onClick={handleApproveRecommendation}>אשר ושלח</button>
+              <button onClick={handleRejectRecommendation}>דחה</button>
+            </div>
+          )}
 
           <div className="chat-input">
             <textarea
