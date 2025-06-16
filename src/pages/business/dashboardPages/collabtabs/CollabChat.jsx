@@ -361,32 +361,35 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           </Box>
         )}
         {conversations.map((conv) => {
-          const idx = conv.participants.findIndex((id) => id !== myBusinessId);
-          const partner = conv.participantsInfo?.[idx] || { businessName: "עסק" };
-          const lastMsg = conv.messages?.slice(-1)[0]?.text || "";
-          return (
-            <Box
-              key={conv._id}
-              sx={{
-                px: 2.5,
-                py: 1.5,
-                cursor: "pointer",
-                borderBottom: "1px solid #f3f0fa",
-                background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
-              }}
-              onClick={() => setSelectedConversation(conv)}
-            >
-              <Box sx={{ fontWeight: 600 }}>{partner.businessName}</Box>
-              <Box
-                sx={{
-                  color: "#7c6ae6",
-                  fontSize: 13,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {lastMsg || "אין הודעות"}
+  const idx = conv.participants.findIndex((id) => id !== myBusinessId);
+  const partner = conv.participantsInfo?.[idx] || { businessName: "עסק" };
+  // בדיקה אם messages הוא מערך לא ריק לפני שימוש
+  const lastMsg = Array.isArray(conv.messages) && conv.messages.length > 0
+    ? conv.messages[conv.messages.length - 1].text
+    : "";
+  return (
+    <Box
+      key={conv._id}
+      sx={{
+        px: 2.5,
+        py: 1.5,
+        cursor: "pointer",
+        borderBottom: "1px solid #f3f0fa",
+        background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+      }}
+      onClick={() => setSelectedConversation(conv)}
+    >
+      <Box sx={{ fontWeight: 600 }}>{partner.businessName}</Box>
+      <Box
+        sx={{
+          color: "#7c6ae6",
+          fontSize: 13,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {lastMsg || "אין הודעות"}
               </Box>
             </Box>
           );
