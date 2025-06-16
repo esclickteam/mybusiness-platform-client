@@ -12,8 +12,9 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // מזהה העסק הנוכחי
+  // מזהה העסק הנוכחי ושם העסק
   const [currentUserBusinessId, setCurrentUserBusinessId] = useState(propBusinessId || null);
+  const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
 
   // מצב למודאל הצעה
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
@@ -32,18 +33,20 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     fetchBusiness();
   }, [businessId]);
 
-  // אם לא קיבלנו מזהה עסק כפרופ, טוענים אותו כאן (פעם אחת בלבד)
+  // אם לא קיבלנו מזהה עסק כפרופ, טוענים אותו ושם העסק כאן (פעם אחת בלבד)
   useEffect(() => {
     if (!propBusinessId) {
-      async function fetchMyBusinessId() {
+      async function fetchMyBusiness() {
         try {
           const res = await API.get("/business/my");
           setCurrentUserBusinessId(res.data.business._id);
+          setCurrentUserBusinessName(res.data.business.businessName || "");
         } catch {
           setCurrentUserBusinessId(null);
+          setCurrentUserBusinessName("");
         }
       }
-      fetchMyBusinessId();
+      fetchMyBusiness();
     }
   }, [propBusinessId]);
 
@@ -269,12 +272,11 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
         >
           <ProposalForm
             fromBusinessId={currentUserBusinessId}
-            fromBusinessName={currentUserBusinessName} // ודא שזה מועבר
+            fromBusinessName={currentUserBusinessName}
             toBusiness={business}
             onClose={closeProposalModal}
             onSent={() => {
               closeProposalModal();
-              // אפשר להוסיף התראה פה אם רוצים
             }}
           />
         </Box>
