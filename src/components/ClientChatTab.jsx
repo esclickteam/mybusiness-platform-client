@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
-import { Buffer } from "buffer"; // אם צריך לשלוח קבצים
+import { Buffer } from "buffer";
+import API from "../api";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
@@ -75,7 +76,6 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
 
 export default function ClientChatTab({ socket, conversationId, businessId, userId }) {
   const [messages, setMessages] = useState([]);
-  const [recommendations, setRecommendations] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -92,15 +92,13 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טען היסטוריית הודעות מהשרת
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
     setError("");
-    fetch(`/api/conversations/history?conversationId=${conversationId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setMessages(data);
+    API.get("/conversations/history", { params: { conversationId } })
+      .then((res) => {
+        setMessages(res.data);
         setLoading(false);
       })
       .catch(() => {
@@ -110,7 +108,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
   }, [conversationId]);
 
-  // התחבר לאירועי Socket.IO
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -125,80 +122,97 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
     };
 
-    const handleNewRecommendation = (suggestion) => {
-      setRecommendations((prev) => [...prev, suggestion]);
-    };
-
     socket.on("newMessage", handleNewMessage);
-    socket.on("newAiSuggestion", handleNewRecommendation);
     socket.on("connect_error", (err) => setError(err.message));
 
     socket.emit("joinConversation", conversationId);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
-      socket.off("newAiSuggestion", handleNewRecommendation);
       socket.emit("leaveConversation", conversationId);
     };
   }, [socket, conversationId]);
 
-  // גלילה אוטומטית לתחתית הצ'אט כשהודעות מתעדכנות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
-  }, [messages, recommendations]);
+  }, [messages]);
 
-  // התאמת גובה הטקסט אריאה
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // שליחת הודעת טקסט + בקשת המלצה AI נפרדת
+  // --- פונקציה לשליחת הודעה רגילה ---
   const sendMessage = () => {
-    if (!input.trim() || sending || !socket) return;
-    if (!socket.connected) {
-      setError("Socket אינו מחובר, נסה להתחבר מחדש");
-      return;
-    }
-    setSending(true);
-    setError("");
+  if (!input.trim() || sending || !socket) return;
+  if (!socket.connected) {
+    setError("Socket אינו מחובר, נסה להתחבר מחדש");
+    return;
+  }
+  setSending(true);
+  setError("");
 
-    const tempId = uuidv4();
+  const tempId = uuidv4();
 
-    // 1. שליחת ההודעה לצ'אט הרגיל (שמירת ההודעה)
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
-      (ack) => {
-        if (!ack?.ok) {
-          setError("שגיאה בשליחת ההודעה");
-        }
+  // 1. שליחת ההודעה הרגילה לצ'אט
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
+    (ack) => {
+      console.log("sendMessage ack:", ack);
+      setSending(false);
+      if (ack?.ok) {
+        setInput("");
+      } else {
+        setError("שגיאה בשליחת ההודעה");
       }
-    );
+    }
+  );
 
-    // 2. בקשה ל-AI לקבלת המלצה
+  // 2. שליחת בקשה ל-AI לקבלת המלצה
+  socket.emit(
+    "clientSendMessageForRecommendation",
+    {
+      message: input.trim(),
+      clientSocketId: socket.id,
+      conversationId,
+      // אפשר להעביר פרופיל העסק אם רוצים, או להשאיר
+    },
+    (ack) => {
+      if (!ack.ok) {
+        console.error("שגיאה בשליחת בקשה לקבלת המלצה:", ack.error);
+      }
+    }
+  );
+};
+
+
+  // --- פונקציה לשליחת בקשת המלצה AI ---
+  const sendMessageForRecommendation = (text) => {
+    if (!text || !text.trim() || !socket || socket.disconnected) return;
+
+    setChat((prev) => [...prev, { sender: "user", text }]);
+    setInput("");
+    setLoading(true);
+
     socket.emit(
       "clientSendMessageForRecommendation",
       {
-        message: input.trim(),
+        message: text,
         clientSocketId: socket.id,
         conversationId,
       },
       (response) => {
-        setSending(false);
+        setLoading(false);
         if (!response.ok) {
-          alert("שגיאה בשליחת הודעה לקבלת המלצה: " + response.error);
-        } else {
-          setInput("");
+          setError("שגיאה בשליחת הודעה לקבלת המלצה: " + response.error);
         }
       }
     );
   };
-
-  // --- פונקציות הקלטת קול ---
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
@@ -237,7 +251,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     mediaRecorderRef.current.stop();
   };
 
-  // שליחת הקלטת קול דרך Socket.IO
   const handleSendRecording = async () => {
     if (!recordedBlob || !socket) return;
     setSending(true);
@@ -268,8 +281,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     }
   };
 
-  // --- טיפול בשליחת תמונות וקבצים ---
-
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file || !socket) return;
@@ -284,7 +295,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           from: userId,
           to: businessId,
           role: "client",
-          image: reader.result, // data:image/...;base64,...
+          image: reader.result,
         },
         (ack) => {
           setSending(false);
@@ -303,8 +314,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
   const handleAttach = () => fileInputRef.current?.click();
 
-  // --- JSX UI ---
-
   return (
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef}>
@@ -313,31 +322,14 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {messages.map((m, i) => (
           <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
             {m.image ? (
-              <img
-                src={m.image}
-                alt={m.fileName || "image"}
-                style={{ maxWidth: 200, borderRadius: 8 }}
-              />
+              <img src={m.image} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
             ) : m.fileUrl || m.file?.data ? (
               m.fileType && m.fileType.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl || m.file.data}
-                  userAvatar={m.userAvatar}
-                  duration={m.fileDuration}
-                />
-              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
-                <img
-                  src={m.fileUrl || m.file.data}
-                  alt={m.fileName || "image"}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
+                <WhatsAppAudioPlayer src={m.fileUrl || m.file.data} userAvatar={m.userAvatar} duration={m.fileDuration} />
+              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
+                <img src={m.fileUrl || m.file.data} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
-                <a
-                  href={m.fileUrl || m.file?.data}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                >
+                <a href={m.fileUrl || m.file?.data} target="_blank" rel="noopener noreferrer" download>
                   {m.fileName || "קובץ להורדה"}
                 </a>
               )
@@ -360,19 +352,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="recommendations-list" style={{ marginTop: 20 }}>
-        <h4>המלצות AI מהעסק:</h4>
-        {recommendations.length === 0 && <p>אין המלצות</p>}
-        <ul>
-          {recommendations.map(({ id, text, recommendation, status }, i) => (
-            <li key={id || i} style={{ border: "1px solid #ccc", padding: 8, marginBottom: 8 }}>
-              <p>{text || recommendation || JSON.stringify(recommendation)}</p>
-              <p>סטטוס: {status || "ממתין"}</p>
-            </li>
-          ))}
-        </ul>
       </div>
 
       <div className="inputBar">
