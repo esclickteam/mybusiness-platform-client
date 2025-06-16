@@ -17,15 +17,23 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [activeSuggestion, setActiveSuggestion] = useState(null);
   const bottomRef = useRef(null);
+  const notificationSound = useRef(null);
 
-  // חיבור Socket.IO עם auth
+  // יצירת חיבור Socket.IO עם אימות
   const [socket, setSocket] = useState(null);
   useEffect(() => {
     if (!businessId || !token) {
       console.log("Missing businessId or token, skipping socket connection.");
       return;
     }
+
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    notificationSound.current = new Audio("/notification.mp3"); // צליל התראה - צריך להוסיף קובץ בפאבליק
 
     const s = io(SOCKET_URL, {
       auth: { token, businessId },
@@ -41,23 +49,35 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       console.error("Socket connection error:", err);
     });
 
-    // קבלת המלצות AI חדשות לעסק
+    // קבלת המלצות AI חדשות
     s.on("newRecommendation", (suggestion) => {
-  console.log("New AI suggestion received:", suggestion);
-  setSuggestions((prev) => [...prev, suggestion]);
-});
+      console.log("New AI suggestion received:", suggestion);
+      // השמעת צליל
+      if (notificationSound.current) notificationSound.current.play();
+      // התראה בדפדפן
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("הודעת AI חדשה", {
+          body: suggestion.recommendation || suggestion.text,
+          icon: "/logo192.png",
+        });
+      }
+      // הוספה לרשימה והצגת במודאל
+      setSuggestions((prev) => [
+        ...prev,
+        {
+          id: suggestion.recommendationId,
+          text: suggestion.recommendation,
+          status: suggestion.status || "ממתין",
+          conversationId: suggestion.conversationId,
+          clientSocketId: suggestion.clientSocketId,
+        },
+      ]);
+    });
 
-    // קבלת הודעות חדשות (למשל אישור שלח להודעה ללקוח או הודעות מהלקוח)
+    // קבלת הודעות חדשות לצ'אט
     s.on("newMessage", (msg) => {
       console.log("New chat message received:", msg);
       setChat((prev) => [...prev, msg]);
-    });
-
-    // עדכון סטטוס המלצה (למשל "sent")
-    s.on("updateRecommendationStatus", ({ id, status }) => {
-      setSuggestions((prev) =>
-        prev.map((sug) => (sug.id === id ? { ...sug, status } : sug))
-      );
     });
 
     s.on("disconnect", () => {
@@ -71,13 +91,18 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     };
   }, [businessId, token]);
 
-  // טעינת פרופיל העסק עם businessId ב-URL
+  // הצגת המודאל להתראה חכמה
+  useEffect(() => {
+    if (suggestions.length > 0) {
+      setActiveSuggestion(suggestions[suggestions.length - 1]);
+    }
+  }, [suggestions]);
+
+  // טעינת פרופיל העסק
   useEffect(() => {
     async function fetchProfile() {
-      if (!businessId || !token) {
-        console.log("Missing businessId or token, skipping fetch");
-        return;
-      }
+      if (!businessId || !token) return;
+
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
         const res = await fetch(`${apiBaseUrl}/business/${businessId}/profile`, {
@@ -98,7 +123,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     fetchProfile();
   }, [businessId, token]);
 
-  // שמירת פרופיל עם Authorization header
+  // שמירת פרופיל העסק
   const handleSaveProfile = async () => {
     try {
       const apiBaseUrl = import.meta.env.VITE_API_URL;
@@ -121,14 +146,13 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     }
   };
 
-  // שינוי שדות פרופיל
+  // טיפול בשינוי שדות בפרופיל העסק
   const handleProfileChange = (e) => {
     setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
   };
 
-  // שליחת הודעה לקבלת המלצה באמצעות Socket.IO
+  // שליחת בקשה להמלצה ל-AI
   const sendMessageForRecommendation = (text) => {
-    console.log("sendMessageForRecommendation called with:", text);
     if (!text || !text.trim() || !socket || socket.disconnected) return;
 
     setChat((prev) => [...prev, { sender: "user", text }]);
@@ -140,7 +164,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       {
         message: text,
         clientSocketId: socket.id,
-        conversationId, // אם יש conversationId
+        conversationId,
         businessProfile,
       },
       (response) => {
@@ -152,7 +176,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     );
   };
 
-  // אישור המלצה ושליחתה ללקוח
+  // אישור ושליחת המלצה ללקוח
   const approveSuggestion = async (id) => {
     setLoading(true);
     try {
@@ -169,6 +193,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
         prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
       );
       alert("ההמלצה אושרה ונשלחה ללקוח!");
+      setActiveSuggestion(null);
     } catch (err) {
       setLoading(false);
       alert("שגיאה באישור ההמלצה: " + err.message);
@@ -178,6 +203,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   // דחיית המלצה
   const rejectSuggestion = (id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
+    setActiveSuggestion(null);
   };
 
   // גלילה אוטומטית לתחתית הצ'אט וההמלצות
@@ -257,7 +283,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
           <div className="chat-box" style={{ maxHeight: 300, overflowY: "auto" }}>
             {[...chat, ...suggestions.map((s) => ({ sender: "aiSuggestion", text: s.text, status: s.status, id: s.id }))].map(
               (msg, i) => (
-                <div key={i} className={`bubble ${msg.sender}`}>
+                <div key={msg.id || i} className={`bubble ${msg.sender}`}>
                   {msg.text}
                   {msg.status && <span> ({msg.status})</span>}
                 </div>
@@ -270,15 +296,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
             <textarea
               rows={2}
               value={input || ""}
-              onChange={(e) => {
-                const val = e.target.value;
-                console.log("onChange input value:", val);
-                setInput(val === undefined || val === null ? "" : val);
-              }}
+              onChange={(e) => setInput(e.target.value ?? "")}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  console.log("Sending message with input:", input);
                   sendMessageForRecommendation(input);
                 }
               }}
@@ -286,10 +307,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
               disabled={loading}
             />
             <button
-              onClick={() => {
-                console.log("Button clicked to send message with input:", input);
-                sendMessageForRecommendation(input);
-              }}
+              onClick={() => sendMessageForRecommendation(input)}
               disabled={loading || !input.trim()}
             >
               שלח
@@ -317,6 +335,24 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
           </div>
         </div>
       </div>
+
+      {/* מודאל התראה חכמה */}
+      {activeSuggestion && (
+        <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3>הודעת AI חדשה</h3>
+            <p>{activeSuggestion.text}</p>
+            <div style={{ marginTop: 10 }}>
+              <button onClick={() => approveSuggestion(activeSuggestion.id)} disabled={loading}>
+                אשר ושלח
+              </button>
+              <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading} style={{ marginLeft: 8 }}>
+                דחה
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
