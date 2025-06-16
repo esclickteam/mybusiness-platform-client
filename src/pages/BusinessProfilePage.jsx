@@ -37,7 +37,8 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
 
   const handleSendProposal = () => {
     // ניווט לטופס שליחת הצעה לעסק הנבחר (עדכן נתיב לפי הצורך)
-    navigate(`/proposals/new?toBusinessId=${businessId}`);
+      navigate(`/proposal-form?toBusinessId=${businessId}`);
+
   };
 
   const handleCreateAgreement = () => {
