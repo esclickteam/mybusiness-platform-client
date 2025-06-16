@@ -38,10 +38,10 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   const handleResendProposal = (proposal) => {
     alert(
       `פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${
-        proposal.toBusinessId?.businessName || "הצעה ציבורית"
+        proposal.toBusinessId?.businessName || "לא ידוע"
       }`
     );
-    // כאן אפשר לממש פתיחת טופס עריכה/שליחה מחדש
+    // אפשר לממש כאן טופס עריכה/שליחה מחדש
   };
 
   if (loading) return <p>טוען הצעות שנשלחו...</p>;
@@ -50,7 +50,12 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   return (
     <div
       className="collab-section"
-      style={{ direction: "rtl", fontFamily: "Arial, sans-serif", maxWidth: 700, margin: "auto" }}
+      style={{
+        direction: "rtl",
+        fontFamily: "Arial, sans-serif",
+        maxWidth: 700,
+        margin: "auto",
+      }}
     >
       <h3
         className="collab-title"
@@ -58,16 +63,17 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
       >
         📤 הצעות שנשלחו
       </h3>
+
       {sentRequests.length === 0 ? (
         <p style={{ textAlign: "center" }}>לא נשלחו עדיין הצעות.</p>
       ) : (
         sentRequests.map((req) => {
-          const { title, description, budget, expiryDate } = req.message || {};
-          const validUntil = expiryDate
-            ? new Date(expiryDate).toLocaleDateString("he-IL")
-            : "-";
-          const amount = budget !== undefined && budget !== null ? budget : "-";
-          const toBusinessName = req.toBusinessId?.businessName || "הצעה ציבורית";
+          const {
+            title,
+            description,
+            budget: amount,
+            expiryDate: validUntil,
+          } = req.message || {};
 
           return (
             <div
@@ -80,13 +86,14 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 marginBottom: 16,
                 wordBreak: "break-word",
+                lineHeight: "1.6",
               }}
             >
               <p>
-                <strong>עסק שולח:</strong> {req.fromBusinessId?.businessName || "לא ידוע"}
+                <strong>עסק שולח:</strong> {req.fromBusinessId?.businessName || "-"}
               </p>
               <p>
-                <strong>עסק מקבל:</strong> {toBusinessName}
+                <strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "-"}
               </p>
               <p>
                 <strong>כותרת הצעה:</strong> {title || "-"}
@@ -95,17 +102,18 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                 <strong>תיאור הצעה:</strong> {description || "-"}
               </p>
               <p>
-                <strong>סכום:</strong> {amount}
+                <strong>סכום:</strong> {amount !== undefined && amount !== null ? amount : "-"}
               </p>
               <p>
-                <strong>תוקף עד:</strong> {validUntil}
+                <strong>תאריך תוקף:</strong>{" "}
+                {validUntil
+                  ? new Date(validUntil).toLocaleDateString("he-IL")
+                  : "-"}
               </p>
               <p>
                 <strong>סטטוס:</strong> {req.status || "לא ידוע"}
               </p>
-              <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                נשלח ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
-              </p>
+
               <div
                 style={{
                   marginTop: 12,
