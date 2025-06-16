@@ -265,62 +265,105 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // טיפול בבחירת קובץ ושליחתו דרך socket
   const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !socketRef.current || !selectedConversation) return;
+  const file = e.target.files?.[0];
+  if (!file || !socketRef.current || !selectedConversation) return;
 
-    setIsSending(true);
+  setIsSending(true);
 
-    const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
-    const optimisticMsg = {
-      _id: tempId,
-      conversationId: selectedConversation._id,
-      fromBusinessId: myBusinessId,
-      toBusinessId: selectedConversation.participants.find(id => id !== myBusinessId),
-      fileUrl: URL.createObjectURL(file),
-      fileName: file.name,
-      fileType: file.type,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
+  const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
+  const toBusinessId = selectedConversation.participants.find(id => id !== myBusinessId);
 
-    setMessages((prev) => uniqueMessages([...prev, optimisticMsg]));
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      socketRef.current.emit(
-        "sendFile",
-        {
-          conversationId: selectedConversation._id,
-          from: myBusinessId,
-          to: optimisticMsg.toBusinessId,
-          fileType: file.type,
-          buffer: reader.result,
-          fileName: file.name,
-          tempId,
-        },
-        (ack) => {
-          setIsSending(false);
-          if (!ack.ok) {
-            alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה לא ידועה"));
-            setMessages((prev) => prev.filter((m) => m._id !== tempId));
-          } else if (ack.message?._id) {
-            setMessages((prev) =>
-              uniqueMessages([
-                ...prev.filter((m) => m._id !== tempId),
-                {
-                  ...ack.message,
-                  fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-                  toBusinessId: ack.message.toBusinessId || ack.message.to,
-                },
-              ])
-            );
-          }
-        }
-      );
-    };
-    reader.readAsArrayBuffer(file);
+  const optimisticMsg = {
+    _id: tempId,
+    conversationId: selectedConversation._id,
+    fromBusinessId: myBusinessId,
+    toBusinessId,
+    fileUrl: URL.createObjectURL(file),
+    fileName: file.name,
+    fileType: file.type,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
   };
+
+  // עדכון הודעות בלבד
+  setMessages((prev) => uniqueMessages([...prev, optimisticMsg]));
+
+  // עדכון השיחה המתאימה בתוך conversations
+  setConversations((prevConvs) =>
+    prevConvs.map((conv) => {
+      if (conv._id === selectedConversation._id) {
+        const msgs = Array.isArray(conv.messages) ? conv.messages : [];
+        return {
+          ...conv,
+          messages: uniqueMessages([...msgs, optimisticMsg]),
+        };
+      }
+      return conv;
+    })
+  );
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    socketRef.current.emit(
+      "sendFile",
+      {
+        conversationId: selectedConversation._id,
+        from: myBusinessId,
+        to: toBusinessId,
+        fileType: file.type,
+        buffer: reader.result,
+        fileName: file.name,
+        tempId,
+      },
+      (ack) => {
+        setIsSending(false);
+        if (!ack.ok) {
+          alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה לא ידועה"));
+          // הסרת ההודעה האופטימית מ-messages ו-conversations
+          setMessages((prev) => prev.filter((m) => m._id !== tempId));
+          setConversations((prevConvs) =>
+            prevConvs.map((conv) => {
+              if (conv._id === selectedConversation._id) {
+                const msgs = Array.isArray(conv.messages)
+                  ? conv.messages.filter((m) => m._id !== tempId)
+                  : [];
+                return { ...conv, messages: msgs };
+              }
+              return conv;
+            })
+          );
+        } else if (ack.message?._id) {
+          const realMsg = {
+            ...ack.message,
+            fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+            toBusinessId: ack.message.toBusinessId || ack.message.to,
+          };
+          // החלפה בהודעה אמיתית
+          setMessages((prev) =>
+            uniqueMessages([...prev.filter((m) => m._id !== tempId), realMsg])
+          );
+          setConversations((prevConvs) =>
+            prevConvs.map((conv) => {
+              if (conv._id === selectedConversation._id) {
+                const msgs = Array.isArray(conv.messages)
+                  ? conv.messages.filter((m) => m._id !== tempId)
+                  : [];
+                return {
+                  ...conv,
+                  messages: uniqueMessages([...msgs, realMsg]),
+                };
+              }
+              return conv;
+            })
+          );
+        }
+      }
+    );
+  };
+  reader.readAsArrayBuffer(file);
+};
+
 
   return (
     <Box
