@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../../../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import BusinessAdvisorTab from "./esclickTabs/BusinessAdvisorTab";
 import MarketingAdvisorTab from "./esclickTabs/MarketingAdvisorTab";
 import BusinessXrayWrapper from "./esclickTabs/BusinessXrayWrapper";
