@@ -33,7 +33,6 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     fetchBusiness();
   }, [businessId]);
 
-  // אם לא קיבלנו מזהה עסק כפרופ, טוענים אותו ושם העסק כאן (פעם אחת בלבד)
   useEffect(() => {
     if (!propBusinessId) {
       async function fetchMyBusiness() {
@@ -61,6 +60,10 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
   };
 
   const openProposalModal = () => {
+    if (!currentUserBusinessName) {
+      alert("שם העסק השולח עדיין לא נטען, אנא המתן ונסה שוב.");
+      return;
+    }
     setIsProposalModalOpen(true);
   };
 
