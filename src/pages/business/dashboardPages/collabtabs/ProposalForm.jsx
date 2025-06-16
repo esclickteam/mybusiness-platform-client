@@ -11,14 +11,12 @@ import API from "../../../../api";
 import "./ProposalForm.css";
 
 export default function ProposalForm({
-  fromBusinessId,
   fromBusinessName,
   toBusiness,
   onClose,
   onSent,
 }) {
   const [formData, setFormData] = useState({
-    fromBusinessId: fromBusinessId || "",
     toBusinessId: toBusiness?._id || "",
     title: "",
     description: "",
@@ -29,15 +27,6 @@ export default function ProposalForm({
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
 
-  // עדכון fromBusinessId כשפרופס משתנים
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      fromBusinessId: fromBusinessId || "",
-    }));
-  }, [fromBusinessId]);
-
-  // עדכון toBusinessId כשפרופס משתנים
   useEffect(() => {
     if (toBusiness?._id) {
       setFormData((prev) => ({ ...prev, toBusinessId: toBusiness._id }));
@@ -65,7 +54,6 @@ export default function ProposalForm({
 
     try {
       const res = await API.post("/business/my/proposals", {
-        fromBusinessId: formData.fromBusinessId,
         toBusinessId: formData.toBusinessId,
         message: `כותרת: ${formData.title}\nתיאור: ${formData.description}\nסכום: ${formData.amount || "-"}\nתוקף עד: ${formData.validUntil}`,
       });
