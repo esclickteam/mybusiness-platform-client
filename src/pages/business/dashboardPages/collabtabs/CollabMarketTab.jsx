@@ -229,7 +229,8 @@ export default function CollabMarketTab({ isDevUser }) {
           </div>
           <button
             className="contact-button"
-            onClick={() => navigate(`/business/${item.businessId}`)}
+              onClick={() => navigate(`/business-profile/${item.businessId}`)}
+
           >
             👁️ צפייה בפרופיל
           </button>
