@@ -33,7 +33,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       Notification.requestPermission();
     }
 
-    notificationSound.current = new Audio("/notification.mp3"); // צליל התראה - צריך להוסיף קובץ בפאבליק
+    notificationSound.current = new Audio("/notification.mp3");
 
     const s = io(SOCKET_URL, {
       auth: { token, businessId },
@@ -52,26 +52,28 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     // קבלת המלצות AI חדשות
     s.on("newRecommendation", (suggestion) => {
       console.log("New AI suggestion received:", suggestion);
-      // השמעת צליל
       if (notificationSound.current) notificationSound.current.play();
-      // התראה בדפדפן
       if ("Notification" in window && Notification.permission === "granted") {
         new Notification("הודעת AI חדשה", {
           body: suggestion.recommendation || suggestion.text,
           icon: "/logo192.png",
         });
       }
-      // הוספה לרשימה והצגת במודאל
-      setSuggestions((prev) => [
-        ...prev,
-        {
-          id: suggestion.recommendationId,
-          text: suggestion.recommendation,
-          status: suggestion.status || "ממתין",
-          conversationId: suggestion.conversationId,
-          clientSocketId: suggestion.clientSocketId,
-        },
-      ]);
+
+      setSuggestions((prev) => {
+        const exists = prev.some(s => s.id === suggestion.recommendationId);
+        if (exists) return prev;
+        return [
+          ...prev,
+          {
+            id: suggestion.recommendationId,
+            text: suggestion.recommendation,
+            status: suggestion.status || "ממתין",
+            conversationId: suggestion.conversationId,
+            clientSocketId: suggestion.clientSocketId,
+          },
+        ];
+      });
     });
 
     // קבלת הודעות חדשות לצ'אט
