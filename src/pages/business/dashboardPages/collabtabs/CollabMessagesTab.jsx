@@ -204,12 +204,19 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
             </p>
 
             {/* פיצול שדה message לשורות */}
-            {msg.message &&
-              msg.message.split("\n").map((line, i) => (
-                <p key={i} style={{ marginBottom: 4 }}>
-                  {line.trim()}
-                </p>
-              ))}
+            {msg.message && (
+  <>
+    {msg.message.title && (
+      <p style={{ fontWeight: "bold", marginBottom: 4 }}>{msg.message.title}</p>
+    )}
+    {msg.message.description &&
+      msg.message.description.split("\n").map((line, i) => (
+        <p key={i} style={{ marginBottom: 4 }}>
+          {line.trim()}
+        </p>
+      ))}
+  </>
+)}
 
             <p>
               <strong>סטטוס:</strong>{" "}
