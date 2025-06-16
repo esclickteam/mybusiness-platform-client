@@ -16,10 +16,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   const [chat, setChat] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pendingRecommendation, setPendingRecommendation] = useState(null);
+  const [suggestions, setSuggestions] = useState([]); // המלצות AI ממתינות
   const bottomRef = useRef(null);
 
-  // יצירת החיבור ל- Socket עם auth וארועים
+  // יצירת חיבור Socket וארועים
   const [socket, setSocket] = useState(null);
   useEffect(() => {
     if (!businessId || !token) {
@@ -27,136 +27,67 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       return;
     }
 
-    console.log("Connecting socket with:", { businessId, token });
-
     const s = io(SOCKET_URL, {
-      auth: { token, businessId, role: "client" },
+      auth: { token, businessId },
       transports: ["websocket"],
     });
 
     s.on("connect", () => {
-      console.log("Connected to socket with id:", s.id);
+      console.log("Socket connected:", s.id);
+      s.emit("joinRoom", businessId);
     });
 
-    s.on("connect_error", (err) => {
-      console.error("Socket connection error:", err.message);
+    s.on("newAiSuggestion", (suggestion) => {
+      console.log("New AI suggestion received:", suggestion);
+      setSuggestions((prev) => [...prev, suggestion]);
     });
 
-    // מאזין להודעות חדשות מלקוחות
-    s.on("newClientMessageNotification", ({ conversationId, messageSummary }) => {
-      console.log("AI Partner got new client message:", conversationId, messageSummary);
-      setChat((prev) => [
-        ...prev,
-        {
-          sender: "client",
-          text: messageSummary.text,
-          timestamp: messageSummary.timestamp,
-          conversationId,
-          clientName: messageSummary.clientName,
-        },
-      ]);
-
-      // שליחת ההודעה לשרת לקבלת המלצה AI
-      s.emit(
-        "clientSendMessageForRecommendation",
-        {
-          message: messageSummary.text,
-          clientSocketId: s.id,
-          conversationId,
-        },
-        (response) => {
-          if (!response.ok) {
-            console.error("Error requesting AI recommendation:", response.error);
-          }
-        }
-      );
-    });
-
-    // מאזין לקבלת המלצות חדשות מהשרת
-    s.on("newRecommendation", ({ recommendationId, message, recommendation }) => {
-      console.log("Received newRecommendation:", { recommendationId, message, recommendation });
-      setPendingRecommendation({ recommendationId, message, recommendation });
-      setChat((prev) => [
-        ...prev,
-        {
-          sender: "ai",
-          text: `הודעת לקוח: ${message}\nהמלצה AI: ${recommendation}`,
-          recommendationId,
-        },
-      ]);
-    });
-
-    // הודעות מאושרות מהעסק
-    s.on("approvedRecommendationMessage", (data) => {
-      console.log("Received approvedRecommendationMessage:", data);
-      setChat((prev) => [
-        ...prev,
-        { sender: "business", text: `העסק אישר ושלח:\n${data.recommendation}` },
-      ]);
-    });
-
-    s.on("disconnect", (reason) => {
-      console.log("Socket disconnected, reason:", reason);
+    s.on("disconnect", () => {
+      console.log("Socket disconnected");
     });
 
     setSocket(s);
 
     return () => {
-      console.log("Disconnecting socket");
       s.disconnect();
     };
   }, [businessId, token]);
 
-  // טעינת פרופיל העסק והצ'אט ההיסטורי
+  // טעינת פרופיל העסק
   useEffect(() => {
-    async function fetchProfileAndChat() {
+    async function fetchProfile() {
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        console.log("Fetching profile and chat history...");
-        const [profileRes, chatRes] = await Promise.all([
-          fetch(`${apiBaseUrl}/business/profile`),
-          fetch(`${apiBaseUrl}/partner-ai/chat-history`),
-        ]);
-        if (!profileRes.ok || !chatRes.ok) throw new Error("Failed to load");
+        const res = await fetch(`${apiBaseUrl}/business/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to load profile");
 
-        const profileData = await profileRes.json();
-        const chatData = await chatRes.json();
-
-        console.log("Profile data:", profileData);
-        console.log("Chat history data:", chatData);
-
+        const profileData = await res.json();
         setBusinessProfile(profileData);
-        setChat(chatData);
 
         if (profileData.goal) {
-          setDailyTip(
-            `"${profileData.goal}" מתקרב – אולי היום תשתף פוסט עם ערך לקהל שלך?`
-          );
+          setDailyTip(`"${profileData.goal}" מתקרב – אולי היום תשתף פוסט עם ערך לקהל שלך?`);
         }
       } catch (err) {
-        console.error("Error fetching profile or chat history:", err);
+        console.error("Error fetching profile:", err);
       }
     }
-    fetchProfileAndChat();
-  }, []);
+    fetchProfile();
+  }, [token]);
 
-  const handleProfileChange = (e) => {
-    setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
-  };
-
+  // שמירת פרופיל העסק
   const handleSaveProfile = async () => {
     try {
       const apiBaseUrl = import.meta.env.VITE_API_URL;
-      console.log("Saving profile:", businessProfile);
       const res = await fetch(`${apiBaseUrl}/business/profile`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(businessProfile),
       });
       if (!res.ok) throw new Error("Failed to save profile");
 
       const data = await res.json();
-
       alert("✅ פרטי העסק נשמרו בהצלחה!");
 
       if (data.goal) {
@@ -168,89 +99,67 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     }
   };
 
-  // שליחת הודעה לקבלת המלצה דרך Socket
-  const sendMessageForRecommendation = (text) => {
-    if (!text.trim()) {
-      console.log("Ignoring empty message");
-      return;
-    }
-    if (!socket) {
-      console.log("Socket not connected yet");
-      return;
-    }
-    if (socket.disconnected) {
-      console.log("Socket is disconnected");
-      return;
-    }
+  // שינוי שדות פרופיל
+  const handleProfileChange = (e) => {
+    setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
+  };
 
-    console.log("Sending message for recommendation:", text);
+  // שליחת הודעה לקבלת המלצה דרך API
+  const sendMessageForRecommendation = (text) => {
+    if (!text.trim() || !socket || socket.disconnected) return;
 
     setChat((prev) => [...prev, { sender: "user", text }]);
     setInput("");
     setLoading(true);
 
-    socket.emit(
-      "clientSendMessageForRecommendation",
-      { message: text, clientSocketId: socket.id, conversationId },
-      (response) => {
+    fetch(`${import.meta.env.VITE_API_URL}/chat/from-client`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ businessId, clientId: "client123", message: text, businessProfile }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
         setLoading(false);
-        console.log("Response from server on recommendation request:", response);
-        if (!response.ok) {
-          alert("שגיאה בשליחת הודעה לקבלת המלצה: " + response.error);
-        }
-      }
-    );
+        if (!data.success) alert("שגיאה בשליחת הודעה לקבלת המלצה");
+      })
+      .catch((err) => {
+        setLoading(false);
+        alert("שגיאה ברשת: " + err.message);
+      });
   };
 
-  // אישור המלצה ושליחתה ללקוח
-  const handleApproveRecommendation = () => {
-    if (!pendingRecommendation || !socket) {
-      console.log("No pending recommendation or socket not connected");
-      return;
-    }
+  // אישור המלצה ושליחתה ללקוח דרך API
+  const approveSuggestion = async (id) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/send-approved`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ businessId, recommendationId: id }),
+      });
+      const data = await res.json();
+      setLoading(false);
+      if (!res.ok) throw new Error(data.error || "Failed to approve");
 
-    console.log("Approving recommendation:", pendingRecommendation);
-
-    socket.emit(
-      "approveRecommendation",
-      { recommendationId: pendingRecommendation.recommendationId },
-      (response) => {
-        console.log("Response from server on approveRecommendation:", response);
-        if (response.ok) {
-          setChat((prev) => [
-            ...prev,
-            { sender: "business", text: `העסק אישר ושלח:\n${pendingRecommendation.recommendation}` },
-          ]);
-          setPendingRecommendation(null);
-        } else {
-          alert("שגיאה בשליחת ההמלצה המאושרת: " + response.error);
-        }
-      }
-    );
-  };
-
-  const handleRejectRecommendation = () => {
-    console.log("Recommendation rejected:", pendingRecommendation);
-    setPendingRecommendation(null);
-  };
-
-  // לחיצה על שליחה
-  const handleSendClick = () => {
-    sendMessageForRecommendation(input);
-  };
-
-  // שליחה בלחיצה על Enter
-  const handleInputKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessageForRecommendation(input);
+      setSuggestions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
+      );
+      alert("ההמלצה אושרה ונשלחה ללקוח!");
+    } catch (err) {
+      setLoading(false);
+      alert("שגיאה באישור ההמלצה: " + err.message);
     }
   };
 
-  // גלילה לתחתית הצ'אט
+  // דחיית המלצה (הסרה מהרשימה)
+  const rejectSuggestion = (id) => {
+    setSuggestions((prev) => prev.filter((s) => s.id !== id));
+  };
+
+  // גלילה אוטומטית לתחתית הצ'אט
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat]);
+  }, [chat, suggestions]);
 
   const quickActions = [
     "תנסח לי פוסט שיווקי",
@@ -304,6 +213,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
             💾 שמור פרופיל
           </button>
         </div>
+
         <div className="chat-section">
           {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
 
@@ -320,38 +230,53 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
             ))}
           </div>
 
-          <div className="chat-box">
-            {chat.map((msg, idx) => (
-              <div key={idx} className={`bubble ${msg.sender}`}>
+          <div className="chat-box" style={{ maxHeight: 300, overflowY: "auto" }}>
+            {[...chat, ...suggestions.map(s => ({ sender: "aiSuggestion", text: s.text, status: s.status, id: s.id }))].map((msg, i) => (
+              <div key={i} className={`bubble ${msg.sender}`}>
                 {msg.text}
+                {msg.status && <span> ({msg.status})</span>}
               </div>
             ))}
-            {loading && <div className="bubble ai">⌛ מחשב תשובה...</div>}
-            <div ref={bottomRef} style={{ height: 1 }} />
+            <div ref={bottomRef} />
           </div>
 
-          {/* אזור אישור המלצה */}
-          {pendingRecommendation && (
-            <div className="approve-recommendation-box">
-              <h4>המלצה מ-AI:</h4>
-              <p>{pendingRecommendation.recommendation}</p>
-              <button onClick={handleApproveRecommendation}>אשר ושלח</button>
-              <button onClick={handleRejectRecommendation}>דחה</button>
-            </div>
-          )}
-
-          <div className="chat-input">
+          <div>
             <textarea
-              placeholder="כתבי כאן כל שאלה או בקשה..."
+              rows={2}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleInputKeyDown}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessageForRecommendation(input);
+                }
+              }}
+              placeholder="הקלד הודעה או בקשה..."
               disabled={loading}
-              rows={2}
             />
-            <button onClick={handleSendClick} disabled={loading}>
-              שליחה
+            <button onClick={() => sendMessageForRecommendation(input)} disabled={loading || !input.trim()}>
+              שלח
             </button>
+          </div>
+
+          <div className="suggestions-list" style={{ marginTop: 20 }}>
+            {suggestions.map(({ id, text, status }) => (
+              <div key={id} style={{ marginBottom: 10, padding: 10, border: "1px solid #ccc" }}>
+                <p>{text}</p>
+                <p>סטטוס: {status || "ממתין"}</p>
+                {status !== "sent" && (
+                  <>
+                    <button onClick={() => approveSuggestion(id)} disabled={loading}>
+                      אשר ושלח
+                    </button>
+                    <button onClick={() => rejectSuggestion(id)} disabled={loading} style={{ marginLeft: 8 }}>
+                      דחה
+                    </button>
+                  </>
+                )}
+                {status === "sent" && <span style={{ color: "green" }}>✅ נשלח ללקוח</span>}
+              </div>
+            ))}
           </div>
         </div>
       </div>
