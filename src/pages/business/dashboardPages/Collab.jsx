@@ -90,14 +90,25 @@ export default function Collab() {
   };
 
   const handleSendProposal = async (toBusinessId, message) => {
-    try {
-      await API.post("/business/my/proposals", { toBusinessId, message });
-      setRefreshSent((f) => f + 1);
-    } catch (err) {
-      console.error(err);
-      alert("❌ שגיאה בשליחת ההצעה");
+  try {
+    let endpoint = "";
+    const payload = { message };
+
+    if (toBusinessId) {
+      endpoint = "/business/my/proposals/private";
+      payload.toBusinessId = toBusinessId;
+    } else {
+      endpoint = "/business/my/proposals/public";
     }
-  };
+
+    await API.post(endpoint, payload);
+    setRefreshSent((f) => f + 1);
+  } catch (err) {
+    console.error(err);
+    alert("❌ שגיאה בשליחת ההצעה");
+  }
+};
+
 
   const handleStatusChange = () => {
     setRefreshSent((f) => f + 1);
