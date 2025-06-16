@@ -61,7 +61,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       }
 
       setSuggestions((prev) => {
-        const exists = prev.some(s => s.id === suggestion.recommendationId);
+        const exists = prev.some((s) => s.id === suggestion.recommendationId);
         if (exists) return prev;
         return [
           ...prev,
@@ -153,29 +153,28 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
   };
 
-  // שליחת בקשה להמלצה ל-AI
+  // שליחת הודעה דרך 'sendMessage' עם role של לקוח
   const sendMessageForRecommendation = (text) => {
     if (!text || !text.trim() || !socket || socket.disconnected) return;
+
+    const msg = {
+      conversationId,
+      from: socket.id,      // או מזהה אחר לפי הלוגיקה שלך
+      to: businessId,
+      text,
+      role: "client",       // חשוב! כדי שהשרת יזהה כהודעת לקוח
+    };
 
     setChat((prev) => [...prev, { sender: "user", text }]);
     setInput("");
     setLoading(true);
 
-    socket.emit(
-      "clientSendMessageForRecommendation",
-      {
-        message: text,
-        clientSocketId: socket.id,
-        conversationId,
-        businessProfile,
-      },
-      (response) => {
-        setLoading(false);
-        if (!response.ok) {
-          alert("שגיאה בשליחת הודעה לקבלת המלצה: " + response.error);
-        }
+    socket.emit("sendMessage", msg, (response) => {
+      setLoading(false);
+      if (!response.ok) {
+        alert("שגיאה בשליחת הודעה: " + (response.error || "unknown error"));
       }
-    );
+    });
   };
 
   // אישור ושליחת המלצה ללקוח

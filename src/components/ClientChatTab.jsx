@@ -145,70 +145,28 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // --- פונקציה לשליחת הודעה רגילה ---
+  // --- פונקציה לשליחת הודעה רגילה בלבד (ללא קריאה כפולה) ---
   const sendMessage = () => {
-  if (!input.trim() || sending || !socket) return;
-  if (!socket.connected) {
-    setError("Socket אינו מחובר, נסה להתחבר מחדש");
-    return;
-  }
-  setSending(true);
-  setError("");
-
-  const tempId = uuidv4();
-
-  // 1. שליחת ההודעה הרגילה לצ'אט
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
-    (ack) => {
-      console.log("sendMessage ack:", ack);
-      setSending(false);
-      if (ack?.ok) {
-        setInput("");
-      } else {
-        setError("שגיאה בשליחת ההודעה");
-      }
+    if (!input.trim() || sending || !socket) return;
+    if (!socket.connected) {
+      setError("Socket אינו מחובר, נסה להתחבר מחדש");
+      return;
     }
-  );
+    setSending(true);
+    setError("");
 
-  // 2. שליחת בקשה ל-AI לקבלת המלצה
-  socket.emit(
-    "clientSendMessageForRecommendation",
-    {
-      message: input.trim(),
-      clientSocketId: socket.id,
-      conversationId,
-      // אפשר להעביר פרופיל העסק אם רוצים, או להשאיר
-    },
-    (ack) => {
-      if (!ack.ok) {
-        console.error("שגיאה בשליחת בקשה לקבלת המלצה:", ack.error);
-      }
-    }
-  );
-};
-
-
-  // --- פונקציה לשליחת בקשת המלצה AI ---
-  const sendMessageForRecommendation = (text) => {
-    if (!text || !text.trim() || !socket || socket.disconnected) return;
-
-    setChat((prev) => [...prev, { sender: "user", text }]);
-    setInput("");
-    setLoading(true);
+    const tempId = uuidv4();
 
     socket.emit(
-      "clientSendMessageForRecommendation",
-      {
-        message: text,
-        clientSocketId: socket.id,
-        conversationId,
-      },
-      (response) => {
-        setLoading(false);
-        if (!response.ok) {
-          setError("שגיאה בשליחת הודעה לקבלת המלצה: " + response.error);
+      "sendMessage",
+      { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
+      (ack) => {
+        console.log("sendMessage ack:", ack);
+        setSending(false);
+        if (ack?.ok) {
+          setInput("");
+        } else {
+          setError("שגיאה בשליחת ההודעה");
         }
       }
     );
