@@ -151,6 +151,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
   // שליחת הודעה דרך 'sendMessage' עם role של לקוח
   const sendMessageForRecommendation = (text) => {
+  console.log("sendMessageForRecommendation called. socket:", socket, "disconnected:", socket?.disconnected);
+  
     if (!text || !text.trim() || !socket || socket.disconnected) return;
 
     const msg = {
