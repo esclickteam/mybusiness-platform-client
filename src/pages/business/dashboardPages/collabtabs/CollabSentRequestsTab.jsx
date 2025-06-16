@@ -108,12 +108,13 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
               <p>
                 <strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "-"}
               </p>
-              <p>
-                <strong>כותרת:</strong> {cleanTitle || "-"}
-              </p>
-              <p>
-                <strong>תיאור:</strong> {cleanDescription || "-"}
-              </p>
+
+              <p><strong>כותרת:</strong></p>
+              <p>{cleanTitle || "-"}</p>
+
+              <p><strong>תיאור:</strong></p>
+              <p>{cleanDescription || "-"}</p>
+
               <p>
                 <strong>סכום:</strong> {budget != null ? budget : "-"}
               </p>
