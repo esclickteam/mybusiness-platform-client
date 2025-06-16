@@ -28,7 +28,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
       await API.delete(`/business/my/proposals/${proposalId}`);
-      setSentRequests((prev) => prev.filter((p) => p._id !== proposalId));
+      setSentRequests((prev) => prev.filter((p) => p.proposalId !== proposalId));
       alert("ההצעה בוטלה בהצלחה");
     } catch (err) {
       console.error("שגיאה בביטול ההצעה:", err.response || err.message || err);
@@ -42,10 +42,8 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         proposal.toBusinessId?.businessName || "לא ידוע"
       }`
     );
-    // אפשר לממש כאן טופס עריכה/שליחה מחדש
   };
 
-  // ניקוי גרשים כפולים מהכותרת והתיאור
   const cleanString = (str) => {
     if (!str) return "";
     return str.replace(/^"+|"+$/g, "");
@@ -77,7 +75,6 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         sentRequests.map((req) => {
           console.log("Proposal message:", req.message);
 
-          // תמיכה במקרה שבו message עשוי להיות מקונן בתוך message
           const rawMsg = req.message?.message ?? req.message ?? {};
           const {
             title,
@@ -91,7 +88,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
 
           return (
             <div
-              key={req._id}
+              key={req.proposalId}
               className="collab-card"
               style={{
                 background: "#fff",
@@ -160,7 +157,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                     cursor: "pointer",
                     fontWeight: "bold",
                   }}
-                  onClick={() => handleCancelProposal(req._id)}
+                  onClick={() => handleCancelProposal(req.proposalId)}
                 >
                   🗑️ ביטול
                 </button>
