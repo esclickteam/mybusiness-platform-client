@@ -15,11 +15,12 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // טוען את העסק הנוכחי מהשרת בלבד - בלי תלות בפרופס חיצוניים
   const [currentUserBusinessId, setCurrentUserBusinessId] = useState(null);
   const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
 
-  // סטייטים למודאלים
+  // מזהה ההצעה שנוצרה לאחרונה
+  const [currentProposalId, setCurrentProposalId] = useState(null);
+
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
@@ -284,7 +285,10 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
             fromBusinessName={currentUserBusinessName}
             toBusiness={business}
             onClose={closeProposalModal}
-            onSent={closeProposalModal}
+            onSent={(proposalId) => {
+              setCurrentProposalId(proposalId);
+              closeProposalModal();
+            }}
           />
         </Box>
       </Modal>
@@ -338,6 +342,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
             fromBusinessId={currentUserBusinessId}
             fromBusinessName={currentUserBusinessName}
             partnerBusiness={business}
+            proposalId={currentProposalId}
             onClose={closeCreateAgreementModal}
           />
         </Box>
