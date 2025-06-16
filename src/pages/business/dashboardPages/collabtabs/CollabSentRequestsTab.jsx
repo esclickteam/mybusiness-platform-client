@@ -77,12 +77,14 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         sentRequests.map((req) => {
           console.log("Proposal message:", req.message);
 
+          // תמיכה במקרה שבו message עשוי להיות מקונן בתוך message
+          const rawMsg = req.message?.message ?? req.message ?? {};
           const {
             title,
             description,
             budget: amount,
             expiryDate: validUntil,
-          } = req.message || {};
+          } = rawMsg;
 
           const cleanTitle = cleanString(title);
           const cleanDescription = cleanString(description);
@@ -114,14 +116,16 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                 <strong>תיאור:</strong> {cleanDescription || "-"}
               </p>
               <p>
-                <strong>סכום:</strong> {amount !== undefined && amount !== null ? amount : "-"}
+                <strong>סכום:</strong> {amount != null ? amount : "-"}
               </p>
               <p>
                 <strong>תאריך תוקף:</strong>{" "}
-                {validUntil ? new Date(validUntil).toLocaleDateString("he-IL") : "-"}
+                {validUntil
+                  ? new Date(validUntil).toLocaleDateString("he-IL")
+                  : "-"}
               </p>
               <p>
-                <strong>סטטוס:</strong> {req.status || "לא ידוע"}
+                <strong>סטטוס:</strong> {req.status || "-"}
               </p>
 
               <div
