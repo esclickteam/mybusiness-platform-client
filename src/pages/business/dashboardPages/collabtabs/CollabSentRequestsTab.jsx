@@ -7,11 +7,13 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log("useEffect triggered - fetchSentRequests starting");
     setLoading(true);
     async function fetchSentRequests() {
       try {
+        console.log("Fetching sent proposals from API...");
         const res = await API.get("/business/my/proposals/sent");
-        console.log("proposalsSent:", res.data.proposalsSent);
+        console.log("proposalsSent from API:", res.data.proposalsSent);
         setSentRequests(res.data.proposalsSent || []);
         setError(null);
       } catch (err) {
@@ -19,17 +21,20 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         setError("שגיאה בטעינת הצעות שנשלחו");
       } finally {
         setLoading(false);
+        console.log("Finished fetchSentRequests, loading set to false");
       }
     }
     fetchSentRequests();
   }, [refreshFlag]);
 
   const handleCancelProposal = async (proposalId) => {
+    console.log("handleCancelProposal called with proposalId:", proposalId);
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
       await API.delete(`/business/my/proposals/${proposalId}`);
       setSentRequests((prev) => prev.filter((p) => p.proposalId !== proposalId));
       alert("ההצעה בוטלה בהצלחה");
+      console.log("Proposal cancelled and state updated");
     } catch (err) {
       console.error("שגיאה בביטול ההצעה:", err.response || err.message || err);
       alert("שגיאה בביטול ההצעה");
@@ -37,6 +42,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
   };
 
   const handleResendProposal = (proposal) => {
+    console.log("handleResendProposal called for proposal:", proposal);
     alert(
       `פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${
         proposal.toBusinessId?.businessName || "לא ידוע"
@@ -73,9 +79,8 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         <p style={{ textAlign: "center" }}>לא נשלחו עדיין הצעות.</p>
       ) : (
         sentRequests.map((req) => {
-          console.log("Proposal message:", req.message);
+          console.log("Rendering proposal message:", req.message);
 
-          // תיקון קריאה לשדה message בלבד
           const rawMsg = req.message ?? {};
 
           const {
