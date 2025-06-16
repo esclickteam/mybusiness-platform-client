@@ -205,22 +205,32 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
 
             {/* פיצול שדה message לשורות */}
             {msg.message && (
-  <>
-    {msg.message.title && (
-      <p style={{ fontWeight: "bold", marginBottom: 4 }}>{msg.message.title}</p>
-    )}
-    {msg.message.description &&
-      msg.message.description.split("\n").map((line, i) => (
-        <p key={i} style={{ marginBottom: 4 }}>
-          {line.trim()}
-        </p>
-      ))}
-  </>
-)}
+              <>
+                {msg.message.title && (
+                  <p style={{ fontWeight: "bold", marginBottom: 4 }}>{msg.message.title}</p>
+                )}
+                {msg.message.description &&
+                  msg.message.description.split("\n").map((line, i) => (
+                    <p key={i} style={{ marginBottom: 4 }}>
+                      {line.trim()}
+                    </p>
+                  ))}
+                {msg.message.budget != null && (
+                  <p>
+                    <strong>סכום:</strong> {msg.message.budget}
+                  </p>
+                )}
+                {msg.message.expiryDate && (
+                  <p>
+                    <strong>תאריך תוקף:</strong>{" "}
+                    {new Date(msg.message.expiryDate).toLocaleDateString("he-IL")}
+                  </p>
+                )}
+              </>
+            )}
 
             <p>
-              <strong>סטטוס:</strong>{" "}
-              <span style={{ marginLeft: 6 }}>{msg.status}</span>
+              <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
             </p>
 
             {/* כפתורים קשורים להסכם */}
