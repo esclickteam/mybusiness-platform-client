@@ -19,7 +19,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   const [pendingRecommendation, setPendingRecommendation] = useState(null);
   const bottomRef = useRef(null);
 
-  // יצירת החיבור ל- Socket עם auth
+  // יצירת החיבור ל- Socket עם auth וארועים
   const [socket, setSocket] = useState(null);
   useEffect(() => {
     if (!businessId || !token) {
@@ -42,7 +42,37 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       console.error("Socket connection error:", err.message);
     });
 
-    // מאזין להמלצות חדשות - כאן אפשר לראות המלצות שהעסק קיבל מהשרת
+    // מאזין להודעות חדשות מלקוחות
+    s.on("newClientMessageNotification", ({ conversationId, messageSummary }) => {
+      console.log("AI Partner got new client message:", conversationId, messageSummary);
+      setChat((prev) => [
+        ...prev,
+        {
+          sender: "client",
+          text: messageSummary.text,
+          timestamp: messageSummary.timestamp,
+          conversationId,
+          clientName: messageSummary.clientName,
+        },
+      ]);
+
+      // שליחת ההודעה לשרת לקבלת המלצה AI
+      s.emit(
+        "clientSendMessageForRecommendation",
+        {
+          message: messageSummary.text,
+          clientSocketId: s.id,
+          conversationId,
+        },
+        (response) => {
+          if (!response.ok) {
+            console.error("Error requesting AI recommendation:", response.error);
+          }
+        }
+      );
+    });
+
+    // מאזין לקבלת המלצות חדשות מהשרת
     s.on("newRecommendation", ({ recommendationId, message, recommendation }) => {
       console.log("Received newRecommendation:", { recommendationId, message, recommendation });
       setPendingRecommendation({ recommendationId, message, recommendation });
@@ -56,7 +86,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       ]);
     });
 
-    // הודעות מאושרות מהעסק (העסק אישר ושלח)
+    // הודעות מאושרות מהעסק
     s.on("approvedRecommendationMessage", (data) => {
       console.log("Received approvedRecommendationMessage:", data);
       setChat((prev) => [
