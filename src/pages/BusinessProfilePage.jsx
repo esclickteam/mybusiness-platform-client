@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
 import API from "../api";
+import ProposalForm from "../components/ProposalForm"; // תעדכן נתיב נכון
 
 export default function BusinessProfilePage({ currentUserBusinessId, resetSearchFilters }) {
   const { businessId } = useParams();
-  const navigate = useNavigate();
 
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // מצב למודאל הצעה
+  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchBusiness() {
@@ -31,19 +36,20 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
   const isOwnerViewingOther = currentUserBusinessId && currentUserBusinessId !== businessId;
 
   const handleStartChat = () => {
-    // ניווט לדף צ'אט עם העסק הנבחר (עדכן נתיב לפי הצורך)
-    navigate(`/chat/${businessId}`);
+    // כאן תשאיר ניווט לדף צ'אט
+    window.location.href = `/chat/${businessId}`;
   };
 
-  const handleSendProposal = () => {
-    // ניווט לטופס שליחת הצעה לעסק הנבחר (עדכן נתיב לפי הצורך)
-      navigate(`/proposal-form?toBusinessId=${businessId}`);
+  const openProposalModal = () => {
+    setIsProposalModalOpen(true);
+  };
 
+  const closeProposalModal = () => {
+    setIsProposalModalOpen(false);
   };
 
   const handleCreateAgreement = () => {
-    // ניווט לטופס יצירת הסכם חדש (עדכן נתיב לפי הצורך)
-    navigate(`/agreements/new?partnerBusinessId=${businessId}`);
+    window.location.href = `/agreements/new?partnerBusinessId=${businessId}`;
   };
 
   return (
@@ -56,12 +62,11 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
         textAlign: "right",
       }}
     >
-      {/* כפתור חזרה לשיתופי פעולה */}
       {isOwnerViewingOther && (
         <button
           onClick={() => {
             if (resetSearchFilters) resetSearchFilters();
-            navigate("/business/collaborations");
+            window.location.href = "/business/collaborations";
           }}
           style={{
             backgroundColor: "transparent",
@@ -72,7 +77,7 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
             marginBottom: 24,
             fontWeight: "600",
             padding: 0,
-            textDecoration: "underline"
+            textDecoration: "underline",
           }}
           aria-label="חזרה לשיתופי פעולה"
         >
@@ -80,7 +85,6 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
         </button>
       )}
 
-      {/* כרטיס פרטי העסק */}
       <div
         style={{
           backgroundColor: "#fff",
@@ -88,7 +92,7 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
           boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
           fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
           color: "#333",
-          padding: 30
+          padding: 30,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
@@ -102,7 +106,7 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
               borderRadius: "50%",
               border: "4px solid #9b59b6",
               marginRight: 24,
-              boxShadow: "0 4px 12px rgba(155,89,182,0.4)"
+              boxShadow: "0 4px 12px rgba(155,89,182,0.4)",
             }}
           />
           <div>
@@ -161,10 +165,9 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
           )}
         </div>
 
-        {/* כפתורי פעולה */}
         <div style={{ marginTop: 30, display: "flex", gap: 10, justifyContent: "center" }}>
           <button
-            onClick={handleSendProposal}
+            onClick={openProposalModal}
             style={{
               backgroundColor: "#8e44ad",
               color: "white",
@@ -175,10 +178,10 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
               fontWeight: "600",
               fontSize: 16,
               boxShadow: "0 4px 14px rgba(142, 68, 173, 0.4)",
-              transition: "background-color 0.3s ease"
+              transition: "background-color 0.3s ease",
             }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#732d91")}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#8e44ad")}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#732d91")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#8e44ad")}
           >
             שלח הצעה
           </button>
@@ -194,13 +197,13 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
               cursor: "pointer",
               fontWeight: "600",
               fontSize: 16,
-              transition: "background-color 0.3s ease"
+              transition: "background-color 0.3s ease",
             }}
-            onMouseEnter={e => {
+            onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "#8e44ad";
               e.currentTarget.style.color = "white";
             }}
-            onMouseLeave={e => {
+            onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
               e.currentTarget.style.color = "#8e44ad";
             }}
@@ -219,13 +222,13 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
               cursor: "pointer",
               fontWeight: "600",
               fontSize: 16,
-              transition: "background-color 0.3s ease"
+              transition: "background-color 0.3s ease",
             }}
-            onMouseEnter={e => {
+            onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "#8e44ad";
               e.currentTarget.style.color = "white";
             }}
-            onMouseLeave={e => {
+            onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
               e.currentTarget.style.color = "#8e44ad";
             }}
@@ -234,6 +237,30 @@ export default function BusinessProfilePage({ currentUserBusinessId, resetSearch
           </button>
         </div>
       </div>
+
+      <Modal open={isProposalModalOpen} onClose={closeProposalModal}>
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            p: 4,
+            borderRadius: 2,
+            maxWidth: 600,
+            margin: "10% auto",
+            maxHeight: "80vh",
+            overflowY: "auto",
+          }}
+        >
+          <ProposalForm
+            fromBusinessId={currentUserBusinessId}
+            toBusiness={business}
+            onClose={closeProposalModal}
+            onSent={() => {
+              closeProposalModal();
+              // אפשר להוסיף התראה פה אם רוצים
+            }}
+          />
+        </Box>
+      </Modal>
     </div>
   );
 }
