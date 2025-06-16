@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import API from "../api";
-import ProposalForm from "../components/ProposalForm"; // תעדכן נתיב נכון
+import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 
 export default function BusinessProfilePage({ currentUserBusinessId, resetSearchFilters }) {
   const { businessId } = useParams();
