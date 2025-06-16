@@ -8,27 +8,22 @@ import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import CreateAgreementForm from "../components/CreateAgreementForm";
 
-
-export default function BusinessProfilePage({ currentUserBusinessId: propBusinessId, resetSearchFilters }) {
+export default function BusinessProfilePage({ resetSearchFilters }) {
   const { businessId } = useParams();
 
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // מזהה העסק הנוכחי ושם העסק
-  const [currentUserBusinessId, setCurrentUserBusinessId] = useState(propBusinessId || null);
+  // טוען את העסק הנוכחי מהשרת בלבד - בלי תלות בפרופס חיצוניים
+  const [currentUserBusinessId, setCurrentUserBusinessId] = useState(null);
   const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
 
-  // מצב למודאל הצעה
+  // סטייטים למודאלים
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
-
-  // מצב למודאל צ'אט
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [sending, setSending] = useState(false);
-
-  // מצב למודאל יצירת הסכם
   const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
 
   useEffect(() => {
@@ -36,7 +31,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
       try {
         const res = await API.get(`/business/${businessId}`);
         setBusiness(res.data.business);
-      } catch (err) {
+      } catch {
         setError("שגיאה בטעינת פרטי העסק");
       } finally {
         setLoading(false);
@@ -51,7 +46,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
         const res = await API.get("/business/my");
         setCurrentUserBusinessId(res.data.business._id);
         setCurrentUserBusinessName(res.data.business.businessName || "");
-      } catch (error) {
+      } catch {
         setCurrentUserBusinessId(null);
         setCurrentUserBusinessName("");
       }
@@ -72,16 +67,12 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
     }
     setIsProposalModalOpen(true);
   };
-
-  const closeProposalModal = () => {
-    setIsProposalModalOpen(false);
-  };
+  const closeProposalModal = () => setIsProposalModalOpen(false);
 
   const openChatModal = () => {
     setChatModalOpen(true);
     setChatMessage("");
   };
-
   const closeChatModal = () => {
     setChatModalOpen(false);
     setChatMessage("");
@@ -97,32 +88,18 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
       });
       alert("ההודעה נשלחה בהצלחה!");
       closeChatModal();
-    } catch (err) {
+    } catch {
       alert("שגיאה בשליחת ההודעה");
     } finally {
       setSending(false);
     }
   };
 
-  // כאן במקום ניווט פותחים את מודאל יצירת ההסכם
-  const handleCreateAgreement = () => {
-    setCreateAgreementModalOpen(true);
-  };
-
-  const closeCreateAgreementModal = () => {
-    setCreateAgreementModalOpen(false);
-  };
+  const handleCreateAgreement = () => setCreateAgreementModalOpen(true);
+  const closeCreateAgreementModal = () => setCreateAgreementModalOpen(false);
 
   return (
-    <div
-      style={{
-        maxWidth: 700,
-        margin: "40px auto",
-        padding: 30,
-        direction: "rtl",
-        textAlign: "right",
-      }}
-    >
+    <div style={{ maxWidth: 700, margin: "40px auto", padding: 30, direction: "rtl", textAlign: "right" }}>
       {isOwnerViewingOther && (
         <button
           onClick={() => {
@@ -171,21 +148,15 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
             }}
           />
           <div>
-            <h1 style={{ fontSize: 28, marginBottom: 4, color: "#6c3483" }}>
-              {business.businessName}
-            </h1>
-            <p style={{ fontSize: 18, color: "#9b59b6", fontWeight: "600" }}>
-              {business.category}
-            </p>
+            <h1 style={{ fontSize: 28, marginBottom: 4, color: "#6c3483" }}>{business.businessName}</h1>
+            <p style={{ fontSize: 18, color: "#9b59b6", fontWeight: "600" }}>{business.category}</p>
           </div>
         </div>
 
         <div style={{ lineHeight: 1.6, fontSize: 16 }}>
           <p><b>📍 אזור פעילות:</b> {business.area || "לא מוגדר"}</p>
           <p><b>📝 תיאור העסק:</b></p>
-          <p style={{ marginTop: 8, color: "#555" }}>
-            {business.description || "אין תיאור זמין"}
-          </p>
+          <p style={{ marginTop: 8, color: "#555" }}>{business.description || "אין תיאור זמין"}</p>
 
           {(business.collabPref || (business.lookingFor && business.lookingFor.length) || (business.complementaryCategories && business.complementaryCategories.length)) && (
             <div style={{ marginTop: 20 }}>
@@ -195,9 +166,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
                 <>
                   <p><b>מחפש שיתופי פעולה בתחומים:</b></p>
                   <ul style={{ paddingLeft: 20 }}>
-                    {business.lookingFor.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
+                    {business.lookingFor.map((item, i) => <li key={i}>{item}</li>)}
                   </ul>
                 </>
               )}
@@ -205,9 +174,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
                 <>
                   <p><b>קטגוריות משלימות:</b></p>
                   <ul style={{ paddingLeft: 20 }}>
-                    {business.complementaryCategories.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
+                    {business.complementaryCategories.map((item, i) => <li key={i}>{item}</li>)}
                   </ul>
                 </>
               )}
@@ -241,8 +208,8 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
               boxShadow: "0 4px 14px rgba(142, 68, 173, 0.4)",
               transition: "background-color 0.3s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#732d91")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#8e44ad")}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#732d91")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#8e44ad")}
           >
             שלח הצעה
           </button>
@@ -260,11 +227,11 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
               fontSize: 16,
               transition: "background-color 0.3s ease",
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               e.currentTarget.style.backgroundColor = "#8e44ad";
               e.currentTarget.style.color = "white";
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               e.currentTarget.style.backgroundColor = "transparent";
               e.currentTarget.style.color = "#8e44ad";
             }}
@@ -285,11 +252,11 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
               fontSize: 16,
               transition: "background-color 0.3s ease",
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               e.currentTarget.style.backgroundColor = "#8e44ad";
               e.currentTarget.style.color = "white";
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               e.currentTarget.style.backgroundColor = "transparent";
               e.currentTarget.style.color = "#8e44ad";
             }}
@@ -317,9 +284,7 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
             fromBusinessName={currentUserBusinessName}
             toBusiness={business}
             onClose={closeProposalModal}
-            onSent={() => {
-              closeProposalModal();
-            }}
+            onSent={closeProposalModal}
           />
         </Box>
       </Modal>
@@ -346,15 +311,11 @@ export default function BusinessProfilePage({ currentUserBusinessId: propBusines
             minRows={3}
             fullWidth
             value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
+            onChange={e => setChatMessage(e.target.value)}
             placeholder="הקלד הודעה ראשונה לעסק…"
             sx={{ mb: 2 }}
           />
-          <Button
-            variant="contained"
-            onClick={handleSendBusinessMessage}
-            disabled={!chatMessage.trim() || sending}
-          >
+          <Button variant="contained" onClick={handleSendBusinessMessage} disabled={!chatMessage.trim() || sending}>
             שלח
           </Button>
         </Box>
