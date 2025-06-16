@@ -41,9 +41,23 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       console.error("Socket connection error:", err);
     });
 
+    // קבלת המלצות AI חדשות לעסק
     s.on("newAiSuggestion", (suggestion) => {
       console.log("New AI suggestion received:", suggestion);
       setSuggestions((prev) => [...prev, suggestion]);
+    });
+
+    // קבלת הודעות חדשות (למשל אישור שלח להודעה ללקוח או הודעות מהלקוח)
+    s.on("newMessage", (msg) => {
+      console.log("New chat message received:", msg);
+      setChat((prev) => [...prev, msg]);
+    });
+
+    // עדכון סטטוס המלצה (למשל "sent")
+    s.on("updateRecommendationStatus", ({ id, status }) => {
+      setSuggestions((prev) =>
+        prev.map((sug) => (sug.id === id ? { ...sug, status } : sug))
+      );
     });
 
     s.on("disconnect", () => {
@@ -112,7 +126,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
   };
 
-  // שליחת הודעה לקבלת המלצה
+  // שליחת הודעה לקבלת המלצה באמצעות Socket.IO
   const sendMessageForRecommendation = (text) => {
     console.log("sendMessageForRecommendation called with:", text);
     if (!text || !text.trim() || !socket || socket.disconnected) return;
@@ -121,20 +135,21 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     setInput("");
     setLoading(true);
 
-    fetch(`${import.meta.env.VITE_API_URL}/chat/from-client`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ businessId, clientId: "client123", message: text, businessProfile }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    socket.emit(
+      "clientSendMessageForRecommendation",
+      {
+        message: text,
+        clientSocketId: socket.id,
+        conversationId, // אם יש conversationId
+        businessProfile,
+      },
+      (response) => {
         setLoading(false);
-        if (!data.success) alert("שגיאה בשליחת הודעה לקבלת המלצה");
-      })
-      .catch((err) => {
-        setLoading(false);
-        alert("שגיאה ברשת: " + err.message);
-      });
+        if (!response.ok) {
+          alert("שגיאה בשליחת הודעה לקבלת המלצה: " + response.error);
+        }
+      }
+    );
   };
 
   // אישור המלצה ושליחתה ללקוח
