@@ -11,6 +11,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     async function fetchSentRequests() {
       try {
         const res = await API.get("/business/my/proposals/sent");
+        console.log("proposalsSent:", res.data.proposalsSent);
         setSentRequests(res.data.proposalsSent || []);
         setError(null);
       } catch (err) {
@@ -27,7 +28,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
       await API.delete(`/business/my/proposals/${proposalId}`);
-      setSentRequests((prev) => prev.filter((p) => p.proposalId !== proposalId));
+      setSentRequests((prev) => prev.filter((p) => p._id !== proposalId));
       alert("ההצעה בוטלה בהצלחה");
     } catch (err) {
       console.error("שגיאה בביטול ההצעה:", err.response || err.message || err);
@@ -77,7 +78,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
 
           return (
             <div
-              key={req.proposalId}
+              key={req._id}
               className="collab-card"
               style={{
                 background: "#fff",
@@ -146,7 +147,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                     cursor: "pointer",
                     fontWeight: "bold",
                   }}
-                  onClick={() => handleCancelProposal(req.proposalId)}
+                  onClick={() => handleCancelProposal(req._id)}
                 >
                   🗑️ ביטול
                 </button>
