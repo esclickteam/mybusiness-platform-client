@@ -6,7 +6,8 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
-import CreateAgreementForm from "./business/dashboardPages/collabtabs/CreateAgreementForm"; // <-- הוסף את זה עם הנתיב הנכון
+import CreateAgreementForm from "../components/CreateAgreementForm";
+
 
 export default function BusinessProfilePage({ currentUserBusinessId: propBusinessId, resetSearchFilters }) {
   const { businessId } = useParams();
