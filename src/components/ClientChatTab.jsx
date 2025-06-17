@@ -147,29 +147,52 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   };
 
   const sendMessage = () => {
-    if (!input.trim() || sending || !socket) return;
-    if (!socket.connected) {
-      setError("Socket אינו מחובר, נסה להתחבר מחדש");
-      return;
-    }
-    setSending(true);
-    setError("");
+  if (!input.trim() || sending || !socket) return;
+  if (!socket.connected) {
+    setError("Socket אינו מחובר, נסה להתחבר מחדש");
+    return;
+  }
+  setSending(true);
+  setError("");
 
-    const tempId = uuidv4();
+  const tempId = uuidv4();
 
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
-      (ack) => {
-        setSending(false);
-        if (ack?.ok) {
-          setInput("");
-        } else {
-          setError("שגיאה בשליחת ההודעה");
-        }
-      }
-    );
+  // יצירת הודעה זמנית להוספה מיידית לסטייט
+  const optimisticMsg = {
+    _id: tempId,
+    tempId,
+    conversationId,
+    from: userId,
+    to: businessId,
+    role: "client",
+    text: input.trim(),
+    timestamp: new Date(),
   };
+
+  // הוספה מיידית
+  setMessages((prev) => [...prev, optimisticMsg]);
+  setInput("");
+
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: userId, to: businessId, role: "client", text: optimisticMsg.text, tempId },
+    (ack) => {
+      setSending(false);
+      if (ack?.ok) {
+        // החלפת ההודעה הזמנית בהודעה מהשרת עם מזהה אמיתי
+        setMessages((prev) =>
+          prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
+        );
+      } else {
+        setError("שגיאה בשליחת ההודעה");
+        // להסיר או לסמן הודעה ככושלת
+        setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+      }
+    }
+  );
+};
+
+
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
