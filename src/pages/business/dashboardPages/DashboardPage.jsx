@@ -383,12 +383,19 @@ const DashboardPage = () => {
     cursor: "pointer",
   }}
   onClick={() => {
-    if (!socketRef.current || socketRef.current.disconnected) {
+    console.log("אשר ושלח נלחץ, recommendationId:", recommendationId);
+    if (!socketRef.current) {
       alert("Socket לא מחובר, נסה שוב מאוחר יותר");
+      console.warn("Socket לא מחובר בזמן שליחת אישור המלצה");
+      return;
+    }
+    if (socketRef.current.disconnected) {
+      alert("Socket מנותק, נסה שוב מאוחר יותר");
+      console.warn("Socket מנותק בזמן שליחת אישור המלצה");
       return;
     }
     socketRef.current.emit(
-      "businessApproveRecommendation",
+      "approveRecommendation",
       { recommendationId },
       (res) => {
         console.log("Response from server:", res);
@@ -398,10 +405,14 @@ const DashboardPage = () => {
             prev.filter((r) => r.recommendationId !== recommendationId)
           );
           if (res.conversationId) {
+            console.log("ניווט לשיחה עם conversationId:", res.conversationId);
             navigate("/business/chat", { state: { conversationId: res.conversationId } });
+          } else {
+            console.warn("אין conversationId בתגובה מהשרת");
           }
         } else {
           alert("שגיאה באישור ההמלצה: " + res.error);
+          console.error("שגיאה באישור המלצה:", res.error);
         }
       }
     );
@@ -409,6 +420,7 @@ const DashboardPage = () => {
 >
   אשר ושלח
 </button>
+
 
         </li>
       ))}
