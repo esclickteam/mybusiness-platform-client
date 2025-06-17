@@ -313,17 +313,7 @@ const DashboardPage = () => {
           return { ...old, appointments: enriched, appointments_count: enriched.length };
         });
       });
-
-      // ** NEW: Listen to AI recommendations **
-      sock.on("newRecommendation", (recommendation) => {
-        setRecommendations((prev) => {
-          if (prev.find(r => r.recommendationId === recommendation.recommendationId)) {
-            // כבר קיים - לא מוסיפים
-            return prev;
-          }
-          return [...prev, recommendation];
-        });
-      });
+      
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
