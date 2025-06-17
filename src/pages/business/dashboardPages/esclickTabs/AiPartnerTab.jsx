@@ -26,6 +26,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
+  const [clientId, setClientId] = useState(null); // מזהה המשתמש השני בשיחה
 
   // סינון כפילויות וזיהוי תקין (ObjectId 24 תווים hex)
   function filterValidUniqueRecommendations(recs) {
@@ -65,6 +66,38 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     }
     fetchRecommendations();
   }, [businessId, token]);
+
+  // טעינת מזהה הלקוח מתוך conversationId
+  useEffect(() => {
+    async function fetchClientId() {
+      if (!conversationId || !businessId || !token) return;
+
+      try {
+        const apiBaseUrl = import.meta.env.VITE_API_URL;
+        const res = await fetch(`${apiBaseUrl}/conversations/${conversationId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to load conversation details");
+        const messages = await res.json();
+
+        // בחירת המשתתף השני - צריך להחזיר את השיחה המלאה עם המשתתפים, לא רק הודעות
+        // לכן מומלץ לשנות API או להעביר פרופיל שיחה עם משתתפים, כאן נניח שיש API כזה:
+        const convRes = await fetch(`${apiBaseUrl}/conversations?businessId=${businessId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!convRes.ok) throw new Error("Failed to load conversations");
+        const conversations = await convRes.json();
+        const conv = conversations.find(c => c.conversationId === conversationId);
+        if (!conv) throw new Error("Conversation not found");
+
+        const otherId = conv.participants.find(p => p !== businessId);
+        setClientId(otherId);
+      } catch (err) {
+        console.error("Error fetching client ID:", err);
+      }
+    }
+    fetchClientId();
+  }, [conversationId, businessId, token]);
 
   // חיבור Socket.IO עם אימות
   useEffect(() => {
@@ -110,7 +143,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           {
             id: suggestion.id || suggestion.recommendationId,
             text: suggestion.text || suggestion.recommendation,
-            status: suggestion.status || "pending", // ממתינה לאישור העסק
+            status: suggestion.status || "pending",
             conversationId: suggestion.conversationId,
             clientSocketId: suggestion.clientSocketId,
           },
@@ -216,52 +249,51 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   };
 
   const approveSuggestion = async ({ id, conversationId, text }) => {
-  setLoading(true);
-  try {
-    const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ businessId, recommendationId: id, text }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) throw new Error(data.error || "Failed to approve");
-
-    // הוספת ההודעה לשיחה בשרת (API נפרד)
-    if (conversationId) {
-      await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
+    setLoading(true);
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          text,
-          from: businessId,
-          role: "business",
-          timestamp: new Date().toISOString(),
-        }),
+        body: JSON.stringify({ businessId, recommendationId: id, text }),
       });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+      if (conversationId && clientId) {
+        await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            text,
+            from: businessId,
+            to: clientId,
+            role: "business",
+            timestamp: new Date().toISOString(),
+          }),
+        });
+      }
+
+      setSuggestions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
+      );
+      alert("ההמלצה אושרה ונשלחה ללקוח!");
+      setActiveSuggestion(null);
+    } catch (err) {
+      console.error("Error approving suggestion:", err);
+      alert("שגיאה באישור ההמלצה: " + err.message);
+    } finally {
+      setLoading(false);
     }
-
-    setSuggestions((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
-    );
-    alert("ההמלצה אושרה ונשלחה ללקוח!");
-    setActiveSuggestion(null);
-  } catch (err) {
-    console.error("Error approving suggestion:", err);
-    alert("שגיאה באישור ההמלצה: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const rejectSuggestion = (id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
