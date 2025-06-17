@@ -128,8 +128,12 @@ const DashboardPage = () => {
 
     socket.emit(event, data, (...args) => {
       try {
-        if (typeof callback === "function") callback(...args);
-        else console.warn(`Callback for event ${event} is not a function`);
+        if (typeof callback === "function") {
+          console.log(`Calling callback for event ${event} with args:`, args);
+          callback(...args);
+        } else {
+          console.warn(`Callback for event ${event} is not a function. Value:`, callback);
+        }
       } catch (err) {
         console.error(`Error in callback for event ${event}:`, err);
       }
@@ -138,41 +142,40 @@ const DashboardPage = () => {
 
   // טיפול באישור המלצה עם ניווט אוטומטי
   function handleApproveRecommendation(recommendationId) {
-  if (!socketRef.current) {
-    alert("Socket לא מחובר, נסה שוב מאוחר יותר");
-    return;
-  }
-  if (socketRef.current.disconnected) {
-    alert("Socket מנותק, נסה שוב מאוחר יותר");
-    return;
-  }
-
-  safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
-  console.log("Response from approveRecommendation:", res);
-
-  if (res.ok) {
-    alert("ההמלצה אושרה ונשלחה ללקוח");
-    setRecommendations((prev) =>
-      prev.filter((r) => r.recommendationId !== recommendationId)
-    );
-
-    if (res.conversationId && res.clientId) {
-      console.log('Navigating to chat with clientId:', res.clientId, 'conversationId:', res.conversationId);
-      navigate(`/business/${businessId}/chat/${res.clientId}`, {
-        state: { conversationId: res.conversationId }
-      });
-    } else {
-      console.warn("אין conversationId או clientId בתגובה מהשרת");
+    if (!socketRef.current) {
+      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
+      return;
     }
-  } else {
-    alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
-    console.error("שגיאה באישור המלצה:", res.error);
+    if (socketRef.current.disconnected) {
+      alert("Socket מנותק, נסה שוב מאוחר יותר");
+      return;
+    }
+
+    console.log("Sending approveRecommendation with recommendationId:", recommendationId);
+
+    safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
+      console.log("Response from approveRecommendation callback:", res);
+
+      if (res.ok) {
+        alert("ההמלצה אושרה ונשלחה ללקוח");
+        setRecommendations((prev) =>
+          prev.filter((r) => r.recommendationId !== recommendationId)
+        );
+
+        if (res.conversationId && res.clientId) {
+          console.log('Navigating to chat with clientId:', res.clientId, 'conversationId:', res.conversationId);
+          navigate(`/business/${businessId}/chat/${res.clientId}`, {
+            state: { conversationId: res.conversationId }
+          });
+        } else {
+          console.warn("אין conversationId או clientId בתגובה מהשרת");
+        }
+      } else {
+        alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
+        console.error("שגיאה באישור המלצה:", res.error);
+      }
+    });
   }
-});
-
-}
-
-
 
   const {
     data: stats,
