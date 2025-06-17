@@ -111,7 +111,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    const handleNewMessage = (msg) => {
+    const handleIncomingMessage = (msg) => {
       setMessages((prev) => {
         const exists = prev.some(
           (m) =>
@@ -122,29 +122,15 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
     };
 
-    const handleNewAiSuggestion = (suggestion) => {
-      const aiMsg = {
-        _id: suggestion.recommendationId,
-        conversationId: suggestion.conversationId,
-        from: businessId,
-        to: null,
-        role: "business",
-        text: suggestion.recommendation,
-        timestamp: new Date(),
-        isRecommendation: true,
-      };
-      setMessages((prev) => [...prev, aiMsg]);
-    };
-
-    socket.on("newMessage", handleNewMessage);
-    socket.on("newAiSuggestion", handleNewAiSuggestion);
+    socket.on("newMessage", handleIncomingMessage);
+    socket.on("newAiSuggestion", handleIncomingMessage);
 
     socket.emit("joinConversation", conversationId);
     socket.emit("joinRoom", businessId);
 
     return () => {
-      socket.off("newMessage", handleNewMessage);
-      socket.off("newAiSuggestion", handleNewAiSuggestion);
+      socket.off("newMessage", handleIncomingMessage);
+      socket.off("newAiSuggestion", handleIncomingMessage);
       socket.emit("leaveConversation", conversationId);
     };
   }, [socket, conversationId, businessId]);
@@ -203,8 +189,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     );
   };
 
-
-
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
 
@@ -257,7 +241,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           to: businessId,
           role: "client",
           file: { name: `voice.webm`, type: recordedBlob.type, duration: timer },
-          blob: buffer, // <-- שמים את ה-buffer בתוך האובייקט
+          blob: buffer,
         },
         (ack) => {
           setSending(false);
@@ -286,7 +270,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           from: userId,
           to: businessId,
           role: "client",
-          image: reader.result, // data:image/...;base64,...
+          image: reader.result,
         },
         (ack) => {
           setSending(false);
@@ -314,7 +298,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           <div
             key={m._id || i}
             className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
-
           >
             {m.image ? (
               <img
