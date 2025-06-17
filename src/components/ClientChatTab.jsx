@@ -12,14 +12,17 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+
     const onTimeUpdate = () => setProgress(audio.currentTime);
     const onEnded = () => {
       setPlaying(false);
       setProgress(0);
     };
+
     audio.addEventListener("timeupdate", onTimeUpdate);
     audio.addEventListener("ended", onEnded);
     audio.load();
+
     return () => {
       audio.removeEventListener("timeupdate", onTimeUpdate);
       audio.removeEventListener("ended", onEnded);
@@ -109,54 +112,50 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   }, [conversationId]);
 
   useEffect(() => {
-  if (!socket) return;
+    if (!socket) return;
 
-  const handleIncomingMessage = (msg) => {
-  setMessages((prev) => {
-    // החלפה לפי tempId (הודעה אופטימית שנשלחה)
-    if (msg.tempId) {
-      return prev.map((m) => (m.tempId === msg.tempId ? msg : m));
-    }
-
-    // החלפה לפי _id (הודעה מאושרת או הודעה חדשה)
-    if (msg._id) {
-      let replaced = false;
-      const updated = prev.map((m) => {
-        if (m._id === msg._id) {
-          replaced = true;
-          return msg;
+    const handleIncomingMessage = (msg) => {
+      setMessages((prev) => {
+        // החלפה לפי tempId (אופטימיות)
+        if (msg.tempId) {
+          return prev.map((m) => (m.tempId === msg.tempId ? msg : m));
         }
-        return m;
+
+        // החלפה לפי _id
+        if (msg._id) {
+          let replaced = false;
+          const updated = prev.map((m) => {
+            if (m._id === msg._id) {
+              replaced = true;
+              return msg;
+            }
+            return m;
+          });
+          if (replaced) return updated;
+        }
+
+        // אם ההודעה לא קיימת כלל, הוסף
+        const exists = prev.some((m) => m._id === msg._id);
+        if (exists) return prev;
+
+        return [...prev, msg];
       });
-      if (replaced) return updated;
-    }
+    };
 
-    // אם ההודעה לא קיימת בכלל, הוסף אותה
-    const exists = prev.some((m) => m._id === msg._id);
-    if (exists) return prev;
+    socket.on("newMessage", handleIncomingMessage);
+    socket.on("newAiSuggestion", handleIncomingMessage); // תואם לשרת
+    socket.on("messageApproved", handleIncomingMessage);
 
-    return [...prev, msg];
-  });
-};
+    socket.emit("joinConversation", conversationId);
+    socket.emit("joinRoom", businessId);
 
-  socket.on("newMessage", handleIncomingMessage);
-  socket.on("newRecommendation", handleIncomingMessage);
-  // הוספנו מאזין גם לאירוע אישור המלצה
-  socket.on("messageApproved", handleIncomingMessage);
-
-  socket.emit("joinConversation", conversationId);
-  socket.emit("joinRoom", businessId);
-
-  return () => {
-    socket.off("newMessage", handleIncomingMessage);
-    socket.off("newRecommendation", handleIncomingMessage);
-    // להסיר גם את מאזין אישור ההמלצה
-    socket.off("messageApproved", handleIncomingMessage);
-    socket.emit("leaveConversation", conversationId);
-  };
-}, [socket, conversationId, businessId]);
-
-
+    return () => {
+      socket.off("newMessage", handleIncomingMessage);
+      socket.off("newAiSuggestion", handleIncomingMessage);
+      socket.off("messageApproved", handleIncomingMessage);
+      socket.emit("leaveConversation", conversationId);
+    };
+  }, [socket, conversationId, businessId]);
 
   useEffect(() => {
     if (messageListRef.current) {
@@ -197,7 +196,14 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
     socket.emit(
       "sendMessage",
-      { conversationId, from: userId, to: businessId, role: "client", text: optimisticMsg.text, tempId },
+      {
+        conversationId,
+        from: userId,
+        to: businessId,
+        role: "client",
+        text: optimisticMsg.text,
+        tempId,
+      },
       (ack) => {
         setSending(false);
         if (ack?.ok) {
@@ -257,14 +263,15 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       const buffer = Buffer.from(arrayBuffer);
 
       socket.emit(
-        "sendMessage",
+        "sendAudio",
         {
           conversationId,
           from: userId,
           to: businessId,
           role: "client",
-          file: { name: `voice.webm`, type: recordedBlob.type, duration: timer },
-          blob: buffer,
+          buffer, // חשוב: משתמשים בשם buffer כדי להתאים לשרת
+          fileType: recordedBlob.type,
+          duration: timer,
         },
         (ack) => {
           setSending(false);
@@ -287,13 +294,15 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     const reader = new FileReader();
     reader.onload = () => {
       socket.emit(
-        "sendMessage",
+        "sendFile",
         {
           conversationId,
           from: userId,
           to: businessId,
           role: "client",
-          image: reader.result,
+          buffer: Buffer.from(reader.result.split(",")[1], "base64"),
+          fileType: file.type,
+          fileName: file.name,
         },
         (ack) => {
           setSending(false);
