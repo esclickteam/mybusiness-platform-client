@@ -1,17 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
+import { io } from "socket.io-client";
+
 import BusinessAdvisorTab from "./esclickTabs/BusinessAdvisorTab";
 import MarketingAdvisorTab from "./esclickTabs/MarketingAdvisorTab";
 import BusinessXrayWrapper from "./esclickTabs/BusinessXrayWrapper";
 import AiPartnerTab from "./esclickTabs/AiPartnerTab";
 import "./EsclickAdvisor.css";
 
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
+
 const EsclickAdvisor = () => {
   const [activeTab, setActiveTab] = useState("business");
-
-  // שליפת token ו-businessId מתוך הקונטקסט
+  const [hasAiNotification, setHasAiNotification] = useState(false);
   const { user, loading } = useAuth();
-  const token = localStorage.getItem("token"); // או תוכל להעביר אותו גם בקונטקסט אם שמרת שם
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!user?.businessId || !token) return;
+
+    const socket = io(SOCKET_URL, {
+      auth: { token, businessId: user.businessId },
+      transports: ["websocket"],
+    });
+
+    socket.on("newRecommendation", () => {
+      setHasAiNotification(true);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [user?.businessId, token]);
+
+  useEffect(() => {
+    if (activeTab === "partner") {
+      setHasAiNotification(false);
+    }
+  }, [activeTab]);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
 
   const renderTab = () => {
     switch (activeTab) {
@@ -39,27 +69,28 @@ const EsclickAdvisor = () => {
       <div className="tab-buttons">
         <button
           className={activeTab === "business" ? "active" : ""}
-          onClick={() => setActiveTab("business")}
+          onClick={() => handleTabChange("business")}
         >
           יועץ עסקי
         </button>
         <button
           className={activeTab === "marketing" ? "active" : ""}
-          onClick={() => setActiveTab("marketing")}
+          onClick={() => handleTabChange("marketing")}
         >
           יועץ שיווקי
         </button>
         <button
           className={activeTab === "xray" ? "active" : ""}
-          onClick={() => setActiveTab("xray")}
+          onClick={() => handleTabChange("xray")}
         >
           רנטגן עסקי
         </button>
         <button
           className={activeTab === "partner" ? "active" : ""}
-          onClick={() => setActiveTab("partner")}
+          onClick={() => handleTabChange("partner")}
         >
           שותף AI אישי
+          {hasAiNotification && <span className="notification-dot" />}
         </button>
       </div>
 

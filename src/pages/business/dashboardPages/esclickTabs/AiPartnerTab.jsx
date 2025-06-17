@@ -5,7 +5,7 @@ import "./AiPartnerTab.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 
-const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
+const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommendation }) => {
   const navigate = useNavigate();
 
   const [businessProfile, setBusinessProfile] = useState({
@@ -65,6 +65,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
       setSuggestions((prev) => {
         if (prev.find((r) => r.id === suggestion.recommendationId)) return prev;
+
+        // קריאה לפונקציית ההתראה מהאב
+        if (typeof onNewRecommendation === "function") {
+          onNewRecommendation();
+        }
+
         return [
           ...prev,
           {
@@ -93,7 +99,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     return () => {
       if (s.connected) s.disconnect();
     };
-  }, [businessId, token]);
+  }, [businessId, token, onNewRecommendation]);
 
   // הצגת המודאל להתראה חכמה
   useEffect(() => {
@@ -302,16 +308,42 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
             ))}
           </div>
 
-          <div className="chat-box" style={{ maxHeight: 300, overflowY: "auto" }}>
-            {[...chat, ...suggestions.map((s) => ({ sender: "aiSuggestion", text: s.text, status: s.status, id: s.id }))].map(
-              (msg, i) => (
-                <div key={msg.id || i} className={`bubble ${msg.sender}`}>
-                  {msg.text}
-                  {msg.status && <span> ({msg.status})</span>}
+          {/* המלצות חכמות מוצגות כאן */}
+          <div
+            className="recommendations-container"
+            style={{
+              minHeight: 150,
+              maxHeight: 300,
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderRadius: 8,
+              padding: "1rem",
+              backgroundColor: "#f7f4ff",
+              marginBottom: "1rem",
+              textAlign: "right",
+              direction: "rtl",
+            }}
+          >
+            {suggestions.length === 0 ? (
+              <p style={{ color: "#999" }}>כאן יוצגו ההמלצות החכמות שלך 🧠✨</p>
+            ) : (
+              suggestions.map(({ id, text, status }) => (
+                <div
+                  key={id}
+                  className="ai-recommendation"
+                  style={{
+                    marginBottom: 10,
+                    padding: 10,
+                    backgroundColor: "#e1d7ff",
+                    borderRadius: 10,
+                    wordBreak: "break-word",
+                  }}
+                >
+                  <p style={{ margin: 0 }}>{text}</p>
+                  <small style={{ color: "#555" }}>סטטוס: {status || "ממתין"}</small>
                 </div>
-              )
+              ))
             )}
-            <div ref={bottomRef} />
           </div>
 
           <div>
