@@ -28,7 +28,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [socket, setSocket] = useState(null);
   const [clientId, setClientId] = useState(null);
 
-  // פילטר המלצות תקינות ויחודיות
   const filterValidUniqueRecommendations = useCallback((recs) => {
     const filtered = recs.filter(
       (r) => r._id && typeof r._id === "string" && r._id.length === 24
@@ -40,7 +39,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     return Array.from(uniqueMap.values());
   }, []);
 
-  // טעינת המלצות מהשרת
   useEffect(() => {
     async function fetchRecommendations() {
       if (!businessId || !token) return;
@@ -66,7 +64,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     fetchRecommendations();
   }, [businessId, token, filterValidUniqueRecommendations]);
 
-  // טעינת clientId לפי conversationId
   useEffect(() => {
     async function fetchClientId() {
       if (!conversationId || !businessId || !token) return;
@@ -88,7 +85,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     fetchClientId();
   }, [conversationId, businessId, token]);
 
-  // התחברות ל-Socket.IO והאזנה לאירועים
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -103,7 +99,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
     s.on("connect", () => {
       console.log("Socket connected:", s.id);
+      // AI room
       s.emit("joinRoom", businessId);
+      // conversation room for real-time messageApproved
       if (conversationId) {
         s.emit("joinConversation", conversationId);
       }
@@ -146,6 +144,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       setChat((prev) => [...prev, msg]);
     });
 
+    // New listener for approved recommendations
     s.on("messageApproved", (msg) => {
       console.log("Recommendation approved, new chat message:", msg);
       setChat((prev) => [...prev, msg]);
@@ -164,7 +163,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     };
   }, [businessId, token, conversationId, onNewRecommendation]);
 
-  // טעינת פרופיל העסק
   useEffect(() => {
     async function fetchProfile() {
       if (!businessId || !token) return;
@@ -186,7 +184,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     fetchProfile();
   }, [businessId, token]);
 
-  // שמירת פרופיל העסק
   const handleSaveProfile = useCallback(async () => {
     setLoading(true);
     try {
@@ -213,12 +210,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     }
   }, [businessProfile, token]);
 
-  // שינוי בפרטי פרופיל
   const handleProfileChange = useCallback((e) => {
     setBusinessProfile((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }, []);
 
-  // שליחת הודעה (טקסט מהלקוח לעסק)
   const sendMessageForRecommendation = useCallback(
     (text) => {
       if (!text.trim() || !socket || socket.disconnected || !clientId) return;
@@ -243,53 +238,62 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     [socket, conversationId, clientId, businessId]
   );
 
-  // אישור המלצה - עם Socket.IO במקום fetch
   const approveSuggestion = useCallback(
-    ({ id, conversationId, text }) => {
-      if (!socket || !conversationId || !clientId) return;
+    async ({ id, conversationId, text }) => {
       setLoading(true);
-
-      socket.emit(
-        "approveRecommendation",
-        { businessId, recommendationId: id, conversationId, text, clientId },
-        (response) => {
-          setLoading(false);
-          if (response.error) {
-            alert("שגיאה באישור ההמלצה: " + response.error);
-            return;
-          }
-
-          setSuggestions((prev) =>
-            prev.map((s) =>
-              s.id === id ? { ...s, status: "sent", text } : s
-            )
-          );
-
-          if (response.message) {
-              setChat(prev => [...prev, response.message]);
-
-          }
-
-          alert("ההמלצה אושרה ונשלחה ללקוח!");
-          setActiveSuggestion(null);
+      try {
+        const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ businessId, recommendationId: id, text }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to approve");
+        if (conversationId && clientId) {
+          await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              text,
+              from: businessId,
+              to: clientId,
+              role: "business",
+              timestamp: new Date().toISOString(),
+              isRecommendation: true,
+            }),
+          });
         }
-      );
+        setSuggestions((prev) =>
+          prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
+        );
+        alert("ההמלצה אושרה ונשלחה ללקוח!");
+        setActiveSuggestion(null);
+      } catch (err) {
+        console.error("Error approving suggestion:", err);
+        alert("שגיאה באישור ההמלצה: " + err.message);
+      } finally {
+        setLoading(false);
+      }
     },
-    [socket, businessId, clientId]
+    [businessId, clientId, token]
   );
 
-  // דחיית המלצה
   const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
   }, []);
 
-  // גלילה לתחתית הצ'אט כשמתווספות הודעות או המלצות
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
 
-  // טעינת טקסט לעריכה בהמלצה פעילה
   useEffect(() => {
     if (activeSuggestion) {
       setEditedText(activeSuggestion.text);
@@ -381,7 +385,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             />
             <button
               onClick={() => sendMessageForRecommendation(input)}
-              disabled={loading || !input.trim()}
+              disabled={loading || !input.trim()}  
             >
               שלח
             </button>
@@ -424,24 +428,17 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                       id: activeSuggestion.id,
                       conversationId: activeSuggestion.conversationId,
                       text: editedText,
-                      clientId, 
-                      businessId 
-
-
                     });
                     setEditing(false);
                   }}
                   disabled={loading || !editedText.trim()}
                 >
-                  אשר ושלח
+                  אשר ושלח  
                 </button>
-                <button
-                  disabled={loading}
-                  onClick={() => {
-                    setEditing(false);
-                    setEditedText(activeSuggestion.text);
-                  }}
-                >
+                <button disabled={loading} onClick={() => {
+                  setEditing(false);
+                  setEditedText(activeSuggestion.text);
+                }}>
                   ביטול
                 </button>
               </>
@@ -452,27 +449,19 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 ))}
                 {activeSuggestion.status === "pending" ? (
                   <>
-                    <button
-                      onClick={() =>
-                        approveSuggestion({
-                          id: activeSuggestion.id,
-                          conversationId: activeSuggestion.conversationId,
-                          text: activeSuggestion.text,
-                          clientId,
-                          
-                        })
-                      }
-                      disabled={loading}
-                    >
+                    <button onClick={() =>
+                      approveSuggestion({
+                        id: activeSuggestion.id,
+                        conversationId: activeSuggestion.conversationId,
+                        text: activeSuggestion.text,
+                      })
+                    } disabled={loading}>
                       אשר ושלח מידית
                     </button>
                     <button disabled={loading} onClick={() => setEditing(true)}>
                       ערוך
                     </button>
-                    <button
-                      disabled={loading}
-                      onClick={() => rejectSuggestion(activeSuggestion.id)}
-                    >
+                    <button disabled={loading} onClick={() => rejectSuggestion(activeSuggestion.id)}>
                       דחה
                     </button>
                   </>
