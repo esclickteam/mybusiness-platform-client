@@ -25,6 +25,18 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
 
+  // פונקציה לסינון כפילויות וזיהוי תקין (ObjectId 24 תווים hex)
+  function filterValidUniqueRecommendations(recs) {
+    const filtered = recs.filter(
+      (r) => r._id && typeof r._id === "string" && r._id.length === 24
+    );
+    const uniqueMap = new Map();
+    filtered.forEach((r) => {
+      if (!uniqueMap.has(r._id)) uniqueMap.set(r._id, r);
+    });
+    return Array.from(uniqueMap.values());
+  }
+
   // טעינת המלצות קיימות מהשרת
   useEffect(() => {
     async function fetchRecommendations() {
@@ -36,7 +48,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
         if (!res.ok) throw new Error("Failed to load recommendations");
         const recs = await res.json();
-        const formatted = recs.map((r) => ({
+        const validUniqueRecs = filterValidUniqueRecommendations(recs);
+        const formatted = validUniqueRecs.map((r) => ({
           id: r._id,
           text: r.text,
           status: r.status,
