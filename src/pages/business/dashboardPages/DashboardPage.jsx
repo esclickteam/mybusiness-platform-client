@@ -147,8 +147,6 @@ const DashboardPage = () => {
     return;
   }
 
-  const businessId = getBusinessId(); // או user.businessId אם יש גישה
-
   safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
     if (!res || typeof res !== "object") {
       console.warn("Callback response לא תקין:", res);
@@ -159,10 +157,13 @@ const DashboardPage = () => {
       setRecommendations((prev) =>
         prev.filter((r) => r.recommendationId !== recommendationId)
       );
-      if (res.conversationId) {
-        navigate(`/business/${businessId}/chat/${res.conversationId}`);
+
+      if (res.conversationId && res.clientId) {
+        navigate(`/business/${businessId}/chat/${res.clientId}`, {
+          state: { conversationId: res.conversationId }
+        });
       } else {
-        console.warn("אין conversationId בתגובה מהשרת");
+        console.warn("אין conversationId או clientId בתגובה מהשרת");
       }
     } else {
       alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
@@ -170,6 +171,7 @@ const DashboardPage = () => {
     }
   });
 }
+
 
 
   const {
