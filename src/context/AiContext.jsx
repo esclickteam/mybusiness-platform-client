@@ -120,9 +120,10 @@ export function AiProvider({ children }) {
       );
       setActiveSuggestion(null);
 
-      if (data.conversationId) {
-        navigate(`/business/chat/${data.conversationId}`);
-      }
+      // כאן נשארים בדף הנוכחי, בלי ניווט:
+      // אפשר להוסיף הודעה אם רוצים, למשל:
+      // alert("ההמלצה אושרה ונשלחה ללקוח!");
+
     } catch (err) {
       console.error("Approve suggestion error:", err);
       alert("שגיאה באישור ההמלצה: " + err.message);
@@ -146,7 +147,7 @@ export function AiProvider({ children }) {
         suggestions,
         addSuggestion,
         activeSuggestion,
-        setActiveSuggestion, // אפשרי גם לחשוף לפעמים לשליטה חיצונית
+        setActiveSuggestion,
         approveSuggestion,
         rejectSuggestion,
         closeModal,
