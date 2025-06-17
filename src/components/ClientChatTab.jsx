@@ -116,35 +116,30 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
     const handleIncomingMessage = (msg) => {
   console.log('Received socket message:', msg);
-  setMessages((prev) => {
-    // אם יש tempId, עדכן הודעה קיימת לפי tempId (אופטימיות)
-    if (msg.tempId) {
-      const updated = prev.map((m) => (m.tempId === msg.tempId ? { ...m, ...msg } : m));
-      // אם העדכון באמת קרה (כלומר היתה הודעה עם tempId)
-      const found = prev.some((m) => m.tempId === msg.tempId);
-      if (found) return updated;
-    }
 
-    // אם יש _id, עדכן הודעה קיימת לפי _id
-    if (msg._id) {
-      let replaced = false;
-      const updated = prev.map((m) => {
-        if (m._id === msg._id) {
-          replaced = true;
-          return { ...m, ...msg };
-        }
-        return m;
-      });
-      if (replaced) return updated;
-    }
+  // נוצר id אחיד לכל סוג הודעה
+  const id = msg._id || msg.recommendationId || msg.tempId;
+
+  setMessages((prev) => {
+    // עדכון לפי id
+    let replaced = false;
+    const updated = prev.map((m) => {
+      if (m._id === id || m.recommendationId === id || m.tempId === id) {
+        replaced = true;
+        return { ...m, ...msg };
+      }
+      return m;
+    });
+    if (replaced) return updated;
 
     // אם ההודעה לא קיימת כלל, הוסף חדשה
-    const exists = prev.some((m) => m._id === msg._id || (msg.tempId && m.tempId === msg.tempId));
+    const exists = prev.some((m) => m._id === id || m.recommendationId === id || m.tempId === id);
     if (exists) return prev;
 
     return [...prev, msg];
   });
 };
+
 
 
     socket.on("newMessage", handleIncomingMessage);
