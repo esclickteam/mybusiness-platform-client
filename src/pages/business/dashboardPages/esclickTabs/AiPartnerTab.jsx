@@ -216,36 +216,36 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   };
 
   const approveSuggestion = async ({ id, conversationId, text }) => {
-    setLoading(true);
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ businessId, recommendationId: id, text }),
-      });
+  setLoading(true);
+  try {
+    const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ businessId, recommendationId: id, text }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      setLoading(false);
-      if (!res.ok) throw new Error(data.error || "Failed to approve");
+    setLoading(false);
+    if (!res.ok) throw new Error(data.error || "Failed to approve");
 
-      setSuggestions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
-      );
-      alert("ההמלצה אושרה ונשלחה ללקוח!");
-      setActiveSuggestion(null);
+    setSuggestions((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
+    );
+    alert("ההמלצה אושרה ונשלחה ללקוח!");
+    setActiveSuggestion(null);
 
-      navigate(`/business/chat/${conversationId}`);
-    } catch (err) {
-      setLoading(false);
-      console.error("Error approving suggestion:", err);
-      alert("שגיאה באישור ההמלצה: " + err.message);
-    }
-  };
+    // השאר כאן בלי navigate, כך שלא תהיה ניתוב
+  } catch (err) {
+    setLoading(false);
+    console.error("Error approving suggestion:", err);
+    alert("שגיאה באישור ההמלצה: " + err.message);
+  }
+};
 
   const rejectSuggestion = (id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
