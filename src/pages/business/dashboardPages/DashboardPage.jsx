@@ -148,28 +148,28 @@ const DashboardPage = () => {
   }
 
   safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
-    if (!res || typeof res !== "object") {
-      console.warn("Callback response לא תקין:", res);
-      return;
-    }
-    if (res.ok) {
-      alert("ההמלצה אושרה ונשלחה ללקוח");
-      setRecommendations((prev) =>
-        prev.filter((r) => r.recommendationId !== recommendationId)
-      );
+  console.log("Response from approveRecommendation:", res);
 
-      if (res.conversationId && res.clientId) {
-        navigate(`/business/${businessId}/chat/${res.clientId}`, {
-          state: { conversationId: res.conversationId }
-        });
-      } else {
-        console.warn("אין conversationId או clientId בתגובה מהשרת");
-      }
+  if (res.ok) {
+    alert("ההמלצה אושרה ונשלחה ללקוח");
+    setRecommendations((prev) =>
+      prev.filter((r) => r.recommendationId !== recommendationId)
+    );
+
+    if (res.conversationId && res.clientId) {
+      console.log('Navigating to chat with clientId:', res.clientId, 'conversationId:', res.conversationId);
+      navigate(`/business/${businessId}/chat/${res.clientId}`, {
+        state: { conversationId: res.conversationId }
+      });
     } else {
-      alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
-      console.error("שגיאה באישור המלצה:", res.error);
+      console.warn("אין conversationId או clientId בתגובה מהשרת");
     }
-  });
+  } else {
+    alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
+    console.error("שגיאה באישור המלצה:", res.error);
+  }
+});
+
 }
 
 
