@@ -424,6 +424,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                       id: activeSuggestion.id,
                       conversationId: activeSuggestion.conversationId,
                       text: editedText,
+                      clientId, 
+                      businessId 
+
+
                     });
                     setEditing(false);
                   }}
@@ -454,6 +458,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                           id: activeSuggestion.id,
                           conversationId: activeSuggestion.conversationId,
                           text: activeSuggestion.text,
+                          clientId,
+                          businessId,
                         })
                       }
                       disabled={loading}
