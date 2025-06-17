@@ -109,31 +109,32 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   }, [conversationId]);
 
   useEffect(() => {
-    if (!socket || !conversationId) return;
+  if (!socket) return;
 
-    const handleIncomingMessage = (msg) => {
-      setMessages((prev) => {
-        const exists = prev.some(
-          (m) =>
-            (m._id && msg._id && m._id === msg._id) ||
-            (m.tempId && msg.tempId && m.tempId === msg.tempId)
-        );
-        return exists ? prev : [...prev, msg];
-      });
-    };
+  const handleIncomingMessage = (msg) => {
+    setMessages((prev) => {
+      const exists = prev.some(
+        (m) =>
+          (m._id && msg._id && m._id === msg._id) ||
+          (m.tempId && msg.tempId && m.tempId === msg.tempId)
+      );
+      return exists ? prev : [...prev, msg];
+    });
+  };
 
-    socket.on("newMessage", handleIncomingMessage);
-    socket.on("newAiSuggestion", handleIncomingMessage);
+  socket.on("newMessage", handleIncomingMessage);
+  socket.on("newRecommendation", handleIncomingMessage);
 
-    socket.emit("joinConversation", conversationId);
-    socket.emit("joinRoom", businessId);
+  socket.emit("joinConversation", conversationId);
+  socket.emit("joinRoom", businessId);
 
-    return () => {
-      socket.off("newMessage", handleIncomingMessage);
-      socket.off("newAiSuggestion", handleIncomingMessage);
-      socket.emit("leaveConversation", conversationId);
-    };
-  }, [socket, conversationId, businessId]);
+  return () => {
+    socket.off("newMessage", handleIncomingMessage);
+    socket.off("newRecommendation", handleIncomingMessage);
+    socket.emit("leaveConversation", conversationId);
+  };
+}, [socket, conversationId, businessId]);
+
 
   useEffect(() => {
     if (messageListRef.current) {
