@@ -52,7 +52,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       console.error("Socket connection error:", err);
     });
 
-    // קבלת המלצות AI חדשות - מניעת כפילויות
     s.on("newRecommendation", (suggestion) => {
       console.log("New AI suggestion received:", suggestion);
       if (notificationSound.current) notificationSound.current.play();
@@ -66,7 +65,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       setSuggestions((prev) => {
         if (prev.find((r) => r.id === suggestion.recommendationId)) return prev;
 
-        // קריאה לפונקציית ההתראה מהאב
         if (typeof onNewRecommendation === "function") {
           onNewRecommendation();
         }
@@ -84,7 +82,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       });
     });
 
-    // קבלת הודעות חדשות לצ'אט
     s.on("newMessage", (msg) => {
       console.log("New chat message received:", msg);
       setChat((prev) => [...prev, msg]);
@@ -101,14 +98,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     };
   }, [businessId, token, onNewRecommendation]);
 
-  // הצגת המודאל להתראה חכמה
   useEffect(() => {
     if (suggestions.length > 0) {
       setActiveSuggestion(suggestions[0]);
     }
   }, [suggestions]);
 
-  // טעינת פרופיל העסק
   useEffect(() => {
     async function fetchProfile() {
       if (!businessId || !token) return;
@@ -133,7 +128,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     fetchProfile();
   }, [businessId, token]);
 
-  // שמירת פרופיל העסק
   const handleSaveProfile = async () => {
     try {
       const apiBaseUrl = import.meta.env.VITE_API_URL;
@@ -156,12 +150,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     }
   };
 
-  // טיפול בשינוי שדות בפרופיל העסק
   const handleProfileChange = (e) => {
     setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
   };
 
-  // שליחת הודעה דרך socket
   const sendMessageForRecommendation = (text) => {
     if (!text || !text.trim() || !socket || socket.disconnected) return;
 
@@ -185,7 +177,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     });
   };
 
-  // אישור ושליחת המלצה ללקוח + ניווט לצ'אט
   const approveSuggestion = async ({ id, conversationId, text }) => {
     setLoading(true);
     try {
@@ -228,13 +219,11 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     }
   };
 
-  // דחיית המלצה
   const rejectSuggestion = (id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
   };
 
-  // גלילה אוטומטית לתחתית
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
@@ -308,9 +297,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             ))}
           </div>
 
-        
-
-          <div>
+          <div className="chat-input">
             <textarea
               rows={2}
               value={input || ""}
@@ -331,37 +318,29 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
               שלח
             </button>
           </div>
-
-          
         </div>
       </div>
 
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>הודעת AI חדשה</h3>
+          <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
+            <h4>הודעת AI חדשה</h4>
             <p>{activeSuggestion.text}</p>
-            <div style={{ marginTop: 10 }}>
-              <button
-                onClick={() =>
-                  approveSuggestion({
-                    id: activeSuggestion.id,
-                    conversationId: activeSuggestion.conversationId,
-                    text: activeSuggestion.text,
-                  })
-                }
-                disabled={loading}
-              >
-                אשר ושלח
-              </button>
-              <button
-                onClick={() => rejectSuggestion(activeSuggestion.id)}
-                disabled={loading}
-                style={{ marginLeft: 8 }}
-              >
-                דחה
-              </button>
-            </div>
+            <button
+              onClick={() =>
+                approveSuggestion({
+                  id: activeSuggestion.id,
+                  conversationId: activeSuggestion.conversationId,
+                  text: activeSuggestion.text,
+                })
+              }
+              disabled={loading}
+            >
+              אשר ושלח
+            </button>
+            <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading}>
+              דחה
+            </button>
           </div>
         </div>
       )}
