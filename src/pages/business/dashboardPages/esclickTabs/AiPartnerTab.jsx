@@ -108,12 +108,20 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           {
             id: suggestion.id || suggestion.recommendationId,
             text: suggestion.text || suggestion.recommendation,
-            status: suggestion.status || "pending",
+            status: suggestion.status || "pending", // ממתינה לאישור העסק
             conversationId: suggestion.conversationId,
             clientSocketId: suggestion.clientSocketId,
           },
         ];
       });
+    });
+
+    s.on("updateRecommendationStatus", ({ recommendationId, status }) => {
+      setSuggestions((prev) =>
+        prev.map((s) =>
+          s.id === recommendationId ? { ...s, status } : s
+        )
+      );
     });
 
     s.on("newMessage", (msg) => {
@@ -131,8 +139,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (s.connected) s.disconnect();
     };
   }, [businessId, token, onNewRecommendation]);
-
-  // ** אין פה useEffect שמגדיר activeSuggestion אוטומטית **
 
   useEffect(() => {
     async function fetchProfile() {
@@ -211,9 +217,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     setLoading(true);
     try {
       const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
-      console.log("Sending approve request to:", url);
-      console.log("Request body:", { businessId, recommendationId: id });
-
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -223,9 +226,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         body: JSON.stringify({ businessId, recommendationId: id }),
       });
 
-      console.log("Response status:", res.status);
       const data = await res.json();
-      console.log("Response data:", data);
 
       setLoading(false);
       if (!res.ok) throw new Error(data.error || "Failed to approve");
@@ -236,24 +237,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       alert("ההמלצה אושרה ונשלחה ללקוח!");
       setActiveSuggestion(null);
 
-      if (socket && !socket.disconnected) {
-        const msg = {
-          conversationId,
-          from: socket.id,
-          to: businessId,
-          text,
-          role: "business",
-        };
-        socket.emit("sendMessage", msg, (response) => {
-          if (!response.ok) {
-            alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
-          } else {
-            navigate(`/business/chat/${conversationId}`);
-          }
-        });
-      } else {
-        navigate(`/business/chat/${conversationId}`);
-      }
+      navigate(`/business/chat/${conversationId}`);
     } catch (err) {
       setLoading(false);
       console.error("Error approving suggestion:", err);
@@ -391,24 +375,29 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             {activeSuggestion.text.split("\n").map((line, index) => (
               <p key={index}>{line}</p>
             ))}
-            <button
-              onClick={() =>
-                approveSuggestion({
-                  id: activeSuggestion.id,
-                  conversationId: activeSuggestion.conversationId,
-                  text: activeSuggestion.text,
-                })
-              }
-              disabled={loading}
-            >
-              אשר ושלח
-            </button>
-            <button
-              onClick={() => rejectSuggestion(activeSuggestion.id)}
-              disabled={loading}
-            >
-              דחה
-            </button>
+            {activeSuggestion.status === "pending" && (
+              <>
+                <button
+                  onClick={() =>
+                    approveSuggestion({
+                      id: activeSuggestion.id,
+                      conversationId: activeSuggestion.conversationId,
+                      text: activeSuggestion.text,
+                    })
+                  }
+                  disabled={loading}
+                >
+                  אשר ושלח
+                </button>
+                <button
+                  onClick={() => rejectSuggestion(activeSuggestion.id)}
+                  disabled={loading}
+                >
+                  דחה
+                </button>
+              </>
+            )}
+            {activeSuggestion.status === "sent" && <p>ההמלצה אושרה ונשלחה ללקוח.</p>}
           </div>
         </div>
       )}
