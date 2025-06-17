@@ -7,6 +7,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
+import { AiProvider } from "../../../context/AiContext";  // <-- הוספתי כאן
 import "./Collab.css";
 
 const tabMap = {
@@ -90,25 +91,24 @@ export default function Collab() {
   };
 
   const handleSendProposal = async (toBusinessId, message) => {
-  try {
-    let endpoint = "";
-    const payload = { message };
+    try {
+      let endpoint = "";
+      const payload = { message };
 
-    if (toBusinessId) {
-      endpoint = "/business/my/proposals/private";
-      payload.toBusinessId = toBusinessId;
-    } else {
-      endpoint = "/business/my/proposals/public";
+      if (toBusinessId) {
+        endpoint = "/business/my/proposals/private";
+        payload.toBusinessId = toBusinessId;
+      } else {
+        endpoint = "/business/my/proposals/public";
+      }
+
+      await API.post(endpoint, payload);
+      setRefreshSent((f) => f + 1);
+    } catch (err) {
+      console.error(err);
+      alert("❌ שגיאה בשליחת ההצעה");
     }
-
-    await API.post(endpoint, payload);
-    setRefreshSent((f) => f + 1);
-  } catch (err) {
-    console.error(err);
-    alert("❌ שגיאה בשליחת ההצעה");
-  }
-};
-
+  };
 
   const handleStatusChange = () => {
     setRefreshSent((f) => f + 1);
@@ -135,58 +135,60 @@ export default function Collab() {
   }
 
   return (
-    <div className="p-6 collab-container">
-      <div className="tab-header">
-        {Object.keys(tabMap).map((key) => (
-          <button
-            key={key}
-            className={`tab ${tab === tabMap[key] ? "active" : ""}`}
-            onClick={() => {
-              setTab(tabMap[key]);
-              navigate(`/business/collaborations/${key}`, { replace: true });
-            }}
-          >
-            {tabLabels[key]}
-          </button>
-        ))}
-      </div>
+    <AiProvider>
+      <div className="p-6 collab-container">
+        <div className="tab-header">
+          {Object.keys(tabMap).map((key) => (
+            <button
+              key={key}
+              className={`tab ${tab === tabMap[key] ? "active" : ""}`}
+              onClick={() => {
+                setTab(tabMap[key]);
+                navigate(`/business/collaborations/${key}`, { replace: true });
+              }}
+            >
+              {tabLabels[key]}
+            </button>
+          ))}
+        </div>
 
-      {tab === tabMap.profile &&
-        (loadingProfile ? (
-          <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
-        ) : (
-          <CollabBusinessProfileTab
-            profileData={profileData}
-            profileImage={profileImage}
-            handleSaveProfile={handleSaveProfile}
+        {tab === tabMap.profile &&
+          (loadingProfile ? (
+            <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
+          ) : (
+            <CollabBusinessProfileTab
+              profileData={profileData}
+              profileImage={profileImage}
+              handleSaveProfile={handleSaveProfile}
+            />
+          ))}
+
+        {tab === tabMap.findPartner && (
+          <CollabFindPartnerTab
+            searchMode="category"
+            setSearchMode={() => {}}
+            searchCategory={""}
+            setSearchCategory={() => {}}
+            freeText={""}
+            setFreeText={() => {}}
+            categories={[]}
+            setSelectedBusiness={() => {}}
+            handleSendProposal={handleSendProposal}
+            handleOpenChat={handleOpenChat}
+            isDevUser={isDevUser}
           />
-        ))}
+        )}
 
-      {tab === tabMap.findPartner && (
-        <CollabFindPartnerTab
-          searchMode="category"
-          setSearchMode={() => {}}
-          searchCategory={""}
-          setSearchCategory={() => {}}
-          freeText={""}
-          setFreeText={() => {}}
-          categories={[]}
-          setSelectedBusiness={() => {}}
-          handleSendProposal={handleSendProposal}
-          handleOpenChat={handleOpenChat}
-          isDevUser={isDevUser}
-        />
-      )}
+        {tab === tabMap.messages && (
+          <CollabMessagesTab
+            refreshFlag={refreshSent + refreshReceived}
+            onStatusChange={handleStatusChange}
+            userBusinessId={user?.businessId}
+          />
+        )}
 
-      {tab === tabMap.messages && (
-        <CollabMessagesTab
-          refreshFlag={refreshSent + refreshReceived}
-          onStatusChange={handleStatusChange}
-          userBusinessId={user?.businessId}
-        />
-      )}
-
-      {tab === tabMap.market && <CollabMarketTab isDevUser={isDevUser} />}
-    </div>
+        {tab === tabMap.market && <CollabMarketTab isDevUser={isDevUser} />}
+      </div>
+    </AiProvider>
   );
 }

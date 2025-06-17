@@ -8,9 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 
-// הוספת ייבוא useAi ו-AiModal
-import { useAi } from "../../context/AiContext";
-import AiModal from "../../components/AiModal";
+import { AiProvider } from "../../context/AiContext"; // ייבוא AiProvider בלבד
 
 const tabs = [
   { path: "dashboard", label: "📊 דשבורד" },
@@ -31,9 +29,6 @@ export default function BusinessDashboardLayout() {
 
   const { unreadCountsByConversation, updateMessagesCount, incrementMessagesCount } = useUnreadMessages();
   const queryClient = useQueryClient();
-
-  // לקבלת הנתונים של מודאל AI
-  const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading: aiLoading } = useAi();
 
   // Prefetch חשוב של נתונים מרכזיים
   useEffect(() => {
@@ -183,119 +178,118 @@ export default function BusinessDashboardLayout() {
 
   return (
     <BusinessServicesProvider>
-      <div className={`rtl-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
-        <div className="business-dashboard-layout">
-          {(!isMobile || showSidebar) && (
-            <aside
-              className={`sidebar ${isMobile ? "mobile open" : ""}`}
-              ref={sidebarRef}
-              aria-modal={isMobile && showSidebar ? "true" : undefined}
-              role={isMobile && showSidebar ? "dialog" : undefined}
-              id="sidebar"
+      <AiProvider>
+        <div className={`rtl-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
+          <div className="business-dashboard-layout">
+            {(!isMobile || showSidebar) && (
+              <aside
+                className={`sidebar ${isMobile ? "mobile open" : ""}`}
+                ref={sidebarRef}
+                aria-modal={isMobile && showSidebar ? "true" : undefined}
+                role={isMobile && showSidebar ? "dialog" : undefined}
+                id="sidebar"
+              >
+                <h2>ניהול העסק</h2>
+                <nav>
+                  {user?.role === "business" && (
+                    <NavLink
+                      to={`/business/${businessId}`}
+                      end
+                      className={({ isActive }) => (isActive ? "active" : undefined)}
+                    >
+                      👀 צפייה בפרופיל
+                    </NavLink>
+                  )}
+                  {tabs.map(({ path, label }) => (
+                    <NavLink
+                      key={path}
+                      to={path}
+                      end
+                      className={({ isActive }) => (isActive ? "active" : undefined)}
+                    >
+                      {label}
+                      {path === "messages" && unreadCount > 0 && (
+                        <span
+                          style={{
+                            backgroundColor: "red",
+                            color: "white",
+                            borderRadius: "12px",
+                            padding: "2px 8px",
+                            fontSize: "12px",
+                            marginLeft: "8px",
+                            fontWeight: "bold",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          {unreadCount}
+                        </span>
+                      )}
+                    </NavLink>
+                  ))}
+                </nav>
+              </aside>
+            )}
+
+            {isMobile && showSidebar && (
+              <div
+                className="sidebar-overlay"
+                onClick={() => setShowSidebar(false)}
+                aria-label="סגור תפריט"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setShowSidebar(false);
+                }}
+              />
+            )}
+
+            {isMobile && (
+              <button
+                onClick={() => setShowSidebar((prev) => !prev)}
+                aria-label={showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"}
+                style={{
+                  position: "fixed",
+                  top: 60,
+                  left: 12,
+                  zIndex: 9999,
+                  backgroundColor: "#7c4dff",
+                  border: "none",
+                  borderRadius: 40,
+                  width: 120,
+                  height: 40,
+                  color: "#fff",
+                  fontSize: 16,
+                  cursor: "pointer",
+                  boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  userSelect: "none",
+                  fontWeight: "600",
+                }}
+              >
+                <span style={{ fontSize: 24 }}>{showSidebar ? "×" : "☰"}</span>
+                <span>{showSidebar ? "סגור ניווט" : "פתח ניווט"}</span>
+              </button>
+            )}
+
+            <main
+              className="dashboard-content"
+              tabIndex={-1}
+              aria-live="polite"
+              aria-atomic="true"
             >
-              <h2>ניהול העסק</h2>
-              <nav>
-                {user?.role === "business" && (
-                  <NavLink
-                    to={`/business/${businessId}`}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
-                    👀 צפייה בפרופיל
-                  </NavLink>
-                )}
-                {tabs.map(({ path, label }) => (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    end
-                    className={({ isActive }) => (isActive ? "active" : undefined)}
-                  >
-                    {label}
-                    {path === "messages" && unreadCount > 0 && (
-                      <span
-                        style={{
-                          backgroundColor: "red",
-                          color: "white",
-                          borderRadius: "12px",
-                          padding: "2px 8px",
-                          fontSize: "12px",
-                          marginLeft: "8px",
-                          fontWeight: "bold",
-                          verticalAlign: "middle",
-                        }}
-                      >
-                        {unreadCount}
-                      </span>
-                    )}
-                  </NavLink>
-                ))}
-              </nav>
-            </aside>
-          )}
-
-          {isMobile && showSidebar && (
-            <div
-              className="sidebar-overlay"
-              onClick={() => setShowSidebar(false)}
-              aria-label="סגור תפריט"
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") setShowSidebar(false);
-              }}
-            />
-          )}
-
-          {isMobile && (
-            <button
-              onClick={() => setShowSidebar((prev) => !prev)}
-              aria-label={showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"}
-              style={{
-                position: "fixed",
-                top: 60,
-                left: 12,
-                zIndex: 9999,
-                backgroundColor: "#7c4dff",
-                border: "none",
-                borderRadius: 40,
-                width: 120,
-                height: 40,
-                color: "#fff",
-                fontSize: 16,
-                cursor: "pointer",
-                boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                userSelect: "none",
-                fontWeight: "600",
-              }}
-            >
-              <span style={{ fontSize: 24 }}>{showSidebar ? "×" : "☰"}</span>
-              <span>{showSidebar ? "סגור ניווט" : "פתח ניווט"}</span>
-            </button>
-          )}
-
-          <main
-            className="dashboard-content"
-            tabIndex={-1}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <Outlet
-              context={{
-                unreadCount,
-                updateMessagesCount,
-              }}
-            />
-          </main>
-
-          {/* הוספת מודאל AI גלובלי */}
-          <AiModal />
+              <Outlet
+                context={{
+                  unreadCount,
+                  updateMessagesCount,
+                }}
+              />
+            </main>
+          </div>
         </div>
-      </div>
+      </AiProvider>
     </BusinessServicesProvider>
   );
 }

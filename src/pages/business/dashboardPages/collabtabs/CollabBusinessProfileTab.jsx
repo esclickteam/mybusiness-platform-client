@@ -5,6 +5,10 @@ import API from "../../../../api";
 import CollabChat from "./CollabChat";
 import "./CollabBusinessProfileTab.css";
 
+// הוספת ייבוא useAi ו-AiModal
+import { useAi } from "../../../../context/AiContext";
+import AiModal from "../../../../components/AiModal";
+
 export default function CollabBusinessProfileTab() {
   const [profileData, setProfileData] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
@@ -17,6 +21,9 @@ export default function CollabBusinessProfileTab() {
   // מזהי עסק לצ'אט
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
+
+  // שימוש בקונטקסט AI
+  const { suggestions, approveSuggestion, rejectSuggestion, activeSuggestion, closeModal, loading: aiLoading } = useAi();
 
   useEffect(() => {
     fetchProfile();
@@ -284,6 +291,9 @@ export default function CollabBusinessProfileTab() {
           )}
         </Box>
       </Modal>
+
+      {/* הוספת מודאל AI גלובלי */}
+      <AiModal />
     </>
   );
 }
