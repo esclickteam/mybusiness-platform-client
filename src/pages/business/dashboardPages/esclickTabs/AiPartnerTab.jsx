@@ -239,51 +239,50 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   );
 
   const approveSuggestion = useCallback(
-    async ({ id, conversationId, text }) => {
-      setLoading(true);
-      try {
-        const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
-        const res = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ businessId, recommendationId: id, text }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to approve");
-        if (conversationId && clientId) {
-          await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              text,
-              from: businessId,
-              to: clientId,
-              role: "business",
-              timestamp: new Date().toISOString(),
-              isRecommendation: true,
-            }),
-          });
-        }
-        setSuggestions((prev) =>
-          prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
-        );
-        alert("ההמלצה אושרה ונשלחה ללקוח!");
-        setActiveSuggestion(null);
-      } catch (err) {
-        console.error("Error approving suggestion:", err);
-        alert("שגיאה באישור ההמלצה: " + err.message);
-      } finally {
-        setLoading(false);
+  async ({ id, conversationId, text }) => {
+    setLoading(true);
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ businessId, recommendationId: id, text }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+      if (socket && conversationId && clientId) {
+        const msg = {
+          conversationId,
+          from: businessId,
+          to: clientId,
+          role: "business",
+          text,
+          timestamp: new Date().toISOString(),
+          isRecommendation: true,
+        };
+        socket.emit("sendApprovedMessage", msg);
+        setChat((prev) => [...prev, msg]); // עדכון UI מיידי
       }
-    },
-    [businessId, clientId, token]
-  );
+
+      setSuggestions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
+      );
+      alert("ההמלצה אושרה ונשלחה ללקוח!");
+      setActiveSuggestion(null);
+    } catch (err) {
+      console.error("Error approving suggestion:", err);
+      alert("שגיאה באישור ההמלצה: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  },
+  [businessId, clientId, token, socket]
+);
+
 
   const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
