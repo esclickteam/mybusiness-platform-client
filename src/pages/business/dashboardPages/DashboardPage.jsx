@@ -345,37 +345,77 @@ const DashboardPage = () => {
       {alert && <p className="alert-text">{alert}</p>}
 
       {/* NEW: AI Recommendations Section */}
-      {recommendations.length > 0 && (
-        <section className="recommendations-section" style={{ marginBottom: 20, padding: 15, border: "1px solid #ccc", borderRadius: 6, backgroundColor: "#f9f9f9" }}>
-          <h3>המלצות AI חדשות לקבלת אישור</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {recommendations.map(({ recommendationId, message, recommendation }) => (
-              <li key={recommendationId} style={{ marginBottom: 15, paddingBottom: 10, borderBottom: "1px solid #ddd" }}>
-                <p><b>הודעת לקוח:</b> {message}</p>
-                <p><b>המלצה AI:</b> {recommendation}</p>
-                <button
-                  style={{ backgroundColor: "#4caf50", color: "white", border: "none", padding: "8px 12px", borderRadius: 4, cursor: "pointer" }}
-                  onClick={() => {
-                    if (!socketRef.current) return;
-                    console.error("Socket not connected!");
-                    socketRef.current.emit("businessApproveRecommendation", { recommendationId }, (res) => {
-                      console.log("Response from server:", res);
-                      if (res.ok) {
-                        alert("ההמלצה אושרה ונשלחה ללקוח");
-                        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
-                      } else {
-                        alert("שגיאה באישור ההמלצה: " + res.error);
-                      }
-                    });
-                  }}
-                >
-                  אשר ושלח
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+{recommendations.length > 0 && (
+  <section
+    className="recommendations-section"
+    style={{
+      marginBottom: 20,
+      padding: 15,
+      border: "1px solid #ccc",
+      borderRadius: 6,
+      backgroundColor: "#f9f9f9",
+    }}
+  >
+    <h3>המלצות AI חדשות לקבלת אישור</h3>
+    <ul style={{ listStyle: "none", padding: 0 }}>
+      {recommendations.map(({ recommendationId, message, recommendation }) => (
+        <li
+          key={recommendationId}
+          style={{
+            marginBottom: 15,
+            paddingBottom: 10,
+            borderBottom: "1px solid #ddd",
+          }}
+        >
+          <p>
+            <b>הודעת לקוח:</b> {message}
+          </p>
+          <p>
+            <b>המלצה AI:</b> {recommendation}
+          </p>
+          <button
+  style={{
+    backgroundColor: "#4caf50",
+    color: "white",
+    border: "none",
+    padding: "8px 12px",
+    borderRadius: 4,
+    cursor: "pointer",
+  }}
+  onClick={() => {
+    if (!socketRef.current || socketRef.current.disconnected) {
+      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
+      return;
+    }
+    socketRef.current.emit(
+      "businessApproveRecommendation",
+      { recommendationId },
+      (res) => {
+        console.log("Response from server:", res);
+        if (res.ok) {
+          alert("ההמלצה אושרה ונשלחה ללקוח");
+          setRecommendations((prev) =>
+            prev.filter((r) => r.recommendationId !== recommendationId)
+          );
+          if (res.conversationId) {
+            navigate("/business/chat", { state: { conversationId: res.conversationId } });
+          }
+        } else {
+          alert("שגיאה באישור ההמלצה: " + res.error);
+        }
+      }
+    );
+  }}
+>
+  אשר ושלח
+</button>
+
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען ניווט...</div>}>
         <MemoizedDashboardNav
