@@ -112,15 +112,32 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   if (!socket) return;
 
   const handleIncomingMessage = (msg) => {
-    setMessages((prev) => {
-      if (msg.tempId) {
-        return prev.map((m) => (m.tempId === msg.tempId ? msg : m));
-      }
-      const exists = prev.some((m) => m._id === msg._id);
-      if (exists) return prev;
-      return [...prev, msg];
-    });
-  };
+  setMessages((prev) => {
+    // החלפה לפי tempId (הודעה אופטימית שנשלחה)
+    if (msg.tempId) {
+      return prev.map((m) => (m.tempId === msg.tempId ? msg : m));
+    }
+
+    // החלפה לפי _id (הודעה מאושרת או הודעה חדשה)
+    if (msg._id) {
+      let replaced = false;
+      const updated = prev.map((m) => {
+        if (m._id === msg._id) {
+          replaced = true;
+          return msg;
+        }
+        return m;
+      });
+      if (replaced) return updated;
+    }
+
+    // אם ההודעה לא קיימת בכלל, הוסף אותה
+    const exists = prev.some((m) => m._id === msg._id);
+    if (exists) return prev;
+
+    return [...prev, msg];
+  });
+};
 
   socket.on("newMessage", handleIncomingMessage);
   socket.on("newRecommendation", handleIncomingMessage);
