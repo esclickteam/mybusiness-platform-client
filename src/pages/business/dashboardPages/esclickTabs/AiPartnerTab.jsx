@@ -176,46 +176,59 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   };
 
   const approveSuggestion = async ({ id, conversationId, text }) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/send-approved`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ businessId, recommendationId: id }),
+  setLoading(true);
+  try {
+    const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
+    console.log("Sending approve request to:", url);
+    console.log("Request body:", { businessId, recommendationId: id });
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json", 
+        Authorization: `Bearer ${token}` 
+      },
+      body: JSON.stringify({ businessId, recommendationId: id }),
+    });
+
+    console.log("Response status:", res.status);
+    const data = await res.json();
+    console.log("Response data:", data);
+
+    setLoading(false);
+    if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+    setSuggestions((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
+    );
+    alert("ההמלצה אושרה ונשלחה ללקוח!");
+    setActiveSuggestion(null);
+
+    if (socket && !socket.disconnected) {
+      const msg = {
+        conversationId,
+        from: socket.id,
+        to: businessId,
+        text,
+        role: "business",
+      };
+      socket.emit("sendMessage", msg, (response) => {
+        if (!response.ok) {
+          alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
+        } else {
+          navigate(`/business/chat/${conversationId}`);
+        }
       });
-      const data = await res.json();
-      setLoading(false);
-      if (!res.ok) throw new Error(data.error || "Failed to approve");
-
-      setSuggestions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
-      );
-      alert("ההמלצה אושרה ונשלחה ללקוח!");
-      setActiveSuggestion(null);
-
-      if (socket && !socket.disconnected) {
-        const msg = {
-          conversationId,
-          from: socket.id,
-          to: businessId,
-          text,
-          role: "business",
-        };
-        socket.emit("sendMessage", msg, (response) => {
-          if (!response.ok) {
-            alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
-          } else {
-            navigate(`/business/chat/${conversationId}`);
-          }
-        });
-      } else {
-        navigate(`/business/chat/${conversationId}`);
-      }
-    } catch (err) {
-      setLoading(false);
-      alert("שגיאה באישור ההמלצה: " + err.message);
+    } else {
+      navigate(`/business/chat/${conversationId}`);
     }
-  };
+  } catch (err) {
+    setLoading(false);
+    console.error("Error approving suggestion:", err);
+    alert("שגיאה באישור ההמלצה: " + err.message);
+  }
+};
+
 
   const rejectSuggestion = (id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
