@@ -115,47 +115,43 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket) return;
 
     const handleIncomingMessage = (msg) => {
-  console.log('Received socket message:', msg);
+  // אם זו המלצה (newRecommendation)
+  if (msg.recommendation) {
+    msg.text = msg.recommendation;
+    msg._id  = msg.recommendationId;     // כדי שלא יווצר רשומה כפולה
+    msg.isRecommendation = true;
+  }
 
-  // נוצר id אחיד לכל סוג הודעה
-  const id = msg._id || msg.recommendationId || msg.tempId;
-
-  setMessages((prev) => {
-    // עדכון לפי id
+  const id = msg._id || msg.tempId;
+  setMessages(prev => {
     let replaced = false;
-    const updated = prev.map((m) => {
-      if (m._id === id || m.recommendationId === id || m.tempId === id) {
+    const updated = prev.map(m => {
+      if (m._id === id || m.tempId === id) {
         replaced = true;
         return { ...m, ...msg };
       }
       return m;
     });
     if (replaced) return updated;
-
-    // אם ההודעה לא קיימת כלל, הוסף חדשה
-    const exists = prev.some((m) => m._id === id || m.recommendationId === id || m.tempId === id);
-    if (exists) return prev;
-
     return [...prev, msg];
   });
 };
 
 
 
-    socket.on("newMessage", handleIncomingMessage);
-    socket.on("newAiSuggestion", handleIncomingMessage); // תואם לשרת
-    socket.on("messageApproved", handleIncomingMessage);
+     socket.on("newMessage", handleIncomingMessage);
+  socket.on("messageApproved", handleIncomingMessage);
+  socket.on("newRecommendation", handleIncomingMessage);
 
-    socket.emit("joinConversation", conversationId);
-    socket.emit("joinRoom", businessId);
+  socket.emit("joinConversation", conversationId);
 
-    return () => {
-      socket.off("newMessage", handleIncomingMessage);
-      socket.off("newAiSuggestion", handleIncomingMessage);
-      socket.off("messageApproved", handleIncomingMessage);
-      socket.emit("leaveConversation", conversationId);
-    };
-  }, [socket, conversationId, businessId]);
+  return () => {
+    socket.off("newMessage", handleIncomingMessage);
+    socket.off("messageApproved", handleIncomingMessage);
+    socket.off("newRecommendation", handleIncomingMessage);
+    socket.emit("leaveConversation", conversationId);
+  };
+}, [socket, conversationId]);
 
   useEffect(() => {
     if (messageListRef.current) {
