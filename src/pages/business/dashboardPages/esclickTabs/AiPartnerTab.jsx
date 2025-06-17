@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
@@ -29,7 +29,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [clientId, setClientId] = useState(null); // מזהה המשתמש השני בשיחה
 
   // סינון כפילויות וזיהוי תקין (ObjectId 24 תווים hex)
-  function filterValidUniqueRecommendations(recs) {
+  const filterValidUniqueRecommendations = useCallback((recs) => {
     const filtered = recs.filter(
       (r) => r._id && typeof r._id === "string" && r._id.length === 24
     );
@@ -38,7 +38,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (!uniqueMap.has(r._id)) uniqueMap.set(r._id, r);
     });
     return Array.from(uniqueMap.values());
-  }
+  }, []);
 
   // טעינת המלצות קיימות מהשרת
   useEffect(() => {
@@ -65,7 +65,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       }
     }
     fetchRecommendations();
-  }, [businessId, token]);
+  }, [businessId, token, filterValidUniqueRecommendations]);
 
   // טעינת מזהה הלקוח מתוך conversationId
   useEffect(() => {
@@ -74,23 +74,17 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const res = await fetch(`${apiBaseUrl}/conversations/${conversationId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Failed to load conversation details");
-        const messages = await res.json();
 
-        // בחירת המשתתף השני - צריך להחזיר את השיחה המלאה עם המשתתפים, לא רק הודעות
-        // לכן מומלץ לשנות API או להעביר פרופיל שיחה עם משתתפים, כאן נניח שיש API כזה:
+        // שים לב: רצוי שה-API יחזיר פרטי שיחה עם משתתפים כדי לקבל מזהה המשתמש השני ישירות
         const convRes = await fetch(`${apiBaseUrl}/conversations?businessId=${businessId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!convRes.ok) throw new Error("Failed to load conversations");
         const conversations = await convRes.json();
-        const conv = conversations.find(c => c.conversationId === conversationId);
+        const conv = conversations.find((c) => c.conversationId === conversationId);
         if (!conv) throw new Error("Conversation not found");
 
-        const otherId = conv.participants.find(p => p !== businessId);
+        const otherId = conv.participants.find((p) => p !== businessId);
         setClientId(otherId);
       } catch (err) {
         console.error("Error fetching client ID:", err);
@@ -199,8 +193,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     fetchProfile();
   }, [businessId, token]);
 
-  const handleSaveProfile = async () => {
+  const handleSaveProfile = useCallback(async () => {
     try {
+      setLoading(true);
       const apiBaseUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiBaseUrl}/business/profile`, {
         method: "PUT",
@@ -218,19 +213,21 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     } catch (err) {
       console.error("Error saving profile:", err);
       alert("❌ שגיאה בשמירת פרטי העסק");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [businessProfile, token]);
 
-  const handleProfileChange = (e) => {
-    setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
-  };
+  const handleProfileChange = useCallback((e) => {
+    setBusinessProfile((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }, []);
 
-  const sendMessageForRecommendation = (text) => {
-    if (!text || !text.trim() || !socket || socket.disconnected) return;
+  const sendMessageForRecommendation = useCallback((text) => {
+    if (!text || !text.trim() || !socket || socket.disconnected || !clientId) return;
 
     const msg = {
       conversationId,
-      from: socket.id,
+      from: clientId, // מזהה הלקוח/משתמש
       to: businessId,
       text,
       role: "client",
@@ -246,9 +243,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         alert("שגיאה בשליחת הודעה: " + (response.error || "unknown error"));
       }
     });
-  };
+  }, [socket, conversationId, clientId, businessId]);
 
-  const approveSuggestion = async ({ id, conversationId, text }) => {
+  const approveSuggestion = useCallback(async ({ id, conversationId, text }) => {
     setLoading(true);
     try {
       const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
@@ -278,7 +275,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             to: clientId,
             role: "business",
             timestamp: new Date().toISOString(),
-            isRecommendation: true,  
+            isRecommendation: true,
           }),
         });
       }
@@ -294,12 +291,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     } finally {
       setLoading(false);
     }
-  };
+  }, [businessId, clientId, token]);
 
-  const rejectSuggestion = (id) => {
+  const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
-  };
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -493,12 +490,15 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                     </button>
                   </>
                 )}
-                {activeSuggestion.status === "sent" && <p>ההמלצה אושרה ונשלחה ללקוח.</p>}
+                {activeSuggestion.status === "sent" && (
+                  <p>ההמלצה אושרה ונשלחה ללקוח.</p>
+                )}
               </>
             )}
           </div>
         </div>
       )}
+      <audio ref={notificationSound} src="/notification.mp3" preload="auto" />
       <div ref={bottomRef} />
     </div>
   );
