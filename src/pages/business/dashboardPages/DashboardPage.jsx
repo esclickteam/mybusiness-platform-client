@@ -153,28 +153,35 @@ const DashboardPage = () => {
 
     console.log("Sending approveRecommendation with recommendationId:", recommendationId);
 
-    safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
-      console.log("Response from approveRecommendation callback:", res);
+    safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (...args) => {
+  console.log("Response from approveRecommendation callback with args:", args);
 
-      if (res.ok) {
-        alert("ההמלצה אושרה ונשלחה ללקוח");
-        setRecommendations((prev) =>
-          prev.filter((r) => r.recommendationId !== recommendationId)
-        );
+  const res = args[0]; // כי socket.io שולח את הפרמטרים כמערך
+  if (!res) {
+    console.error("No response object received in callback");
+    return;
+  }
 
-        if (res.conversationId && res.clientId) {
-          console.log('Navigating to chat with clientId:', res.clientId, 'conversationId:', res.conversationId);
-          navigate(`/business/${businessId}/chat/${res.clientId}`, {
-            state: { conversationId: res.conversationId }
-          });
-        } else {
-          console.warn("אין conversationId או clientId בתגובה מהשרת");
-        }
-      } else {
-        alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
-        console.error("שגיאה באישור המלצה:", res.error);
-      }
-    });
+  if (res.ok) {
+    alert("ההמלצה אושרה ונשלחה ללקוח");
+    setRecommendations((prev) =>
+      prev.filter((r) => r.recommendationId !== recommendationId)
+    );
+
+    if (res.conversationId && res.clientId) {
+      console.log('Navigating to chat with clientId:', res.clientId, 'conversationId:', res.conversationId);
+      navigate(`/business/${businessId}/chat/${res.clientId}`, {
+        state: { conversationId: res.conversationId }
+      });
+    } else {
+      console.warn("אין conversationId או clientId בתגובה מהשרת");
+    }
+  } else {
+    alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
+    console.error("שגיאה באישור המלצה:", res.error);
+  }
+});
+
   }
 
   const {
