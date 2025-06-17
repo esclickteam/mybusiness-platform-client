@@ -127,17 +127,18 @@ const DashboardPage = () => {
     }
 
     socket.emit(event, data, (...args) => {
-      try {
-        if (typeof callback === "function") {
-          console.log(`Calling callback for event ${event} with args:`, args);
-          callback(...args);
-        } else {
-          console.warn(`Callback for event ${event} is not a function. Value:`, callback);
-        }
-      } catch (err) {
-        console.error(`Error in callback for event ${event}:`, err);
-      }
-    });
+  try {
+    console.log('Type of callback:', typeof callback, 'callback:', callback);
+    if (typeof callback === "function") {
+      callback(...args);
+    } else {
+      console.warn(`Callback for event ${event} is not a function.`);
+    }
+  } catch (err) {
+    console.error(`Error in callback for event ${event}:`, err);
+  }
+});
+
   }
 
   // טיפול באישור המלצה עם ניווט אוטומטי
