@@ -132,11 +132,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     };
   }, [businessId, token, onNewRecommendation]);
 
-  useEffect(() => {
-    if (suggestions.length > 0) {
-      setActiveSuggestion(suggestions[0]);
-    }
-  }, [suggestions]);
+  // *** שימו לב: לא מגדירים את activeSuggestion אוטומטית! ***
+  // כלומר, אין כאן useEffect שקורא setActiveSuggestion לפי suggestions
 
   useEffect(() => {
     async function fetchProfile() {
@@ -371,7 +368,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
           <div className="suggestions-list">
             {suggestions.map((s) => (
-              <div key={s.id} className={`suggestion ${s.status}`}>
+              <div
+                key={s.id}
+                className={`suggestion ${s.status}`}
+                onClick={() => setActiveSuggestion(s)}
+                style={{ cursor: "pointer" }}
+              >
                 <p>{s.text}</p>
                 <small>סטטוס: {s.status}</small>
               </div>
@@ -402,7 +404,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             >
               אשר ושלח
             </button>
-            <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading}>
+            <button
+              onClick={() => rejectSuggestion(activeSuggestion.id)}
+              disabled={loading}
+            >
               דחה
             </button>
           </div>
