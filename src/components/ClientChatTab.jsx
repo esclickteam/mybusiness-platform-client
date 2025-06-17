@@ -111,7 +111,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   useEffect(() => {
   if (!socket) return;
 
-  const handleIncomingMessage = (msg) => {
+    const handleIncomingMessage = (msg) => {
     setMessages((prev) => {
       const exists = prev.some(
         (m) =>
@@ -123,7 +123,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   };
 
   socket.on("newMessage", handleIncomingMessage);
-  socket.on("newRecommendation", handleIncomingMessage);
+  socket.on("newRecommendation", handleIncomingMessage); // <-- כאן מאזינים למלצות AI
 
   socket.emit("joinConversation", conversationId);
   socket.emit("joinRoom", businessId);
