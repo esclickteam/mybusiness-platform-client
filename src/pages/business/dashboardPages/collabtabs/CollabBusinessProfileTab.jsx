@@ -5,11 +5,10 @@ import API from "../../../../api";
 import CollabChat from "./CollabChat";
 import "./CollabBusinessProfileTab.css";
 
-// הוספת ייבוא useAi ו-AiModal
 import { useAi } from "../../../../context/AiContext";
 import AiModal from "../../../../components/AiModal";
 
-export default function CollabBusinessProfileTab() {
+export default function CollabBusinessProfileTab({ socket }) {
   const [profileData, setProfileData] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
@@ -23,13 +22,27 @@ export default function CollabBusinessProfileTab() {
   const [myBusinessName, setMyBusinessName] = useState("");
 
   // שימוש בקונטקסט AI
-  const { suggestions, approveSuggestion, rejectSuggestion, activeSuggestion, closeModal, loading: aiLoading } = useAi();
+  const { addSuggestion, activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading: aiLoading } = useAi();
 
   useEffect(() => {
     fetchProfile();
     fetchMyBusinessId();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewRecommendation = (rec) => {
+      addSuggestion(rec); // מוסיף המלצה לקונטקסט
+    };
+
+    socket.on("newRecommendation", handleNewRecommendation);
+
+    return () => {
+      socket.off("newRecommendation", handleNewRecommendation);
+    };
+  }, [socket, addSuggestion]);
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -46,7 +59,6 @@ export default function CollabBusinessProfileTab() {
     setLoading(false);
   };
 
-  // טעינת מזהה עסק מהשרת (נחוץ לצ'אט)
   const fetchMyBusinessId = async () => {
     try {
       const { data } = await API.get("/business-chat/me");
@@ -292,8 +304,14 @@ export default function CollabBusinessProfileTab() {
         </Box>
       </Modal>
 
-      {/* הוספת מודאל AI גלובלי */}
-      <AiModal />
+      {/* מודאל AI גלובלי להצגת המלצות */}
+      <AiModal
+        loading={aiLoading}
+        activeSuggestion={activeSuggestion}
+        approveSuggestion={approveSuggestion}
+        rejectSuggestion={rejectSuggestion}
+        closeModal={closeModal}
+      />
     </>
   );
 }
