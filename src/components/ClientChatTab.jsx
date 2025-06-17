@@ -141,6 +141,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
   socket.on("newMessage", handleIncomingMessage);
   socket.on("newRecommendation", handleIncomingMessage);
+  // הוספנו מאזין גם לאירוע אישור המלצה
+  socket.on("messageApproved", handleIncomingMessage);
 
   socket.emit("joinConversation", conversationId);
   socket.emit("joinRoom", businessId);
@@ -148,6 +150,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   return () => {
     socket.off("newMessage", handleIncomingMessage);
     socket.off("newRecommendation", handleIncomingMessage);
+    // להסיר גם את מאזין אישור ההמלצה
+    socket.off("messageApproved", handleIncomingMessage);
     socket.emit("leaveConversation", conversationId);
   };
 }, [socket, conversationId, businessId]);
