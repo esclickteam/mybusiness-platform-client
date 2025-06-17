@@ -111,19 +111,19 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   useEffect(() => {
   if (!socket) return;
 
-    const handleIncomingMessage = (msg) => {
+  const handleIncomingMessage = (msg) => {
     setMessages((prev) => {
-      const exists = prev.some(
-        (m) =>
-          (m._id && msg._id && m._id === msg._id) ||
-          (m.tempId && msg.tempId && m.tempId === msg.tempId)
-      );
-      return exists ? prev : [...prev, msg];
+      if (msg.tempId) {
+        return prev.map((m) => (m.tempId === msg.tempId ? msg : m));
+      }
+      const exists = prev.some((m) => m._id === msg._id);
+      if (exists) return prev;
+      return [...prev, msg];
     });
   };
 
   socket.on("newMessage", handleIncomingMessage);
-  socket.on("newRecommendation", handleIncomingMessage); // <-- כאן מאזינים למלצות AI
+  socket.on("newRecommendation", handleIncomingMessage);
 
   socket.emit("joinConversation", conversationId);
   socket.emit("joinRoom", businessId);
@@ -134,6 +134,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     socket.emit("leaveConversation", conversationId);
   };
 }, [socket, conversationId, businessId]);
+
 
 
   useEffect(() => {
