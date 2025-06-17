@@ -141,16 +141,16 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 };
 
     socket.on("newMessage", handleNewMessage);
-    socket.on("newRecommendation", handleNewRecommendation);
-    socket.on("connect_error", (err) => setError(err.message));
+socket.on("newAiSuggestion", handleNewRecommendation);
+socket.on("connect_error", (err) => setError(err.message));
 
-    socket.emit("joinConversation", conversationId);
-    socket.emit("joinRoom", businessId); // חשוב להצטרף לחדר AI Partner לקבלת המלצות
+socket.emit("joinConversation", conversationId);
+socket.emit("joinRoom", businessId); // חשוב להצטרף לחדר AI Partner לקבלת המלצות
 
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-      socket.off("newRecommendation", handleNewRecommendation);
-      socket.emit("leaveConversation", conversationId);
+return () => {
+  socket.off("newMessage", handleNewMessage);
+  socket.off("newAiSuggestion", handleNewRecommendation);
+  socket.emit("leaveConversation", conversationId);
       // אפשר להשאיר או לעזוב את חדר AI בהתאם לצורך
     };
   }, [socket, conversationId, businessId]);
