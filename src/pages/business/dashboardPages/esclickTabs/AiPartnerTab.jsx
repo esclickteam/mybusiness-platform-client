@@ -23,9 +23,35 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
-
-  // יצירת חיבור Socket.IO עם אימות
   const [socket, setSocket] = useState(null);
+
+  // טעינת המלצות קיימות מהשרת
+  useEffect(() => {
+    async function fetchRecommendations() {
+      if (!businessId || !token) return;
+      try {
+        const apiBaseUrl = import.meta.env.VITE_API_URL;
+        const res = await fetch(`${apiBaseUrl}/chat/recommendations/${businessId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to load recommendations");
+        const recs = await res.json();
+        const formatted = recs.map((r) => ({
+          id: r._id,
+          text: r.text,
+          status: r.status,
+          conversationId: r.conversationId || null,
+          clientSocketId: null,
+        }));
+        setSuggestions(formatted);
+      } catch (err) {
+        console.error("Error fetching recommendations:", err);
+      }
+    }
+    fetchRecommendations();
+  }, [businessId, token]);
+
+  // חיבור Socket.IO עם אימות
   useEffect(() => {
     if (!businessId || !token) {
       console.log("Missing businessId or token, skipping socket connection.");
@@ -55,24 +81,21 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (notificationSound.current) notificationSound.current.play();
       if ("Notification" in window && Notification.permission === "granted") {
         new Notification("הודעת AI חדשה", {
-          body: suggestion.recommendation || suggestion.text,
+          body: suggestion.text || suggestion.recommendation,
           icon: "/logo192.png",
         });
       }
 
       setSuggestions((prev) => {
-        if (prev.find((r) => r.id === suggestion.recommendationId)) return prev;
-
-        if (typeof onNewRecommendation === "function") {
-          onNewRecommendation();
-        }
+        if (prev.find((r) => r.id === suggestion.id)) return prev;
+        if (typeof onNewRecommendation === "function") onNewRecommendation();
 
         return [
           ...prev,
           {
-            id: suggestion.recommendationId,
-            text: suggestion.recommendation,
-            status: suggestion.status || "ממתין",
+            id: suggestion.id || suggestion.recommendationId,
+            text: suggestion.text || suggestion.recommendation,
+            status: suggestion.status || "pending",
             conversationId: suggestion.conversationId,
             clientSocketId: suggestion.clientSocketId,
           },
@@ -176,59 +199,58 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   };
 
   const approveSuggestion = async ({ id, conversationId, text }) => {
-  setLoading(true);
-  try {
-    const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
-    console.log("Sending approve request to:", url);
-    console.log("Request body:", { businessId, recommendationId: id });
+    setLoading(true);
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
+      console.log("Sending approve request to:", url);
+      console.log("Request body:", { businessId, recommendationId: id });
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json", 
-        Authorization: `Bearer ${token}` 
-      },
-      body: JSON.stringify({ businessId, recommendationId: id }),
-    });
-
-    console.log("Response status:", res.status);
-    const data = await res.json();
-    console.log("Response data:", data);
-
-    setLoading(false);
-    if (!res.ok) throw new Error(data.error || "Failed to approve");
-
-    setSuggestions((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
-    );
-    alert("ההמלצה אושרה ונשלחה ללקוח!");
-    setActiveSuggestion(null);
-
-    if (socket && !socket.disconnected) {
-      const msg = {
-        conversationId,
-        from: socket.id,
-        to: businessId,
-        text,
-        role: "business",
-      };
-      socket.emit("sendMessage", msg, (response) => {
-        if (!response.ok) {
-          alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
-        } else {
-          navigate(`/business/chat/${conversationId}`);
-        }
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ businessId, recommendationId: id }),
       });
-    } else {
-      navigate(`/business/chat/${conversationId}`);
-    }
-  } catch (err) {
-    setLoading(false);
-    console.error("Error approving suggestion:", err);
-    alert("שגיאה באישור ההמלצה: " + err.message);
-  }
-};
 
+      console.log("Response status:", res.status);
+      const data = await res.json();
+      console.log("Response data:", data);
+
+      setLoading(false);
+      if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+      setSuggestions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
+      );
+      alert("ההמלצה אושרה ונשלחה ללקוח!");
+      setActiveSuggestion(null);
+
+      if (socket && !socket.disconnected) {
+        const msg = {
+          conversationId,
+          from: socket.id,
+          to: businessId,
+          text,
+          role: "business",
+        };
+        socket.emit("sendMessage", msg, (response) => {
+          if (!response.ok) {
+            alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
+          } else {
+            navigate(`/business/chat/${conversationId}`);
+          }
+        });
+      } else {
+        navigate(`/business/chat/${conversationId}`);
+      }
+    } catch (err) {
+      setLoading(false);
+      console.error("Error approving suggestion:", err);
+      alert("שגיאה באישור ההמלצה: " + err.message);
+    }
+  };
 
   const rejectSuggestion = (id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
@@ -287,7 +309,11 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             value={businessProfile.goal}
             onChange={handleProfileChange}
           />
-          <button onClick={handleSaveProfile} className="save-profile-button" disabled={loading}>
+          <button
+            onClick={handleSaveProfile}
+            className="save-profile-button"
+            disabled={loading}
+          >
             💾 שמור פרופיל
           </button>
         </div>
@@ -329,34 +355,47 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
               שלח
             </button>
           </div>
+
+          <div className="suggestions-list">
+            {suggestions.map((s) => (
+              <div key={s.id} className={`suggestion ${s.status}`}>
+                <p>{s.text}</p>
+                <small>סטטוס: {s.status}</small>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {activeSuggestion && (
-  <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
-    <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
-      <h4>הודעת AI חדשה</h4>
-      {activeSuggestion.text.split('\n').map((line, index) => (
-        <p key={index}>{line}</p>
-      ))}
-      <button
-        onClick={() =>
-          approveSuggestion({
-            id: activeSuggestion.id,
-            conversationId: activeSuggestion.conversationId,
-            text: activeSuggestion.text,
-          })
-        }
-        disabled={loading}
-      >
-        אשר ושלח
-      </button>
-      <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading}>
-        דחה
+        <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
+          <div
+            className="modal-content approve-recommendation-box"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h4>הודעת AI חדשה</h4>
+            {activeSuggestion.text.split("\n").map((line, index) => (
+              <p key={index}>{line}</p>
+            ))}
+            <button
+              onClick={() =>
+                approveSuggestion({
+                  id: activeSuggestion.id,
+                  conversationId: activeSuggestion.conversationId,
+                  text: activeSuggestion.text,
+                })
+              }
+              disabled={loading}
+            >
+              אשר ושלח
+            </button>
+            <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading}>
+              דחה
             </button>
           </div>
         </div>
       )}
+      <div ref={bottomRef} />
     </div>
   );
 };
