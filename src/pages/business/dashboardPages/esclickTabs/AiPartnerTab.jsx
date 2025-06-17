@@ -223,27 +223,30 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   }, []);
 
   const sendMessageForRecommendation = useCallback((text) => {
-    if (!text || !text.trim() || !socket || socket.disconnected || !clientId) return;
+  if (!text || !text.trim() || !socket || socket.disconnected || !clientId) return;
 
-    const msg = {
-      conversationId,
-      from: clientId, // מזהה הלקוח/משתמש
-      to: businessId,
-      text,
-      role: "client",
-    };
+  const msg = {
+    conversationId,
+    from: clientId, // מזהה הלקוח/משתמש
+    to: businessId,
+    text,
+    role: "client",
+    timestamp: new Date().toISOString(),
+  };
 
-    setChat((prev) => [...prev, { sender: "user", text }]);
-    setInput("");
-    setLoading(true);
+  // הוספה מיידית לצ'אט בפורמט אחיד (כמו הודעות שמגיעות משרת)
+  setChat((prev) => [...prev, msg]);
+  setInput("");
+  setLoading(true);
 
-    socket.emit("sendMessage", msg, (response) => {
-      setLoading(false);
-      if (!response.ok) {
-        alert("שגיאה בשליחת הודעה: " + (response.error || "unknown error"));
-      }
-    });
-  }, [socket, conversationId, clientId, businessId]);
+  socket.emit("sendMessage", msg, (response) => {
+    setLoading(false);
+    if (!response.ok) {
+      alert("שגיאה בשליחת הודעה: " + (response.error || "unknown error"));
+    }
+  });
+}, [socket, conversationId, clientId, businessId]);
+
 
   const approveSuggestion = useCallback(async ({ id, conversationId, text }) => {
     setLoading(true);
