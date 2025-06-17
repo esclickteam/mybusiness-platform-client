@@ -59,6 +59,8 @@
   margin-bottom: 1rem;
   font-size: 1rem;
   font-weight: bold;
+  white-space: pre-wrap;    /* שומר על שורות חדשות */
+  word-break: break-word;   /* שובר מילים ארוכות */
 }
 
 .quick-buttons {
@@ -183,8 +185,9 @@
 
 .modal-content p {
   line-height: 1.6;
-  white-space: pre-wrap;
+  white-space: pre-wrap;    /* מאפשר שמירת שורות חדשות */
   margin-bottom: 20px;
+  word-break: break-word;
 }
 
 .modal-content button {

@@ -322,24 +322,26 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       </div>
 
       {activeSuggestion && (
-        <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
-          <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
-            <h4>הודעת AI חדשה</h4>
-            <p>{activeSuggestion.text}</p>
-            <button
-              onClick={() =>
-                approveSuggestion({
-                  id: activeSuggestion.id,
-                  conversationId: activeSuggestion.conversationId,
-                  text: activeSuggestion.text,
-                })
-              }
-              disabled={loading}
-            >
-              אשר ושלח
-            </button>
-            <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading}>
-              דחה
+  <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
+    <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
+      <h4>הודעת AI חדשה</h4>
+      {activeSuggestion.text.split('\n').map((line, index) => (
+        <p key={index}>{line}</p>
+      ))}
+      <button
+        onClick={() =>
+          approveSuggestion({
+            id: activeSuggestion.id,
+            conversationId: activeSuggestion.conversationId,
+            text: activeSuggestion.text,
+          })
+        }
+        disabled={loading}
+      >
+        אשר ושלח
+      </button>
+      <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading}>
+        דחה
             </button>
           </div>
         </div>
