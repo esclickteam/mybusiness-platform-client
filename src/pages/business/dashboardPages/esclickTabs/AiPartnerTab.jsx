@@ -308,43 +308,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             ))}
           </div>
 
-          {/* המלצות חכמות מוצגות כאן */}
-          <div
-            className="recommendations-container"
-            style={{
-              minHeight: 150,
-              maxHeight: 300,
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              borderRadius: 8,
-              padding: "1rem",
-              backgroundColor: "#f7f4ff",
-              marginBottom: "1rem",
-              textAlign: "right",
-              direction: "rtl",
-            }}
-          >
-            {suggestions.length === 0 ? (
-              <p style={{ color: "#999" }}>כאן יוצגו ההמלצות החכמות שלך 🧠✨</p>
-            ) : (
-              suggestions.map(({ id, text, status }) => (
-                <div
-                  key={id}
-                  className="ai-recommendation"
-                  style={{
-                    marginBottom: 10,
-                    padding: 10,
-                    backgroundColor: "#e1d7ff",
-                    borderRadius: 10,
-                    wordBreak: "break-word",
-                  }}
-                >
-                  <p style={{ margin: 0 }}>{text}</p>
-                  <small style={{ color: "#555" }}>סטטוס: {status || "ממתין"}</small>
-                </div>
-              ))
-            )}
-          </div>
+        
 
           <div>
             <textarea
