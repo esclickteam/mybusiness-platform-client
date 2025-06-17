@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 
 const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
+  const navigate = useNavigate();
+
   const [businessProfile, setBusinessProfile] = useState({
     name: "",
     type: "",
@@ -60,7 +63,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
         });
       }
 
-      // מחליפים את הרשימה עם המלצה אחת בלבד
       setSuggestions([
         {
           id: suggestion.recommendationId,
@@ -92,7 +94,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
   // הצגת המודאל להתראה חכמה
   useEffect(() => {
     if (suggestions.length > 0) {
-      setActiveSuggestion(suggestions[0]); // תמיד ההמלצה היחידה
+      setActiveSuggestion(suggestions[0]);
     }
   }, [suggestions]);
 
@@ -149,10 +151,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     setBusinessProfile({ ...businessProfile, [e.target.name]: e.target.value });
   };
 
-  // שליחת הודעה דרך 'sendMessage' עם role של לקוח
+  // שליחת הודעה דרך socket
   const sendMessageForRecommendation = (text) => {
-    console.log("sendMessageForRecommendation called. socket:", socket, "disconnected:", socket?.disconnected);
-
     if (!text || !text.trim() || !socket || socket.disconnected) return;
 
     const msg = {
@@ -175,7 +175,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     });
   };
 
-  // אישור ושליחת המלצה ללקוח + שליחה אוטומטית לצ'אט
+  // אישור ושליחת המלצה ללקוח + ניווט לצ'אט
   const approveSuggestion = async ({ id, conversationId, text }) => {
     setLoading(true);
     try {
@@ -194,20 +194,23 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       alert("ההמלצה אושרה ונשלחה ללקוח!");
       setActiveSuggestion(null);
 
-      // שליחת ההודעה לצ'אט דרך socket
       if (socket && !socket.disconnected) {
         const msg = {
           conversationId,
           from: socket.id,
-          to: businessId, // כאן אפשר לשים את מזהה הלקוח אם יש לך
+          to: businessId, // במידה ויש מזהה של הלקוח, להחליף כאן
           text,
           role: "business",
         };
         socket.emit("sendMessage", msg, (response) => {
           if (!response.ok) {
             alert("שגיאה בשליחת ההודעה לצ'אט: " + (response.error || "unknown error"));
+          } else {
+            navigate(`/business/chat/${conversationId}`);
           }
         });
+      } else {
+        navigate(`/business/chat/${conversationId}`);
       }
     } catch (err) {
       setLoading(false);
@@ -221,7 +224,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
     setActiveSuggestion(null);
   };
 
-  // גלילה אוטומטית לתחתית הצ'אט וההמלצות
+  // גלילה אוטומטית לתחתית
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
@@ -351,7 +354,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
         </div>
       </div>
 
-      {/* מודאל התראה חכמה */}
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
