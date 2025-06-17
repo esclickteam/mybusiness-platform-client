@@ -230,22 +230,38 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
     const data = await res.json();
 
-    setLoading(false);
     if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+    // הוספת ההודעה לשיחה בשרת (API נפרד)
+    if (conversationId) {
+      await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          text,
+          from: businessId,
+          role: "business",
+          timestamp: new Date().toISOString(),
+        }),
+      });
+    }
 
     setSuggestions((prev) =>
       prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
     );
     alert("ההמלצה אושרה ונשלחה ללקוח!");
     setActiveSuggestion(null);
-
-    // השאר כאן בלי navigate, כך שלא תהיה ניתוב
   } catch (err) {
-    setLoading(false);
     console.error("Error approving suggestion:", err);
     alert("שגיאה באישור ההמלצה: " + err.message);
+  } finally {
+    setLoading(false);
   }
 };
+
 
   const rejectSuggestion = (id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
