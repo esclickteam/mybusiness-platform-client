@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -8,6 +9,7 @@ const AiContext = createContext();
 
 export function AiProvider({ children }) {
   const { token, user } = useAuth();
+  const navigate = useNavigate();
 
   const [suggestions, setSuggestions] = useState(() => {
     try {
@@ -33,15 +35,16 @@ export function AiProvider({ children }) {
         try {
           const newSuggestions = e.newValue ? JSON.parse(e.newValue) : [];
           setSuggestions(newSuggestions);
-          setActiveSuggestion(prev =>
-            prev && !newSuggestions.find(s => s.id === prev.id) ? null : prev
-          );
+
+          if (activeSuggestion && !newSuggestions.find(s => s.id === activeSuggestion.id)) {
+            setActiveSuggestion(null);
+          }
         } catch {}
       }
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  }, [activeSuggestion]);
 
   // חיבור וסנכרון socket
   useEffect(() => {
@@ -50,79 +53,93 @@ export function AiProvider({ children }) {
     const s = io(SOCKET_URL, {
       path: "/socket.io",
       transports: ["websocket"],
-      auth: { token, businessId: user.businessId },
+      auth: {
+        token,
+        businessId: user.businessId,
+      },
     });
 
     s.on("connect", () => {
       console.log("AI Socket connected:", s.id);
-      // הצטרפות לחדר המלצות AI
-      s.emit("joinRoom", user.businessId);
     });
 
-    s.on("disconnect", reason => {
+    s.on("disconnect", (reason) => {
       console.log("AI Socket disconnected:", reason);
     });
 
-    // קבלת המלצות AI חדשות
-    s.on("newRecommendation", suggestion => {
+    // קבלת המלצות AI חדשות - הוספה למערך בלי כפילויות
+    s.on("newRecommendation", (suggestion) => {
       const newSuggestion = {
         id: suggestion.recommendationId,
         text: suggestion.recommendation,
         status: suggestion.status || "ממתין",
         conversationId: suggestion.conversationId,
-        clientId: suggestion.clientId || null,  // ודא שהשרת שולח את זה
-        businessId: user.businessId,
+        clientSocketId: suggestion.clientSocketId,
       };
-      setSuggestions(prev =>
-        prev.find(s => s.id === newSuggestion.id) ? prev : [...prev, newSuggestion]
-      );
-    });
 
-    // מאזין לאישור המלצה בזמן אמת
-    s.on("messageApproved", ({ recommendationId }) => {
-      setSuggestions(prev =>
-        prev.map(sug =>
-          sug.id === recommendationId ? { ...sug, status: "sent" } : sug
-        )
-      );
-      setActiveSuggestion(prev =>
-        prev && prev.id === recommendationId ? null : prev
-      );
+      setSuggestions(prev => {
+        if (prev.find(s => s.id === newSuggestion.id)) return prev;
+        return [...prev, newSuggestion];
+      });
+
+      // !הסרתי את השורה שמעדכנת activeSuggestion כדי לא לפתוח את המודל אוטומטית
+      // setActiveSuggestion(newSuggestion);
     });
 
     setSocket(s);
+
     return () => {
       s.disconnect();
       setSocket(null);
     };
   }, [token, user?.businessId]);
 
-  const addSuggestion = suggestion => {
-    setSuggestions(prev =>
-      prev.find(s => s.id === suggestion.id) ? prev : [...prev, suggestion]
-    );
+  const addSuggestion = (suggestion) => {
+    setSuggestions((prev) => {
+      if (prev.find(s => s.id === suggestion.id)) {
+        return prev;
+      }
+      return [...prev, suggestion];
+    });
     setActiveSuggestion(suggestion);
   };
 
-  // אישור המלצה דרך socket.emit (מועבר אובייקט עם כל הפרטים)
-  const approveSuggestion = ({ id, conversationId, text, clientId, businessId }) => {
-    if (!socket) return;
+  const approveSuggestion = async (id) => {
     setLoading(true);
-    socket.emit("approveRecommendation", { recommendationId: id, conversationId, text, clientId, businessId }, ack => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "https://api.esclick.co.il"}/chat/send-approved`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ businessId: user.businessId, recommendationId: id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+      setSuggestions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
+      );
+      setActiveSuggestion(null);
+
+      // כאן נשארים בדף הנוכחי, בלי ניווט:
+      // אפשר להוסיף הודעה אם רוצים, למשל:
+      // alert("ההמלצה אושרה ונשלחה ללקוח!");
+
+    } catch (err) {
+      console.error("Approve suggestion error:", err);
+      alert("שגיאה באישור ההמלצה: " + err.message);
+    } finally {
       setLoading(false);
-      if (!ack.ok) {
-        alert("שגיאה באישור ההמלצה: " + (ack.error || "Unknown error"));
-      }
-      // ה-state יתעדכן אוטומטית דרך listener
-    });
+    }
   };
 
-  const rejectSuggestion = id => {
-    setSuggestions(prev => prev.filter(s => s.id !== id));
+  const rejectSuggestion = (id) => {
+    setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
   };
 
-  const closeModal = () => setActiveSuggestion(null);
+  const closeModal = () => {
+    setActiveSuggestion(null);
+  };
 
   return (
     <AiContext.Provider
@@ -151,19 +168,20 @@ export function useAi() {
 // רכיב modal להצגת ההמלצה
 function AiModal() {
   const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading } = useAi();
+
   if (!activeSuggestion) return null;
 
   return (
     <div
       onClick={closeModal}
       style={{
-        position: "fixed",
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.5)",
-        display: "flex", justifyContent: "center", alignItems: "center",
-        zIndex: 1000
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
+        justifyContent: "center", alignItems: "center", zIndex: 1000
       }}
-      aria-modal="true" role="dialog" tabIndex={-1}
+      aria-modal="true"
+      role="dialog"
+      tabIndex={-1}
     >
       <div
         onClick={e => e.stopPropagation()}
@@ -182,15 +200,7 @@ function AiModal() {
         <p>{activeSuggestion.text}</p>
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
           <button
-            onClick={() =>
-              approveSuggestion({
-                id: activeSuggestion.id,
-                conversationId: activeSuggestion.conversationId,
-                text: activeSuggestion.text,
-                clientId: activeSuggestion.clientId,
-                businessId: activeSuggestion.businessId,
-              })
-            }
+            onClick={() => approveSuggestion(activeSuggestion.id)}
             disabled={loading}
             style={{ padding: "8px 16px" }}
           >

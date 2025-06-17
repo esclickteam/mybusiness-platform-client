@@ -245,40 +245,38 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
   // אישור המלצה - עם Socket.IO במקום fetch
   const approveSuggestion = useCallback(
-  ({ id, conversationId, text, clientId, businessId }) => {
-    console.log("Approve called with:", { id, conversationId, text, clientId, businessId });
-    if (!socket || !conversationId || !clientId) {
-      console.warn("Missing socket or conversationId or clientId");
-      return;
-    }
-    setLoading(true);
+    ({ id, conversationId, text }) => {
+      if (!socket || !conversationId || !clientId) return;
+      setLoading(true);
 
-    socket.emit(
-      "approveRecommendation",
-      { businessId, recommendationId: id, conversationId, text, clientId },
-      (response) => {
-        setLoading(false);
-        console.log("ApproveRecommendation response:", response);
-        if (response.error) {
-          alert("שגיאה באישור ההמלצה: " + response.error);
-          return;
-        }
-        setSuggestions((prev) =>
-          prev.map((s) =>
-            s.id === id ? { ...s, status: "sent", text } : s
-          )
-        );
-        if (response.message) {
-          setChat(prev => [...prev, response.message]);
-        }
-        alert("ההמלצה אושרה ונשלחה ללקוח!");
-        setActiveSuggestion(null);
-      }
-    );
-  },
-  [socket, businessId, clientId]
-);
+      socket.emit(
+        "approveRecommendation",
+        { businessId, recommendationId: id, conversationId, text, clientId },
+        (response) => {
+          setLoading(false);
+          if (response.error) {
+            alert("שגיאה באישור ההמלצה: " + response.error);
+            return;
+          }
 
+          setSuggestions((prev) =>
+            prev.map((s) =>
+              s.id === id ? { ...s, status: "sent", text } : s
+            )
+          );
+
+          if (response.message) {
+              setChat(prev => [...prev, response.message]);
+
+          }
+
+          alert("ההמלצה אושרה ונשלחה ללקוח!");
+          setActiveSuggestion(null);
+        }
+      );
+    },
+    [socket, businessId, clientId]
+  );
 
   // דחיית המלצה
   const rejectSuggestion = useCallback((id) => {
@@ -461,7 +459,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                           conversationId: activeSuggestion.conversationId,
                           text: activeSuggestion.text,
                           clientId,
-                          businessId,
+                          
                         })
                       }
                       disabled={loading}
