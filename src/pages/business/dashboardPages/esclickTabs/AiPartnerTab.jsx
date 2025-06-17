@@ -52,7 +52,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
       console.error("Socket connection error:", err);
     });
 
-    // קבלת המלצות AI חדשות
+    // קבלת המלצות AI חדשות - מניעת כפילויות
     s.on("newRecommendation", (suggestion) => {
       console.log("New AI suggestion received:", suggestion);
       if (notificationSound.current) notificationSound.current.play();
@@ -63,15 +63,19 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
         });
       }
 
-      setSuggestions([
-        {
-          id: suggestion.recommendationId,
-          text: suggestion.recommendation,
-          status: suggestion.status || "ממתין",
-          conversationId: suggestion.conversationId,
-          clientSocketId: suggestion.clientSocketId,
-        },
-      ]);
+      setSuggestions((prev) => {
+        if (prev.find((r) => r.id === suggestion.recommendationId)) return prev;
+        return [
+          ...prev,
+          {
+            id: suggestion.recommendationId,
+            text: suggestion.recommendation,
+            status: suggestion.status || "ממתין",
+            conversationId: suggestion.conversationId,
+            clientSocketId: suggestion.clientSocketId,
+          },
+        ];
+      });
     });
 
     // קבלת הודעות חדשות לצ'אט
@@ -198,7 +202,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
         const msg = {
           conversationId,
           from: socket.id,
-          to: businessId, // במידה ויש מזהה של הלקוח, להחליף כאן
+          to: businessId,
           text,
           role: "business",
         };
@@ -220,7 +224,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
 
   // דחיית המלצה
   const rejectSuggestion = (id) => {
-    setSuggestions([]);
+    setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
   };
 
@@ -277,7 +281,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null }) => {
             value={businessProfile.goal}
             onChange={handleProfileChange}
           />
-          <button onClick={handleSaveProfile} className="save-profile-button">
+          <button onClick={handleSaveProfile} className="save-profile-button" disabled={loading}>
             💾 שמור פרופיל
           </button>
         </div>

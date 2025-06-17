@@ -1,17 +1,26 @@
 import React from "react";
 import { useAi } from "../context/AiContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./AiModal.css";  
 
 export default function AiModal() {
   const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading } = useAi();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isBusinessManagementTab =
     location.pathname.startsWith("/business/") &&
     (location.pathname.includes("/dashboard") || location.pathname.includes("/chat"));
 
   if (!activeSuggestion || !isBusinessManagementTab) return null;
+
+  const handleApprove = async () => {
+    await approveSuggestion(activeSuggestion.id);
+    closeModal();
+    if (activeSuggestion.conversationId) {
+      navigate(`/business/chat/${activeSuggestion.conversationId}`);
+    }
+  };
 
   return (
     <div className="ai-modal-overlay" onClick={closeModal} aria-modal="true" role="dialog">
@@ -21,7 +30,7 @@ export default function AiModal() {
         <div className="ai-modal-buttons">
           <button
             className="ai-modal-button approve-btn"
-            onClick={() => approveSuggestion(activeSuggestion.id)}
+            onClick={handleApprove}
             disabled={loading}
           >
             אשר ושלח

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const SOCKET_URL = "https://api.esclick.co.il";
 
@@ -8,6 +9,8 @@ const AiContext = createContext();
 
 export function AiProvider({ children }) {
   const { token, user } = useAuth();
+  const navigate = useNavigate();
+
   const [suggestions, setSuggestions] = useState(() => {
     try {
       const stored = localStorage.getItem("aiSuggestions");
@@ -64,6 +67,7 @@ export function AiProvider({ children }) {
       console.log("AI Socket disconnected:", reason);
     });
 
+    // קבלת המלצות AI חדשות - הוספה למערך בלי כפילויות
     s.on("newRecommendation", (suggestion) => {
       const newSuggestion = {
         id: suggestion.recommendationId,
@@ -73,8 +77,11 @@ export function AiProvider({ children }) {
         clientSocketId: suggestion.clientSocketId,
       };
 
-      // שמור רק המלצה אחת – מחליף את הרשימה בהמלצה החדשה בלבד
-      setSuggestions([newSuggestion]);
+      setSuggestions(prev => {
+        if (prev.find(s => s.id === newSuggestion.id)) return prev;
+        return [...prev, newSuggestion];
+      });
+
       setActiveSuggestion(newSuggestion);
     });
 
@@ -111,8 +118,13 @@ export function AiProvider({ children }) {
         prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
       );
       setActiveSuggestion(null);
+
+      if (data.conversationId) {
+        navigate(`/business/chat/${data.conversationId}`);
+      }
     } catch (err) {
       console.error("Approve suggestion error:", err);
+      alert("שגיאה באישור ההמלצה: " + err.message);
     } finally {
       setLoading(false);
     }
