@@ -138,36 +138,39 @@ const DashboardPage = () => {
 
   // טיפול באישור המלצה עם ניווט אוטומטי
   function handleApproveRecommendation(recommendationId) {
-    if (!socketRef.current) {
-      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
-      return;
-    }
-    if (socketRef.current.disconnected) {
-      alert("Socket מנותק, נסה שוב מאוחר יותר");
-      return;
-    }
-
-    safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
-      if (!res || typeof res !== "object") {
-        console.warn("Callback response לא תקין:", res);
-        return;
-      }
-      if (res.ok) {
-        alert("ההמלצה אושרה ונשלחה ללקוח");
-        setRecommendations((prev) =>
-          prev.filter((r) => r.recommendationId !== recommendationId)
-        );
-        if (res.conversationId) {
-          navigate(`/business/chat/${res.conversationId}`);
-        } else {
-          console.warn("אין conversationId בתגובה מהשרת");
-        }
-      } else {
-        alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
-        console.error("שגיאה באישור המלצה:", res.error);
-      }
-    });
+  if (!socketRef.current) {
+    alert("Socket לא מחובר, נסה שוב מאוחר יותר");
+    return;
   }
+  if (socketRef.current.disconnected) {
+    alert("Socket מנותק, נסה שוב מאוחר יותר");
+    return;
+  }
+
+  const businessId = getBusinessId(); // או user.businessId אם יש גישה
+
+  safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
+    if (!res || typeof res !== "object") {
+      console.warn("Callback response לא תקין:", res);
+      return;
+    }
+    if (res.ok) {
+      alert("ההמלצה אושרה ונשלחה ללקוח");
+      setRecommendations((prev) =>
+        prev.filter((r) => r.recommendationId !== recommendationId)
+      );
+      if (res.conversationId) {
+        navigate(`/business/${businessId}/chat/${res.conversationId}`);
+      } else {
+        console.warn("אין conversationId בתגובה מהשרת");
+      }
+    } else {
+      alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
+      console.error("שגיאה באישור המלצה:", res.error);
+    }
+  });
+}
+
 
   const {
     data: stats,
