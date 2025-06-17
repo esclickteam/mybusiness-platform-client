@@ -70,7 +70,8 @@ export function AiProvider({ children }) {
         text: suggestion.recommendation,
         status: suggestion.status || "ממתין",
         conversationId: suggestion.conversationId,
-        clientSocketId: suggestion.clientSocketId,
+        clientId: suggestion.clientId || null,  // ודא שהשרת שולח את זה
+        businessId: user.businessId,
       };
       setSuggestions(prev =>
         prev.find(s => s.id === newSuggestion.id) ? prev : [...prev, newSuggestion]
@@ -103,11 +104,11 @@ export function AiProvider({ children }) {
     setActiveSuggestion(suggestion);
   };
 
-  // אישור המלצה דרך socket.emit
-  const approveSuggestion = id => {
+  // אישור המלצה דרך socket.emit (מועבר אובייקט עם כל הפרטים)
+  const approveSuggestion = ({ id, conversationId, text, clientId, businessId }) => {
     if (!socket) return;
     setLoading(true);
-    socket.emit("approveRecommendation", { recommendationId: id }, ack => {
+    socket.emit("approveRecommendation", { recommendationId: id, conversationId, text, clientId, businessId }, ack => {
       setLoading(false);
       if (!ack.ok) {
         alert("שגיאה באישור ההמלצה: " + (ack.error || "Unknown error"));
@@ -181,7 +182,15 @@ function AiModal() {
         <p>{activeSuggestion.text}</p>
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
           <button
-            onClick={() => approveSuggestion(activeSuggestion.id)}
+            onClick={() =>
+              approveSuggestion({
+                id: activeSuggestion.id,
+                conversationId: activeSuggestion.conversationId,
+                text: activeSuggestion.text,
+                clientId: activeSuggestion.clientId,
+                businessId: activeSuggestion.businessId,
+              })
+            }
             disabled={loading}
             style={{ padding: "8px 16px" }}
           >
