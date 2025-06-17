@@ -2,11 +2,14 @@
   padding: 3rem 2rem;
   text-align: center;
   background-color: #f8f5ff;
+  min-height: 100vh; /* שומר על גובה מלא למראה אחיד */
 }
 
 .esclick-header {
   color: #5a2ea6;
   margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 2rem;
 }
 
 .tab-buttons {
@@ -59,4 +62,38 @@
   max-width: 900px;
   margin: 0 auto;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+/* הוספתי סגנון בסיסי לרשימת שיחות לבחירת שיחה (אם תשלב עם הקוד) */
+.conversation-selector {
+  max-width: 900px;
+  margin: 1rem auto 2rem;
+  text-align: right; /* עברית ימין לשמאל */
+}
+
+.conversation-selector h3 {
+  color: #5a2ea6;
+  margin-bottom: 0.5rem;
+}
+
+.conversation-selector ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.conversation-selector li {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: right; /* עברית ימין לשמאל */
+}
+
+.conversation-selector li.active,
+.conversation-selector li:hover {
+  background-color: #7e57c2;
+  color: white;
 }
