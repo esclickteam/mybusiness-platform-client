@@ -82,7 +82,8 @@ export function AiProvider({ children }) {
         return [...prev, newSuggestion];
       });
 
-      setActiveSuggestion(newSuggestion);
+      // !הסרתי את השורה שמעדכנת activeSuggestion כדי לא לפתוח את המודל אוטומטית
+      // setActiveSuggestion(newSuggestion);
     });
 
     setSocket(s);
@@ -145,6 +146,7 @@ export function AiProvider({ children }) {
         suggestions,
         addSuggestion,
         activeSuggestion,
+        setActiveSuggestion, // אפשרי גם לחשוף לפעמים לשליטה חיצונית
         approveSuggestion,
         rejectSuggestion,
         closeModal,
