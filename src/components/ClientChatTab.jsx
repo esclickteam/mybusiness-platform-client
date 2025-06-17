@@ -123,18 +123,22 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     };
 
     const handleNewRecommendation = (data) => {
-      console.log("New AI recommendation:", data);
-      // אפשר להוסיף UI להצגת ההמלצה או להוסיף אותה כהודעה חדשה:
-      setMessages((prev) => [
-        ...prev,
-        {
-          _id: `rec-${data.recommendationId}`,
-          text: data.recommendation,
-          role: "business",
-          timestamp: new Date(),
-        },
-      ]);
-    };
+  console.log("New AI recommendation:", data);
+  if (data.status === "sent") {
+    setMessages((prev) => [
+      ...prev,
+      {
+        _id: `rec-${data.recommendationId}`,
+        text: data.recommendation,
+        role: "business",
+        timestamp: new Date(),
+      },
+    ]);
+  } else {
+    // המלצה במצב ממתין - לא להציג ללקוח
+    console.log("Recommendation pending, לא מוצג בצד הלקוח");
+  }
+};
 
     socket.on("newMessage", handleNewMessage);
     socket.on("newRecommendation", handleNewRecommendation);

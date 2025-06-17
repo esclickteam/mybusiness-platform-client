@@ -21,6 +21,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [activeSuggestion, setActiveSuggestion] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [editedText, setEditedText] = useState("");
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
@@ -223,7 +225,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ businessId, recommendationId: id }),
+        body: JSON.stringify({ businessId, recommendationId: id, text }),
       });
 
       const data = await res.json();
@@ -232,7 +234,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (!res.ok) throw new Error(data.error || "Failed to approve");
 
       setSuggestions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
+        prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
       );
       alert("ההמלצה אושרה ונשלחה ללקוח!");
       setActiveSuggestion(null);
@@ -253,6 +255,13 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
+
+  useEffect(() => {
+    if (activeSuggestion) {
+      setEditedText(activeSuggestion.text);
+      setEditing(false);
+    }
+  }, [activeSuggestion]);
 
   const quickActions = [
     "תנסח לי פוסט שיווקי",
@@ -372,32 +381,72 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             onClick={(e) => e.stopPropagation()}
           >
             <h4>הודעת AI חדשה</h4>
-            {activeSuggestion.text.split("\n").map((line, index) => (
-              <p key={index}>{line}</p>
-            ))}
-            {activeSuggestion.status === "pending" && (
+
+            {editing ? (
               <>
+                <textarea
+                  rows={6}
+                  value={editedText}
+                  onChange={(e) => setEditedText(e.target.value)}
+                  disabled={loading}
+                />
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     approveSuggestion({
                       id: activeSuggestion.id,
                       conversationId: activeSuggestion.conversationId,
-                      text: activeSuggestion.text,
-                    })
-                  }
-                  disabled={loading}
+                      text: editedText,
+                    });
+                    setEditing(false);
+                  }}
+                  disabled={loading || !editedText.trim()}
                 >
                   אשר ושלח
                 </button>
                 <button
-                  onClick={() => rejectSuggestion(activeSuggestion.id)}
+                  onClick={() => {
+                    setEditing(false);
+                    setEditedText(activeSuggestion.text);
+                  }}
                   disabled={loading}
                 >
-                  דחה
+                  ביטול
                 </button>
               </>
+            ) : (
+              <>
+                {activeSuggestion.text.split("\n").map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+
+                {activeSuggestion.status === "pending" && (
+                  <>
+                    <button
+                      onClick={() =>
+                        approveSuggestion({
+                          id: activeSuggestion.id,
+                          conversationId: activeSuggestion.conversationId,
+                          text: activeSuggestion.text,
+                        })
+                      }
+                      disabled={loading}
+                    >
+                      אשר ושלח מידית
+                    </button>
+                    <button onClick={() => setEditing(true)} disabled={loading}>
+                      ערוך
+                    </button>
+                    <button
+                      onClick={() => rejectSuggestion(activeSuggestion.id)}
+                      disabled={loading}
+                    >
+                      דחה
+                    </button>
+                  </>
+                )}
+                {activeSuggestion.status === "sent" && <p>ההמלצה אושרה ונשלחה ללקוח.</p>}
+              </>
             )}
-            {activeSuggestion.status === "sent" && <p>ההמלצה אושרה ונשלחה ללקוח.</p>}
           </div>
         </div>
       )}
