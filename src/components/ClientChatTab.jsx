@@ -147,6 +147,8 @@ return () => {
   };
 
   const sendMessage = () => {
+  console.log("sendMessage called, input:", input);
+  
   if (!input.trim() || sending || !socket) return;
   if (!socket.connected) {
     setError("Socket אינו מחובר, נסה להתחבר מחדש");
