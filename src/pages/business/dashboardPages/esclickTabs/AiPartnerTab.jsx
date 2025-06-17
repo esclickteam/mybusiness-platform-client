@@ -25,7 +25,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
 
-  // פונקציה לסינון כפילויות וזיהוי תקין (ObjectId 24 תווים hex)
+  // סינון כפילויות וזיהוי תקין (ObjectId 24 תווים hex)
   function filterValidUniqueRecommendations(recs) {
     const filtered = recs.filter(
       (r) => r._id && typeof r._id === "string" && r._id.length === 24
@@ -100,7 +100,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       }
 
       setSuggestions((prev) => {
-        if (prev.find((r) => r.id === suggestion.id)) return prev;
+        if (prev.find((r) => r.id === suggestion.id || r.id === suggestion.recommendationId)) return prev;
         if (typeof onNewRecommendation === "function") onNewRecommendation();
 
         return [
@@ -132,8 +132,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     };
   }, [businessId, token, onNewRecommendation]);
 
-  // *** שימו לב: לא מגדירים את activeSuggestion אוטומטית! ***
-  // כלומר, אין כאן useEffect שקורא setActiveSuggestion לפי suggestions
+  // ** אין פה useEffect שמגדיר activeSuggestion אוטומטית **
 
   useEffect(() => {
     async function fetchProfile() {
