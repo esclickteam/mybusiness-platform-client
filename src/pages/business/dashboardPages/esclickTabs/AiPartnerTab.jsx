@@ -332,25 +332,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             </button>
           </div>
 
-          <div className="suggestions-list" style={{ marginTop: 20 }}>
-            {suggestions.map(({ id, text, status, conversationId }) => (
-              <div key={id} style={{ marginBottom: 10, padding: 10, border: "1px solid #ccc" }}>
-                <p>{text}</p>
-                <p>סטטוס: {status || "ממתין"}</p>
-                {status !== "sent" && (
-                  <>
-                    <button onClick={() => approveSuggestion({ id, conversationId, text })} disabled={loading}>
-                      אשר ושלח
-                    </button>
-                    <button onClick={() => rejectSuggestion(id)} disabled={loading} style={{ marginLeft: 8 }}>
-                      דחה
-                    </button>
-                  </>
-                )}
-                {status === "sent" && <span style={{ color: "green" }}>✅ נשלח ללקוח</span>}
-              </div>
-            ))}
-          </div>
+          
         </div>
       </div>
 
