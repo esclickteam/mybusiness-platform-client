@@ -44,9 +44,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (!businessId || !token) return;
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const res = await fetch(`${apiBaseUrl}/chat/recommendations/${businessId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `${apiBaseUrl}/chat/recommendations/${businessId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         if (!res.ok) throw new Error("Failed to load recommendations");
         const recs = await res.json();
         const validUniqueRecs = filterValidUniqueRecommendations(recs);
@@ -69,9 +70,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (!conversationId || !businessId || !token) return;
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const convRes = await fetch(`${apiBaseUrl}/conversations?businessId=${businessId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const convRes = await fetch(
+          `${apiBaseUrl}/conversations?businessId=${businessId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         if (!convRes.ok) throw new Error("Failed to load conversations");
         const conversations = await convRes.json();
         const conv = conversations.find((c) => c.conversationId === conversationId);
@@ -99,9 +101,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
     s.on("connect", () => {
       console.log("Socket connected:", s.id);
-      // AI room
       s.emit("joinRoom", businessId);
-      // conversation room for real-time messageApproved
       if (conversationId) {
         s.emit("joinConversation", conversationId);
       }
@@ -120,7 +120,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
       }
       setSuggestions((prev) => {
-        if (prev.find((r) => r.id === (suggestion.id || suggestion.recommendationId))) return prev;
+        if (
+          prev.find((r) => r.id === (suggestion.id || suggestion.recommendationId))
+        )
+          return prev;
         if (typeof onNewRecommendation === "function") onNewRecommendation();
         return [
           ...prev,
@@ -134,9 +137,24 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       });
     });
 
+    // מאזין להמלצות שנשלחות מהלקוח
+    s.on("newRecommendation", (rec) => {
+      setSuggestions((prev) => [
+        ...prev,
+        {
+          id: rec._id || rec.recommendationId,
+          text: rec.text || rec.recommendation,
+          status: rec.status || "pending",
+          conversationId: rec.conversationId,
+        },
+      ]);
+    });
+
     s.on("updateRecommendationStatus", ({ recommendationId, status }) => {
       setSuggestions((prev) =>
-        prev.map((s) => (s.id === recommendationId ? { ...s, status } : s))
+        prev.map((sugg) =>
+          sugg.id === recommendationId ? { ...sugg, status } : sugg
+        )
       );
     });
 
@@ -144,7 +162,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       setChat((prev) => [...prev, msg]);
     });
 
-    // New listener for approved recommendations
     s.on("messageApproved", (msg) => {
       console.log("Recommendation approved, new chat message:", msg);
       setChat((prev) => [...prev, msg]);
@@ -158,6 +175,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     return () => {
       if (s.connected) {
         if (conversationId) s.emit("leaveConversation", conversationId);
+        s.off("newRecommendation");
         s.disconnect();
       }
     };
@@ -168,9 +186,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (!businessId || !token) return;
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const res = await fetch(`${apiBaseUrl}/business/${businessId}/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `${apiBaseUrl}/business/${businessId}/profile`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         if (!res.ok) throw new Error("Failed to load profile");
         const profileData = await res.json();
         setBusinessProfile(profileData);
@@ -239,34 +258,34 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   );
 
   const approveSuggestion = useCallback(
-  async ({ id, conversationId, text }) => {
-    setLoading(true);
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ businessId, recommendationId: id, text }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to approve");
+    async ({ id, conversationId, text }) => {
+      setLoading(true);
+      try {
+        const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ businessId, recommendationId: id, text }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to approve");
 
-      if (socket && conversationId && clientId) {
-        const msg = {
-          conversationId,
-          from: businessId,
-          to: clientId,
-          role: "business",
-          text,
-          timestamp: new Date().toISOString(),
-          isRecommendation: true,
-        };
-        socket.emit("sendApprovedMessage", msg);
-        setChat((prev) => [...prev, msg]); // עדכון UI מיידי
-      }
+        if (socket && conversationId && clientId) {
+          const msg = {
+            conversationId,
+            from: businessId,
+            to: clientId,
+            role: "business",
+            text,
+            timestamp: new Date().toISOString(),
+            isRecommendation: true,
+          };
+          socket.emit("sendApprovedMessage", msg);
+          setChat((prev) => [...prev, msg]);
+        }
 
       setSuggestions((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
