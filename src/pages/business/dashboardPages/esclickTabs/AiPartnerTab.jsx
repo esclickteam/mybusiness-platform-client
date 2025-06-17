@@ -278,6 +278,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             to: clientId,
             role: "business",
             timestamp: new Date().toISOString(),
+            isRecommendation: true,  
           }),
         });
       }
