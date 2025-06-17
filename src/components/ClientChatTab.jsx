@@ -115,6 +115,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket) return;
 
     const handleIncomingMessage = (msg) => {
+      console.log('Received socket message:', msg);
       setMessages((prev) => {
         // החלפה לפי tempId (אופטימיות)
         if (msg.tempId) {
