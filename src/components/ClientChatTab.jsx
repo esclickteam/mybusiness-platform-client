@@ -112,27 +112,44 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket || !conversationId) return;
 
     const handleNewMessage = (msg) => {
-  setMessages((prev) => {
-    const exists = prev.some(
-      (m) =>
-        (m._id && msg._id && m._id === msg._id) ||
-        (m.tempId && msg.tempId && m.tempId === msg.tempId)
-    );
-    return exists ? prev : [...prev, msg];
-  });
-};
+      setMessages((prev) => {
+        const exists = prev.some(
+          (m) =>
+            (m._id && msg._id && m._id === msg._id) ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        );
+        return exists ? prev : [...prev, msg];
+      });
+    };
 
-socket.on("newMessage", handleNewMessage);
-socket.on("connect_error", (err) => setError(err.message));
+    const handleNewRecommendation = (data) => {
+      console.log("New AI recommendation:", data);
+      // אפשר להוסיף UI להצגת ההמלצה או להוסיף אותה כהודעה חדשה:
+      setMessages((prev) => [
+        ...prev,
+        {
+          _id: `rec-${data.recommendationId}`,
+          text: data.recommendation,
+          role: "business",
+          timestamp: new Date(),
+        },
+      ]);
+    };
 
-socket.emit("joinConversation", conversationId);
+    socket.on("newMessage", handleNewMessage);
+    socket.on("newRecommendation", handleNewRecommendation);
+    socket.on("connect_error", (err) => setError(err.message));
 
-return () => {
-  socket.off("newMessage", handleNewMessage);
-  socket.emit("leaveConversation", conversationId);
-};
+    socket.emit("joinConversation", conversationId);
+    socket.emit("joinRoom", businessId); // חשוב להצטרף לחדר AI Partner לקבלת המלצות
 
-  }, [socket, conversationId]);
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.off("newRecommendation", handleNewRecommendation);
+      socket.emit("leaveConversation", conversationId);
+      // אפשר להשאיר או לעזוב את חדר AI בהתאם לצורך
+    };
+  }, [socket, conversationId, businessId]);
 
   useEffect(() => {
     if (messageListRef.current) {
@@ -147,32 +164,33 @@ return () => {
   };
 
   const sendMessage = () => {
-  console.log("sendMessage called, input:", input);
-  
-  if (!input.trim() || sending || !socket) return;
-  if (!socket.connected) {
-    setError("Socket אינו מחובר, נסה להתחבר מחדש");
-    return;
-  }
-  setSending(true);
-  setError("");
+    console.log("sendMessage called, input:", input);
 
-  const tempId = uuidv4();
-
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
-    (ack) => {
-      console.log("sendMessage ack:", ack);
-      setSending(false);
-      if (ack?.ok) {
-        setInput("");
-      } else {
-        setError("שגיאה בשליחת ההודעה");
-      }
+    if (!input.trim() || sending || !socket) return;
+    if (!socket.connected) {
+      setError("Socket אינו מחובר, נסה להתחבר מחדש");
+      return;
     }
-  );
-};
+    setSending(true);
+    setError("");
+
+    const tempId = uuidv4();
+
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
+      (ack) => {
+        console.log("sendMessage ack:", ack);
+        setSending(false);
+        if (ack?.ok) {
+          setInput("");
+        } else {
+          setError("שגיאה בשליחת ההודעה");
+        }
+      }
+    );
+  };
+
 
 
   const getSupportedMimeType = () =>
