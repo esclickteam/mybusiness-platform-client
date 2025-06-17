@@ -36,8 +36,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       Notification.requestPermission();
     }
 
-    notificationSound.current = new Audio("/notification.mp3");
-
     const s = io(SOCKET_URL, {
       auth: { token, businessId },
       transports: ["websocket"],
