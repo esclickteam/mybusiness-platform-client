@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { v4 as uuidv4 } from "uuid"; // <-- הוסף את זה
+import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
 import { Buffer } from "buffer";
-import API from "../api"; // <-- ייבוא Axios עם הגדרות הטוקן
+import API from "../api";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
@@ -122,14 +122,29 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
     };
 
+    const handleNewAiSuggestion = (suggestion) => {
+      const aiMsg = {
+        _id: suggestion.recommendationId,
+        conversationId: suggestion.conversationId,
+        from: businessId,
+        to: null,
+        role: "business",
+        text: suggestion.recommendation,
+        timestamp: new Date(),
+        isRecommendation: true,
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+    };
+
     socket.on("newMessage", handleNewMessage);
-    socket.on("connect_error", (err) => setError(err.message));
+    socket.on("newAiSuggestion", handleNewAiSuggestion);
 
     socket.emit("joinConversation", conversationId);
-    socket.emit("joinRoom", businessId); // אם יש צורך לקבל המלצות, אחרת אפשר להסיר
+    socket.emit("joinRoom", businessId);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
+      socket.off("newAiSuggestion", handleNewAiSuggestion);
       socket.emit("leaveConversation", conversationId);
     };
   }, [socket, conversationId, businessId]);
@@ -147,50 +162,46 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   };
 
   const sendMessage = () => {
-  if (!input.trim() || sending || !socket) return;
-  if (!socket.connected) {
-    setError("Socket אינו מחובר, נסה להתחבר מחדש");
-    return;
-  }
-  setSending(true);
-  setError("");
-
-  const tempId = uuidv4();
-
-  // יצירת הודעה זמנית להוספה מיידית לסטייט
-  const optimisticMsg = {
-    _id: tempId,
-    tempId,
-    conversationId,
-    from: userId,
-    to: businessId,
-    role: "client",
-    text: input.trim(),
-    timestamp: new Date(),
-  };
-
-  // הוספה מיידית
-  setMessages((prev) => [...prev, optimisticMsg]);
-  setInput("");
-
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: userId, to: businessId, role: "client", text: optimisticMsg.text, tempId },
-    (ack) => {
-      setSending(false);
-      if (ack?.ok) {
-        // החלפת ההודעה הזמנית בהודעה מהשרת עם מזהה אמיתי
-        setMessages((prev) =>
-          prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
-        );
-      } else {
-        setError("שגיאה בשליחת ההודעה");
-        // להסיר או לסמן הודעה ככושלת
-        setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-      }
+    if (!input.trim() || sending || !socket) return;
+    if (!socket.connected) {
+      setError("Socket אינו מחובר, נסה להתחבר מחדש");
+      return;
     }
-  );
-};
+    setSending(true);
+    setError("");
+
+    const tempId = uuidv4();
+
+    const optimisticMsg = {
+      _id: tempId,
+      tempId,
+      conversationId,
+      from: userId,
+      to: businessId,
+      role: "client",
+      text: input.trim(),
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setInput("");
+
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: userId, to: businessId, role: "client", text: optimisticMsg.text, tempId },
+      (ack) => {
+        setSending(false);
+        if (ack?.ok) {
+          setMessages((prev) =>
+            prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
+          );
+        } else {
+          setError("שגיאה בשליחת ההודעה");
+          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+        }
+      }
+    );
+  };
 
 
 
@@ -302,7 +313,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {messages.map((m, i) => (
           <div
             key={m._id || i}
-            className={`message${m.role === "client" ? " mine" : " theirs"}${m._id?.startsWith("rec-") ? " ai-recommendation" : ""}`}
+            className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
+
           >
             {m.image ? (
               <img
