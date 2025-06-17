@@ -91,7 +91,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       console.error("Socket connection error:", err);
     });
 
-    s.on("newRecommendation", (suggestion) => {
+    s.on("newAiSuggestion", (suggestion) => {
       console.log("New AI suggestion received:", suggestion);
       if (notificationSound.current) notificationSound.current.play();
       if ("Notification" in window && Notification.permission === "granted") {

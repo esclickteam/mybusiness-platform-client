@@ -122,36 +122,15 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
     };
 
-    const handleNewRecommendation = (data) => {
-  console.log("New AI recommendation:", data);
-  if (data.status === "sent") {
-    setMessages((prev) => [
-      ...prev,
-      {
-        _id: `rec-${data.recommendationId}`,
-        text: data.recommendation,
-        role: "business",
-        timestamp: new Date(),
-      },
-    ]);
-  } else {
-    // המלצה במצב ממתין - לא להציג ללקוח
-    console.log("Recommendation pending, לא מוצג בצד הלקוח");
-  }
-};
-
     socket.on("newMessage", handleNewMessage);
-socket.on("newAiSuggestion", handleNewRecommendation);
-socket.on("connect_error", (err) => setError(err.message));
+    socket.on("connect_error", (err) => setError(err.message));
 
-socket.emit("joinConversation", conversationId);
-socket.emit("joinRoom", businessId); // חשוב להצטרף לחדר AI Partner לקבלת המלצות
+    socket.emit("joinConversation", conversationId);
+    socket.emit("joinRoom", businessId); // אם יש צורך לקבל המלצות, אחרת אפשר להסיר
 
-return () => {
-  socket.off("newMessage", handleNewMessage);
-  socket.off("newAiSuggestion", handleNewRecommendation);
-  socket.emit("leaveConversation", conversationId);
-      // אפשר להשאיר או לעזוב את חדר AI בהתאם לצורך
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.emit("leaveConversation", conversationId);
     };
   }, [socket, conversationId, businessId]);
 
@@ -168,8 +147,6 @@ return () => {
   };
 
   const sendMessage = () => {
-    console.log("sendMessage called, input:", input);
-
     if (!input.trim() || sending || !socket) return;
     if (!socket.connected) {
       setError("Socket אינו מחובר, נסה להתחבר מחדש");
@@ -184,7 +161,6 @@ return () => {
       "sendMessage",
       { conversationId, from: userId, to: businessId, role: "client", text: input.trim(), tempId },
       (ack) => {
-        console.log("sendMessage ack:", ack);
         setSending(false);
         if (ack?.ok) {
           setInput("");
@@ -194,8 +170,6 @@ return () => {
       }
     );
   };
-
-
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
@@ -235,126 +209,127 @@ return () => {
   };
 
   const handleSendRecording = async () => {
-  if (!recordedBlob || !socket) return;
-  setSending(true);
-  try {
-    const arrayBuffer = await recordedBlob.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    if (!recordedBlob || !socket) return;
+    setSending(true);
+    try {
+      const arrayBuffer = await recordedBlob.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-    socket.emit(
-      "sendMessage",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        role: "client",
-        file: { name: `voice.webm`, type: recordedBlob.type, duration: timer },
-        blob: buffer,           // <-- שמים את ה-buffer בתוך האובייקט
-      },
-      (ack) => {
-        setSending(false);
-        setRecordedBlob(null);
-        setTimer(0);
-        if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
-      }
-    );
-  } catch (e) {
-    setSending(false);
-    setError("שגיאה בהכנת הקובץ למשלוח");
-  }
-};
-
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          file: { name: `voice.webm`, type: recordedBlob.type, duration: timer },
+          blob: buffer, // <-- שמים את ה-buffer בתוך האובייקט
+        },
+        (ack) => {
+          setSending(false);
+          setRecordedBlob(null);
+          setTimer(0);
+          if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
+        }
+      );
+    } catch (e) {
+      setSending(false);
+      setError("שגיאה בהכנת הקובץ למשלוח");
+    }
+  };
 
   const handleFileChange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file || !socket) return;
-  setSending(true);
+    const file = e.target.files?.[0];
+    if (!file || !socket) return;
+    setSending(true);
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    socket.emit(
-      "sendMessage",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        role: "client",
-        image: reader.result, // data:image/...;base64,...
-      },
-      (ack) => {
-        setSending(false);
-        if (!ack.ok) setError("שגיאה בשליחת הקובץ");
-      }
-    );
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          image: reader.result, // data:image/...;base64,...
+        },
+        (ack) => {
+          setSending(false);
+          if (!ack.ok) setError("שגיאה בשליחת הקובץ");
+        }
+      );
+    };
+    reader.onerror = () => {
+      setSending(false);
+      setError("שגיאה בהמרת הקובץ");
+    };
+
+    reader.readAsDataURL(file);
+    e.target.value = null;
   };
-  reader.onerror = () => {
-    setSending(false);
-    setError("שגיאה בהמרת הקובץ");
-  };
-
-  reader.readAsDataURL(file);
-  e.target.value = null;
-};
-
 
   const handleAttach = () => fileInputRef.current?.click();
 
   return (
-  <div className="chat-container client">
-    <div className="message-list" ref={messageListRef}>
-      {loading && <div className="loading">טוען...</div>}
-      {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-      {messages.map((m, i) => (
-        <div key={m._id || i} className={`message${m.role === "client" ? " mine" : " theirs"}`}>
-          {m.image ? (
-            <img
-              src={m.image}
-              alt={m.fileName || "image"}
-              style={{ maxWidth: 200, borderRadius: 8 }}
-            />
-          ) : m.fileUrl || m.file?.data ? (
-            m.fileType && m.fileType.startsWith("audio") ? (
-              <WhatsAppAudioPlayer
-                src={m.fileUrl || m.file.data}
-                userAvatar={m.userAvatar}
-                duration={m.fileDuration}
-              />
-            ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
+    <div className="chat-container client">
+      <div className="message-list" ref={messageListRef}>
+        {loading && <div className="loading">טוען...</div>}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {messages.map((m, i) => (
+          <div
+            key={m._id || i}
+            className={`message${m.role === "client" ? " mine" : " theirs"}${m._id?.startsWith("rec-") ? " ai-recommendation" : ""}`}
+          >
+            {m.image ? (
               <img
-                src={m.fileUrl || m.file.data}
+                src={m.image}
                 alt={m.fileName || "image"}
                 style={{ maxWidth: 200, borderRadius: 8 }}
               />
+            ) : m.fileUrl || m.file?.data ? (
+              m.fileType && m.fileType.startsWith("audio") ? (
+                <WhatsAppAudioPlayer
+                  src={m.fileUrl || m.file.data}
+                  userAvatar={m.userAvatar}
+                  duration={m.fileDuration}
+                />
+              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
+                <img
+                  src={m.fileUrl || m.file.data}
+                  alt={m.fileName || "image"}
+                  style={{ maxWidth: 200, borderRadius: 8 }}
+                />
+              ) : (
+                <a
+                  href={m.fileUrl || m.file?.data}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
+                  {m.fileName || "קובץ להורדה"}
+                </a>
+              )
             ) : (
-              <a
-                href={m.fileUrl || m.file?.data}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-              >
-                {m.fileName || "קובץ להורדה"}
-              </a>
-            )
-          ) : (
-            <div className="text">{m.text}</div>
-          )}
-          <div className="meta">
-            <span className="time">
-              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </span>
-            {m.fileDuration && (
-              <span className="audio-length">
-                {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-                {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-              </span>
+              <div className="text">{m.text}</div>
             )}
+            <div className="meta">
+              <span className="time">
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+              {m.fileDuration && (
+                <span className="audio-length">
+                  {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                  {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
 
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
