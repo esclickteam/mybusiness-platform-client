@@ -56,6 +56,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           text: r.text,
           status: r.status,
           conversationId: r.conversationId || null,
+          timestamp: r.timestamp || r.createdAt || null,
         }));
         setSuggestions(formatted);
       } catch (err) {
@@ -370,34 +371,39 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           </div>
 
           <div className="suggestions-list">
-            {suggestions
-              .slice()
-              .sort((a, b) => {
-                if (a.timestamp && b.timestamp) {
-                  return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
-                }
-                return 0;
-              })
-              .map((s) => {
-                const isLong = s.text.length > SHORTEN_LENGTH;
-                const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
+  {suggestions
+    .slice()
+    .sort((a, b) => {
+      if (a.timestamp && b.timestamp) {
+        return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
+      }
+      return 0;
+    })
+    .map((s) => {
+      const isLong = s.text.length > SHORTEN_LENGTH;
+      const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
 
-                return (
-                  <div
-                    key={s.id}
-                    className={`suggestion ${s.status}`}
-                  >
-                    <p>{shortText}</p>
-                    {isLong && (
-                      <button
-                        className="read-more-btn"
-                        onClick={() => setActiveSuggestion(s)}
-                      >
-                        קרא עוד
-                      </button>
-                    )}
-                    <small>סטטוס: {s.status}</small>
-                  </div>
+      return (
+        <div key={s.id} className={`suggestion ${s.status}`}>
+          <p>{shortText}</p>
+          {isLong && (
+            <button
+              className="read-more-btn"
+              onClick={() => setActiveSuggestion(s)}
+            >
+              קרא עוד
+            </button>
+          )}
+          <small>
+            סטטוס: {s.status} |{" "}
+            {s.timestamp
+              ? new Date(s.timestamp).toLocaleString("he-IL", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })
+              : "תאריך לא זמין"}
+          </small>
+        </div>
                 );
               })}
           </div>
