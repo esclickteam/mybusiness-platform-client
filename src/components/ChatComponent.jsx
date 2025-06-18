@@ -20,7 +20,6 @@ export default function ChatComponent({
   const [loadingInit, setLoadingInit] = useState(false);
   const [currentCustomerId, setCurrentCustomerId] = useState(customerIdProp || null);
 
-  // כאן תעשה emit לקבלת שיחות וכו' באמצעות socket הקיים
   useEffect(() => {
     if (!userId || !socket) return;
 

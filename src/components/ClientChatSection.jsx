@@ -16,7 +16,6 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
-  // 1️⃣ Initialize socket once when dependencies are ready
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
 
@@ -27,7 +26,7 @@ export default function ClientChatSection() {
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      transports: ['websocket'],
+      transports: ["websocket"],
       auth: { token, role: "chat", businessId },
       withCredentials: true,
     });
@@ -58,7 +57,6 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId, businessId]);
 
-  // 2️⃣ Start or get conversation once
   useEffect(() => {
     if (!socketRef.current || !businessId) return;
 
@@ -82,11 +80,13 @@ export default function ClientChatSection() {
     );
   }, [businessId]);
 
-  // 3️⃣ After conversationId is ready, load business name
   useEffect(() => {
     if (!socketRef.current || !conversationId) return;
 
-    console.log("Loading conversations to get business name, conversationId:", conversationId);
+    console.log(
+      "Loading conversations to get business name, conversationId:",
+      conversationId
+    );
 
     socketRef.current.emit(
       "getConversations",
@@ -95,7 +95,9 @@ export default function ClientChatSection() {
         if (res.ok) {
           console.log("Conversations received:", res.conversations.length);
           const conv = res.conversations.find((c) =>
-            [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
+            [c.conversationId, c._id, c.id]
+              .map(String)
+              .includes(String(conversationId))
           );
           if (conv) {
             console.log("Found conversation businessName:", conv.businessName);
@@ -121,9 +123,7 @@ export default function ClientChatSection() {
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
-          <div className={styles.convItemActive}>
-            {businessName || businessId}
-          </div>
+          <div className={styles.convItemActive}>{businessName || businessId}</div>
         </aside>
         <section className={styles.chatArea}>
           {conversationId ? (
