@@ -197,12 +197,17 @@ export default function ClientChatTab({
     };
 
     const handleRecommendationUpdated = (updatedRec) => {
-      if (updatedRec.conversationId !== conversationId) return;
+  if (updatedRec.conversationId !== conversationId) return;
 
-      setMessages((prev) =>
-        prev.map((m) => (m._id === updatedRec._id ? { ...m, ...updatedRec } : m))
-      );
-    };
+  setMessages((prev) =>
+    prev.map((m) =>
+      m._id === updatedRec._id || m.recommendationId === updatedRec._id
+        ? { ...m, ...updatedRec }
+        : m
+    )
+  );
+};
+
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("messageApproved", handleMessageApproved);
