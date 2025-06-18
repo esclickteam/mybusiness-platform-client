@@ -117,59 +117,70 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
   // טיפול בהודעות נכנסות
   useEffect(() => {
-    if (!socket) return;
+  if (!socket) return;
 
-    const handleIncomingMessage = (msg) => {
-      if (msg.status === "pending" && msg.recommendationId) return;
-
-      const id = msg._id || msg.recommendationId || msg.tempId;
-      if (!id) {
-        setMessages((prev) => [...prev, msg]);
-        return;
-      }
-
-      setMessages((prev) => {
-        const messagesMap = new Map();
-        prev.forEach((m) => {
-          const mid = m._id || m.recommendationId || m.tempId;
-          if (mid) messagesMap.set(mid, m);
-        });
-
-        if (messagesMap.has(id)) {
-          messagesMap.set(id, { ...messagesMap.get(id), ...msg });
-        } else {
-          messagesMap.set(id, msg);
-        }
-        return Array.from(messagesMap.values());
-      });
-    };
-
-    // עדכון או הוספה של הודעה שאושרה ע"י העסק
-    const handleMessageApproved = (msg) => {
-  console.log('messageApproved event received:', msg);
-  if (msg.conversationId !== conversationId) return;
-  setMessages((prev) => {
-    if (prev.some((m) => m._id === msg._id)) {
-      return prev.map((m) => (m._id === msg._id ? msg : m));
+  const handleIncomingMessage = (msg) => {
+    console.log("Received message/newAiSuggestion:", msg);
+    // אם זו המלצה במצב pending (הלקוח לא צריך לראות אותה)
+    if (msg.status === "pending" && msg.recommendationId) {
+      console.log("Ignoring pending recommendation:", msg.recommendationId);
+      return;
     }
-    return [...prev, msg];
-  });
-};
 
-    socket.on("newMessage", handleIncomingMessage);
-    socket.on("newAiSuggestion", handleIncomingMessage);
-    socket.on("messageApproved", handleMessageApproved);
+    const id = msg._id || msg.recommendationId || msg.tempId;
+    if (!id) {
+      setMessages((prev) => [...prev, msg]);
+      return;
+    }
 
-    socket.emit("joinConversation", conversationId);
-    socket.emit("joinRoom", businessId);
+    setMessages((prev) => {
+      const messagesMap = new Map();
+      prev.forEach((m) => {
+        const mid = m._id || m.recommendationId || m.tempId;
+        if (mid) messagesMap.set(mid, m);
+      });
 
-    return () => {
-      socket.off("newMessage", handleIncomingMessage);
-      socket.off("newAiSuggestion", handleIncomingMessage);
-      socket.off("messageApproved", handleMessageApproved);
-      socket.emit("leaveConversation", conversationId);
-    };
-  }, [socket, conversationId, businessId]);
+      if (messagesMap.has(id)) {
+        messagesMap.set(id, { ...messagesMap.get(id), ...msg });
+      } else {
+        messagesMap.set(id, msg);
+      }
+      return Array.from(messagesMap.values());
+    });
+  };
+
+  const handleMessageApproved = (msg) => {
+    console.log("Received messageApproved:", msg);
+    if (msg.conversationId !== conversationId) {
+      console.log("messageApproved for other conversation, ignoring:", msg.conversationId);
+      return;
+    }
+    setMessages((prev) => {
+      if (prev.some((m) => m._id === msg._id)) {
+        return prev.map((m) => (m._id === msg._id ? msg : m));
+      }
+      return [...prev, msg];
+    });
+  };
+
+  socket.on("newMessage", handleIncomingMessage);
+  socket.on("newAiSuggestion", handleIncomingMessage);
+  socket.on("messageApproved", handleMessageApproved);
+
+  console.log("Joining rooms:", conversationId, businessId);
+  socket.emit("joinConversation", conversationId);
+  socket.emit("joinRoom", businessId);
+
+  return () => {
+    socket.off("newMessage", handleIncomingMessage);
+    socket.off("newAiSuggestion", handleIncomingMessage);
+    socket.off("messageApproved", handleMessageApproved);
+    socket.emit("leaveConversation", conversationId);
+    console.log("Left conversation room:", conversationId);
+  };
+}, [socket, conversationId, businessId]);
+
+
 
   // גלילה לתחתית הצ'אט כשיש הודעות חדשות
   useEffect(() => {
