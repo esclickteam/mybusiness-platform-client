@@ -35,27 +35,6 @@ export default function ClientChatSection() {
 
     socketRef.current.on("connect", () => {
       setError("");
-      if (conversationId) {
-        socketRef.current.emit(
-          "getConversations",
-          { userId },
-          (res) => {
-            if (res.ok) {
-              const conv = res.conversations.find((c) =>
-                [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
-              );
-              if (conv) {
-                setBusinessName(conv.businessName || "");
-                setError("");
-              } else {
-                setBusinessName("");
-              }
-            } else {
-              setError("שגיאה בטעינת שם העסק");
-            }
-          }
-        );
-      }
     });
 
     socketRef.current.on("disconnect", (reason) => {
@@ -74,7 +53,7 @@ export default function ClientChatSection() {
         socketRef.current = null;
       }
     };
-  }, [initialized, userId, businessId, conversationId]);
+  }, [initialized, userId, businessId]);
 
   // פתיחת שיחה חדשה עם העסק
   useEffect(() => {
@@ -95,6 +74,31 @@ export default function ClientChatSection() {
       }
     );
   }, [businessId]);
+
+  // טעינת שם העסק אחרי שיש conversationId
+  useEffect(() => {
+    if (!socketRef.current || !conversationId || !userId) return;
+
+    socketRef.current.emit(
+      "getConversations",
+      { userId },
+      (res) => {
+        if (res.ok) {
+          const conv = res.conversations.find((c) =>
+            [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
+          );
+          if (conv) {
+            setBusinessName(conv.businessName || "");
+            setError("");
+          } else {
+            setBusinessName("");
+          }
+        } else {
+          setError("שגיאה בטעינת שם העסק");
+        }
+      }
+    );
+  }, [conversationId, userId]);
 
   // טעינת היסטוריית הודעות והאזנות לאירועים בזמן אמת
   useEffect(() => {
