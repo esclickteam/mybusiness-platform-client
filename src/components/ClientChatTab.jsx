@@ -117,7 +117,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     const handleIncomingMessage = (msg) => {
       console.log("Received socket message:", msg);
 
-      // מזהה ייחודי עבור ההודעה
       const id = msg._id || msg.recommendationId || msg.tempId;
 
       setMessages((prev) => {
@@ -165,7 +164,9 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  // פונקציות נוספות (sendMessage, הקלטות וכו') נשארות כפי שהיו
+  const handleAttach = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
 
   const sendMessage = () => {
     if (!input.trim() || sending || !socket) return;
@@ -216,7 +217,106 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     );
   };
 
-  // כל שאר הקוד נשאר אותו דבר
+  const getSupportedMimeType = () =>
+    MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
+
+  const handleRecordStart = async () => {
+    if (recording) return;
+    recordedChunksRef.current = [];
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      const mimeType = getSupportedMimeType();
+      const recorder = new MediaRecorder(stream, { mimeType });
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(recordedChunksRef.current, { type: mimeType });
+        setRecordedBlob(blob);
+        clearInterval(timerRef.current);
+        setRecording(false);
+      };
+
+      recorder.start();
+      setRecording(true);
+      setTimer(0);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } catch {
+      setError("אין הרשאה להקלטה");
+    }
+  };
+
+  const handleRecordStop = () => {
+    if (!recording || !mediaRecorderRef.current) return;
+    mediaRecorderRef.current.stop();
+  };
+
+  const handleSendRecording = async () => {
+    if (!recordedBlob || !socket) return;
+    setSending(true);
+    try {
+      const arrayBuffer = await recordedBlob.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      socket.emit(
+        "sendAudio",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          buffer,
+          fileType: recordedBlob.type,
+          duration: timer,
+        },
+        (ack) => {
+          setSending(false);
+          setRecordedBlob(null);
+          setTimer(0);
+          if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
+        }
+      );
+    } catch (e) {
+      setSending(false);
+      setError("שגיאה בהכנת הקובץ למשלוח");
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !socket) return;
+    setSending(true);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendFile",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          buffer: Buffer.from(reader.result.split(",")[1], "base64"),
+          fileType: file.type,
+          fileName: file.name,
+        },
+        (ack) => {
+          setSending(false);
+          if (!ack.ok) setError("שגיאה בשליחת הקובץ");
+        }
+      );
+    };
+    reader.onerror = () => {
+      setSending(false);
+      setError("שגיאה בהמרת הקובץ");
+    };
+
+    reader.readAsDataURL(file);
+    e.target.value = null;
+  };
 
   return (
     <div className="chat-container client">
