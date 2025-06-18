@@ -109,15 +109,15 @@ export default function ClientChatSection() {
 
     // טעינת ההיסטוריה הראשונית
     socketRef.current.emit("getHistory", { conversationId }, (res) => {
-      if (res.ok) {
-        // תיקון: לוודא שההודעות הן מערך
-        setMessages(Array.isArray(res.messages) ? res.messages : []);
-        setError("");
-      } else {
-        setMessages([]);
-        setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
-      }
-    });
+  if (res.ok) {
+    // תיקון: לוודא שההודעות הן מערך
+    setMessages(Array.isArray(res.messages) ? res.messages : []);
+    setError("");
+  } else {
+    setMessages([]);
+    setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
+  }
+});
 
     // מטפל בהודעות חדשות
     const handleNewMessage = (msg) => {
