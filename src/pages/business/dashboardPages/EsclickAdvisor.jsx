@@ -12,7 +12,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 
 const EsclickAdvisor = () => {
   const [activeTab, setActiveTab] = useState("business");
-  const [hasAiNotification, setHasAiNotification] = useState(false);
+  const [hasBusinessNotification, setHasBusinessNotification] = useState(false);
   const { user, loading } = useAuth();
   const token = localStorage.getItem("token");
 
@@ -24,8 +24,9 @@ const EsclickAdvisor = () => {
       transports: ["websocket"],
     });
 
+    // מאזין לאירוע חדש - שים לב להחליף בשם האירוע המתאים מהשרת שלך
     socket.on("newRecommendation", () => {
-      setHasAiNotification(true);
+      setHasBusinessNotification(true);
     });
 
     return () => {
@@ -34,8 +35,8 @@ const EsclickAdvisor = () => {
   }, [user?.businessId, token]);
 
   useEffect(() => {
-    if (activeTab === "partner") {
-      setHasAiNotification(false);
+    if (activeTab === "business") {
+      setHasBusinessNotification(false);
     }
   }, [activeTab]);
 
@@ -72,6 +73,7 @@ const EsclickAdvisor = () => {
           onClick={() => handleTabChange("business")}
         >
           יועץ עסקי
+          {hasBusinessNotification && <span className="notification-dot" />}
         </button>
         <button
           className={activeTab === "marketing" ? "active" : ""}
@@ -90,7 +92,6 @@ const EsclickAdvisor = () => {
           onClick={() => handleTabChange("partner")}
         >
           שותף AI אישי
-          {hasAiNotification && <span className="notification-dot" />}
         </button>
       </div>
 
