@@ -143,6 +143,7 @@ export default function ClientChatTab({
     if (!socket || !conversationId || !businessId) return;
 
     const handleIncomingMessage = (msg) => {
+      console.log('newMessage received:', msg);
   if (msg.isRecommendation && msg.status === "pending") return;
 
   const id = msg.isRecommendation
@@ -186,6 +187,7 @@ export default function ClientChatTab({
 
 
     const handleMessageApproved = (msg) => {
+      console.log('messageApproved received:', msg);
       if (msg.conversationId !== conversationId) return;
 
       setMessages((prev) => {
