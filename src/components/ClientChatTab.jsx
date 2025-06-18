@@ -115,24 +115,21 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket) return;
 
     const handleIncomingMessage = (msg) => {
-  // אם זו המלצה (newRecommendation)
-  if (msg.recommendation) {
-    msg.text = msg.recommendation;
-    msg._id  = msg.recommendationId;     // כדי שלא יווצר רשומה כפולה
-    msg.isRecommendation = true;
-  }
-
-  const id = msg._id || msg.tempId;
-  setMessages(prev => {
+  console.log("Incoming message:", msg);
+  setMessages((prev) => {
     let replaced = false;
-    const updated = prev.map(m => {
-      if (m._id === id || m.tempId === id) {
+    const updated = prev.map((m) => {
+      const sameById = m._id && msg._id && m._id === msg._id;
+      const sameByTempId = m.tempId && msg.tempId && m.tempId === msg.tempId;
+      if (sameById || sameByTempId) {
         replaced = true;
+        console.log(`Updating existing message: ${m._id || m.tempId}`);
         return { ...m, ...msg };
       }
       return m;
     });
     if (replaced) return updated;
+    console.log("Adding new message:", msg._id || msg.tempId);
     return [...prev, msg];
   });
 };
@@ -324,7 +321,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
           <div
-            key={m._id || i}
+            key={m._id || m.tempId || i}
             className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
           >
             {m.image ? (
