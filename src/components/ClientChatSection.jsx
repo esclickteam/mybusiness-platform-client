@@ -1,4 +1,3 @@
-// src/components/ClientChatSection.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ClientChatTab from "./ClientChatTab";
@@ -33,6 +32,18 @@ export default function ClientChatSection() {
       withCredentials: true,
     });
 
+    socketRef.current.on("connect", () => {
+      console.log("Socket connected:", socketRef.current.id);
+      setError("");
+    });
+
+    socketRef.current.on("disconnect", (reason) => {
+      console.warn("Socket disconnected:", reason);
+      if (reason !== "io client disconnect") {
+        setError("Socket disconnected unexpectedly: " + reason);
+      }
+    });
+
     socketRef.current.on("connect_error", (err) => {
       console.error("Socket connect_error:", err.message);
       setError("שגיאה בחיבור לסוקט: " + err.message);
@@ -40,6 +51,7 @@ export default function ClientChatSection() {
 
     return () => {
       if (socketRef.current) {
+        console.log("Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
       }
@@ -51,12 +63,20 @@ export default function ClientChatSection() {
     if (!socketRef.current || !businessId) return;
 
     setLoading(true);
+    console.log("Requesting startConversation with businessId:", businessId);
+
     socketRef.current.emit(
       "startConversation",
       { otherUserId: businessId },
       (res) => {
-        if (res.ok) setConversationId(res.conversationId);
-        else setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
+        if (res.ok) {
+          console.log("Conversation started, ID:", res.conversationId);
+          setConversationId(res.conversationId);
+          setError("");
+        } else {
+          console.error("Error starting conversation:", res.error);
+          setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
+        }
         setLoading(false);
       }
     );
@@ -66,18 +86,27 @@ export default function ClientChatSection() {
   useEffect(() => {
     if (!socketRef.current || !conversationId) return;
 
+    console.log("Loading conversations to get business name, conversationId:", conversationId);
+
     socketRef.current.emit(
       "getConversations",
       { userId },
       (res) => {
         if (res.ok) {
+          console.log("Conversations received:", res.conversations.length);
           const conv = res.conversations.find((c) =>
-            [c.conversationId, c._id, c.id]
-              .map(String)
-              .includes(String(conversationId))
+            [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
           );
-          setBusinessName(conv?.businessName || "");
+          if (conv) {
+            console.log("Found conversation businessName:", conv.businessName);
+            setBusinessName(conv.businessName || "");
+            setError("");
+          } else {
+            console.warn("Conversation not found in conversations list");
+            setBusinessName("");
+          }
         } else {
+          console.error("Error loading conversations:", res.error);
           setError("שגיאה בטעינת שם העסק");
         }
       }
