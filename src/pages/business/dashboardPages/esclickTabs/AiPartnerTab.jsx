@@ -56,7 +56,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           text: r.text,
           status: r.status,
           conversationId: r.conversationId || null,
-          timestamp: r.timestamp || r.createdAt || null,
+            timestamp: r.createdAt || null, 
         }));
         setSuggestions(formatted);
       } catch (err) {
