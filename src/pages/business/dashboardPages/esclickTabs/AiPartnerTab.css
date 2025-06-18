@@ -10,8 +10,10 @@
 .ai-partner-container h2 {
   text-align: center;
   color: #7e57c2;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 2.2rem;
 }
 
 .partner-layout {
@@ -59,8 +61,8 @@
   margin-bottom: 1rem;
   font-size: 1rem;
   font-weight: bold;
-  white-space: pre-wrap;    /* שומר על שורות חדשות */
-  word-break: break-word;   /* שובר מילים ארוכות */
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .quick-buttons {
@@ -105,8 +107,8 @@
   background-color: #7e57c2;
   color: white;
   border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
+  border-radius: 50px;
+  padding: 10px 24px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -144,6 +146,47 @@
   cursor: not-allowed;
 }
 
+/* המלצות - כרטיסים */
+.suggestions-list {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.suggestion {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fafafa;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.suggestion:hover {
+  background-color: #f3e5f5;
+  transform: scale(1.02);
+}
+
+.suggestion.pending {
+  border-right: 6px solid #ff9800;
+}
+
+.suggestion.sent {
+  border-right: 6px solid #4caf50;
+}
+
+.suggestion p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.suggestion small {
+  color: #666;
+  font-size: 0.8rem;
+}
+
 /* מודאל המלצה */
 .modal-overlay {
   position: fixed;
@@ -164,13 +207,13 @@
   padding: 25px 30px;
   border-radius: 15px;
   max-width: 480px;
-  max-height: 80vh;       /* מגבלת גובה יחסית לחלון */
+  max-height: 80vh;
   box-shadow: 0 5px 20px rgba(0,0,0,0.2);
   box-sizing: border-box;
   text-align: right;
   font-size: 16px;
   color: #222;
-  overflow-y: auto;       /* גלילה אנכית אם הטקסט ארוך */
+  overflow-y: auto;
 }
 
 .approve-recommendation-box {
@@ -187,7 +230,7 @@
 
 .modal-content p {
   line-height: 1.6;
-  white-space: pre-wrap;    /* מאפשר שמירת שורות חדשות */
+  white-space: pre-wrap;
   margin-bottom: 20px;
   word-break: break-word;
 }
