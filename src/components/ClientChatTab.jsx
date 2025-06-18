@@ -95,58 +95,10 @@ export default function ClientChatTab({
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [recording, setRecording] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState(null);
-  const [timer, setTimer] = useState(0);
 
   const messageListRef = useRef(null);
-  const textareaRef = useRef(null);
-  const fileInputRef = useRef(null);
-  const timerRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const recordedChunksRef = useRef([]);
-  const mediaStreamRef = useRef(null);
 
-  const messageKeysRef = useRef(new Set());
-
-  // פונקציה לעריכת המלצה - קריאה ל-API ועדכון סטייט
-  const editRecommendation = async (recommendationId, newText) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("/api/chat/edit-recommendation", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ recommendationId, newText }),
-      });
-      if (!res.ok) {
-        const errMsg = await res.text();
-        throw new Error(errMsg || "Failed to update recommendation");
-      }
-      const data = await res.json();
-
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg._id === recommendationId
-            ? {
-                ...msg,
-                text: newText,
-                isEdited: true,
-                editedText: newText,
-                ...data.recommendation,
-              }
-            : msg
-        )
-      );
-    } catch (error) {
-      console.error("Error updating recommendation:", error);
-      setError("שגיאה בעדכון ההמלצה: " + error.message);
-    }
-  };
-
-  // טעינת היסטוריית הודעות + המלצות מ-API
+  // טעינת ההיסטוריה פעם אחת עם שינוי conversationId
   useEffect(() => {
     if (!conversationId) return;
 
@@ -176,6 +128,7 @@ export default function ClientChatTab({
       });
   }, [conversationId, setMessages]);
 
+  // מאזיני socket לעדכונים בזמן אמת - אין fetch חוזר
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
@@ -214,7 +167,6 @@ export default function ClientChatTab({
           return newMessages;
         }
 
-        messageKeysRef.current.add(id);
         return [...prev, msg];
       });
     };
@@ -234,18 +186,8 @@ export default function ClientChatTab({
         if (idx !== -1) {
           const newMessages = [...prev];
           newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
-
-          const key = msg.isRecommendation
-            ? `rec_${msg.recommendationId}`
-            : msg._id
-            ? `msg_${msg._id}`
-            : null;
-          if (key) messageKeysRef.current.add(key);
-
           return newMessages;
         }
-        const exists = prev.some((m) => m._id === msg._id);
-        if (exists) return prev;
         return [...prev, msg];
       });
     };
