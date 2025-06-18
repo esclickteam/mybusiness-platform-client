@@ -104,6 +104,19 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   // Ref לשמירת מזהים ייחודיים למניעת כפילויות
   const messageKeysRef = useRef(new Set());
 
+  // פונקציה ללוג של מפתחות הייחודיים ושל הודעות
+  useEffect(() => {
+    const keys = messages.map(getMessageKey);
+    console.log('Messages count:', messages.length);
+    console.log('Message keys:', keys);
+
+    // בדיקה של כפילויות במפתחות
+    const duplicates = keys.filter((key, index) => keys.indexOf(key) !== index);
+    if (duplicates.length > 0) {
+      console.warn('Duplicate keys detected:', duplicates);
+    }
+  }, [messages]);
+
   // טעינת ההיסטוריה דרך socket ב-joinConversation
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
@@ -120,11 +133,13 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         : null;
 
       if (!id) {
+        console.log('Adding message without id:', msg);
         setMessages((prev) => [...prev, msg]);
         return;
       }
 
       if (messageKeysRef.current.has(id)) {
+        console.log('Updating existing message id:', id);
         setMessages((prev) =>
           prev.map((m) => {
             const mid = m.isRecommendation
@@ -138,6 +153,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           })
         );
       } else {
+        console.log('Adding new message id:', id);
         messageKeysRef.current.add(id);
         setMessages((prev) => [...prev, msg]);
       }
@@ -154,6 +170,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
         );
         if (idx !== -1) {
+          console.log('Approving message id:', msg._id);
           const newMessages = [...prev];
           newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
 
@@ -168,6 +185,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         }
         const exists = prev.some((m) => m._id === msg._id);
         if (exists) return prev;
+        console.log('Adding approved message id:', msg._id);
         return [...prev, msg];
       });
     };
@@ -195,6 +213,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         }
       }
 
+      console.log('Loaded unique messages from history:', uniqueMessages.length);
       messageKeysRef.current = keys;
       setMessages(uniqueMessages);
       setLoading(false);
@@ -252,6 +271,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       timestamp: new Date(),
     };
 
+    console.log('Sending message with tempId:', tempId);
+
     setMessages((prev) => [...prev, optimisticMsg]);
     messageKeysRef.current.add(`temp_${tempId}`);
 
@@ -270,6 +291,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       (ack) => {
         setSending(false);
         if (ack?.ok) {
+          console.log('Message acknowledged by server, tempId:', tempId);
           setMessages((prev) =>
             prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
           );
@@ -279,6 +301,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             messageKeysRef.current.add(`msg_${ack.message._id}`);
           }
         } else {
+          console.warn('Message failed to send, tempId:', tempId);
           setError("שגיאה בשליחת ההודעה");
           setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
           messageKeysRef.current.delete(`temp_${tempId}`);
