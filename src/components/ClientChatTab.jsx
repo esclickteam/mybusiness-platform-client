@@ -169,54 +169,54 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  const sendMessage = () => {
-    if (!input.trim() || sending || !socket) return;
-    if (!socket.connected) {
-      setError("Socket אינו מחובר, נסה להתחבר מחדש");
-      return;
-    }
-    setSending(true);
-    setError("");
+  // פונקציה לשליחת הודעה
+const sendMessage = () => {
+  if (!input.trim() || sending || !socket) return;
+  setSending(true);
+  const tempId = uuidv4();
 
-    const tempId = uuidv4();
+  const optimisticMsg = {
+    _id: tempId,   // בהתחלה משתמשים ב-tempId זמני
+    tempId,
+    conversationId,
+    from: userId,
+    to: businessId,
+    role: "client",
+    text: input.trim(),
+    timestamp: new Date().toISOString(),
+  };
 
-    const optimisticMsg = {
-      _id: tempId,
-      tempId,
+  setMessages(prev => [...prev, optimisticMsg]);
+  setInput("");
+
+  socket.emit(
+    "sendMessage",
+    {
       conversationId,
       from: userId,
       to: businessId,
       role: "client",
-      text: input.trim(),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setInput("");
-
-    socket.emit(
-      "sendMessage",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        role: "client",
-        text: optimisticMsg.text,
-        tempId,
-      },
-      (ack) => {
-        setSending(false);
-        if (ack?.ok) {
-          setMessages((prev) =>
-            prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
-          );
-        } else {
-          setError("שגיאה בשליחת ההודעה");
-          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-        }
+      text: optimisticMsg.text,
+      tempId,
+    },
+    (ack) => {
+      setSending(false);
+      if (ack?.ok && ack.message) {
+        // מחליפים הודעה זמנית בהודעה המאושרת עם _id אמיתי
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.tempId === tempId ? { ...ack.message } : msg
+          )
+        );
+      } else {
+        // במקרה של שגיאה, מסירים את ההודעה הזמנית ומציגים שגיאה
+        setMessages(prev => prev.filter(msg => msg.tempId !== tempId));
+        setError("שגיאה בשליחת ההודעה");
       }
-    );
-  };
+    }
+  );
+};
+
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
