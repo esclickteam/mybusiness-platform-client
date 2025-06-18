@@ -123,18 +123,19 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
       }
       setSuggestions((prev) => {
-        if (
-          prev.find((r) => r.id === (suggestion.id || suggestion.recommendationId))
-        )
-          return prev;
-        if (typeof onNewRecommendation === "function") onNewRecommendation();
-        return [
-          ...prev,
-          {
-            id: suggestion.id || suggestion.recommendationId,
-            text: suggestion.text || suggestion.recommendation,
-            status: suggestion.status || "pending",
-            conversationId: suggestion.conversationId,
+  if (
+    prev.find((r) => r.id === (suggestion.id || suggestion.recommendationId))
+  )
+    return prev;
+  if (typeof onNewRecommendation === "function") onNewRecommendation();
+  return [
+    ...prev,
+    {
+      id: suggestion.id || suggestion.recommendationId,
+      text: suggestion.text || suggestion.recommendation,
+      status: suggestion.status || "pending",
+      conversationId: suggestion.conversationId,
+      timestamp: suggestion.timestamp,
           },
         ];
       });
