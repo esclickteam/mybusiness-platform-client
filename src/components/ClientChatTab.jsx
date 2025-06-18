@@ -117,35 +117,33 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     const handleIncomingMessage = (msg) => {
   console.log("Received socket message:", msg);
 
+  // אם זו המלצה עם סטטוס pending, אל תציג אותה בצ'אט
+  if (msg.status === "pending" && msg.recommendationId) {
+    return;
+  }
+
   const id = msg._id || msg.recommendationId || msg.tempId;
   if (!id) {
-    // אם אין מזהה, פשוט הוסף
     setMessages((prev) => [...prev, msg]);
     return;
   }
 
   setMessages((prev) => {
-    // יצירת Map למניעת כפילויות לפי id
     const messagesMap = new Map();
-
-    // הוסף את ההודעות הקודמות
     prev.forEach(m => {
       const mid = m._id || m.recommendationId || m.tempId;
       if (mid) messagesMap.set(mid, m);
     });
 
-    // אם ההודעה כבר קיימת, עדכן אותה
     if (messagesMap.has(id)) {
       messagesMap.set(id, { ...messagesMap.get(id), ...msg });
     } else {
-      // אם לא קיימת, הוסף חדשה
       messagesMap.set(id, msg);
     }
-
-    // המרה חזרה למערך
     return Array.from(messagesMap.values());
   });
 };
+
 
 
     socket.on("newMessage", handleIncomingMessage);
