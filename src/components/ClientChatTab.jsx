@@ -146,14 +146,15 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
     // עדכון או הוספה של הודעה שאושרה ע"י העסק
     const handleMessageApproved = (msg) => {
-      if (msg.conversationId !== conversationId) return;
-      setMessages((prev) => {
-        if (prev.some((m) => m._id === msg._id)) {
-          return prev.map((m) => (m._id === msg._id ? msg : m));
-        }
-        return [...prev, msg];
-      });
-    };
+  console.log('messageApproved event received:', msg);
+  if (msg.conversationId !== conversationId) return;
+  setMessages((prev) => {
+    if (prev.some((m) => m._id === msg._id)) {
+      return prev.map((m) => (m._id === msg._id ? msg : m));
+    }
+    return [...prev, msg];
+  });
+};
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("newAiSuggestion", handleIncomingMessage);
