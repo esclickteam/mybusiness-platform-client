@@ -104,20 +104,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   // Ref לשמירת מזהים ייחודיים למניעת כפילויות
   const messageKeysRef = useRef(new Set());
 
-  // פונקציה ללוג של מפתחות הייחודיים ושל הודעות
-  useEffect(() => {
-    const keys = messages.map(getMessageKey);
-    console.log('Messages count:', messages.length);
-    console.log('Message keys:', keys);
-
-    // בדיקה של כפילויות במפתחות
-    const duplicates = keys.filter((key, index) => keys.indexOf(key) !== index);
-    if (duplicates.length > 0) {
-      console.warn('Duplicate keys detected:', duplicates);
-    }
-  }, [messages]);
-
-  // טעינת ההיסטוריה דרך socket ב-joinConversation
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
@@ -138,25 +124,32 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         return;
       }
 
-      if (messageKeysRef.current.has(id)) {
-        console.log('Updating existing message id:', id);
-        setMessages((prev) =>
-          prev.map((m) => {
-            const mid = m.isRecommendation
-              ? `rec_${m.recommendationId}`
-              : m._id
-              ? `msg_${m._id}`
-              : m.tempId
-              ? `temp_${m.tempId}`
-              : null;
-            return mid === id ? { ...m, ...msg } : m;
-          })
-        );
-      } else {
+      setMessages((prev) => {
+        // מצא הודעה קיימת עם אותו מזהה או החלפה של tempId עם _id של הודעה מאושרת
+        const existsIdx = prev.findIndex(m => {
+          const mid = m.isRecommendation
+            ? `rec_${m.recommendationId}`
+            : m._id
+            ? `msg_${m._id}`
+            : m.tempId
+            ? `temp_${m.tempId}`
+            : null;
+          // החלפה של הודעה זמנית עם הודעה מאושרת
+          if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
+          return mid === id;
+        });
+
+        if (existsIdx !== -1) {
+          console.log('Updating existing message id:', id);
+          const newMessages = [...prev];
+          newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
+          return newMessages;
+        }
+
         console.log('Adding new message id:', id);
         messageKeysRef.current.add(id);
-        setMessages((prev) => [...prev, msg]);
-      }
+        return [...prev, msg];
+      });
     };
 
     const handleMessageApproved = (msg) => {
@@ -190,7 +183,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
     };
 
-    // במקום קריאת API, נטען את ההיסטוריה דרך callback של joinConversation
     socket.emit("joinConversation", conversationId, (res) => {
       const history = Array.isArray(res?.messages) ? res.messages : [];
       const filtered = history.filter(
