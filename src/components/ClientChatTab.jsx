@@ -95,8 +95,17 @@ export default function ClientChatTab({
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [recording, setRecording] = useState(false);
+  const [recordedBlob, setRecordedBlob] = useState(null);
+  const [timer, setTimer] = useState(0);
 
   const messageListRef = useRef(null);
+  const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const timerRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const recordedChunksRef = useRef([]);
+  const mediaStreamRef = useRef(null);
 
   // טעינת ההיסטוריה פעם אחת עם שינוי conversationId
   useEffect(() => {
@@ -128,7 +137,7 @@ export default function ClientChatTab({
       });
   }, [conversationId, setMessages]);
 
-  // מאזיני socket לעדכונים בזמן אמת - אין fetch חוזר
+  // מאזיני socket לעדכונים בזמן אמת (בלי fetch חוזר)
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
@@ -143,12 +152,8 @@ export default function ClientChatTab({
         ? `temp_${msg.tempId}`
         : null;
 
-      if (!id) {
-        setMessages((prev) => [...prev, msg]);
-        return;
-      }
-
       setMessages((prev) => {
+        // אם ההודעה כבר קיימת (כולל החלפת tempId ב-id אמיתי), עדכן במקום להוסיף כפילויות
         const existsIdx = prev.findIndex((m) => {
           const mid = m.isRecommendation
             ? `rec_${m.recommendationId}`
@@ -166,7 +171,6 @@ export default function ClientChatTab({
           newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
           return newMessages;
         }
-
         return [...prev, msg];
       });
     };
@@ -240,6 +244,7 @@ export default function ClientChatTab({
     setSending(true);
     setError("");
 
+    // יצירת מזהה זמני ל-optimistic update
     const tempId = uuidv4();
 
     const optimisticMsg = {
@@ -253,11 +258,12 @@ export default function ClientChatTab({
       timestamp: new Date(),
     };
 
+    // הוספת הודעה זמנית ל-UI (Optimistic UI Update)
     setMessages((prev) => [...prev, optimisticMsg]);
-    messageKeysRef.current.add(`temp_${tempId}`);
 
     setInput("");
 
+    // שליחת ההודעה לשרת עם tempId
     socket.emit(
       "sendMessage",
       {
@@ -271,18 +277,14 @@ export default function ClientChatTab({
       (ack) => {
         setSending(false);
         if (ack?.ok) {
+          // החלפת ההודעה הזמנית בהודעה האמיתית מהשרת
           setMessages((prev) =>
             prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
           );
-
-          messageKeysRef.current.delete(`temp_${tempId}`);
-          if (ack.message?._id) {
-            messageKeysRef.current.add(`msg_${ack.message._id}`);
-          }
         } else {
+          // במקרה של שגיאה, הסר את ההודעה הזמנית והצג שגיאה
           setError("שגיאה בשליחת ההודעה");
           setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-          messageKeysRef.current.delete(`temp_${tempId}`);
         }
       }
     );
@@ -397,7 +399,9 @@ export default function ClientChatTab({
         {messages.map((m) => (
           <div
             key={getMessageKey(m)}
-            className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
+            className={`message${m.role === "client" ? " mine" : " theirs"}${
+              m.isRecommendation ? " ai-recommendation" : ""
+            }`}
           >
             {m.image ? (
               <img
@@ -429,9 +433,7 @@ export default function ClientChatTab({
                 </a>
               )
             ) : (
-              <div className="text">
-                {m.isEdited && m.editedText ? m.editedText : m.text}
-              </div>
+              <div className="text">{m.isEdited && m.editedText ? m.editedText : m.text}</div>
             )}
             {m.isEdited && (
               <div className="edited-label" style={{ fontSize: "0.8em", color: "#888" }}>
