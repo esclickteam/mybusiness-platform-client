@@ -95,13 +95,18 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
+  // טעינת היסטוריה מה-API
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
     setError("");
     API.get("/conversations/history", { params: { conversationId } })
       .then((res) => {
-        setMessages(res.data);
+        // סינון המלצות עם status pending שלא יוצגו בצ'אט
+        const filtered = res.data.filter(
+          (msg) => !(msg.isRecommendation && msg.status === "pending")
+        );
+        setMessages(filtered);
         setLoading(false);
       })
       .catch(() => {
@@ -111,44 +116,49 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
   }, [conversationId]);
 
+  // טיפול בהודעות נכנסות - כולל סינון המלצות pending
   useEffect(() => {
     if (!socket) return;
 
     const handleIncomingMessage = (msg) => {
-  console.log("Received socket message:", msg);
+      if (msg.status === "pending" && msg.recommendationId) return;
 
-  // אם זו המלצה עם סטטוס pending, אל תציג אותה בצ'אט
-  if (msg.status === "pending" && msg.recommendationId) {
-    return;
-  }
+      const id = msg._id || msg.recommendationId || msg.tempId;
+      if (!id) {
+        setMessages((prev) => [...prev, msg]);
+        return;
+      }
 
-  const id = msg._id || msg.recommendationId || msg.tempId;
-  if (!id) {
-    setMessages((prev) => [...prev, msg]);
-    return;
-  }
+      setMessages((prev) => {
+        const messagesMap = new Map();
+        prev.forEach((m) => {
+          const mid = m._id || m.recommendationId || m.tempId;
+          if (mid) messagesMap.set(mid, m);
+        });
 
-  setMessages((prev) => {
-    const messagesMap = new Map();
-    prev.forEach(m => {
-      const mid = m._id || m.recommendationId || m.tempId;
-      if (mid) messagesMap.set(mid, m);
-    });
+        if (messagesMap.has(id)) {
+          messagesMap.set(id, { ...messagesMap.get(id), ...msg });
+        } else {
+          messagesMap.set(id, msg);
+        }
+        return Array.from(messagesMap.values());
+      });
+    };
 
-    if (messagesMap.has(id)) {
-      messagesMap.set(id, { ...messagesMap.get(id), ...msg });
-    } else {
-      messagesMap.set(id, msg);
-    }
-    return Array.from(messagesMap.values());
-  });
-};
-
-
+    // טיפול באישור המלצה - מעדכן או מוסיף הודעה רשמית
+    const handleMessageApproved = (msg) => {
+      if (msg.conversationId !== conversationId) return;
+      setMessages((prev) => {
+        if (prev.some((m) => m._id === msg._id)) {
+          return prev.map((m) => (m._id === msg._id ? msg : m));
+        }
+        return [...prev, msg];
+      });
+    };
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("newAiSuggestion", handleIncomingMessage);
-    socket.on("messageApproved", handleIncomingMessage);
+    socket.on("messageApproved", handleMessageApproved);
 
     socket.emit("joinConversation", conversationId);
     socket.emit("joinRoom", businessId);
@@ -156,11 +166,12 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     return () => {
       socket.off("newMessage", handleIncomingMessage);
       socket.off("newAiSuggestion", handleIncomingMessage);
-      socket.off("messageApproved", handleIncomingMessage);
+      socket.off("messageApproved", handleMessageApproved);
       socket.emit("leaveConversation", conversationId);
     };
   }, [socket, conversationId, businessId]);
 
+  // גלילה לתחתית הצ'אט עם הודעות חדשות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;

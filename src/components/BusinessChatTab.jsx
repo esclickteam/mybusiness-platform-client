@@ -124,9 +124,9 @@ export default function BusinessChatTab({
     console.log("[BusinessChatTab] newMessage received:", msg);
     if (msg.conversationId === conversationId) {
       setMessages((prev) => {
-        if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
+        if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
           return prev.map((m) =>
-            m._id === msg.tempId ? { ...msg, sending: false } : m
+            m.tempId === msg.tempId ? { ...msg, sending: false } : m
           );
         }
         if (prev.some((m) => m._id === msg._id)) {
