@@ -95,14 +95,13 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טעינת היסטוריה מה-API
+  // טעינת היסטוריה מה-API, מסננת המלצות pending
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
     setError("");
     API.get("/conversations/history", { params: { conversationId } })
       .then((res) => {
-        // סינון המלצות עם status pending שלא יוצגו בצ'אט
         const filtered = res.data.filter(
           (msg) => !(msg.isRecommendation && msg.status === "pending")
         );
@@ -116,7 +115,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
   }, [conversationId]);
 
-  // טיפול בהודעות נכנסות - כולל סינון המלצות pending
+  // טיפול בהודעות נכנסות
   useEffect(() => {
     if (!socket) return;
 
@@ -145,7 +144,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
     };
 
-    // טיפול באישור המלצה - מעדכן או מוסיף הודעה רשמית
+    // עדכון או הוספה של הודעה שאושרה ע"י העסק
     const handleMessageApproved = (msg) => {
       if (msg.conversationId !== conversationId) return;
       setMessages((prev) => {
@@ -171,13 +170,14 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     };
   }, [socket, conversationId, businessId]);
 
-  // גלילה לתחתית הצ'אט עם הודעות חדשות
+  // גלילה לתחתית הצ'אט כשיש הודעות חדשות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages]);
 
+  // התאמת גובה הטקסטארא
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
@@ -188,6 +188,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
+  // שליחת הודעה טקסט עם אופטימיות
   const sendMessage = () => {
     if (!input.trim() || sending || !socket) return;
     if (!socket.connected) {
@@ -239,6 +240,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
+
+  // הקלטה, עצירה ושליחה של קול - כמו קודם, לא שונה
 
   const handleRecordStart = async () => {
     if (recording) return;
@@ -305,6 +308,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     }
   };
 
+  // שליחת קובץ - כמו קודם, לא שונה
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file || !socket) return;
@@ -347,13 +352,12 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           <div
             key={
               m.recommendationId
-  ? `rec_${m.recommendationId}`
-  : m._id
-  ? `msg_${m._id}`
-  : m.tempId
-  ? `temp_${m.tempId}`
-  : `unknown_${uuidv4()}`
-                
+                ? `rec_${m.recommendationId}`
+                : m._id
+                ? `msg_${m._id}`
+                : m.tempId
+                ? `temp_${m.tempId}`
+                : `unknown_${uuidv4()}`
             }
             className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
           >
@@ -391,26 +395,25 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             )}
             <div className="meta">
               <span className="time">
-  {(() => {
-    const date = new Date(m.timestamp);
-    if (isNaN(date)) return "";
-    return date.toLocaleTimeString("he-IL", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  })()}
-</span>
-{m.fileDuration && (
-  <span className="audio-length">
-    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-    {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-  </span>
-)}
-</div>
-</div>
-))}
-</div>
-
+                {(() => {
+                  const date = new Date(m.timestamp);
+                  if (isNaN(date)) return "";
+                  return date.toLocaleTimeString("he-IL", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                })()}
+              </span>
+              {m.fileDuration && (
+                <span className="audio-length">
+                  {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                  {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
 
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
