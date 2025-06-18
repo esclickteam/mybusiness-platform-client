@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
-const SHORTEN_LENGTH = 200; // תווים להצגה מקוצרת
 
 const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommendation }) => {
   const navigate = useNavigate();
@@ -21,7 +20,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
@@ -46,10 +44,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (!businessId || !token) return;
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const res = await fetch(
-          `${apiBaseUrl}/chat/recommendations/${businessId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await fetch(`${apiBaseUrl}/chat/recommendations/${businessId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) throw new Error("Failed to load recommendations");
         const recs = await res.json();
         const validUniqueRecs = filterValidUniqueRecommendations(recs);
@@ -58,7 +55,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           text: r.text,
           status: r.status,
           conversationId: r.conversationId || null,
-          timestamp: r.timestamp || r.createdAt || null,  // להוסיף שדה תאריך תקין כאן
         }));
         setSuggestions(formatted);
       } catch (err) {
@@ -73,10 +69,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (!conversationId || !businessId || !token) return;
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const convRes = await fetch(
-          `${apiBaseUrl}/conversations?businessId=${businessId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const convRes = await fetch(`${apiBaseUrl}/conversations?businessId=${businessId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!convRes.ok) throw new Error("Failed to load conversations");
         const conversations = await convRes.json();
         const conv = conversations.find((c) => c.conversationId === conversationId);
@@ -104,7 +99,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
     s.on("connect", () => {
       console.log("Socket connected:", s.id);
+      // AI room
       s.emit("joinRoom", businessId);
+      // conversation room for real-time messageApproved
       if (conversationId) {
         s.emit("joinConversation", conversationId);
       }
@@ -123,41 +120,23 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
       }
       setSuggestions((prev) => {
-  if (
-    prev.find((r) => r.id === (suggestion.id || suggestion.recommendationId))
-  )
-    return prev;
-  if (typeof onNewRecommendation === "function") onNewRecommendation();
-  return [
-    ...prev,
-    {
-      id: suggestion.id || suggestion.recommendationId,
-      text: suggestion.text || suggestion.recommendation,
-      status: suggestion.status || "pending",
-      conversationId: suggestion.conversationId,
-      timestamp: suggestion.timestamp,
+        if (prev.find((r) => r.id === (suggestion.id || suggestion.recommendationId))) return prev;
+        if (typeof onNewRecommendation === "function") onNewRecommendation();
+        return [
+          ...prev,
+          {
+            id: suggestion.id || suggestion.recommendationId,
+            text: suggestion.text || suggestion.recommendation,
+            status: suggestion.status || "pending",
+            conversationId: suggestion.conversationId,
           },
         ];
       });
     });
 
-    s.on("newRecommendation", (rec) => {
-      setSuggestions((prev) => [
-        ...prev,
-        {
-          id: rec._id || rec.recommendationId,
-          text: rec.text || rec.recommendation,
-          status: rec.status || "pending",
-          conversationId: rec.conversationId,
-        },
-      ]);
-    });
-
     s.on("updateRecommendationStatus", ({ recommendationId, status }) => {
       setSuggestions((prev) =>
-        prev.map((sugg) =>
-          sugg.id === recommendationId ? { ...sugg, status } : sugg
-        )
+        prev.map((s) => (s.id === recommendationId ? { ...s, status } : s))
       );
     });
 
@@ -165,6 +144,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       setChat((prev) => [...prev, msg]);
     });
 
+    // New listener for approved recommendations
     s.on("messageApproved", (msg) => {
       console.log("Recommendation approved, new chat message:", msg);
       setChat((prev) => [...prev, msg]);
@@ -178,7 +158,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     return () => {
       if (s.connected) {
         if (conversationId) s.emit("leaveConversation", conversationId);
-        s.off("newRecommendation");
         s.disconnect();
       }
     };
@@ -189,10 +168,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       if (!businessId || !token) return;
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const res = await fetch(
-          `${apiBaseUrl}/business/${businessId}/profile`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await fetch(`${apiBaseUrl}/business/${businessId}/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) throw new Error("Failed to load profile");
         const profileData = await res.json();
         setBusinessProfile(profileData);
@@ -275,21 +253,23 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to approve");
-
-        if (socket && conversationId && clientId) {
-          const msg = {
-            conversationId,
-            from: businessId,
-            to: clientId,
-            role: "business",
-            text,
-            timestamp: new Date().toISOString(),
-            isRecommendation: true,
-          };
-          socket.emit("sendApprovedMessage", msg);
-          setChat((prev) => [...prev, msg]);
+        if (conversationId && clientId) {
+          await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              text,
+              from: businessId,
+              to: clientId,
+              role: "business",
+              timestamp: new Date().toISOString(),
+              isRecommendation: true,
+            }),
+          });
         }
-
         setSuggestions((prev) =>
           prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
         );
@@ -302,7 +282,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         setLoading(false);
       }
     },
-    [businessId, clientId, token, socket]
+    [businessId, clientId, token]
   );
 
   const rejectSuggestion = useCallback((id) => {
@@ -405,55 +385,24 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             />
             <button
               onClick={() => sendMessageForRecommendation(input)}
-              disabled={loading || !input.trim()}
+              disabled={loading || !input.trim()}  
             >
               שלח
             </button>
           </div>
 
-          <button
-            className="toggle-suggestions-btn"
-            onClick={() => setShowSuggestions((prev) => !prev)}
-          >
-            {showSuggestions ? "הסתר המלצות" : "הצג המלצות"}
-          </button>
-
-          {showSuggestions && (
-  <div className="suggestions-list">
-    {suggestions
-      .slice() // יוצרים עותק כדי לא לשנות את המקורי
-      .sort((a, b) => {
-        if (a.timestamp && b.timestamp) {
-          return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
-        }
-        return 0; // אם אין תאריך, נשאיר כפי שהוא
-      })
-      .map((s) => {
-        const isLong = s.text.length > SHORTEN_LENGTH;
-        const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
-
-        return (
-          <div key={s.id} className={`suggestion ${s.status}`}>
-            <p>{shortText}</p>
-            {isLong && (
-              <small
-                className="show-more-btn"
+          <div className="suggestions-list">
+            {suggestions.map((s) => (
+              <div
+                key={s.id}
+                className={`suggestion ${s.status}`}
                 onClick={() => setActiveSuggestion(s)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setActiveSuggestion(s);
-                }}
               >
-                        הצג עוד
-                      </small>
-                    )}
-                    <small>סטטוס: {s.status}</small>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                <p>{s.text}</p>
+                <small>סטטוס: {s.status}</small>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -484,15 +433,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                   }}
                   disabled={loading || !editedText.trim()}
                 >
-                  אשר ושלח
+                  אשר ושלח  
                 </button>
-                <button
-                  disabled={loading}
-                  onClick={() => {
-                    setEditing(false);
-                    setEditedText(activeSuggestion.text);
-                  }}
-                >
+                <button disabled={loading} onClick={() => {
+                  setEditing(false);
+                  setEditedText(activeSuggestion.text);
+                }}>
                   ביטול
                 </button>
               </>
@@ -503,25 +449,19 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 ))}
                 {activeSuggestion.status === "pending" ? (
                   <>
-                    <button
-                      onClick={() =>
-                        approveSuggestion({
-                          id: activeSuggestion.id,
-                          conversationId: activeSuggestion.conversationId,
-                          text: activeSuggestion.text,
-                        })
-                      }
-                      disabled={loading}
-                    >
+                    <button onClick={() =>
+                      approveSuggestion({
+                        id: activeSuggestion.id,
+                        conversationId: activeSuggestion.conversationId,
+                        text: activeSuggestion.text,
+                      })
+                    } disabled={loading}>
                       אשר ושלח מידית
                     </button>
                     <button disabled={loading} onClick={() => setEditing(true)}>
                       ערוך
                     </button>
-                    <button
-                      disabled={loading}
-                      onClick={() => rejectSuggestion(activeSuggestion.id)}
-                    >
+                    <button disabled={loading} onClick={() => rejectSuggestion(activeSuggestion.id)}>
                       דחה
                     </button>
                   </>
