@@ -179,8 +179,8 @@
   cursor: pointer;
   background-color: #fafafa;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  white-space: pre-wrap;      /* שמירת שורות */
-  word-break: break-word;     /* שבירת מילים ארוכות */
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .suggestion:hover {
@@ -208,6 +208,21 @@
   color: #666;
   font-size: 0.8rem;
   display: block;
+}
+
+/* כפתור הצג עוד */
+.show-more-btn {
+  color: #5e35b1;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  margin-top: 0.3rem;
+  display: inline-block;
+}
+.show-more-btn:hover,
+.show-more-btn:focus {
+  color: #4527a0;
+  outline: none;
 }
 
 /* מודאל המלצה */

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
+const SHORTEN_LENGTH = 200; // תווים להצגה מקוצרת
 
 const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommendation }) => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false); // toggle המלצות
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
@@ -417,16 +418,30 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
           {showSuggestions && (
             <div className="suggestions-list">
-              {suggestions.map((s) => (
-                <div
-                  key={s.id}
-                  className={`suggestion ${s.status}`}
-                  onClick={() => setActiveSuggestion(s)}
-                >
-                  <p>{s.text}</p>
-                  <small>סטטוס: {s.status}</small>
-                </div>
-              ))}
+              {suggestions.map((s) => {
+                const isLong = s.text.length > SHORTEN_LENGTH;
+                const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
+
+                return (
+                  <div key={s.id} className={`suggestion ${s.status}`}>
+                    <p>{shortText}</p>
+                    {isLong && (
+                      <small
+                        className="show-more-btn"
+                        onClick={() => setActiveSuggestion(s)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") setActiveSuggestion(s);
+                        }}
+                      >
+                        הצג עוד
+                      </small>
+                    )}
+                    <small>סטטוס: {s.status}</small>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
