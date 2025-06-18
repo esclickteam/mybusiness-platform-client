@@ -41,30 +41,33 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   }, []);
 
   useEffect(() => {
-    async function fetchRecommendations() {
-      if (!businessId || !token) return;
-      try {
-        const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const res = await fetch(`${apiBaseUrl}/chat/recommendations/${businessId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Failed to load recommendations");
-        const recs = await res.json();
-        const validUniqueRecs = filterValidUniqueRecommendations(recs);
-        const formatted = validUniqueRecs.map((r) => ({
-          id: r._id,
-          text: r.text,
-          status: r.status,
-          conversationId: r.conversationId || null,
-            timestamp: r.createdAt || null, 
-        }));
-        setSuggestions(formatted);
-      } catch (err) {
-        console.error("Error fetching recommendations:", err);
-      }
+  async function fetchRecommendations() {
+    if (!businessId || !token) return;
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL;
+      const res = await fetch(`${apiBaseUrl}/chat/recommendations/${businessId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to load recommendations");
+      const recs = await res.json();
+      console.log("Fetched recommendations:", recs);  // <-- כאן
+      const validUniqueRecs = filterValidUniqueRecommendations(recs);
+      const formatted = validUniqueRecs.map((r) => ({
+        id: r._id,
+        text: r.text,
+        status: r.status,
+        conversationId: r.conversationId || null,
+        timestamp: r.createdAt || null,
+      }));
+      console.log("Formatted recommendations:", formatted); // <-- כאן
+      setSuggestions(formatted);
+    } catch (err) {
+      console.error("Error fetching recommendations:", err);
     }
-    fetchRecommendations();
-  }, [businessId, token, filterValidUniqueRecommendations]);
+  }
+  fetchRecommendations();
+}, [businessId, token, filterValidUniqueRecommendations]);
+
 
   useEffect(() => {
     async function fetchClientId() {
