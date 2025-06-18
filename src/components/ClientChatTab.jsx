@@ -375,12 +375,12 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           <div
             key={
               m.recommendationId
-                ? `rec_${m.recommendationId}`
-                : m._id
-                ? `msg_${m._id}`
-                : m.tempId
-                ? `temp_${m.tempId}`
-                : `unknown_${uuidv4()}`
+  ? `rec_${m.recommendationId}_rec`
+  : m._id
+  ? `msg_${m._id}_msg`
+  : m.tempId
+  ? `temp_${m.tempId}_temp`
+  : `unknown_${uuidv4()}`
             }
             className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
           >
