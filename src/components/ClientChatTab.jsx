@@ -150,18 +150,29 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   };
 
   const handleMessageApproved = (msg) => {
-    console.log("Received messageApproved:", msg);
-    if (msg.conversationId !== conversationId) {
-      console.log("messageApproved for other conversation, ignoring:", msg.conversationId);
-      return;
+  console.log("Received messageApproved:", msg);
+  if (msg.conversationId !== conversationId) {
+    console.log("messageApproved for other conversation, ignoring:", msg.conversationId);
+    return;
+  }
+  setMessages((prev) => {
+    // מצא אינדקס של הודעה עם אותו _id או tempId (אם קיים)
+    const idx = prev.findIndex(
+      (m) =>
+        m._id === msg._id ||
+        (m.tempId && msg.tempId && m.tempId === msg.tempId)
+    );
+    if (idx !== -1) {
+      // החלף את ההודעה הישנה בחדשה
+      const newMessages = [...prev];
+      newMessages[idx] = { ...newMessages[idx], ...msg };
+      return newMessages;
     }
-    setMessages((prev) => {
-      if (prev.some((m) => m._id === msg._id)) {
-        return prev.map((m) => (m._id === msg._id ? msg : m));
-      }
-      return [...prev, msg];
-    });
-  };
+    // אם לא נמצא, הוסף את ההודעה החדשה
+    return [...prev, msg];
+  });
+};
+
 
   socket.on("newMessage", handleIncomingMessage);
   socket.on("newAiSuggestion", handleIncomingMessage);
