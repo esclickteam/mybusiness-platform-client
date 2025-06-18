@@ -132,6 +132,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             text: suggestion.text || suggestion.recommendation,
             status: suggestion.status || "pending",
             conversationId: suggestion.conversationId,
+            timestamp: suggestion.createdAt || new Date().toISOString(), // הוסף timestamp
           },
         ];
       });
