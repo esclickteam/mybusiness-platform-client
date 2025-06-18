@@ -20,6 +20,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false); // toggle המלצות
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
@@ -137,7 +138,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       });
     });
 
-    // מאזין להמלצות שנשלחות מהלקוח
     s.on("newRecommendation", (rec) => {
       setSuggestions((prev) => [
         ...prev,
@@ -287,21 +287,20 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           setChat((prev) => [...prev, msg]);
         }
 
-      setSuggestions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
-      );
-      alert("ההמלצה אושרה ונשלחה ללקוח!");
-      setActiveSuggestion(null);
-    } catch (err) {
-      console.error("Error approving suggestion:", err);
-      alert("שגיאה באישור ההמלצה: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  },
-  [businessId, clientId, token, socket]
-);
-
+        setSuggestions((prev) =>
+          prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
+        );
+        alert("ההמלצה אושרה ונשלחה ללקוח!");
+        setActiveSuggestion(null);
+      } catch (err) {
+        console.error("Error approving suggestion:", err);
+        alert("שגיאה באישור ההמלצה: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [businessId, clientId, token, socket]
+  );
 
   const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
@@ -403,24 +402,33 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             />
             <button
               onClick={() => sendMessageForRecommendation(input)}
-              disabled={loading || !input.trim()}  
+              disabled={loading || !input.trim()}
             >
               שלח
             </button>
           </div>
 
-          <div className="suggestions-list">
-            {suggestions.map((s) => (
-              <div
-                key={s.id}
-                className={`suggestion ${s.status}`}
-                onClick={() => setActiveSuggestion(s)}
-              >
-                <p>{s.text}</p>
-                <small>סטטוס: {s.status}</small>
-              </div>
-            ))}
-          </div>
+          <button
+            className="toggle-suggestions-btn"
+            onClick={() => setShowSuggestions((prev) => !prev)}
+          >
+            {showSuggestions ? "הסתר המלצות" : "הצג המלצות"}
+          </button>
+
+          {showSuggestions && (
+            <div className="suggestions-list">
+              {suggestions.map((s) => (
+                <div
+                  key={s.id}
+                  className={`suggestion ${s.status}`}
+                  onClick={() => setActiveSuggestion(s)}
+                >
+                  <p>{s.text}</p>
+                  <small>סטטוס: {s.status}</small>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -451,12 +459,15 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                   }}
                   disabled={loading || !editedText.trim()}
                 >
-                  אשר ושלח  
+                  אשר ושלח
                 </button>
-                <button disabled={loading} onClick={() => {
-                  setEditing(false);
-                  setEditedText(activeSuggestion.text);
-                }}>
+                <button
+                  disabled={loading}
+                  onClick={() => {
+                    setEditing(false);
+                    setEditedText(activeSuggestion.text);
+                  }}
+                >
                   ביטול
                 </button>
               </>
@@ -467,19 +478,25 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 ))}
                 {activeSuggestion.status === "pending" ? (
                   <>
-                    <button onClick={() =>
-                      approveSuggestion({
-                        id: activeSuggestion.id,
-                        conversationId: activeSuggestion.conversationId,
-                        text: activeSuggestion.text,
-                      })
-                    } disabled={loading}>
+                    <button
+                      onClick={() =>
+                        approveSuggestion({
+                          id: activeSuggestion.id,
+                          conversationId: activeSuggestion.conversationId,
+                          text: activeSuggestion.text,
+                        })
+                      }
+                      disabled={loading}
+                    >
                       אשר ושלח מידית
                     </button>
                     <button disabled={loading} onClick={() => setEditing(true)}>
                       ערוך
                     </button>
-                    <button disabled={loading} onClick={() => rejectSuggestion(activeSuggestion.id)}>
+                    <button
+                      disabled={loading}
+                      onClick={() => rejectSuggestion(activeSuggestion.id)}
+                    >
                       דחה
                     </button>
                   </>

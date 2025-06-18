@@ -146,6 +146,24 @@
   cursor: not-allowed;
 }
 
+/* כפתור הצג/הסתר המלצות */
+.toggle-suggestions-btn {
+  background-color: #7e57c2;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 1rem 0;
+  transition: background-color 0.3s ease;
+  align-self: flex-start; /* לכפתור מצד שמאל בשיחה */
+}
+
+.toggle-suggestions-btn:hover {
+  background-color: #6843bb;
+}
+
 /* המלצות - כרטיסים */
 .suggestions-list {
   margin-top: 1rem;
