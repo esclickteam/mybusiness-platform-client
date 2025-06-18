@@ -181,23 +181,24 @@ export default function ClientChatTab({
       });
     };
 
-    socket.on("newMessage", handleIncomingMessage);
-    socket.on("newAiSuggestion", handleIncomingMessage);
+     socket.on("newMessage", handleIncomingMessage);
+  socket.on("newAiSuggestion", (msg) => {
     console.log("Received AI recommendation:", msg);
+    handleIncomingMessage(msg);
+  });
 
-    socket.on("messageApproved", handleMessageApproved);
+  socket.on("messageApproved", handleMessageApproved);
 
-    socket.emit("joinConversation", conversationId);
+  socket.emit("joinConversation", conversationId);
+  socket.emit("joinRoom", businessId);
 
-    socket.emit("joinRoom", businessId);
-
-    return () => {
-      socket.off("newMessage", handleIncomingMessage);
-      socket.off("newAiSuggestion", handleIncomingMessage);
-      socket.off("messageApproved", handleMessageApproved);
-      socket.emit("leaveConversation", conversationId);
-    };
-  }, [socket, conversationId, businessId, setMessages]);
+  return () => {
+    socket.off("newMessage", handleIncomingMessage);
+    socket.off("newAiSuggestion", handleIncomingMessage);
+    socket.off("messageApproved", handleMessageApproved);
+    socket.emit("leaveConversation", conversationId);
+  };
+}, [socket, conversationId, businessId, setMessages]);
 
   useEffect(() => {
     if (messageListRef.current) {
