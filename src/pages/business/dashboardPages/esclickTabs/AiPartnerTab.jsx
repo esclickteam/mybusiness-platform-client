@@ -24,7 +24,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false); // מצב הצגת ההמלצות
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
@@ -51,7 +51,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
         if (!res.ok) throw new Error("Failed to load recommendations");
         const recs = await res.json();
-        console.log("Fetched recommendations:", recs);
         const validUniqueRecs = filterValidUniqueRecommendations(recs);
         const formatted = validUniqueRecs.map((r) => ({
           id: r._id,
@@ -59,8 +58,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           status: r.status,
           conversationId: r.conversationId || null,
           timestamp: r.createdAt || null,
+          isEdited: r.isEdited || false,
+          editedText: r.editedText || "",
         }));
-        console.log("Formatted recommendations:", formatted);
         setSuggestions(formatted);
       } catch (err) {
         console.error("Error fetching recommendations:", err);
@@ -103,7 +103,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     });
 
     s.on("connect", () => {
-      console.log("Socket connected:", s.id);
       s.emit("joinRoom", businessId);
       if (conversationId) {
         s.emit("joinConversation", conversationId);
@@ -133,6 +132,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             status: suggestion.status || "pending",
             conversationId: suggestion.conversationId,
             timestamp: suggestion.createdAt || new Date().toISOString(),
+            isEdited: suggestion.isEdited || false,
+            editedText: suggestion.editedText || "",
           },
         ];
       });
@@ -144,12 +145,27 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       );
     });
 
+    s.on("recommendationUpdated", (updated) => {
+      setSuggestions((prev) =>
+        prev.map((s) =>
+          s.id === updated._id
+            ? {
+                ...s,
+                text: updated.text,
+                isEdited: updated.isEdited,
+                editedText: updated.editedText,
+                status: updated.status,
+              }
+            : s
+        )
+      );
+    });
+
     s.on("newMessage", (msg) => {
       setChat((prev) => [...prev, msg]);
     });
 
     s.on("messageApproved", (msg) => {
-      console.log("Recommendation approved, new chat message:", msg);
       setChat((prev) => [...prev, msg]);
     });
 
@@ -295,6 +311,40 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     setActiveSuggestion(null);
   }, []);
 
+  const editRecommendation = useCallback(
+    async ({ id, newText }) => {
+      setLoading(true);
+      try {
+        const url = `${import.meta.env.VITE_API_URL}/chat/edit-recommendation`;
+        const res = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ recommendationId: id, newText }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to update recommendation");
+
+        setSuggestions((prev) =>
+          prev.map((s) =>
+            s.id === id ? { ...s, text: newText, isEdited: true, editedText: newText } : s
+          )
+        );
+        alert("ההמלצה עודכנה בהצלחה!");
+        setActiveSuggestion(null);
+        setEditing(false);
+      } catch (err) {
+        console.error("Error updating recommendation:", err);
+        alert("שגיאה בעדכון ההמלצה: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token]
+  );
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
@@ -387,7 +437,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 .slice()
                 .sort((a, b) => {
                   if (a.timestamp && b.timestamp) {
-                    return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
+                    return new Date(b.timestamp) - new Date(a.timestamp);
                   }
                   return 0;
                 })
@@ -414,6 +464,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                               timeStyle: "short",
                             })
                           : "תאריך לא זמין"}
+                        {s.isEdited && <span> (נערך)</span>}
                       </small>
                     </div>
                   );
@@ -441,12 +492,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 />
                 <button
                   onClick={() => {
-                    approveSuggestion({
+                    editRecommendation({
                       id: activeSuggestion.id,
-                      conversationId: activeSuggestion.conversationId,
-                      text: editedText,
+                      newText: editedText,
                     });
-                    setEditing(false);
                   }}
                   disabled={loading || !editedText.trim()}
                 >
