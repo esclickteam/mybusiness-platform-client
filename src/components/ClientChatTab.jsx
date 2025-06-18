@@ -101,11 +101,49 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // Ref לשמירת מזהים ייחודיים למניעת כפילויות
   const messageKeysRef = useRef(new Set());
 
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
+
+    socket.emit("joinConversation", conversationId, (res) => {
+      if (!res.ok) {
+        setError("לא הצלחנו להצטרף לשיחה");
+        setLoading(false);
+        return;
+      }
+
+      socket.emit("getHistory", { conversationId }, (res) => {
+        if (res.ok) {
+          const filtered = res.messages.filter(
+            (msg) => !(msg.isRecommendation && msg.status === "pending")
+          );
+
+          const keys = new Set();
+          const uniqueMessages = [];
+          for (const m of filtered) {
+            const key = m.recommendationId
+              ? `rec_${m.recommendationId}`
+              : m._id
+              ? `msg_${m._id}`
+              : m.tempId
+              ? `temp_${m.tempId}`
+              : null;
+            if (key && !keys.has(key)) {
+              keys.add(key);
+              uniqueMessages.push(m);
+            }
+          }
+
+          messageKeysRef.current = keys;
+          setMessages(uniqueMessages);
+          setLoading(false);
+        } else {
+          setError("שגיאה בטעינת ההודעות");
+          setLoading(false);
+        }
+      });
+    });
 
     const handleIncomingMessage = (msg) => {
       if (msg.isRecommendation && msg.status === "pending") return;
@@ -119,14 +157,12 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         : null;
 
       if (!id) {
-        console.log('Adding message without id:', msg);
         setMessages((prev) => [...prev, msg]);
         return;
       }
 
       setMessages((prev) => {
-        // מצא הודעה קיימת עם אותו מזהה או החלפה של tempId עם _id של הודעה מאושרת
-        const existsIdx = prev.findIndex(m => {
+        const existsIdx = prev.findIndex((m) => {
           const mid = m.isRecommendation
             ? `rec_${m.recommendationId}`
             : m._id
@@ -134,19 +170,16 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             : m.tempId
             ? `temp_${m.tempId}`
             : null;
-          // החלפה של הודעה זמנית עם הודעה מאושרת
           if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
           return mid === id;
         });
 
         if (existsIdx !== -1) {
-          console.log('Updating existing message id:', id);
           const newMessages = [...prev];
           newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
           return newMessages;
         }
 
-        console.log('Adding new message id:', id);
         messageKeysRef.current.add(id);
         return [...prev, msg];
       });
@@ -163,7 +196,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
         );
         if (idx !== -1) {
-          console.log('Approving message id:', msg._id);
           const newMessages = [...prev];
           newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
 
@@ -178,38 +210,9 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         }
         const exists = prev.some((m) => m._id === msg._id);
         if (exists) return prev;
-        console.log('Adding approved message id:', msg._id);
         return [...prev, msg];
       });
     };
-
-    socket.emit("joinConversation", conversationId, (res) => {
-      const history = Array.isArray(res?.messages) ? res.messages : [];
-      const filtered = history.filter(
-        (msg) => !(msg.isRecommendation && msg.status === "pending")
-      );
-
-      const keys = new Set();
-      const uniqueMessages = [];
-      for (const m of filtered) {
-        const key = m.recommendationId
-          ? `rec_${m.recommendationId}`
-          : m._id
-          ? `msg_${m._id}`
-          : m.tempId
-          ? `temp_${m.tempId}`
-          : null;
-        if (key && !keys.has(key)) {
-          keys.add(key);
-          uniqueMessages.push(m);
-        }
-      }
-
-      console.log('Loaded unique messages from history:', uniqueMessages.length);
-      messageKeysRef.current = keys;
-      setMessages(uniqueMessages);
-      setLoading(false);
-    });
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("newAiSuggestion", handleIncomingMessage);
@@ -263,8 +266,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       timestamp: new Date(),
     };
 
-    console.log('Sending message with tempId:', tempId);
-
     setMessages((prev) => [...prev, optimisticMsg]);
     messageKeysRef.current.add(`temp_${tempId}`);
 
@@ -283,7 +284,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       (ack) => {
         setSending(false);
         if (ack?.ok) {
-          console.log('Message acknowledged by server, tempId:', tempId);
           setMessages((prev) =>
             prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
           );
@@ -293,7 +293,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             messageKeysRef.current.add(`msg_${ack.message._id}`);
           }
         } else {
-          console.warn('Message failed to send, tempId:', tempId);
           setError("שגיאה בשליחת ההודעה");
           setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
           messageKeysRef.current.delete(`temp_${tempId}`);
