@@ -215,22 +215,19 @@ export default function ClientChatTab({
     };
 
     socket.on("newMessage", handleIncomingMessage);
-    socket.on("newAiSuggestion", (msg) => {
-      console.log("Received AI recommendation:", msg);
-      handleIncomingMessage(msg);
-    });
 
-    socket.on("messageApproved", handleMessageApproved);
+socket.on("messageApproved", handleMessageApproved);
 
-    socket.emit("joinConversation", conversationId);
-    socket.emit("joinRoom", businessId);
+socket.emit("joinConversation", conversationId);
+socket.emit("joinRoom", businessId);
 
-    return () => {
-      socket.off("newMessage", handleIncomingMessage);
-      socket.off("newAiSuggestion", handleIncomingMessage);
-      socket.off("messageApproved", handleMessageApproved);
-      socket.emit("leaveConversation", conversationId);
-    };
+return () => {
+  socket.off("newMessage", handleIncomingMessage);
+  // הסרתי את ההאזנה ל-newAiSuggestion:
+  // socket.off("newAiSuggestion", handleIncomingMessage);
+  socket.off("messageApproved", handleMessageApproved);
+  socket.emit("leaveConversation", conversationId);
+};
   }, [socket, conversationId, businessId, setMessages]);
 
   useEffect(() => {
