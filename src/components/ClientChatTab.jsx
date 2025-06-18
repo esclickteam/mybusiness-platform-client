@@ -168,7 +168,7 @@ export default function ClientChatTab({
         return res.json();
       })
       .then((data) => {
-        setMessages(data);
+        setMessages(Array.isArray(data.messages) ? data.messages : []);
         setLoading(false);
       })
       .catch((err) => {
