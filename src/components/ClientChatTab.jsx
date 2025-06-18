@@ -83,8 +83,14 @@ const getMessageKey = (m) => {
   return `unknown_${uuidv4()}`;
 };
 
-export default function ClientChatTab({ socket, conversationId, businessId, userId }) {
-  const [messages, setMessages] = useState([]);
+export default function ClientChatTab({
+  socket,
+  conversationId,
+  businessId,
+  userId,
+  messages,
+  setMessages,
+}) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -101,7 +107,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // Ref לשמירת מזהים ייחודיים למניעת כפילויות
   const messageKeysRef = useRef(new Set());
 
   useEffect(() => {
@@ -119,14 +124,12 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         : null;
 
       if (!id) {
-        console.log('Adding message without id:', msg);
         setMessages((prev) => [...prev, msg]);
         return;
       }
 
       setMessages((prev) => {
-        // מצא הודעה קיימת עם אותו מזהה או החלפה של tempId עם _id של הודעה מאושרת
-        const existsIdx = prev.findIndex(m => {
+        const existsIdx = prev.findIndex((m) => {
           const mid = m.isRecommendation
             ? `rec_${m.recommendationId}`
             : m._id
@@ -134,19 +137,16 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             : m.tempId
             ? `temp_${m.tempId}`
             : null;
-          // החלפה של הודעה זמנית עם הודעה מאושרת
           if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
           return mid === id;
         });
 
         if (existsIdx !== -1) {
-          console.log('Updating existing message id:', id);
           const newMessages = [...prev];
           newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
           return newMessages;
         }
 
-        console.log('Adding new message id:', id);
         messageKeysRef.current.add(id);
         return [...prev, msg];
       });
@@ -163,7 +163,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
         );
         if (idx !== -1) {
-          console.log('Approving message id:', msg._id);
           const newMessages = [...prev];
           newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
 
@@ -178,42 +177,15 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         }
         const exists = prev.some((m) => m._id === msg._id);
         if (exists) return prev;
-        console.log('Adding approved message id:', msg._id);
         return [...prev, msg];
       });
     };
 
-    socket.emit("joinConversation", conversationId, (res) => {
-      const history = Array.isArray(res?.messages) ? res.messages : [];
-      const filtered = history.filter(
-        (msg) => !(msg.isRecommendation && msg.status === "pending")
-      );
-
-      const keys = new Set();
-      const uniqueMessages = [];
-      for (const m of filtered) {
-        const key = m.recommendationId
-          ? `rec_${m.recommendationId}`
-          : m._id
-          ? `msg_${m._id}`
-          : m.tempId
-          ? `temp_${m.tempId}`
-          : null;
-        if (key && !keys.has(key)) {
-          keys.add(key);
-          uniqueMessages.push(m);
-        }
-      }
-
-      console.log('Loaded unique messages from history:', uniqueMessages.length);
-      messageKeysRef.current = keys;
-      setMessages(uniqueMessages);
-      setLoading(false);
-    });
-
     socket.on("newMessage", handleIncomingMessage);
     socket.on("newAiSuggestion", handleIncomingMessage);
     socket.on("messageApproved", handleMessageApproved);
+
+    socket.emit("joinConversation", conversationId);
 
     socket.emit("joinRoom", businessId);
 
@@ -223,7 +195,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       socket.off("messageApproved", handleMessageApproved);
       socket.emit("leaveConversation", conversationId);
     };
-  }, [socket, conversationId, businessId]);
+  }, [socket, conversationId, businessId, setMessages]);
 
   useEffect(() => {
     if (messageListRef.current) {

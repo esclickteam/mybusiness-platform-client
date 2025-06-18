@@ -14,47 +14,41 @@ export default function ClientChatSection() {
   const [businessName, setBusinessName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [messages, setMessages] = useState([]);
   const socketRef = useRef(null);
 
+  // יצירת socket פעם אחת בלבד
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
-    if (socketRef.current) return; // מניעת יצירת חיבור כפול
+    if (socketRef.current) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
 
-    console.log("Creating socket with:", { token, businessId });
-
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-       transports: ["websocket"],
+      transports: ["websocket"],
       auth: { token, role: "chat", businessId },
       withCredentials: true,
       autoConnect: true,
     });
 
     socketRef.current.on("connect", () => {
-      console.log("Socket connected:", socketRef.current.id);
       setError("");
-      // טעינת שיחות עם conversationId קיים
       if (conversationId) {
         socketRef.current.emit(
           "getConversations",
           { userId },
           (res) => {
             if (res.ok) {
-              console.log("Conversations received:", res.conversations.length);
               const conv = res.conversations.find((c) =>
-                [c.conversationId, c._id, c.id]
-                  .map(String)
-                  .includes(String(conversationId))
+                [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
               );
               if (conv) {
                 setBusinessName(conv.businessName || "");
                 setError("");
               } else {
                 setBusinessName("");
-                console.warn("Conversation not found");
               }
             } else {
               setError("שגיאה בטעינת שם העסק");
@@ -65,38 +59,33 @@ export default function ClientChatSection() {
     });
 
     socketRef.current.on("disconnect", (reason) => {
-      console.warn("Socket disconnected:", reason);
       if (reason !== "io client disconnect") {
         setError("Socket disconnected unexpectedly: " + reason);
       }
     });
 
     socketRef.current.on("connect_error", (err) => {
-      console.error("Socket connect_error:", err.message);
       setError("שגיאה בחיבור לסוקט: " + err.message);
     });
 
     return () => {
       if (socketRef.current) {
-        console.log("Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
       }
     };
   }, [initialized, userId, businessId]);
 
+  // פתיחת שיחה חדשה עם העסק
   useEffect(() => {
     if (!socketRef.current || !businessId) return;
 
     setLoading(true);
-    console.log("Requesting startConversation with businessId:", businessId);
-
     socketRef.current.emit(
       "startConversation",
       { otherUserId: businessId },
       (res) => {
         if (res.ok) {
-          console.log("Conversation started, ID:", res.conversationId);
           setConversationId(res.conversationId);
           setError("");
         } else {
@@ -106,6 +95,24 @@ export default function ClientChatSection() {
       }
     );
   }, [businessId]);
+
+  // טעינת היסטוריית הודעות כאשר יש conversationId ו-socket מחובר
+  useEffect(() => {
+    if (!socketRef.current || !socketRef.current.connected || !conversationId) {
+      setMessages([]);
+      return;
+    }
+
+    socketRef.current.emit("getHistory", { conversationId }, (res) => {
+      if (res.ok) {
+        setMessages(res.messages || []);
+        setError("");
+      } else {
+        setMessages([]);
+        setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
+      }
+    });
+  }, [conversationId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
@@ -124,6 +131,8 @@ export default function ClientChatSection() {
               conversationId={conversationId}
               businessId={businessId}
               userId={userId}
+              messages={messages}
+              setMessages={setMessages}
             />
           ) : (
             <div className={styles.emptyMessage}>לא הצלחנו לפתוח שיחה…</div>
