@@ -183,6 +183,8 @@ export default function ClientChatTab({
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("newAiSuggestion", handleIncomingMessage);
+    console.log("Received AI recommendation:", msg);
+
     socket.on("messageApproved", handleMessageApproved);
 
     socket.emit("joinConversation", conversationId);
