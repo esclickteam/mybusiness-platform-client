@@ -148,7 +148,9 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
   const handleIncomingMessage = (msg) => {
     console.log("Received message/newAiSuggestion:", msg);
-    if (msg.status === "pending" && msg.recommendationId) {
+
+    // אם המלצה במצב pending - אל תוסיף כהודעה רגילה
+    if (msg.isRecommendation && msg.status === "pending") {
       console.log("Ignoring pending recommendation:", msg.recommendationId);
       return;
     }
@@ -207,11 +209,12 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       const idx = prev.findIndex(
         (m) =>
           m._id === msg._id ||
-          (m.tempId && msg.tempId && m.tempId === msg.tempId)
+          (m.tempId && msg.tempId && m.tempId === msg.tempId) ||
+          (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
       );
       if (idx !== -1) {
         const newMessages = [...prev];
-        newMessages[idx] = { ...newMessages[idx], ...msg };
+        newMessages[idx] = { ...newMessages[idx], ...msg, status: 'approved' };
         return newMessages;
       }
       const exists = prev.some((m) => m._id === msg._id);
@@ -235,6 +238,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     socket.emit("leaveConversation", conversationId);
   };
 }, [socket, conversationId, businessId]);
+
 
 
   useEffect(() => {
