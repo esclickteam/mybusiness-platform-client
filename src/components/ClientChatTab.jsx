@@ -115,27 +115,38 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket) return;
 
     const handleIncomingMessage = (msg) => {
-      console.log("Received socket message:", msg);
+  console.log("Received socket message:", msg);
 
-      const id = msg._id || msg.recommendationId || msg.tempId;
+  const id = msg._id || msg.recommendationId || msg.tempId;
+  if (!id) {
+    // אם אין מזהה, פשוט הוסף
+    setMessages((prev) => [...prev, msg]);
+    return;
+  }
 
-      setMessages((prev) => {
-        let replaced = false;
-        const updated = prev.map((m) => {
-          if (m._id === id || m.recommendationId === id || m.tempId === id) {
-            replaced = true;
-            return { ...m, ...msg };
-          }
-          return m;
-        });
-        if (replaced) return updated;
+  setMessages((prev) => {
+    // יצירת Map למניעת כפילויות לפי id
+    const messagesMap = new Map();
 
-        const exists = prev.some((m) => m._id === id || m.recommendationId === id || m.tempId === id);
-        if (exists) return prev;
+    // הוסף את ההודעות הקודמות
+    prev.forEach(m => {
+      const mid = m._id || m.recommendationId || m.tempId;
+      if (mid) messagesMap.set(mid, m);
+    });
 
-        return [...prev, msg];
-      });
-    };
+    // אם ההודעה כבר קיימת, עדכן אותה
+    if (messagesMap.has(id)) {
+      messagesMap.set(id, { ...messagesMap.get(id), ...msg });
+    } else {
+      // אם לא קיימת, הוסף חדשה
+      messagesMap.set(id, msg);
+    }
+
+    // המרה חזרה למערך
+    return Array.from(messagesMap.values());
+  });
+};
+
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("newAiSuggestion", handleIncomingMessage);
