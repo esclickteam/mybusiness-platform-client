@@ -322,14 +322,22 @@ const sendMessage = () => {
   const handleAttach = () => fileInputRef.current?.click();
 
   return (
-    <div className="chat-container client">
-      <div className="message-list" ref={messageListRef}>
-        {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m) => (
-          <div
-                key={`${m._id ?? m.tempId ?? Math.random().toString()}_${m.recommendationId ? 'rec' : 'msg'}`}
-                className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
+  <div className="chat-container client">
+    <div className="message-list" ref={messageListRef}>
+      {loading && <div className="loading">טוען...</div>}
+      {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+      {messages.map((m) => (
+        <div
+          key={
+            m.recommendationId
+              ? `${m.recommendationId}_rec`
+              : m._id
+              ? `${m._id}_msg`
+              : m.tempId
+              ? `${m.tempId}_temp`
+              : uuidv4()
+          }
+          className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
 
           >
             {m.image ? (
