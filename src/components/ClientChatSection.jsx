@@ -74,7 +74,7 @@ export default function ClientChatSection() {
         socketRef.current = null;
       }
     };
-  }, [initialized, userId, businessId]);
+  }, [initialized, userId, businessId, conversationId]);
 
   // פתיחת שיחה חדשה עם העסק
   useEffect(() => {
@@ -103,6 +103,7 @@ export default function ClientChatSection() {
       return;
     }
 
+    // בקשת ההיסטוריה הראשונית (כולל המלצות)
     socketRef.current.emit("getHistory", { conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
@@ -112,6 +113,43 @@ export default function ClientChatSection() {
         setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
       }
     });
+
+    // מאזינים לאירועים בזמן אמת לעדכון ההודעות וההמלצות
+    const handleNewMessage = (msg) => {
+      setMessages((prev) => {
+        // מניעת כפילויות: אם כבר קיימת הודעה עם אותו מזהה - עדכון
+        const existsIdx = prev.findIndex((m) => {
+          if (m.isRecommendation && msg.isRecommendation) {
+            return m.recommendationId === msg.recommendationId;
+          }
+          if (!m.isRecommendation && !msg.isRecommendation) {
+            return m._id === msg._id || m.tempId === msg.tempId;
+          }
+          return false;
+        });
+        if (existsIdx !== -1) {
+          const newMessages = [...prev];
+          newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
+          return newMessages;
+        }
+        return [...prev, msg];
+      });
+    };
+
+    socketRef.current.on("newMessage", handleNewMessage);
+    socketRef.current.on("newAiSuggestion", (msg) => {
+      if (msg.status !== "pending") {
+        handleNewMessage(msg);
+      }
+    });
+
+    // ניקוי מאזינים בקומפוננטה יוצאת
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off("newMessage", handleNewMessage);
+        socketRef.current.off("newAiSuggestion", handleNewMessage);
+      }
+    };
   }, [conversationId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;

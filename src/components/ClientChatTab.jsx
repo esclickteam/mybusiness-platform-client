@@ -143,44 +143,47 @@ export default function ClientChatTab({
     if (!socket || !conversationId || !businessId) return;
 
     const handleIncomingMessage = (msg) => {
-      if (msg.isRecommendation && msg.status === "pending") return;
+  if (msg.isRecommendation && msg.status === "pending") return;
 
-      const id = msg.isRecommendation
-        ? `rec_${msg.recommendationId}`
-        : msg._id
-        ? `msg_${msg._id}`
-        : msg.tempId
-        ? `temp_${msg.tempId}`
+  const id = msg.isRecommendation
+    ? `rec_${msg.recommendationId}`
+    : msg._id
+    ? `msg_${msg._id}`
+    : msg.tempId
+    ? `temp_${msg.tempId}`
+    : null;
+
+  if (!id) {
+    setMessages((prev) => [...prev, msg]);
+    return;
+  }
+
+  setMessages((prev) => {
+    const existsIdx = prev.findIndex((m) => {
+      const mid = m.isRecommendation
+        ? `rec_${m.recommendationId}`
+        : m._id
+        ? `msg_${m._id}`
+        : m.tempId
+        ? `temp_${m.tempId}`
         : null;
+      if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
+      return mid === id;
+    });
 
-      if (!id) {
-        setMessages((prev) => [...prev, msg]);
-        return;
-      }
+    if (existsIdx !== -1) {
+      // עדכון הודעה קיימת עם פרטי ההודעה החדשה
+      const newMessages = [...prev];
+      newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
+      return newMessages;
+    }
 
-      setMessages((prev) => {
-        const existsIdx = prev.findIndex((m) => {
-          const mid = m.isRecommendation
-            ? `rec_${m.recommendationId}`
-            : m._id
-            ? `msg_${m._id}`
-            : m.tempId
-            ? `temp_${m.tempId}`
-            : null;
-          if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
-          return mid === id;
-        });
+    // הוספת הודעה חדשה לרשימה
+    messageKeysRef.current.add(id);
+    return [...prev, msg];
+  });
+};
 
-        if (existsIdx !== -1) {
-          const newMessages = [...prev];
-          newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
-          return newMessages;
-        }
-
-        messageKeysRef.current.add(id);
-        return [...prev, msg];
-      });
-    };
 
     const handleMessageApproved = (msg) => {
       if (msg.conversationId !== conversationId) return;
