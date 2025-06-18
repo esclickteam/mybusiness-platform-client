@@ -109,6 +109,35 @@ export default function ClientChatTab({
 
   const messageKeysRef = useRef(new Set());
 
+  // פונקציה לעריכת המלצה - קריאה ל-API ועדכון סטייט
+  const editRecommendation = async (recommendationId, newText) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("/api/chat/edit-recommendation", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ recommendationId, newText }),
+      });
+      if (!res.ok) {
+        const errMsg = await res.text();
+        throw new Error(errMsg || "Failed to update recommendation");
+      }
+      const data = await res.json();
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === recommendationId ? { ...msg, text: newText, ...data.recommendation } : msg
+        )
+      );
+    } catch (error) {
+      console.error("Error updating recommendation:", error);
+      setError("שגיאה בעדכון ההמלצה: " + error.message);
+    }
+  };
+
   // טעינת היסטוריית הודעות + המלצות מ-API
   useEffect(() => {
     if (!conversationId) return;
@@ -143,51 +172,46 @@ export default function ClientChatTab({
     if (!socket || !conversationId || !businessId) return;
 
     const handleIncomingMessage = (msg) => {
-      console.log('newMessage received:', msg);
-  if (msg.isRecommendation && msg.status === "pending") return;
+      if (msg.isRecommendation && msg.status === "pending") return;
 
-  const id = msg.isRecommendation
-    ? `rec_${msg.recommendationId}`
-    : msg._id
-    ? `msg_${msg._id}`
-    : msg.tempId
-    ? `temp_${msg.tempId}`
-    : null;
-
-  if (!id) {
-    setMessages((prev) => [...prev, msg]);
-    return;
-  }
-
-  setMessages((prev) => {
-    const existsIdx = prev.findIndex((m) => {
-      const mid = m.isRecommendation
-        ? `rec_${m.recommendationId}`
-        : m._id
-        ? `msg_${m._id}`
-        : m.tempId
-        ? `temp_${m.tempId}`
+      const id = msg.isRecommendation
+        ? `rec_${msg.recommendationId}`
+        : msg._id
+        ? `msg_${msg._id}`
+        : msg.tempId
+        ? `temp_${msg.tempId}`
         : null;
-      if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
-      return mid === id;
-    });
 
-    if (existsIdx !== -1) {
-      // עדכון הודעה קיימת עם פרטי ההודעה החדשה
-      const newMessages = [...prev];
-      newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
-      return newMessages;
-    }
+      if (!id) {
+        setMessages((prev) => [...prev, msg]);
+        return;
+      }
 
-    // הוספת הודעה חדשה לרשימה
-    messageKeysRef.current.add(id);
-    return [...prev, msg];
-  });
-};
+      setMessages((prev) => {
+        const existsIdx = prev.findIndex((m) => {
+          const mid = m.isRecommendation
+            ? `rec_${m.recommendationId}`
+            : m._id
+            ? `msg_${m._id}`
+            : m.tempId
+            ? `temp_${m.tempId}`
+            : null;
+          if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
+          return mid === id;
+        });
 
+        if (existsIdx !== -1) {
+          const newMessages = [...prev];
+          newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
+          return newMessages;
+        }
+
+        messageKeysRef.current.add(id);
+        return [...prev, msg];
+      });
+    };
 
     const handleMessageApproved = (msg) => {
-      console.log('messageApproved received:', msg);
       if (msg.conversationId !== conversationId) return;
 
       setMessages((prev) => {
@@ -195,7 +219,9 @@ export default function ClientChatTab({
           (m) =>
             m._id === msg._id ||
             (m.tempId && msg.tempId && m.tempId === msg.tempId) ||
-            (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
+            (m.isRecommendation &&
+              msg.recommendationId &&
+              m.recommendationId === msg.recommendationId)
         );
         if (idx !== -1) {
           const newMessages = [...prev];
@@ -216,20 +242,27 @@ export default function ClientChatTab({
       });
     };
 
+    const handleRecommendationUpdated = (updatedRec) => {
+      if (updatedRec.conversationId !== conversationId) return;
+
+      setMessages((prev) =>
+        prev.map((m) => (m._id === updatedRec._id ? { ...m, ...updatedRec } : m))
+      );
+    };
+
     socket.on("newMessage", handleIncomingMessage);
+    socket.on("messageApproved", handleMessageApproved);
+    socket.on("recommendationUpdated", handleRecommendationUpdated);
 
-socket.on("messageApproved", handleMessageApproved);
+    socket.emit("joinConversation", conversationId);
+    socket.emit("joinRoom", businessId);
 
-socket.emit("joinConversation", conversationId);
-socket.emit("joinRoom", businessId);
-
-return () => {
-  socket.off("newMessage", handleIncomingMessage);
-  // הסרתי את ההאזנה ל-newAiSuggestion:
-  // socket.off("newAiSuggestion", handleIncomingMessage);
-  socket.off("messageApproved", handleMessageApproved);
-  socket.emit("leaveConversation", conversationId);
-};
+    return () => {
+      socket.off("newMessage", handleIncomingMessage);
+      socket.off("messageApproved", handleMessageApproved);
+      socket.off("recommendationUpdated", handleRecommendationUpdated);
+      socket.emit("leaveConversation", conversationId);
+    };
   }, [socket, conversationId, businessId, setMessages]);
 
   useEffect(() => {
@@ -270,8 +303,6 @@ return () => {
       timestamp: new Date(),
     };
 
-    console.log("Sending message with tempId:", tempId);
-
     setMessages((prev) => [...prev, optimisticMsg]);
     messageKeysRef.current.add(`temp_${tempId}`);
 
@@ -290,7 +321,6 @@ return () => {
       (ack) => {
         setSending(false);
         if (ack?.ok) {
-          console.log("Message acknowledged by server, tempId:", tempId);
           setMessages((prev) =>
             prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
           );
@@ -300,7 +330,6 @@ return () => {
             messageKeysRef.current.add(`msg_${ack.message._id}`);
           }
         } else {
-          console.warn("Message failed to send, tempId:", tempId);
           setError("שגיאה בשליחת ההודעה");
           setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
           messageKeysRef.current.delete(`temp_${tempId}`);
