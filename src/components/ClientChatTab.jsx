@@ -131,31 +131,54 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   }, [conversationId]);
 
   useEffect(() => {
-    if (!socket) return;
+  if (!socket) {
+    console.log("Socket not ready yet, skipping listener setup");
+    return;
+  }
+  if (!conversationId) {
+    console.log("No conversationId provided, skipping listener setup");
+    return;
+  }
+  if (!businessId) {
+    console.log("No businessId provided, skipping listener setup");
+    return;
+  }
 
-    const handleIncomingMessage = (msg) => {
-      console.log("Received message/newAiSuggestion:", msg);
-      if (msg.status === "pending" && msg.recommendationId) {
-        console.log("Ignoring pending recommendation:", msg.recommendationId);
-        return;
+  console.log("Setting up socket listeners for conversation:", conversationId);
+
+  const handleIncomingMessage = (msg) => {
+    console.log("Received message/newAiSuggestion:", msg);
+    if (msg.status === "pending" && msg.recommendationId) {
+      console.log("Ignoring pending recommendation:", msg.recommendationId);
+      return;
+    }
+
+    setMessages((prev) => {
+      const id = msg.isRecommendation
+        ? `rec_${msg.recommendationId}`
+        : msg._id
+        ? `msg_${msg._id}`
+        : msg.tempId
+        ? `temp_${msg.tempId}`
+        : null;
+
+      if (!id) {
+        return [...prev, msg];
       }
 
-      setMessages((prev) => {
-        // מזהה ייחודי שמשלב סוג ההודעה והמזהה
-        const id = msg.isRecommendation
-          ? `rec_${msg.recommendationId}`
-          : msg._id
-          ? `msg_${msg._id}`
-          : msg.tempId
-          ? `temp_${msg.tempId}`
+      const exists = prev.some((m) => {
+        const mid = m.isRecommendation
+          ? `rec_${m.recommendationId}`
+          : m._id
+          ? `msg_${m._id}`
+          : m.tempId
+          ? `temp_${m.tempId}`
           : null;
+        return mid === id;
+      });
 
-        if (!id) {
-          return [...prev, msg];
-        }
-
-        // בדיקה אם ההודעה קיימת (לפי id)
-        const exists = prev.some((m) => {
+      if (exists) {
+        return prev.map((m) => {
           const mid = m.isRecommendation
             ? `rec_${m.recommendationId}`
             : m._id
@@ -163,70 +186,56 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             : m.tempId
             ? `temp_${m.tempId}`
             : null;
-          return mid === id;
+          if (mid === id) {
+            return { ...m, ...msg };
+          }
+          return m;
         });
-
-        if (exists) {
-          // החלפת ההודעה הקיימת בחדשה (merge)
-          return prev.map((m) => {
-            const mid = m.isRecommendation
-              ? `rec_${m.recommendationId}`
-              : m._id
-              ? `msg_${m._id}`
-              : m.tempId
-              ? `temp_${m.tempId}`
-              : null;
-            if (mid === id) {
-              return { ...m, ...msg };
-            }
-            return m;
-          });
-        } else {
-          return [...prev, msg];
-        }
-      });
-    };
-
-    const handleMessageApproved = (msg) => {
-      console.log("Received messageApproved:", msg);
-      if (msg.conversationId !== conversationId) {
-        console.log("messageApproved for other conversation, ignoring:", msg.conversationId);
-        return;
-      }
-      setMessages((prev) => {
-        const idx = prev.findIndex(
-          (m) =>
-            m._id === msg._id ||
-            (m.tempId && msg.tempId && m.tempId === msg.tempId)
-        );
-        if (idx !== -1) {
-          const newMessages = [...prev];
-          newMessages[idx] = { ...newMessages[idx], ...msg };
-          return newMessages;
-        }
-        // בדיקה מפורשת שלא קיימת הודעה עם אותו _id לפני הוספה
-        const exists = prev.some((m) => m._id === msg._id);
-        if (exists) return prev;
+      } else {
         return [...prev, msg];
-      });
-    };
+      }
+    });
+  };
 
-    socket.on("newMessage", handleIncomingMessage);
-    socket.on("newAiSuggestion", handleIncomingMessage);
-    socket.on("messageApproved", handleMessageApproved);
+  const handleMessageApproved = (msg) => {
+    console.log("Received messageApproved:", msg);
+    if (msg.conversationId !== conversationId) {
+      console.log("messageApproved for other conversation, ignoring:", msg.conversationId);
+      return;
+    }
+    setMessages((prev) => {
+      const idx = prev.findIndex(
+        (m) =>
+          m._id === msg._id ||
+          (m.tempId && msg.tempId && m.tempId === msg.tempId)
+      );
+      if (idx !== -1) {
+        const newMessages = [...prev];
+        newMessages[idx] = { ...newMessages[idx], ...msg };
+        return newMessages;
+      }
+      const exists = prev.some((m) => m._id === msg._id);
+      if (exists) return prev;
+      return [...prev, msg];
+    });
+  };
 
-    console.log("Joining rooms:", conversationId, businessId);
-    socket.emit("joinConversation", conversationId);
-    socket.emit("joinRoom", businessId);
+  socket.on("newMessage", handleIncomingMessage);
+  socket.on("newAiSuggestion", handleIncomingMessage);
+  socket.on("messageApproved", handleMessageApproved);
 
-    return () => {
-      socket.off("newMessage", handleIncomingMessage);
-      socket.off("newAiSuggestion", handleIncomingMessage);
-      socket.off("messageApproved", handleMessageApproved);
-      socket.emit("leaveConversation", conversationId);
-      console.log("Left conversation room:", conversationId);
-    };
-  }, [socket, conversationId, businessId]);
+  socket.emit("joinConversation", conversationId);
+  socket.emit("joinRoom", businessId);
+
+  return () => {
+    console.log("Cleaning up socket listeners for conversation:", conversationId);
+    socket.off("newMessage", handleIncomingMessage);
+    socket.off("newAiSuggestion", handleIncomingMessage);
+    socket.off("messageApproved", handleMessageApproved);
+    socket.emit("leaveConversation", conversationId);
+  };
+}, [socket, conversationId, businessId]);
+
 
   useEffect(() => {
     if (messageListRef.current) {
