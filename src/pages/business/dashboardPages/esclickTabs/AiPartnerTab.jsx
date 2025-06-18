@@ -24,6 +24,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false); // מצב הצגת ההמלצות
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
@@ -41,33 +42,32 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   }, []);
 
   useEffect(() => {
-  async function fetchRecommendations() {
-    if (!businessId || !token) return;
-    try {
-      const apiBaseUrl = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${apiBaseUrl}/chat/recommendations/${businessId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Failed to load recommendations");
-      const recs = await res.json();
-      console.log("Fetched recommendations:", recs);  // <-- כאן
-      const validUniqueRecs = filterValidUniqueRecommendations(recs);
-      const formatted = validUniqueRecs.map((r) => ({
-        id: r._id,
-        text: r.text,
-        status: r.status,
-        conversationId: r.conversationId || null,
-        timestamp: r.createdAt || null,
-      }));
-      console.log("Formatted recommendations:", formatted); // <-- כאן
-      setSuggestions(formatted);
-    } catch (err) {
-      console.error("Error fetching recommendations:", err);
+    async function fetchRecommendations() {
+      if (!businessId || !token) return;
+      try {
+        const apiBaseUrl = import.meta.env.VITE_API_URL;
+        const res = await fetch(`${apiBaseUrl}/chat/recommendations/${businessId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to load recommendations");
+        const recs = await res.json();
+        console.log("Fetched recommendations:", recs);
+        const validUniqueRecs = filterValidUniqueRecommendations(recs);
+        const formatted = validUniqueRecs.map((r) => ({
+          id: r._id,
+          text: r.text,
+          status: r.status,
+          conversationId: r.conversationId || null,
+          timestamp: r.createdAt || null,
+        }));
+        console.log("Formatted recommendations:", formatted);
+        setSuggestions(formatted);
+      } catch (err) {
+        console.error("Error fetching recommendations:", err);
+      }
     }
-  }
-  fetchRecommendations();
-}, [businessId, token, filterValidUniqueRecommendations]);
-
+    fetchRecommendations();
+  }, [businessId, token, filterValidUniqueRecommendations]);
 
   useEffect(() => {
     async function fetchClientId() {
@@ -132,7 +132,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             text: suggestion.text || suggestion.recommendation,
             status: suggestion.status || "pending",
             conversationId: suggestion.conversationId,
-            timestamp: suggestion.createdAt || new Date().toISOString(), // הוסף timestamp
+            timestamp: suggestion.createdAt || new Date().toISOString(),
           },
         ];
       });
@@ -374,43 +374,52 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             ))}
           </div>
 
-          <div className="suggestions-list">
-  {suggestions
-    .slice()
-    .sort((a, b) => {
-      if (a.timestamp && b.timestamp) {
-        return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
-      }
-      return 0;
-    })
-    .map((s) => {
-      const isLong = s.text.length > SHORTEN_LENGTH;
-      const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
+          <button
+            onClick={() => setShowSuggestions((prev) => !prev)}
+            className="toggle-suggestions-btn"
+          >
+            {showSuggestions ? "הסתר המלצות" : "הצג המלצות"}
+          </button>
 
-      return (
-        <div key={s.id} className={`suggestion ${s.status}`}>
-          <p>{shortText}</p>
-          {isLong && (
-            <button
-              className="read-more-btn"
-              onClick={() => setActiveSuggestion(s)}
-            >
-              קרא עוד
-            </button>
-          )}
-          <small>
-            סטטוס: {s.status} |{" "}
-            {s.timestamp
-              ? new Date(s.timestamp).toLocaleString("he-IL", {
-                  dateStyle: "short",
-                  timeStyle: "short",
+          {showSuggestions && (
+            <div className="suggestions-list">
+              {suggestions
+                .slice()
+                .sort((a, b) => {
+                  if (a.timestamp && b.timestamp) {
+                    return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
+                  }
+                  return 0;
                 })
-              : "תאריך לא זמין"}
-          </small>
-        </div>
-                );
-              })}
-          </div>
+                .map((s) => {
+                  const isLong = s.text.length > SHORTEN_LENGTH;
+                  const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
+
+                  return (
+                    <div key={s.id} className={`suggestion ${s.status}`}>
+                      <p>{shortText}</p>
+                      {isLong && (
+                        <button
+                          className="read-more-btn"
+                          onClick={() => setActiveSuggestion(s)}
+                        >
+                          קרא עוד
+                        </button>
+                      )}
+                      <small>
+                        סטטוס: {s.status} |{" "}
+                        {s.timestamp
+                          ? new Date(s.timestamp).toLocaleString("he-IL", {
+                              dateStyle: "short",
+                              timeStyle: "short",
+                            })
+                          : "תאריך לא זמין"}
+                      </small>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
         </div>
       </div>
 
