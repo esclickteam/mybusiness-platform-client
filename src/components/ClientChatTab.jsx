@@ -101,8 +101,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     setError("");
     API.get("/conversations/history", { params: { conversationId } })
       .then((res) => {
-        const sortedMessages = [...res.data].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        setMessages(sortedMessages);
+        setMessages(res.data);
         setLoading(false);
       })
       .catch(() => {
@@ -116,32 +115,35 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket) return;
 
     const handleIncomingMessage = (msg) => {
-      console.log('Received socket message:', msg);
+  console.log('Received socket message:', msg);
 
-      const id = msg._id || msg.recommendationId || msg.tempId;
+  // נוצר id אחיד לכל סוג הודעה
+  const id = msg._id || msg.recommendationId || msg.tempId;
 
-      setMessages((prev) => {
-        let replaced = false;
-        const updated = prev.map((m) => {
-          if (m._id === id || m.recommendationId === id || m.tempId === id) {
-            replaced = true;
-            return { ...m, ...msg };
-          }
-          return m;
-        });
-        if (replaced) return updated;
+  setMessages((prev) => {
+    // עדכון לפי id
+    let replaced = false;
+    const updated = prev.map((m) => {
+      if (m._id === id || m.recommendationId === id || m.tempId === id) {
+        replaced = true;
+        return { ...m, ...msg };
+      }
+      return m;
+    });
+    if (replaced) return updated;
 
-        const exists = prev.some((m) => m._id === id || m.recommendationId === id || m.tempId === id);
-        if (exists) return prev;
+    // אם ההודעה לא קיימת כלל, הוסף חדשה
+    const exists = prev.some((m) => m._id === id || m.recommendationId === id || m.tempId === id);
+    if (exists) return prev;
 
-        const newList = [...prev, msg];
-        newList.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        return newList;
-      });
-    };
+    return [...prev, msg];
+  });
+};
+
+
 
     socket.on("newMessage", handleIncomingMessage);
-    socket.on("newAiSuggestion", handleIncomingMessage);
+    socket.on("newAiSuggestion", handleIncomingMessage); // תואם לשרת
     socket.on("messageApproved", handleIncomingMessage);
 
     socket.emit("joinConversation", conversationId);
@@ -186,7 +188,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       to: businessId,
       role: "client",
       text: input.trim(),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
@@ -267,7 +269,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           from: userId,
           to: businessId,
           role: "client",
-          buffer,
+          buffer, // חשוב: משתמשים בשם buffer כדי להתאים לשרת
           fileType: recordedBlob.type,
           duration: timer,
         },
@@ -324,65 +326,63 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m, i) => {
-          const date = new Date(m.timestamp);
-          const isValidDate = !isNaN(date.getTime());
-          return (
-            <div
-              key={m._id || i}
-              className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
-            >
-              {m.image ? (
+        {messages.map((m, i) => (
+          <div
+            key={m._id || i}
+            className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
+          >
+            {m.image ? (
+              <img
+                src={m.image}
+                alt={m.fileName || "image"}
+                style={{ maxWidth: 200, borderRadius: 8 }}
+              />
+            ) : m.fileUrl || m.file?.data ? (
+              m.fileType && m.fileType.startsWith("audio") ? (
+                <WhatsAppAudioPlayer
+                  src={m.fileUrl || m.file.data}
+                  userAvatar={m.userAvatar}
+                  duration={m.fileDuration}
+                />
+              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
                 <img
-                  src={m.image}
+                  src={m.fileUrl || m.file.data}
                   alt={m.fileName || "image"}
                   style={{ maxWidth: 200, borderRadius: 8 }}
                 />
-              ) : m.fileUrl || m.file?.data ? (
-                m.fileType && m.fileType.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer
-                    src={m.fileUrl || m.file.data}
-                    userAvatar={m.userAvatar}
-                    duration={m.fileDuration}
-                  />
-                ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || '') ? (
-                  <img
-                    src={m.fileUrl || m.file.data}
-                    alt={m.fileName || "image"}
-                    style={{ maxWidth: 200, borderRadius: 8 }}
-                  />
-                ) : (
-                  <a
-                    href={m.fileUrl || m.file?.data}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
-                    {m.fileName || "קובץ להורדה"}
-                  </a>
-                )
               ) : (
-                <div className="text">{m.text}</div>
-              )}
-              <div className="meta">
-                <span className="time">
-                  {isValidDate
-                    ? date.toLocaleTimeString("he-IL", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : "תאריך לא זמין"}
+                <a
+                  href={m.fileUrl || m.file?.data}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
+                  {m.fileName || "קובץ להורדה"}
+                </a>
+              )
+            ) : (
+              <div className="text">{m.text}</div>
+            )}
+            <div className="meta">
+              <span className="time">
+  {(() => {
+    const date = new Date(m.timestamp);
+    if (!m.timestamp || isNaN(date.getTime())) return "";
+    return date.toLocaleTimeString("he-IL", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  })()}
+</span>
+              {m.fileDuration && (
+                <span className="audio-length">
+                  {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                  {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
                 </span>
-                {m.fileDuration && (
-                  <span className="audio-length">
-                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-                    {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-                  </span>
-                )}
-              </div>
+              )}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       <div className="inputBar">
