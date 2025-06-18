@@ -18,6 +18,7 @@ export default function ClientChatSection() {
 
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
+    if (socketRef.current) return; // מניעת יצירת חיבור כפול
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
@@ -26,7 +27,7 @@ export default function ClientChatSection() {
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      transports: ["websocket"],
+      transports: ["websocket"], // רק WebSocket, ללא polling
       auth: { token, role: "chat", businessId },
       withCredentials: true,
     });
@@ -34,6 +35,33 @@ export default function ClientChatSection() {
     socketRef.current.on("connect", () => {
       console.log("Socket connected:", socketRef.current.id);
       setError("");
+      if (conversationId) {
+        socketRef.current.emit(
+          "getConversations",
+          { userId },
+          (res) => {
+            if (res.ok) {
+              console.log("Conversations received:", res.conversations.length);
+              const conv = res.conversations.find((c) =>
+                [c.conversationId, c._id, c.id]
+                  .map(String)
+                  .includes(String(conversationId))
+              );
+              if (conv) {
+                console.log("Found conversation businessName:", conv.businessName);
+                setBusinessName(conv.businessName || "");
+                setError("");
+              } else {
+                console.warn("Conversation not found in conversations list");
+                setBusinessName("");
+              }
+            } else {
+              console.error("Error loading conversations:", res.error);
+              setError("שגיאה בטעינת שם העסק");
+            }
+          }
+        );
+      }
     });
 
     socketRef.current.on("disconnect", (reason) => {
@@ -55,7 +83,7 @@ export default function ClientChatSection() {
         socketRef.current = null;
       }
     };
-  }, [initialized, userId, businessId]);
+  }, [initialized, userId, businessId, conversationId]);
 
   useEffect(() => {
     if (!socketRef.current || !businessId) return;
@@ -79,41 +107,6 @@ export default function ClientChatSection() {
       }
     );
   }, [businessId]);
-
-  useEffect(() => {
-    if (!socketRef.current || !conversationId) return;
-
-    console.log(
-      "Loading conversations to get business name, conversationId:",
-      conversationId
-    );
-
-    socketRef.current.emit(
-      "getConversations",
-      { userId },
-      (res) => {
-        if (res.ok) {
-          console.log("Conversations received:", res.conversations.length);
-          const conv = res.conversations.find((c) =>
-            [c.conversationId, c._id, c.id]
-              .map(String)
-              .includes(String(conversationId))
-          );
-          if (conv) {
-            console.log("Found conversation businessName:", conv.businessName);
-            setBusinessName(conv.businessName || "");
-            setError("");
-          } else {
-            console.warn("Conversation not found in conversations list");
-            setBusinessName("");
-          }
-        } else {
-          console.error("Error loading conversations:", res.error);
-          setError("שגיאה בטעינת שם העסק");
-        }
-      }
-    );
-  }, [conversationId, userId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
