@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
 import { Buffer } from "buffer";
-import API from "../api";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
@@ -77,20 +76,11 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
-// פונקציה לקבלת key ייחודי עם לוג להדפסה לקונסול
 const getMessageKey = (m) => {
-  let key;
-  if (m.recommendationId) {
-    key = `rec_${m.recommendationId}_rec`;
-  } else if (m._id) {
-    key = `msg_${m._id}_msg`;
-  } else if (m.tempId) {
-    key = `temp_${m.tempId}_temp`;
-  } else {
-    key = `unknown_${uuidv4()}`;
-  }
-  console.log("Message key generated:", key, m);
-  return key;
+  if (m.recommendationId) return `rec_${m.recommendationId}_rec`;
+  if (m._id) return `msg_${m._id}_msg`;
+  if (m.tempId) return `temp_${m.tempId}_temp`;
+  return `unknown_${uuidv4()}`;
 };
 
 export default function ClientChatTab({ socket, conversationId, businessId, userId }) {
@@ -111,51 +101,16 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
+  // Ref לשמירת מזהים ייחודיים למניעת כפילויות
+  const messageKeysRef = useRef(new Set());
+
+  // טעינת ההיסטוריה דרך socket ב-joinConversation
   useEffect(() => {
-    if (!conversationId) return;
-    setLoading(true);
-    setError("");
-    API.get("/conversations/history", { params: { conversationId } })
-      .then((res) => {
-        const filtered = res.data.filter(
-          (msg) => !(msg.isRecommendation && msg.status === "pending")
-        );
-        setMessages(filtered);
-        setLoading(false);
-      })
-      .catch(() => {
-        setMessages([]);
-        setError("שגיאה בטעינת היסטוריית ההודעות");
-        setLoading(false);
-      });
-  }, [conversationId]);
+    if (!socket || !conversationId || !businessId) return;
 
-  useEffect(() => {
-  if (!socket) {
-    console.log("Socket not ready yet, skipping listener setup");
-    return;
-  }
-  if (!conversationId) {
-    console.log("No conversationId provided, skipping listener setup");
-    return;
-  }
-  if (!businessId) {
-    console.log("No businessId provided, skipping listener setup");
-    return;
-  }
+    const handleIncomingMessage = (msg) => {
+      if (msg.isRecommendation && msg.status === "pending") return;
 
-  console.log("Setting up socket listeners for conversation:", conversationId);
-
-  const handleIncomingMessage = (msg) => {
-    console.log("Received message/newAiSuggestion:", msg);
-
-    // אם המלצה במצב pending - אל תוסיף כהודעה רגילה
-    if (msg.isRecommendation && msg.status === "pending") {
-      console.log("Ignoring pending recommendation:", msg.recommendationId);
-      return;
-    }
-
-    setMessages((prev) => {
       const id = msg.isRecommendation
         ? `rec_${msg.recommendationId}`
         : msg._id
@@ -165,81 +120,99 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         : null;
 
       if (!id) {
-        return [...prev, msg];
+        setMessages((prev) => [...prev, msg]);
+        return;
       }
 
-      const exists = prev.some((m) => {
-        const mid = m.isRecommendation
+      if (messageKeysRef.current.has(id)) {
+        setMessages((prev) =>
+          prev.map((m) => {
+            const mid = m.isRecommendation
+              ? `rec_${m.recommendationId}`
+              : m._id
+              ? `msg_${m._id}`
+              : m.tempId
+              ? `temp_${m.tempId}`
+              : null;
+            return mid === id ? { ...m, ...msg } : m;
+          })
+        );
+      } else {
+        messageKeysRef.current.add(id);
+        setMessages((prev) => [...prev, msg]);
+      }
+    };
+
+    const handleMessageApproved = (msg) => {
+      if (msg.conversationId !== conversationId) return;
+
+      setMessages((prev) => {
+        const idx = prev.findIndex(
+          (m) =>
+            m._id === msg._id ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId) ||
+            (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
+        );
+        if (idx !== -1) {
+          const newMessages = [...prev];
+          newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
+
+          const key = msg.isRecommendation
+            ? `rec_${msg.recommendationId}`
+            : msg._id
+            ? `msg_${msg._id}`
+            : null;
+          if (key) messageKeysRef.current.add(key);
+
+          return newMessages;
+        }
+        const exists = prev.some((m) => m._id === msg._id);
+        if (exists) return prev;
+        return [...prev, msg];
+      });
+    };
+
+    // במקום קריאת API, נטען את ההיסטוריה דרך callback של joinConversation
+    socket.emit("joinConversation", conversationId, (res) => {
+      const history = Array.isArray(res?.messages) ? res.messages : [];
+      const filtered = history.filter(
+        (msg) => !(msg.isRecommendation && msg.status === "pending")
+      );
+
+      const keys = new Set();
+      const uniqueMessages = [];
+      for (const m of filtered) {
+        const key = m.recommendationId
           ? `rec_${m.recommendationId}`
           : m._id
           ? `msg_${m._id}`
           : m.tempId
           ? `temp_${m.tempId}`
           : null;
-        return mid === id;
-      });
-
-      if (exists) {
-        return prev.map((m) => {
-          const mid = m.isRecommendation
-            ? `rec_${m.recommendationId}`
-            : m._id
-            ? `msg_${m._id}`
-            : m.tempId
-            ? `temp_${m.tempId}`
-            : null;
-          if (mid === id) {
-            return { ...m, ...msg };
-          }
-          return m;
-        });
-      } else {
-        return [...prev, msg];
+        if (key && !keys.has(key)) {
+          keys.add(key);
+          uniqueMessages.push(m);
+        }
       }
+
+      messageKeysRef.current = keys;
+      setMessages(uniqueMessages);
+      setLoading(false);
     });
-  };
 
-  const handleMessageApproved = (msg) => {
-    console.log("Received messageApproved:", msg);
-    if (msg.conversationId !== conversationId) {
-      console.log("messageApproved for other conversation, ignoring:", msg.conversationId);
-      return;
-    }
-    setMessages((prev) => {
-      const idx = prev.findIndex(
-        (m) =>
-          m._id === msg._id ||
-          (m.tempId && msg.tempId && m.tempId === msg.tempId) ||
-          (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
-      );
-      if (idx !== -1) {
-        const newMessages = [...prev];
-        newMessages[idx] = { ...newMessages[idx], ...msg, status: 'approved' };
-        return newMessages;
-      }
-      const exists = prev.some((m) => m._id === msg._id);
-      if (exists) return prev;
-      return [...prev, msg];
-    });
-  };
+    socket.on("newMessage", handleIncomingMessage);
+    socket.on("newAiSuggestion", handleIncomingMessage);
+    socket.on("messageApproved", handleMessageApproved);
 
-  socket.on("newMessage", handleIncomingMessage);
-  socket.on("newAiSuggestion", handleIncomingMessage);
-  socket.on("messageApproved", handleMessageApproved);
+    socket.emit("joinRoom", businessId);
 
-  socket.emit("joinConversation", conversationId);
-  socket.emit("joinRoom", businessId);
-
-  return () => {
-    console.log("Cleaning up socket listeners for conversation:", conversationId);
-    socket.off("newMessage", handleIncomingMessage);
-    socket.off("newAiSuggestion", handleIncomingMessage);
-    socket.off("messageApproved", handleMessageApproved);
-    socket.emit("leaveConversation", conversationId);
-  };
-}, [socket, conversationId, businessId]);
-
-
+    return () => {
+      socket.off("newMessage", handleIncomingMessage);
+      socket.off("newAiSuggestion", handleIncomingMessage);
+      socket.off("messageApproved", handleMessageApproved);
+      socket.emit("leaveConversation", conversationId);
+    };
+  }, [socket, conversationId, businessId]);
 
   useEffect(() => {
     if (messageListRef.current) {
@@ -280,6 +253,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
+    messageKeysRef.current.add(`temp_${tempId}`);
+
     setInput("");
 
     socket.emit(
@@ -298,9 +273,15 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           setMessages((prev) =>
             prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
           );
+
+          messageKeysRef.current.delete(`temp_${tempId}`);
+          if (ack.message?._id) {
+            messageKeysRef.current.add(`msg_${ack.message._id}`);
+          }
         } else {
           setError("שגיאה בשליחת ההודעה");
           setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+          messageKeysRef.current.delete(`temp_${tempId}`);
         }
       }
     );
