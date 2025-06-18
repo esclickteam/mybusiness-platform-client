@@ -382,21 +382,26 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
             )}
             <div className="meta">
               <span className="time">
-                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-              {m.fileDuration && (
-                <span className="audio-length">
-                  {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-                  {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-                </span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+  {(() => {
+    const date = new Date(m.timestamp);
+    if (isNaN(date)) return "";
+    return date.toLocaleTimeString("he-IL", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  })()}
+</span>
+{m.fileDuration && (
+  <span className="audio-length">
+    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+    {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+  </span>
+)}
+</div>
+</div>
+))}
+</div>
+
 
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
