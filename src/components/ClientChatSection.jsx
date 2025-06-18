@@ -96,14 +96,14 @@ export default function ClientChatSection() {
     );
   }, [businessId]);
 
-  // טעינת היסטוריית הודעות כאשר יש conversationId ו-socket מחובר
+  // טעינת היסטוריית הודעות והאזנות לאירועים בזמן אמת
   useEffect(() => {
     if (!socketRef.current || !socketRef.current.connected || !conversationId) {
       setMessages([]);
       return;
     }
 
-    // בקשת ההיסטוריה הראשונית (כולל המלצות)
+    // טעינת ההיסטוריה הראשונית
     socketRef.current.emit("getHistory", { conversationId }, (res) => {
       if (res.ok) {
         setMessages(res.messages || []);
@@ -114,10 +114,9 @@ export default function ClientChatSection() {
       }
     });
 
-    // מאזינים לאירועים בזמן אמת לעדכון ההודעות וההמלצות
+    // מטפל בהודעות חדשות
     const handleNewMessage = (msg) => {
       setMessages((prev) => {
-        // מניעת כפילויות: אם כבר קיימת הודעה עם אותו מזהה - עדכון
         const existsIdx = prev.findIndex((m) => {
           if (m.isRecommendation && msg.isRecommendation) {
             return m.recommendationId === msg.recommendationId;
@@ -136,21 +135,44 @@ export default function ClientChatSection() {
       });
     };
 
+    // מטפל באישור המלצות
+    const handleMessageApproved = (msg) => {
+      setMessages((prev) => {
+        const idx = prev.findIndex(
+          (m) =>
+            m._id === msg._id ||
+            (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
+        );
+        if (idx !== -1) {
+          const newMessages = [...prev];
+          newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
+          return newMessages;
+        }
+        return [...prev, msg];
+      });
+    };
+
     socketRef.current.on("newMessage", handleNewMessage);
     socketRef.current.on("newAiSuggestion", (msg) => {
       if (msg.status !== "pending") {
         handleNewMessage(msg);
       }
     });
+    socketRef.current.on("messageApproved", handleMessageApproved);
 
-    // ניקוי מאזינים בקומפוננטה יוצאת
+    // הצטרפות לחדר השיחה
+    socketRef.current.emit("joinConversation", conversationId);
+    socketRef.current.emit("joinRoom", businessId);
+
     return () => {
       if (socketRef.current) {
         socketRef.current.off("newMessage", handleNewMessage);
         socketRef.current.off("newAiSuggestion", handleNewMessage);
+        socketRef.current.off("messageApproved", handleMessageApproved);
+        socketRef.current.emit("leaveConversation", conversationId);
       }
     };
-  }, [conversationId]);
+  }, [conversationId, businessId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
