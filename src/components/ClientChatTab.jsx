@@ -326,10 +326,11 @@ const sendMessage = () => {
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m, i) => (
+        {messages.map((m) => (
           <div
-            key={m._id || i}
-            className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
+            key={m._id ?? m.tempId ?? Math.random().toString()}
+                className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
+
           >
             {m.image ? (
               <img
