@@ -27,15 +27,16 @@ export default function ClientChatSection() {
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      transports: ["polling", "websocket"], // fallback ל-polling
+       transports: ["websocket"],
       auth: { token, role: "chat", businessId },
       withCredentials: true,
+      autoConnect: true,
     });
 
     socketRef.current.on("connect", () => {
       console.log("Socket connected:", socketRef.current.id);
       setError("");
-      // בעת התחברות טען את השיחות אם כבר יש conversationId
+      // טעינת שיחות עם conversationId קיים
       if (conversationId) {
         socketRef.current.emit(
           "getConversations",
@@ -49,15 +50,13 @@ export default function ClientChatSection() {
                   .includes(String(conversationId))
               );
               if (conv) {
-                console.log("Found conversation businessName:", conv.businessName);
                 setBusinessName(conv.businessName || "");
                 setError("");
               } else {
-                console.warn("Conversation not found in conversations list");
                 setBusinessName("");
+                console.warn("Conversation not found");
               }
             } else {
-              console.error("Error loading conversations:", res.error);
               setError("שגיאה בטעינת שם העסק");
             }
           }
@@ -84,7 +83,7 @@ export default function ClientChatSection() {
         socketRef.current = null;
       }
     };
-  }, [initialized, userId, businessId, conversationId]);
+  }, [initialized, userId, businessId]);
 
   useEffect(() => {
     if (!socketRef.current || !businessId) return;
@@ -101,15 +100,12 @@ export default function ClientChatSection() {
           setConversationId(res.conversationId);
           setError("");
         } else {
-          console.error("Error starting conversation:", res.error);
           setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
         }
         setLoading(false);
       }
     );
   }, [businessId]);
-
-  // מחיקת useEffect המקורי של getConversations כי עכשיו הטעינה מתבצעת באירוע connect
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
