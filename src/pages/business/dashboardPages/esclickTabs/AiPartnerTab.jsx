@@ -417,24 +417,32 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           </button>
 
           {showSuggestions && (
-            <div className="suggestions-list">
-              {suggestions.map((s) => {
-                const isLong = s.text.length > SHORTEN_LENGTH;
-                const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
+  <div className="suggestions-list">
+    {suggestions
+      .slice() // יוצרים עותק כדי לא לשנות את המקורי
+      .sort((a, b) => {
+        if (a.timestamp && b.timestamp) {
+          return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
+        }
+        return 0; // אם אין תאריך, נשאיר כפי שהוא
+      })
+      .map((s) => {
+        const isLong = s.text.length > SHORTEN_LENGTH;
+        const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
 
-                return (
-                  <div key={s.id} className={`suggestion ${s.status}`}>
-                    <p>{shortText}</p>
-                    {isLong && (
-                      <small
-                        className="show-more-btn"
-                        onClick={() => setActiveSuggestion(s)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") setActiveSuggestion(s);
-                        }}
-                      >
+        return (
+          <div key={s.id} className={`suggestion ${s.status}`}>
+            <p>{shortText}</p>
+            {isLong && (
+              <small
+                className="show-more-btn"
+                onClick={() => setActiveSuggestion(s)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setActiveSuggestion(s);
+                }}
+              >
                         הצג עוד
                       </small>
                     )}
