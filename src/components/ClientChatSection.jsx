@@ -110,7 +110,8 @@ export default function ClientChatSection() {
     // טעינת ההיסטוריה הראשונית
     socketRef.current.emit("getHistory", { conversationId }, (res) => {
       if (res.ok) {
-        setMessages(res.messages || []);
+        // תיקון: לוודא שההודעות הן מערך
+        setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
       } else {
         setMessages([]);
