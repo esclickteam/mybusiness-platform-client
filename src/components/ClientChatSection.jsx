@@ -27,7 +27,7 @@ export default function ClientChatSection() {
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
-      transports: ["websocket"], // רק WebSocket, ללא polling
+      transports: ["polling", "websocket"], // fallback ל-polling
       auth: { token, role: "chat", businessId },
       withCredentials: true,
     });
@@ -35,6 +35,7 @@ export default function ClientChatSection() {
     socketRef.current.on("connect", () => {
       console.log("Socket connected:", socketRef.current.id);
       setError("");
+      // בעת התחברות טען את השיחות אם כבר יש conversationId
       if (conversationId) {
         socketRef.current.emit(
           "getConversations",
@@ -107,6 +108,8 @@ export default function ClientChatSection() {
       }
     );
   }, [businessId]);
+
+  // מחיקת useEffect המקורי של getConversations כי עכשיו הטעינה מתבצעת באירוע connect
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
