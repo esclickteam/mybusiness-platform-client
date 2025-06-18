@@ -111,32 +111,41 @@ export default function ClientChatTab({
 
   // פונקציה לעריכת המלצה - קריאה ל-API ועדכון סטייט
   const editRecommendation = async (recommendationId, newText) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("/api/chat/edit-recommendation", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ recommendationId, newText }),
-      });
-      if (!res.ok) {
-        const errMsg = await res.text();
-        throw new Error(errMsg || "Failed to update recommendation");
-      }
-      const data = await res.json();
-
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg._id === recommendationId ? { ...msg, text: newText, ...data.recommendation } : msg
-        )
-      );
-    } catch (error) {
-      console.error("Error updating recommendation:", error);
-      setError("שגיאה בעדכון ההמלצה: " + error.message);
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch("/api/chat/edit-recommendation", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ recommendationId, newText }),
+    });
+    if (!res.ok) {
+      const errMsg = await res.text();
+      throw new Error(errMsg || "Failed to update recommendation");
     }
-  };
+    const data = await res.json();
+
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg._id === recommendationId
+          ? {
+              ...msg,
+              text: newText,
+              isEdited: true,       
+              editedText: newText,  
+              ...data.recommendation,
+            }
+          : msg
+      )
+    );
+  } catch (error) {
+    console.error("Error updating recommendation:", error);
+    setError("שגיאה בעדכון ההמלצה: " + error.message);
+  }
+};
+
 
   // טעינת היסטוריית הודעות + המלצות מ-API
   useEffect(() => {
@@ -440,68 +449,76 @@ export default function ClientChatTab({
   };
 
   return (
-    <div className="chat-container client">
-      <div className="message-list" ref={messageListRef}>
-        {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m) => (
-          <div
-            key={getMessageKey(m)}
-            className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
-          >
-            {m.image ? (
+  <div className="chat-container client">
+    <div className="message-list" ref={messageListRef}>
+      {loading && <div className="loading">טוען...</div>}
+      {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+      {messages.map((m) => (
+        <div
+          key={getMessageKey(m)}
+          className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
+        >
+          {m.image ? (
+            <img
+              src={m.image}
+              alt={m.fileName || "image"}
+              style={{ maxWidth: 200, borderRadius: 8 }}
+            />
+          ) : m.fileUrl || m.file?.data ? (
+            m.fileType && m.fileType.startsWith("audio") ? (
+              <WhatsAppAudioPlayer
+                src={m.fileUrl || m.file.data}
+                userAvatar={m.userAvatar}
+                duration={m.fileDuration}
+              />
+            ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
               <img
-                src={m.image}
+                src={m.fileUrl || m.file.data}
                 alt={m.fileName || "image"}
                 style={{ maxWidth: 200, borderRadius: 8 }}
               />
-            ) : m.fileUrl || m.file?.data ? (
-              m.fileType && m.fileType.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl || m.file.data}
-                  userAvatar={m.userAvatar}
-                  duration={m.fileDuration}
-                />
-              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
-                <img
-                  src={m.fileUrl || m.file.data}
-                  alt={m.fileName || "image"}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
-              ) : (
-                <a
-                  href={m.fileUrl || m.file?.data}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                >
-                  {m.fileName || "קובץ להורדה"}
-                </a>
-              )
             ) : (
-              <div className="text">{m.text}</div>
-            )}
-            <div className="meta">
-              <span className="time">
-                {(() => {
-                  const date = new Date(m.timestamp);
-                  if (isNaN(date)) return "";
-                  return date.toLocaleTimeString("he-IL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  });
-                })()}
-              </span>
-              {m.fileDuration && (
-                <span className="audio-length">
-                  {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-                  {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-                </span>
-              )}
+              <a
+                href={m.fileUrl || m.file?.data}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+              >
+                {m.fileName || "קובץ להורדה"}
+              </a>
+            )
+          ) : (
+            <div className="text">
+              {m.isEdited && m.editedText ? m.editedText : m.text}
             </div>
+          )}
+          {m.isEdited && (
+            <div className="edited-label" style={{ fontSize: "0.8em", color: "#888" }}>
+              (נערך)
+            </div>
+          )}
+          <div className="meta">
+            <span className="time">
+              {(() => {
+                const date = new Date(m.timestamp);
+                if (isNaN(date)) return "";
+                return date.toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+              })()}
+            </span>
+            {m.fileDuration && (
+              <span className="audio-length">
+                {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+              </span>
+            )}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+    </div>
+
 
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
