@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
+const SHORTEN_LENGTH = 200; // תווים להצגה מקוצרת
 
 const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommendation }) => {
   const navigate = useNavigate();
@@ -99,9 +100,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
     s.on("connect", () => {
       console.log("Socket connected:", s.id);
-      // AI room
       s.emit("joinRoom", businessId);
-      // conversation room for real-time messageApproved
       if (conversationId) {
         s.emit("joinConversation", conversationId);
       }
@@ -144,7 +143,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       setChat((prev) => [...prev, msg]);
     });
 
-    // New listener for approved recommendations
     s.on("messageApproved", (msg) => {
       console.log("Recommendation approved, new chat message:", msg);
       setChat((prev) => [...prev, msg]);
@@ -253,6 +251,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to approve");
+
         if (conversationId && clientId) {
           await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
             method: "POST",
@@ -270,6 +269,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             }),
           });
         }
+
         setSuggestions((prev) =>
           prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
         );
@@ -369,39 +369,37 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             ))}
           </div>
 
-          <div className="chat-input">
-            <textarea
-              rows={2}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessageForRecommendation(input);
-                }
-              }}
-              placeholder="הקלד הודעה או בקשה..."
-              disabled={loading}
-            />
-            <button
-              onClick={() => sendMessageForRecommendation(input)}
-              disabled={loading || !input.trim()}  
-            >
-              שלח
-            </button>
-          </div>
-
           <div className="suggestions-list">
-            {suggestions.map((s) => (
-              <div
-                key={s.id}
-                className={`suggestion ${s.status}`}
-                onClick={() => setActiveSuggestion(s)}
-              >
-                <p>{s.text}</p>
-                <small>סטטוס: {s.status}</small>
-              </div>
-            ))}
+            {suggestions
+              .slice()
+              .sort((a, b) => {
+                if (a.timestamp && b.timestamp) {
+                  return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
+                }
+                return 0;
+              })
+              .map((s) => {
+                const isLong = s.text.length > SHORTEN_LENGTH;
+                const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
+
+                return (
+                  <div
+                    key={s.id}
+                    className={`suggestion ${s.status}`}
+                  >
+                    <p>{shortText}</p>
+                    {isLong && (
+                      <button
+                        className="read-more-btn"
+                        onClick={() => setActiveSuggestion(s)}
+                      >
+                        קרא עוד
+                      </button>
+                    )}
+                    <small>סטטוס: {s.status}</small>
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>
@@ -433,12 +431,15 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                   }}
                   disabled={loading || !editedText.trim()}
                 >
-                  אשר ושלח  
+                  אשר ושלח
                 </button>
-                <button disabled={loading} onClick={() => {
-                  setEditing(false);
-                  setEditedText(activeSuggestion.text);
-                }}>
+                <button
+                  disabled={loading}
+                  onClick={() => {
+                    setEditing(false);
+                    setEditedText(activeSuggestion.text);
+                  }}
+                >
                   ביטול
                 </button>
               </>
@@ -449,19 +450,25 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 ))}
                 {activeSuggestion.status === "pending" ? (
                   <>
-                    <button onClick={() =>
-                      approveSuggestion({
-                        id: activeSuggestion.id,
-                        conversationId: activeSuggestion.conversationId,
-                        text: activeSuggestion.text,
-                      })
-                    } disabled={loading}>
+                    <button
+                      onClick={() =>
+                        approveSuggestion({
+                          id: activeSuggestion.id,
+                          conversationId: activeSuggestion.conversationId,
+                          text: activeSuggestion.text,
+                        })
+                      }
+                      disabled={loading}
+                    >
                       אשר ושלח מידית
                     </button>
                     <button disabled={loading} onClick={() => setEditing(true)}>
                       ערוך
                     </button>
-                    <button disabled={loading} onClick={() => rejectSuggestion(activeSuggestion.id)}>
+                    <button
+                      disabled={loading}
+                      onClick={() => rejectSuggestion(activeSuggestion.id)}
+                    >
                       דחה
                     </button>
                   </>
