@@ -1,57 +1,27 @@
-// src/components/ClientChatSection.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
-import { io } from "socket.io-client";
+import { useSocket } from "../context/socketContext";  // <-- כאן
 
 export default function ClientChatSection() {
   const { businessId } = useParams();
   const { user, initialized } = useAuth();
   const userId = user?.userId || null;
+  const socket = useSocket();  // <-- שימוש בקונטקסט
 
   const [conversationId, setConversationId] = useState(null);
   const [businessName, setBusinessName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const socketRef = useRef(null);
 
-  // 1️⃣ Initialize socket once when dependencies are ready
+  // שימוש ב-socket מהקונטקסט לאירועים
   useEffect(() => {
-    if (!initialized || !userId || !businessId) return;
-
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    const token = localStorage.getItem("token");
-
-    console.log("Creating socket with:", { token, businessId });
-
-    socketRef.current = io(socketUrl, {
-      path: "/socket.io",
-      transports: ['websocket'],
-      auth: { token, role: "chat", businessId },
-      withCredentials: true,
-    });
-
-    socketRef.current.on("connect_error", (err) => {
-      console.error("Socket connect_error:", err.message);
-      setError("שגיאה בחיבור לסוקט: " + err.message);
-    });
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [initialized, userId, businessId]);
-
-  // 2️⃣ Start or get conversation once
-  useEffect(() => {
-    if (!socketRef.current || !businessId) return;
+    if (!initialized || !userId || !businessId || !socket) return;
 
     setLoading(true);
-    socketRef.current.emit(
+    socket.emit(
       "startConversation",
       { otherUserId: businessId },
       (res) => {
@@ -60,13 +30,12 @@ export default function ClientChatSection() {
         setLoading(false);
       }
     );
-  }, [businessId]);
+  }, [initialized, userId, businessId, socket]);
 
-  // 3️⃣ After conversationId is ready, load business name
   useEffect(() => {
-    if (!socketRef.current || !conversationId) return;
+    if (!socket || !conversationId) return;
 
-    socketRef.current.emit(
+    socket.emit(
       "getConversations",
       { userId },
       (res) => {
@@ -82,7 +51,7 @@ export default function ClientChatSection() {
         }
       }
     );
-  }, [conversationId, userId]);
+  }, [conversationId, userId, socket]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
@@ -99,7 +68,7 @@ export default function ClientChatSection() {
         <section className={styles.chatArea}>
           {conversationId ? (
             <ClientChatTab
-              socket={socketRef.current}
+              socket={socket}
               conversationId={conversationId}
               businessId={businessId}
               userId={userId}
