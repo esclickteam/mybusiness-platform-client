@@ -24,7 +24,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false); // מצב הצגת ההמלצות
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
@@ -51,6 +51,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
         if (!res.ok) throw new Error("Failed to load recommendations");
         const recs = await res.json();
+        console.log("Fetched recommendations:", recs);
         const validUniqueRecs = filterValidUniqueRecommendations(recs);
         const formatted = validUniqueRecs.map((r) => ({
           id: r._id,
@@ -59,6 +60,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           conversationId: r.conversationId || null,
           timestamp: r.createdAt || null,
         }));
+        console.log("Formatted recommendations:", formatted);
         setSuggestions(formatted);
       } catch (err) {
         console.error("Error fetching recommendations:", err);
@@ -101,10 +103,15 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     });
 
     s.on("connect", () => {
+      console.log("Socket connected:", s.id);
       s.emit("joinRoom", businessId);
       if (conversationId) {
         s.emit("joinConversation", conversationId);
       }
+    });
+
+    s.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
     });
 
     s.on("newAiSuggestion", (suggestion) => {
@@ -142,7 +149,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     });
 
     s.on("messageApproved", (msg) => {
+      console.log("Recommendation approved, new chat message:", msg);
       setChat((prev) => [...prev, msg]);
+    });
+
+    s.on("disconnect", () => {
+      console.log("Socket disconnected");
     });
 
     setSocket(s);
@@ -268,7 +280,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         );
         alert("ההמלצה אושרה ונשלחה ללקוח!");
         setActiveSuggestion(null);
-        setEditing(false);
       } catch (err) {
         console.error("Error approving suggestion:", err);
         alert("שגיאה באישור ההמלצה: " + err.message);
@@ -282,7 +293,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
-    setEditing(false);
   }, []);
 
   useEffect(() => {
@@ -377,7 +387,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 .slice()
                 .sort((a, b) => {
                   if (a.timestamp && b.timestamp) {
-                    return new Date(b.timestamp) - new Date(a.timestamp);
+                    return new Date(b.timestamp) - new Date(a.timestamp); // מהחדש לישן
                   }
                   return 0;
                 })
@@ -428,20 +438,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                   value={editedText}
                   onChange={(e) => setEditedText(e.target.value)}
                   disabled={loading}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    fontSize: "16px",
-                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    lineHeight: 1.5,
-                    borderRadius: "8px",
-                    border: "1.5px solid #7c43bd",
-                    backgroundColor: "#faf7fd",
-                    direction: "rtl",
-                    textAlign: "right",
-                    boxSizing: "border-box",
-                    marginBottom: "12px",
-                  }}
                 />
                 <button
                   onClick={() => {
@@ -462,7 +458,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                     setEditing(false);
                     setEditedText(activeSuggestion.text);
                   }}
-                  style={{ marginLeft: "8px" }}
                 >
                   ביטול
                 </button>
@@ -486,13 +481,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                     >
                       אשר ושלח מידית
                     </button>
-                    <button disabled={loading} onClick={() => setEditing(true)} style={{ marginLeft: "8px" }}>
+                    <button disabled={loading} onClick={() => setEditing(true)}>
                       ערוך
                     </button>
                     <button
                       disabled={loading}
                       onClick={() => rejectSuggestion(activeSuggestion.id)}
-                      style={{ marginLeft: "8px" }}
                     >
                       דחה
                     </button>
