@@ -3,79 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
 import { Buffer } from "buffer";
 import API from "../api";
-
-function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
-  const audioRef = useRef(null);
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const onTimeUpdate = () => setProgress(audio.currentTime);
-    const onEnded = () => {
-      setPlaying(false);
-      setProgress(0);
-    };
-
-    audio.addEventListener("timeupdate", onTimeUpdate);
-    audio.addEventListener("ended", onEnded);
-    audio.load();
-
-    return () => {
-      audio.removeEventListener("timeupdate", onTimeUpdate);
-      audio.removeEventListener("ended", onEnded);
-    };
-  }, [src]);
-
-  const togglePlay = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    playing ? audio.pause() : audio.play();
-    setPlaying((p) => !p);
-  };
-
-  const formatTime = (time) => {
-    if (!time || isNaN(time) || !isFinite(time)) return "0:00";
-    const m = Math.floor(time / 60);
-    const s = Math.floor(time % 60);
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  };
-
-  const totalDots = 20;
-  const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
-  const containerClass = userAvatar
-    ? "custom-audio-player with-avatar"
-    : "custom-audio-player no-avatar";
-
-  return (
-    <div className={containerClass}>
-      {userAvatar && (
-        <div className="avatar-wrapper">
-          <img src={userAvatar} alt="avatar" />
-          <div className="mic-icon">🎤</div>
-        </div>
-      )}
-      <button
-        onClick={togglePlay}
-        aria-label={playing ? "Pause audio" : "Play audio"}
-        className={`play-pause ${playing ? "playing" : ""}`}
-      >
-        {playing ? "❚❚" : "▶"}
-      </button>
-      <div className="progress-dots">
-        {[...Array(totalDots)].map((_, i) => (
-          <div key={i} className={`dot${i <= activeDot ? " active" : ""}`} />
-        ))}
-      </div>
-      <div className="time-display">
-        {formatTime(progress)} / {formatTime(duration || 0)}
-      </div>
-      <audio ref={audioRef} src={src} preload="metadata" />
-    </div>
-  );
-}
+import WhatsAppAudioPlayer from "./WhatsAppAudioPlayer";
 
 export default function ClientChatTab({ socket, conversationId, businessId, userId }) {
   const [messages, setMessages] = useState([]);
@@ -95,7 +23,8 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טעינת היסטוריה מה-API, מסננת המלצות pending
+  const getMessageId = (msg) => msg._id || msg.recommendationId || msg.tempId;
+
   useEffect(() => {
     if (!conversationId) return;
     setLoading(true);
@@ -115,112 +44,72 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
       });
   }, [conversationId]);
 
-  // טיפול בהודעות נכנסות
   useEffect(() => {
-  if (!socket) return;
+    if (!socket) return;
 
-  const handleIncomingMessage = (msg) => {
-    console.log("Received message/newAiSuggestion:", msg);
-    // אם זו המלצה במצב pending (הלקוח לא צריך לראות אותה)
-    if (msg.status === "pending" && msg.recommendationId) {
-      console.log("Ignoring pending recommendation:", msg.recommendationId);
-      return;
-    }
+    const handleIncomingMessage = (msg) => {
+      const id = getMessageId(msg);
+      if (msg.status === "pending" && msg.recommendationId) return;
 
-    const id = msg._id || msg.recommendationId || msg.tempId;
-    if (!id) {
-      setMessages((prev) => [...prev, msg]);
-      return;
-    }
-
-    setMessages((prev) => {
-      const messagesMap = new Map();
-      prev.forEach((m) => {
-        const mid = m._id || m.recommendationId || m.tempId;
-        if (mid) messagesMap.set(mid, m);
+      setMessages((prev) => {
+        const map = new Map();
+        prev.forEach((m) => map.set(getMessageId(m), m));
+        map.set(id, { ...map.get(id), ...msg });
+        return Array.from(map.values());
       });
+    };
 
-      if (messagesMap.has(id)) {
-        messagesMap.set(id, { ...messagesMap.get(id), ...msg });
-      } else {
-        messagesMap.set(id, msg);
-      }
-      return Array.from(messagesMap.values());
-    });
-  };
+    const handleMessageApproved = (msg) => {
+      if (msg.conversationId !== conversationId) return;
+      const id = getMessageId(msg);
+      if (!id) return;
 
-  const handleMessageApproved = (msg) => {
-  console.log("Received messageApproved:", msg);
-  if (msg.conversationId !== conversationId) {
-    console.log("messageApproved for other conversation, ignoring:", msg.conversationId);
-    return;
-  }
-  setMessages((prev) => {
-    // מצא אינדקס של הודעה עם אותו _id או tempId (אם קיים)
-    const idx = prev.findIndex(
-      (m) =>
-        m._id === msg._id ||
-        (m.tempId && msg.tempId && m.tempId === msg.tempId)
-    );
-    if (idx !== -1) {
-      // החלף את ההודעה הישנה בחדשה
-      const newMessages = [...prev];
-      newMessages[idx] = { ...newMessages[idx], ...msg };
-      return newMessages;
-    }
-    // אם לא נמצא, הוסף את ההודעה החדשה
-    return [...prev, msg];
-  });
-};
+      setMessages((prev) => {
+        const idx = prev.findIndex((m) => getMessageId(m) === id);
+        if (idx !== -1) {
+          const newMessages = [...prev];
+          newMessages[idx] = { ...newMessages[idx], ...msg };
+          return newMessages;
+        }
+        return [...prev, msg];
+      });
+    };
 
+    socket.on("newMessage", handleIncomingMessage);
+    socket.on("newAiSuggestion", handleIncomingMessage);
+    socket.on("messageApproved", handleMessageApproved);
+    socket.emit("joinConversation", conversationId);
+    socket.emit("joinRoom", businessId);
 
-  socket.on("newMessage", handleIncomingMessage);
-  socket.on("newAiSuggestion", handleIncomingMessage);
-  socket.on("messageApproved", handleMessageApproved);
+    return () => {
+      socket.off("newMessage", handleIncomingMessage);
+      socket.off("newAiSuggestion", handleIncomingMessage);
+      socket.off("messageApproved", handleMessageApproved);
+      socket.emit("leaveConversation", conversationId);
+    };
+  }, [socket, conversationId, businessId]);
 
-  console.log("Joining rooms:", conversationId, businessId);
-  socket.emit("joinConversation", conversationId);
-  socket.emit("joinRoom", businessId);
-
-  return () => {
-    socket.off("newMessage", handleIncomingMessage);
-    socket.off("newAiSuggestion", handleIncomingMessage);
-    socket.off("messageApproved", handleMessageApproved);
-    socket.emit("leaveConversation", conversationId);
-    console.log("Left conversation room:", conversationId);
-  };
-}, [socket, conversationId, businessId]);
-
-
-
-  // גלילה לתחתית הצ'אט כשיש הודעות חדשות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // התאמת גובה הטקסטארא
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  const handleAttach = () => {
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
-
-  // שליחת הודעה טקסט עם אופטימיות
   const sendMessage = () => {
     if (!input.trim() || sending || !socket) return;
     if (!socket.connected) {
       setError("Socket אינו מחובר, נסה להתחבר מחדש");
       return;
     }
+
     setSending(true);
     setError("");
-
     const tempId = uuidv4();
 
     const optimisticMsg = {
@@ -263,8 +152,6 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
-
-  // הקלטה, עצירה ושליחה של קול - כמו קודם, לא שונה
 
   const handleRecordStart = async () => {
     if (recording) return;
@@ -325,13 +212,11 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
         }
       );
-    } catch (e) {
+    } catch {
       setSending(false);
       setError("שגיאה בהכנת הקובץ למשלוח");
     }
   };
-
-  // שליחת קובץ - כמו קודם, לא שונה
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -373,43 +258,22 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m) => (
           <div
-            key={
-              m.recommendationId
-  ? `rec_${m.recommendationId}_rec`
-  : m._id
-  ? `msg_${m._id}_msg`
-  : m.tempId
-  ? `temp_${m.tempId}_temp`
-  : `unknown_${uuidv4()}`
-            }
+            key={getMessageId(m) ? `msg_${getMessageId(m)}` : `unknown_${uuidv4()}`}
             className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
           >
             {m.image ? (
-              <img
-                src={m.image}
-                alt={m.fileName || "image"}
-                style={{ maxWidth: 200, borderRadius: 8 }}
-              />
+              <img src={m.image} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
             ) : m.fileUrl || m.file?.data ? (
-              m.fileType && m.fileType.startsWith("audio") ? (
+              m.fileType?.startsWith("audio") ? (
                 <WhatsAppAudioPlayer
                   src={m.fileUrl || m.file.data}
                   userAvatar={m.userAvatar}
                   duration={m.fileDuration}
                 />
               ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
-                <img
-                  src={m.fileUrl || m.file.data}
-                  alt={m.fileName || "image"}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
+                <img src={m.fileUrl || m.file.data} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
-                <a
-                  href={m.fileUrl || m.file?.data}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                >
+                <a href={m.fileUrl || m.file?.data} target="_blank" rel="noopener noreferrer" download>
                   {m.fileName || "קובץ להורדה"}
                 </a>
               )
@@ -445,36 +309,22 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
           <div className="audio-preview-row">
             {recording ? (
               <>
-                <button className="recordBtn recording" onClick={handleRecordStop} type="button">
-                  ⏹️
-                </button>
+                <button className="recordBtn recording" onClick={handleRecordStop} type="button">⏹️</button>
                 <span className="preview-timer">
                   {String(Math.floor(timer / 60)).padStart(2, "0")}:
                   {String(timer % 60).padStart(2, "0")}
                 </span>
-                <button
-                  className="preview-btn trash"
-                  onClick={() => {
-                    setRecording(false);
-                    setRecordedBlob(null);
-                    setTimer(0);
-                  }}
-                  type="button"
-                >
-                  🗑️
-                </button>
+                <button className="preview-btn trash" onClick={() => {
+                  setRecording(false);
+                  setRecordedBlob(null);
+                  setTimer(0);
+                }} type="button">🗑️</button>
               </>
             ) : (
               <>
                 <audio src={URL.createObjectURL(recordedBlob)} controls style={{ height: 30 }} />
-                <div>
-                  משך הקלטה:{" "}
-                  {String(Math.floor(timer / 60)).padStart(2, "0")}:
-                  {String(timer % 60).padStart(2, "0")}
-                </div>
-                <button className="send-btn" onClick={handleSendRecording} disabled={sending}>
-                  שלח
-                </button>
+                <div>משך הקלטה: {String(Math.floor(timer / 60)).padStart(2, "0")}:{String(timer % 60).padStart(2, "0")}</div>
+                <button className="send-btn" onClick={handleSendRecording} disabled={sending}>שלח</button>
               </>
             )}
           </div>
