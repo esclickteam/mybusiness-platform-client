@@ -109,6 +109,36 @@ export default function ClientChatTab({
 
   const messageKeysRef = useRef(new Set());
 
+  // טעינת היסטוריית הודעות + המלצות מ-API
+  useEffect(() => {
+    if (!conversationId) return;
+
+    setLoading(true);
+    setError("");
+
+    fetch(`/api/chat/history?conversationId=${conversationId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const errMsg = await res.text();
+          throw new Error(errMsg || "Error loading chat history");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setMessages(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("שגיאה בטעינת ההיסטוריה: " + err.message);
+        setLoading(false);
+      });
+  }, [conversationId, setMessages]);
+
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
@@ -181,24 +211,24 @@ export default function ClientChatTab({
       });
     };
 
-     socket.on("newMessage", handleIncomingMessage);
-  socket.on("newAiSuggestion", (msg) => {
-    console.log("Received AI recommendation:", msg);
-    handleIncomingMessage(msg);
-  });
+    socket.on("newMessage", handleIncomingMessage);
+    socket.on("newAiSuggestion", (msg) => {
+      console.log("Received AI recommendation:", msg);
+      handleIncomingMessage(msg);
+    });
 
-  socket.on("messageApproved", handleMessageApproved);
+    socket.on("messageApproved", handleMessageApproved);
 
-  socket.emit("joinConversation", conversationId);
-  socket.emit("joinRoom", businessId);
+    socket.emit("joinConversation", conversationId);
+    socket.emit("joinRoom", businessId);
 
-  return () => {
-    socket.off("newMessage", handleIncomingMessage);
-    socket.off("newAiSuggestion", handleIncomingMessage);
-    socket.off("messageApproved", handleMessageApproved);
-    socket.emit("leaveConversation", conversationId);
-  };
-}, [socket, conversationId, businessId, setMessages]);
+    return () => {
+      socket.off("newMessage", handleIncomingMessage);
+      socket.off("newAiSuggestion", handleIncomingMessage);
+      socket.off("messageApproved", handleMessageApproved);
+      socket.emit("leaveConversation", conversationId);
+    };
+  }, [socket, conversationId, businessId, setMessages]);
 
   useEffect(() => {
     if (messageListRef.current) {
@@ -238,7 +268,7 @@ export default function ClientChatTab({
       timestamp: new Date(),
     };
 
-    console.log('Sending message with tempId:', tempId);
+    console.log("Sending message with tempId:", tempId);
 
     setMessages((prev) => [...prev, optimisticMsg]);
     messageKeysRef.current.add(`temp_${tempId}`);
@@ -258,7 +288,7 @@ export default function ClientChatTab({
       (ack) => {
         setSending(false);
         if (ack?.ok) {
-          console.log('Message acknowledged by server, tempId:', tempId);
+          console.log("Message acknowledged by server, tempId:", tempId);
           setMessages((prev) =>
             prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
           );
@@ -268,7 +298,7 @@ export default function ClientChatTab({
             messageKeysRef.current.add(`msg_${ack.message._id}`);
           }
         } else {
-          console.warn('Message failed to send, tempId:', tempId);
+          console.warn("Message failed to send, tempId:", tempId);
           setError("שגיאה בשליחת ההודעה");
           setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
           messageKeysRef.current.delete(`temp_${tempId}`);
