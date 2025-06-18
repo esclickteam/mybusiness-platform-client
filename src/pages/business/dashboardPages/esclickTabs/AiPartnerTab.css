@@ -157,7 +157,7 @@
   font-weight: 600;
   margin: 1rem 0;
   transition: background-color 0.3s ease;
-  align-self: flex-start; /* לכפתור מצד שמאל בשיחה */
+  align-self: flex-start;
 }
 
 .toggle-suggestions-btn:hover {
@@ -175,10 +175,12 @@
 .suggestion {
   border: 1px solid #eee;
   border-radius: 8px;
-  padding: 10px;
+  padding: 15px;
   cursor: pointer;
   background-color: #fafafa;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  white-space: pre-wrap;      /* שמירת שורות */
+  word-break: break-word;     /* שבירת מילים ארוכות */
 }
 
 .suggestion:hover {
@@ -195,14 +197,17 @@
 }
 
 .suggestion p {
-  margin: 0;
+  margin: 0 0 0.5rem 0;
   font-size: 0.95rem;
   font-weight: 500;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .suggestion small {
   color: #666;
   font-size: 0.8rem;
+  display: block;
 }
 
 /* מודאל המלצה */
