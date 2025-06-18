@@ -139,11 +139,11 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       });
     });
 
-    s.on("updateRecommendationStatus", ({ recommendationId, status }) => {
-      setSuggestions((prev) =>
-        prev.map((s) => (s.id === recommendationId ? { ...s, status } : s))
-      );
-    });
+    s.on("updateRecommendationStatus", ({ _id, status }) => {
+  setSuggestions((prev) =>
+    prev.map((s) => (s.id === _id ? { ...s, status } : s))
+  );
+});
 
     s.on("recommendationUpdated", (updated) => {
       setSuggestions((prev) =>
