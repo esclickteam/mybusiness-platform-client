@@ -134,33 +134,59 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket) return;
 
     const handleIncomingMessage = (msg) => {
-      console.log("Received message/newAiSuggestion:", msg);
-      if (msg.status === "pending" && msg.recommendationId) {
-        console.log("Ignoring pending recommendation:", msg.recommendationId);
-        return;
-      }
+  console.log("Received message/newAiSuggestion:", msg);
+  if (msg.status === "pending" && msg.recommendationId) {
+    console.log("Ignoring pending recommendation:", msg.recommendationId);
+    return;
+  }
 
-      const id = msg._id || msg.recommendationId || msg.tempId;
-      if (!id) {
-        setMessages((prev) => [...prev, msg]);
-        return;
-      }
+  setMessages((prev) => {
+    // מזהה ייחודי שמשלב סוג ההודעה והמזהה
+    const id = msg.isRecommendation
+      ? `rec_${msg.recommendationId}`
+      : msg._id
+      ? `msg_${msg._id}`
+      : msg.tempId
+      ? `temp_${msg.tempId}`
+      : null;
 
-      setMessages((prev) => {
-        const messagesMap = new Map();
-        prev.forEach((m) => {
-          const mid = m._id || m.recommendationId || m.tempId;
-          if (mid) messagesMap.set(mid, m);
-        });
+    if (!id) {
+      return [...prev, msg];
+    }
 
-        if (messagesMap.has(id)) {
-          messagesMap.set(id, { ...messagesMap.get(id), ...msg });
-        } else {
-          messagesMap.set(id, msg);
+    // סינון כפילויות לפי id ייחודי
+    const exists = prev.some((m) => {
+      const mid = m.isRecommendation
+        ? `rec_${m.recommendationId}`
+        : m._id
+        ? `msg_${m._id}`
+        : m.tempId
+        ? `temp_${m.tempId}`
+        : null;
+      return mid === id;
+    });
+
+    if (exists) {
+      // אפשר לעדכן את ההודעה הקיימת (merge)
+      return prev.map((m) => {
+        const mid = m.isRecommendation
+          ? `rec_${m.recommendationId}`
+          : m._id
+          ? `msg_${m._id}`
+          : m.tempId
+          ? `temp_${m.tempId}`
+          : null;
+        if (mid === id) {
+          return { ...m, ...msg };
         }
-        return Array.from(messagesMap.values());
+        return m;
       });
-    };
+    } else {
+      return [...prev, msg];
+    }
+  });
+};
+
 
     const handleMessageApproved = (msg) => {
       console.log("Received messageApproved:", msg);
