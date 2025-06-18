@@ -115,40 +115,47 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
     if (!socket) return;
 
     const handleIncomingMessage = (msg) => {
-  console.log("Incoming message:", msg);
+  console.log('Received socket message:', msg);
+
+  // נוצר id אחיד לכל סוג הודעה
+  const id = msg._id || msg.recommendationId || msg.tempId;
+
   setMessages((prev) => {
+    // עדכון לפי id
     let replaced = false;
     const updated = prev.map((m) => {
-      const sameById = m._id && msg._id && m._id === msg._id;
-      const sameByTempId = m.tempId && msg.tempId && m.tempId === msg.tempId;
-      if (sameById || sameByTempId) {
+      if (m._id === id || m.recommendationId === id || m.tempId === id) {
         replaced = true;
-        console.log(`Updating existing message: ${m._id || m.tempId}`);
         return { ...m, ...msg };
       }
       return m;
     });
     if (replaced) return updated;
-    console.log("Adding new message:", msg._id || msg.tempId);
+
+    // אם ההודעה לא קיימת כלל, הוסף חדשה
+    const exists = prev.some((m) => m._id === id || m.recommendationId === id || m.tempId === id);
+    if (exists) return prev;
+
     return [...prev, msg];
   });
 };
 
 
 
-     socket.on("newMessage", handleIncomingMessage);
-  socket.on("messageApproved", handleIncomingMessage);
-  socket.on("newRecommendation", handleIncomingMessage);
+    socket.on("newMessage", handleIncomingMessage);
+    socket.on("newAiSuggestion", handleIncomingMessage); // תואם לשרת
+    socket.on("messageApproved", handleIncomingMessage);
 
-  socket.emit("joinConversation", conversationId);
+    socket.emit("joinConversation", conversationId);
+    socket.emit("joinRoom", businessId);
 
-  return () => {
-    socket.off("newMessage", handleIncomingMessage);
-    socket.off("messageApproved", handleIncomingMessage);
-    socket.off("newRecommendation", handleIncomingMessage);
-    socket.emit("leaveConversation", conversationId);
-  };
-}, [socket, conversationId]);
+    return () => {
+      socket.off("newMessage", handleIncomingMessage);
+      socket.off("newAiSuggestion", handleIncomingMessage);
+      socket.off("messageApproved", handleIncomingMessage);
+      socket.emit("leaveConversation", conversationId);
+    };
+  }, [socket, conversationId, businessId]);
 
   useEffect(() => {
     if (messageListRef.current) {
@@ -321,7 +328,7 @@ export default function ClientChatTab({ socket, conversationId, businessId, user
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => (
           <div
-            key={m._id || m.tempId || i}
+            key={m._id || i}
             className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
           >
             {m.image ? (
