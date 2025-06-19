@@ -9,8 +9,111 @@
   align-items: center;
   padding: 6px 20px;
   min-height: 120px;
+  justify-content: space-between; /* מיישר את התוכן */
 }
 
+/* מיכל המבורגר + התראות */
+.menu-toggle {
+  position: absolute;
+  right: 20px;                  
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1001;
+  display: flex;               /* שורה אחת */
+  align-items: center;
+  gap: 12px;
+}
+
+/* כפתור המבורגר */
+.menu-button {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #5e17eb;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* כפתור התראות (פעמון) */
+.notification-button {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #5e17eb;
+  font-size: 24px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+.notification-button:hover {
+  opacity: 0.8;
+}
+.notification-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(94, 23, 235, 0.4);
+}
+
+/* הבועה למספר ההתראות הלא נקראות */
+.notification-button > span {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  user-select: none;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1;
+}
+
+/* תפריט התראות נפתח */
+.notification-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  z-index: 2000;
+}
+
+/* פריט התראה */
+.notification-item {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: normal;
+  background-color: white;
+  transition: background-color 0.2s;
+}
+.notification-item:hover {
+  background-color: #f0f4ff;
+}
+
+/* התראה חדשה מודגשת */
+.notification-item.new {
+  font-weight: 700;
+  background-color: #e8f4ff;
+}
+
+/* הלוגו */
 .logo-wrapper {
   position: absolute;
   left: 50%;
@@ -29,23 +132,7 @@
   transform: scale(1.05);  /* אפקט הגדלה בלחיצה */
 }
 
-/* כפתור המבורגר */
-.menu-toggle {
-  position: absolute;
-  right: 20px;                  
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1001;
-}
-.menu-button {
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  color: #5e17eb;
-}
-
-/* כפתורי דסקטופ – לשמאל */
+/* ===== כפתורי דסקטופ – לשמאל ===== */
 .auth-controls.desktop-only {
   position: absolute;
   left: 20px;                    /* מרחק משמאל */

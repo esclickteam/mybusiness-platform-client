@@ -27,6 +27,16 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
+  // סטייט התראות - דמו
+  const [notifications, setNotifications] = useState([
+    { id: 1, type: "message", text: "💬 התקבלה הודעה חדשה", read: false },
+    { id: 2, type: "collaboration", text: "🤝 שיתוף פעולה חדש", read: false },
+    { id: 3, type: "meeting", text: "📅 פגישה חדשה", read: false },
+    { id: 4, type: "review", text: "⭐ ביקורת חדשה", read: true }
+  ]);
+
+  const [notifOpen, setNotifOpen] = useState(false);
+
   if (loading) return null;
 
   const getDashboardPath = () => {
@@ -66,17 +76,119 @@ export default function Header() {
     setMenuOpen(false);
   };
 
+  const handleNotificationClick = (type, id) => {
+    // סימון התראה כנקראה
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+
+    // ניווט לפי סוג
+    switch (type) {
+      case "message":
+        navigate("/messages");
+        break;
+      case "collaboration":
+        navigate("/collaborations");
+        break;
+      case "meeting":
+        navigate("/meetings");
+        break;
+      case "review":
+        navigate("/reviews");
+        break;
+      default:
+        break;
+    }
+
+    setNotifOpen(false);
+  };
+
   return (
     <>
       {/* ===== HEADER BAR ===== */}
-      <nav className="app-header">
-        {!menuOpen && (
-          <div className="menu-toggle">
-            <button className="menu-button" onClick={() => setMenuOpen(true)}>
-              <FaBars size={24} />
+      <nav className="app-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          {!menuOpen && (
+            <div className="menu-toggle">
+              <button className="menu-button" onClick={() => setMenuOpen(true)}>
+                <FaBars size={24} />
+              </button>
+            </div>
+          )}
+
+          {/* אייקון התראות ליד ההמבורגר */}
+          <div style={{ position: "relative" }}>
+            <button
+              className="notification-button"
+              onClick={() => setNotifOpen(!notifOpen)}
+              aria-label="התראות"
+              style={{
+                fontSize: 24,
+                position: "relative",
+                cursor: "pointer",
+                background: "none",
+                border: "none",
+                color: "inherit"
+              }}
+            >
+              🔔
+              {notifications.some((n) => !n.read) && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-5px",
+                    right: "-5px",
+                    backgroundColor: "red",
+                    color: "white",
+                    borderRadius: "50%",
+                    padding: "2px 6px",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    userSelect: "none",
+                  }}
+                >
+                  {notifications.filter((n) => !n.read).length}
+                </span>
+              )}
             </button>
+
+            {notifOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "30px",
+                  right: 0,
+                  width: 320,
+                  maxHeight: 400,
+                  overflowY: "auto",
+                  backgroundColor: "white",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                  borderRadius: 8,
+                  zIndex: 1000,
+                }}
+              >
+                {notifications.map((notif) => (
+                  <div
+                    key={notif.id}
+                    onClick={() => handleNotificationClick(notif.type, notif.id)}
+                    style={{
+                      padding: "10px 15px",
+                      borderBottom: "1px solid #eee",
+                      fontWeight: notif.read ? "normal" : "700",
+                      backgroundColor: notif.read ? "white" : "#e8f4ff",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <span>{notif.text}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
@@ -116,10 +228,7 @@ export default function Header() {
 
           <div className="side-menu open">
             <div className="drawer-header">
-              <button
-                className="back-button"
-                onClick={() => setMenuOpen(false)}
-              >
+              <button className="back-button" onClick={() => setMenuOpen(false)}>
                 <FaChevronLeft size={20} />
                 <span className="back-text">חזור</span>
               </button>
@@ -128,11 +237,7 @@ export default function Header() {
             {/* כפתור התחברות במובייל */}
             {!user && (
               <div className="mobile-auth">
-                <Link
-                  to="/login"
-                  className="login-button"
-                  onClick={() => setMenuOpen(false)}
-                >
+                <Link to="/login" className="login-button" onClick={() => setMenuOpen(false)}>
                   התחברות
                 </Link>
               </div>
