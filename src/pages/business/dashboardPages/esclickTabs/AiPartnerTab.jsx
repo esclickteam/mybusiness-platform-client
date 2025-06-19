@@ -315,38 +315,39 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   }, []);
 
   const editRecommendation = useCallback(
-    async ({ id, newText }) => {
-      setLoading(true);
-      try {
-        const url = `${import.meta.env.VITE_API_URL}/chat/edit-recommendation`;
-        const res = await fetch(url, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ recommendationId: id, newText }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to update recommendation");
+  async ({ id, newText }) => {
+    setLoading(true);
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/chat/edit-recommendation`;
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ recommendationId: id, newText }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update recommendation");
 
-        setSuggestions((prev) =>
-          prev.map((s) =>
-            s.id === id ? { ...s, text: newText, isEdited: true, editedText: newText } : s
-          )
-        );
-        alert("ההמלצה עודכנה בהצלחה!");
-        setActiveSuggestion(null);
-        setEditing(false);
-      } catch (err) {
-        console.error("Error updating recommendation:", err);
-        alert("שגיאה בעדכון ההמלצה: " + err.message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token]
-  );
+      setSuggestions((prev) =>
+        prev.map((s) =>
+          s.id === id ? { ...s, text: newText, isEdited: true, editedText: newText, status: "sent" } : s
+        )
+      );
+      alert("ההמלצה עודכנה ונשלחה בהצלחה!");
+      setActiveSuggestion(null);
+      setEditing(false);
+    } catch (err) {
+      console.error("Error updating recommendation:", err);
+      alert("שגיאה בעדכון ההמלצה: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  },
+  [token]
+);
+
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
