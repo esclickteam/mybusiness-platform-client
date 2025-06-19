@@ -34,12 +34,19 @@ const fetchWorkHours = async (businessId) => {
   return res.data.workHours;
 };
 
+// הוספת פונקציה חדשה לקריאת ביקורות לפי businessId
+const fetchReviews = async (businessId) => {
+  const res = await API.get(`/reviews/business/${businessId}`);
+  return res.data.reviews || [];
+};
+
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
+  // סטייטים קיימים
   const [faqs, setFaqs] = useState([]);
   const [services, setServices] = useState([]);
   const [schedule, setSchedule] = useState({});
@@ -52,6 +59,7 @@ export default function BusinessProfileView() {
 
   const hasIncrementedRef = useRef(false);
 
+  // קריאה לפרטי העסק
   const {
     data,
     isLoading,
@@ -64,9 +72,17 @@ export default function BusinessProfileView() {
     staleTime: 5 * 60 * 1000,
   });
 
+  // קריאה לשעות עבודה
   const { data: workHoursData } = useQuery({
     queryKey: ['workHours', bizId],
     queryFn: () => fetchWorkHours(bizId),
+    enabled: !!bizId
+  });
+
+  // קריאה חדשה לביקורות
+  const { data: reviews = [], refetch: refetchReviews } = useQuery({
+    queryKey: ['reviews', bizId],
+    queryFn: () => fetchReviews(bizId),
     enabled: !!bizId
   });
 
@@ -158,7 +174,8 @@ export default function BusinessProfileView() {
     try {
       await API.post(`/business/${bizId}/reviews`, formData);
       setShowReviewModal(false);
-      await refetch();
+      // רענון גם של פרטי העסק וגם של הביקורות
+      await Promise.all([refetch(), refetchReviews()]);
     } catch {
       alert("שגיאה בשליחת ביקורת");
     } finally {
@@ -178,7 +195,6 @@ export default function BusinessProfileView() {
     category = "",
     mainImages = [],
     gallery = [],
-    reviews = [],
     address: { city = "" } = {},
   } = data;
 
