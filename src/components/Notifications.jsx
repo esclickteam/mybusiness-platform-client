@@ -107,32 +107,58 @@ export default function Notifications({ socket, user, onClose, clearNotification
     onClose();
   };
 
-  // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום
+  // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום - נשארת למקרה שצריך
   const handleClearAll = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-    const res = await fetch('/api/business/my/notifications/readAll', {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await res.json();
-    if (data.ok) {
-      // מנקים את ההתראות בממשק, אבל הן נשארות שמורות בשרת (כעת מסומנות כנקראות)
-      setNotifications([]);
-      if (clearNotifications) clearNotifications();
-    } else {
-      console.error('Failed to clear notifications on server:', data.error);
+      const res = await fetch('/api/business/my/notifications/readAll', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setNotifications([]);
+        if (clearNotifications) clearNotifications();
+      } else {
+        console.error('Failed to clear notifications on server:', data.error);
+      }
+    } catch (err) {
+      console.error('Failed to clear notifications:', err);
     }
-  } catch (err) {
-    console.error('Failed to clear notifications:', err);
-  }
-};
+  };
 
+  // **פונקציה חדשה** למחיקת כל ההתראות שכבר נקראו ושמירת הלא נקראות
+  const handleClearReadNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch('/api/business/my/notifications/clearRead', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.ok) {
+        // מסיר מהסטייט רק את ההתראות שכבר נקראו
+        setNotifications((prev) => prev.filter((notif) => !notif.read));
+        if (clearNotifications) clearNotifications();
+      } else {
+        console.error('Failed to clear read notifications on server:', data.error);
+      }
+    } catch (err) {
+      console.error('Failed to clear read notifications:', err);
+    }
+  };
 
   // פונקציה לעיצוב תאריך
   const formatDate = (ts) => {
@@ -167,19 +193,35 @@ export default function Notifications({ socket, user, onClose, clearNotification
       >
         התראות
         {notifications.length > 0 && (
-          <button
-            onClick={handleClearAll}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#007bff",
-              cursor: "pointer",
-              fontSize: "0.9rem",
-            }}
-            aria-label="נקה את כל ההתראות"
-          >
-            נקה הכל
-          </button>
+          <>
+            <button
+              onClick={handleClearReadNotifications}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#007bff",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+                marginLeft: 10,
+              }}
+              aria-label="נקה את כל ההתראות שכבר נקראו"
+            >
+              נקה נקראות
+            </button>
+            <button
+              onClick={handleClearAll}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#007bff",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+              }}
+              aria-label="סמן את כל ההתראות כנקראות"
+            >
+              סמן כנקראות
+            </button>
+          </>
         )}
       </div>
 
