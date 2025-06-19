@@ -22,9 +22,13 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [socket, setSocket] = useState(null);
   const [clientId, setClientId] = useState(null);
 
-  // פונקציה להסרת קישורי Cloudinary מהטקסט
-  const filterCloudinaryLinks = (text) =>
-    text.replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, "");
+  // פונקציה להסרת קישורי Cloudinary וכוכביות
+  const filterText = useCallback((text) =>
+    text
+      .replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, "") // הסרת קישורי Cloudinary
+      .replace(/\*+/g, "") // הסרת כוכביות
+      .trim()
+  , []);
 
   const filterValidUniqueRecommendations = useCallback((recs) => {
     const filtered = recs.filter(
@@ -182,8 +186,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     async ({ id, conversationId, text }) => {
       setLoading(true);
       try {
-        // סינון טקסט להסרת קישורי קלאודינרי לפני שליחה
-        const filteredText = filterCloudinaryLinks(text);
+        // סינון טקסט להסרת קישורי קלאודינרי וכוכביות
+        const filteredText = filterText(text);
 
         const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
         const res = await fetch(url, {
@@ -227,7 +231,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         setLoading(false);
       }
     },
-    [businessId, clientId, token, filterCloudinaryLinks]
+    [businessId, clientId, token, filterText]
   );
 
   const rejectSuggestion = useCallback((id) => {
@@ -306,8 +310,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 })
                 .map((s) => {
                   const isLong = s.text.length > SHORTEN_LENGTH;
-                  // סינון קישורי קלאודינרי להצגה בלבד
-                  const filteredTextForDisplay = filterCloudinaryLinks(s.text);
+                  const filteredTextForDisplay = filterText(s.text);
                   const shortText = isLong ? filteredTextForDisplay.slice(0, SHORTEN_LENGTH) + "..." : filteredTextForDisplay;
 
                   return (
@@ -380,7 +383,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
               </>
             ) : (
               <>
-                {filterCloudinaryLinks(activeSuggestion.text)
+                {filterText(activeSuggestion.text)
                   .split("\n")
                   .map((line, idx) => (
                     <p key={idx}>{line}</p>
