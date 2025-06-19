@@ -40,8 +40,9 @@ const ReviewForm = ({ businessId, onSuccess }) => {
     };
 
     try {
-      // שליפת טוקן האימות, שנה לפי מקור האימות שלך
-      const token = localStorage.getItem("accessToken");
+      // שליפת טוקן האימות
+      const token = localStorage.getItem("token");
+
 
       const response = await fetch("/api/reviews", {
         method: "POST",
