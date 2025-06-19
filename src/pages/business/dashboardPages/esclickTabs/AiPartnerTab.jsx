@@ -259,7 +259,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
   const approveSuggestion = useCallback(
   async ({ id, conversationId, text }) => {
-    console.log("approveSuggestion called with:", { id, conversationId, text });
     setLoading(true);
     try {
       const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
@@ -269,7 +268,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ businessId, recommendationId: id }), // בלי לשלוח את הטקסט
+        // חשוב: לשלוח גם את הטקסט המעודכן!
+        body: JSON.stringify({ businessId, recommendationId: id, text }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to approve");
@@ -292,7 +292,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         });
       }
 
-      // עדכון סטטוס וטקסט בממשק
       setSuggestions((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
       );
@@ -307,6 +306,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   },
   [businessId, clientId, token]
 );
+
 
 
   const rejectSuggestion = useCallback((id) => {
