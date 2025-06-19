@@ -109,28 +109,30 @@ export default function Notifications({ socket, user, onClose, clearNotification
 
   // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום
   const handleClearAll = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-      const res = await fetch('/api/business/my/notifications/readAll', {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setNotifications([]);
-        if (clearNotifications) clearNotifications();
-      } else {
-        console.error('Failed to clear notifications on server:', data.error);
-      }
-    } catch (err) {
-      console.error('Failed to clear notifications:', err);
+    const res = await fetch('/api/business/my/notifications/readAll', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await res.json();
+    if (data.ok) {
+      // מנקים את ההתראות בממשק, אבל הן נשארות שמורות בשרת (כעת מסומנות כנקראות)
+      setNotifications([]);
+      if (clearNotifications) clearNotifications();
+    } else {
+      console.error('Failed to clear notifications on server:', data.error);
     }
-  };
+  } catch (err) {
+    console.error('Failed to clear notifications:', err);
+  }
+};
+
 
   // פונקציה לעיצוב תאריך
   const formatDate = (ts) => {
