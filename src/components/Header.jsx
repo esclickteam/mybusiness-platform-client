@@ -37,14 +37,16 @@ export default function Header() {
   useEffect(() => {
     if (!user || !(user.role === "business" || user.role === "business-dashboard")) return;
 
-    const socketConnection = io(process.env.REACT_APP_SOCKET_URL || "http://localhost:3000", {
+    const socketUrl = process.env.REACT_APP_SOCKET_URL 
+
+    const socketConnection = io(socketUrl, {
       auth: {
         token: user.token,
         businessId: user.businessId,
         role: user.role, // חשוב לשלוח את התפקיד גם כן
       },
       path: "/socket.io",
-      transports: ["websocket", "polling"],
+      transports: ["websocket"],
     });
 
     setSocket(socketConnection);
