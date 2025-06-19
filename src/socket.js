@@ -40,7 +40,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
   socketInstance = io(SOCKET_URL, {
     path: "/socket.io",
-    transports: ["websocket"],
+    transports: ["polling", "websocket"],
     auth,
     autoConnect: false,
     reconnection: true,
