@@ -21,7 +21,7 @@
   z-index: 1001;
   display: flex;               /* שורה אחת */
   align-items: center;
-  gap: 12px;
+  gap: 8px;                   /* ריווח קטן בין הכפתורים */
 }
 
 /* כפתור המבורגר */
@@ -44,17 +44,19 @@
   border: none;
   cursor: pointer;
   color: #5e17eb;
-  font-size: 24px;
-  padding: 4px;
+  font-size: 22px;            /* מעט קטן מההמבורגר */
+  padding: 4px 6px 4px 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   user-select: none;
   transition: opacity 0.2s;
 }
+
 .notification-button:hover {
   opacity: 0.8;
 }
+
 .notification-button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(94, 23, 235, 0.4);
@@ -77,7 +79,7 @@
   line-height: 1;
 }
 
-/* תפריט התראות נפתח */
+/* תפריט התראות נפתח מתחת לפעמון */
 .notification-dropdown {
   position: absolute;
   top: 36px;
