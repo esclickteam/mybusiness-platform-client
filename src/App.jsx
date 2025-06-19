@@ -19,10 +19,10 @@ import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 import { LoginSkeleton } from "./components/LoginSkeleton";
 
-// הוספת ייבוא AiProvider, AiModal ו-Notifications
 import { AiProvider } from "./context/AiContext";
 import AiModal from "./components/AiModal";
-import Notifications from "./components/Notifications";  // נתיב מתאים
+import Notifications from "./components/Notifications";
+import { NotificationsProvider } from "./context/NotificationsContext";  // ייבוא ה־Provider
 
 // ---- כל הייבוא הדינמי כפי שהיה ----
 const HomePage            = lazy(() => import("./pages/Home"));
@@ -88,6 +88,7 @@ export default function App() {
   const [searchCategory, setSearchCategory] = useState("");
   const [freeText, setFreeText] = useState("");
 
+  // ניהול פאנל התראות גלובלי
   const [showNotifications, setShowNotifications] = useState(false);
 
   const resetSearchFilters = () => {
@@ -98,237 +99,238 @@ export default function App() {
 
   if (loading) return <LoginSkeleton />;
 
-  // אפשר להעביר את הפתיחה/סגירה של התראות ל-Header
   const toggleNotifications = () => setShowNotifications((v) => !v);
 
   return (
     <>
-      <Header onToggleNotifications={toggleNotifications} />
-      <ScrollToTop />
-      <AiProvider>
-        <Suspense fallback={<div>🔄 טוען…</div>}>
-          <Routes>
-            {/* דפים ציבוריים */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/search" element={<SearchBusinesses />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/plans" element={<Plans />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/accessibility" element={<Accessibility />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/business-support" element={<BusinessSupport />} />
-            <Route path="/business" element={<BusinessOverview />} />
-            <Route path="/businesses" element={<BusinessesList />} />
-            <Route path="/quick-jobs" element={<QuickJobsBoard />} />
-            <Route path="/quick-jobs/new" element={<QuickJobForm />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/change-password" element={<ChangePassword />} />
-            <Route path="/staff-login" element={<StaffLogin />} />
-            <Route path="/business/:businessId" element={<BusinessProfileView />} />
-            <Route path="/book/:businessId" element={<BookingPage />} />
+      <NotificationsProvider user={user}>
+        <Header onToggleNotifications={toggleNotifications} />
+        <ScrollToTop />
+        <AiProvider>
+          <Suspense fallback={<div>🔄 טוען…</div>}>
+            <Routes>
+              {/* דפים ציבוריים */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/search" element={<SearchBusinesses />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/plans" element={<Plans />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/accessibility" element={<Accessibility />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/business-support" element={<BusinessSupport />} />
+              <Route path="/business" element={<BusinessOverview />} />
+              <Route path="/businesses" element={<BusinessesList />} />
+              <Route path="/quick-jobs" element={<QuickJobsBoard />} />
+              <Route path="/quick-jobs/new" element={<QuickJobForm />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/change-password" element={<ChangePassword />} />
+              <Route path="/staff-login" element={<StaffLogin />} />
+              <Route path="/business/:businessId" element={<BusinessProfileView />} />
+              <Route path="/book/:businessId" element={<BookingPage />} />
 
-            <Route
-              path="/business/collaborations/:tab?"
-              element={
-                <ProtectedRoute roles={["business"]}>
-                  <Collab />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/business/collaborations/:tab?"
+                element={
+                  <ProtectedRoute roles={["business"]}>
+                    <Collab />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/business-profile/:businessId"
-              element={
-                <ProtectedRoute roles={["business", "customer", "worker", "manager", "admin"]}>
-                  <BusinessProfilePage
-                    currentUserBusinessId={user?.businessId || null}
-                    resetSearchFilters={resetSearchFilters}
-                  />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/business-profile/:businessId"
+                element={
+                  <ProtectedRoute roles={["business", "customer", "worker", "manager", "admin"]}>
+                    <BusinessProfilePage
+                      currentUserBusinessId={user?.businessId || null}
+                      resetSearchFilters={resetSearchFilters}
+                    />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Client chat outside dashboard */}
-            <Route
-              path="/business/:businessId/messages"
-              element={
-                <ProtectedRoute roles={["customer"]}>
-                  <ClientChatSection />
-                </ProtectedRoute>
-              }
-            />
+              {/* Client chat outside dashboard */}
+              <Route
+                path="/business/:businessId/messages"
+                element={
+                  <ProtectedRoute roles={["customer"]}>
+                    <ClientChatSection />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Business dashboard */}
-            <Route
-              path="/business/:businessId/dashboard/*"
-              element={
-                <ProtectedRoute roles={["business"]}>
-                  <BusinessDashboardRoutes />
-                </ProtectedRoute>
-              }
-            />
+              {/* Business dashboard */}
+              <Route
+                path="/business/:businessId/dashboard/*"
+                element={
+                  <ProtectedRoute roles={["business"]}>
+                    <BusinessDashboardRoutes />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Business chat (list + detail) */}
-            <Route
-              path="/business/:businessId/chat/*"
-              element={
-                <ProtectedRoute roles={["business"]}>
-                  <BusinessChatPage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Business chat (list + detail) */}
+              <Route
+                path="/business/:businessId/chat/*"
+                element={
+                  <ProtectedRoute roles={["business"]}>
+                    <BusinessChatPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Client dashboard */}
-            <Route
-              path="/client/dashboard/*"
-              element={
-                <ProtectedRoute roles={["customer"]}>
-                  <ClientDashboard />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Navigate to="search" replace />} />
-              <Route path="messages" element={<MessagesPage />} />
-              <Route path="orders" element={<OrdersPage />} />
-              <Route path="favorites" element={<FavoritesPage />} />
-            </Route>
+              {/* Client dashboard */}
+              <Route
+                path="/client/dashboard/*"
+                element={
+                  <ProtectedRoute roles={["customer"]}>
+                    <ClientDashboard />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="search" replace />} />
+                <Route path="messages" element={<MessagesPage />} />
+                <Route path="orders" element={<OrdersPage />} />
+                <Route path="favorites" element={<FavoritesPage />} />
+              </Route>
 
-            {/* Staff & Admin */}
-            <Route
-              path="/staff/dashboard"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <StaffDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/staff/session"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <WorkSession />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/staff/profile"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <PhoneProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/staff/tasks"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <MyTasks />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/staff/sales"
-              element={
-                <ProtectedRoute roles={["worker"]}>
-                  <MySales />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager/dashboard"
-              element={
-                <ProtectedRoute roles={["manager"]}>
-                  <ManagerDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/logs"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminLogs />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/plans"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminPlans />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/settings"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminSettings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/users"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminUsers />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/site-edit"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <EditSiteContent />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/roles"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <ManageRoles />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/affiliate-payouts"
-              element={
-                <ProtectedRoute roles={["admin"]}>
-                  <AdminPayoutPage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Staff & Admin */}
+              <Route
+                path="/staff/dashboard"
+                element={
+                  <ProtectedRoute roles={["worker"]}>
+                    <StaffDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/staff/session"
+                element={
+                  <ProtectedRoute roles={["worker"]}>
+                    <WorkSession />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/staff/profile"
+                element={
+                  <ProtectedRoute roles={["worker"]}>
+                    <PhoneProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/staff/tasks"
+                element={
+                  <ProtectedRoute roles={["worker"]}>
+                    <MyTasks />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/staff/sales"
+                element={
+                  <ProtectedRoute roles={["worker"]}>
+                    <MySales />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/dashboard"
+                element={
+                  <ProtectedRoute roles={["manager"]}>
+                    <ManagerDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/logs"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <AdminLogs />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/plans"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <AdminPlans />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/settings"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <AdminSettings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <AdminUsers />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/site-edit"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <EditSiteContent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/roles"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <ManageRoles />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/affiliate-payouts"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <AdminPayoutPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          {/* מודאל AI גלובלי */}
-          <AiModal />
-          {/* פאנל התראות גלובלי */}
-          {showNotifications && (
-            <Notifications
-              socket={window.socket} // או העבר אובייקט socket מתאים אם יש לך
-              user={user}
-              onClose={() => setShowNotifications(false)}
-              clearNotifications={() => {}}
-            />
-          )}
-        </Suspense>
-      </AiProvider>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+
+            {/* מודאל AI גלובלי */}
+            <AiModal />
+
+            {/* פאנל התראות גלובלי */}
+            {showNotifications && (
+              <Notifications
+                onClose={() => setShowNotifications(false)}
+                // props נוספים אם נדרשים
+              />
+            )}
+          </Suspense>
+        </AiProvider>
+      </NotificationsProvider>
     </>
   );
 }
