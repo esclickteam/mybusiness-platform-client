@@ -8,12 +8,14 @@ export default function Notifications({ socket, user, onClose, clearNotification
   // טען התראות מהשרת בהתחלה
   useEffect(() => {
     if (!user) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
     async function loadNotifications() {
       try {
         const res = await fetch("/api/business/my/notifications", {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         const data = await res.json();
@@ -64,10 +66,13 @@ export default function Notifications({ socket, user, onClose, clearNotification
   // סימון התראה כנקראה בשרת ובמקום
   const markAsRead = async (id) => {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
       await fetch(`/api/business/my/notifications/${id}/read`, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -105,10 +110,13 @@ export default function Notifications({ socket, user, onClose, clearNotification
   // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום
   const handleClearAll = async () => {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
       const res = await fetch('/api/business/my/notifications/readAll', {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });

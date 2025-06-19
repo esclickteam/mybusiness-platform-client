@@ -1,5 +1,4 @@
-// NotificationsContext.jsx
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { io } from "socket.io-client";
 
 const NotificationsContext = createContext();
@@ -8,10 +7,18 @@ export function NotificationsProvider({ user, children }) {
   const [notifications, setNotifications] = useState([]);
   const [socket, setSocket] = useState(null);
 
-  useEffect(() => {
-    if (!user || !user.businessId) return;
+  const addNotification = useCallback((notification) => {
+    setNotifications((prev) => {
+      if (prev.some(n => n.id === notification.id || n._id === notification._id)) {
+        return prev;
+      }
+      return [notification, ...prev];
+    });
+  }, []);
 
-    // יצירת חיבור Socket.io
+  useEffect(() => {
+    if (!user || !user.businessId || !user.token) return;
+
     const socketConnection = io(import.meta.env.VITE_SOCKET_URL, {
       auth: {
         token: user.token,
@@ -23,7 +30,6 @@ export function NotificationsProvider({ user, children }) {
 
     setSocket(socketConnection);
 
-    // טעינת התראות היסטוריות מהשרת
     fetch("/api/business/my/notifications", {
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -35,16 +41,22 @@ export function NotificationsProvider({ user, children }) {
       })
       .catch((err) => console.error("Failed to fetch notifications:", err));
 
-    // קבלת התראות בזמן אמת
-    socketConnection.on("newNotification", (notification) => {
-      setNotifications((prev) => [notification, ...prev]);
+    const events = [
+      "newNotification",
+      "reviewCreated",
+      "appointmentCreated",
+      "newProposalCreated",
+      "newMessage",
+    ];
+
+    events.forEach(event => {
+      socketConnection.on(event, addNotification);
     });
 
-    // ניתוק החיבור בעת פירוק הקומפוננטה
     return () => {
       socketConnection.disconnect();
     };
-  }, [user]);
+  }, [user, addNotification]);
 
   return (
     <NotificationsContext.Provider value={{ notifications, setNotifications, socket }}>
