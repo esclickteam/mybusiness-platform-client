@@ -14,9 +14,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     async function loadNotifications() {
       try {
         const res = await fetch("/api/business/my/notifications", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
         if (data.ok) setNotifications(data.notifications);
@@ -47,7 +45,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
 
   useEffect(() => {
     if (!socket) return;
-
     const events = [
       "newNotification",
       "reviewCreated",
@@ -55,12 +52,8 @@ export default function Notifications({ socket, user, onClose, clearNotification
       "newProposalCreated",
       "newMessage",
     ];
-
     events.forEach((event) => socket.on(event, handler));
-
-    return () => {
-      events.forEach((event) => socket.off(event, handler));
-    };
+    return () => events.forEach((event) => socket.off(event, handler));
   }, [socket, handler]);
 
   // סימון התראה כנקראה בשרת ובמקום
@@ -68,7 +61,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-
       await fetch(`/api/business/my/notifications/${id}/read`, {
         method: "PUT",
         headers: {
@@ -87,7 +79,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
   // טיפול בלחיצה על התראה
   const handleClick = (notif) => {
     if (!notif.read) markAsRead(notif.id);
-
     switch (notif.type) {
       case "message":
         navigate("/messages");
@@ -107,17 +98,16 @@ export default function Notifications({ socket, user, onClose, clearNotification
     onClose();
   };
 
-  // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום - נשארת למקרה שצריך
+  // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום
   const handleClearAll = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-
-      const res = await fetch('/api/business/my/notifications/readAll', {
-        method: 'PUT',
+      const res = await fetch("/api/business/my/notifications/readAll", {
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
       const data = await res.json();
@@ -125,38 +115,34 @@ export default function Notifications({ socket, user, onClose, clearNotification
         setNotifications([]);
         if (clearNotifications) clearNotifications();
       } else {
-        console.error('Failed to clear notifications on server:', data.error);
+        console.error("Failed to clear notifications on server:", data.error);
       }
     } catch (err) {
-      console.error('Failed to clear notifications:', err);
+      console.error("Failed to clear notifications:", err);
     }
   };
 
-  // **פונקציה חדשה** למחיקת כל ההתראות שכבר נקראו ושמירת הלא נקראות
+  // מחיקת כל ההתראות שכבר נקראו ושמירת הלא נקראות
   const handleClearReadNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-
-      const res = await fetch('/api/business/my/notifications/clearRead', {
-        method: 'DELETE',
+      const res = await fetch("/api/business/my/notifications/clearRead", {
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-
       const data = await res.json();
-
       if (data.ok) {
-        // מסיר מהסטייט רק את ההתראות שכבר נקראו
         setNotifications((prev) => prev.filter((notif) => !notif.read));
         if (clearNotifications) clearNotifications();
       } else {
-        console.error('Failed to clear read notifications on server:', data.error);
+        console.error("Failed to clear read notifications on server:", data.error);
       }
     } catch (err) {
-      console.error('Failed to clear read notifications:', err);
+      console.error("Failed to clear read notifications:", err);
     }
   };
 
