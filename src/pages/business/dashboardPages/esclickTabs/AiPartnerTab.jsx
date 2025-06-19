@@ -178,6 +178,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     async ({ id, conversationId, text }) => {
       setLoading(true);
       try {
+        // סינון טקסט להסרת קישורי קלאודינרי
+        const filteredText = text.replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, '[קישור מוסר]');
+
         const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
         const res = await fetch(url, {
           method: "POST",
@@ -185,7 +188,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ businessId, recommendationId: id, text }),
+          body: JSON.stringify({ businessId, recommendationId: id, text: filteredText }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to approve");
@@ -198,7 +201,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              text,
+              text: filteredText,
               from: businessId,
               to: clientId,
               role: "business",
@@ -209,7 +212,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         }
 
         setSuggestions((prev) =>
-          prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
+          prev.map((s) => (s.id === id ? { ...s, status: "sent", text: filteredText } : s))
         );
         alert("ההמלצה אושרה ונשלחה ללקוח!");
         setActiveSuggestion(null);
@@ -299,7 +302,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 })
                 .map((s) => {
                   const isLong = s.text.length > SHORTEN_LENGTH;
-                  const shortText = isLong ? s.text.slice(0, SHORTEN_LENGTH) + "..." : s.text;
+                  // סינון קישורי קלאודינרי להצגה בלבד
+                  const filteredTextForDisplay = s.text.replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, '[קישור מוסר]');
+                  const shortText = isLong ? filteredTextForDisplay.slice(0, SHORTEN_LENGTH) + "..." : filteredTextForDisplay;
 
                   return (
                     <div key={s.id} className={`suggestion ${s.status}`}>
