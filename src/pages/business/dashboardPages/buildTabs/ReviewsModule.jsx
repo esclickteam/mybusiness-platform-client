@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-// סגנונות כלליים של עמוד הבניה
 import '../build/Build.css';
-// סגנונות ספציפיים לטאב הביקורות
 import './ReviewsModule.css';
 
 import StarRatingChart from './StarRatingChart';
@@ -150,6 +148,7 @@ const ParameterTable = () => (
 const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId, socket }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [canReview, setCanReview] = useState(false);
+  const [liveReviews, setLiveReviews] = useState(reviews);
   const contentRef = useRef(null);
 
   useEffect(() => {
@@ -170,24 +169,38 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId, socke
     checkReviewPermission();
   }, [currentUser, businessId]);
 
-  const displayReviews =
-    Array.isArray(reviews) && reviews.length > 0
-      ? reviews
+  useEffect(() => {
+    if (!socket || !businessId) return;
+
+    socket.emit('joinRoom', `business-${businessId}`);
+
+    const handleNewReview = (review) => {
+      setLiveReviews((prev) => [review, ...prev]);
+    };
+
+    socket.on('reviewCreated', handleNewReview);
+
+    return () => {
+      socket.off('reviewCreated', handleNewReview);
+    };
+  }, [socket, businessId]);
+
+  const computedReviews =
+    liveReviews.length > 0
+      ? liveReviews.map((r) => {
+          const values = Object.keys(PARAMETERS)
+            .map((k) => parseFloat(r[k]))
+            .filter((v) => typeof v === 'number' && !isNaN(v));
+          const avg = values.length
+            ? values.reduce((a, b) => a + b, 0) / values.length
+            : typeof r.rating === 'number'
+            ? r.rating
+            : undefined;
+          return { ...r, average: avg };
+        })
       : currentUser
       ? exampleReviews
       : [];
-
-  const computedReviews = displayReviews.map((r) => {
-    const values = Object.keys(PARAMETERS)
-      .map((k) => parseFloat(r[k]))
-      .filter((v) => typeof v === 'number' && !isNaN(v));
-    const avg = values.length
-      ? values.reduce((a, b) => a + b, 0) / values.length
-      : typeof r.rating === 'number'
-      ? r.rating
-      : undefined;
-    return { ...r, average: avg };
-  });
 
   return (
     <div className="reviews-tab fade-slide" ref={contentRef}>
@@ -209,13 +222,10 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId, socke
                   <ReviewForm
                     businessId={businessId}
                     socket={socket}
-                    onSubmit={(data) => {
-                      console.log('📩 ביקורת נשלחה:', data);
-                      setShowReviewForm(false);
-                    }}
                     onSuccess={(review) => {
-                      // ניתן להוסיף כאן טיפול נוסף אחרי שליחה מוצלחת, למשל רענון
-                      // או הוספת הביקורת לסטייט במידת הצורך
+                      // הוספה מידית של הביקורת החדשה לרשימה
+                      setLiveReviews((prev) => [review, ...prev]);
+                      setShowReviewForm(false);
                     }}
                   />
                 </div>
