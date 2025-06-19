@@ -11,7 +11,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
   const [dailyTip, setDailyTip] = useState("");
   const [chat, setChat] = useState([]);
-  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [activeSuggestion, setActiveSuggestion] = useState(null);
@@ -175,30 +174,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     };
   }, [businessId, token, conversationId, onNewRecommendation]);
 
-  const sendMessageForRecommendation = useCallback(
-    (text) => {
-      if (!text.trim() || !socket || socket.disconnected || !clientId) return;
-      const msg = {
-        conversationId,
-        from: clientId,
-        to: businessId,
-        text,
-        role: "client",
-        timestamp: new Date().toISOString(),
-      };
-      setChat((prev) => [...prev, msg]);
-      setInput("");
-      setLoading(true);
-      socket.emit("sendMessage", msg, (response) => {
-        setLoading(false);
-        if (!response.ok) {
-          alert("שגיאה בשליחת הודעה: " + (response.error || "unknown error"));
-        }
-      });
-    },
-    [socket, conversationId, clientId, businessId]
-  );
-
   const approveSuggestion = useCallback(
     async ({ id, conversationId, text }) => {
       setLoading(true);
@@ -298,32 +273,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     }
   }, [activeSuggestion]);
 
-  const quickActions = [
-    "תנסח לי פוסט שיווקי",
-    "כתוב לי מייל ללקוחה לא מרוצה",
-    "תן לי רעיון למבצע",
-    "איך לשפר את השירות שלי השבוע",
-  ];
-
   return (
     <div className="ai-partner-container">
       <h2>🤖 שותף AI אישי לעסק</h2>
       <div className="partner-layout">
-
         <div className="chat-section">
           {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
-
-          <div className="quick-buttons">
-            {quickActions.map((text, idx) => (
-              <button
-                key={idx}
-                onClick={() => sendMessageForRecommendation(text)}
-                disabled={loading}
-              >
-                {text}
-              </button>
-            ))}
-          </div>
 
           <button
             onClick={() => setShowSuggestions((prev) => !prev)}
