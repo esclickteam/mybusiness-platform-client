@@ -33,22 +33,24 @@ const ReviewForm = ({ businessId, onSuccess }) => {
     setError(null);
 
     const reviewData = {
-      business: businessId,          // שים לב לשם השדה שתואם לשרת
+      business: businessId,
       ratings,
       averageScore: parseFloat(calculateAverage()),
       comment: text,
     };
 
     try {
+      // שליפת טוקן האימות, שנה לפי מקור האימות שלך
+      const token = localStorage.getItem("accessToken");
+
       const response = await fetch("/api/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // הוסף כאן Authorization אם צריך טוקן:
-          // 'Authorization': `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(reviewData),
-        credentials: "include", // אם משתמש בקוקיז לאימות
+        credentials: "include", // אם יש קוקיז לאימות
       });
 
       if (!response.ok) {
