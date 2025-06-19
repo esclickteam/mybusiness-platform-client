@@ -147,7 +147,7 @@ const ParameterTable = () => (
   </div>
 );
 
-const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId }) => {
+const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId, socket }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [canReview, setCanReview] = useState(false);
   const contentRef = useRef(null);
@@ -207,9 +207,15 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId }) => 
               {showReviewForm && (
                 <div className="review-form-wrapper">
                   <ReviewForm
+                    businessId={businessId}
+                    socket={socket}
                     onSubmit={(data) => {
                       console.log('📩 ביקורת נשלחה:', data);
                       setShowReviewForm(false);
+                    }}
+                    onSuccess={(review) => {
+                      // ניתן להוסיף כאן טיפול נוסף אחרי שליחה מוצלחת, למשל רענון
+                      // או הוספת הביקורת לסטייט במידת הצורך
                     }}
                   />
                 </div>
