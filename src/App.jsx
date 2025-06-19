@@ -19,10 +19,10 @@ import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 import { LoginSkeleton } from "./components/LoginSkeleton";
 
-// הוספת ייבוא AiProvider ו-AiModal
+// הוספת ייבוא AiProvider, AiModal ו-Notifications
 import { AiProvider } from "./context/AiContext";
 import AiModal from "./components/AiModal";
-
+import Notifications from "./components/Notifications";  // נתיב מתאים
 
 // ---- כל הייבוא הדינמי כפי שהיה ----
 const HomePage            = lazy(() => import("./pages/Home"));
@@ -88,6 +88,8 @@ export default function App() {
   const [searchCategory, setSearchCategory] = useState("");
   const [freeText, setFreeText] = useState("");
 
+  const [showNotifications, setShowNotifications] = useState(false);
+
   const resetSearchFilters = () => {
     setSearchMode("category");
     setSearchCategory("");
@@ -96,9 +98,12 @@ export default function App() {
 
   if (loading) return <LoginSkeleton />;
 
+  // אפשר להעביר את הפתיחה/סגירה של התראות ל-Header
+  const toggleNotifications = () => setShowNotifications((v) => !v);
+
   return (
     <>
-      <Header />
+      <Header onToggleNotifications={toggleNotifications} />
       <ScrollToTop />
       <AiProvider>
         <Suspense fallback={<div>🔄 טוען…</div>}>
@@ -313,6 +318,15 @@ export default function App() {
           </Routes>
           {/* מודאל AI גלובלי */}
           <AiModal />
+          {/* פאנל התראות גלובלי */}
+          {showNotifications && (
+            <Notifications
+              socket={window.socket} // או העבר אובייקט socket מתאים אם יש לך
+              user={user}
+              onClose={() => setShowNotifications(false)}
+              clearNotifications={() => {}}
+            />
+          )}
         </Suspense>
       </AiProvider>
     </>
