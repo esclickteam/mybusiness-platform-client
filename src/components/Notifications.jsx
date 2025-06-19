@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Notifications({ socket, user, onClose }) {
+export default function Notifications({ socket, user, onClose, clearNotifications }) {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
@@ -26,18 +26,25 @@ export default function Notifications({ socket, user, onClose }) {
   }, [user]);
 
   // מאזין להתראות בזמן אמת דרך socket
-  useEffect(() => {
-    if (!socket) return;
-
-    const handler = (data) => {
+  const handler = useCallback(
+    (data) => {
       const newNotif = {
         id: data._id || data.id || Date.now(),
         type: data.type || "notification",
         text: data.text || "התראה חדשה",
         read: false,
+        timestamp: data.timestamp || data.createdAt || Date.now(),
       };
-      setNotifications((prev) => [newNotif, ...prev]);
-    };
+      setNotifications((prev) => {
+        if (prev.some((n) => n.id === newNotif.id)) return prev;
+        return [newNotif, ...prev];
+      });
+    },
+    [setNotifications]
+  );
+
+  useEffect(() => {
+    if (!socket) return;
 
     const events = [
       "newNotification",
@@ -52,7 +59,7 @@ export default function Notifications({ socket, user, onClose }) {
     return () => {
       events.forEach((event) => socket.off(event, handler));
     };
-  }, [socket]);
+  }, [socket, handler]);
 
   // סימון התראה כנקראה בשרת ובמקום
   const markAsRead = async (id) => {
@@ -95,6 +102,34 @@ export default function Notifications({ socket, user, onClose }) {
     onClose();
   };
 
+  // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום
+  const handleClearAll = async () => {
+    try {
+      const res = await fetch('/api/business/my/notifications/readAll', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setNotifications([]);
+        if (clearNotifications) clearNotifications();
+      } else {
+        console.error('Failed to clear notifications on server:', data.error);
+      }
+    } catch (err) {
+      console.error('Failed to clear notifications:', err);
+    }
+  };
+
+  // פונקציה לעיצוב תאריך
+  const formatDate = (ts) => {
+    const d = new Date(ts);
+    return d.toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
+  };
+
   return (
     <div
       style={{
@@ -110,10 +145,36 @@ export default function Notifications({ socket, user, onClose }) {
         zIndex: 1000,
       }}
     >
+      <div
+        style={{
+          padding: "8px 12px",
+          borderBottom: "1px solid #ddd",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontWeight: "700",
+        }}
+      >
+        התראות
+        {notifications.length > 0 && (
+          <button
+            onClick={handleClearAll}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#007bff",
+              cursor: "pointer",
+              fontSize: "0.9rem",
+            }}
+            aria-label="נקה את כל ההתראות"
+          >
+            נקה הכל
+          </button>
+        )}
+      </div>
+
       {notifications.length === 0 && (
-        <div style={{ padding: "15px", textAlign: "center" }}>
-          אין התראות חדשות
-        </div>
+        <div style={{ padding: "15px", textAlign: "center" }}>אין התראות חדשות</div>
       )}
 
       {notifications.map((notif) => (
@@ -130,7 +191,17 @@ export default function Notifications({ socket, user, onClose }) {
           }}
           title={notif.text}
         >
-          {notif.text}
+          <div>{notif.text}</div>
+          <div
+            style={{
+              fontSize: "0.75rem",
+              color: "#666",
+              opacity: 0.7,
+              marginTop: 4,
+            }}
+          >
+            {formatDate(notif.timestamp)}
+          </div>
         </div>
       ))}
     </div>

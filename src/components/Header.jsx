@@ -21,7 +21,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 import { io } from "socket.io-client";
-import Notifications from "./Notifications";  // <-- הוספת ייבוא הקומפוננטה
+import Notifications from "./Notifications";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
@@ -31,22 +31,30 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [socket, setSocket] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
-  // יצירת חיבור socket
+  // יצירת חיבור socket והאזנה להתראות
   useEffect(() => {
-    if (!user || !(user.role === "business" || user.role === "business-dashboard"))
-      return;
+    if (!user || !(user.role === "business" || user.role === "business-dashboard")) return;
 
     const socketConnection = io(process.env.REACT_APP_SOCKET_URL || "http://localhost:3000", {
       auth: {
         token: user.token,
         businessId: user.businessId,
+        role: user.role, // חשוב לשלוח את התפקיד גם כן
       },
       path: "/socket.io",
       transports: ["websocket", "polling"],
     });
 
     setSocket(socketConnection);
+
+    // מאזין להתראות חדשות
+    socketConnection.on("newNotification", (notification) => {
+      setNotifications((prev) => [notification, ...prev]);
+    });
+
+    // אפשר גם להאזין לאירועים אחרים אם צריך
 
     return () => {
       socketConnection.disconnect();
@@ -142,13 +150,35 @@ export default function Header() {
                 }}
               >
                 🔔
+                {notifications.length > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      background: "red",
+                      borderRadius: "50%",
+                      width: "16px",
+                      height: "16px",
+                      color: "white",
+                      fontSize: "12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {notifications.length}
+                  </span>
+                )}
               </button>
 
               {notifOpen && socket && user && (
                 <Notifications
                   socket={socket}
                   user={user}
+                  notifications={notifications}
                   onClose={() => setNotifOpen(false)}
+                  clearNotifications={() => setNotifications([])}
                 />
               )}
             </>
