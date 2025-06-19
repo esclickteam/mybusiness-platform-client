@@ -319,3 +319,15 @@
   width: auto;       /* ביטול הגבלת רוחב קודמת */
   box-sizing: border-box;
 }
+
+.modal-content textarea {
+  resize: both;          /* מאפשר שינוי גודל גם לרוחב וגם לגובה */
+  min-width: 200px;      /* רוחב מינימלי */
+  max-width: 100%;       /* לא לעבור את רוחב המכולה */
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  overflow: auto;
+}
