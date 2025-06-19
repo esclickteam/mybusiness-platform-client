@@ -22,6 +22,8 @@ export default function ProposalForm({
     description: "",
     amount: "",
     validUntil: "",
+    contactName: "",   // הוספת שדה
+    phone: "",         // הוספת שדה
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -46,7 +48,14 @@ export default function ProposalForm({
     setError(null);
     setSuccessMessage("");
 
-    if (!formData.title.trim() || !formData.description.trim() || !formData.validUntil) {
+    // בדיקה של כל השדות הדרושים
+    if (
+      !formData.title.trim() ||
+      !formData.description.trim() ||
+      !formData.validUntil ||
+      !formData.contactName.trim() ||
+      !formData.phone.trim()
+    ) {
       setError("נא למלא את כל השדות הנדרשים");
       setLoading(false);
       return;
@@ -54,14 +63,16 @@ export default function ProposalForm({
 
     try {
       const res = await API.post("/business/my/proposals", {
-  toBusinessId: formData.toBusinessId,
-  message: {
-    title: formData.title,
-    description: formData.description,
-    budget: formData.amount,        // שם השדה כפי שמצופה בשרת
-    expiryDate: formData.validUntil, // שם השדה כפי שמצופה בשרת
-  }
-});
+        toBusinessId: formData.toBusinessId,
+        message: {
+          title: formData.title,
+          description: formData.description,
+          budget: formData.amount ? Number(formData.amount) : null,
+          expiryDate: formData.validUntil,
+        },
+        contactName: formData.contactName,
+        phone: formData.phone,
+      });
 
       console.log("Proposal POST response data:", res.data);
 
@@ -76,13 +87,15 @@ export default function ProposalForm({
 
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage("ההצעה נשלחה בהצלחה!");
-        setFormData((prev) => ({
-          ...prev,
+        setFormData({
+          toBusinessId: toBusiness?._id || "",
           title: "",
           description: "",
           amount: "",
           validUntil: "",
-        }));
+          contactName: "",
+          phone: "",
+        });
         if (onSent) {
           console.log("Sending proposal ID to parent:", proposalIdToSend);
           onSent(proposalIdToSend);
@@ -166,6 +179,24 @@ export default function ProposalForm({
         type="date"
         InputLabelProps={{ shrink: true }}
         value={formData.validUntil}
+        onChange={handleChange}
+        required
+        fullWidth
+      />
+
+      <TextField
+        label="שם איש קשר"
+        name="contactName"
+        value={formData.contactName}
+        onChange={handleChange}
+        required
+        fullWidth
+      />
+
+      <TextField
+        label="טלפון"
+        name="phone"
+        value={formData.phone}
         onChange={handleChange}
         required
         fullWidth
