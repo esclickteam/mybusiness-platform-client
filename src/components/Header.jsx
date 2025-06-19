@@ -105,55 +105,78 @@ export default function Header() {
   return (
     <>
       {/* ===== HEADER BAR ===== */}
-      <nav className="app-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <nav
+        className="app-header"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         {/* המבורגר + פעמון התראות */}
-        <div className="menu-toggle" style={{ display: "flex", alignItems: "center", gap: "8px", position: "relative", right: 20 }}>
+        <div
+          className="menu-toggle"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            position: "relative",
+            right: 20,
+          }}
+        >
           {!menuOpen && (
-            <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="תפריט ראשי">
+            <button
+              className="menu-button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="תפריט ראשי"
+            >
               <FaBars size={24} />
             </button>
           )}
 
-          <button
-            className="notification-button"
-            onClick={() => setNotifOpen(!notifOpen)}
-            aria-label="התראות"
-            style={{
-              fontSize: 24,
-              position: "relative",
-              cursor: "pointer",
-              background: "none",
-              border: "none",
-              color: "inherit",
-              padding: 4,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}
-          >
-            🔔
-            {notifications.some((n) => !n.read) && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-5px",
-                  right: "-5px",
-                  backgroundColor: "red",
-                  color: "white",
-                  borderRadius: "50%",
-                  padding: "2px 6px",
-                  fontSize: "12px",
-                  fontWeight: "bold",
-                  userSelect: "none",
-                  minWidth: 18,
-                  textAlign: "center",
-                  lineHeight: 1,
-                }}
-              >
-                {notifications.filter((n) => !n.read).length}
-              </span>
-            )}
-          </button>
+          {/* הוספת תנאי להצגת הפעמון רק לעסקים */}
+          {(user?.role === "business" || user?.role === "business-dashboard") && (
+            <button
+              className="notification-button"
+              onClick={() => setNotifOpen(!notifOpen)}
+              aria-label="התראות"
+              style={{
+                fontSize: 24,
+                position: "relative",
+                cursor: "pointer",
+                background: "none",
+                border: "none",
+                color: "inherit",
+                padding: 4,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              🔔
+              {notifications.some((n) => !n.read) && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-5px",
+                    right: "-5px",
+                    backgroundColor: "red",
+                    color: "white",
+                    borderRadius: "50%",
+                    padding: "2px 6px",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    userSelect: "none",
+                    minWidth: 18,
+                    textAlign: "center",
+                    lineHeight: 1,
+                  }}
+                >
+                  {notifications.filter((n) => !n.read).length}
+                </span>
+              )}
+            </button>
+          )}
 
           {notifOpen && (
             <div
@@ -239,7 +262,11 @@ export default function Header() {
             {/* כפתור התחברות במובייל */}
             {!user && (
               <div className="mobile-auth">
-                <Link to="/login" className="login-button" onClick={() => setMenuOpen(false)}>
+                <Link
+                  to="/login"
+                  className="login-button"
+                  onClick={() => setMenuOpen(false)}
+                >
                   התחברות
                 </Link>
               </div>
@@ -273,7 +300,7 @@ export default function Header() {
                 {link("/about", <FaInfoCircle />, "אודות")}
                 {link("/contact", <FaPhone />, "צור קשר")}
                 {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
-                {link("/terms", <FaFileContract />, "תנאי שימוש")}
+                {link("/", <FaFileContract />, "תנאי שימוש")}
                 {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
                 {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
               </div>
