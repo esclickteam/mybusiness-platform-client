@@ -321,8 +321,10 @@
 }
 
 .modal-content textarea {
-  resize: both;          /* מאפשר שינוי גודל גם לרוחב וגם לגובה */
-  min-width: 200px;      /* רוחב מינימלי */
+  resize: both;          /* אפשר שינוי גודל גם לרוחב וגם לגובה */
+  min-width: 300px;      /* רוחב מינימלי */
+  width: 100%;           /* רוחב מלא בתוך המודל */
+  min-height: 180px;     /* גובה מינימלי */
   max-width: 100%;       /* לא לעבור את רוחב המכולה */
   padding: 10px;
   font-size: 1rem;
