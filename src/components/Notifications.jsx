@@ -27,14 +27,27 @@ export default function Notifications({ socket, user, onClose, clearNotification
 
   // מאזין להתראות בזמן אמת דרך socket
   const handler = useCallback(
-    (data) => {
-      const newNotif = {
-        id: data._id || data.id || Date.now(),
-        type: data.type || "notification",
-        text: data.text || "התראה חדשה",
-        read: false,
-        timestamp: data.timestamp || data.createdAt || Date.now(),
-      };
+    (data, event) => {
+      let newNotif = {};
+
+      if (event === 'reviewCreated') {
+        newNotif = {
+          id: data._id || data.id || Date.now(),
+          type: 'review',
+          text: `⭐ ביקורת חדשה: "${data.comment || 'ביקורת חדשה'}" - ציון ממוצע: ${data.averageScore || '?'}`,
+          read: false,
+          timestamp: data.createdAt || Date.now(),
+        };
+      } else {
+        newNotif = {
+          id: data._id || data.id || Date.now(),
+          type: data.type || "notification",
+          text: data.text || "התראה חדשה",
+          read: false,
+          timestamp: data.timestamp || data.createdAt || Date.now(),
+        };
+      }
+
       setNotifications((prev) => {
         if (prev.some((n) => n.id === newNotif.id)) return prev;
         return [newNotif, ...prev];
@@ -52,7 +65,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
       "newProposalCreated",
       "newMessage",
     ];
-    events.forEach((event) => socket.on(event, handler));
+    events.forEach((event) => socket.on(event, (data) => handler(data, event)));
     return () => events.forEach((event) => socket.off(event, handler));
   }, [socket, handler]);
 
