@@ -22,6 +22,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [socket, setSocket] = useState(null);
   const [clientId, setClientId] = useState(null);
 
+  // פונקציה להסרת קישורי Cloudinary מהטקסט
+  const filterCloudinaryLinks = (text) =>
+    text.replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, "");
+
   const filterValidUniqueRecommendations = useCallback((recs) => {
     const filtered = recs.filter(
       (r) => r._id && typeof r._id === "string" && r._id.length === 24
@@ -178,8 +182,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     async ({ id, conversationId, text }) => {
       setLoading(true);
       try {
-        // סינון טקסט להסרת קישורי קלאודינרי
-        const filteredText = text.replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, '[קישור מוסר]');
+        // סינון טקסט להסרת קישורי קלאודינרי לפני שליחה
+        const filteredText = filterCloudinaryLinks(text);
 
         const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
         const res = await fetch(url, {
@@ -223,7 +227,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         setLoading(false);
       }
     },
-    [businessId, clientId, token]
+    [businessId, clientId, token, filterCloudinaryLinks]
   );
 
   const rejectSuggestion = useCallback((id) => {
@@ -303,7 +307,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 .map((s) => {
                   const isLong = s.text.length > SHORTEN_LENGTH;
                   // סינון קישורי קלאודינרי להצגה בלבד
-                  const filteredTextForDisplay = s.text.replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, '[קישור מוסר]');
+                  const filteredTextForDisplay = filterCloudinaryLinks(s.text);
                   const shortText = isLong ? filteredTextForDisplay.slice(0, SHORTEN_LENGTH) + "..." : filteredTextForDisplay;
 
                   return (
@@ -376,12 +380,11 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
               </>
             ) : (
               <>
-                {activeSuggestion.text
-  .replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, '[קישור מוסר]')
-  .split("\n")
-  .map((line, idx) => (
-    <p key={idx}>{line}</p>
-))}
+                {filterCloudinaryLinks(activeSuggestion.text)
+                  .split("\n")
+                  .map((line, idx) => (
+                    <p key={idx}>{line}</p>
+                  ))}
                 {activeSuggestion.status === "pending" ? (
                   <div className="buttons-row">
                     <button
