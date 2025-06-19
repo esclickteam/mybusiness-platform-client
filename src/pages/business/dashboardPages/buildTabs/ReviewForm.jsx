@@ -44,7 +44,7 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
       const reviewData = {
         business: businessId,
         client: clientId,
-        ratings: {  
+        ratings: {
           service: ratings.service,
           professional: ratings.professional,
           timing: ratings.timing,

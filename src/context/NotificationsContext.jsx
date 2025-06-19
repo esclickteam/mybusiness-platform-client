@@ -25,13 +25,16 @@ export function NotificationsProvider({ user, children }) {
         businessId: user.businessId,
       },
       path: "/socket.io",
-      transports: ["polling", "websocket"], // הוספתי polling בנוסף ל-websocket
+      transports: ["websocket"],
     });
 
     setSocket(socketConnection);
 
     socketConnection.on("connect", () => {
       console.log("Socket connected:", socketConnection.id);
+
+      // הצטרפות לחדר העסקי
+      socketConnection.emit("joinBusinessRoom", user.businessId);
     });
 
     socketConnection.on("connect_error", (err) => {
@@ -70,7 +73,7 @@ export function NotificationsProvider({ user, children }) {
   }, [user, addNotification]);
 
   return (
-    <NotificationsContext.Provider value={{  notifications, setNotifications, socket }}>
+    <NotificationsContext.Provider value={{ notifications, setNotifications, socket }}>
       {children}
     </NotificationsContext.Provider>
   );
