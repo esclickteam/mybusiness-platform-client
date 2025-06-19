@@ -44,7 +44,7 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
       const reviewData = {
         business: businessId,
         client: clientId,
-        ratings: {  // איגוד המדדים לאובייקט אחד בשם 'ratings'
+        ratings: {  
           service: ratings.service,
           professional: ratings.professional,
           timing: ratings.timing,
@@ -56,6 +56,8 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
         averageScore: parseFloat(calculateAverage()),
         comment: text,
       };
+
+      console.log("🟢 [DEBUG] Sending reviewData:", reviewData);
 
       if (socket && socket.connected) {
         // שליחה דרך socket
