@@ -182,7 +182,7 @@ export default function BusinessProfileView() {
     address: { city = "" } = {},
   } = data;
 
-  const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0);
+  const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating || r.averageScore || 0), 0);
   const avgRating = reviews.length ? totalRating / reviews.length : 0;
   const roundedAvg = Math.round(avgRating * 10) / 10;
   const isOwner = user?.role === "business" && user.businessId === bizId;
@@ -298,7 +298,7 @@ export default function BusinessProfileView() {
                 )}
                 {showReviewModal && (
                   <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
-                    <div className="#modal-inner" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
                       <Suspense fallback={<div>טוען טופס ביקורת...</div>}>
                         <ReviewForm
                           businessId={bizId}
@@ -315,7 +315,10 @@ export default function BusinessProfileView() {
                 {reviews.length ? (
                   reviews.map((r, i) => (
                     <div key={r._id || i} className="review-card improved">
-                      {/* תוכן הביקורת */}
+                      <p><strong>⭐ דירוג ממוצע:</strong> {(r.rating || r.averageScore)?.toFixed(1) || "לא קיים"}</p>
+                      {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
+                      <p><strong>🗓️ תאריך:</strong> {new Date(r.createdAt || r.date).toLocaleDateString()}</p>
+                      {r.client && <p><strong>מאת:</strong> {r.client.name}</p>}
                     </div>
                   ))
                 ) : (
