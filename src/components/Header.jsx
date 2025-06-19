@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import {
@@ -16,25 +16,42 @@ import {
   FaSearch,
   FaSignOutAlt,
   FaUserCircle,
-  FaHeadset
+  FaHeadset,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
+import { io } from "socket.io-client";
+import Notifications from "./Notifications";  // <-- הוספת ייבוא הקומפוננטה
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
   const location = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
   const navigate = useNavigate();
 
-  // סטייט התראות - דמו
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: "message", text: "💬 התקבלה הודעה חדשה", read: false },
-    { id: 2, type: "collaboration", text: "🤝 שיתוף פעולה חדש", read: false },
-    { id: 3, type: "meeting", text: "📅 פגישה חדשה", read: false },
-    { id: 4, type: "review", text: "⭐ ביקורת חדשה", read: true }
-  ]);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [socket, setSocket] = useState(null);
+
+  // יצירת חיבור socket
+  useEffect(() => {
+    if (!user || !(user.role === "business" || user.role === "business-dashboard"))
+      return;
+
+    const socketConnection = io(process.env.REACT_APP_SOCKET_URL || "http://localhost:3000", {
+      auth: {
+        token: user.token,
+        businessId: user.businessId,
+      },
+      path: "/socket.io",
+      transports: ["websocket", "polling"],
+    });
+
+    setSocket(socketConnection);
+
+    return () => {
+      socketConnection.disconnect();
+    };
+  }, [user]);
 
   if (loading) return null;
 
@@ -75,36 +92,8 @@ export default function Header() {
     setMenuOpen(false);
   };
 
-  const handleNotificationClick = (type, id) => {
-    // סימון התראה כנקראה
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-
-    // ניווט לפי סוג
-    switch (type) {
-      case "message":
-        navigate("/messages");
-        break;
-      case "collaboration":
-        navigate("/collaborations");
-        break;
-      case "meeting":
-        navigate("/meetings");
-        break;
-      case "review":
-        navigate("/reviews");
-        break;
-      default:
-        break;
-    }
-
-    setNotifOpen(false);
-  };
-
   return (
     <>
-      {/* ===== HEADER BAR ===== */}
       <nav
         className="app-header"
         style={{
@@ -113,7 +102,6 @@ export default function Header() {
           justifyContent: "space-between",
         }}
       >
-        {/* המבורגר + פעמון התראות */}
         <div
           className="menu-toggle"
           style={{
@@ -134,84 +122,36 @@ export default function Header() {
             </button>
           )}
 
-          {/* הוספת תנאי להצגת הפעמון רק לעסקים */}
           {(user?.role === "business" || user?.role === "business-dashboard") && (
-            <button
-              className="notification-button"
-              onClick={() => setNotifOpen(!notifOpen)}
-              aria-label="התראות"
-              style={{
-                fontSize: 24,
-                position: "relative",
-                cursor: "pointer",
-                background: "none",
-                border: "none",
-                color: "inherit",
-                padding: 4,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              🔔
-              {notifications.some((n) => !n.read) && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "-5px",
-                    right: "-5px",
-                    backgroundColor: "red",
-                    color: "white",
-                    borderRadius: "50%",
-                    padding: "2px 6px",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    userSelect: "none",
-                    minWidth: 18,
-                    textAlign: "center",
-                    lineHeight: 1,
-                  }}
-                >
-                  {notifications.filter((n) => !n.read).length}
-                </span>
-              )}
-            </button>
-          )}
+            <>
+              <button
+                className="notification-button"
+                onClick={() => setNotifOpen(!notifOpen)}
+                aria-label="התראות"
+                style={{
+                  fontSize: 24,
+                  position: "relative",
+                  cursor: "pointer",
+                  background: "none",
+                  border: "none",
+                  color: "inherit",
+                  padding: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                🔔
+              </button>
 
-          {notifOpen && (
-            <div
-              style={{
-                position: "absolute",
-                top: "36px",
-                left: 0,
-                width: 320,
-                maxHeight: 400,
-                overflowY: "auto",
-                backgroundColor: "white",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                borderRadius: 8,
-                zIndex: 1000,
-              }}
-            >
-              {notifications.map((notif) => (
-                <div
-                  key={notif.id}
-                  onClick={() => handleNotificationClick(notif.type, notif.id)}
-                  style={{
-                    padding: "10px 15px",
-                    borderBottom: "1px solid #eee",
-                    fontWeight: notif.read ? "normal" : "700",
-                    backgroundColor: notif.read ? "white" : "#e8f4ff",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
-                >
-                  <span>{notif.text}</span>
-                </div>
-              ))}
-            </div>
+              {notifOpen && socket && user && (
+                <Notifications
+                  socket={socket}
+                  user={user}
+                  onClose={() => setNotifOpen(false)}
+                />
+              )}
+            </>
           )}
         </div>
 
@@ -259,7 +199,6 @@ export default function Header() {
               </button>
             </div>
 
-            {/* כפתור התחברות במובייל */}
             {!user && (
               <div className="mobile-auth">
                 <Link
