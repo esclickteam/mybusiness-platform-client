@@ -37,7 +37,8 @@ export default function Header() {
   useEffect(() => {
     if (!user || !(user.role === "business" || user.role === "business-dashboard")) return;
 
-    const socketUrl = process.env.REACT_APP_SOCKET_URL 
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+
 
     const socketConnection = io(socketUrl, {
       auth: {
