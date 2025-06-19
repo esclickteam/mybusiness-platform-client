@@ -5,53 +5,27 @@ export default function Notifications({ socket, user, onClose, clearNotification
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
-  // טעינת התראות מהשרת
-  const loadNotifications = useCallback(async () => {
+  // טען התראות מהשרת בהתחלה
+  useEffect(() => {
     if (!user) return;
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    try {
-      const res = await fetch("/api/business/my/notifications", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (data.ok) setNotifications(data.notifications);
-    } catch (err) {
-      console.error("Failed to load notifications", err);
+    async function loadNotifications() {
+      try {
+        const res = await fetch("/api/business/my/notifications", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.ok) setNotifications(data.notifications);
+      } catch (err) {
+        console.error("Failed to load notifications", err);
+      }
     }
+    loadNotifications();
   }, [user]);
 
-  useEffect(() => {
-    loadNotifications();
-  }, [loadNotifications]);
-
-  // מאזין להתראות Socket.IO עם ניהול נכון של listeners
-  useEffect(() => {
-    if (!socket) return;
-
-    const events = [
-      "newNotification",
-      "reviewCreated",
-      "appointmentCreated",
-      "newProposalCreated",
-      "newMessage",
-    ];
-
-    const listeners = events.map(event => {
-      const listener = (data) => handler(data, event);
-      socket.on(event, listener);
-      return { event, listener };
-    });
-
-    return () => {
-      listeners.forEach(({ event, listener }) => {
-        socket.off(event, listener);
-      });
-    };
-  }, [socket, handler]);
-
-  // Handler לקבלת התראות
+  // מאזין להתראות בזמן אמת דרך socket
   const handler = useCallback(
     (data, event) => {
       let newNotif = {};
@@ -79,10 +53,23 @@ export default function Notifications({ socket, user, onClose, clearNotification
         return [newNotif, ...prev];
       });
     },
-    []
+    [setNotifications]
   );
 
-  // סימון התראה כנקראה
+  useEffect(() => {
+    if (!socket) return;
+    const events = [
+      "newNotification",
+      "reviewCreated",
+      "appointmentCreated",
+      "newProposalCreated",
+      "newMessage",
+    ];
+    events.forEach((event) => socket.on(event, (data) => handler(data, event)));
+    return () => events.forEach((event) => socket.off(event, handler));
+  }, [socket, handler]);
+
+  // סימון התראה כנקראה בשרת ובמקום
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -124,7 +111,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     onClose();
   };
 
-  // ניקוי וסימון כל ההתראות כנקראות
+  // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום
   const handleClearAll = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -148,7 +135,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // מחיקת כל ההתראות שכבר נקראו
+  // מחיקת כל ההתראות שכבר נקראו ושמירת הלא נקראות
   const handleClearReadNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -172,7 +159,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // עיצוב תאריך
+  // פונקציה לעיצוב תאריך
   const formatDate = (ts) => {
     const d = new Date(ts);
     return d.toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
@@ -235,12 +222,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
             </button>
           </>
         )}
-      </div>
-
-      <div style={{ padding: "8px 12px" }}>
-        <button onClick={loadNotifications} style={{ cursor: 'pointer' }}>
-          רענן התראות
-        </button>
       </div>
 
       {notifications.length === 0 && (
