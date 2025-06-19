@@ -86,6 +86,9 @@ export default function Header() {
     setMenuOpen(false);
   };
 
+  // סופרים את מספר ההתראות שעדיין לא נקראו
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   return (
     <>
       <nav
@@ -136,7 +139,7 @@ export default function Header() {
                 }}
               >
                 🔔
-                {notifications.length > 0 && (
+                {unreadCount > 0 && (
                   <span
                     style={{
                       position: "absolute",
@@ -153,7 +156,7 @@ export default function Header() {
                       justifyContent: "center",
                     }}
                   >
-                    {notifications.length}
+                    {unreadCount}
                   </span>
                 )}
               </button>
