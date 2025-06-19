@@ -376,9 +376,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
               </>
             ) : (
               <>
-                {activeSuggestion.text.split("\n").map((line, idx) => (
-                  <p key={idx}>{line}</p>
-                ))}
+                {activeSuggestion.text
+  .replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, '[קישור מוסר]')
+  .split("\n")
+  .map((line, idx) => (
+    <p key={idx}>{line}</p>
+))}
                 {activeSuggestion.status === "pending" ? (
                   <div className="buttons-row">
                     <button
