@@ -9,13 +9,6 @@ const SHORTEN_LENGTH = 200; // תווים להצגה מקוצרת
 const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommendation }) => {
   const navigate = useNavigate();
 
-  const [businessProfile, setBusinessProfile] = useState({
-    name: "",
-    type: "",
-    tone: "",
-    audience: "",
-    goal: "",
-  });
   const [dailyTip, setDailyTip] = useState("");
   const [chat, setChat] = useState([]);
   const [input, setInput] = useState("");
@@ -24,7 +17,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
@@ -140,10 +133,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     });
 
     s.on("updateRecommendationStatus", ({ id, status }) => {
-  setSuggestions((prev) =>
-    prev.map((s) => (s.id === id ? { ...s, status } : s))
-  );
-});
+      setSuggestions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status } : s))
+      );
+    });
 
     s.on("recommendationUpdated", (updated) => {
       setSuggestions((prev) =>
@@ -182,57 +175,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     };
   }, [businessId, token, conversationId, onNewRecommendation]);
 
-  useEffect(() => {
-    async function fetchProfile() {
-      if (!businessId || !token) return;
-      try {
-        const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const res = await fetch(`${apiBaseUrl}/business/${businessId}/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Failed to load profile");
-        const profileData = await res.json();
-        setBusinessProfile(profileData);
-        if (profileData.goal) {
-          setDailyTip(`"${profileData.goal}" מתקרב – אולי היום תשתף פוסט עם ערך לקהל שלך?`);
-        }
-      } catch (err) {
-        console.error("Error fetching profile:", err);
-      }
-    }
-    fetchProfile();
-  }, [businessId, token]);
-
-  const handleSaveProfile = useCallback(async () => {
-    setLoading(true);
-    try {
-      const apiBaseUrl = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${apiBaseUrl}/business/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(businessProfile),
-      });
-      if (!res.ok) throw new Error("Failed to save profile");
-      const data = await res.json();
-      alert("✅ פרטי העסק נשמרו בהצלחה!");
-      if (data.goal) {
-        setDailyTip(`"${data.goal}" מתקרב – אולי היום תשתף פוסט עם ערך לקהל שלך?`);
-      }
-    } catch (err) {
-      console.error("Error saving profile:", err);
-      alert("❌ שגיאה בשמירת פרטי העסק");
-    } finally {
-      setLoading(false);
-    }
-  }, [businessProfile, token]);
-
-  const handleProfileChange = useCallback((e) => {
-    setBusinessProfile((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  }, []);
-
   const sendMessageForRecommendation = useCallback(
     (text) => {
       if (!text.trim() || !socket || socket.disconnected || !clientId) return;
@@ -258,56 +200,53 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   );
 
   const approveSuggestion = useCallback(
-  async ({ id, conversationId, text }) => {
-    setLoading(true);
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        // חשוב: לשלוח גם את הטקסט המעודכן!
-        body: JSON.stringify({ businessId, recommendationId: id, text }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to approve");
-
-      if (conversationId && clientId) {
-        await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
+    async ({ id, conversationId, text }) => {
+      setLoading(true);
+      try {
+        const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
+        const res = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            text,
-            from: businessId,
-            to: clientId,
-            role: "business",
-            timestamp: new Date().toISOString(),
-            isRecommendation: true,
-          }),
+          body: JSON.stringify({ businessId, recommendationId: id, text }),
         });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+        if (conversationId && clientId) {
+          await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              text,
+              from: businessId,
+              to: clientId,
+              role: "business",
+              timestamp: new Date().toISOString(),
+              isRecommendation: true,
+            }),
+          });
+        }
+
+        setSuggestions((prev) =>
+          prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
+        );
+        alert("ההמלצה אושרה ונשלחה ללקוח!");
+        setActiveSuggestion(null);
+      } catch (err) {
+        console.error("Error approving suggestion:", err);
+        alert("שגיאה באישור ההמלצה: " + err.message);
+      } finally {
+        setLoading(false);
       }
-
-      setSuggestions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: "sent", text } : s))
-      );
-      alert("ההמלצה אושרה ונשלחה ללקוח!");
-      setActiveSuggestion(null);
-    } catch (err) {
-      console.error("Error approving suggestion:", err);
-      alert("שגיאה באישור ההמלצה: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  },
-  [businessId, clientId, token]
-);
-
-
+    },
+    [businessId, clientId, token]
+  );
 
   const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
@@ -315,39 +254,38 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   }, []);
 
   const editRecommendation = useCallback(
-  async ({ id, newText }) => {
-    setLoading(true);
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/chat/edit-recommendation`;
-      const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ recommendationId: id, newText }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update recommendation");
+    async ({ id, newText }) => {
+      setLoading(true);
+      try {
+        const url = `${import.meta.env.VITE_API_URL}/chat/edit-recommendation`;
+        const res = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ recommendationId: id, newText }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to update recommendation");
 
-      setSuggestions((prev) =>
-        prev.map((s) =>
-          s.id === id ? { ...s, text: newText, isEdited: true, editedText: newText, status: "sent" } : s
-        )
-      );
-      alert("ההמלצה עודכנה ונשלחה בהצלחה!");
-      setActiveSuggestion(null);
-      setEditing(false);
-    } catch (err) {
-      console.error("Error updating recommendation:", err);
-      alert("שגיאה בעדכון ההמלצה: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  },
-  [token]
-);
-
+        setSuggestions((prev) =>
+          prev.map((s) =>
+            s.id === id ? { ...s, text: newText, isEdited: true, editedText: newText, status: "sent" } : s
+          )
+        );
+        alert("ההמלצה עודכנה ונשלחה בהצלחה!");
+        setActiveSuggestion(null);
+        setEditing(false);
+      } catch (err) {
+        console.error("Error updating recommendation:", err);
+        alert("שגיאה בעדכון ההמלצה: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token]
+  );
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -371,47 +309,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     <div className="ai-partner-container">
       <h2>🤖 שותף AI אישי לעסק</h2>
       <div className="partner-layout">
-        <div className="profile-section">
-          <h4>📝 הגדרת העסק</h4>
-          <input
-            type="text"
-            name="name"
-            placeholder="שם העסק"
-            value={businessProfile.name}
-            onChange={handleProfileChange}
-          />
-          <input
-            type="text"
-            name="type"
-            placeholder="סוג העסק (לדוג': חנות, קליניקה)"
-            value={businessProfile.type}
-            onChange={handleProfileChange}
-          />
-          <input
-            type="text"
-            name="tone"
-            placeholder="סגנון כתיבה (רשמי / חברי וכו')"
-            value={businessProfile.tone}
-            onChange={handleProfileChange}
-          />
-          <input
-            type="text"
-            name="audience"
-            placeholder="קהל היעד שלך"
-            value={businessProfile.audience}
-            onChange={handleProfileChange}
-          />
-          <input
-            type="text"
-            name="goal"
-            placeholder="מה היעד העיקרי שלך כרגע?"
-            value={businessProfile.goal}
-            onChange={handleProfileChange}
-          />
-          <button onClick={handleSaveProfile} disabled={loading}>
-            💾 שמור פרופיל
-          </button>
-        </div>
 
         <div className="chat-section">
           {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
@@ -523,16 +420,14 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 {activeSuggestion.status === "pending" ? (
                   <>
                     <button
-  onClick={() => {
-    console.log("Button 'אשר ושלח מידית' clicked");
-    approveSuggestion({
-      id: activeSuggestion.id,
-      conversationId: activeSuggestion.conversationId,
-      text: editedText.trim() || activeSuggestion.text,
-
-    });
-  }}
-  disabled={loading}
+                      onClick={() => {
+                        approveSuggestion({
+                          id: activeSuggestion.id,
+                          conversationId: activeSuggestion.conversationId,
+                          text: editedText.trim() || activeSuggestion.text,
+                        });
+                      }}
+                      disabled={loading}
                     >
                       אשר ושלח מידית
                     </button>
