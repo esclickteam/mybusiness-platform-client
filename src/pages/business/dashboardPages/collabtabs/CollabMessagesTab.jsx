@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 
-export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBusinessId }) {
+export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange, userBusinessId }) {
   const [sentMessages, setSentMessages] = useState([]);
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,26 +13,53 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  useEffect(() => {
+  // טען הצעות מהשרת
+  const fetchMessages = async () => {
     setLoading(true);
-    async function fetchMessages() {
-      try {
-        const [sentRes, receivedRes] = await Promise.all([
-          API.get("/business/my/proposals/sent"),
-          API.get("/business/my/proposals/received"),
-        ]);
-        setSentMessages(sentRes.data.proposalsSent || []);
-        setReceivedMessages(receivedRes.data.proposalsReceived || []);
-        setError(null);
-      } catch (err) {
-        console.error("Error loading proposals:", err);
-        setError("שגיאה בטעינת ההודעות");
-      } finally {
-        setLoading(false);
-      }
+    try {
+      const [sentRes, receivedRes] = await Promise.all([
+        API.get("/business/my/proposals/sent"),
+        API.get("/business/my/proposals/received"),
+      ]);
+      setSentMessages(sentRes.data.proposalsSent || []);
+      setReceivedMessages(receivedRes.data.proposalsReceived || []);
+      setError(null);
+    } catch (err) {
+      console.error("Error loading proposals:", err);
+      setError("שגיאה בטעינת ההודעות");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchMessages();
   }, [refreshFlag]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    // מאזין להתראות והצעות חדשות בזמן אמת
+    const handleNewNotification = (notification) => {
+      // אפשר להציג הודעה או לעדכן UI במידת הצורך
+      console.log("New notification received:", notification);
+      // טען מחדש הצעות כדי לעדכן את הרשימה
+      fetchMessages();
+    };
+
+    const handleNewProposal = (proposal) => {
+      console.log("New proposal received:", proposal);
+      fetchMessages();
+    };
+
+    socket.on("newNotification", handleNewNotification);
+    socket.on("newProposalCreated", handleNewProposal);
+
+    return () => {
+      socket.off("newNotification", handleNewNotification);
+      socket.off("newProposalCreated", handleNewProposal);
+    };
+  }, [socket]);
 
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
@@ -125,6 +152,14 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
     fontWeight: "bold",
   };
 
+  if (loading) {
+    return <div style={{ textAlign: "center", padding: 20 }}>🔄 טוען הצעות...</div>;
+  }
+
+  if (error) {
+    return <div style={{ textAlign: "center", padding: 20, color: "red" }}>{error}</div>;
+  }
+
   return (
     <div style={{ direction: "rtl", fontFamily: "Arial, sans-serif", maxWidth: 700, margin: "auto" }}>
       <div style={{ marginBottom: 20, display: "flex", gap: 12, justifyContent: "center" }}>
@@ -205,31 +240,30 @@ export default function CollabMessagesTab({ refreshFlag, onStatusChange, userBus
 
             {/* פיצול שדה message לשורות */}
             {msg.message && (
-  <>
-    {msg.message.title && (
-      <p style={{ fontWeight: "bold", marginBottom: 4 }}>
-        כותרת: {msg.message.title}
-      </p>
-    )}
-    {msg.message.description && (
-      <p style={{ marginBottom: 4, whiteSpace: "pre-line" }}>
-        תיאור: {msg.message.description}
-      </p>
-    )}
-    {msg.message.budget != null && (
-      <p>
-        <strong>סכום:</strong> {msg.message.budget}
-      </p>
-    )}
-    {msg.message.expiryDate && (
-      <p>
-        <strong>תאריך תוקף:</strong>{" "}
-        {new Date(msg.message.expiryDate).toLocaleDateString("he-IL")}
-      </p>
-    )}
-  </>
-)}
-
+              <>
+                {msg.message.title && (
+                  <p style={{ fontWeight: "bold", marginBottom: 4 }}>
+                    כותרת: {msg.message.title}
+                  </p>
+                )}
+                {msg.message.description && (
+                  <p style={{ marginBottom: 4, whiteSpace: "pre-line" }}>
+                    תיאור: {msg.message.description}
+                  </p>
+                )}
+                {msg.message.budget != null && (
+                  <p>
+                    <strong>סכום:</strong> {msg.message.budget}
+                  </p>
+                )}
+                {msg.message.expiryDate && (
+                  <p>
+                    <strong>תאריך תוקף:</strong>{" "}
+                    {new Date(msg.message.expiryDate).toLocaleDateString("he-IL")}
+                  </p>
+                )}
+              </>
+            )}
 
             <p>
               <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>

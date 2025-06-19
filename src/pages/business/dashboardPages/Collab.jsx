@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { io } from "socket.io-client";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
@@ -7,7 +8,7 @@ import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
 import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
 import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
 import CollabMarketTab from "./collabtabs/CollabMarketTab";
-import { AiProvider } from "../../../context/AiContext";  // <-- הוספתי כאן
+import { AiProvider } from "../../../context/AiContext";
 import "./Collab.css";
 
 const tabMap = {
@@ -33,18 +34,35 @@ export default function Collab() {
 
   const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
 
-  useEffect(() => {
-    if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
-      setTab(tabMap[tabParam]);
-    }
-  }, [tabParam, tab]);
-
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
 
   const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+
+  // --- Socket.IO state ---
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
+
+    const newSocket = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") },
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
+      setTab(tabMap[tabParam]);
+    }
+  }, [tabParam, tab]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -91,25 +109,24 @@ export default function Collab() {
   };
 
   const handleSendProposal = async (toBusinessId, message, contactName, phone) => {
-  try {
-    let endpoint = "";
-    const payload = { message, contactName, phone };
+    try {
+      let endpoint = "";
+      const payload = { message, contactName, phone };
 
-    if (toBusinessId) {
-      endpoint = "/business/my/proposals/private";
-      payload.toBusinessId = toBusinessId;
-    } else {
-      endpoint = "/business/my/proposals/public";
+      if (toBusinessId) {
+        endpoint = "/business/my/proposals/private";
+        payload.toBusinessId = toBusinessId;
+      } else {
+        endpoint = "/business/my/proposals/public";
+      }
+
+      await API.post(endpoint, payload);
+      setRefreshSent((f) => f + 1);
+    } catch (err) {
+      console.error(err);
+      alert("❌ שגיאה בשליחת ההצעה");
     }
-
-    await API.post(endpoint, payload);
-    setRefreshSent((f) => f + 1);
-  } catch (err) {
-    console.error(err);
-    alert("❌ שגיאה בשליחת ההצעה");
-  }
-};
-
+  };
 
   const handleStatusChange = () => {
     setRefreshSent((f) => f + 1);
@@ -182,6 +199,7 @@ export default function Collab() {
 
         {tab === tabMap.messages && (
           <CollabMessagesTab
+            socket={socket}
             refreshFlag={refreshSent + refreshReceived}
             onStatusChange={handleStatusChange}
             userBusinessId={user?.businessId}
