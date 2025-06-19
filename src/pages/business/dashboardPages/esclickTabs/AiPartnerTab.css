@@ -307,3 +307,15 @@
 .modal-content button + button:hover:not(:disabled) {
   background-color: #999;
 }
+
+.buttons-row {
+  display: flex;
+  gap: 12px; /* רווח בין הכפתורים */
+  margin-top: 1rem;
+}
+
+.buttons-row button {
+  flex: 1;           /* כל כפתור יתפוס רוחב שווה */
+  width: auto;       /* ביטול הגבלת רוחב קודמת */
+  box-sizing: border-box;
+}

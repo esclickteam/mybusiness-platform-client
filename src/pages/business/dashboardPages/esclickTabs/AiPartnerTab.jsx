@@ -346,26 +346,28 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                   onChange={(e) => setEditedText(e.target.value)}
                   disabled={loading}
                 />
-                <button
-                  onClick={() => {
-                    editRecommendation({
-                      id: activeSuggestion.id,
-                      newText: editedText,
-                    });
-                  }}
-                  disabled={loading || !editedText.trim()}
-                >
-                  אשר ושלח
-                </button>
-                <button
-                  disabled={loading}
-                  onClick={() => {
-                    setEditing(false);
-                    setEditedText(activeSuggestion.text);
-                  }}
-                >
-                  ביטול
-                </button>
+                <div className="buttons-row">
+                  <button
+                    onClick={() => {
+                      editRecommendation({
+                        id: activeSuggestion.id,
+                        newText: editedText,
+                      });
+                    }}
+                    disabled={loading || !editedText.trim()}
+                  >
+                    אשר ושלח
+                  </button>
+                  <button
+                    disabled={loading}
+                    onClick={() => {
+                      setEditing(false);
+                      setEditedText(activeSuggestion.text);
+                    }}
+                  >
+                    ביטול
+                  </button>
+                </div>
               </>
             ) : (
               <>
@@ -373,7 +375,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                   <p key={idx}>{line}</p>
                 ))}
                 {activeSuggestion.status === "pending" ? (
-                  <>
+                  <div className="buttons-row">
                     <button
                       onClick={() => {
                         approveSuggestion({
@@ -395,7 +397,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                     >
                       דחה
                     </button>
-                  </>
+                  </div>
                 ) : (
                   <p>ההמלצה אושרה ונשלחה ללקוח.</p>
                 )}
