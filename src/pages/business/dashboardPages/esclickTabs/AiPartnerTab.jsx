@@ -522,15 +522,15 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                 {activeSuggestion.status === "pending" ? (
                   <>
                     <button
-                      onClick={() =>
-                        approveSuggestion({
-                          id: activeSuggestion.id,
-                          conversationId: activeSuggestion.conversationId,
-                          text: editing ? editedText : activeSuggestion.text,
-
-                        })
-                      }
-                      disabled={loading}
+  onClick={() => {
+    console.log("Button 'אשר ושלח מידית' clicked");
+    approveSuggestion({
+      id: activeSuggestion.id,
+      conversationId: activeSuggestion.conversationId,
+      text: editing ? editedText : activeSuggestion.text,
+    });
+  }}
+  disabled={loading}
                     >
                       אשר ושלח מידית
                     </button>
