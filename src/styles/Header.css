@@ -82,8 +82,8 @@
 /* תפריט התראות נפתח מתחת לפעמון */
 .notification-dropdown {
   position: absolute;
-  top: 36px;
-  right: 0;
+  top: 40px;     /* מעט מתחת לפעמון */
+  right: 0;      /* מיושר לימין האייקון */
   width: 320px;
   max-height: 400px;
   overflow-y: auto;
