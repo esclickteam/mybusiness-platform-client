@@ -44,13 +44,15 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
       const reviewData = {
         business: businessId,
         client: clientId,
-        service: ratings.service,
-        professional: ratings.professional,
-        timing: ratings.timing,
-        availability: ratings.availability,
-        value: ratings.value,
-        goal: ratings.goal,
-        experience: ratings.experience,
+        ratings: {  // איגוד המדדים לאובייקט אחד בשם 'ratings'
+          service: ratings.service,
+          professional: ratings.professional,
+          timing: ratings.timing,
+          availability: ratings.availability,
+          value: ratings.value,
+          goal: ratings.goal,
+          experience: ratings.experience,
+        },
         averageScore: parseFloat(calculateAverage()),
         comment: text,
       };
