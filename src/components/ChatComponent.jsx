@@ -87,6 +87,7 @@ export default function ChatComponent({
       businessId={userId}
       customerId={currentCustomerId}
       socket={socket}
+      userRole="business"   // העברת userRole לעסק
     />
   ) : (
     <ClientChatTab
@@ -94,6 +95,7 @@ export default function ChatComponent({
       businessId={partnerId}
       userId={userId}
       socket={socket}
+      userRole="client"     // העברת userRole ללקוח
     />
   );
 }
