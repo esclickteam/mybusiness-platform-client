@@ -70,7 +70,7 @@ export function NotificationsProvider({ user, children }) {
   }, [user, addNotification]);
 
   return (
-    <NotificationsContext.Provider value={{ notifications, setNotifications, socket }}>
+    <NotificationsContext.Provider value={{  notifications, setNotifications, socket }}>
       {children}
     </NotificationsContext.Provider>
   );
