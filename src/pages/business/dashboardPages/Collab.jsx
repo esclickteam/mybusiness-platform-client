@@ -90,25 +90,26 @@ export default function Collab() {
     alert("✅ פרטי הפרופיל נשמרו");
   };
 
-  const handleSendProposal = async (toBusinessId, message) => {
-    try {
-      let endpoint = "";
-      const payload = { message };
+  const handleSendProposal = async (toBusinessId, message, contactName, phone) => {
+  try {
+    let endpoint = "";
+    const payload = { message, contactName, phone };
 
-      if (toBusinessId) {
-        endpoint = "/business/my/proposals/private";
-        payload.toBusinessId = toBusinessId;
-      } else {
-        endpoint = "/business/my/proposals/public";
-      }
-
-      await API.post(endpoint, payload);
-      setRefreshSent((f) => f + 1);
-    } catch (err) {
-      console.error(err);
-      alert("❌ שגיאה בשליחת ההצעה");
+    if (toBusinessId) {
+      endpoint = "/business/my/proposals/private";
+      payload.toBusinessId = toBusinessId;
+    } else {
+      endpoint = "/business/my/proposals/public";
     }
-  };
+
+    await API.post(endpoint, payload);
+    setRefreshSent((f) => f + 1);
+  } catch (err) {
+    console.error(err);
+    alert("❌ שגיאה בשליחת ההצעה");
+  }
+};
+
 
   const handleStatusChange = () => {
     setRefreshSent((f) => f + 1);
