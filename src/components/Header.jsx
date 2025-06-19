@@ -19,50 +19,33 @@ import {
   FaHeadset,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { useSocket } from "../context/socketContext";
 import "../styles/Header.css";
-import { io } from "socket.io-client";
 import Notifications from "./Notifications";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
+  const socket = useSocket();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [socket, setSocket] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
-  // יצירת חיבור socket והאזנה להתראות
   useEffect(() => {
-    if (!user || !(user.role === "business" || user.role === "business-dashboard")) return;
+    if (!socket) return;
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
-
-
-    const socketConnection = io(socketUrl, {
-      auth: {
-        token: user.token,
-        businessId: user.businessId,
-        role: user.role, // חשוב לשלוח את התפקיד גם כן
-      },
-      path: "/socket.io",
-      transports: ["websocket"],
-    });
-
-    setSocket(socketConnection);
-
-    // מאזין להתראות חדשות
-    socketConnection.on("newNotification", (notification) => {
+    const handleNewNotification = (notification) => {
       setNotifications((prev) => [notification, ...prev]);
-    });
+    };
 
-    // אפשר גם להאזין לאירועים אחרים אם צריך
+    socket.on("newNotification", handleNewNotification);
 
     return () => {
-      socketConnection.disconnect();
+      socket.off("newNotification", handleNewNotification);
     };
-  }, [user]);
+  }, [socket]);
 
   if (loading) return null;
 
