@@ -12,7 +12,7 @@ const ratingFields = [
   { key: "experience", label: "🎉 חוויה כללית" },
 ];
 
-const ReviewForm = ({ businessId, onSuccess }) => {
+const ReviewForm = ({ businessId, socket, onSuccess }) => {
   const [ratings, setRatings] = useState({});
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +34,6 @@ const ReviewForm = ({ businessId, onSuccess }) => {
     setError(null);
 
     try {
-      // שליפת הטוקן והפענוח כדי לקבל userId
       const token = localStorage.getItem("token");
       if (!token) throw new Error("אין טוקן אימות, אנא התחבר מחדש");
 
@@ -44,35 +43,57 @@ const ReviewForm = ({ businessId, onSuccess }) => {
 
       const reviewData = {
         business: businessId,
-        client: clientId,  // הוספנו את שדה ה-client לפי דרישת השרת
-        ratings,
+        client: clientId,
+        service: ratings.service,
+        professional: ratings.professional,
+        timing: ratings.timing,
+        availability: ratings.availability,
+        value: ratings.value,
+        goal: ratings.goal,
+        experience: ratings.experience,
         averageScore: parseFloat(calculateAverage()),
         comment: text,
       };
 
-      const response = await fetch("/api/reviews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(reviewData),
-        credentials: "include",
-      });
+      if (socket && socket.connected) {
+        // שליחה דרך socket
+        socket.emit("createReview", reviewData, (res) => {
+          if (res.ok) {
+            onSuccess && onSuccess(res.review);
+            setRatings({});
+            setText("");
+            setIsSubmitting(false);
+          } else {
+            setError(res.error || "שגיאה בשליחת הביקורת");
+            setIsSubmitting(false);
+          }
+        });
+      } else {
+        // fallback לביצוע fetch רגיל
+        const response = await fetch("/api/reviews", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(reviewData),
+          credentials: "include",
+        });
 
-      if (!response.ok) {
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "שגיאה בשליחת הביקורת");
+        }
+
         const data = await response.json();
-        throw new Error(data.error || "שגיאה בשליחת הביקורת");
+        onSuccess && onSuccess(data.review);
+
+        setRatings({});
+        setText("");
+        setIsSubmitting(false);
       }
-
-      const data = await response.json();
-      onSuccess && onSuccess(data.review);
-
-      setRatings({});
-      setText("");
     } catch (err) {
       setError(err.message);
-    } finally {
       setIsSubmitting(false);
     }
   };
