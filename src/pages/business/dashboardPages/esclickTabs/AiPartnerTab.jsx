@@ -259,6 +259,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
   const approveSuggestion = useCallback(
   async ({ id, conversationId, text }) => {
+    console.log("approveSuggestion called with:", { id, conversationId, text });
     setLoading(true);
     try {
       const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
