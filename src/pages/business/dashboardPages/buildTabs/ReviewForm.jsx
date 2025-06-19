@@ -1,4 +1,5 @@
 import { useState } from "react";
+import jwtDecode from "jwt-decode"; // יש להתקין: npm install jwt-decode
 import "./ReviewForm.css";
 
 const ratingFields = [
@@ -32,26 +33,31 @@ const ReviewForm = ({ businessId, onSuccess }) => {
     setIsSubmitting(true);
     setError(null);
 
-    const reviewData = {
-      business: businessId,
-      ratings,
-      averageScore: parseFloat(calculateAverage()),
-      comment: text,
-    };
-
     try {
-      // שליפת טוקן האימות
+      // שליפת הטוקן והפענוח כדי לקבל userId
       const token = localStorage.getItem("token");
+      if (!token) throw new Error("אין טוקן אימות, אנא התחבר מחדש");
 
+      const decoded = jwtDecode(token);
+      const clientId = decoded.userId;
+      if (!clientId) throw new Error("טוקן לא תקין - חסר userId");
+
+      const reviewData = {
+        business: businessId,
+        client: clientId,  // הוספנו את שדה ה-client לפי דרישת השרת
+        ratings,
+        averageScore: parseFloat(calculateAverage()),
+        comment: text,
+      };
 
       const response = await fetch("/api/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(reviewData),
-        credentials: "include", // אם יש קוקיז לאימות
+        credentials: "include",
       });
 
       if (!response.ok) {
