@@ -90,6 +90,7 @@ export default function ClientChatTab({
   userId,
   messages,
   setMessages,
+  userRole,
 }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
