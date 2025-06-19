@@ -25,10 +25,18 @@ export function NotificationsProvider({ user, children }) {
         businessId: user.businessId,
       },
       path: "/socket.io",
-      transports: ["websocket"],
+      transports: ["polling", "websocket"], // הוספתי polling בנוסף ל-websocket
     });
 
     setSocket(socketConnection);
+
+    socketConnection.on("connect", () => {
+      console.log("Socket connected:", socketConnection.id);
+    });
+
+    socketConnection.on("connect_error", (err) => {
+      console.error("Socket connection error:", err.message);
+    });
 
     fetch("/api/business/my/notifications", {
       headers: {
@@ -50,7 +58,10 @@ export function NotificationsProvider({ user, children }) {
     ];
 
     events.forEach(event => {
-      socketConnection.on(event, addNotification);
+      socketConnection.on(event, (data) => {
+        console.log(`Received event ${event}:`, data);
+        addNotification(data);
+      });
     });
 
     return () => {
