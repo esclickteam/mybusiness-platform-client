@@ -527,7 +527,8 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     approveSuggestion({
       id: activeSuggestion.id,
       conversationId: activeSuggestion.conversationId,
-      text: editing ? editedText : activeSuggestion.text,
+      text: editedText.trim() || activeSuggestion.text,
+
     });
   }}
   disabled={loading}
