@@ -13,7 +13,8 @@ const CRMServicesTab = () => {
   const [newService, setNewService] = useState({
     name: "",
     description: "",
-    duration: "",
+    durationHours: "0",
+    durationMinutes: "30",
     price: "",
     imageFile: null,
   });
@@ -39,15 +40,20 @@ const CRMServicesTab = () => {
   );
 
   const handleAddService = async () => {
-    if (!newService.name || !newService.duration || !newService.price) {
-      alert("נא למלא שם שירות, משך וזמן");
+    if (!newService.name || newService.price === "" ) {
+      alert("נא למלא שם שירות ומחיר");
       return;
     }
+
+    // חישוב משך כולל בדקות
+    const durationTotal =
+      parseInt(newService.durationHours) * 60 + parseInt(newService.durationMinutes);
+
     try {
       const formData = new FormData();
       formData.append("name", newService.name);
       formData.append("description", newService.description);
-      formData.append("duration", newService.duration);
+      formData.append("duration", durationTotal.toString());
       formData.append("price", newService.price);
       if (newService.imageFile) {
         formData.append("image", newService.imageFile);
@@ -67,7 +73,8 @@ const CRMServicesTab = () => {
       setNewService({
         name: "",
         description: "",
-        duration: "",
+        durationHours: "0",
+        durationMinutes: "30",
         price: "",
         imageFile: null,
       });
@@ -104,59 +111,76 @@ const CRMServicesTab = () => {
             e.preventDefault();
             handleAddService();
           }}
-          style={{ display: "flex", flexDirection: "column", gap: "12px" }}
         >
           <label>
-            שם שירות
+            שם שירות:
             <input
               type="text"
               value={newService.name}
               onChange={(e) =>
                 setNewService({ ...newService, name: e.target.value })
               }
+              placeholder="לדוגמה: טיפול פנים"
               required
             />
           </label>
 
           <label>
-            תיאור
+            תיאור השירות:
             <input
               type="text"
               value={newService.description}
               onChange={(e) =>
                 setNewService({ ...newService, description: e.target.value })
               }
+              placeholder="פירוט על השירות..."
             />
           </label>
 
-          <label>
-            משך (דקות)
-            <input
-              type="number"
-              value={newService.duration}
+          <label>משך השירות:</label>
+          <div className="duration-container">
+            <select
+              value={newService.durationHours}
               onChange={(e) =>
-                setNewService({ ...newService, duration: e.target.value })
+                setNewService({ ...newService, durationHours: e.target.value })
               }
-              required
-              min="0"
-            />
-          </label>
+            >
+              {[...Array(24)].map((_, i) => (
+                <option key={i} value={i}>
+                  {i} שעות
+                </option>
+              ))}
+            </select>
+            <select
+              value={newService.durationMinutes}
+              onChange={(e) =>
+                setNewService({ ...newService, durationMinutes: e.target.value })
+              }
+            >
+              {[0, 15, 30, 45].map((m) => (
+                <option key={m} value={m}>
+                  {m} דקות
+                </option>
+              ))}
+            </select>
+          </div>
 
           <label>
-            מחיר (ש"ח)
+            מחיר (ש"ח):
             <input
               type="number"
               value={newService.price}
               onChange={(e) =>
                 setNewService({ ...newService, price: e.target.value })
               }
-              required
+              placeholder="לדוגמה: 250"
               min="0"
+              required
             />
           </label>
 
           <label>
-            תמונת שירות (לא חובה)
+            תמונת שירות (לא חובה):
             <input
               type="file"
               accept="image/*"
