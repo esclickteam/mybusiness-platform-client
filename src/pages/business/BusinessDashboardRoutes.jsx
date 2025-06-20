@@ -5,30 +5,32 @@ import { useQueryClient } from '@tanstack/react-query';
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from '../../utils/lazyWithPreload';
 
-// רכיבים דינמיים
-const BuildBusinessPage            = lazy(() => import("./dashboardPages/build/Build"));
-const DashboardPage               = lazyWithPreload(() => import("./dashboardPages/DashboardPage"));
-const Collab                     = lazy(() => import("./dashboardPages/Collab"));
-const Upgrade                    = lazy(() => import("./dashboardPages/Upgrade"));
-const CartPage                   = lazy(() => import("./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage"));
-const BusinessChatPage           = lazy(() => import("../../components/BusinessChatPage"));
-const CollabChat                 = lazy(() => import("./dashboardPages/collabtabs/CollabChat"));
-const AffiliatePage              = lazy(() => import("./dashboardPages/AffiliatePage"));
-const EsclickAdvisor             = lazy(() => import("./dashboardPages/EsclickAdvisor"));
-const CRMMain                    = lazy(() => import("./dashboardPages/crmpages/CRMMain"));
-const CRMAppointmentsTab         = lazy(() => import("./dashboardPages/crmpages/CRMAppointmentsTab"));
-const CRMClientsTab              = lazy(() => import("./dashboardPages/crmpages/CRMClientsTab"));
-const CRMServicesTab             = lazy(() => import("./dashboardPages/crmpages/CRMServicesTab"));
-const CRMSettingsTab             = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
-const GoalsPage                  = lazy(() => import("./dashboardPages/GoalsPage"));
-const HelpCenter                 = lazy(() => import("../HelpCenter"));
+// דפי עריכה ודשבורד
+const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
+const DashboardPage = lazyWithPreload(() => import("./dashboardPages/DashboardPage"));
+// רכיבים נוספים
+const Collab = lazy(() => import("./dashboardPages/Collab"));
+const Upgrade = lazy(() => import("./dashboardPages/Upgrade"));
+const CartPage = lazy(() => import("./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage"));
+const BusinessChatPage = lazy(() => import("../../components/BusinessChatPage"));
+const CollabChat = lazy(() => import("./dashboardPages/collabtabs/CollabChat"));
+const AffiliatePage = lazy(() => import("./dashboardPages/AffiliatePage"));
+const EsclickAdvisor = lazy(() => import("./dashboardPages/EsclickAdvisor"));
+const CRMMain = lazy(() => import("./dashboardPages/crmpages/CRMMain"));
+const CRMAppointmentsTab = lazy(() => import("./dashboardPages/crmpages/CRMAppointmentsTab"));
+const CRMClientsTab = lazy(() => import("./dashboardPages/crmpages/CRMClientsTab"));
+const CRMServicesTab = lazy(() => import("./dashboardPages/crmpages/CRMServicesTab"));
+const CRMSettingsTab = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
+const GoalsPage = lazy(() => import("./dashboardPages/GoalsPage"));
+const HelpCenter = lazy(() => import("../HelpCenter"));
 
-// דפי מדריכים שנמצאים בתיקיית src/pages/
-const ChatGuidePage               = lazy(() => import("../ChatGuidePage"));
-const DashboardGuidePage          = lazy(() => import("../DashboardGuidePage"));
-const AppointmentCRMGuidePage     = lazy(() => import("../AppointmentCRMGuidePage"));
+// דפי מדריכים חדשים
+const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessGuidePage")); // רכיב דף המדריך
+const ChatGuidePage = lazy(() => import("../ChatGuidePage"));
+const DashboardGuidePage = lazy(() => import("../DashboardGuidePage"));
+const AppointmentCRMGuidePage = lazy(() => import("../AppointmentCRMGuidePage"));
 const BusinessCollaborationGuidePage = lazy(() => import("../BusinessCollaborationGuidePage"));
-const AICompanionGuidePage        = lazy(() => import("../AICompanionGuidePage"));
+const AICompanionGuidePage = lazy(() => import("../AICompanionGuidePage"));
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
@@ -59,8 +61,20 @@ const BusinessDashboardRoutes = () => {
         <Route path="" element={<BusinessDashboardLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+
+          {/* עריכה */}
           <Route path="edit" element={<BuildBusinessPage />} />
           <Route path="build" element={<BuildBusinessPage />} />
+
+          {/* דפי מדריכים */}
+          <Route path="articles/build-business-page" element={<BuildBusinessGuidePage />} />
+          <Route path="articles/chat-guide" element={<ChatGuidePage />} />
+          <Route path="articles/dashboard-guide" element={<DashboardGuidePage />} />
+          <Route path="articles/appointment-crm-guide" element={<AppointmentCRMGuidePage />} />
+          <Route path="articles/business-collaboration" element={<BusinessCollaborationGuidePage />} />
+          <Route path="articles/ai-companion" element={<AICompanionGuidePage />} />
+
+          {/* שאר הנתיבים */}
           <Route path="cart" element={<CartPage />} />
           <Route path="collab" element={<Collab />} />
           <Route path="upgrade" element={<Upgrade />} />
@@ -78,16 +92,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="settings" element={<CRMSettingsTab businessId={businessId} />} />
           </Route>
 
-          {/* מרכז העזרה */}
           <Route path="help-center" element={<HelpCenter />} />
-
-          {/* דפי המדריכים החדשים */}
-          <Route path="articles/build-business-page" element={<BuildBusinessPage />} />
-          <Route path="articles/chat-guide" element={<ChatGuidePage />} />
-          <Route path="articles/dashboard-guide" element={<DashboardGuidePage />} />
-          <Route path="articles/appointment-crm-guide" element={<AppointmentCRMGuidePage />} />
-          <Route path="articles/business-collaboration" element={<BusinessCollaborationGuidePage />} />
-          <Route path="articles/ai-companion" element={<AICompanionGuidePage />} />
 
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
