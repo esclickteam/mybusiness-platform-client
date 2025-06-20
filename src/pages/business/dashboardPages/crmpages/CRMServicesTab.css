@@ -179,11 +179,11 @@
   gap: 10px;
 }
 
-/* כפתורי עריכה ומחיקה מעוצבים ככפתורי טקסט עם צבע רקע */
+/* כפתורי עריכה וביטול עיצוב כמו בתמונה */
 .edit-btn, .delete-btn {
   font-weight: 700;
   font-size: 14px;
-  padding: 6px 16px;
+  padding: 6px 14px;
   border-radius: 12px;
   border: none;
   cursor: pointer;
@@ -192,29 +192,29 @@
   align-items: center;
   gap: 6px;
   transition: background-color 0.3s ease;
-  box-shadow: none;
-  outline: none;
   text-align: center;
+  justify-content: center;
+  min-width: 70px;
 }
 
-/* כפתור עריכה סגול בהיר */
+/* כפתור ערוך */
 .edit-btn {
-  background-color: #e8e4ff;
+  background-color: rgba(135, 123, 255, 0.3);
   color: #6b59ff;
 }
 
 .edit-btn:hover {
-  background-color: #d0c8ff;
+  background-color: rgba(135, 123, 255, 0.5);
 }
 
-/* כפתור בטל אדום בהיר */
+/* כפתור בטל */
 .delete-btn {
-  background-color: #ffe5e5;
+  background-color: rgba(255, 99, 99, 0.3);
   color: #f44336;
 }
 
 .delete-btn:hover {
-  background-color: #ffb3b3;
+  background-color: rgba(255, 99, 99, 0.5);
 }
 
 /* טופס הוספה ועריכה */
