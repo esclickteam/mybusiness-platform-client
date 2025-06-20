@@ -18,6 +18,7 @@ const tabs = [
   { path: "crm", label: "📇 מערכת CRM" },
   { path: "esclick", label: "🧠 יועץ עסקליק" },
   { path: "affiliate", label: "👥 תכנית שותפים" },
+  { path: "help-center", label: "❓ מרכז העזרה" },
 ];
 
 export default function BusinessDashboardLayout() {

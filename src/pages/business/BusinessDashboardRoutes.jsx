@@ -22,6 +22,8 @@ const CRMClientsTab      = lazy(() => import("./dashboardPages/crmpages/CRMClien
 const CRMServicesTab     = lazy(() => import("./dashboardPages/crmpages/CRMServicesTab"));
 const CRMSettingsTab     = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
 const GoalsPage          = lazy(() => import("./dashboardPages/GoalsPage"));
+const HelpCenter = lazy(() => import("./dashboardPages/HelpCenter"));
+
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
@@ -68,6 +70,8 @@ const BusinessDashboardRoutes = () => {
             <Route path="clients" element={<CRMClientsTab businessId={businessId} />} />
             <Route path="services" element={<CRMServicesTab businessId={businessId} />} />
             <Route path="settings" element={<CRMSettingsTab businessId={businessId} />} />
+            <Route path="help-center" element={<HelpCenter />} />
+
           </Route>
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>

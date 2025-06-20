@@ -1,0 +1,52 @@
+/* HelpCenter.css */
+
+.help-center-container {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.help-center-container h1 {
+  margin-bottom: 16px;
+  font-size: 2.5rem;
+  color: #5a2a82;
+}
+
+.help-center-container h2 {
+  margin-top: 32px;
+  margin-bottom: 12px;
+  font-size: 1.8rem;
+  color: #7c4dff;
+  border-bottom: 2px solid #7c4dff;
+  padding-bottom: 4px;
+}
+
+.help-center-container p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.help-center-container ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.help-center-container ul li {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+.help-center-container a {
+  color: #7c4dff;
+  text-decoration: none;
+}
+
+.help-center-container a:hover {
+  text-decoration: underline;
+}
