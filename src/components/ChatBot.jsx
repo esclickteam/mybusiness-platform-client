@@ -1,35 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
-const faq = [
-  { question: "איך לערוך את הפרופיל שלי?", answer: "תוכל לערוך את הפרופיל תחת 'הגדרות' בתפריט." },
-  { question: "איך ליצור קשר עם שירות הלקוחות?", answer: "ניתן ליצור קשר בטלפון 123456 או באימייל support@example.com" },
-  // הוסיפי עוד שאלות ותשובות רלוונטיות למרכז העזרה שלך
-];
+export default function ChatBot({ chatOpen, setChatOpen }) {
+  const [chatInput, setChatInput] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+  const messagesEndRef = useRef(null);
 
-export default function ChatBot() {
-  const [input, setInput] = useState("");
-  const [chatLog, setChatLog] = useState([]);
-  const [chatOpen, setChatOpen] = useState(true);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages]);
 
-  async function sendQuestion() {
-    if (!input.trim()) return;
+  function cleanText(text) {
+    return text.replace(/\*\*/g, "");
+  }
 
-    setChatLog((prev) => [...prev, { role: "user", content: input }]);
+  async function sendMessage() {
+    if (!chatInput.trim()) return;
+
+    const userMessage = { sender: "user", text: chatInput };
+    setChatMessages((msgs) => [...msgs, userMessage]);
+    setChatInput("");
 
     try {
-      const res = await fetch("/api/chatbot", {
+      const response = await fetch("/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input }),
+        body: JSON.stringify({ question: chatInput }),
       });
-      const data = await res.json();
+      const data = await response.json();
 
-      setChatLog((prev) => [...prev, { role: "bot", content: data.answer, source: data.source }]);
-    } catch (error) {
-      setChatLog((prev) => [...prev, { role: "bot", content: "אירעה שגיאה בשרת" }]);
+      const botMessage = {
+        sender: "bot",
+        text: cleanText(data.answer || "סליחה, לא הצלחתי למצוא תשובה לשאלה זו."),
+        source: data.source || "עסקליק AI",
+      };
+      setChatMessages((msgs) => [...msgs, botMessage]);
+    } catch {
+      setChatMessages((msgs) => [
+        ...msgs,
+        { sender: "bot", text: "אירעה שגיאה, נסה שוב מאוחר יותר.", source: "מערכת" },
+      ]);
     }
-
-    setInput("");
   }
 
   if (!chatOpen) {
@@ -42,13 +54,13 @@ export default function ChatBot() {
           left: 20,
           backgroundColor: "#007bff",
           color: "white",
+          border: "none",
           borderRadius: "50%",
           width: 48,
           height: 48,
-          fontSize: 28,
           cursor: "pointer",
+          fontSize: 28,
           zIndex: 10000,
-          border: "none",
           boxShadow: "0 3px 8px rgba(0,123,255,0.6)",
         }}
         aria-label="פתח יועץ AI"
@@ -59,67 +71,166 @@ export default function ChatBot() {
   }
 
   return (
-    <div
+    <section
       style={{
         position: "fixed",
         bottom: 20,
         left: 20,
-        border: "1px solid #ccc",
-        padding: 12,
-        borderRadius: 6,
-        height: 400,
         width: 350,
+        maxHeight: 500,
+        backgroundColor: "#fff",
+        borderRadius: 14,
+        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "white",
-        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
         zIndex: 10000,
+        overflow: "hidden",
       }}
     >
-      <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-        <strong>יועץ AI</strong>
+      <header
+        style={{
+          backgroundColor: "#007bff",
+          color: "white",
+          padding: "12px 20px",
+          fontWeight: "700",
+          fontSize: 18,
+          letterSpacing: "0.5px",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+          userSelect: "none",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        יועץ עסקליק AI
         <button
           onClick={() => setChatOpen(false)}
-          aria-label="סגור צ'אט"
           style={{
-            background: "transparent",
+            backgroundColor: "transparent",
             border: "none",
+            color: "white",
             fontSize: 24,
-            cursor: "pointer",
-            color: "#007bff",
             fontWeight: "bold",
+            cursor: "pointer",
             lineHeight: "1",
             padding: "0 6px",
           }}
+          aria-label="סגור צ'אט"
         >
           &times;
         </button>
       </header>
 
-      <div style={{ flexGrow: 1, overflowY: "auto", marginBottom: 10 }}>
-        {chatLog.map((msg, idx) => (
-          <div key={idx} style={{ marginBottom: 8, textAlign: msg.role === "user" ? "right" : "left" }}>
-            <b>{msg.role === "user" ? "אתה" : "בוט"}:</b> {msg.content} {msg.source && <small>({msg.source})</small>}
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: 20,
+          backgroundColor: "#f6f8fa",
+          fontSize: 15,
+          lineHeight: 1.5,
+          color: "#333",
+        }}
+      >
+        {chatMessages.length === 0 && (
+          <p
+            style={{
+              color: "#888",
+              fontStyle: "italic",
+              textAlign: "center",
+              marginTop: 50,
+              userSelect: "none",
+            }}
+          >
+            שלום! איך אפשר לעזור לך?
+          </p>
+        )}
+        {chatMessages.map((msg, i) => (
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              flexDirection: msg.sender === "user" ? "row-reverse" : "row",
+              marginBottom: 18,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "75%",
+                padding: "12px 18px",
+                borderRadius: 25,
+                borderBottomRightRadius: msg.sender === "user" ? 0 : 25,
+                borderBottomLeftRadius: msg.sender === "user" ? 25 : 0,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                whiteSpace: "pre-line",
+                fontWeight: msg.sender === "bot" ? "500" : "400",
+                fontSize: 15,
+              }}
+              title={msg.source ? `מקור התשובה: ${msg.source}` : ""}
+            >
+              {msg.text}
+            </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
-      <input
-        type="text"
-        placeholder="כתוב כאן את השאלה שלך..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && sendQuestion()}
-        style={{ padding: 8, borderRadius: 4, border: "1px solid #aaa", direction: "rtl" }}
-        aria-label="שאלת בוט AI"
-      />
-      <button
-        onClick={sendQuestion}
-        style={{ marginTop: 8, padding: 8, borderRadius: 4, cursor: "pointer" }}
-        aria-label="שלח שאלה לבוט AI"
+      <div
+        style={{
+          borderTop: "1px solid #ddd",
+          padding: "12px 15px",
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "white",
+        }}
       >
-        שלח
-      </button>
-    </div>
+        <input
+          type="text"
+          value={chatInput}
+          onChange={(e) => setChatInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          placeholder="כתוב שאלה..."
+          style={{
+            flex: 1,
+            border: "1.5px solid #ccc",
+            borderRadius: 25,
+            padding: "10px 18px",
+            fontSize: 15,
+            outline: "none",
+            direction: "rtl",
+            transition: "border-color 0.3s ease",
+          }}
+          aria-label="שאלת בוט AI"
+          onFocus={(e) => (e.target.style.borderColor = "#007bff")}
+          onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+        />
+        <button
+          onClick={sendMessage}
+          style={{
+            marginLeft: 12,
+            backgroundColor: "#007bff",
+            border: "none",
+            borderRadius: "50%",
+            width: 42,
+            height: 42,
+            color: "white",
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: 20,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            boxShadow: "0 3px 8px rgba(0,123,255,0.6)",
+            transition: "background-color 0.3s ease",
+          }}
+          aria-label="שלח שאלה לבוט AI"
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#0056b3")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#007bff")}
+        >
+          &#9658;
+        </button>
+      </div>
+    </section>
   );
 }
