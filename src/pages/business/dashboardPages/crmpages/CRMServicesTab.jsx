@@ -19,6 +19,8 @@ const CRMServicesTab = () => {
     imageFile: null,
   });
 
+  const [editingService, setEditingService] = useState(null);
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -39,15 +41,27 @@ const CRMServicesTab = () => {
     service.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAddService = async () => {
-    if (!newService.name || newService.price === "" ) {
+  const resetForm = () => {
+    setNewService({
+      name: "",
+      description: "",
+      durationHours: "0",
+      durationMinutes: "30",
+      price: "",
+      imageFile: null,
+    });
+    setEditingService(null);
+  };
+
+  const handleAddOrUpdateService = async () => {
+    if (!newService.name || newService.price === "") {
       alert("נא למלא שם שירות ומחיר");
       return;
     }
 
-    // חישוב משך כולל בדקות
     const durationTotal =
-      parseInt(newService.durationHours) * 60 + parseInt(newService.durationMinutes);
+      parseInt(newService.durationHours) * 60 +
+      parseInt(newService.durationMinutes);
 
     try {
       const formData = new FormData();
@@ -59,28 +73,57 @@ const CRMServicesTab = () => {
         formData.append("image", newService.imageFile);
       }
 
-      const res = await API.post("/business/my/services", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      let res;
+      if (editingService) {
+        // עדכון שירות קיים
+        res = await API.put(`/business/my/services/${editingService._id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        // הוספת שירות חדש
+        res = await API.post("/business/my/services", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      }
 
-      if (res.data && res.data.services) {
-        setServices(res.data.services);
+      if (res.data && (res.data.services || res.data.data)) {
+        const updatedServices =
+          res.data.services || res.data.data || services;
+        setServices(updatedServices);
       }
 
       setShowAddForm(false);
-      setNewService({
-        name: "",
-        description: "",
-        durationHours: "0",
-        durationMinutes: "30",
-        price: "",
-        imageFile: null,
-      });
+      resetForm();
     } catch (error) {
-      alert("שגיאה בהוספת השירות");
+      alert("שגיאה בשמירת השירות");
       console.error(error);
+    }
+  };
+
+  const handleEdit = (service) => {
+    setEditingService(service);
+    const hours = Math.floor(service.duration / 60).toString();
+    const minutes = (service.duration % 60).toString();
+    setNewService({
+      name: service.name,
+      description: service.description || "",
+      durationHours: hours,
+      durationMinutes: minutes,
+      price: service.price,
+      imageFile: null,
+    });
+    setShowAddForm(true);
+  };
+
+  const handleDelete = async (serviceId) => {
+    if (!window.confirm("בטוח שברצונך למחוק את השירות?")) return;
+
+    try {
+      await API.delete(`/business/my/services/${serviceId}`);
+      setServices((prev) => prev.filter((s) => s._id !== serviceId));
+    } catch (err) {
+      alert("שגיאה במחיקת השירות");
+      console.error(err);
     }
   };
 
@@ -98,9 +141,12 @@ const CRMServicesTab = () => {
         />
         <button
           className="add-btn"
-          onClick={() => setShowAddForm(!showAddForm)}
+          onClick={() => {
+            setShowAddForm(!showAddForm);
+            resetForm();
+          }}
         >
-          {showAddForm ? "בטל" : "הוסף שירות"}
+          {showAddForm ? "בטל" : editingService ? "ערוך שירות" : "הוסף שירות"}
         </button>
       </div>
 
@@ -109,7 +155,7 @@ const CRMServicesTab = () => {
           className="add-service-form"
           onSubmit={(e) => {
             e.preventDefault();
-            handleAddService();
+            handleAddOrUpdateService();
           }}
         >
           <label>
@@ -191,7 +237,7 @@ const CRMServicesTab = () => {
           </label>
 
           <button type="submit" className="add-btn">
-            שמור שירות
+            {editingService ? "עדכן שירות" : "שמור שירות"}
           </button>
         </form>
       )}
@@ -202,12 +248,13 @@ const CRMServicesTab = () => {
             <th>שם + תמונה + תיאור</th>
             <th>משך (דקות)</th>
             <th>מחיר (ש"ח)</th>
+            <th>פעולות</th>
           </tr>
         </thead>
         <tbody>
           {filteredServices.length === 0 ? (
             <tr>
-              <td colSpan="3" style={{ textAlign: "center", padding: "10px" }}>
+              <td colSpan="4" style={{ textAlign: "center", padding: "10px" }}>
                 לא נמצאו שירותים
               </td>
             </tr>
@@ -236,10 +283,7 @@ const CRMServicesTab = () => {
                     />
                   )}
                   <div style={{ textAlign: "right" }}>
-                    <div
-                      className="service-name"
-                      style={{ fontWeight: "bold" }}
-                    >
+                    <div className="service-name" style={{ fontWeight: "bold" }}>
                       {service.name}
                     </div>
                     <div
@@ -255,6 +299,22 @@ const CRMServicesTab = () => {
                 </td>
                 <td style={{ textAlign: "center", padding: "8px" }}>
                   {service.price}
+                </td>
+                <td style={{ textAlign: "center", padding: "8px" }}>
+                  <button
+                    onClick={() => handleEdit(service)}
+                    className="edit-btn"
+                    aria-label={`ערוך שירות ${service.name}`}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => handleDelete(service._id)}
+                    className="delete-btn"
+                    aria-label={`מחק שירות ${service.name}`}
+                  >
+                    🗑️
+                  </button>
                 </td>
               </tr>
             ))
