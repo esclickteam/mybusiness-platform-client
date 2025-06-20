@@ -70,7 +70,7 @@
   margin: 0 auto;
   border-collapse: separate;
   border-spacing: 0 12px;
-  table-layout: fixed;
+  table-layout: auto;
   font-weight: 600;
   color: #222;
 }
@@ -169,21 +169,22 @@
   width: 20%;
 }
 
+/* תא הפעולות עם הכפתורים */
 .services-table tbody td:last-child {
-  width: 15%;
-  white-space: nowrap;
-  padding: 12px 8px;
-  text-align: center;
-  display: flex;
+  display: flex !important;
   justify-content: center;
   gap: 10px;
+  white-space: nowrap;
+  direction: rtl;
+  padding: 8px;
+  min-width: 150px;
 }
 
-/* כפתורי עריכה וביטול - עיצוב כמו בתמונה */
-.edit-btn, .delete-btn {
+/* כפתורי פעולה - עיצוב כללי */
+.action-btn {
   font-weight: 700;
   font-size: 14px;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 12px;
   border: none;
   cursor: pointer;
@@ -199,22 +200,22 @@
 
 /* כפתור ערוך */
 .edit-btn {
-  background-color: rgba(135, 123, 255, 0.3);
+  background-color: rgba(135, 123, 255, 0.4);
   color: #6b59ff;
 }
 
 .edit-btn:hover {
-  background-color: rgba(135, 123, 255, 0.5);
+  background-color: rgba(135, 123, 255, 0.6);
 }
 
 /* כפתור בטל */
 .delete-btn {
-  background-color: rgba(255, 99, 99, 0.3);
+  background-color: rgba(255, 99, 99, 0.4);
   color: #f44336;
 }
 
 .delete-btn:hover {
-  background-color: rgba(255, 99, 99, 0.5);
+  background-color: rgba(255, 99, 99, 0.6);
 }
 
 /* טופס הוספה ועריכה */
