@@ -23,12 +23,12 @@ const CRMSettingsTab             = lazy(() => import("./dashboardPages/crmpages/
 const GoalsPage                  = lazy(() => import("./dashboardPages/GoalsPage"));
 const HelpCenter                 = lazy(() => import("../HelpCenter"));
 
-// דפי מדריכים חדשים
-const ChatGuidePage              = lazy(() => import("./dashboardPages/articles/ChatGuidePage"));
-const DashboardGuidePage         = lazy(() => import("./dashboardPages/articles/DashboardGuidePage"));
-const AppointmentCRMGuidePage    = lazy(() => import("./dashboardPages/articles/AppointmentCRMGuidePage"));
-const BusinessCollaborationGuidePage = lazy(() => import("./dashboardPages/articles/BusinessCollaborationGuidePage"));
-const AICompanionGuidePage       = lazy(() => import("./dashboardPages/articles/AICompanionGuidePage"));
+// דפי מדריכים שנמצאים בתיקיית src/pages/
+const ChatGuidePage               = lazy(() => import("../ChatGuidePage"));
+const DashboardGuidePage          = lazy(() => import("../DashboardGuidePage"));
+const AppointmentCRMGuidePage     = lazy(() => import("../AppointmentCRMGuidePage"));
+const BusinessCollaborationGuidePage = lazy(() => import("../BusinessCollaborationGuidePage"));
+const AICompanionGuidePage        = lazy(() => import("../AICompanionGuidePage"));
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
