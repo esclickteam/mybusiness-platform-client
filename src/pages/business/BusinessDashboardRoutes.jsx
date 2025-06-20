@@ -34,7 +34,7 @@ const BusinessCollaborationGuidePage = lazy(() => import("../BusinessCollaborati
 const AICompanionGuidePage = lazy(() => import("../AICompanionGuidePage"));
 
 // ייבוא דף FAQ פרופיל העסק
-const ProfileFAQ = lazy(() => import("../../pages/ProfileFAQ"));
+const ProfileFAQ = lazy(() => import("../faqPages/ProfileFAQ"));
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
@@ -80,6 +80,7 @@ const BusinessDashboardRoutes = () => {
 
           {/* דף FAQ פרופיל העסק */}
           <Route path="faq/profile" element={<ProfileFAQ />} />
+
 
           {/* שאר הנתיבים */}
           <Route path="cart" element={<CartPage />} />

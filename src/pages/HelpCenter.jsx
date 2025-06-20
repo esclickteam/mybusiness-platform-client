@@ -50,7 +50,7 @@ export default function HelpCenter() {
 
   // רשימת הכרטיסיות (קטגוריות) עם הנתיבים שייקשרו אליהם
   const faqCategories = [
-    { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/faq/profile` : "/" },
+    { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
     { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/faq/dashboard` : "/" },
     { id: 3, title: "הודעות מלקוחות", path: businessId ? `/business/${businessId}/faq/messages` : "/" },
     { id: 4, title: "שיתופי פעולה", path: businessId ? `/business/${businessId}/faq/collaborations` : "/" },
