@@ -59,7 +59,6 @@ export default function HelpCenter() {
       faq.question.includes(searchTerm) || faq.answer.includes(searchTerm)
   );
 
-  // פונקציה לניקוי טקסט (למשל הסרת כוכביות)
   function cleanText(text) {
     return text.replace(/\*\*/g, "");
   }
@@ -67,6 +66,7 @@ export default function HelpCenter() {
   // --- סטייט ופעולות של בוט AI ---
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
+  const [chatOpen, setChatOpen] = useState(true);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -102,6 +102,33 @@ export default function HelpCenter() {
         { sender: "bot", text: "אירעה שגיאה, נסה שוב מאוחר יותר.", source: "מערכת" },
       ]);
     }
+  }
+
+  if (!chatOpen) {
+    // כפתור פתיחה קטן לפינה כשהצ'אט סגור
+    return (
+      <button
+        onClick={() => setChatOpen(true)}
+        style={{
+          position: "fixed",
+          bottom: 20,
+          left: 20,
+          backgroundColor: "#007bff",
+          color: "white",
+          border: "none",
+          borderRadius: "50%",
+          width: 48,
+          height: 48,
+          cursor: "pointer",
+          fontSize: 28,
+          zIndex: 10000,
+          boxShadow: "0 3px 8px rgba(0,123,255,0.6)",
+        }}
+        aria-label="פתח יועץ AI"
+      >
+        💬
+      </button>
+    );
   }
 
   return (
@@ -196,9 +223,28 @@ export default function HelpCenter() {
             letterSpacing: "0.5px",
             boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
             userSelect: "none",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
           יועץ עסקליק AI
+          <button
+            onClick={() => setChatOpen(false)}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              color: "white",
+              fontSize: 24,
+              fontWeight: "bold",
+              cursor: "pointer",
+              lineHeight: "1",
+              padding: "0 6px",
+            }}
+            aria-label="סגור צ'אט"
+          >
+            &times;
+          </button>
         </header>
 
         <div
