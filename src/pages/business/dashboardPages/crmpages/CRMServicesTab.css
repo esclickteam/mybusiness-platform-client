@@ -41,6 +41,7 @@
   outline: none;
 }
 
+/* כפתור הוספת שירות */
 .add-btn {
   background: linear-gradient(90deg, #7c4dff 0%, #9a67ff 100%);
   border: none;
@@ -142,7 +143,7 @@
   min-width: 0; /* לטיפול בטקסט נחתך */
 }
 
-.service-name-desc .name {
+.service-name-desc .service-name {
   font-weight: 700;
   font-size: 1.1rem;
   color: #3a0ca3;
@@ -150,7 +151,7 @@
   overflow-wrap: break-word;
 }
 
-.service-name-desc .description {
+.service-name-desc .service-description {
   font-size: 0.85rem;
   color: #666;
   margin-top: 4px;
