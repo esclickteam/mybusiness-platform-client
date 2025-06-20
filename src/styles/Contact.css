@@ -1,115 +1,179 @@
 .contact-container {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    direction: rtl;
+  text-align: center;
+  max-width: 600px;
+  margin: 40px auto 60px auto;
+  padding: 30px 25px;
+  direction: rtl;
+  background: #faf7ff;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(128, 0, 128, 0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  transition: box-shadow 0.3s ease;
+}
+
+.contact-container:hover {
+  box-shadow: 0 20px 60px rgba(128, 0, 128, 0.3);
 }
 
 .contact-title {
-    font-size: 36px;
-    font-weight: bold;
-    color: #800080;
-    margin-bottom: 10px;
+  font-size: 38px;
+  font-weight: 900;
+  color: #6a1b9a;
+  margin-bottom: 15px;
+  letter-spacing: 1.2px;
+  text-shadow: 0 1px 6px rgba(106, 27, 154, 0.25);
 }
 
 .contact-subtitle {
-    font-size: 18px;
-    color: #4a4a4a;
-    margin-bottom: 20px;
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 30px;
+  font-weight: 500;
 }
 
 .contact-form {
-    display: flex;
-    flex-direction: column;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 28px 25px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(128, 0, 128, 0.1);
 }
 
 .contact-form label {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-    text-align: right;
+  font-size: 17px;
+  font-weight: 700;
+  color: #4a148c;
+  margin-bottom: 8px;
+  text-align: right;
+  user-select: none;
 }
 
 .contact-form input,
 .contact-form textarea {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 15px;
-    border: 2px solid #800080;
-    border-radius: 10px;
-    font-size: 18px;
-    font-family: inherit;
-    color: #333;
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+  border: 2.5px solid #9c27b0;
+  border-radius: 12px;
+  font-size: 18px;
+  font-family: inherit;
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  resize: none;
+  box-shadow: inset 0 0 6px rgba(156, 39, 176, 0.1);
 }
 
-.contact-form textarea {
-    height: 150px;
-    resize: none;
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: #6a1b9a;
+  box-shadow: 0 0 10px rgba(106, 27, 154, 0.4);
 }
 
-/* כפתור שליחה גדול ובולט */
 .submit-button {
-    background-color: #800080;
-    color: #fff;
-    font-size: 22px;
-    font-weight: bold;
-    padding: 18px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-    width: 100%;
-    text-transform: uppercase;
-    box-shadow: 0px 4px 10px rgba(128, 0, 128, 0.4);
+  background-color: #6a1b9a;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  padding: 20px 0;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.35s ease, transform 0.25s ease, box-shadow 0.3s ease;
+  text-transform: uppercase;
+  box-shadow: 0 6px 20px rgba(106, 27, 154, 0.4);
 }
 
 .submit-button:hover {
-    background-color: #5a005a;
-    box-shadow: 0px 6px 15px rgba(128, 0, 128, 0.6);
-    transform: scale(1.05);
+  background-color: #4a148c;
+  box-shadow: 0 10px 30px rgba(74, 20, 140, 0.7);
+  transform: scale(1.07);
 }
 
 .contact-email {
-    font-size: 18px;
-    color: #333;
-    margin-top: 20px;
+  font-size: 17px;
+  color: #4a148c;
+  margin-top: 28px;
+  font-weight: 600;
+  user-select: text;
 }
 
-.footer {
-    text-align: center;
-    margin-top: 40px;
-    padding: 20px;
+.contact-email::before {
+  content: "📧 ";
 }
 
-.footer-links {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 10px;
-}
+/* התאמה למובייל ולטאבלטים */
+@media (max-width: 768px) {
+  .contact-container {
+    padding: 25px 15px;
+    width: 95%;
+  }
 
-.footer-links li {
-    display: inline-block;
-    margin: 5px 10px;
+  .contact-title {
+    font-size: 28px;
+  }
+
+  .contact-subtitle {
     font-size: 16px;
+  }
+
+  .contact-form label {
+    font-size: 16px;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    font-size: 16px;
+  }
+
+  .submit-button {
+    font-size: 18px;
+    padding: 16px 0;
+  }
+
+  .contact-email {
+    font-size: 15px;
+  }
 }
 
-.footer-links a {
-    text-decoration: none;
-    color: #800080;
-    font-weight: bold;
-}
+/* התאמה למובייל קטן מאוד (טלפונים קטנים) */
+@media (max-width: 480px) {
+  .contact-container {
+    padding: 20px 15px;
+    width: 95%;
+    margin: 20px auto 50px auto;
+  }
 
-.footer-links a:hover {
-    text-decoration: underline;
-}
+  .contact-title {
+    font-size: 24px;
+  }
 
-.copyright {
+  .contact-subtitle {
     font-size: 14px;
-    color: #000;
+    margin-bottom: 20px;
+  }
+
+  .contact-form label {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    font-size: 14px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+  }
+
+  .submit-button {
+    font-size: 16px;
+    padding: 14px 0;
+  }
+
+  .contact-email {
+    font-size: 14px;
+    margin-top: 18px;
+  }
 }

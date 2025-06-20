@@ -25,16 +25,26 @@ export default function Notifications({ socket, user, onClose, clearNotification
     loadNotifications();
   }, [user]);
 
-  // מאזין להתראות בזמן אמת דרך socket
+  // הצטרפות לחדר ההתראות לפי businessId
+  useEffect(() => {
+    if (!socket || !user?.businessId) return;
+
+    const room = `business-${user.businessId}`;
+    socket.emit("joinRoom", room);
+    console.log(`Joined room ${room}`);
+
+  }, [socket, user]);
+
+  // מאזין להתראות בזמן אמת דרך socket עם ניהול נכון של off
   const handler = useCallback(
     (data, event) => {
       let newNotif = {};
 
-      if (event === 'reviewCreated') {
+      if (event === "reviewCreated") {
         newNotif = {
           id: data._id || data.id || Date.now(),
-          type: 'review',
-          text: `⭐ ביקורת חדשה: "${data.comment || 'ביקורת חדשה'}" - ציון ממוצע: ${data.averageScore || '?'}`,
+          type: "review",
+          text: `⭐ ביקורת חדשה: "${data.comment || "ביקורת חדשה"}" - ציון ממוצע: ${data.averageScore || "?"}`,
           read: false,
           timestamp: data.createdAt || Date.now(),
         };
@@ -58,6 +68,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
 
   useEffect(() => {
     if (!socket) return;
+
     const events = [
       "newNotification",
       "reviewCreated",
@@ -65,8 +76,19 @@ export default function Notifications({ socket, user, onClose, clearNotification
       "newProposalCreated",
       "newMessage",
     ];
-    events.forEach((event) => socket.on(event, (data) => handler(data, event)));
-    return () => events.forEach((event) => socket.off(event, handler));
+
+    // שמירת הפונקציות כדי להשתמש ב-off נכון
+    const eventHandlers = events.map((event) => {
+      const fn = (data) => handler(data, event);
+      socket.on(event, fn);
+      return { event, fn };
+    });
+
+    return () => {
+      eventHandlers.forEach(({ event, fn }) => {
+        socket.off(event, fn);
+      });
+    };
   }, [socket, handler]);
 
   // סימון התראה כנקראה בשרת ובמקום
