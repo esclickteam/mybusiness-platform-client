@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";  // ייבוא ההקשר לקבלת המשתמש
 import "../styles/HelpCenter.css";
@@ -62,11 +62,17 @@ export default function HelpCenter() {
   // --- סטייט ופעולות של בוט AI ---
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages]);
 
   async function sendMessage() {
     if (!chatInput.trim()) return;
 
-    // הוספת הודעת המשתמש לצ'אט
     const userMessage = { sender: "user", text: chatInput };
     setChatMessages((msgs) => [...msgs, userMessage]);
     setChatInput("");
@@ -162,51 +168,99 @@ export default function HelpCenter() {
           position: "fixed",
           bottom: 20,
           left: 20,
-          width: 300,
-          maxHeight: 400,
+          width: 350,
+          maxHeight: 500,
           backgroundColor: "#fff",
-          border: "1px solid #ccc",
-          borderRadius: 8,
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+          borderRadius: 14,
+          boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
           display: "flex",
           flexDirection: "column",
-          zIndex: 1000,
+          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+          zIndex: 10000,
+          overflow: "hidden",
         }}
       >
+        <header
+          style={{
+            backgroundColor: "#007bff",
+            color: "white",
+            padding: "12px 20px",
+            fontWeight: "700",
+            fontSize: 18,
+            letterSpacing: "0.5px",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+            userSelect: "none",
+          }}
+        >
+          יועץ עסקליק AI
+        </header>
+
         <div
           className="chatbot-messages"
           style={{
             flex: 1,
             overflowY: "auto",
-            padding: 10,
-            fontSize: 14,
+            padding: 20,
+            backgroundColor: "#f6f8fa",
+            fontSize: 15,
+            lineHeight: 1.5,
+            color: "#333",
           }}
         >
           {chatMessages.length === 0 && (
-            <p style={{ color: "#666", fontStyle: "italic" }}>
+            <p
+              style={{
+                color: "#888",
+                fontStyle: "italic",
+                textAlign: "center",
+                marginTop: 50,
+                userSelect: "none",
+              }}
+            >
               שלום! איך אפשר לעזור לך?
             </p>
           )}
           {chatMessages.map((msg, i) => (
-            <p
+            <div
               key={i}
               style={{
-                textAlign: msg.sender === "user" ? "right" : "left",
-                margin: "5px 0",
-                backgroundColor: msg.sender === "user" ? "#dcf8c6" : "#eee",
-                padding: "5px 10px",
-                borderRadius: 12,
-                maxWidth: "80%",
-                alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
+                display: "flex",
+                flexDirection: msg.sender === "user" ? "row-reverse" : "row",
+                marginBottom: 18,
               }}
             >
-              {msg.text}
-            </p>
+              <div
+                style={{
+                  maxWidth: "75%",
+                  backgroundColor: msg.sender === "user" ? "#daf5d4" : "#e8eaed",
+                  color: "#222",
+                  padding: "12px 18px",
+                  borderRadius: 25,
+                  borderBottomRightRadius: msg.sender === "user" ? 0 : 25,
+                  borderBottomLeftRadius: msg.sender === "user" ? 25 : 0,
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                  whiteSpace: "pre-line",
+                  fontWeight: msg.sender === "bot" ? "500" : "400",
+                  fontSize: 15,
+                }}
+                title={msg.source ? `מקור התשובה: ${msg.source}` : ""}
+              >
+                {msg.text}
+              </div>
+            </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
+
         <div
           className="chatbot-input"
-          style={{ display: "flex", borderTop: "1px solid #ccc" }}
+          style={{
+            borderTop: "1px solid #ddd",
+            padding: "12px 15px",
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "white",
+          }}
         >
           <input
             type="text"
@@ -216,26 +270,42 @@ export default function HelpCenter() {
             placeholder="כתוב שאלה..."
             style={{
               flex: 1,
-              border: "none",
-              padding: 10,
-              fontSize: 14,
+              border: "1.5px solid #ccc",
+              borderRadius: 25,
+              padding: "10px 18px",
+              fontSize: 15,
               outline: "none",
+              direction: "rtl",
+              transition: "border-color 0.3s ease",
             }}
-            dir="rtl"
             aria-label="שאלת בוט AI"
+            onFocus={(e) => (e.target.style.borderColor = "#007bff")}
+            onBlur={(e) => (e.target.style.borderColor = "#ccc")}
           />
           <button
             onClick={sendMessage}
             style={{
-              padding: "0 15px",
+              marginLeft: 12,
+              backgroundColor: "#007bff",
               border: "none",
-              backgroundColor: "#4caf50",
+              borderRadius: "50%",
+              width: 42,
+              height: 42,
               color: "white",
               cursor: "pointer",
+              fontWeight: "bold",
+              fontSize: 20,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              boxShadow: "0 3px 8px rgba(0,123,255,0.6)",
+              transition: "background-color 0.3s ease",
             }}
             aria-label="שלח שאלה לבוט AI"
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#0056b3")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#007bff")}
           >
-            ➤
+            &#9658;
           </button>
         </div>
       </section>
