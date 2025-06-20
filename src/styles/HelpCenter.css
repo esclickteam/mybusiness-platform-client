@@ -133,6 +133,38 @@ p {
   text-decoration: underline;
 }
 
+/* עיצוב כרטיסיות קטגוריות שאלות נפוצות */
+.faq-categories {
+  margin-bottom: 40px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.category-card {
+  background-color: #e7f0ff;
+  border-radius: 10px;
+  padding: 18px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #004a99;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
+  user-select: none;
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.category-card:hover,
+.category-card:focus {
+  background-color: #0066ff;
+  color: white;
+  outline: none;
+}
+
 /* עיצוב הצ'אט בוט בצד שמאל למטה */
 .chatbot-section {
   position: fixed !important;
@@ -267,6 +299,9 @@ p {
 /* רספונסיביות למובייל */
 @media (max-width: 600px) {
   .articles-grid {
+    grid-template-columns: 1fr;
+  }
+  .categories-grid {
     grid-template-columns: 1fr;
   }
   .chatbot-section {

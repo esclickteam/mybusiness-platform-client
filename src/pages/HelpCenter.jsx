@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";  // ייבוא ההקשר לקבלת המשתמש
-import ChatBot from "../components/ChatBot";       // ייבוא קומפוננטת הצ'אט
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import ChatBot from "../components/ChatBot";
 import "../styles/HelpCenter.css";
 
 export default function HelpCenter() {
   const { user } = useAuth();
   const businessId = user?.businessId;
+  const navigate = useNavigate();
 
   const popularArticles = [
     {
@@ -47,20 +48,29 @@ export default function HelpCenter() {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const faqs = [
-    { question: "איך לערוך את פרופיל העסק שלי?", answer: 'עבור ללשונית "עריכת עמוד עסקי" בתפריט הצד.' },
-    { question: "איך ליצור קשר עם לקוחות?", answer: 'השתמש בלשונית "הודעות מלקוחות" כדי לשלוח ולקבל הודעות.' },
-    { question: "איך לנהל את ה-CRM?", answer: 'בקרו בלשונית "מערכת CRM" לניהול הלקוחות והפגישות שלכם.' },
+  // רשימת הכרטיסיות (קטגוריות) עם הנתיבים שייקשרו אליהם
+  const faqCategories = [
+    { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/faq/profile` : "/" },
+    { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/faq/dashboard` : "/" },
+    { id: 3, title: "הודעות מלקוחות", path: businessId ? `/business/${businessId}/faq/messages` : "/" },
+    { id: 4, title: "שיתופי פעולה", path: businessId ? `/business/${businessId}/faq/collaborations` : "/" },
+    { id: 5, title: "CRM", path: businessId ? `/business/${businessId}/faq/crm` : "/" },
+    { id: 6, title: "יועץ עסקליק", path: businessId ? `/business/${businessId}/faq/ai-advisor` : "/" },
+    { id: 7, title: "תוכנית שותפים", path: businessId ? `/business/${businessId}/faq/partners-program` : "/" },
   ];
 
-  const filteredFaqs = faqs.filter(
-    (faq) =>
-      faq.question.includes(searchTerm) || faq.answer.includes(searchTerm)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [chatOpen, setChatOpen] = useState(true);
+
+  // סינון הכרטיסיות לפי חיפוש
+  const filteredCategories = faqCategories.filter(cat =>
+    cat.title.includes(searchTerm)
   );
 
-  const [chatOpen, setChatOpen] = useState(true);
+  // ניתוב לדף הכרטיסיה בלחיצה
+  const handleCategoryClick = (path) => {
+    navigate(path);
+  };
 
   return (
     <div className="help-center-container">
@@ -70,14 +80,39 @@ export default function HelpCenter() {
       <div className="search-bar">
         <input
           type="text"
-          placeholder='חפשו נושאים כמו "חיוב", "הגדרות חשבון", "פרסום"'
+          placeholder='חפשו קטגוריה כמו "דשבורד", "CRM", "פרופיל העסק"'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           dir="rtl"
-          aria-label="חיפוש מרכז עזרה"
+          aria-label="חיפוש קטגוריות"
         />
         <span className="search-icon" role="img" aria-label="חיפוש">🔍</span>
       </div>
+
+      <section className="faq-categories">
+        <h2>בחר קטגוריה לשאלות נפוצות</h2>
+        <div className="categories-grid">
+          {filteredCategories.length > 0 ? (
+            filteredCategories.map((category) => (
+              <div
+                key={category.id}
+                className="category-card"
+                role="button"
+                tabIndex={0}
+                onClick={() => handleCategoryClick(category.path)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") handleCategoryClick(category.path);
+                }}
+                aria-label={`פתח שאלות נפוצות בקטגוריה ${category.title}`}
+              >
+                {category.title}
+              </div>
+            ))
+          ) : (
+            <p>לא נמצאו קטגוריות התואמות את "{searchTerm}"</p>
+          )}
+        </div>
+      </section>
 
       <section className="popular-articles">
         <h2>מאמרים פופולריים</h2>
@@ -98,21 +133,6 @@ export default function HelpCenter() {
         </div>
       </section>
 
-      <section className="faqs">
-        <h2>שאלות נפוצות</h2>
-        {filteredFaqs.length > 0 ? (
-          <ul>
-            {filteredFaqs.map((faq, idx) => (
-              <li key={idx}>
-                <strong>{faq.question}</strong> — {faq.answer}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>לא נמצאו תוצאות עבור "{searchTerm}"</p>
-        )}
-      </section>
-
       <section className="contact-us">
         <h2>צריכים עזרה נוספת?</h2>
         <p>
@@ -125,7 +145,6 @@ export default function HelpCenter() {
         </p>
       </section>
 
-      {/* הצגת קומפוננטת הצ'אט */}
       <ChatBot chatOpen={chatOpen} setChatOpen={setChatOpen} />
     </div>
   );
