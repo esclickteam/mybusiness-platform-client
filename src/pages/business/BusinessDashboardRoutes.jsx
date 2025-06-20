@@ -8,6 +8,7 @@ import { lazyWithPreload } from '../../utils/lazyWithPreload';
 // דפי עריכה ודשבורד
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
 const DashboardPage = lazyWithPreload(() => import("./dashboardPages/DashboardPage"));
+
 // רכיבים נוספים
 const Collab = lazy(() => import("./dashboardPages/Collab"));
 const Upgrade = lazy(() => import("./dashboardPages/Upgrade"));
@@ -31,6 +32,9 @@ const DashboardGuidePage = lazy(() => import("../DashboardGuidePage"));
 const AppointmentCRMGuidePage = lazy(() => import("../AppointmentCRMGuidePage"));
 const BusinessCollaborationGuidePage = lazy(() => import("../BusinessCollaborationGuidePage"));
 const AICompanionGuidePage = lazy(() => import("../AICompanionGuidePage"));
+
+// ייבוא דף FAQ פרופיל העסק
+const ProfileFAQ = lazy(() => import("../../pages/ProfileFAQ"));
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
@@ -73,6 +77,9 @@ const BusinessDashboardRoutes = () => {
           <Route path="articles/appointment-crm-guide" element={<AppointmentCRMGuidePage />} />
           <Route path="articles/business-collaboration" element={<BusinessCollaborationGuidePage />} />
           <Route path="articles/ai-companion" element={<AICompanionGuidePage />} />
+
+          {/* דף FAQ פרופיל העסק */}
+          <Route path="faq/profile" element={<ProfileFAQ />} />
 
           {/* שאר הנתיבים */}
           <Route path="cart" element={<CartPage />} />
