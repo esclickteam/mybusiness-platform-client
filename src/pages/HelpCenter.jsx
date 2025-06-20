@@ -1,5 +1,6 @@
 import React from "react";
-import "./HelpCenter.css";  // ייבוא קובץ ה-CSS
+import "../styles/HelpCenter.css";
+
 
 export default function HelpCenter() {
   return (
