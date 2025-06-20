@@ -159,8 +159,24 @@ p {
   letter-spacing: 0.5px !important;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
   user-select: none !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
 }
 
+/* כפתור סגירה בכותרת */
+.chatbot-section > header button {
+  background-color: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+  padding: 0 6px !important;
+}
+
+/* הודעות בצ'אט */
 .chatbot-messages {
   flex: 1 !important;
   overflow-y: auto !important;
