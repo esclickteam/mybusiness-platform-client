@@ -298,20 +298,22 @@ const CRMServicesTab = () => {
                 <td style={{ textAlign: "center", padding: "8px" }}>
                   {service.price}
                 </td>
-                <td style={{ textAlign: "center", padding: "8px" }}>
+                <td style={{ textAlign: "center", padding: "8px", whiteSpace: "nowrap" }}>
                   <button
                     onClick={() => handleEdit(service)}
-                    className="edit-btn"
+                    className="action-btn edit-btn"
                     aria-label={`ערוך שירות ${service.name}`}
+                    title="ערוך"
                   >
-                    ✏️
+                    <span>ערוך</span> <span>✏️</span>
                   </button>
                   <button
                     onClick={() => handleDelete(service._id)}
-                    className="delete-btn"
-                    aria-label={`מחק שירות ${service.name}`}
+                    className="action-btn delete-btn"
+                    aria-label={`בטל שירות ${service.name}`}
+                    title="בטל"
                   >
-                    🗑️
+                    <span>בטל</span> <span>❌</span>
                   </button>
                 </td>
               </tr>
