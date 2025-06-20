@@ -22,7 +22,8 @@ const CRMClientsTab      = lazy(() => import("./dashboardPages/crmpages/CRMClien
 const CRMServicesTab     = lazy(() => import("./dashboardPages/crmpages/CRMServicesTab"));
 const CRMSettingsTab     = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
 const GoalsPage          = lazy(() => import("./dashboardPages/GoalsPage"));
-const HelpCenter = lazy(() => import("./dashboardPages/HelpCenter"));
+const HelpCenter = lazy(() => import("../HelpCenter"));
+
 
 
 const BusinessDashboardRoutes = () => {
