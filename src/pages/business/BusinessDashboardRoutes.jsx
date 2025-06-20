@@ -25,7 +25,7 @@ const GoalsPage = lazy(() => import("./dashboardPages/GoalsPage"));
 const HelpCenter = lazy(() => import("../HelpCenter"));
 
 // דפי מדריכים חדשים
-const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessGuidePage")); // רכיב דף המדריך
+const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
 const ChatGuidePage = lazy(() => import("../ChatGuidePage"));
 const DashboardGuidePage = lazy(() => import("../DashboardGuidePage"));
 const AppointmentCRMGuidePage = lazy(() => import("../AppointmentCRMGuidePage"));
