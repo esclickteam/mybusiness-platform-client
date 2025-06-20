@@ -1,40 +1,56 @@
 .settings-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    max-width: 400px;
-    margin-top: 1rem;
-  }
-  
-  .settings-form label {
-    font-weight: bold;
-    text-align: right;
-    color: #333;
-  }
-  
-  .settings-form input {
-    padding: 0.6rem 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1rem;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .save-settings-btn {
-    background-color: #7c4dff;
-    color: white;
-    border: none;
-    padding: 0.8rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 10px;
-    margin-top: 1rem;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  
-  .save-settings-btn:hover {
-    background-color: #6a3edb;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-width: 400px;
+  margin-top: 1rem;
+  direction: rtl; /* התאמה לעברית */
+  font-family: Arial, sans-serif;
+}
+
+.settings-form label {
+  font-weight: bold;
+  text-align: right;
+  color: #333;
+  user-select: none;
+}
+
+.settings-form input {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline-offset: 2px;
+  color: #222;
+}
+
+.settings-form input:focus {
+  border-color: #7c4dff;
+  box-shadow: 0 0 8px rgba(124, 77, 255, 0.5);
+  outline: none;
+}
+
+.save-settings-btn {
+  background-color: #7c4dff;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 10px;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  user-select: none;
+}
+
+.save-settings-btn:hover {
+  background-color: #6a3edb;
+}
+
+.save-settings-btn:active {
+  transform: scale(0.96);
+}

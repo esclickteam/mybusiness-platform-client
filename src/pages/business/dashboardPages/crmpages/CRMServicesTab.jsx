@@ -16,7 +16,8 @@ const CRMServicesTab = () => {
     description: "",
     duration: "",
     price: "",
-    imageUrl: ""
+    imageUrl: "",
+    imageFile: null, // שדה לקובץ תמונה
   });
 
   useEffect(() => {
@@ -39,29 +40,53 @@ const CRMServicesTab = () => {
     service.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAddService = () => {
+  const handleAddService = async () => {
     if (!newService.name || !newService.duration || !newService.price) {
       alert("נא למלא שם שירות, משך וזמן");
       return;
     }
-    setServices([
-      ...services,
-      { ...newService, _id: Date.now().toString() }
-    ]);
-    setShowAddForm(false);
-    setNewService({
-      name: "",
-      description: "",
-      duration: "",
-      price: "",
-      imageUrl: ""
-    });
+    try {
+      const formData = new FormData();
+      formData.append("name", newService.name);
+      formData.append("description", newService.description);
+      formData.append("duration", newService.duration);
+      formData.append("price", newService.price);
+      if (newService.imageFile) {
+        formData.append("image", newService.imageFile);
+      }
+
+      const res = await API.post("/business/my/services", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res.data && res.data.services) {
+        setServices(res.data.services);
+      }
+
+      setShowAddForm(false);
+      setNewService({
+        name: "",
+        description: "",
+        duration: "",
+        price: "",
+        imageUrl: "",
+        imageFile: null,
+      });
+    } catch (error) {
+      alert("שגיאה בהוספת השירות");
+      console.error(error);
+    }
   };
 
   return (
     <div className="crm-services-tab">
       <h2>🛠️ שירותים</h2>
-      <div className="services-header" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+      <div
+        className="services-header"
+        style={{ display: "flex", gap: "10px", alignItems: "center" }}
+      >
         <input
           type="text"
           placeholder="חפש לפי שם השירות..."
@@ -79,36 +104,54 @@ const CRMServicesTab = () => {
       </div>
 
       {showAddForm && (
-        <div className="add-service-form" style={{ marginTop: "15px", display: "flex", flexDirection: "column", gap: "8px", maxWidth: "400px" }}>
+        <div
+          className="add-service-form"
+          style={{
+            marginTop: "15px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            maxWidth: "400px",
+          }}
+        >
           <input
             type="text"
             placeholder="שם שירות"
             value={newService.name}
-            onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+            onChange={(e) =>
+              setNewService({ ...newService, name: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="תיאור"
             value={newService.description}
-            onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+            onChange={(e) =>
+              setNewService({ ...newService, description: e.target.value })
+            }
           />
           <input
             type="number"
             placeholder="משך (דקות)"
             value={newService.duration}
-            onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
+            onChange={(e) =>
+              setNewService({ ...newService, duration: e.target.value })
+            }
           />
           <input
             type="number"
             placeholder='מחיר (ש"ח)'
             value={newService.price}
-            onChange={(e) => setNewService({ ...newService, price: e.target.value })}
+            onChange={(e) =>
+              setNewService({ ...newService, price: e.target.value })
+            }
           />
           <input
-            type="text"
-            placeholder="כתובת תמונה (URL)"
-            value={newService.imageUrl}
-            onChange={(e) => setNewService({ ...newService, imageUrl: e.target.value })}
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setNewService({ ...newService, imageFile: e.target.files[0] })
+            }
           />
           <button onClick={handleAddService}>שמור שירות</button>
         </div>
@@ -130,13 +173,24 @@ const CRMServicesTab = () => {
           ) : (
             filteredServices.map((service) => (
               <tr key={service._id}>
-                <td style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <td
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
+                >
                   {service.imageUrl && (
                     <img
                       src={service.imageUrl}
                       alt={service.name}
                       className="service-image"
-                      style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "4px" }}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        objectFit: "cover",
+                        borderRadius: "4px",
+                      }}
                     />
                   )}
                   <div>
