@@ -1,13 +1,22 @@
 import React, { useState } from "react";
 import "../styles/HelpCenter.css";
 
-const categories = [
-  { id: 1, icon: "🧾", title: "חיובים ותשלומים" },
-  { id: 2, icon: "🧑‍💻", title: "ניהול חשבון" },
-  { id: 3, icon: "📢", title: "פרסום ושיווק" },
-  { id: 4, icon: "🔒", title: "פרטיות ואבטחה" },
-  { id: 5, icon: "🛠️", title: "תקלות טכניות" },
-  { id: 6, icon: "📱", title: "שימוש באפליקציה" },
+const popularArticles = [
+  {
+    id: 1,
+    title:
+      "תכונות בקמפיינים של התכתבות לא זמינות בעקבות כללים הקשורים לשמירה על פרטיות באירופה וביפן",
+  },
+  {
+    id: 2,
+    title:
+      "פתרון של בעיות בקשורות לפוסטים שאי אפשר לקדם בדף פייסבוק",
+  },
+  {
+    id: 3,
+    title: "פתרון בעיות בחשבון מודעות מושבת",
+  },
+  // אפשר להוסיף עוד מאמרים לפי הצורך
 ];
 
 const faqs = [
@@ -23,12 +32,6 @@ const faqs = [
     question: "איך לנהל את ה-CRM?",
     answer: 'בקרו בלשונית "מערכת CRM" לניהול הלקוחות והפגישות שלכם.',
   },
-];
-
-const recommendedArticles = [
-  "איך לעדכן פרטי תשלום?",
-  "מה עושים אם החשבון נחסם?",
-  "מדריך מהיר ליצירת קמפיין בפייסבוק",
 ];
 
 export default function HelpCenter() {
@@ -53,22 +56,25 @@ export default function HelpCenter() {
           dir="rtl"
           aria-label="חיפוש מרכז עזרה"
         />
-        <span className="search-icon" role="img" aria-label="חיפוש">🔍</span>
+        <span className="search-icon" role="img" aria-label="חיפוש">
+          🔍
+        </span>
       </div>
 
-      <section className="categories">
-        <h2>קטגוריות עזרה</h2>
-        <div className="categories-grid">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              className="category-card"
-              aria-label={`קטגוריית עזרה: ${cat.title}`}
-              onClick={() => alert(`נבחרה קטגוריה: ${cat.title}`)}
-            >
-              <span className="category-icon">{cat.icon}</span>
-              <span className="category-title">{cat.title}</span>
-            </button>
+      <section className="popular-articles">
+        <h2>מאמרים פופולריים</h2>
+        <div className="articles-grid">
+          {popularArticles.map((article) => (
+            <div key={article.id} className="article-card">
+              <p>{article.title}</p>
+              <button
+                onClick={() =>
+                  alert(`מעבר למאמר: "${article.title}" (כאן ניתן לקשר לעמוד המלא)`)
+                }
+              >
+                מידע נוסף
+              </button>
+            </div>
           ))}
         </div>
       </section>
@@ -86,15 +92,6 @@ export default function HelpCenter() {
         ) : (
           <p>לא נמצאו תוצאות עבור "{searchTerm}"</p>
         )}
-      </section>
-
-      <section className="recommended-articles">
-        <h2>מאמרים מומלצים</h2>
-        <ul>
-          {recommendedArticles.map((article, idx) => (
-            <li key={idx}>{article}</li>
-          ))}
-        </ul>
       </section>
 
       <section className="contact-us">

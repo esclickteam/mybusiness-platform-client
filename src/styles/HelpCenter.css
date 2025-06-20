@@ -46,52 +46,62 @@ p {
   pointer-events: none;
 }
 
-.categories {
+/* הסרת הסגנונות הישנים של קטגוריות */
+/* .categories, .categories-grid, .category-card, .category-icon - הוסרו */
+
+.popular-articles {
   margin-bottom: 40px;
 }
 
-.categories-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: flex-start;
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
-.category-card {
-  background-color: #f9f9f9;
-  border: 1px solid transparent;
-  border-radius: 12px;
+.article-card {
+  background-color: #f0f4ff;
+  border-radius: 8px;
   padding: 20px;
-  width: 140px;
-  height: 140px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
+  justify-content: space-between;
+  min-height: 150px;
+}
+
+.article-card p {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  line-height: 1.3;
+  color: #222;
+}
+
+.article-card button {
+  align-self: flex-start;
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
-  user-select: none;
-  box-shadow: 0 0 6px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease;
 }
 
-.category-card:hover,
-.category-card:focus {
-  background-color: #e6f0ff;
-  border-color: #007bff;
-  outline: none;
+.article-card button:hover {
+  background-color: #004ecc;
 }
 
-.category-icon {
-  font-size: 38px;
-  margin-bottom: 12px;
-}
-
-.faqs, .recommended-articles, .contact-us {
+.faqs,
+.recommended-articles,
+.contact-us {
   margin-bottom: 30px;
 }
 
-.faqs h2, .recommended-articles h2, .contact-us h2 {
+.faqs h2,
+.recommended-articles h2,
+.contact-us h2 {
   font-size: 1.6rem;
   margin-bottom: 15px;
   border-bottom: 2px solid #007bff;
@@ -99,12 +109,14 @@ p {
   width: fit-content;
 }
 
-.faqs ul, .recommended-articles ul {
+.faqs ul,
+.recommended-articles ul {
   list-style: none;
   padding-right: 0;
 }
 
-.faqs li, .recommended-articles li {
+.faqs li,
+.recommended-articles li {
   padding: 10px 0;
   border-bottom: 1px solid #ddd;
   font-size: 1.1rem;
@@ -122,13 +134,7 @@ p {
 
 /* רספונסיביות למובייל */
 @media (max-width: 600px) {
-  .categories-grid {
-    justify-content: center;
-  }
-  .category-card {
-    width: 120px;
-    height: 120px;
-    font-size: 1rem;
-    padding: 15px;
+  .articles-grid {
+    grid-template-columns: 1fr;
   }
 }
