@@ -63,6 +63,7 @@
   transition: transform 0.1s ease;
 }
 
+/* טבלת שירותים */
 .services-table {
   width: 100%;
   max-width: 900px;
@@ -207,6 +208,77 @@
 .delete-btn:hover {
   background: linear-gradient(90deg, #d32f2f 0%, #f44336 100%);
   box-shadow: 0 6px 15px rgba(211, 47, 47, 0.7);
+}
+
+/* טופס הוספה ועריכה */
+.add-service-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin-top: 1rem;
+  justify-content: flex-start;
+}
+
+.add-service-form label {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.add-service-form input[type="text"],
+.add-service-form input[type="number"],
+.add-service-form select,
+.add-service-form input[type="file"] {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  font-size: 14px;
+  font-weight: 500;
+  outline-offset: 2px;
+  transition: border-color 0.3s ease;
+}
+
+.add-service-form input[type="text"]:focus,
+.add-service-form input[type="number"]:focus,
+.add-service-form select:focus,
+.add-service-form input[type="file"]:focus {
+  border-color: #7c4dff;
+  box-shadow: 0 0 6px rgba(124, 77, 255, 0.5);
+  outline: none;
+}
+
+.duration-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.add-service-form button[type="submit"] {
+  background: linear-gradient(90deg, #7c4dff 0%, #9a67ff 100%);
+  border: none;
+  color: white;
+  font-weight: 900;
+  padding: 0.7rem 1.8rem;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(124, 77, 255, 0.4);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
+.add-service-form button[type="submit"]:hover {
+  background: linear-gradient(90deg, #6a3edb 0%, #804ef8 100%);
+  box-shadow: 0 8px 20px rgba(106, 62, 219, 0.7);
+}
+
+.add-service-form button[type="submit"]:active {
+  transform: scale(0.96);
+  transition: transform 0.1s ease;
 }
 
 /* רספונסיביות למובייל */

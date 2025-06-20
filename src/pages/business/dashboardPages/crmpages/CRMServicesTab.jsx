@@ -75,12 +75,10 @@ const CRMServicesTab = () => {
 
       let res;
       if (editingService) {
-        // עדכון שירות קיים
         res = await API.put(`/business/my/services/${editingService._id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        // הוספת שירות חדש
         res = await API.post("/business/my/services", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
