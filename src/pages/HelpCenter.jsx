@@ -89,6 +89,26 @@ export default function HelpCenter() {
         <span className="search-icon" role="img" aria-label="חיפוש">🔍</span>
       </div>
 
+      <section className="popular-articles">
+        <h2>מאמרים פופולריים</h2>
+        <div className="articles-grid">
+          {popularArticles.map((article) => (
+            <div key={article.id} className="article-card">
+              <p className="article-title">{article.title}</p>
+              <p className="article-description">{article.description}</p>
+              <Link
+                to={article.url}
+                className="more-info-button"
+                aria-label={`מידע נוסף על ${article.title}`}
+              >
+                מידע נוסף
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* כאן הכרטיסיות (קטגוריות שאלות נפוצות) מתחת למאמרים */}
       <section className="faq-categories">
         <h2>בחר קטגוריה לשאלות נפוצות</h2>
         <div className="categories-grid">
@@ -111,25 +131,6 @@ export default function HelpCenter() {
           ) : (
             <p>לא נמצאו קטגוריות התואמות את "{searchTerm}"</p>
           )}
-        </div>
-      </section>
-
-      <section className="popular-articles">
-        <h2>מאמרים פופולריים</h2>
-        <div className="articles-grid">
-          {popularArticles.map((article) => (
-            <div key={article.id} className="article-card">
-              <p className="article-title">{article.title}</p>
-              <p className="article-description">{article.description}</p>
-              <Link
-                to={article.url}
-                className="more-info-button"
-                aria-label={`מידע נוסף על ${article.title}`}
-              >
-                מידע נוסף
-              </Link>
-            </div>
-          ))}
         </div>
       </section>
 
