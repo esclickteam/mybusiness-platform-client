@@ -60,7 +60,7 @@ export default function HelpCenter() {
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [chatOpen, setChatOpen] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
 
   // סינון הכרטיסיות לפי חיפוש
   const filteredCategories = faqCategories.filter(cat =>
