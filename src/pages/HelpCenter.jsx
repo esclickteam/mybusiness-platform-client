@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import ChatBot from "../components/ChatBot";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";  // ייבוא ההקשר לקבלת המשתמש
+import ChatBot from "../components/ChatBot";       // ייבוא קומפוננטת הצ'אט
 import "../styles/HelpCenter.css";
 
 export default function HelpCenter() {
@@ -66,8 +67,65 @@ export default function HelpCenter() {
       <h1>👋 ברוכים הבאים למרכז העזרה של עסקליק</h1>
       <p>כאן תוכלו למצוא תשובות, מדריכים וכלים לניהול העסק הדיגיטלי שלכם.</p>
 
-      {/* שאר התוכן: חיפוש, מאמרים, שאלות נפוצות, יצירת קשר */}
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder='חפשו נושאים כמו "חיוב", "הגדרות חשבון", "פרסום"'
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          dir="rtl"
+          aria-label="חיפוש מרכז עזרה"
+        />
+        <span className="search-icon" role="img" aria-label="חיפוש">🔍</span>
+      </div>
 
+      <section className="popular-articles">
+        <h2>מאמרים פופולריים</h2>
+        <div className="articles-grid">
+          {popularArticles.map((article) => (
+            <div key={article.id} className="article-card">
+              <p className="article-title">{article.title}</p>
+              <p className="article-description">{article.description}</p>
+              <Link
+                to={article.url}
+                className="more-info-button"
+                aria-label={`מידע נוסף על ${article.title}`}
+              >
+                מידע נוסף
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="faqs">
+        <h2>שאלות נפוצות</h2>
+        {filteredFaqs.length > 0 ? (
+          <ul>
+            {filteredFaqs.map((faq, idx) => (
+              <li key={idx}>
+                <strong>{faq.question}</strong> — {faq.answer}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>לא נמצאו תוצאות עבור "{searchTerm}"</p>
+        )}
+      </section>
+
+      <section className="contact-us">
+        <h2>צריכים עזרה נוספת?</h2>
+        <p>
+          ניתן לפנות אלינו באמצעות האימייל:{" "}
+          <a href="mailto:support@yourdomain.com">support@yourdomain.com</a>
+        </p>
+        <p>
+          או להתקשר למספר הטלפון:{" "}
+          <a href="tel:+97212345678">+972-1-2345678</a>
+        </p>
+      </section>
+
+      {/* הצגת קומפוננטת הצ'אט */}
       <ChatBot chatOpen={chatOpen} setChatOpen={setChatOpen} />
     </div>
   );
