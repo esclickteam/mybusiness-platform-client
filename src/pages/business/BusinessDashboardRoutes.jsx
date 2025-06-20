@@ -6,22 +6,29 @@ import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from '../../utils/lazyWithPreload';
 
 // רכיבים דינמיים
-const BuildBusinessPage  = lazy(() => import("./dashboardPages/build/Build"));
-const DashboardPage = lazyWithPreload(() => import("./dashboardPages/DashboardPage"));
-const Collab             = lazy(() => import("./dashboardPages/Collab"));
-const Upgrade            = lazy(() => import("./dashboardPages/Upgrade"));
-const CartPage           = lazy(() => import("./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage"));
-const BusinessChatPage   = lazy(() => import("../../components/BusinessChatPage"));
-const CollabChat         = lazy(() => import("./dashboardPages/collabtabs/CollabChat"));
-const AffiliatePage      = lazy(() => import("./dashboardPages/AffiliatePage"));
-const EsclickAdvisor     = lazy(() => import("./dashboardPages/EsclickAdvisor"));
-const CRMMain            = lazy(() => import("./dashboardPages/crmpages/CRMMain"));
-const CRMAppointmentsTab = lazy(() => import("./dashboardPages/crmpages/CRMAppointmentsTab"));
-const CRMClientsTab      = lazy(() => import("./dashboardPages/crmpages/CRMClientsTab"));
-const CRMServicesTab     = lazy(() => import("./dashboardPages/crmpages/CRMServicesTab"));
-const CRMSettingsTab     = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
-const GoalsPage          = lazy(() => import("./dashboardPages/GoalsPage"));
-const HelpCenter = lazy(() => import("../HelpCenter"));
+const BuildBusinessPage            = lazy(() => import("./dashboardPages/build/Build"));
+const DashboardPage               = lazyWithPreload(() => import("./dashboardPages/DashboardPage"));
+const Collab                     = lazy(() => import("./dashboardPages/Collab"));
+const Upgrade                    = lazy(() => import("./dashboardPages/Upgrade"));
+const CartPage                   = lazy(() => import("./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage"));
+const BusinessChatPage           = lazy(() => import("../../components/BusinessChatPage"));
+const CollabChat                 = lazy(() => import("./dashboardPages/collabtabs/CollabChat"));
+const AffiliatePage              = lazy(() => import("./dashboardPages/AffiliatePage"));
+const EsclickAdvisor             = lazy(() => import("./dashboardPages/EsclickAdvisor"));
+const CRMMain                    = lazy(() => import("./dashboardPages/crmpages/CRMMain"));
+const CRMAppointmentsTab         = lazy(() => import("./dashboardPages/crmpages/CRMAppointmentsTab"));
+const CRMClientsTab              = lazy(() => import("./dashboardPages/crmpages/CRMClientsTab"));
+const CRMServicesTab             = lazy(() => import("./dashboardPages/crmpages/CRMServicesTab"));
+const CRMSettingsTab             = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
+const GoalsPage                  = lazy(() => import("./dashboardPages/GoalsPage"));
+const HelpCenter                 = lazy(() => import("../HelpCenter"));
+
+// דפי מדריכים חדשים
+const ChatGuidePage              = lazy(() => import("./dashboardPages/articles/ChatGuidePage"));
+const DashboardGuidePage         = lazy(() => import("./dashboardPages/articles/DashboardGuidePage"));
+const AppointmentCRMGuidePage    = lazy(() => import("./dashboardPages/articles/AppointmentCRMGuidePage"));
+const BusinessCollaborationGuidePage = lazy(() => import("./dashboardPages/articles/BusinessCollaborationGuidePage"));
+const AICompanionGuidePage       = lazy(() => import("./dashboardPages/articles/AICompanionGuidePage"));
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
@@ -62,7 +69,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="messages" element={<BusinessChatPage />} />
           <Route path="business-messages" element={<CollabChat />} />
           <Route path="affiliate" element={<AffiliatePage />} />
-          
+
           <Route path="crm" element={<CRMMain />}>
             <Route index element={<Navigate to="appointments" replace />} />
             <Route path="appointments" element={<CRMAppointmentsTab businessId={businessId} />} />
@@ -71,8 +78,16 @@ const BusinessDashboardRoutes = () => {
             <Route path="settings" element={<CRMSettingsTab businessId={businessId} />} />
           </Route>
 
-          {/* מרכז העזרה מחוץ ל- crm */}
+          {/* מרכז העזרה */}
           <Route path="help-center" element={<HelpCenter />} />
+
+          {/* דפי המדריכים החדשים */}
+          <Route path="articles/build-business-page" element={<BuildBusinessPage />} />
+          <Route path="articles/chat-guide" element={<ChatGuidePage />} />
+          <Route path="articles/dashboard-guide" element={<DashboardGuidePage />} />
+          <Route path="articles/appointment-crm-guide" element={<AppointmentCRMGuidePage />} />
+          <Route path="articles/business-collaboration" element={<BusinessCollaborationGuidePage />} />
+          <Route path="articles/ai-companion" element={<AICompanionGuidePage />} />
 
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>

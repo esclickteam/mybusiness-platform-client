@@ -1,13 +1,14 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles/HelpCenter.css";
 
 const popularArticles = [
-  { id: 1, title: "בניית עמוד עסקי", description: "צעד אחר צעד לבניית עמוד עסקי מושך שימשוך אליך לקוחות חדשים.", url: "/articles/build-business-page" },
-  { id: 2, title: "שימוש נכון בצ'אט עם לקוחות", description: "טיפים לניהול שיחות צ'אט חכמות שיחזקו את הקשר עם הלקוחות שלך.", url: "/articles/chat-with-customers" },
-  { id: 3, title: "דשבורד העסק", description: "לגלות איך הדשבורד נותן לך שליטה מלאה ונראות מלאה על העסק.", url: "/articles/business-dashboard" },
-  { id: 4, title: "יומן תיאום תורים / CRM", description: "ניהול תורים ולקוחות במקום אחד – פשוט ויעיל כמו שצריך.", url: "/articles/appointment-crm" },
-  { id: 5, title: "יועץ עסקליק ושותף AI", description: "הכירו את היועץ הדיגיטלי שישדרג את העסק עם בינה מלאכותית.", url: "/articles/esklick-ai-advisor" },
-  { id: 6, title: "שיתופי פעולה בין עסקים", description: "איך להרחיב את העסק דרך שיתופי פעולה מנצחים עם עסקים אחרים.", url: "/articles/business-collaborations" },
+  { id: 1, title: "בניית עמוד עסקי", description: "צעד אחר צעד לבניית עמוד עסקי מושך שימשוך אליך לקוחות חדשים.", url: "/business/dashboard/articles/build-business-page" },
+  { id: 2, title: "שימוש נכון בצ'אט עם לקוחות", description: "טיפים לניהול שיחות צ'אט חכמות שיחזקו את הקשר עם הלקוחות שלך.", url: "/business/dashboard/articles/chat-guide" },
+  { id: 3, title: "דשבורד העסק", description: "לגלות איך הדשבורד נותן לך שליטה מלאה ונראות מלאה על העסק.", url: "/business/dashboard/articles/dashboard-guide" },
+  { id: 4, title: "יומן תיאום תורים / CRM", description: "ניהול תורים ולקוחות במקום אחד – פשוט ויעיל כמו שצריך.", url: "/business/dashboard/articles/appointment-crm-guide" },
+  { id: 5, title: "יועץ עסקליק ושותף AI", description: "הכירו את היועץ הדיגיטלי שישדרג את העסק עם בינה מלאכותית.", url: "/business/dashboard/articles/ai-companion" },
+  { id: 6, title: "שיתופי פעולה בין עסקים", description: "איך להרחיב את העסק דרך שיתופי פעולה מנצחים עם עסקים אחרים.", url: "/business/dashboard/articles/business-collaboration" },
 ];
 
 const faqs = [
@@ -48,9 +49,9 @@ export default function HelpCenter() {
             <div key={article.id} className="article-card">
               <p className="article-title">{article.title}</p>
               <p className="article-description">{article.description}</p>
-              <a href={article.url} className="more-info-button" aria-label={`מידע נוסף על ${article.title}`}>
+              <Link to={article.url} className="more-info-button" aria-label={`מידע נוסף על ${article.title}`}>
                 מידע נוסף
-              </a>
+              </Link>
             </div>
           ))}
         </div>

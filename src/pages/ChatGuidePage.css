@@ -1,0 +1,87 @@
+.chat-guide-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+  color: #222;
+  line-height: 1.6;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+.chat-guide-container h1 {
+  font-size: 2.4rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.chat-guide-container h2 {
+  font-size: 1.8rem;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 5px;
+  width: fit-content;
+}
+
+.chat-guide-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.chat-guide-container ul {
+  margin: 0 0 20px 20px;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.chat-guide-container li {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.chat-guide-container strong {
+  font-weight: 700;
+}
+
+.chat-guide-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.chat-guide-container th,
+.chat-guide-container td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.chat-guide-container th {
+  background-color: #f0f4ff;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .chat-guide-container {
+    padding: 15px;
+    margin: 20px;
+  }
+
+  .chat-guide-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .chat-guide-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .chat-guide-container p,
+  .chat-guide-container li,
+  .chat-guide-container th,
+  .chat-guide-container td {
+    font-size: 1rem;
+  }
+}
