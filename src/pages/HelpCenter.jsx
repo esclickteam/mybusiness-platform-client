@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import "../styles/HelpCenter.css";
 
 const popularArticles = [
-  { id: 1, title: "בניית עמוד עסקי" },
-  { id: 2, title: "שימוש נכון בצ'אט עם לקוחות" },
-  { id: 3, title: "דשבורד העסק" },
-  { id: 4, title: "יומן תיאום תורים / CRM" },
-  { id: 5, title: "יועץ עסקליק ושותף AI" },
-  { id: 6, title: "שיתופי פעולה בין עסקים" },
+  { id: 1, title: "בניית עמוד עסקי", description: "צעד אחר צעד לבניית עמוד עסקי מושך שימשוך אליך לקוחות חדשים." },
+  { id: 2, title: "שימוש נכון בצ'אט עם לקוחות", description: "טיפים לניהול שיחות צ'אט חכמות שיחזקו את הקשר עם הלקוחות שלך." },
+  { id: 3, title: "דשבורד העסק", description: "לגלות איך הדשבורד נותן לך שליטה מלאה ונראות מלאה על העסק." },
+  { id: 4, title: "יומן תיאום תורים / CRM", description: "ניהול תורים ולקוחות במקום אחד – פשוט ויעיל כמו שצריך." },
+  { id: 5, title: "יועץ עסקליק ושותף AI", description: "הכירו את היועץ הדיגיטלי שישדרג את העסק עם בינה מלאכותית." },
+  { id: 6, title: "שיתופי פעולה בין עסקים", description: "איך להרחיב את העסק דרך שיתופי פעולה מנצחים עם עסקים אחרים." },
 ];
 
 const faqs = [
@@ -57,7 +57,8 @@ export default function HelpCenter() {
         <div className="articles-grid">
           {popularArticles.map((article) => (
             <div key={article.id} className="article-card">
-              <p>{article.title}</p>
+              <p className="article-title">{article.title}</p>
+              <p className="article-description">{article.description}</p>
               <button
                 onClick={() =>
                   alert(`מעבר למאמר: "${article.title}" (כאן ניתן לקשר לעמוד המלא)`)
