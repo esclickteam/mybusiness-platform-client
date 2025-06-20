@@ -282,10 +282,9 @@ export default function HelpCenter() {
               }}
             >
               <div
+                className={msg.sender === "user" ? "user" : "bot"}
                 style={{
                   maxWidth: "75%",
-                  backgroundColor: msg.sender === "user" ? "#daf5d4" : "#e8eaed",
-                  color: "#222",
                   padding: "12px 18px",
                   borderRadius: 25,
                   borderBottomRightRadius: msg.sender === "user" ? 0 : 25,
