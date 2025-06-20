@@ -17,7 +17,7 @@ const CRMServicesTab = () => {
     duration: "",
     price: "",
     imageUrl: "",
-    imageFile: null, // שדה לקובץ תמונה
+    imageFile: null,
   });
 
   useEffect(() => {
@@ -81,11 +81,11 @@ const CRMServicesTab = () => {
   };
 
   return (
-    <div className="crm-services-tab">
+    <div className="crm-services-tab" style={{ maxWidth: "400px", margin: "auto" }}>
       <h2>🛠️ שירותים</h2>
       <div
         className="services-header"
-        style={{ display: "flex", gap: "10px", alignItems: "center" }}
+        style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px" }}
       >
         <input
           type="text"
@@ -94,90 +94,185 @@ const CRMServicesTab = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="services-search-input"
           autoComplete="off"
+          style={{
+            flexGrow: 1,
+            padding: "6px 10px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+            fontSize: "14px",
+          }}
         />
         <button
           className="add-service-button"
           onClick={() => setShowAddForm(!showAddForm)}
+          style={{
+            padding: "6px 12px",
+            borderRadius: "4px",
+            border: "1px solid #777",
+            background: "#fff",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
         >
           {showAddForm ? "בטל" : "הוסף שירות"}
         </button>
       </div>
 
       {showAddForm && (
-        <div
+        <form
           className="add-service-form"
           style={{
-            marginTop: "15px",
             display: "flex",
             flexDirection: "column",
-            gap: "8px",
-            maxWidth: "400px",
+            gap: "12px",
+            border: "1px solid #ddd",
+            padding: "15px",
+            borderRadius: "6px",
+            backgroundColor: "#fafafa",
+          }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleAddService();
           }}
         >
-          <input
-            type="text"
-            placeholder="שם שירות"
-            value={newService.name}
-            onChange={(e) =>
-              setNewService({ ...newService, name: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="תיאור"
-            value={newService.description}
-            onChange={(e) =>
-              setNewService({ ...newService, description: e.target.value })
-            }
-          />
-          <input
-            type="number"
-            placeholder="משך (דקות)"
-            value={newService.duration}
-            onChange={(e) =>
-              setNewService({ ...newService, duration: e.target.value })
-            }
-          />
-          <input
-            type="number"
-            placeholder='מחיר (ש"ח)'
-            value={newService.price}
-            onChange={(e) =>
-              setNewService({ ...newService, price: e.target.value })
-            }
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) =>
-              setNewService({ ...newService, imageFile: e.target.files[0] })
-            }
-          />
-          <button onClick={handleAddService}>שמור שירות</button>
-        </div>
+          <label>
+            שם שירות
+            <input
+              type="text"
+              value={newService.name}
+              onChange={(e) =>
+                setNewService({ ...newService, name: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "6px 8px",
+                marginTop: "4px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+              required
+            />
+          </label>
+
+          <label>
+            תיאור
+            <input
+              type="text"
+              value={newService.description}
+              onChange={(e) =>
+                setNewService({ ...newService, description: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "6px 8px",
+                marginTop: "4px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </label>
+
+          <label>
+            משך (דקות)
+            <input
+              type="number"
+              value={newService.duration}
+              onChange={(e) =>
+                setNewService({ ...newService, duration: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "6px 8px",
+                marginTop: "4px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+              required
+              min="0"
+            />
+          </label>
+
+          <label>
+            מחיר (ש"ח)
+            <input
+              type="number"
+              value={newService.price}
+              onChange={(e) =>
+                setNewService({ ...newService, price: e.target.value })
+              }
+              style={{
+                width: "100%",
+                padding: "6px 8px",
+                marginTop: "4px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+              required
+              min="0"
+            />
+          </label>
+
+          <label>
+            תמונת שירות (לא חובה)
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setNewService({ ...newService, imageFile: e.target.files[0] })
+              }
+              style={{ marginTop: "4px" }}
+            />
+          </label>
+
+          <button
+            type="submit"
+            style={{
+              padding: "8px",
+              borderRadius: "4px",
+              border: "1px solid #777",
+              background: "#fff",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "bold",
+            }}
+          >
+            שמור שירות
+          </button>
+        </form>
       )}
 
-      <table className="services-table" style={{ marginTop: "20px" }}>
+      <table
+        className="services-table"
+        style={{ marginTop: "20px", width: "100%", borderCollapse: "collapse" }}
+      >
         <thead>
-          <tr>
-            <th>שם + תמונה + תיאור</th>
-            <th>משך (דקות)</th>
-            <th>מחיר (ש"ח)</th>
+          <tr style={{ borderBottom: "1px solid #ccc" }}>
+            <th style={{ textAlign: "right", padding: "8px" }}>שם + תמונה + תיאור</th>
+            <th style={{ textAlign: "center", padding: "8px" }}>משך (דקות)</th>
+            <th style={{ textAlign: "center", padding: "8px" }}>מחיר (ש"ח)</th>
           </tr>
         </thead>
         <tbody>
           {filteredServices.length === 0 ? (
             <tr>
-              <td colSpan="3">לא נמצאו שירותים</td>
+              <td colSpan="3" style={{ textAlign: "center", padding: "10px" }}>
+                לא נמצאו שירותים
+              </td>
             </tr>
           ) : (
             filteredServices.map((service) => (
-              <tr key={service._id}>
+              <tr key={service._id} style={{ borderBottom: "1px solid #eee" }}>
                 <td
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "10px",
+                    padding: "8px",
+                    direction: "rtl",
                   }}
                 >
                   {service.imageUrl && (
@@ -193,15 +288,21 @@ const CRMServicesTab = () => {
                       }}
                     />
                   )}
-                  <div>
-                    <div className="service-name">{service.name}</div>
-                    <div className="service-description">
+                  <div style={{ textAlign: "right" }}>
+                    <div className="service-name" style={{ fontWeight: "bold" }}>
+                      {service.name}
+                    </div>
+                    <div className="service-description" style={{ fontSize: "12px", color: "#666" }}>
                       {service.description || "-"}
                     </div>
                   </div>
                 </td>
-                <td className="service-duration">{service.duration}</td>
-                <td className="service-price">{service.price}</td>
+                <td className="service-duration" style={{ textAlign: "center", padding: "8px" }}>
+                  {service.duration}
+                </td>
+                <td className="service-price" style={{ textAlign: "center", padding: "8px" }}>
+                  {service.price}
+                </td>
               </tr>
             ))
           )}
