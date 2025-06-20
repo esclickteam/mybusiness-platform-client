@@ -45,8 +45,15 @@ export default function useDashboardSocket({ token, businessId, refreshAccessTok
         return;
       }
       socketRef.current.auth.token = newToken;
-      socketRef.current.disconnect();
-      socketRef.current.connect();
+      // במקום disconnect/connect, משתמשים ב-emit authenticate
+      socketRef.current.emit("authenticate", { token: newToken }, (ack) => {
+        if (!ack?.ok) {
+          console.warn("❌ Authentication failed after token refresh");
+          if (logout) logout();
+        } else {
+          console.log("✅ Authentication succeeded after token refresh");
+        }
+      });
     });
 
     socketRef.current.on("connect_error", (err) => {

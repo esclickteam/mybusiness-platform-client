@@ -70,8 +70,14 @@ const DashboardRealTime = ({ businessId }) => {
           return;
         }
         socket.auth.token = newToken;
-        socket.disconnect();
-        socket.connect();
+        socket.emit("authenticate", { token: newToken }, (ack) => {
+          if (!ack?.ok) {
+            console.warn("Authentication failed after token refresh");
+            logout();
+          } else {
+            console.log("Authentication succeeded after token refresh");
+          }
+        });
       });
 
       socket.on("connect_error", (err) => {

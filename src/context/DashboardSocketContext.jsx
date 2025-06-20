@@ -35,14 +35,12 @@ export function DashboardSocketProvider({ businessId, children }) {
         return;
       }
 
-      // מחברים לסוקט עם auth שמכיל גם businessId
       socketRef.current = io(SOCKET_URL, {
         path: "/socket.io",
         auth: { token, role: "business-dashboard", businessId },
         transports: ["websocket"],
       });
 
-      // מאזינים לאירועים מהשרת
       socketRef.current.on("dashboardUpdate", (newStats) => {
         if (!isMounted) return;
         const cleanedStats = {};
@@ -56,7 +54,9 @@ export function DashboardSocketProvider({ businessId, children }) {
 
       socketRef.current.on("unreadMessagesCount", (count) => {
         if (!isMounted) return;
-        setStats((prev) => (prev.messages_count === count ? prev : { ...prev, messages_count: count }));
+        setStats((prev) =>
+          prev.messages_count === count ? prev : { ...prev, messages_count: count }
+        );
       });
 
       socketRef.current.on("appointmentCreated", (newAppointment) => {
@@ -93,7 +93,9 @@ export function DashboardSocketProvider({ businessId, children }) {
       socketRef.current.on("appointmentDeleted", ({ id }) => {
         if (!isMounted) return;
         setStats((prev) => {
-          const updatedAppointments = prev.appointments ? prev.appointments.filter((a) => a._id !== id) : [];
+          const updatedAppointments = prev.appointments
+            ? prev.appointments.filter((a) => a._id !== id)
+            : [];
           return {
             ...prev,
             appointments: updatedAppointments,
@@ -127,8 +129,14 @@ export function DashboardSocketProvider({ businessId, children }) {
           return;
         }
         socketRef.current.auth.token = newToken;
-        socketRef.current.disconnect();
-        socketRef.current.connect();
+        socketRef.current.emit("authenticate", { token: newToken }, (ack) => {
+          if (!ack?.ok) {
+            console.warn("❌ אימות מחדש נכשל, מבצע Logout");
+            logout();
+          } else {
+            console.log("✅ אימות מחדש הצליח");
+          }
+        });
       });
     }
 
@@ -143,6 +151,9 @@ export function DashboardSocketProvider({ businessId, children }) {
         socketRef.current.off("appointmentUpdated");
         socketRef.current.off("appointmentDeleted");
         socketRef.current.off("allAppointmentsUpdated");
+        socketRef.current.off("connect");
+        socketRef.current.off("connect_error");
+        socketRef.current.off("tokenExpired");
         socketRef.current.disconnect();
         console.log("🔌 [SocketProvider] ניתוק ה־socket");
         socketRef.current = null;
