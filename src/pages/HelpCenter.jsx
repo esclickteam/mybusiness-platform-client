@@ -51,19 +51,24 @@ export default function HelpCenter() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           dir="rtl"
+          aria-label="חיפוש מרכז עזרה"
         />
+        <span className="search-icon" role="img" aria-label="חיפוש">🔍</span>
       </div>
 
       <section className="categories">
         <h2>קטגוריות עזרה</h2>
         <div className="categories-grid">
           {categories.map((cat) => (
-            <div key={cat.id} className="category-card">
-              <span className="category-icon" aria-label={cat.title}>
-                {cat.icon}
-              </span>
+            <button
+              key={cat.id}
+              className="category-card"
+              aria-label={`קטגוריית עזרה: ${cat.title}`}
+              onClick={() => alert(`נבחרה קטגוריה: ${cat.title}`)}
+            >
+              <span className="category-icon">{cat.icon}</span>
               <span className="category-title">{cat.title}</span>
-            </div>
+            </button>
           ))}
         </div>
       </section>
