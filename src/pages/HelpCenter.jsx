@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import ChatBot from "./ChatBot"; // ייבוא קומפוננטת הצ'אט
+import ChatBot from "../components/ChatBot";
 import "../styles/HelpCenter.css";
 
 export default function HelpCenter() {
