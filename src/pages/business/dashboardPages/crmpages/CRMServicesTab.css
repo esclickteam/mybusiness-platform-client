@@ -64,11 +64,14 @@
   transition: transform 0.1s ease;
 }
 
+/* טבלת שירותים */
 .services-table {
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
   border-collapse: separate;
   border-spacing: 0 12px;
-  table-layout: fixed;
+  table-layout: fixed; /* חשוב לחלוקת רוחב עמודות */
   font-weight: 600;
   color: #222;
 }
@@ -87,6 +90,7 @@
   white-space: nowrap;
 }
 
+/* עיצוב שורות הטבלה */
 .services-table tbody tr {
   background-color: #fff;
   box-shadow: 0 0 10px rgba(124, 77, 255, 0.1);
@@ -108,8 +112,9 @@
   color: #222;
 }
 
-/* --- התאמת התא הראשון לטקסט ותמונה --- */
+/* התא הראשון (תמונה + שם + תיאור) */
 .services-table tbody td:first-child {
+  width: 60%;
   text-align: left;
   white-space: normal; /* אפשר שורות מרובות */
   overflow: visible;
@@ -118,9 +123,10 @@
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  max-width: 300px; /* מניעת התרחבות גדולה */
+  max-width: none; /* הסרת מגבלת רוחב */
 }
 
+/* עיצוב תמונה */
 .services-table tbody td:first-child img {
   width: 80px;
   height: 80px;
@@ -136,11 +142,12 @@
   box-shadow: 0 0 8px rgba(124, 77, 255, 0.6);
 }
 
+/* מכולת שם ותיאור */
 .service-name-desc {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 0; /* לטיפול בטקסט נחתך */
+  min-width: 0; /* טיפול בטקסט נחתך */
 }
 
 .service-name-desc .service-name {
@@ -157,6 +164,16 @@
   margin-top: 4px;
   white-space: normal;
   overflow-wrap: break-word;
+}
+
+/* עמודת משך (דקות) */
+.services-table tbody td:nth-child(2) {
+  width: 20%;
+}
+
+/* עמודת מחיר (ש"ח) */
+.services-table tbody td:nth-child(3) {
+  width: 20%;
 }
 
 /* רספונסיביות למובייל */

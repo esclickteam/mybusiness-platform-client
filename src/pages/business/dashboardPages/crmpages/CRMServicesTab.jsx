@@ -9,14 +9,12 @@ const CRMServicesTab = () => {
   const [search, setSearch] = useState("");
   const [services, setServices] = useState([]);
 
-  // מצב לטופס הוספת שירות חדש
   const [showAddForm, setShowAddForm] = useState(false);
   const [newService, setNewService] = useState({
     name: "",
     description: "",
     duration: "",
     price: "",
-    imageUrl: "",
     imageFile: null,
   });
 
@@ -71,7 +69,6 @@ const CRMServicesTab = () => {
         description: "",
         duration: "",
         price: "",
-        imageUrl: "",
         imageFile: null,
       });
     } catch (error) {
@@ -81,12 +78,9 @@ const CRMServicesTab = () => {
   };
 
   return (
-    <div className="crm-services-tab" style={{ maxWidth: "400px", margin: "auto" }}>
+    <div className="crm-services-tab" dir="rtl">
       <h2>🛠️ שירותים</h2>
-      <div
-        className="services-header"
-        style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px" }}
-      >
+      <div className="services-header">
         <input
           type="text"
           placeholder="חפש לפי שם השירות..."
@@ -94,25 +88,10 @@ const CRMServicesTab = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="services-search-input"
           autoComplete="off"
-          style={{
-            flexGrow: 1,
-            padding: "6px 10px",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-            fontSize: "14px",
-          }}
         />
         <button
-          className="add-service-button"
+          className="add-btn"
           onClick={() => setShowAddForm(!showAddForm)}
-          style={{
-            padding: "6px 12px",
-            borderRadius: "4px",
-            border: "1px solid #777",
-            background: "#fff",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
         >
           {showAddForm ? "בטל" : "הוסף שירות"}
         </button>
@@ -121,19 +100,11 @@ const CRMServicesTab = () => {
       {showAddForm && (
         <form
           className="add-service-form"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
-            border: "1px solid #ddd",
-            padding: "15px",
-            borderRadius: "6px",
-            backgroundColor: "#fafafa",
-          }}
           onSubmit={(e) => {
             e.preventDefault();
             handleAddService();
           }}
+          style={{ display: "flex", flexDirection: "column", gap: "12px" }}
         >
           <label>
             שם שירות
@@ -143,14 +114,6 @@ const CRMServicesTab = () => {
               onChange={(e) =>
                 setNewService({ ...newService, name: e.target.value })
               }
-              style={{
-                width: "100%",
-                padding: "6px 8px",
-                marginTop: "4px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                fontSize: "14px",
-              }}
               required
             />
           </label>
@@ -163,14 +126,6 @@ const CRMServicesTab = () => {
               onChange={(e) =>
                 setNewService({ ...newService, description: e.target.value })
               }
-              style={{
-                width: "100%",
-                padding: "6px 8px",
-                marginTop: "4px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                fontSize: "14px",
-              }}
             />
           </label>
 
@@ -182,14 +137,6 @@ const CRMServicesTab = () => {
               onChange={(e) =>
                 setNewService({ ...newService, duration: e.target.value })
               }
-              style={{
-                width: "100%",
-                padding: "6px 8px",
-                marginTop: "4px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                fontSize: "14px",
-              }}
               required
               min="0"
             />
@@ -203,14 +150,6 @@ const CRMServicesTab = () => {
               onChange={(e) =>
                 setNewService({ ...newService, price: e.target.value })
               }
-              style={{
-                width: "100%",
-                padding: "6px 8px",
-                marginTop: "4px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                fontSize: "14px",
-              }}
               required
               min="0"
             />
@@ -224,36 +163,21 @@ const CRMServicesTab = () => {
               onChange={(e) =>
                 setNewService({ ...newService, imageFile: e.target.files[0] })
               }
-              style={{ marginTop: "4px" }}
             />
           </label>
 
-          <button
-            type="submit"
-            style={{
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #777",
-              background: "#fff",
-              cursor: "pointer",
-              fontSize: "16px",
-              fontWeight: "bold",
-            }}
-          >
+          <button type="submit" className="add-btn">
             שמור שירות
           </button>
         </form>
       )}
 
-      <table
-        className="services-table"
-        style={{ marginTop: "20px", width: "100%", borderCollapse: "collapse" }}
-      >
+      <table className="services-table">
         <thead>
-          <tr style={{ borderBottom: "1px solid #ccc" }}>
-            <th style={{ textAlign: "right", padding: "8px" }}>שם + תמונה + תיאור</th>
-            <th style={{ textAlign: "center", padding: "8px" }}>משך (דקות)</th>
-            <th style={{ textAlign: "center", padding: "8px" }}>מחיר (ש"ח)</th>
+          <tr>
+            <th>שם + תמונה + תיאור</th>
+            <th>משך (דקות)</th>
+            <th>מחיר (ש"ח)</th>
           </tr>
         </thead>
         <tbody>
@@ -265,21 +189,20 @@ const CRMServicesTab = () => {
             </tr>
           ) : (
             filteredServices.map((service) => (
-              <tr key={service._id} style={{ borderBottom: "1px solid #eee" }}>
+              <tr key={service._id}>
                 <td
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "10px",
-                    padding: "8px",
                     direction: "rtl",
+                    padding: "8px",
                   }}
                 >
                   {service.imageUrl && (
                     <img
                       src={service.imageUrl}
                       alt={service.name}
-                      className="service-image"
                       style={{
                         width: "50px",
                         height: "50px",
@@ -289,18 +212,24 @@ const CRMServicesTab = () => {
                     />
                   )}
                   <div style={{ textAlign: "right" }}>
-                    <div className="service-name" style={{ fontWeight: "bold" }}>
+                    <div
+                      className="service-name"
+                      style={{ fontWeight: "bold" }}
+                    >
                       {service.name}
                     </div>
-                    <div className="service-description" style={{ fontSize: "12px", color: "#666" }}>
+                    <div
+                      className="service-description"
+                      style={{ fontSize: "12px", color: "#666" }}
+                    >
                       {service.description || "-"}
                     </div>
                   </div>
                 </td>
-                <td className="service-duration" style={{ textAlign: "center", padding: "8px" }}>
+                <td style={{ textAlign: "center", padding: "8px" }}>
                   {service.duration}
                 </td>
-                <td className="service-price" style={{ textAlign: "center", padding: "8px" }}>
+                <td style={{ textAlign: "center", padding: "8px" }}>
                   {service.price}
                 </td>
               </tr>
