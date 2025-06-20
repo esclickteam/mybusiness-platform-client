@@ -1,52 +1,63 @@
-/* HelpCenter.css */
-
 .help-center-container {
-  padding: 24px;
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  direction: rtl;
   font-family: Arial, sans-serif;
-  color: #333;
-  background-color: #fafafa;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 25px;
+  box-sizing: border-box;
+}
+
+.categories-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.category-card {
+  flex: 1 1 140px;
+  background: #f5f5f5;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
 }
 
-.help-center-container h1 {
-  margin-bottom: 16px;
-  font-size: 2.5rem;
-  color: #5a2a82;
+.category-card:hover {
+  background-color: #e0e0e0;
 }
 
-.help-center-container h2 {
-  margin-top: 32px;
-  margin-bottom: 12px;
-  font-size: 1.8rem;
-  color: #7c4dff;
-  border-bottom: 2px solid #7c4dff;
-  padding-bottom: 4px;
+.category-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
 }
 
-.help-center-container p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 16px;
+.faqs ul,
+.recommended-articles ul {
+  list-style: none;
+  padding-right: 0;
 }
 
-.help-center-container ul {
-  list-style-type: disc;
-  padding-left: 20px;
+.faqs li,
+.recommended-articles li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
 }
 
-.help-center-container ul li {
-  margin-bottom: 10px;
-  font-size: 1.1rem;
-}
-
-.help-center-container a {
-  color: #7c4dff;
+.contact-us a {
+  color: #0066cc;
   text-decoration: none;
 }
 
-.help-center-container a:hover {
+.contact-us a:hover {
   text-decoration: underline;
 }
