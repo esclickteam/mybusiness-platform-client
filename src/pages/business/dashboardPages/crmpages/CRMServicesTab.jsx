@@ -9,6 +9,16 @@ const CRMServicesTab = () => {
   const [search, setSearch] = useState("");
   const [services, setServices] = useState([]);
 
+  // מצב לטופס הוספת שירות חדש
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newService, setNewService] = useState({
+    name: "",
+    description: "",
+    duration: "",
+    price: "",
+    imageUrl: ""
+  });
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -29,10 +39,29 @@ const CRMServicesTab = () => {
     service.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleAddService = () => {
+    if (!newService.name || !newService.duration || !newService.price) {
+      alert("נא למלא שם שירות, משך וזמן");
+      return;
+    }
+    setServices([
+      ...services,
+      { ...newService, _id: Date.now().toString() }
+    ]);
+    setShowAddForm(false);
+    setNewService({
+      name: "",
+      description: "",
+      duration: "",
+      price: "",
+      imageUrl: ""
+    });
+  };
+
   return (
     <div className="crm-services-tab">
       <h2>🛠️ שירותים</h2>
-      <div className="services-header">
+      <div className="services-header" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
         <input
           type="text"
           placeholder="חפש לפי שם השירות..."
@@ -41,9 +70,51 @@ const CRMServicesTab = () => {
           className="services-search-input"
           autoComplete="off"
         />
+        <button
+          className="add-service-button"
+          onClick={() => setShowAddForm(!showAddForm)}
+        >
+          {showAddForm ? "בטל" : "הוסף שירות"}
+        </button>
       </div>
 
-      <table className="services-table">
+      {showAddForm && (
+        <div className="add-service-form" style={{ marginTop: "15px", display: "flex", flexDirection: "column", gap: "8px", maxWidth: "400px" }}>
+          <input
+            type="text"
+            placeholder="שם שירות"
+            value={newService.name}
+            onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+          />
+          <input
+            type="text"
+            placeholder="תיאור"
+            value={newService.description}
+            onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="משך (דקות)"
+            value={newService.duration}
+            onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder='מחיר (ש"ח)'
+            value={newService.price}
+            onChange={(e) => setNewService({ ...newService, price: e.target.value })}
+          />
+          <input
+            type="text"
+            placeholder="כתובת תמונה (URL)"
+            value={newService.imageUrl}
+            onChange={(e) => setNewService({ ...newService, imageUrl: e.target.value })}
+          />
+          <button onClick={handleAddService}>שמור שירות</button>
+        </div>
+      )}
+
+      <table className="services-table" style={{ marginTop: "20px" }}>
         <thead>
           <tr>
             <th>שם + תמונה + תיאור</th>
@@ -59,15 +130,16 @@ const CRMServicesTab = () => {
           ) : (
             filteredServices.map((service) => (
               <tr key={service._id}>
-                <td>
+                <td style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   {service.imageUrl && (
                     <img
                       src={service.imageUrl}
                       alt={service.name}
                       className="service-image"
+                      style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "4px" }}
                     />
                   )}
-                  <div className="service-name-desc">
+                  <div>
                     <div className="service-name">{service.name}</div>
                     <div className="service-description">
                       {service.description || "-"}
