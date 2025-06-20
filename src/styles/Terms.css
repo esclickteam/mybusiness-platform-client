@@ -1,96 +1,150 @@
 /* 🌟 רקע דף התקנון */
 body {
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(to bottom, #e0e4ff, #ffffff); /* רקע כמו בעמוד בעלי עסקים */
-    direction: rtl;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #c3d0f7 0%, #ffffff 100%);
+  direction: rtl;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c2c2c;
+  line-height: 1.75;
+  font-weight: 400;
 }
 
 /* 🌟 מבנה הדף */
 .terms-container {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 30px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-    text-align: center;
+  max-width: 920px;
+  margin: 50px auto 80px auto;
+  padding: 45px 60px;
+  background: #fff;
+  border-radius: 25px;
+  box-shadow: 0 15px 50px rgba(74, 20, 140, 0.2);
+  text-align: right;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.terms-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 70px rgba(74, 20, 140, 0.35);
 }
 
 /* 🌟 כותרת ראשית */
 .terms-title {
-    font-size: 36px;
-    color: #4a148c;
-    font-weight: bold;
-    margin-bottom: 20px;
+  font-size: 42px;
+  color: #4a148c;
+  font-weight: 900;
+  margin-bottom: 45px;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 5px rgba(74, 20, 140, 0.2);
 }
 
 /* 🌟 סגנון הסעיפים */
 .terms-section {
-    text-align: right;
-    margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
 .terms-section h2 {
-    font-size: 26px;
-    color: #4a148c;
-    font-weight: bold;
-    margin-bottom: 10px;
+  font-size: 30px;
+  color: #6a1b9a;
+  font-weight: 800;
+  margin-bottom: 18px;
+  border-left: 6px solid #9c27b0;
+  padding-left: 12px;
+  letter-spacing: 0.8px;
+  box-shadow: 1px 2px 5px rgba(156, 39, 176, 0.15);
+  background: #f7e9ff;
+  border-radius: 8px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .terms-section p {
-    font-size: 18px;
-    color: #333;
-    line-height: 1.8;
+  font-size: 19px;
+  color: #444;
+  line-height: 1.85;
+  margin-bottom: 16px;
+  text-align: justify;
+  word-spacing: 2px;
+  letter-spacing: 0.2px;
 }
 
 /* 🌟 התאמה לנייד */
 @media (max-width: 768px) {
-    .terms-container {
-        padding: 20px;
-        width: 90%;
-    }
+  .terms-container {
+    padding: 30px 20px;
+    width: 95%;
+    margin: 30px auto 60px auto;
+  }
 
-    .terms-title {
-        font-size: 30px;
-    }
+  .terms-title {
+    font-size: 32px;
+  }
 
-    .terms-section h2 {
-        font-size: 22px;
-    }
+  .terms-section h2 {
+    font-size: 24px;
+    border-left-width: 4px;
+  }
 
-    .terms-section p {
-        font-size: 16px;
-    }
+  .terms-section p {
+    font-size: 16px;
+  }
+}
+
+/* 🌟 כפתור חזרה למעלה */
+.back-to-top {
+  position: fixed;
+  bottom: 35px;
+  left: 35px;
+  background: #6a1b9a;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 50px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 8px 15px rgba(106, 27, 154, 0.4);
+  transition: background 0.3s ease, transform 0.2s ease;
+  user-select: none;
+  z-index: 1000;
+}
+
+.back-to-top:hover {
+  background: #9c27b0;
+  transform: scale(1.1);
 }
 
 /* 🌟 תחתית האתר */
 .footer {
-    margin-top: 40px;
-    padding: 20px;
-    text-align: center;
+  margin-top: 60px;
+  padding: 30px 15px;
+  text-align: center;
+  background-color: #faf7ff;
+  border-top: 1px solid #e1d7f3;
+  font-size: 15px;
+  color: #555;
+  letter-spacing: 0.3px;
 }
 
 .footer-links {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 10px;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 18px;
 }
 
 .footer-links li {
-    display: inline;
-    margin: 0 10px;
-    color: #333;
-    cursor: pointer;
+  display: inline-block;
+  margin: 0 18px;
+  color: #7a4ca1;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.25s ease;
 }
 
 .footer-links li:hover {
-    text-decoration: underline;
+  text-decoration: underline;
+  color: #4a148c;
 }
 
 /* זכויות שמורות */
 .copyright {
-    font-size: 16px;
-    color: #000;
+  font-size: 14px;
+  color: #777;
 }
