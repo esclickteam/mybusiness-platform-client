@@ -59,6 +59,11 @@ export default function HelpCenter() {
       faq.question.includes(searchTerm) || faq.answer.includes(searchTerm)
   );
 
+  // פונקציה לניקוי טקסט (למשל הסרת כוכביות)
+  function cleanText(text) {
+    return text.replace(/\*\*/g, "");
+  }
+
   // --- סטייט ופעולות של בוט AI ---
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
@@ -87,13 +92,14 @@ export default function HelpCenter() {
 
       const botMessage = {
         sender: "bot",
-        text: data.answer || "סליחה, לא הצלחתי למצוא תשובה לשאלה זו.",
+        text: cleanText(data.answer || "סליחה, לא הצלחתי למצוא תשובה לשאלה זו."),
+        source: data.source || "עסקליק AI",
       };
       setChatMessages((msgs) => [...msgs, botMessage]);
     } catch {
       setChatMessages((msgs) => [
         ...msgs,
-        { sender: "bot", text: "אירעה שגיאה, נסה שוב מאוחר יותר." },
+        { sender: "bot", text: "אירעה שגיאה, נסה שוב מאוחר יותר.", source: "מערכת" },
       ]);
     }
   }
