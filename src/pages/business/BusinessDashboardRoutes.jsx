@@ -5,7 +5,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from '../../utils/lazyWithPreload';
 
-
 // רכיבים דינמיים
 const BuildBusinessPage  = lazy(() => import("./dashboardPages/build/Build"));
 const DashboardPage = lazyWithPreload(() => import("./dashboardPages/DashboardPage"));
@@ -23,8 +22,6 @@ const CRMServicesTab     = lazy(() => import("./dashboardPages/crmpages/CRMServi
 const CRMSettingsTab     = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
 const GoalsPage          = lazy(() => import("./dashboardPages/GoalsPage"));
 const HelpCenter = lazy(() => import("../HelpCenter"));
-
-
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
@@ -65,15 +62,18 @@ const BusinessDashboardRoutes = () => {
           <Route path="messages" element={<BusinessChatPage />} />
           <Route path="business-messages" element={<CollabChat />} />
           <Route path="affiliate" element={<AffiliatePage />} />
+          
           <Route path="crm" element={<CRMMain />}>
             <Route index element={<Navigate to="appointments" replace />} />
             <Route path="appointments" element={<CRMAppointmentsTab businessId={businessId} />} />
             <Route path="clients" element={<CRMClientsTab businessId={businessId} />} />
             <Route path="services" element={<CRMServicesTab businessId={businessId} />} />
             <Route path="settings" element={<CRMSettingsTab businessId={businessId} />} />
-            <Route path="help-center" element={<HelpCenter />} />
-
           </Route>
+
+          {/* מרכז העזרה מחוץ ל- crm */}
+          <Route path="help-center" element={<HelpCenter />} />
+
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Route>
       </Routes>
