@@ -134,7 +134,7 @@ export default function HelpCenter() {
 
       <section className="contact-us">
         <h2>צריכים עזרה נוספת?</h2>
-        <p>
+        <div style={{ textAlign: "center", marginTop: "15px" }}>
           <button
             type="button"
             onClick={() => navigate("/business-support")}
@@ -143,7 +143,7 @@ export default function HelpCenter() {
           >
             עבור לעמוד התמיכה לעסקים
           </button>
-        </p>
+        </div>
       </section>
 
       <ChatBot chatOpen={chatOpen} setChatOpen={setChatOpen} />
