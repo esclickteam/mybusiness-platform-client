@@ -27,7 +27,9 @@ export default function AgreementsList() {
 
   const openAgreement = async (agreementId) => {
     try {
-      const res = await API.get(`/partnershipAgreements/${agreementId}`);
+      // המרה למחרוזת תקינה לפני השימוש ב-URL
+      const idStr = typeof agreementId === "string" ? agreementId : agreementId.toString();
+      const res = await API.get(`/partnershipAgreements/${idStr}`);
       setSelectedAgreement(res.data);
       setModalOpen(true);
     } catch {
