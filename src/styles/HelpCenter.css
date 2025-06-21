@@ -133,6 +133,25 @@ p {
   text-decoration: underline;
 }
 
+/* כפתור תמיכה בעמוד HelpCenter */
+.support-button {
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.support-button:hover,
+.support-button:focus {
+  background-color: #004ecc;
+  outline: none;
+}
+
 /* עיצוב כרטיסיות קטגוריות שאלות נפוצות */
 .faq-categories {
   margin-bottom: 40px;

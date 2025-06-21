@@ -48,7 +48,6 @@ export default function HelpCenter() {
     },
   ];
 
-  // רשימת הכרטיסיות (קטגוריות) עם הנתיבים שייקשרו אליהם - תואם לנתיבי ה-FAQ בקוד ה-Routes
   const faqCategories = [
     { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
     { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/dashboard/faq/dashboard` : "/" },
@@ -64,12 +63,10 @@ export default function HelpCenter() {
   const [searchTerm, setSearchTerm] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
 
-  // סינון הכרטיסיות לפי חיפוש (כולל תמיכה בכתיבה קטנה/גדולה)
   const filteredCategories = faqCategories.filter(cat =>
     cat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // ניתוב לדף הכרטיסיה בלחיצה
   const handleCategoryClick = (path) => {
     navigate(path);
   };
@@ -138,12 +135,14 @@ export default function HelpCenter() {
       <section className="contact-us">
         <h2>צריכים עזרה נוספת?</h2>
         <p>
-          ניתן לפנות אלינו באמצעות האימייל:{" "}
-          <a href="mailto:support@yourdomain.com">support@yourdomain.com</a>
-        </p>
-        <p>
-          או להתקשר למספר הטלפון:{" "}
-          <a href="tel:+97212345678">+972-1-2345678</a>
+          <button
+            type="button"
+            onClick={() => navigate("/business-support")}
+            className="support-button"
+            aria-label="עבור לעמוד תמיכה לעסקים"
+          >
+            עבור לעמוד התמיכה לעסקים
+          </button>
         </p>
       </section>
 
