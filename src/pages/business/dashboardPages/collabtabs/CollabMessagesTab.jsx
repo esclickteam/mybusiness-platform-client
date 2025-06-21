@@ -9,11 +9,9 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("sent"); // 'sent', 'received', 'accepted'
 
-  // מצב למודל הצגת הסכם
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // טען הצעות מהשרת
   const fetchMessages = async () => {
     setLoading(true);
     try {
@@ -39,11 +37,8 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
   useEffect(() => {
     if (!socket) return;
 
-    // מאזין להתראות והצעות חדשות בזמן אמת
     const handleNewNotification = (notification) => {
-      // אפשר להציג הודעה או לעדכן UI במידת הצורך
       console.log("New notification received:", notification);
-      // טען מחדש הצעות כדי לעדכן את הרשימה
       fetchMessages();
     };
 
@@ -238,7 +233,6 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
               <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
             </p>
 
-            {/* פיצול שדה message לשורות */}
             {msg.message && (
               <>
                 {msg.message.title && (
@@ -269,40 +263,28 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
               <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
             </p>
 
-            {/* כפתורים קשורים להסכם */}
+            {/* כפתור צפייה בהסכם */}
             {msg.agreementId && (
               <>
-                {/* העסק השולח תמיד רואה צפייה בהסכם */}
+                {/* העסק השולח רואה את הכפתור */}
                 {String(userBusinessId) === String(msg.fromBusinessId?._id) && (
                   <button
-                    onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
+                    onClick={() => onOpenAgreement(msg.agreementId)}
                     style={buttonStylePurple}
                   >
                     צפייה בהסכם
                   </button>
                 )}
 
-                {/* העסק השני - אם חתם כבר, רואה צפייה בהסכם */}
-                {String(userBusinessId) === String(msg.toBusinessId?._id) &&
-                  msg.agreementId.signatures?.invitedBusiness?.signed && (
-                    <button
-                      onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
-                      style={buttonStylePurple}
-                    >
-                      צפייה בהסכם
-                    </button>
-                  )}
-
-                {/* העסק השני - אם לא חתם עדיין, רואה כפתור חתימה */}
-                {String(userBusinessId) === String(msg.toBusinessId?._id) &&
-                  !msg.agreementId.signatures?.invitedBusiness?.signed && (
-                    <button
-                      onClick={() => onOpenAgreement(msg.agreementId._id || msg.agreementId)}
-                      style={buttonStyleBlue}
-                    >
-                      חתום על ההסכם
-                    </button>
-                  )}
+                {/* העסק המקבל רואה את הכפתור */}
+                {String(userBusinessId) === String(msg.toBusinessId?._id) && (
+                  <button
+                    onClick={() => onOpenAgreement(msg.agreementId)}
+                    style={buttonStylePurple}
+                  >
+                    צפייה בהסכם
+                  </button>
+                )}
               </>
             )}
 
