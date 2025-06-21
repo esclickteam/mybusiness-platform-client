@@ -257,7 +257,16 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
               <>
                 {(String(userBusinessId) === String(msg.fromBusinessId?._id) ||
                   String(userBusinessId) === String(msg.toBusinessId?._id)) && (
-                  <button onClick={() => onOpenAgreement(msg.agreementId)} style={buttonStylePurple}>
+                  <button
+                    onClick={() => {
+                      const idStr =
+                        typeof msg.agreementId === "string"
+                          ? msg.agreementId
+                          : msg.agreementId.toString();
+                      onOpenAgreement(idStr);
+                    }}
+                    style={buttonStylePurple}
+                  >
                     צפייה בהסכם
                   </button>
                 )}
