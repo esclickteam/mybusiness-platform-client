@@ -96,13 +96,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     }
   };
 
-  const handleCreateAgreement = () => {
-    if (!currentProposalId) {
-      alert("יש ליצור הצעה לפני יצירת הסכם");
-      return;
-    }
-    setCreateAgreementModalOpen(true);
-  };
+  const handleCreateAgreement = () => setCreateAgreementModalOpen(true);
   const closeCreateAgreementModal = () => setCreateAgreementModalOpen(false);
 
   return (
@@ -294,7 +288,6 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
             onSent={(proposalId) => {
               setCurrentProposalId(proposalId);
               closeProposalModal();
-              setCreateAgreementModalOpen(true); // פותח אוטומטית את יצירת ההסכם אחרי שליחת הצעה
             }}
           />
         </Box>
