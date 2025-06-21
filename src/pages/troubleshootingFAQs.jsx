@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const troubleshootingFAQs = [
   {
@@ -188,14 +188,76 @@ const troubleshootingFAQs = [
 ];
 
 export default function TroubleshootingSupport() {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const toggleIndex = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
   return (
-    <div style={{ maxWidth: 900, margin: "auto", padding: 20, fontFamily: "Arial, sans-serif", lineHeight: 1.6 }}>
-      <h1>טיפול בתקלות ושגיאות - שאלות ותשובות</h1>
+    <div
+      style={{
+        maxWidth: 900,
+        margin: "auto",
+        padding: 20,
+        fontFamily: "Arial, sans-serif",
+        direction: "rtl",
+        textAlign: "right",
+        lineHeight: 1.6,
+      }}
+    >
+      <h1 style={{ marginBottom: 30, textAlign: "center" }}>טיפול בתקלות ושגיאות - שאלות ותשובות</h1>
       {troubleshootingFAQs.map(({ question, answer }, idx) => (
-        <section key={idx} style={{ marginBottom: 30 }}>
-          <h2 style={{ color: "#3a0ca3" }}>{question}</h2>
-          <div>{answer}</div>
-        </section>
+        <div
+          key={idx}
+          style={{
+            marginBottom: 20,
+            border: "1px solid #ddd",
+            borderRadius: 8,
+            overflow: "hidden",
+            background: "#fff",
+          }}
+        >
+          <button
+            onClick={() => toggleIndex(idx)}
+            aria-expanded={openIndex === idx}
+            aria-controls={`faq-answer-${idx}`}
+            style={{
+              width: "100%",
+              background: "#f5f5f5",
+              color: "#3a0ca3",
+              padding: "15px 20px",
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "right",
+              cursor: "pointer",
+              border: "none",
+              display: "flex",
+              flexDirection: "row-reverse",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <span>{question}</span>
+            <span style={{ fontSize: 24, lineHeight: 1 }}>{openIndex === idx ? "−" : "+"}</span>
+          </button>
+          {openIndex === idx && (
+            <div
+              id={`faq-answer-${idx}`}
+              aria-labelledby={`faq-question-${idx}`}
+              style={{
+                padding: 20,
+                background: "#fafafa",
+                whiteSpace: "pre-wrap",
+                fontSize: 16,
+                color: "#444",
+              }}
+            >
+              {answer}
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );
