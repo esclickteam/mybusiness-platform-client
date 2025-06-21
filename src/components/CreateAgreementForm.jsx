@@ -98,11 +98,16 @@ export default function CreateAgreementForm({
         proposalId,
       };
 
+      console.log("Sending payload to create agreement:", payload);
+
       const res = await API.post("/partnershipAgreements", payload);
+
+      console.log("Response from create agreement API:", res.data);
 
       alert("ההסכם נוצר ונשלח לחתימה של הצד השני!");
       if (onCreated) onCreated(res.data);
     } catch (err) {
+      console.error("Error creating agreement:", err);
       setError("שגיאה ביצירת ההסכם: " + (err.response?.data?.message || err.message));
     } finally {
       setSending(false);
