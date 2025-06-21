@@ -133,18 +133,19 @@ export default function HelpCenter() {
       </section>
 
       <section className="contact-us">
-        <h2 style={{ textAlign: "center" }}>צריכים עזרה נוספת?</h2>
-        <div style={{ textAlign: "center", marginTop: "15px" }}>
-          <button
-            type="button"
-            onClick={() => navigate("/business-support")}
-            className="support-button"
-            aria-label="עבור לעמוד תמיכה לעסקים"
-          >
-            עבור לעמוד התמיכה לעסקים
-          </button>
-        </div>
-      </section>
+  <h2>צריכים עזרה נוספת?</h2>
+  <div>
+    <button
+      type="button"
+      onClick={() => navigate("/business-support")}
+      className="support-button"
+      aria-label="עבור לעמוד תמיכה לעסקים"
+    >
+      עבור לעמוד התמיכה לעסקים
+    </button>
+  </div>
+</section>
+
 
       <ChatBot chatOpen={chatOpen} setChatOpen={setChatOpen} />
     </div>
