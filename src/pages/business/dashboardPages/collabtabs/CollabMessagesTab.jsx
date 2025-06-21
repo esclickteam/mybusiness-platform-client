@@ -259,6 +259,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                   String(userBusinessId) === String(msg.toBusinessId?._id)) && (
                   <button
                     onClick={() => {
+                      // המרה ל-string מ-ObjectId
                       const idStr =
                         typeof msg.agreementId === "string"
                           ? msg.agreementId
