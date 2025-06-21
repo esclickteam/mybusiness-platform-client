@@ -4,7 +4,8 @@ import "./ChatGuidePage.css";
 export default function ChatGuidePage() {
   return (
     <div className="chat-guide-container" dir="rtl" lang="he">
-      <h1>💬 מדריך מקצועי: שימוש נכון בצ’אט עם לקוחות בעסקליק</h1>
+      {/* הסרנו את המשפט בכותרת הראשית */}
+      <h1>🧷 שימוש נכון בצ’אט עם לקוחות בעסקליק</h1>
 
       <h2>📍 איך הצ’אט עובד בפועל?</h2>
       <p>
