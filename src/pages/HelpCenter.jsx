@@ -48,25 +48,25 @@ export default function HelpCenter() {
     },
   ];
 
-  // רשימת הכרטיסיות (קטגוריות) עם הנתיבים שייקשרו אליהם
+  // רשימת הכרטיסיות (קטגוריות) עם הנתיבים שייקשרו אליהם - תואם לנתיבי ה-FAQ בקוד ה-Routes
   const faqCategories = [
-  { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
-  { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/dashboard/faq/dashboard` : "/" },
-  { id: 3, title: "הודעות מלקוחות", path: businessId ? `/business/${businessId}/dashboard/faq/messages` : "/" },
-  { id: 4, title: "שיתופי פעולה", path: businessId ? `/business/${businessId}/dashboard/faq/collaborations` : "/" },
-  { id: 5, title: "CRM", path: businessId ? `/business/${businessId}/dashboard/faq/crm` : "/" },
-  { id: 6, title: "יועץ עסקליק", path: businessId ? `/business/${businessId}/dashboard/faq/ai-advisor` : "/" },
-  { id: 7, title: "תוכנית שותפים", path: businessId ? `/business/${businessId}/dashboard/faq/partners-program` : "/" },
-  { id: 8, title: "טיפול בתקלות ושגיאות", path: businessId ? `/business/${businessId}/dashboard/faq/troubleshooting` : "/" },
-  { id: 9, title: "תמיכה טכנית", path: businessId ? `/business/${businessId}/dashboard/faq/technical-support` : "/" },
-];
+    { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
+    { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/dashboard/faq/dashboard` : "/" },
+    { id: 3, title: "הודעות מלקוחות", path: businessId ? `/business/${businessId}/dashboard/faq/customer-messages` : "/" },
+    { id: 4, title: "שיתופי פעולה", path: businessId ? `/business/${businessId}/dashboard/faq/collaborations` : "/" },
+    { id: 5, title: "CRM", path: businessId ? `/business/${businessId}/dashboard/faq/crm` : "/" },
+    { id: 6, title: "יועץ עסקליק", path: businessId ? `/business/${businessId}/dashboard/faq/eskelik-advisor` : "/" },
+    { id: 7, title: "תוכנית שותפים", path: businessId ? `/business/${businessId}/dashboard/faq/affiliate-program` : "/" },
+    { id: 8, title: "טיפול בתקלות ושגיאות", path: businessId ? `/business/${businessId}/dashboard/faq/troubleshooting` : "/" },
+    { id: 9, title: "תמיכה טכנית", path: businessId ? `/business/${businessId}/dashboard/faq/technical-support` : "/" },
+  ];
 
   const [searchTerm, setSearchTerm] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
 
-  // סינון הכרטיסיות לפי חיפוש
+  // סינון הכרטיסיות לפי חיפוש (כולל תמיכה בכתיבה קטנה/גדולה)
   const filteredCategories = faqCategories.filter(cat =>
-    cat.title.includes(searchTerm)
+    cat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // ניתוב לדף הכרטיסיה בלחיצה
@@ -110,7 +110,6 @@ export default function HelpCenter() {
         </div>
       </section>
 
-      {/* כאן הכרטיסיות (קטגוריות שאלות נפוצות) מתחת למאמרים */}
       <section className="faq-categories">
         <h2>בחר קטגוריה לשאלות נפוצות</h2>
         <div className="categories-grid">
