@@ -233,7 +233,18 @@ export default function EskelikAdvisorFAQ() {
               borderRadius: 6,
             }}
           >
-            <span>{question}</span>
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                userSelect: "none",
+                color: "#e00", // אדום בולט
+              }}
+            >
+              ?
+            </span>
+            <span style={{ flexGrow: 1, textAlign: "right" }}>{question}</span>
             <span style={{ fontSize: 24, lineHeight: 1 }}>
               {openIndex === index ? "−" : "+"}
             </span>
