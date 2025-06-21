@@ -41,7 +41,7 @@ import CollaborationsFAQ from "../CollaborationsFAQ";
 import CrmFAQ from "../CrmFAQ";
 import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
 import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
-import TechnicalSupportFAQ from "../TechnicalSupportFAQ";       
+import TechnicalSupportFAQ from "../technicalSupportFAQs";
 import TroubleshootingFAQ from "../TroubleshootingFAQ";         
 
 const BusinessDashboardRoutes = () => {
