@@ -29,7 +29,6 @@ export default function CollabFindPartnerTab({
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
 
-  // שמירת מזהה ההצעה שיצרת לאחרונה
   const [currentProposalId, setCurrentProposalId] = useState(null);
 
   useEffect(() => {
@@ -99,59 +98,6 @@ export default function CollabFindPartnerTab({
     }
   };
 
-  const openChatModal = (business) => {
-    setChatTarget(business);
-    setChatMessage("");
-    setChatModalOpen(true);
-  };
-
-  const handleSendBusinessMessage = async () => {
-    if (!chatTarget || !chatMessage.trim()) return;
-    setSending(true);
-    try {
-      await API.post("/business-chat/start", {
-        otherBusinessId: chatTarget._id || chatTarget.id,
-        text: chatMessage.trim(),
-      });
-      setSnackbarMessage("ההודעה נשלחה בהצלחה 👍");
-      setSnackbarOpen(true);
-      setChatModalOpen(false);
-    } catch (err) {
-      setSnackbarMessage("שגיאה בשליחה: " + (err?.response?.data?.error || err.message));
-      setSnackbarOpen(true);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const openCreateAgreementModal = (business) => {
-    setCreateAgreementPartner(business);
-    setCreateAgreementModalOpen(true);
-  };
-  const closeCreateAgreementModal = () => {
-    setCreateAgreementModalOpen(false);
-    setCreateAgreementPartner(null);
-  };
-
-  const openSendProposalModal = (business) => {
-    setSelectedBusinessForProposal(business);
-    setSendProposalModalOpen(true);
-  };
-  const closeSendProposalModal = () => {
-    setSendProposalModalOpen(false);
-    setSelectedBusinessForProposal(null);
-  };
-
-  // קולבק שיקבל מזהה הצעה אחרי יצירת הצעה מוצלחת
-  const handleProposalSent = (proposalId) => {
-  console.log("Received proposalId in handleProposalSent:", proposalId);
-  
-    setCurrentProposalId(proposalId);
-    closeSendProposalModal();
-    setSnackbarMessage("ההצעה נשלחה בהצלחה");
-    setSnackbarOpen(true);
-  };
-
   return (
     <div>
       {/* Search Bar */}
@@ -179,109 +125,18 @@ export default function CollabFindPartnerTab({
                 {isMine ? (
                   <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
                 ) : (
-                  <>
-                    <button
-                      className="message-box-button"
-                      onClick={() => openSendProposalModal(business)}
-                    >
-                      שלח הצעה 📨
-                    </button>
-                    <button
-                      className="message-box-button secondary"
-                      onClick={() => handleOpenProfile(business)}
-                    >
-                      צפייה בפרופיל
-                    </button>
-                    <button
-                      className="message-box-button secondary"
-                      onClick={() => openChatModal(business)}
-                    >
-                      צ'אט
-                    </button>
-                    <button
-                      className="message-box-button create-agreement-button"
-                      onClick={() => openCreateAgreementModal(business)}
-                    >
-                      ✍️ צור הסכם חדש
-                    </button>
-                  </>
+                  <button
+                    className="message-box-button secondary"
+                    onClick={() => handleOpenProfile(business)}
+                  >
+                    צפייה בפרופיל
+                  </button>
                 )}
               </div>
             </div>
           );
         })
       )}
-
-      {/* Chat Modal */}
-      <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
-        <Box sx={modalStyle}>
-          <h3>שלח הודעה אל {chatTarget?.businessName}</h3>
-          <TextField
-            autoFocus
-            multiline
-            minRows={3}
-            fullWidth
-            value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
-            placeholder="הקלד הודעה ראשונה לעסק…"
-          />
-          <Button
-            variant="contained"
-            sx={{ mt: 2 }}
-            onClick={handleSendBusinessMessage}
-            disabled={!chatMessage.trim() || sending}
-          >
-            שלח
-          </Button>
-        </Box>
-      </Modal>
-
-      {/* Create Agreement Modal */}
-      <Modal open={createAgreementModalOpen} onClose={closeCreateAgreementModal}>
-        <Box sx={{ ...modalStyle, maxWidth: 600, maxHeight: "80vh", overflowY: "auto" }}>
-          {createAgreementPartner && (
-            <CreatePartnershipAgreementForm
-              fromBusinessId={myBusinessId}
-              fromBusinessName={myBusinessName}
-              partnerBusiness={createAgreementPartner}
-              currentUserBusinessId={myBusinessId}
-              proposalId={currentProposalId} // חשוב להעביר את מזהה ההצעה
-              onCreated={(agreement) => {
-                setSnackbarMessage("ההסכם נוצר בהצלחה");
-                setSnackbarOpen(true);
-                closeCreateAgreementModal();
-              }}
-            />
-          )}
-        </Box>
-      </Modal>
-
-      {/* Send Proposal Modal */}
-      <Modal open={sendProposalModalOpen} onClose={closeSendProposalModal}>
-        <Box sx={modalStyle}>
-          {selectedBusinessForProposal && (
-            <ProposalForm
-              fromBusinessId={myBusinessId}
-              fromBusinessName={myBusinessName}
-              toBusiness={selectedBusinessForProposal}
-              onClose={closeSendProposalModal}
-              onSent={handleProposalSent} // מחזיר את מזהה ההצעה שקיבלנו מ- ProposalForm
-            />
-          )}
-        </Box>
-      </Modal>
-
-      {/* Snackbar */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert severity="success" sx={{ width: "100%" }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }
