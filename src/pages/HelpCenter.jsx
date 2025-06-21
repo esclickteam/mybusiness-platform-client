@@ -133,7 +133,7 @@ export default function HelpCenter() {
       </section>
 
       <section className="contact-us">
-        <h2>צריכים עזרה נוספת?</h2>
+        <h2 style={{ textAlign: "center" }}>צריכים עזרה נוספת?</h2>
         <div style={{ textAlign: "center", marginTop: "15px" }}>
           <button
             type="button"
