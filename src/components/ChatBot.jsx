@@ -1,19 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import loadAllFAQs from "../utils/loadAllFAQs";
 
 export default function ChatBot({ chatOpen, setChatOpen }) {
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
-  const [faqs, setFaqs] = useState([]);
   const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    async function fetchFAQs() {
-      const data = await loadAllFAQs();
-      setFaqs(data);
-    }
-    fetchFAQs();
-  }, []);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -25,17 +15,6 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
     return text.replace(/\*\*/g, "");
   }
 
-  function findFAQAnswer(question) {
-    if (!faqs.length) return null;
-    const lowerQ = question.toLowerCase();
-    // חיפוש פשוט: מחפש שאלות שמכילות או כלולות בטקסט שהמשתמש הכניס
-    const match = faqs.find((faq) =>
-      faq.question.toLowerCase().includes(lowerQ) ||
-      lowerQ.includes(faq.question.toLowerCase())
-    );
-    return match ? match.answer : null;
-  }
-
   async function sendMessage() {
     if (!chatInput.trim()) return;
 
@@ -43,23 +22,26 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
     setChatMessages((msgs) => [...msgs, userMessage]);
     setChatInput("");
 
-    // חיפוש תשובה מתוך ה-FAQ
-    const answer = findFAQAnswer(chatInput);
+    try {
+      const response = await fetch("/api/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: chatInput }),
+      });
 
-    if (answer) {
+      const data = await response.json();
+
       const botMessage = {
         sender: "bot",
-        text: cleanText(answer),
-        source: "עסקליק FAQ",
+        text: cleanText(data.answer || "מצטערים, לא נמצאה תשובה מתאימה."),
+        source: data.source || "עסקליק AI",
       };
       setChatMessages((msgs) => [...msgs, botMessage]);
-    } else {
-      const botMessage = {
-        sender: "bot",
-        text: "סליחה, לא הצלחתי למצוא תשובה לשאלה זו ב-FAQ.",
-        source: "עסקליק AI",
-      };
-      setChatMessages((msgs) => [...msgs, botMessage]);
+    } catch (error) {
+      setChatMessages((msgs) => [
+        ...msgs,
+        { sender: "bot", text: "אירעה שגיאה, נסה שנית מאוחר יותר." },
+      ]);
     }
   }
 
@@ -102,7 +84,8 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
         boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
         display: "flex",
         flexDirection: "column",
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        fontFamily:
+          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
         zIndex: 10000,
         overflow: "hidden",
       }}
