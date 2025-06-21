@@ -19,7 +19,8 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     async function fetchAgreement() {
       setLoading(true);
       try {
-        const res = await API.get(`/partnershipAgreements/${agreementId}`);
+        const idStr = typeof agreementId === "string" ? agreementId : agreementId.toString();
+        const res = await API.get(`/partnershipAgreements/${idStr}`);
         setAgreement(res.data);
       } catch (err) {
         console.error("Error loading agreement:", err);
@@ -43,13 +44,14 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     const signatureDataUrl = sigPadRef.current.getTrimmedCanvas().toDataURL();
     setSaving(true);
     try {
+      const idStr = typeof agreementId === "string" ? agreementId : agreementId.toString();
       if (userSide === "invitedBusiness") {
-        await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl });
+        await API.post(`/partnershipAgreements/${idStr}/sign`, { signatureDataUrl });
       } else if (userSide === "createdBy") {
-        await API.patch(`/partnershipAgreements/${agreementId}`, { signatureDataUrl });
+        await API.patch(`/partnershipAgreements/${idStr}`, { signatureDataUrl });
       }
       setShowSign(false);
-      const res = await API.get(`/partnershipAgreements/${agreementId}`);
+      const res = await API.get(`/partnershipAgreements/${idStr}`);
       setAgreement(res.data);
     } catch (err) {
       console.error("Error saving signature:", err);
@@ -67,7 +69,7 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
 
     const options = {
       margin: 0.5,
-      filename: `agreement_${agreementId}.pdf`,
+      filename: `agreement_${agreementId.toString()}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" },

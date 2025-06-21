@@ -3,8 +3,18 @@ import React, { useState } from "react";
 export default function ProposalList({ proposals, currentBusinessId }) {
   const [openAgreementId, setOpenAgreementId] = useState(null);
 
+  // פונקציה להמרת מזהה למחרוזת בצורה בטוחה
+  function safeId(id) {
+    if (!id) return "";
+    if (typeof id === "string") return id;
+    if (id._id) return id._id.toString();
+    if (typeof id.toString === "function") return id.toString();
+    return String(id);
+  }
+
   function openModal(agreementId) {
-    setOpenAgreementId(agreementId);
+    const idStr = safeId(agreementId);
+    setOpenAgreementId(idStr);
   }
 
   function closeModal() {
@@ -50,12 +60,12 @@ export default function ProposalList({ proposals, currentBusinessId }) {
                   borderRadius: 4,
                   cursor: "pointer",
                 }}
-                onClick={() => openModal(proposal.agreementId._id)}
+                onClick={() => openModal(proposal.agreementId)}
               >
                 הצג הסכם
               </button>
 
-              {openAgreementId === proposal.agreementId._id && (
+              {openAgreementId === safeId(proposal.agreementId) && (
                 <div
                   style={{
                     marginTop: 15,

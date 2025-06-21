@@ -28,7 +28,9 @@ export default function UpdateAgreement({ agreementId, onUpdated }) {
         signatureDataUrl,
       };
 
-      const res = await API.patch(`/partnershipAgreements/${agreementId}`, payload);
+      const idStr = typeof agreementId === "string" ? agreementId : agreementId.toString();
+
+      const res = await API.patch(`/partnershipAgreements/${idStr}`, payload);
 
       alert("ההסכם עודכן בהצלחה!");
       if (onUpdated) onUpdated(res.data);
