@@ -29,7 +29,7 @@ function useDebouncedCallback(callback, delay) {
   }, [callback, delay]);
 }
 
-export default function BusinessChatPage() {
+export default function  BusinessChatPage() {
   const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
