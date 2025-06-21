@@ -29,7 +29,7 @@ function useDebouncedCallback(callback, delay) {
   }, [callback, delay]);
 }
 
-export default function  BusinessChatPage() {
+export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const businessId = user?.businessId || user?.business?._id;
 
@@ -152,13 +152,14 @@ export default function  BusinessChatPage() {
 
     const handleScroll = () => {
       if (
-        el.scrollTop === 0 && // הגיע לראש
+        el.scrollTop === 0 && // הגיע לראש הרשימה
         hasMoreMessages &&
         !isLoadingMore
       ) {
-        const oldestMessageId = messages.length > 0 ? messages[0]._id : null;
-        if (oldestMessageId) {
-          loadMessages(selected.conversationId, oldestMessageId, true);
+        // במקום לשלוח את ה־_id שולחים את הטיימסטמפ של ההודעה הכי ישנה
+        const oldestMessageTimestamp = messages.length > 0 ? messages[0].timestamp : null;
+        if (oldestMessageTimestamp) {
+          loadMessages(selected.conversationId, oldestMessageTimestamp, true);
         }
       }
     };
@@ -298,8 +299,10 @@ export default function  BusinessChatPage() {
             hasMoreMessages={hasMoreMessages}
             loadMoreMessages={() => {
               if (messages.length > 0 && hasMoreMessages && !isLoadingMore) {
-                const oldestMessageId = messages[0]._id;
-                loadMessages(selected.conversationId, oldestMessageId, true);
+                const oldestMessageTimestamp = messages[0].timestamp;
+                if (oldestMessageTimestamp) {
+                  loadMessages(selected.conversationId, oldestMessageTimestamp, true);
+                }
               }
             }}
           />
