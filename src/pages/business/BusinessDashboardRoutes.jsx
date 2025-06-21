@@ -34,15 +34,15 @@ const BusinessCollaborationGuidePage = lazy(() => import("../BusinessCollaborati
 const AICompanionGuidePage = lazy(() => import("../AICompanionGuidePage"));
 
 // דפי FAQ - ייבוא מערכי נתונים
-import { ProfileFAQ } from "../ProfileFAQ";
-import { DashboardFAQ } from "../DashboardFAQ";
-import { CustomerMessagesFAQ } from "../CustomerMessagesFAQ";
-import { CollaborationsFAQ } from "../CollaborationsFAQ";
-import { CrmFAQ } from "../CrmFAQ";
-import { EskelikAdvisorFAQ } from "../EskelikAdvisorFAQ";
-import { AffiliateProgramFAQ } from "../AffiliateProgramFAQ";
-import { technicalSupportFAQs } from "../technicalSupportFAQs";
-import { troubleshootingFAQs } from "../troubleshootingFAQs";
+import ProfileFAQ from "../ProfileFAQ";
+import DashboardFAQ from "../DashboardFAQ";
+import CustomerMessagesFAQ from "../CustomerMessagesFAQ";
+import CollaborationsFAQ from "../CollaborationsFAQ";
+import CrmFAQ from "../CrmFAQ";
+import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
+import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
+import technicalSupportFAQs from "../technicalSupportFAQs";
+import troubleshootingFAQs from "../troubleshootingFAQs";
 
 // רכיב להצגת FAQ (מערך שאלות ותשובות)
 function FAQPage({ faqs }) {
