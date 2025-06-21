@@ -110,6 +110,11 @@ p {
   width: fit-content;
 }
 
+/* הוספת מרכזיות לכותרת ולתוכן ב-contact-us */
+.contact-us {
+  text-align: center;
+}
+
 .faqs ul,
 .recommended-articles ul {
   list-style: none;
@@ -144,6 +149,8 @@ p {
   cursor: pointer;
   transition: background-color 0.3s ease;
   user-select: none;
+  display: inline-block; /* חשוב להישאר רק ברוחב התוכן */
+  margin-top: 15px;
 }
 
 .support-button:hover,
