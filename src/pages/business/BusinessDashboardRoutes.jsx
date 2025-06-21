@@ -103,14 +103,15 @@ const BusinessDashboardRoutes = () => {
 
           {/* דפי FAQ */}
           <Route path="faq/profile" element={<ProfileFAQ />} />
-          <Route path="faq/dashboard" element={<FAQPage faqs={DashboardFAQ} />} />
-          <Route path="faq/customer-messages" element={<FAQPage faqs={CustomerMessagesFAQ} />} />
-          <Route path="faq/collaborations" element={<FAQPage faqs={CollaborationsFAQ} />} />
-          <Route path="faq/crm" element={<FAQPage faqs={CrmFAQ} />} />
-          <Route path="faq/eskelik-advisor" element={<FAQPage faqs={EskelikAdvisorFAQ} />} />
-          <Route path="faq/affiliate-program" element={<FAQPage faqs={AffiliateProgramFAQ} />} />
-          <Route path="faq/technical-support" element={<FAQPage faqs={technicalSupportFAQs} />} />
-          <Route path="faq/troubleshooting" element={<FAQPage faqs={troubleshootingFAQs} />} />
+<Route path="faq/dashboard" element={<DashboardFAQ />} />
+<Route path="faq/customer-messages" element={<CustomerMessagesFAQ />} />
+<Route path="faq/collaborations" element={<CollaborationsFAQ />} />
+<Route path="faq/crm" element={<CrmFAQ />} />
+<Route path="faq/eskelik-advisor" element={<EskelikAdvisorFAQ />} />
+<Route path="faq/affiliate-program" element={<AffiliateProgramFAQ />} />
+<Route path="faq/technical-support" element={<TechnicalSupportFAQs />} />
+<Route path="faq/troubleshooting" element={<TroubleshootingFAQs />} />
+
 
           {/* שאר הנתיבים */}
           <Route path="cart" element={<CartPage />} />
