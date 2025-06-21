@@ -33,9 +33,31 @@ const AppointmentCRMGuidePage = lazy(() => import("../AppointmentCRMGuidePage"))
 const BusinessCollaborationGuidePage = lazy(() => import("../BusinessCollaborationGuidePage"));
 const AICompanionGuidePage = lazy(() => import("../AICompanionGuidePage"));
 
-// ייבוא דף FAQ פרופיל העסק
-const ProfileFAQ = lazy(() => import("../ProfileFAQ"));
+// דפי FAQ - ייבוא מערכי נתונים
+import { ProfileFAQ } from "../ProfileFAQ";
+import { DashboardFAQ } from "../DashboardFAQ";
+import { CustomerMessagesFAQ } from "../CustomerMessagesFAQ";
+import { CollaborationsFAQ } from "../CollaborationsFAQ";
+import { CrmFAQ } from "../CrmFAQ";
+import { EskelikAdvisorFAQ } from "../EskelikAdvisorFAQ";
+import { AffiliateProgramFAQ } from "../AffiliateProgramFAQ";
+import { technicalSupportFAQs } from "../technicalSupportFAQs";
+import { troubleshootingFAQs } from "../troubleshootingFAQs";
 
+// רכיב להצגת FAQ (מערך שאלות ותשובות)
+function FAQPage({ faqs }) {
+  return (
+    <div style={{ maxWidth: 900, margin: "auto", padding: 20, fontFamily: "Arial, sans-serif", lineHeight: 1.6 }}>
+      <h1>שאלות ותשובות</h1>
+      {faqs.map(({ question, answer }, idx) => (
+        <section key={idx} style={{ marginBottom: 30 }}>
+          <h2 style={{ color: "#3a0ca3" }}>{question}</h2>
+          <div>{answer}</div>
+        </section>
+      ))}
+    </div>
+  );
+}
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
@@ -79,9 +101,16 @@ const BusinessDashboardRoutes = () => {
           <Route path="articles/business-collaboration" element={<BusinessCollaborationGuidePage />} />
           <Route path="articles/ai-companion" element={<AICompanionGuidePage />} />
 
-          {/* דף FAQ פרופיל העסק */}
-          <Route path="faq/profile" element={<ProfileFAQ />} />
-
+          {/* דפי FAQ */}
+          <Route path="faq/profile" element={<FAQPage faqs={ProfileFAQ} />} />
+          <Route path="faq/dashboard" element={<FAQPage faqs={DashboardFAQ} />} />
+          <Route path="faq/customer-messages" element={<FAQPage faqs={CustomerMessagesFAQ} />} />
+          <Route path="faq/collaborations" element={<FAQPage faqs={CollaborationsFAQ} />} />
+          <Route path="faq/crm" element={<FAQPage faqs={CrmFAQ} />} />
+          <Route path="faq/eskelik-advisor" element={<FAQPage faqs={EskelikAdvisorFAQ} />} />
+          <Route path="faq/affiliate-program" element={<FAQPage faqs={AffiliateProgramFAQ} />} />
+          <Route path="faq/technical-support" element={<FAQPage faqs={technicalSupportFAQs} />} />
+          <Route path="faq/troubleshooting" element={<FAQPage faqs={troubleshootingFAQs} />} />
 
           {/* שאר הנתיבים */}
           <Route path="cart" element={<CartPage />} />

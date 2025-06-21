@@ -50,14 +50,16 @@ export default function HelpCenter() {
 
   // רשימת הכרטיסיות (קטגוריות) עם הנתיבים שייקשרו אליהם
   const faqCategories = [
-    { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
-    { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/faq/dashboard` : "/" },
-    { id: 3, title: "הודעות מלקוחות", path: businessId ? `/business/${businessId}/faq/messages` : "/" },
-    { id: 4, title: "שיתופי פעולה", path: businessId ? `/business/${businessId}/faq/collaborations` : "/" },
-    { id: 5, title: "CRM", path: businessId ? `/business/${businessId}/faq/crm` : "/" },
-    { id: 6, title: "יועץ עסקליק", path: businessId ? `/business/${businessId}/faq/ai-advisor` : "/" },
-    { id: 7, title: "תוכנית שותפים", path: businessId ? `/business/${businessId}/faq/partners-program` : "/" },
-  ];
+  { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
+  { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/dashboard/faq/dashboard` : "/" },
+  { id: 3, title: "הודעות מלקוחות", path: businessId ? `/business/${businessId}/dashboard/faq/messages` : "/" },
+  { id: 4, title: "שיתופי פעולה", path: businessId ? `/business/${businessId}/dashboard/faq/collaborations` : "/" },
+  { id: 5, title: "CRM", path: businessId ? `/business/${businessId}/dashboard/faq/crm` : "/" },
+  { id: 6, title: "יועץ עסקליק", path: businessId ? `/business/${businessId}/dashboard/faq/ai-advisor` : "/" },
+  { id: 7, title: "תוכנית שותפים", path: businessId ? `/business/${businessId}/dashboard/faq/partners-program` : "/" },
+  { id: 8, title: "טיפול בתקלות ושגיאות", path: businessId ? `/business/${businessId}/dashboard/faq/troubleshooting` : "/" },
+  { id: 9, title: "תמיכה טכנית", path: businessId ? `/business/${businessId}/dashboard/faq/technical-support` : "/" },
+];
 
   const [searchTerm, setSearchTerm] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
