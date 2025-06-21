@@ -96,12 +96,33 @@ export default function AffiliateProgramFAQ() {
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: "2rem auto", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "1.5rem" }}>תוכנית השותפים של עסקליק - שאלות נפוצות</h1>
+    <div
+      style={{
+        maxWidth: 800,
+        margin: "2rem auto",
+        fontFamily: "Arial, sans-serif",
+        direction: "rtl",
+        textAlign: "right",
+        padding: 20,
+      }}
+    >
+      <h1 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+        תוכנית השותפים של עסקליק - שאלות נפוצות
+      </h1>
       {faqs.map((faq, idx) => (
-        <div key={idx} style={{ borderBottom: "1px solid #ccc", padding: "1rem 0" }}>
+        <div
+          key={idx}
+          style={{
+            borderBottom: "1px solid #ccc",
+            padding: "1rem 0",
+            overflowWrap: "break-word",
+          }}
+        >
           <button
             onClick={() => toggleIndex(idx)}
+            aria-expanded={openIndex === idx}
+            aria-controls={`faq-answer-${idx}`}
+            id={`faq-question-${idx}`}
             style={{
               width: "100%",
               background: "none",
@@ -112,19 +133,30 @@ export default function AffiliateProgramFAQ() {
               cursor: "pointer",
               padding: "0.5rem 0",
               outline: "none",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderRadius: 6,
             }}
-            aria-expanded={openIndex === idx}
-            aria-controls={`faq-answer-${idx}`}
-            id={`faq-question-${idx}`}
           >
-            {faq.question}
+            <span>{faq.question}</span>
+            <span style={{ fontSize: 24, lineHeight: 1 }}>
+              {openIndex === idx ? "−" : "+"}
+            </span>
           </button>
           {openIndex === idx && (
             <div
               id={`faq-answer-${idx}`}
               role="region"
               aria-labelledby={`faq-question-${idx}`}
-              style={{ marginTop: 8, whiteSpace: "pre-line", color: "#444", lineHeight: 1.6 }}
+              style={{
+                marginTop: 8,
+                whiteSpace: "pre-wrap",
+                color: "#444",
+                lineHeight: 1.6,
+                textAlign: "right",
+                direction: "rtl",
+              }}
             >
               {faq.answer}
             </div>

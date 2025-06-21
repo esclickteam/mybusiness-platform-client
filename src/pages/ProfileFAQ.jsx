@@ -174,40 +174,70 @@ export default function ProfileFAQ() {
   };
 
   return (
-    <div style={{ maxWidth: 700, margin: "auto", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ textAlign: "center", marginBottom: 20 }}>שאלות ותשובות - פרופיל העסק</h1>
+    <div
+      style={{
+        maxWidth: 700,
+        margin: "auto",
+        fontFamily: "Arial, sans-serif",
+        direction: "rtl",
+        textAlign: "right",
+        padding: 20,
+      }}
+    >
+      <h1 style={{ textAlign: "center", marginBottom: 25 }}>
+        שאלות ותשובות - פרופיל העסק
+      </h1>
       {faqData.map((item, index) => (
         <div
           key={index}
-          style={{ marginBottom: 15, borderBottom: "1px solid #ddd", paddingBottom: 10 }}
+          style={{
+            marginBottom: 15,
+            borderBottom: "1px solid #ddd",
+            paddingBottom: 10,
+          }}
         >
           <button
             onClick={() => toggle(index)}
+            aria-expanded={openIndex === index}
+            aria-controls={`faq-answer-${index}`}
+            id={`faq-header-${index}`}
             style={{
               width: "100%",
               textAlign: "right",
               background: "#f3f3f3",
               border: "none",
-              padding: "10px 15px",
+              padding: "12px 15px",
               fontSize: 18,
               fontWeight: "bold",
               cursor: "pointer",
               outline: "none",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderRadius: 6,
             }}
-            aria-expanded={openIndex === index}
-            aria-controls={`faq-answer-${index}`}
           >
-            {item.question}
+            <span>{item.question}</span>
+            <span style={{ fontSize: 24, lineHeight: 1 }}>
+              {openIndex === index ? "−" : "+"}
+            </span>
           </button>
           {openIndex === index && (
             <div
               id={`faq-answer-${index}`}
+              role="region"
+              aria-labelledby={`faq-header-${index}`}
               style={{
-                padding: "10px 15px",
+                padding: "12px 15px",
                 background: "#fafafa",
-                whiteSpace: "pre-line",
-                textAlign: "right",
+                whiteSpace: "pre-wrap",
                 fontSize: 16,
+                lineHeight: 1.6,
+                color: "#444",
+                textAlign: "right",
+                direction: "rtl",
+                borderRadius: 6,
+                marginTop: 6,
               }}
             >
               {item.answer}
