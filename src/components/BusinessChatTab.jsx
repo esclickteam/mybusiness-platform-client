@@ -409,29 +409,32 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
 
         {messages.map((m, i) =>
-          m.system ? (
-            <div
-              key={
-                m._id
-                  ? m._id.toString()
-                  : m.timestamp
-                  ? m.timestamp.toString()
-                  : `system-${i}`
-              }
-              className="system-message"
-            >
-              {m.text}
-            </div>
-          ) : (
-            <div
-              key={
-                m._id ? m._id.toString() + (m.sending ? "-sending" : "") + (m.failed ? "-failed" : "") : `msg-${i}`
-
-              }
-              className={`message${m.from === businessId ? " mine" : " theirs"}${
-                m.sending ? " sending" : ""
-              }${m.failed ? " failed" : ""}`}
-            >
+  m.system ? (
+    <div
+      key={
+        m._id
+          ? m._id.toString()
+          : m.timestamp
+          ? m.timestamp.toString()
+          : `system-${i}`
+      }
+      className="system-message"
+    >
+      {m.text}
+    </div>
+  ) : (
+    <div
+      key={
+        m._id
+          ? m._id.toString() + (m.sending ? "-sending" : "") + (m.failed ? "-failed" : "")
+          : m.tempId
+          ? m.tempId
+          : `msg-${i}`
+      }
+      className={`message${m.from === businessId ? " mine" : " theirs"}${
+        m.sending ? " sending" : ""
+      }${m.failed ? " failed" : ""}`}
+    >
               {m.fileUrl ? (
                 m.fileType && m.fileType.startsWith("audio") ? (
                   <WhatsAppAudioPlayer
