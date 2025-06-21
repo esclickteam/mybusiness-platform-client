@@ -259,11 +259,28 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                   String(userBusinessId) === String(msg.toBusinessId?._id)) && (
                   <button
                     onClick={() => {
-                      // המרה ל-string מ-ObjectId
-                      const idStr =
-                        typeof msg.agreementId === "string"
-                          ? msg.agreementId
-                          : msg.agreementId.toString();
+                      console.log("Raw agreementId:", msg.agreementId);
+                      let idStr;
+
+                      if (typeof msg.agreementId === "string") {
+                        idStr = msg.agreementId;
+                      } else if (msg.agreementId && typeof msg.agreementId === "object") {
+                        if (msg.agreementId._id) {
+                          idStr = msg.agreementId._id.toString();
+                          console.log("agreementId._id found:", idStr);
+                        } else if (msg.agreementId.id) {
+                          idStr = msg.agreementId.id.toString();
+                          console.log("agreementId.id found:", idStr);
+                        } else {
+                          idStr = msg.agreementId.toString();
+                          console.log("agreementId object converted with toString():", idStr);
+                        }
+                      } else {
+                        idStr = String(msg.agreementId);
+                        console.log("agreementId converted with String():", idStr);
+                      }
+
+                      console.log("Final agreementId string sent to API:", idStr);
                       onOpenAgreement(idStr);
                     }}
                     style={buttonStylePurple}
