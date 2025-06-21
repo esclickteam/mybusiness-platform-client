@@ -23,7 +23,7 @@ import AiModal from "./components/AiModal";
 import Notifications from "./components/Notifications";
 import { NotificationsProvider } from "./context/NotificationsContext";
 
-import { preloadDashboardComponents } from "./pages/business/dashboard/DashboardPage"; 
+import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 
 // טעינה עצלה (lazy) של כל הרכיבים
 const HomePage            = lazy(() => import("./pages/Home"));
