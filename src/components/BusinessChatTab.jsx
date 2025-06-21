@@ -46,13 +46,13 @@ export default function BusinessChatTab({
 
     try {
       const token = localStorage.getItem("token");
-      const params = new URLSearchParams();
-      params.append("limit", PAGE_SIZE);
-      if (beforeTimestamp) params.append("before", beforeTimestamp);
+      const params = new URLSearchParams({ limit: PAGE_SIZE.toString() });
+if (beforeTimestamp) params.append("before", beforeTimestamp);
+params.append("conversationId", conversationId);
 
-      const res = await fetch(`/api/conversations/${conversationId}/history?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+const res = await fetch(`/api/conversations/history?${params.toString()}`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
       if (!res.ok) throw new Error("Failed to load messages");
       const data = await res.json();
 
