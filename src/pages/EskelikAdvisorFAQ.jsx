@@ -188,8 +188,19 @@ export default function EskelikAdvisorFAQ() {
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "auto", padding: 20, fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ textAlign: "center", marginBottom: 30 }}>שאלות ותשובות - יועץ עסקליק</h1>
+    <div
+      style={{
+        maxWidth: 900,
+        margin: "auto",
+        padding: 20,
+        fontFamily: "Arial, sans-serif",
+        direction: "rtl",
+        textAlign: "right",
+      }}
+    >
+      <h1 style={{ textAlign: "center", marginBottom: 30 }}>
+        שאלות ותשובות - יועץ עסקליק
+      </h1>
       {faqData.map(({ question, answer }, index) => (
         <div
           key={index}
