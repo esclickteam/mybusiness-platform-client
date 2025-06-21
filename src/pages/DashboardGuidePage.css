@@ -8,12 +8,14 @@
   line-height: 1.6;
   background-color: #fff;
   box-sizing: border-box;
+  word-break: break-word; /* למניעת שבירת מילים לא טובה */
 }
 
 .dashboard-guide-container h1 {
   font-size: 2.4rem;
   margin-bottom: 20px;
   font-weight: 700;
+  color: #004085; /* מעט כהה יותר לכותרת */
 }
 
 .dashboard-guide-container h2 {
@@ -23,13 +25,24 @@
   border-bottom: 3px solid #007bff;
   padding-bottom: 5px;
   width: fit-content;
+  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+}
+
+.dashboard-guide-container h3 {
+  font-size: 1.4rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-weight: 600;
 }
 
 .dashboard-guide-container p {
   font-size: 1.1rem;
   margin-bottom: 20px;
+  line-height: 1.7;
 }
 
+.dashboard-guide-container ol,
 .dashboard-guide-container ul {
   margin: 0 0 20px 20px;
   padding: 0;
@@ -45,25 +58,39 @@
   font-weight: 700;
 }
 
+/* טבלה */
 .dashboard-guide-container table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  table-layout: fixed;
+  word-wrap: break-word;
   font-size: 1.1rem;
 }
 
 .dashboard-guide-container th,
 .dashboard-guide-container td {
   border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
+  padding: 10px 12px;
+  text-align: right; /* RTL alignment */
+  vertical-align: top;
 }
 
 .dashboard-guide-container th {
   background-color: #f0f4ff;
+  color: #004085;
   font-weight: 700;
 }
 
+/* הוספת אפקט קל בהטבעת כותרות ואלמנטים */
+.dashboard-guide-container h2:hover,
+.dashboard-guide-container h3:hover {
+  color: #003366;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+
+/* רספונסיביות */
 @media (max-width: 600px) {
   .dashboard-guide-container {
     padding: 15px;
@@ -78,10 +105,19 @@
     font-size: 1.4rem;
   }
 
+  .dashboard-guide-container h3 {
+    font-size: 1.2rem;
+  }
+
   .dashboard-guide-container p,
-  .dashboard-guide-container li,
-  .dashboard-guide-container th,
-  .dashboard-guide-container td {
+  .dashboard-guide-container li {
     font-size: 1rem;
+  }
+
+  /* גלילה אופקית לטבלה במובייל */
+  .dashboard-guide-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }

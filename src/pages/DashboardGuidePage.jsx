@@ -4,7 +4,8 @@ import "./DashboardGuidePage.css";
 export default function DashboardGuidePage() {
   return (
     <div className="dashboard-guide-container" dir="rtl" lang="he">
-      <h1>📊 מדריך מקצועי: הדשבורד בעסקליק – שליטה מלאה במבט אחד</h1>
+      {/* משפט הכותרת הוסר */}
+      <h1>🧷 הדשבורד בעסקליק – שליטה מלאה במבט אחד</h1>
 
       <h2>מה זה דשבורד בעסקליק ולמה הוא חשוב?</h2>
       <p>
