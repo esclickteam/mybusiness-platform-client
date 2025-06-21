@@ -1,5 +1,5 @@
 // src/utils/loadAllFAQs.jsx
-export async function loadAllFAQs() {
+export default async function loadAllFAQs() {
   const files = [
     "/affiliateProgramFaq.json",
     "/collaborationsFaq.json",
