@@ -102,7 +102,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="articles/ai-companion" element={<AICompanionGuidePage />} />
 
           {/* דפי FAQ */}
-          <Route path="faq/profile" element={<FAQPage faqs={ProfileFAQ} />} />
+          <Route path="faq/profile" element={<ProfileFAQ />} />
           <Route path="faq/dashboard" element={<FAQPage faqs={DashboardFAQ} />} />
           <Route path="faq/customer-messages" element={<FAQPage faqs={CustomerMessagesFAQ} />} />
           <Route path="faq/collaborations" element={<FAQPage faqs={CollaborationsFAQ} />} />
