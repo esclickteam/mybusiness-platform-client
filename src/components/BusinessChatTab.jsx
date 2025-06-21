@@ -483,7 +483,8 @@ export default function BusinessChatTab({
           ) : (
             <div
               key={
-                m._id ? m._id.toString() + (m.sending ? "-sending" : "") : `msg-${i}`
+                m._id ? m._id.toString() + (m.sending ? "-sending" : "") + (m.failed ? "-failed" : "") : `msg-${i}`
+
               }
               className={`message${m.from === businessId ? " mine" : " theirs"}${
                 m.sending ? " sending" : ""
