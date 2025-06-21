@@ -4,7 +4,8 @@ import "./AICompanionGuidePage.css";
 export default function AICompanionGuidePage() {
   return (
     <div className="ai-guide-container" dir="rtl" lang="he">
-      <h1>🤖 מדריך מקצועי: בינה מלאכותית בעסקליק – השותף החכם שלך לצמיחת העסק בעידן המודרני</h1>
+      {/* משפט הכותרת הוסר */}
+      <h1>🧠 בינה מלאכותית בעסקליק – השותף החכם שלך לצמיחת העסק בעידן המודרני</h1>
 
       <h2>למה כל עסק בעידן המודרני זקוק לבינה מלאכותית?</h2>
       <p>

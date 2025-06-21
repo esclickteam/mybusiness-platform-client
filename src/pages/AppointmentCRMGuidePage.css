@@ -8,12 +8,14 @@
   line-height: 1.6;
   background-color: #fff;
   box-sizing: border-box;
+  word-break: break-word; /* למניעת שבירת מילים לא טובה */
 }
 
 .appointment-crm-container h1 {
   font-size: 2.4rem;
   margin-bottom: 20px;
   font-weight: 700;
+  color: #004085; /* מעט כהה יותר לכותרת */
 }
 
 .appointment-crm-container h2 {
@@ -23,13 +25,24 @@
   border-bottom: 3px solid #007bff;
   padding-bottom: 5px;
   width: fit-content;
+  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+}
+
+.appointment-crm-container h3 {
+  font-size: 1.4rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-weight: 600;
 }
 
 .appointment-crm-container p {
   font-size: 1.1rem;
   margin-bottom: 20px;
+  line-height: 1.7;
 }
 
+.appointment-crm-container ol,
 .appointment-crm-container ul {
   margin: 0 0 20px 20px;
   padding: 0;
@@ -45,25 +58,39 @@
   font-weight: 700;
 }
 
+/* טבלה */
 .appointment-crm-container table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  table-layout: fixed;
+  word-wrap: break-word;
   font-size: 1.1rem;
 }
 
 .appointment-crm-container th,
 .appointment-crm-container td {
   border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
+  padding: 10px 12px;
+  text-align: right; /* RTL alignment */
+  vertical-align: top;
 }
 
 .appointment-crm-container th {
   background-color: #f0f4ff;
+  color: #004085;
   font-weight: 700;
 }
 
+/* הוספת אפקט קל בהטבעת כותרות ואלמנטים */
+.appointment-crm-container h2:hover,
+.appointment-crm-container h3:hover {
+  color: #003366;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+
+/* רספונסיביות */
 @media (max-width: 600px) {
   .appointment-crm-container {
     padding: 15px;
@@ -78,10 +105,19 @@
     font-size: 1.4rem;
   }
 
+  .appointment-crm-container h3 {
+    font-size: 1.2rem;
+  }
+
   .appointment-crm-container p,
-  .appointment-crm-container li,
-  .appointment-crm-container th,
-  .appointment-crm-container td {
+  .appointment-crm-container li {
     font-size: 1rem;
+  }
+
+  /* גלילה אופקית לטבלה במובייל */
+  .appointment-crm-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }

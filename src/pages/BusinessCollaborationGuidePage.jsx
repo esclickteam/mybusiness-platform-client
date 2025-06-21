@@ -4,7 +4,8 @@ import "./BusinessCollaborationGuidePage.css";
 export default function BusinessCollaborationGuidePage() {
   return (
     <div className="business-collab-container" dir="rtl" lang="he">
-      <h1>🤝 מדריך מקצועי: שיתופי פעולה בין עסקים בעסקליק – איך לנהל, לשמור ולהצליח</h1>
+      {/* משפט הכותרת הוסר */}
+      <h1>🧷 שיתופי פעולה בין עסקים בעסקליק – איך לנהל, לשמור ולהצליח</h1>
 
       <h2>למה שיתופי פעולה הם חיוניים לעסק שלך?</h2>
       <p>
