@@ -235,11 +235,14 @@ export default function EskelikAdvisorFAQ() {
           >
             <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
                 userSelect: "none",
-                color: "#e00", // אדום בולט
+                color: "#f06292",        // ורוד-אדום
+                marginLeft: 10,          // רווח בין סימן השאלה לטקסט
+                paddingRight: 2,
+                fontWeight: "bold",
+                fontSize: 24,
+                lineHeight: 1,
+                display: "inline-block",
               }}
             >
               ?
