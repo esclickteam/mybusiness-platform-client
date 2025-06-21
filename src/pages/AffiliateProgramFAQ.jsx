@@ -139,7 +139,21 @@ export default function AffiliateProgramFAQ() {
               borderRadius: 6,
             }}
           >
-            <span>{faq.question}</span>
+            <span
+              style={{
+                userSelect: "none",
+                color: "#f06292",        // ורוד-אדום
+                marginLeft: 10,          // רווח בין סימן השאלה לטקסט
+                paddingRight: 2,
+                fontWeight: "bold",
+                fontSize: 24,
+                lineHeight: 1,
+                display: "inline-block",
+              }}
+            >
+              ?
+            </span>
+            <span style={{ flexGrow: 1, textAlign: "right" }}>{faq.question}</span>
             <span style={{ fontSize: 24, lineHeight: 1 }}>
               {openIndex === idx ? "−" : "+"}
             </span>
