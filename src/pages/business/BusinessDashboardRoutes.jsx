@@ -41,7 +41,7 @@ import CollaborationsFAQ from "../CollaborationsFAQ";
 import CrmFAQ from "../CrmFAQ";
 import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
 import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
-import TechnicalSupport from "../TechnicalSupport";
+import TechnicalSupport from "../technicalSupportFAQs";
 import troubleshootingFAQs from "../troubleshootingFAQs";
 
 // רכיב להצגת FAQ (מערך שאלות ותשובות)
