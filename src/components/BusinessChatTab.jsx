@@ -3,7 +3,76 @@ import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
-  // ... (השארתי את הרכיב הזה ללא שינוי)
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onTimeUpdate = () => setProgress(audio.currentTime);
+    const onEnded = () => {
+      setPlaying(false);
+      setProgress(0);
+    };
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("ended", onEnded);
+    audio.load();
+    return () => {
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("ended", onEnded);
+    };
+  }, [src]);
+
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    playing ? audio.pause() : audio.play();
+    setPlaying((p) => !p);
+  };
+
+  const formatTime = (time) => {
+    if (!time || isNaN(time) || !isFinite(time)) return "0:00";
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const totalDots = 20;
+  const audioDuration = duration || 0;
+  const activeDot = audioDuration
+    ? Math.floor((progress / audioDuration) * totalDots)
+    : 0;
+  const containerClass = userAvatar
+    ? "custom-audio-player with-avatar"
+    : "custom-audio-player no-avatar";
+
+  return (
+    <div className={containerClass}>
+      {userAvatar && (
+        <div className="avatar-wrapper">
+          <img src={userAvatar} alt="avatar" />
+          <div className="mic-icon">🎤</div>
+        </div>
+      )}
+      <button
+        onClick={togglePlay}
+        aria-label={playing ? "Pause audio" : "Play audio"}
+        className={`play-pause ${playing ? "playing" : ""}`}
+      >
+        {playing ? "❚❚" : "▶"}
+      </button>
+      <div className="progress-dots">
+        {[...Array(totalDots)].map((_, i) => (
+          <div key={i} className={`dot${i <= activeDot ? " active" : ""}`} />
+        ))}
+      </div>
+      <div className="time-display">
+        {formatTime(progress)} / {formatTime(audioDuration)}
+      </div>
+      <audio ref={audioRef} src={src} preload="metadata" />
+    </div>
+  );
 }
 
 export default function BusinessChatTab({
@@ -22,8 +91,6 @@ export default function BusinessChatTab({
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
 
   const messageListRef = useRef(null);
   const typingTimeout = useRef(null);
@@ -32,145 +99,10 @@ export default function BusinessChatTab({
   const recordedChunks = useRef([]);
   const timerRef = useRef(null);
   const mediaStreamRef = useRef(null);
-  const currentRoomRef = useRef(null);
-
-  const PAGE_SIZE = 20;
-
-  const loadMessages = useCallback(
-  async (beforeTimestamp) => {
-    if (!conversationId || loadingMore || !hasMore) return;
-    setLoadingMore(true);
-
-    const el = messageListRef.current;
-    const prevScrollHeight = el ? el.scrollHeight : 0;
-
-    try {
-      const token = localStorage.getItem("token");
-      const params = new URLSearchParams({ limit: PAGE_SIZE.toString() });
-if (beforeTimestamp) params.append("before", beforeTimestamp);
-params.append("conversationId", conversationId);
-
-const res = await fetch(`/api/conversations/history?${params.toString()}`, {
-  headers: { Authorization: `Bearer ${token}` },
-});
-      if (!res.ok) throw new Error("Failed to load messages");
-      const data = await res.json();
-
-      if (data.length < PAGE_SIZE) setHasMore(false);
-
-      setMessages((prev) => [...data, ...prev]);
-
-      // שמירת מיקום גלילה למנוע קפיצה
-      setTimeout(() => {
-        if (el) {
-          const newScrollHeight = el.scrollHeight;
-          el.scrollTop = newScrollHeight - prevScrollHeight + el.scrollTop;
-        }
-      }, 0);
-    } catch (e) {
-      console.error("Load messages error:", e);
-    } finally {
-      setLoadingMore(false);
-    }
-  },
-  [conversationId, hasMore, loadingMore, setMessages]
-);
-
-
-  useEffect(() => {
-    if (!socket || !conversationId) return;
-
-    if (currentRoomRef.current === conversationId) return;
-    if (currentRoomRef.current) socket.emit("leaveConversation", currentRoomRef.current);
-    currentRoomRef.current = conversationId;
-
-    setMessages([]);
-    setHasMore(true);
-    setLoading(true);
-
-    socket.emit("joinConversation", conversationId, (res) => {
-      const history = Array.isArray(res?.messages) ? res.messages : [];
-      setMessages(history);
-      setLoading(false);
-      if (!history.length) loadMessages();
-    });
-
-    socket.on("newMessage", handleNewMessage);
-    socket.on("typing", handleTyping);
-    socket.on("reconnect", handleReconnect);
-
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-      socket.off("typing", handleTyping);
-      socket.off("reconnect", handleReconnect);
-      clearTimeout(typingTimeout.current);
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
-        mediaStreamRef.current = null;
-      }
-      if (currentRoomRef.current === conversationId) {
-        socket.emit("leaveConversation", conversationId);
-        currentRoomRef.current = null;
-      }
-    };
-  }, [socket, conversationId, loadMessages]);
-
-  // גלילה חכמה למטה
-  useEffect(() => {
-    if (!messageListRef.current) return;
-    const el = messageListRef.current;
-    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 150;
-    if (isNearBottom) el.scrollTop = el.scrollHeight;
-  }, [messages, isTyping]);
-
-  // מאזין לגלילה למעלה לטעינת הודעות נוספות עם שמירת מיקום גלילה
-  useEffect(() => {
-    const el = messageListRef.current;
-    if (!el) return;
-    const onScroll = () => {
-      if (el.scrollTop < 100 && hasMore && !loadingMore) {
-        const oldestMsg = messages[0];
-        if (oldestMsg?.timestamp) {
-          loadMessages(oldestMsg.timestamp);
-        }
-      }
-    };
-    el.addEventListener("scroll", onScroll);
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [messages, hasMore, loadingMore, loadMessages]);
-
-  // --- Handlers ---
-
-  const handleNewMessage = useCallback(
-    (msg) => {
-      if (msg.conversationId === conversationId) {
-        setMessages((prev) => {
-          if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
-            return prev.map((m) =>
-              m.tempId === msg.tempId ? { ...msg, sending: false } : m
-            );
-          }
-          if (prev.some((m) => m._id === msg._id)) return prev;
-          return [...prev, msg];
-        });
-      }
-    },
-    [conversationId]
-  );
-
-  const handleTyping = useCallback(
-    ({ from }) => {
-      if (from === customerId) {
-        setIsTyping(true);
-        clearTimeout(typingTimeout.current);
-        typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
-      }
-    },
-    [customerId]
-  );
+  const currentRoomRef = useRef(null); // Ref to track current joined conversation
 
   const handleReconnect = useCallback(async () => {
+    console.log("[BusinessChatTab] Socket reconnected, fetching history...");
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -185,9 +117,121 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
     } catch (err) {
       console.error("Fetch history on reconnect failed:", err);
     }
-  }, [conversationId]);
+  }, [conversationId, setMessages]);
 
-  // --- פונקציות לשליחת הודעות ---
+  const handleNew = useCallback(
+  (msg) => {
+    console.log("[BusinessChatTab] newMessage received:", msg);
+    if (msg.conversationId === conversationId) {
+      setMessages((prev) => {
+        if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
+          return prev.map((m) =>
+            m._id === msg.tempId ? { ...msg, sending: false } : m
+          );
+        }
+        if (prev.some((m) => m._id === msg._id)) {
+          return prev;
+        }
+        return [...prev, msg];
+      });
+    }
+  },
+  [conversationId, setMessages]
+);
+
+
+  const handleTyping = useCallback(
+    ({ from }) => {
+      if (from === customerId) {
+        setIsTyping(true);
+        clearTimeout(typingTimeout.current);
+        typingTimeout.current = setTimeout(() => setIsTyping(false), 1800);
+      }
+    },
+    [customerId]
+  );
+
+  useEffect(() => {
+    if (!socket || !conversationId) return;
+
+    // מניעת הצטרפות כפולה לאותו חדר
+    if (currentRoomRef.current === conversationId) {
+      console.log("[BusinessChatTab] Already joined conversation:", conversationId);
+      return;
+    }
+
+    // עזיבת חדר קודם במידת הצורך
+    if (currentRoomRef.current) {
+      console.log("[BusinessChatTab] Leaving previous conversation:", currentRoomRef.current);
+      socket.emit("leaveConversation", currentRoomRef.current);
+    }
+
+    currentRoomRef.current = conversationId;
+
+    setMessages([]);
+    setLoading(true);
+
+    socket.emit("joinConversation", conversationId, (res) => {
+      console.log("[BusinessChatTab] joinConversation ack:", res);
+      const history = Array.isArray(res?.messages) ? res.messages : [];
+      setMessages(history);
+      setLoading(false);
+
+      if (!history.length) {
+        const token = localStorage.getItem("token");
+        fetch(`/api/conversations/history?conversationId=${conversationId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
+        })
+          .then((r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+          })
+          .then((data) => setMessages(Array.isArray(data) ? data : []))
+          .catch((err) => {
+            console.error("Fetch history failed:", err);
+            setMessages([]);
+          })
+          .finally(() => setLoading(false));
+      }
+    });
+
+    socket.on("newMessage", handleNew);
+    socket.on("typing", handleTyping);
+    socket.on("reconnect", handleReconnect);
+
+    return () => {
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
+      socket.off("reconnect", handleReconnect);
+      clearTimeout(typingTimeout.current);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+      }
+      // עזיבת חדר בעת ניקוי הקומפוננטה
+      if (currentRoomRef.current === conversationId) {
+        socket.emit("leaveConversation", conversationId);
+        currentRoomRef.current = null;
+      }
+    };
+  }, [
+    socket,
+    conversationId,
+    handleNew,
+    handleTyping,
+    handleReconnect,
+    setMessages,
+  ]);
+
+  useEffect(() => {
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
+
+  // --- שאר הפונקציות שלך לשיגור הודעות, הקלטות וכו' (אותן לא שיניתי) ---
 
   const handleInput = (e) => {
     setInput(e.target.value);
@@ -239,64 +283,68 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
     );
   };
 
+
+
+
   // פתיחת בחירת קובץ
   const handleAttach = () => fileInputRef.current.click();
 
-  // שליחת קובץ
+  // שליחת קובץ עם שליחה אופטימיסטית
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file || !socket) return;
+  const file = e.target.files[0];
+  if (!file || !socket) return;
 
-    const tempId = uuidv4();
-    const optimisticMsg = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: URL.createObjectURL(file),
-      fileName: file.name,
-      fileType: file.type,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit(
-        "sendFile",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          fileType: file.type,
-          buffer: reader.result,
-          fileName: file.name,
-          tempId,
-        },
-        (ack) => {
-          if (ack.ok) {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m._id === tempId ? { ...ack.message, sending: false } : m
-              )
-            );
-          } else {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m._id === tempId ? { ...m, sending: false, failed: true } : m
-              )
-            );
-          }
-        }
-      );
-    };
-    reader.readAsArrayBuffer(file);
+  const tempId = uuidv4();
+  const optimisticMsg = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    fileUrl: URL.createObjectURL(file),
+    fileName: file.name,
+    fileType: file.type,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId, // 👈
   };
 
-  // קבלת פורמט הקלטה מועדף
+  setMessages((prev) => [...prev, optimisticMsg]);
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    socket.emit(
+      "sendFile",
+      {
+        conversationId,
+        from: businessId,
+        to: customerId,
+        fileType: file.type,
+        buffer: reader.result,
+        fileName: file.name,
+        tempId, // 👈 שלח גם לשרת!
+      },
+      (ack) => {
+        if (ack.ok) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...ack.message, sending: false } : m
+            )
+          );
+        } else {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...m, sending: false, failed: true } : m
+            )
+          );
+        }
+      }
+    );
+  };
+  reader.readAsArrayBuffer(file);
+};
+
+
+  // קבלת פורמט מועדף להקלטה
   const getSupportedMimeType = () => {
     const pref = "audio/webm";
     return window.MediaRecorder?.isTypeSupported(pref) ? pref : pref;
@@ -312,6 +360,7 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
       recordedChunks.current = [];
 
       const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
+      recorder.onstart = () => {};
       recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
       recorder.onstop = () => {
         const blob = new Blob(recordedChunks.current, { type: recorder.mimeType });
@@ -341,122 +390,115 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
   // ביטול הקלטה
   const handleDiscard = () => setRecordedBlob(null);
 
-  // שליחת הקלטה
+  // שליחת הקלטה עם שליחה אופטימיסטית
   const handleSendRecording = () => {
-    if (!recordedBlob || !socket) return;
+  if (!recordedBlob || !socket) return;
 
-    const tempId = uuidv4();
-    const optimisticMsg = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: URL.createObjectURL(recordedBlob),
-      fileName: `audio.${recordedBlob.type.split("/")[1]}`,
-      fileType: recordedBlob.type,
-      fileDuration: timer,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setRecordedBlob(null);
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit(
-        "sendAudio",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          buffer: reader.result,
-          fileType: recordedBlob.type,
-          duration: timer,
-          tempId,
-        },
-        (ack) => {
-          if (ack.ok) {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m._id === tempId ? { ...ack.message, sending: false } : m
-              )
-            );
-          } else {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m._id === tempId ? { ...m, sending: false, failed: true } : m
-              )
-            );
-          }
-        }
-      );
-    };
-    reader.readAsArrayBuffer(recordedBlob);
+  const tempId = uuidv4();
+  const optimisticMsg = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    fileUrl: URL.createObjectURL(recordedBlob),
+    fileName: `audio.${recordedBlob.type.split("/")[1]}`,
+    fileType: recordedBlob.type,
+    fileDuration: timer,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId, // 👈
   };
 
-  useEffect(() => {
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
-    }
-  }, [messages, isTyping]);
+  setMessages((prev) => [...prev, optimisticMsg]);
+  setRecordedBlob(null);
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    socket.emit(
+      "sendAudio",
+      {
+        conversationId,
+        from: businessId,
+        to: customerId,
+        buffer: reader.result,
+        fileType: recordedBlob.type,
+        duration: timer,
+        tempId, // 👈 שלח גם לשרת!
+      },
+      (ack) => {
+        if (ack.ok) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...ack.message, sending: false } : m
+            )
+          );
+        } else {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m._id === tempId ? { ...m, sending: false, failed: true } : m
+            )
+          );
+        }
+      }
+    );
+  };
+  reader.readAsArrayBuffer(recordedBlob);
+};
+
 
   return (
     <div className="chat-container business">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {!loading && messages.length === 0 && (
+          <div className="empty">עדיין אין הודעות</div>
+        )}
 
         {messages.map((m, i) =>
   m.system ? (
-    <div
-      key={
-        m._id
-          ? `${m._id.toString()}-system`
-          : m.timestamp
-          ? `system-${m.timestamp.toString()}`
-          : `system-${i}`
-      }
-      className="system-message"
-    >
-      {m.text}
-    </div>
-  ) : (
-    <div
-      key={
-        m._id
-          ? `${m._id.toString()}${m.sending ? "-sending" : ""}${m.failed ? "-failed" : ""}`
-          : m.tempId
-          ? `${m.tempId}-${i}`
-          : `msg-${i}`
-      }
-      className={`message${m.from === businessId ? " mine" : " theirs"}${
-        m.sending ? " sending" : ""
-      }${m.failed ? " failed" : ""}`}
-    >
+  <div
+    key={
+      m._id
+        ? m._id.toString()
+        : m.timestamp
+        ? m.timestamp.toString()
+        : `system-${i}`
+    }
+    className="system-message"
+  >
+    {m.text}
+  </div>
+) : (
+  <div
+    key={
+      m._id
+        ? m._id.toString() + (m.sending ? "-sending" : "")
+        : `msg-${i}`
+    }
+              className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+            >
               {m.fileUrl ? (
-                m.fileType && m.fileType.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer
-                    src={m.fileUrl}
-                    userAvatar={m.userAvatar}
-                    duration={m.fileDuration}
-                  />
-                ) : (m.fileType && m.fileType.startsWith("image")) ||
-                  /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
-                  <img
-                    src={m.fileUrl}
-                    alt={m.fileName || "image"}
-                    style={{ maxWidth: 200, borderRadius: 8 }}
-                  />
-                ) : (
-                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
-                    {m.fileName || "קובץ להורדה"}
-                  </a>
-                )
-              ) : (
-                <div className="text">{m.text}</div>
-              )}
+  m.fileType && m.fileType.startsWith("audio") ? (
+    <WhatsAppAudioPlayer
+      src={m.fileUrl}
+      userAvatar={m.userAvatar}
+      duration={m.fileDuration}
+    />
+  ) : (m.fileType && m.fileType.startsWith("image")) ||
+    /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
+    <img
+      src={m.fileUrl}
+      alt={m.fileName || "image"}
+      style={{ maxWidth: 200, borderRadius: 8 }}
+    />
+  ) : (
+    <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
+      {m.fileName || "קובץ להורדה"}
+    </a>
+  )
+) : (
+  <div className="text">{m.text}</div>
+)}
 
               <div className="meta">
                 <span className="time">
@@ -479,7 +521,6 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
         )}
 
         {isTyping && <div className="typing-indicator">הלקוח מקליד...</div>}
-        {loadingMore && <div className="loading-more">טוען הודעות נוספות…</div>}
       </div>
 
       <div className="inputBar">
@@ -569,7 +610,7 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
               <button
                 type="button"
                 className={`recordBtn${recording ? " recording" : ""}`}
-                onClick={recording ? handleRecordStop : handleRecordStart}
+                onClick={handleRecordStart}
                 disabled={sending}
                 title={recording ? "עצור הקלטה" : "התחל הקלטה"}
               >
