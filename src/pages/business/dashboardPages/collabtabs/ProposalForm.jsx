@@ -74,7 +74,7 @@ export default function ProposalForm({
         phone: formData.phone,
       });
 
-      console.log("Proposal POST response data:", res.data);
+      console.log("Proposal POST response full data:", res.data);
 
       let proposalIdToSend = null;
       if (res.data.proposal && res.data.proposal._id) {
@@ -84,6 +84,8 @@ export default function ProposalForm({
       } else if (Array.isArray(res.data.proposalsSent) && res.data.proposalsSent.length > 0) {
         proposalIdToSend = res.data.proposalsSent[0]._id;
       }
+
+      console.log("Determined proposalIdToSend:", proposalIdToSend);
 
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage("ההצעה נשלחה בהצלחה!");
