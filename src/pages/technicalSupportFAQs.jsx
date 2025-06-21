@@ -228,7 +228,7 @@ export default function TechnicalSupport() {
               cursor: "pointer",
               border: "none",
               display: "flex",
-              flexDirection: "row-reverse",
+              flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
               gap: 10,
