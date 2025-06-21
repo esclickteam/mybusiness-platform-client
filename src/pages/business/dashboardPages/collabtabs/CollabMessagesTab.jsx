@@ -119,6 +119,49 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
     setSelectedAgreement(null);
   };
 
+  // פונקציה ליצירת הסכם חדש מתוך הצעה ועדכון ה-state
+  const createAgreement = async (proposal) => {
+    try {
+      const agreementData = {
+        invitedBusinessId: proposal.toBusinessId?._id,
+        title: proposal.message?.title || "הסכם חדש",
+        description: proposal.message?.description || "",
+        giving: "", // אפשר למלא בהתאם לצורך
+        receiving: "",
+        type: "דו צדדי",
+        payment: "",
+        startDate: new Date().toISOString().split("T")[0],
+        endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0],
+        cancelAnytime: false,
+        confidentiality: false,
+        proposalId: proposal.proposalId || proposal._id,
+      };
+
+      const res = await API.post('/partnershipAgreements', agreementData);
+      const newAgreement = res.data;
+
+      setSentMessages((prev) =>
+        prev.map((p) =>
+          (p.proposalId === proposal.proposalId || p._id === proposal._id)
+            ? { ...p, agreementId: newAgreement._id }
+            : p
+        )
+      );
+      setReceivedMessages((prev) =>
+        prev.map((p) =>
+          (p.proposalId === proposal.proposalId || p._id === proposal._id)
+            ? { ...p, agreementId: newAgreement._id }
+            : p
+        )
+      );
+
+      alert("ההסכם נוצר בהצלחה!");
+    } catch (error) {
+      console.error("שגיאה ביצירת הסכם:", error);
+      alert("שגיאה ביצירת הסכם");
+    }
+  };
+
   let messagesToShow = [];
   if (filter === "sent") messagesToShow = sentMessages;
   else if (filter === "received") messagesToShow = receivedMessages;
@@ -263,29 +306,24 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
               <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
             </p>
 
-            {/* כפתור צפייה בהסכם */}
-            {msg.agreementId && (
+            {/* כפתור צפייה או יצירת הסכם */}
+            {msg.agreementId ? (
               <>
-                {/* העסק השולח רואה את הכפתור */}
                 {String(userBusinessId) === String(msg.fromBusinessId?._id) && (
-                  <button
-                    onClick={() => onOpenAgreement(msg.agreementId)}
-                    style={buttonStylePurple}
-                  >
+                  <button onClick={() => onOpenAgreement(msg.agreementId)} style={buttonStylePurple}>
                     צפייה בהסכם
                   </button>
                 )}
-
-                {/* העסק המקבל רואה את הכפתור */}
                 {String(userBusinessId) === String(msg.toBusinessId?._id) && (
-                  <button
-                    onClick={() => onOpenAgreement(msg.agreementId)}
-                    style={buttonStylePurple}
-                  >
+                  <button onClick={() => onOpenAgreement(msg.agreementId)} style={buttonStylePurple}>
                     צפייה בהסכם
                   </button>
                 )}
               </>
+            ) : (
+              <button onClick={() => createAgreement(msg)} style={buttonStyleBlue}>
+                צור הסכם
+              </button>
             )}
 
             <div
@@ -366,7 +404,6 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
         ))
       )}
 
-      {/* מודל הצגת ההסכם */}
       {modalOpen && selectedAgreement && (
         <div
           onClick={closeModal}
