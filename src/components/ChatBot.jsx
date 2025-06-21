@@ -1,9 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
+import loadAllFAQs from "./loadAllFAQs";
 
 export default function ChatBot({ chatOpen, setChatOpen }) {
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
+  const [faqs, setFaqs] = useState([]);
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    async function fetchFAQs() {
+      const data = await loadAllFAQs();
+      setFaqs(data);
+    }
+    fetchFAQs();
+  }, []);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -15,6 +25,17 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
     return text.replace(/\*\*/g, "");
   }
 
+  function findFAQAnswer(question) {
+    if (!faqs.length) return null;
+    const lowerQ = question.toLowerCase();
+    // חיפוש פשוט: מחפש שאלות שמכילות או כלולות בטקסט שהמשתמש הכניס
+    const match = faqs.find((faq) =>
+      faq.question.toLowerCase().includes(lowerQ) ||
+      lowerQ.includes(faq.question.toLowerCase())
+    );
+    return match ? match.answer : null;
+  }
+
   async function sendMessage() {
     if (!chatInput.trim()) return;
 
@@ -22,25 +43,23 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
     setChatMessages((msgs) => [...msgs, userMessage]);
     setChatInput("");
 
-    try {
-      const response = await fetch("/api/chatbot", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: chatInput }),
-      });
-      const data = await response.json();
+    // חיפוש תשובה מתוך ה-FAQ
+    const answer = findFAQAnswer(chatInput);
 
+    if (answer) {
       const botMessage = {
         sender: "bot",
-        text: cleanText(data.answer || "סליחה, לא הצלחתי למצוא תשובה לשאלה זו."),
-        source: data.source || "עסקליק AI",
+        text: cleanText(answer),
+        source: "עסקליק FAQ",
       };
       setChatMessages((msgs) => [...msgs, botMessage]);
-    } catch {
-      setChatMessages((msgs) => [
-        ...msgs,
-        { sender: "bot", text: "אירעה שגיאה, נסה שוב מאוחר יותר.", source: "מערכת" },
-      ]);
+    } else {
+      const botMessage = {
+        sender: "bot",
+        text: "סליחה, לא הצלחתי למצוא תשובה לשאלה זו ב-FAQ.",
+        source: "עסקליק AI",
+      };
+      setChatMessages((msgs) => [...msgs, botMessage]);
     }
   }
 
