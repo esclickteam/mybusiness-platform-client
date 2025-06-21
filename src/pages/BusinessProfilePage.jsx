@@ -27,7 +27,6 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   const [sending, setSending] = useState(false);
   const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
 
-  // טען פרטי העסק שנבחר
   useEffect(() => {
     async function fetchBusiness() {
       try {
@@ -42,7 +41,6 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     fetchBusiness();
   }, [businessId]);
 
-  // טען פרטי העסק של המשתמש הנוכחי
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
@@ -68,11 +66,9 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   if (!business)
     return <p style={{ textAlign: "center", marginTop: 50 }}>העסק לא נמצא.</p>;
 
-  // האם המשתמש צופה בפרופיל עסק אחר
   const isOwnerViewingOther =
     currentUserBusinessId && currentUserBusinessId !== businessId;
 
-  // פתיחת חלון שליחת הצעה
   const openProposalModal = () => {
     if (!currentUserBusinessName) {
       alert("שם העסק השולח עדיין לא נטען, אנא המתן ונסה שוב.");
@@ -82,7 +78,6 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   };
   const closeProposalModal = () => setIsProposalModalOpen(false);
 
-  // פתיחת חלון הצ'אט
   const openChatModal = () => {
     setChatModalOpen(true);
     setChatMessage("");
@@ -92,7 +87,6 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     setChatMessage("");
   };
 
-  // שליחת הודעה דרך צ'אט עסקי
   const handleSendBusinessMessage = async () => {
     if (!chatMessage.trim()) return;
     setSending(true);
@@ -110,7 +104,6 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     }
   };
 
-  // פתיחת חלון יצירת הסכם חדש
   const handleCreateAgreement = () => setCreateAgreementModalOpen(true);
   const closeCreateAgreementModal = () => setCreateAgreementModalOpen(false);
 
@@ -312,24 +305,18 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
 
           <button
             onClick={handleCreateAgreement}
+            disabled={!currentProposalId}
+            title={!currentProposalId ? "יש לשלוח הצעה קודם" : ""}
             style={{
-              backgroundColor: "transparent",
+              backgroundColor: !currentProposalId ? "#ccc" : "transparent",
               border: "2px solid #8e44ad",
-              color: "#8e44ad",
+              color: !currentProposalId ? "#666" : "#8e44ad",
               padding: "12px 20px",
               borderRadius: 30,
-              cursor: "pointer",
+              cursor: !currentProposalId ? "not-allowed" : "pointer",
               fontWeight: "600",
               fontSize: 16,
               transition: "background-color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#8e44ad";
-              e.currentTarget.style.color = "white";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#8e44ad";
             }}
           >
             צור הסכם חדש
