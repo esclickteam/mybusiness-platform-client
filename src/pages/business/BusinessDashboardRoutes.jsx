@@ -42,7 +42,8 @@ import CrmFAQ from "../CrmFAQ";
 import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
 import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
 import TechnicalSupportFAQ from "../technicalSupportFAQs";
-import TroubleshootingFAQ from "../TroubleshootingFAQ";         
+import TroubleshootingFAQ from "../troubleshootingFAQs";
+
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
