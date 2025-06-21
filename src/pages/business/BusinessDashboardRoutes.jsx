@@ -42,7 +42,7 @@ import CrmFAQ from "../CrmFAQ";
 import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
 import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
 import TechnicalSupport from "../technicalSupportFAQs";
-import troubleshootingFAQs from "../troubleshootingFAQs";
+import TroubleshootingFAQ from "../troubleshootingFAQs";
 
 // רכיב להצגת FAQ (מערך שאלות ותשובות)
 function FAQPage({ faqs }) {
