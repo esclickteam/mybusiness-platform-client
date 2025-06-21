@@ -185,6 +185,7 @@ const troubleshootingFAQs = [
       </>
     ),
   },
+  // ניתן להוסיף את שאר השאלות בהתאם לצורך
 ];
 
 export default function TroubleshootingSupport() {
@@ -206,7 +207,9 @@ export default function TroubleshootingSupport() {
         lineHeight: 1.6,
       }}
     >
-      <h1 style={{ marginBottom: 30, textAlign: "center" }}>טיפול בתקלות ושגיאות - שאלות ותשובות</h1>
+      <h1 style={{ marginBottom: 30, textAlign: "center" }}>
+        טיפול בתקלות ושגיאות - שאלות ותשובות
+      </h1>
       {troubleshootingFAQs.map(({ question, answer }, idx) => (
         <div
           key={idx}
