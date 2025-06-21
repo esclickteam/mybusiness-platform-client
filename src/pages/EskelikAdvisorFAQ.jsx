@@ -213,40 +213,45 @@ export default function EskelikAdvisorFAQ() {
           }}
         >
           <button
-  onClick={() => toggleIndex(index)}
-  style={{
-    width: "100%",
-    background: "#f5f5f5",
-    color: "#333",
-    padding: "15px 20px",
-    textAlign: "right",
-    fontSize: 18,
-    fontWeight: "bold",
-    border: "none",
-    cursor: "pointer",
-    direction: "rtl",
-    display: "flex",
-    flexDirection: "row-reverse",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    gap: 10,
-  }}
-  aria-expanded={openIndex === index}
->
-            <span style={{ color: "red", fontSize: 24, lineHeight: 0 }}>❓</span>
-            {question}
+            onClick={() => toggleIndex(index)}
+            aria-expanded={openIndex === index}
+            aria-controls={`faq-content-${index}`}
+            id={`faq-header-${index}`}
+            style={{
+              width: "100%",
+              background: "#f5f5f5",
+              color: "#333",
+              padding: "15px 20px",
+              fontSize: 18,
+              fontWeight: "bold",
+              border: "none",
+              cursor: "pointer",
+              direction: "rtl",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderRadius: 6,
+            }}
+          >
+            <span>{question}</span>
+            <span style={{ fontSize: 24, lineHeight: 1 }}>
+              {openIndex === index ? "−" : "+"}
+            </span>
           </button>
           {openIndex === index && (
             <div
+              id={`faq-content-${index}`}
+              role="region"
+              aria-labelledby={`faq-header-${index}`}
               style={{
                 background: "#fafafa",
                 padding: 20,
                 whiteSpace: "pre-wrap",
-                textAlign: "right",
-                direction: "rtl",
                 fontSize: 16,
                 lineHeight: 1.6,
                 color: "#444",
+                textAlign: "right",
+                direction: "rtl",
               }}
             >
               {answer}
