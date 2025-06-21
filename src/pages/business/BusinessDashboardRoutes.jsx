@@ -41,8 +41,8 @@ import CollaborationsFAQ from "../CollaborationsFAQ";
 import CrmFAQ from "../CrmFAQ";
 import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
 import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
-import TechnicalSupportFAQ from "../TechnicalSupportFAQ";       // רכיב React עצמאי
-import TroubleshootingFAQ from "../TroubleshootingFAQ";         // רכיב React עצמאי
+import TechnicalSupportFAQ from "../TechnicalSupportFAQ";       
+import TroubleshootingFAQ from "../TroubleshootingFAQ";         
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
