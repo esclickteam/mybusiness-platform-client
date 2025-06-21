@@ -37,45 +37,45 @@ export default function BusinessChatTab({
   const PAGE_SIZE = 20;
 
   const loadMessages = useCallback(
-    async (beforeTimestamp) => {
-      if (!conversationId || loadingMore || !hasMore) return;
-      setLoadingMore(true);
+  async (beforeTimestamp) => {
+    if (!conversationId || loadingMore || !hasMore) return;
+    setLoadingMore(true);
 
-      const el = messageListRef.current;
-      const prevScrollHeight = el ? el.scrollHeight : 0;
+    const el = messageListRef.current;
+    const prevScrollHeight = el ? el.scrollHeight : 0;
 
-      try {
-        const token = localStorage.getItem("token");
-        const params = new URLSearchParams();
-        params.append("conversationId", conversationId);
-        params.append("limit", PAGE_SIZE);
-        if (beforeTimestamp) params.append("before", beforeTimestamp);
+    try {
+      const token = localStorage.getItem("token");
+      const params = new URLSearchParams();
+      params.append("limit", PAGE_SIZE);
+      if (beforeTimestamp) params.append("before", beforeTimestamp);
 
-        const res = await fetch(`/api/conversations/${conversationId}/history?${params.toString()}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Failed to load messages");
-        const data = await res.json();
+      const res = await fetch(`/api/conversations/${conversationId}/history?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to load messages");
+      const data = await res.json();
 
-        if (data.length < PAGE_SIZE) setHasMore(false);
+      if (data.length < PAGE_SIZE) setHasMore(false);
 
-        setMessages((prev) => [...data, ...prev]);
+      setMessages((prev) => [...data, ...prev]);
 
-        // לשמור על מיקום הגלילה כדי למנוע קפיצה
-        setTimeout(() => {
-          if (el) {
-            const newScrollHeight = el.scrollHeight;
-            el.scrollTop = newScrollHeight - prevScrollHeight + el.scrollTop;
-          }
-        }, 0);
-      } catch (e) {
-        console.error("Load messages error:", e);
-      } finally {
-        setLoadingMore(false);
-      }
-    },
-    [conversationId, hasMore, loadingMore, setMessages]
-  );
+      // שמירת מיקום גלילה למנוע קפיצה
+      setTimeout(() => {
+        if (el) {
+          const newScrollHeight = el.scrollHeight;
+          el.scrollTop = newScrollHeight - prevScrollHeight + el.scrollTop;
+        }
+      }, 0);
+    } catch (e) {
+      console.error("Load messages error:", e);
+    } finally {
+      setLoadingMore(false);
+    }
+  },
+  [conversationId, hasMore, loadingMore, setMessages]
+);
+
 
   useEffect(() => {
     if (!socket || !conversationId) return;
