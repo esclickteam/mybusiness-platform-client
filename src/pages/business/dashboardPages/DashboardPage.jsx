@@ -4,6 +4,7 @@ import React, {
   useRef,
   createRef,
   Suspense,
+  useCallback,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
@@ -116,72 +117,49 @@ const DashboardPage = () => {
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
 
-  // עטיפה בטוחה ל-emit עם callback
-  function safeEmit(socket, event, data, callback) {
+  const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
       console.warn(`Socket disconnected, cannot emit event ${event}`);
-      if (typeof callback === "function") {
-        callback({ ok: false, error: "Socket disconnected" });
-      }
+      if (typeof callback === "function") callback({ ok: false, error: "Socket disconnected" });
       return;
     }
-
     socket.emit(event, data, (...args) => {
-  try {
-    console.log('Type of callback:', typeof callback, 'callback:', callback);
-    if (typeof callback === "function") {
-      callback(...args);
-    } else {
-      console.warn(`Callback for event ${event} is not a function.`);
+      try {
+        if (typeof callback === "function") {
+          callback(...args);
+        } else {
+          console.warn(`Callback for event ${event} is not a function.`);
+        }
+      } catch (err) {
+        console.error(`Error in callback for event ${event}:`, err);
+      }
+    });
+  };
+
+  const handleApproveRecommendation = useCallback((recommendationId) => {
+    if (!socketRef.current) {
+      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
+      return;
     }
-  } catch (err) {
-    console.error(`Error in callback for event ${event}:`, err);
-  }
-});
-
-  }
-
-  // טיפול באישור המלצה עם ניווט אוטומטי
-  function handleApproveRecommendation(recommendationId) {
-  if (!socketRef.current) {
-    alert("Socket לא מחובר, נסה שוב מאוחר יותר");
-    return;
-  }
-  if (socketRef.current.disconnected) {
-    alert("Socket מנותק, נסה שוב מאוחר יותר");
-    return;
-  }
-
-  console.log("Sending approveRecommendation with recommendationId:", recommendationId);
-
-  safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
-    if (!res) {
-      console.error("No response object received in callback");
+    if (socketRef.current.disconnected) {
+      alert("Socket מנותק, נסה שוב מאוחר יותר");
       return;
     }
 
-    if (res.ok) {
-      alert("ההמלצה אושרה ונשלחה ללקוח");
-      setRecommendations((prev) =>
-        prev.filter((r) => r.recommendationId !== recommendationId)
-      );
-
-      // כאן ביטלנו את הניווט
-      /*
-      if (res.conversationId && res.clientId) {
-        navigate(`/business/${businessId}/chat/${res.clientId}`, {
-          state: { conversationId: res.conversationId },
-        });
-      } else {
-        console.warn("אין conversationId או clientId בתגובה מהשרת");
+    safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
+      if (!res) {
+        console.error("No response object received in callback");
+        return;
       }
-      */
-    } else {
-      alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
-      console.error("שגיאה באישור המלצה:", res.error);
-    }
-  });
-}
+      if (res.ok) {
+        alert("ההמלצה אושרה ונשלחה ללקוח");
+        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
+      } else {
+        alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
+        console.error("שגיאה באישור המלצה:", res.error);
+      }
+    });
+  }, []);
 
   const {
     data: stats,
@@ -233,6 +211,8 @@ const DashboardPage = () => {
     if (!initialized || !businessId) return;
     if (socketRef.current) return;
 
+    let isMounted = true;
+
     async function setupSocket() {
       const token = await refreshAccessToken();
       if (!token) {
@@ -240,13 +220,10 @@ const DashboardPage = () => {
         return;
       }
       const sock = await createSocket(refreshAccessToken, logout, businessId);
-      if (!sock) return;
+      if (!sock || !isMounted) return;
       socketRef.current = sock;
 
-      sock.on("connect", () => {
-        console.log("Dashboard socket connected:", sock.id);
-      });
-
+      sock.on("connect", () => console.log("Dashboard socket connected:", sock.id));
       sock.on("tokenExpired", async () => {
         const newToken = await refreshAccessToken();
         if (!newToken) {
@@ -313,26 +290,21 @@ const DashboardPage = () => {
           return { ...old, appointments: enriched, appointments_count: enriched.length };
         });
       });
-      
 
-      sock.on("disconnect", (reason) => {
-        console.log("Dashboard socket disconnected:", reason);
-      });
-
-      sock.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
-      });
+      sock.on("disconnect", (reason) => console.log("Dashboard socket disconnected:", reason));
+      sock.on("connect_error", (err) => console.error("Socket connection error:", err));
     }
 
     setupSocket();
 
     return () => {
+      isMounted = false;
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, refetch, selectedDate, queryClient]);
+  }, [initialized, businessId, logout, refreshAccessToken, refetch]);
 
   useEffect(() => {
     if (!socketRef.current) return;

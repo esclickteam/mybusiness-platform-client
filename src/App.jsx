@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useState, useEffect } from "react";
 import {
   Routes,
   Route,
@@ -13,7 +13,6 @@ import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ClientChatSection from "./components/ClientChatSection";
 import BusinessChatPage from "./components/BusinessChatPage";
 import ConversationsList from "./components/ConversationsList";
-import ChatPage from "./components/ChatPage";
 import { useAuth } from "./context/AuthContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
@@ -22,9 +21,11 @@ import { LoginSkeleton } from "./components/LoginSkeleton";
 import { AiProvider } from "./context/AiContext";
 import AiModal from "./components/AiModal";
 import Notifications from "./components/Notifications";
-import { NotificationsProvider } from "./context/NotificationsContext";  // ייבוא ה־Provider
+import { NotificationsProvider } from "./context/NotificationsContext";
 
-// ---- כל הייבוא הדינמי כפי שהיה ----
+import { preloadDashboardComponents } from "./pages/business/dashboard/DashboardPage"; 
+
+// טעינה עצלה (lazy) של כל הרכיבים
 const HomePage            = lazy(() => import("./pages/Home"));
 const About               = lazy(() => import("./pages/About"));
 const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
@@ -83,12 +84,10 @@ export default function App() {
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
 
-  // חיפוש וסינון
   const [searchMode, setSearchMode] = useState("category");
   const [searchCategory, setSearchCategory] = useState("");
   const [freeText, setFreeText] = useState("");
 
-  // ניהול פאנל התראות גלובלי
   const [showNotifications, setShowNotifications] = useState(false);
 
   const resetSearchFilters = () => {
@@ -96,6 +95,11 @@ export default function App() {
     setSearchCategory("");
     setFreeText("");
   };
+
+  // prefetch מוקדם של רכיבי דשבורד
+  useEffect(() => {
+    preloadDashboardComponents();
+  }, []);
 
   if (loading) return <LoginSkeleton />;
 
@@ -325,7 +329,6 @@ export default function App() {
             {showNotifications && (
               <Notifications
                 onClose={() => setShowNotifications(false)}
-                // props נוספים אם נדרשים
               />
             )}
           </Suspense>
@@ -334,6 +337,7 @@ export default function App() {
     </>
   );
 }
+
 
 // ------ כאן נשארים ה־wrappers שלך (BusinessChatListWrapper, BusinessChatWrapper) כפי שהם ------
 export function BusinessChatListWrapper() {
