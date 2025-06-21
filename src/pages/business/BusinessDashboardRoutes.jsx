@@ -41,7 +41,7 @@ import CollaborationsFAQ from "../CollaborationsFAQ";
 import CrmFAQ from "../CrmFAQ";
 import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
 import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
-import technicalSupportFAQs from "../technicalSupportFAQs";
+import TechnicalSupport from "../TechnicalSupport";
 import troubleshootingFAQs from "../troubleshootingFAQs";
 
 // רכיב להצגת FAQ (מערך שאלות ותשובות)
@@ -109,7 +109,8 @@ const BusinessDashboardRoutes = () => {
           <Route path="faq/crm" element={<CrmFAQ />} />
           <Route path="faq/eskelik-advisor" element={<EskelikAdvisorFAQ />} />
           <Route path="faq/affiliate-program" element={<AffiliateProgramFAQ />} />
-          <Route path="faq/technical-support" element={<TechnicalSupportFAQ />} />
+          <Route path="faq/technical-support" element={<TechnicalSupport />} />
+
 <Route path="faq/troubleshooting" element={<TroubleshootingFAQ />} />
 
           {/* שאר הנתיבים */}
