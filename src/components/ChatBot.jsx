@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import loadAllFAQs from "./loadAllFAQs";
+import loadAllFAQs from "../utils/loadAllFAQs";
 
 export default function ChatBot({ chatOpen, setChatOpen }) {
   const [chatInput, setChatInput] = useState("");
