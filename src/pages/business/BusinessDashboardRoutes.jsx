@@ -41,9 +41,23 @@ import CollaborationsFAQ from "../CollaborationsFAQ";
 import CrmFAQ from "../CrmFAQ";
 import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
 import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
-import TechnicalSupportFAQ from "../technicalSupportFAQs";
-import TroubleshootingFAQ from "../troubleshootingFAQs";
+import technicalSupportFAQs from "../technicalSupportFAQs";
+import troubleshootingFAQs from "../troubleshootingFAQs";
 
+// רכיב להצגת FAQ (מערך שאלות ותשובות)
+function FAQPage({ faqs }) {
+  return (
+    <div style={{ maxWidth: 900, margin: "auto", padding: 20, fontFamily: "Arial, sans-serif", lineHeight: 1.6 }}>
+      <h1>שאלות ותשובות</h1>
+      {faqs.map(({ question, answer }, idx) => (
+        <section key={idx} style={{ marginBottom: 30 }}>
+          <h2 style={{ color: "#3a0ca3" }}>{question}</h2>
+          <div>{answer}</div>
+        </section>
+      ))}
+    </div>
+  );
+}
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
@@ -95,8 +109,8 @@ const BusinessDashboardRoutes = () => {
           <Route path="faq/crm" element={<CrmFAQ />} />
           <Route path="faq/eskelik-advisor" element={<EskelikAdvisorFAQ />} />
           <Route path="faq/affiliate-program" element={<AffiliateProgramFAQ />} />
-          <Route path="faq/technical-support" element={<TechnicalSupportFAQ />} />
-          <Route path="faq/troubleshooting" element={<TroubleshootingFAQ />} />
+          <Route path="faq/technical-support" element={<FAQPage faqs={technicalSupportFAQs} />} />
+          <Route path="faq/troubleshooting" element={<FAQPage faqs={troubleshootingFAQs} />} />
 
           {/* שאר הנתיבים */}
           <Route path="cart" element={<CartPage />} />
