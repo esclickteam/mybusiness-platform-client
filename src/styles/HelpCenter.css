@@ -96,24 +96,21 @@ p {
 
 .faqs,
 .recommended-articles,
-.contact-us {
+.contact-us,
+.faq-categories {
   margin-bottom: 30px;
+  text-align: center; /* מרכז את התוכן וכותרות */
 }
 
 .faqs h2,
 .recommended-articles h2,
-.contact-us h2 {
+.contact-us h2,
+.faq-categories h2 {
   font-size: 1.6rem;
   margin-bottom: 20px;
   padding-bottom: 5px;
   border-bottom: 2px solid #007bff;
-  text-align: center;
-  display: inline-block;
-}
-
-/* הוספת מרכזיות לכותרת ולתוכן ב-contact-us */
-.contact-us {
-  text-align: center;
+  display: inline-block; /* מאפשר למרכז על בסיס ההורה */
 }
 
 .faqs ul,
@@ -150,7 +147,7 @@ p {
   cursor: pointer;
   transition: background-color 0.3s ease;
   user-select: none;
-  display: inline-block; /* חשוב להישאר רק ברוחב התוכן */
+  display: inline-block;
   margin-top: 15px;
 }
 
@@ -167,7 +164,7 @@ p {
 
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 עמודות קבועות */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -223,7 +220,6 @@ p {
   align-items: center !important;
 }
 
-/* כפתור סגירה בכותרת */
 .chatbot-section > header button {
   background-color: transparent !important;
   border: none !important;
