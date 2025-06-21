@@ -104,10 +104,11 @@ p {
 .recommended-articles h2,
 .contact-us h2 {
   font-size: 1.6rem;
-  margin-bottom: 15px;
-  border-bottom: 2px solid #007bff;
+  margin-bottom: 20px;
   padding-bottom: 5px;
-  width: fit-content;
+  border-bottom: 2px solid #007bff;
+  text-align: center;
+  display: inline-block;
 }
 
 /* הוספת מרכזיות לכותרת ולתוכן ב-contact-us */
