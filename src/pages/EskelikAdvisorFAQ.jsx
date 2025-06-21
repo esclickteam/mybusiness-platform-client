@@ -213,25 +213,26 @@ export default function EskelikAdvisorFAQ() {
           }}
         >
           <button
-            onClick={() => toggleIndex(index)}
-            style={{
-              width: "100%",
-              background: "#f5f5f5",
-              color: "#333",
-              padding: "15px 20px",
-              textAlign: "right",
-              fontSize: 18,
-              fontWeight: "bold",
-              border: "none",
-              cursor: "pointer",
-              direction: "rtl",
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: 10,
-            }}
-            aria-expanded={openIndex === index}
-          >
+  onClick={() => toggleIndex(index)}
+  style={{
+    width: "100%",
+    background: "#f5f5f5",
+    color: "#333",
+    padding: "15px 20px",
+    textAlign: "right",
+    fontSize: 18,
+    fontWeight: "bold",
+    border: "none",
+    cursor: "pointer",
+    direction: "rtl",
+    display: "flex",
+    flexDirection: "row-reverse",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 10,
+  }}
+  aria-expanded={openIndex === index}
+>
             <span style={{ color: "red", fontSize: 24, lineHeight: 0 }}>❓</span>
             {question}
           </button>
