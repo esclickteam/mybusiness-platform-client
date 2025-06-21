@@ -413,9 +413,9 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
     <div
       key={
         m._id
-          ? m._id.toString()
+          ? `${m._id.toString()}-system`
           : m.timestamp
-          ? m.timestamp.toString()
+          ? `system-${m.timestamp.toString()}`
           : `system-${i}`
       }
       className="system-message"
@@ -426,9 +426,9 @@ const res = await fetch(`/api/conversations/history?${params.toString()}`, {
     <div
       key={
         m._id
-          ? m._id.toString() + (m.sending ? "-sending" : "") + (m.failed ? "-failed" : "")
+          ? `${m._id.toString()}${m.sending ? "-sending" : ""}${m.failed ? "-failed" : ""}`
           : m.tempId
-          ? m.tempId
+          ? `${m.tempId}-${i}`
           : `msg-${i}`
       }
       className={`message${m.from === businessId ? " mine" : " theirs"}${
