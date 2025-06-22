@@ -83,8 +83,15 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     window.open(url, '_blank');
   };
 
+  // ניווט למערכת CRM לפי מזהה הפגישה
   const editAppointment = (appt) => {
-    alert("עריכת פגישה תתווסף בהמשך ליומן/CRM");
+    const appointmentId = appt._id || appt.id;
+    if (!appointmentId) {
+      alert("לא ניתן לערוך פגישה: מזהה לא קיים");
+      return;
+    }
+    const crmUrl = `/business/dashboard/appointments/edit/${appointmentId}`;
+    window.open(crmUrl, "_blank"); // או window.location.href = crmUrl; לניווט באותה לשונית
   };
 
   return (
