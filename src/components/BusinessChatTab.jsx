@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useReducer,
+} from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
@@ -75,7 +81,35 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
-const PAGE_SIZE = 20;
+// reducer לניהול מצב ההודעות
+function messagesReducer(state, action) {
+  switch (action.type) {
+    case "set":
+      return action.payload;
+    case "add":
+      // הוספת הודעות ישנות בפגינציה לפני הרשימה הקיימת
+      return [...action.payload, ...state];
+    case "append":
+      // הוספת הודעה חדשה או עדכון הודעה קיימת
+      const existingIndex = state.findIndex(
+        (m) => m._id === action.payload._id || (m.tempId && m.tempId === action.payload.tempId)
+      );
+      if (existingIndex !== -1) {
+        const newState = [...state];
+        newState[existingIndex] = { ...newState[existingIndex], ...action.payload };
+        return newState;
+      }
+      return [...state, action.payload];
+    case "updateStatus":
+      return state.map((m) =>
+        m._id === action.payload.id || m.tempId === action.payload.id
+          ? { ...m, ...action.payload.updates }
+          : m
+      );
+    default:
+      return state;
+  }
+}
 
 export default function BusinessChatTab({
   conversationId,
@@ -83,20 +117,18 @@ export default function BusinessChatTab({
   customerId,
   businessName,
   socket,
-  messages,
-  setMessages,
 }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
 
-  // Pagination states
-  const [page, setPage] = useState(1);
-  const [paginatedMessages, setPaginatedMessages] = useState([]);
+  const [messages, dispatchMessages] = useReducer(messagesReducer, []);
 
   const messageListRef = useRef(null);
   const typingTimeout = useRef(null);
@@ -107,56 +139,65 @@ export default function BusinessChatTab({
   const mediaStreamRef = useRef(null);
   const currentRoomRef = useRef(null);
 
-  // Update paginated messages on messages or page change
-  useEffect(() => {
-    const end = page * PAGE_SIZE;
-    const sliced = messages.slice(-end);
-    setPaginatedMessages(sliced);
-  }, [messages, page]);
+  // --- פונקציה למשיכת הודעות עם פגינציה ---
+  const fetchMessagesPage = useCallback(
+    async (pageNum = 0) => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `/api/conversations/history?conversationId=${conversationId}&page=${pageNum}&limit=20`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!response.ok) throw new Error("Failed to fetch messages");
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+      } catch (err) {
+        console.error("Fetch messages failed:", err);
+        return [];
+      }
+    },
+    [conversationId]
+  );
 
-  // Scroll to bottom only on first page load
+  // --- טעינת הודעות ראשונית והגדרת הפגינציה ---
   useEffect(() => {
-    if (messageListRef.current && page === 1) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
-    }
-  }, [paginatedMessages, page]);
+    if (!conversationId) return;
 
-  const handleReconnect = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `/api/conversations/history?conversationId=${conversationId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
+    setLoading(true);
+    setPage(0);
+    setHasMore(true);
+
+    fetchMessagesPage(0).then((msgs) => {
+      dispatchMessages({ type: "set", payload: msgs });
+      setLoading(false);
+      setHasMore(msgs.length === 20);
+
+      setTimeout(() => {
+        if (messageListRef.current) {
+          messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
         }
-      );
-      if (!response.ok) throw new Error("Failed to fetch history on reconnect");
-      const data = await response.json();
-      setMessages(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Fetch history on reconnect failed:", err);
-    }
-  }, [conversationId, setMessages]);
+      }, 0);
+    });
+  }, [conversationId, fetchMessagesPage]);
 
+  // --- טיפול בהודעות חדשות מהסוקט ---
   const handleNew = useCallback(
     (msg) => {
       if (msg.conversationId === conversationId) {
-        setMessages((prev) => {
-          if (msg.tempId && prev.some((m) => m._id === msg.tempId)) {
-            return prev.map((m) =>
-              m._id === msg.tempId ? { ...msg, sending: false } : m
-            );
+        dispatchMessages({ type: "append", payload: msg });
+        setTimeout(() => {
+          if (messageListRef.current) {
+            messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
           }
-          if (prev.some((m) => m._id === msg._id)) {
-            return prev;
-          }
-          return [...prev, msg];
-        });
+        }, 50);
       }
     },
-    [conversationId, setMessages]
+    [conversationId]
   );
 
+  // --- טיפול בהקלדה של הלקוח ---
   const handleTyping = useCallback(
     ({ from }) => {
       if (from === customerId) {
@@ -168,10 +209,13 @@ export default function BusinessChatTab({
     [customerId]
   );
 
+  // --- הצטרפות לחדר וצירוף מאזינים לסוקט ---
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    if (currentRoomRef.current === conversationId) return;
+    if (currentRoomRef.current === conversationId) {
+      return;
+    }
 
     if (currentRoomRef.current) {
       socket.emit("leaveConversation", currentRoomRef.current);
@@ -179,43 +223,15 @@ export default function BusinessChatTab({
 
     currentRoomRef.current = conversationId;
 
-    setMessages([]);
-    setLoading(true);
-
-    socket.emit("joinConversation", conversationId, (res) => {
-      const history = Array.isArray(res?.messages) ? res.messages : [];
-      setMessages(history);
-      setLoading(false);
-
-      if (!history.length) {
-        const token = localStorage.getItem("token");
-        fetch(`/api/conversations/history?conversationId=${conversationId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          credentials: "include",
-        })
-          .then((r) => {
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            return r.json();
-          })
-          .then((data) => setMessages(Array.isArray(data) ? data : []))
-          .catch((err) => {
-            console.error("Fetch history failed:", err);
-            setMessages([]);
-          })
-          .finally(() => setLoading(false));
-      }
-    });
+    socket.emit("joinConversation", conversationId);
 
     socket.on("newMessage", handleNew);
     socket.on("typing", handleTyping);
-    socket.on("reconnect", handleReconnect);
 
     return () => {
       socket.off("newMessage", handleNew);
       socket.off("typing", handleTyping);
-      socket.off("reconnect", handleReconnect);
       clearTimeout(typingTimeout.current);
-      if (timerRef.current) clearInterval(timerRef.current);
       if (mediaStreamRef.current) {
         mediaStreamRef.current.getTracks().forEach((t) => t.stop());
         mediaStreamRef.current = null;
@@ -225,55 +241,265 @@ export default function BusinessChatTab({
         currentRoomRef.current = null;
       }
     };
-  }, [
-    socket,
-    conversationId,
-    handleNew,
-    handleTyping,
-    handleReconnect,
-    setMessages,
-  ]);
+  }, [socket, conversationId, handleNew, handleTyping]);
+
+  // --- טעינת הודעות נוספות בגלילה למעלה ---
+  const handleScroll = useCallback(() => {
+    const el = messageListRef.current;
+    if (!el || loading || !hasMore) return;
+
+    if (el.scrollTop === 0) {
+      setLoading(true);
+      fetchMessagesPage(page + 1).then((msgs) => {
+        if (msgs.length === 0) {
+          setHasMore(false);
+        } else {
+          dispatchMessages({ type: "add", payload: msgs });
+          setPage((p) => p + 1);
+
+          setTimeout(() => {
+            if (el) {
+              // מיקום גלילה לשמירת מיקום נכון לאחר טעינה
+              el.scrollTop = 1;
+            }
+          }, 0);
+        }
+        setLoading(false);
+      });
+    }
+  }, [fetchMessagesPage, hasMore, loading, page]);
 
   useEffect(() => {
-    if (messageListRef.current && page === 1) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    const el = messageListRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  // --- גלילה אוטומטית לתחתית כאשר מגיעות הודעות חדשות או הלקוח מקליד ---
+  useEffect(() => {
+    const el = messageListRef.current;
+    if (!el) return;
+
+    const isNearBottom =
+      el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    if (isNearBottom) {
+      el.scrollTop = el.scrollHeight;
     }
-  }, [paginatedMessages, page]);
+  }, [messages, isTyping]);
 
-  // Your existing input handlers, sendMessage, recording handlers etc.
-  // No changes to these, keep as is.
+  // --- ניהול שדה הקלט והשליחה ---
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    socket?.emit("typing", { conversationId, from: businessId });
+  };
 
-  // Render:
+  const sendMessage = () => {
+    if (sending) return;
+
+    const text = input.trim();
+    if (!text || !socket) return;
+
+    setSending(true);
+
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      text,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+
+    dispatchMessages({ type: "append", payload: optimisticMsg });
+    setInput("");
+
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: businessId, to: customerId, text, tempId },
+      (ack) => {
+        setSending(false);
+        if (ack.ok) {
+          dispatchMessages({
+            type: "updateStatus",
+            payload: { id: tempId, updates: { ...ack.message, sending: false } },
+          });
+        } else {
+          dispatchMessages({
+            type: "updateStatus",
+            payload: { id: tempId, updates: { sending: false, failed: true } },
+          });
+        }
+      }
+    );
+  };
+
+  // --- פתיחת בחירת קובץ ---
+  const handleAttach = () => fileInputRef.current.click();
+
+  // --- שליחת קובץ עם שליחה אופטימיסטית ---
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file || !socket) return;
+
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(file),
+      fileName: file.name,
+      fileType: file.type,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+
+    dispatchMessages({ type: "append", payload: optimisticMsg });
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendFile",
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          fileType: file.type,
+          buffer: reader.result,
+          fileName: file.name,
+          tempId,
+        },
+        (ack) => {
+          if (ack.ok) {
+            dispatchMessages({
+              type: "updateStatus",
+              payload: { id: tempId, updates: { ...ack.message, sending: false } },
+            });
+          } else {
+            dispatchMessages({
+              type: "updateStatus",
+              payload: { id: tempId, updates: { sending: false, failed: true } },
+            });
+          }
+        }
+      );
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  // --- קבלת פורמט מועדף להקלטה ---
+  const getSupportedMimeType = () => {
+    const pref = "audio/webm";
+    return window.MediaRecorder?.isTypeSupported(pref) ? pref : pref;
+  };
+
+  // --- התחלת הקלטה ---
+  const handleRecordStart = async () => {
+    if (!navigator.mediaDevices || recording) return;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      recordedChunks.current = [];
+
+      const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
+      recorder.onstart = () => {};
+      recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(recordedChunks.current, { type: recorder.mimeType });
+        setRecordedBlob(blob);
+      };
+
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+
+      setRecording(true);
+      setTimer(0);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } catch (err) {
+      console.error("startRecording failed:", err);
+    }
+  };
+
+  // --- עצירת הקלטה ---
+  const handleRecordStop = () => {
+    if (!mediaRecorderRef.current) return;
+
+    mediaRecorderRef.current.stop();
+    setRecording(false);
+    clearInterval(timerRef.current);
+  };
+
+  // --- ביטול הקלטה ---
+  const handleDiscard = () => setRecordedBlob(null);
+
+  // --- שליחת הקלטה עם שליחה אופטימיסטית ---
+  const handleSendRecording = () => {
+    if (!recordedBlob || !socket) return;
+
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(recordedBlob),
+      fileName: `audio.${recordedBlob.type.split("/")[1]}`,
+      fileType: recordedBlob.type,
+      fileDuration: timer,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+
+    dispatchMessages({ type: "append", payload: optimisticMsg });
+    setRecordedBlob(null);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendAudio",
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          buffer: reader.result,
+          fileType: recordedBlob.type,
+          duration: timer,
+          tempId,
+        },
+        (ack) => {
+          if (ack.ok) {
+            dispatchMessages({
+              type: "updateStatus",
+              payload: { id: tempId, updates: { ...ack.message, sending: false } },
+            });
+          } else {
+            dispatchMessages({
+              type: "updateStatus",
+              payload: { id: tempId, updates: { sending: false, failed: true } },
+            });
+          }
+        }
+      );
+    };
+    reader.readAsArrayBuffer(recordedBlob);
+  };
+
   return (
     <div className="chat-container business">
-      {page * PAGE_SIZE < messages.length && (
-        <button
-          className="load-more-btn"
-          onClick={() => setPage((prev) => prev + 1)}
-          style={{
-            margin: "10px auto",
-            display: "block",
-            padding: "8px 12px",
-            cursor: "pointer",
-            borderRadius: "8px",
-            border: "none",
-            backgroundColor: "#6e4fff",
-            color: "#fff",
-            fontWeight: "700",
-          }}
-          aria-label="טען עוד הודעות ישנות"
-        >
-          טען עוד הודעות ישנות
-        </button>
-      )}
-
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && paginatedMessages.length === 0 && (
+        {!loading && messages.length === 0 && (
           <div className="empty">עדיין אין הודעות</div>
         )}
 
-        {paginatedMessages.map((m, i) =>
+        {messages.map((m, i) =>
           m.system ? (
             <div
               key={
@@ -294,9 +520,9 @@ export default function BusinessChatTab({
                   ? m._id.toString() + (m.sending ? "-sending" : "")
                   : `msg-${i}`
               }
-              className={`message${m.from === businessId ? " mine" : " theirs"}${
-                m.sending ? " sending" : ""
-              }${m.failed ? " failed" : ""}`}
+              className={`message${
+                m.from === businessId ? " mine" : " theirs"
+              }${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
             >
               {m.fileUrl ? (
                 m.fileType && m.fileType.startsWith("audio") ? (
@@ -305,7 +531,8 @@ export default function BusinessChatTab({
                     userAvatar={m.userAvatar}
                     duration={m.fileDuration}
                   />
-                ) : m.fileType && m.fileType.startsWith("image") ? (
+                ) : m.fileType && m.fileType.startsWith("image") ||
+                  /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
                   <img
                     src={m.fileUrl}
                     alt={m.fileName || "image"}
@@ -435,7 +662,13 @@ export default function BusinessChatTab({
               <button
                 type="button"
                 className={`recordBtn${recording ? " recording" : ""}`}
-                onClick={handleRecordStart}
+                onClick={() => {
+                  if (recording) {
+                    handleRecordStop();
+                  } else {
+                    handleRecordStart();
+                  }
+                }}
                 disabled={sending}
                 title={recording ? "עצור הקלטה" : "התחל הקלטה"}
               >
