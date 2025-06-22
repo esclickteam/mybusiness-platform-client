@@ -5,7 +5,13 @@ import "./DailyAgenda.css";
 const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) => {
   const navigate = useNavigate();
 
-  // כל הקריאות ל-hooks קודם כל, לפני תנאים עם return
+  if (!date)
+    return (
+      <p style={{ fontStyle: "italic", textAlign: "center" }}>
+        בחר/י תאריך כדי לראות לו״ז
+      </p>
+    );
+
   const selectedDate = useMemo(() => {
     try {
       const d = new Date(date);
@@ -41,13 +47,6 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     return sorted;
   }, [appointments, selectedDate]);
 
-  if (!date)
-    return (
-      <p style={{ fontStyle: "italic", textAlign: "center" }}>
-        בחר/י תאריך כדי לראות לו״ז
-      </p>
-    );
-
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
     if (!phone) {
       alert("מספר טלפון של הלקוח לא זמין");
@@ -61,6 +60,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
         cleanPhone = "972" + cleanPhone;
       }
     }
+
     const formattedDate = new Date(date).toLocaleDateString("he-IL", {
       weekday: "long",
       day: "numeric",
@@ -72,7 +72,6 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     const encodedMessage = encodeURIComponent(message);
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
     const url = isMobile
       ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
       : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
@@ -86,12 +85,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       alert("לא ניתן לערוך פגישה: מזהה לא קיים");
       return;
     }
-    const businessId = appt.businessId || "";
-    if (!businessId) {
-      alert("לא ניתן לערוך פגישה: מזהה העסק לא זמין");
-      return;
-    }
-    navigate(`/business/${businessId}/dashboard/crm/appointments/edit/${appointmentId}`);
+    navigate(`/dashboard/crm/appointments/edit/${appointmentId}`);
   };
 
   return (
