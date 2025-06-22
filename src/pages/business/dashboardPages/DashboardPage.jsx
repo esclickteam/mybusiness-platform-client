@@ -464,26 +464,25 @@ const DashboardPage = () => {
         </div>
       </Suspense>
 
-      <Suspense fallback={<div className="loading-spinner">🔄 טוען גרפים...</div>}>
-        <div ref={chartsRef} className="graph-box full-width">
-          <MemoizedBarChartComponent appointments={syncedStats.appointments} title="לקוחות שהזמינו פגישות לפי חודשים 📊" />
-        </div>
-      </Suspense>
-
-      <Suspense fallback={<div className="loading-spinner">🔄 טוען פעילות...</div>}>
-        <div>{syncedStats.recent_activity && <MemoizedRecentActivityTable activities={syncedStats.recent_activity} />}</div>
-      </Suspense>
-
       <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
-        <div ref={appointmentsRef} className="calendar-row">
-          <div className="day-agenda-box">
-            <MemoizedDailyAgenda date={selectedDate} appointments={appointments} businessName={syncedStats.businessName} />
-          </div>
-          <div className="calendar-container">
-            <MemoizedCalendarView appointments={appointments} onDateClick={setSelectedDate} selectedDate={selectedDate} />
-          </div>
-        </div>
-      </Suspense>
+  <div ref={appointmentsRef} className="calendar-row">
+    <div className="day-agenda-box">
+      <MemoizedDailyAgenda
+        date={selectedDate}
+        appointments={appointments}
+        businessName={syncedStats.businessName}
+        businessId={businessId}  
+      />
+    </div>
+    <div className="calendar-container">
+      <MemoizedCalendarView
+        appointments={appointments}
+        onDateClick={setSelectedDate}
+        selectedDate={selectedDate}
+      />
+    </div>
+  </div>
+</Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄  טוען סיכום שבועי...</div>}>
         <div ref={weeklySummaryRef}>

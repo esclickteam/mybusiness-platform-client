@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DailyAgenda.css";
 
-const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) => {
+const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", businessId }) => {
   const navigate = useNavigate();
 
   // פורמט תאריך לתבנית "YYYY-MM-DD"
@@ -85,15 +85,13 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     window.open(url, "_blank");
   };
 
-  // ניתוב לעריכת הפגישה
+  // ניתוב לעמוד תיאומים/הזמנות
   const editAppointment = (appt) => {
-    const appointmentId = appt._id || appt.id;
-    if (!appointmentId) {
-      alert("לא ניתן לערוך פגישה: מזהה לא קיים");
+    if (!businessId) {
+      alert("מזהה העסק לא זמין");
       return;
     }
-      navigate(`/dashboard/crm/appointments`);
-
+    navigate(`/business/${businessId}/dashboard/crm/appointments`);
   };
 
   return (
