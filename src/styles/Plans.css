@@ -1,240 +1,240 @@
 /* עיצוב כללי של העמוד */
 .plans-wrapper {
-  max-width: 480px;
-  margin: 2rem auto;
-  padding: 20px;
-  background: #f5f7fa;
-  font-family: "Arial", sans-serif;
-  color: #333;
+    max-width: 480px;
+    margin: 2rem auto;
+    padding: 20px;
+    background: #f5f7fa;
+    font-family: "Arial", sans-serif;
+    color: #333;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 /* כותרות */
 .plans-header {
-  font-size: 32px;
-  font-weight: 900;
-  color: #6a11cb;
-  margin-bottom: 0.5rem;
+    font-size: 32px;
+    font-weight: 900;
+    color: #6a11cb;
+    margin-bottom: 0.5rem;
 }
 
 .plans-subheader {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: #444;
-  font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #444;
+    font-weight: 600;
 }
 
 /* כרטיס מנוי */
 .plans-card {
-  background: linear-gradient(135deg, #ffef8a, #f8c500); /* רקע בהיר ונעים */
-  color: #5a4100;
-  border-radius: 16px;
-  padding: 30px 25px 40px;
-  width: 100%;
-  max-width: 320px;
+    background: linear-gradient(135deg, #ffef8a, #f8c500); /* רקע בהיר ונעים */
+    color: #5a4100;
+    border-radius: 16px;
+    padding: 30px 25px 40px;
+    width: 100%;
+    max-width: 320px;
 
-  border: 2px solid #b38f00; /* מסגרת חומה עדינה */
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* צל רך ועמוק */
+    border: 2px solid #b38f00; /* מסגרת חומה עדינה */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* צל רך ועמוק */
 
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 540px;
-  position: relative;
-  font-weight: 600;
-  font-size: 16px;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 540px;
+    position: relative;
+    font-weight: 600;
+    font-size: 16px;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .plans-card:hover {
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-  border-color: #ffd700; /* מסגרת זוהרת בהובר */
-  cursor: pointer;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    border-color: #ffd700; /* מסגרת זוהרת בהובר */
+    cursor: pointer;
 }
 
 /* כותרת הכרטיס */
 .card-title {
-  font-size: 28px;
-  margin-bottom: 20px;
-  font-weight: 900;
-  line-height: 1.2;
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: 900;
+    line-height: 1.2;
 }
 
 /* רשימת תכונות */
 .plans-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 35px 0;
-  line-height: 1.5;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 35px 0;
+    line-height: 1.5;
 }
 
 .plans-list-item {
-  margin: 14px 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: flex-start;
-  position: relative;
-  padding-right: 28px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #4a3b00;
+    margin: 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-start;
+    position: relative;
+    padding-right: 28px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #4a3b00;
 }
 
 .plans-list-item .checkmark {
-  position: absolute;
-  right: 0;
-  font-size: 20px;
-  color: #6a4700;
+    position: absolute;
+    right: 0;
+    font-size: 20px;
+    color: #6a4700;
 }
 
 /* בחירת תקופת המנוי */
 .plans-duration-selector {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .duration-btn {
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  color: #5a4100;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: 2px solid transparent;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-  user-select: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  min-width: 120px;
-  background-color: #fff;
-  box-shadow: 0 1px 3px rgba(90, 65, 0, 0.2);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    color: #5a4100;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 120px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(90, 65, 0, 0.2);
 }
 
 .duration-btn:hover {
-  background-color: #fff8b5;
-  border-color: #6a11cb;
-  color: #3a0ca3;
+    background-color: #fff8b5;
+    border-color: #6a11cb;
+    color: #3a0ca3;
 }
 
 .duration-btn.active {
-  background-color: #ffe066;
-  border-color: #6a11cb;
-  color: #3a0ca3;
-  box-shadow: 0 0 8px #6a11cbaa;
+    background-color: #ffe066;
+    border-color: #6a11cb;
+    color: #3a0ca3;
+    box-shadow: 0 0 8px #6a11cbaa;
 }
 
 .duration-price {
-  font-size: 14px;
-  font-weight: 600;
-  color: #4a3b00;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a3b00;
 }
 
 /* כפתור הרשמה */
 .subscribe-btn {
-  padding: 16px 24px;
-  border: none;
-  border-radius: 14px;
-  font-size: 18px;
-  font-weight: 800;
-  cursor: pointer;
-  background-color: #1565c0;
-  color: white;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 4px 8px rgba(90, 65, 0, 0.6);
-  user-select: none;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    background-color: #1565c0;
+    color: white;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(90, 65, 0, 0.6);
+    user-select: none;
 }
 
 .subscribe-btn:hover,
 .subscribe-btn:focus {
-  background-color: #0d47a1;
-  transform: scale(1.07);
-  outline: none;
-  box-shadow: 0 6px 14px rgba(125, 87, 18, 0.85);
+    background-color: #0d47a1;
+    transform: scale(1.07);
+    outline: none;
+    box-shadow: 0 6px 14px rgba(125, 87, 18, 0.85);
 }
 
 /* רספונסיביות לנייד */
 @media (max-width: 768px) {
-  .plans-card {
-    width: 90%;
-    min-height: auto;
-    padding: 25px 20px 35px;
-  }
+    .plans-card {
+        width: 90%;
+        min-height: auto;
+        padding: 25px 20px 35px;
+    }
 
-  .card-title {
-    font-size: 24px;
-  }
+    .card-title {
+        font-size: 24px;
+    }
 
-  .plans-list-item {
-    font-size: 15px;
-    padding-right: 24px;
-    margin: 12px 0;
-  }
+    .plans-list-item {
+        font-size: 15px;
+        padding-right: 24px;
+        margin: 12px 0;
+    }
 
-  .subscribe-btn {
-    font-size: 17px;
-    padding: 14px 20px;
-  }
+    .subscribe-btn {
+        font-size: 17px;
+        padding: 14px 20px;
+    }
 
-  .plans-duration-selector {
-    gap: 10px;
-  }
+    .plans-duration-selector {
+        gap: 10px;
+    }
 
-  .duration-btn {
-    font-size: 15px;
-    padding: 8px 14px;
-    min-width: auto;
-  }
+    .duration-btn {
+        font-size: 15px;
+        padding: 8px 14px;
+        min-width: auto;
+    }
 }
 
 /* שיפור נוסף למובייל קטן */
 @media (max-width: 480px) {
-  .plans-wrapper {
-    padding: 15px 10px;
-  }
+    .plans-wrapper {
+        padding: 15px 10px;
+    }
 
-  .plans-card {
-    width: 100%;
-    min-height: auto;
-    padding: 20px 15px 30px;
-  }
+    .plans-card {
+        width: 100%;
+        min-height: auto;
+        padding: 20px 15px 30px;
+    }
 
-  .card-title {
-    font-size: 20px;
-  }
+    .card-title {
+        font-size: 20px;
+    }
 
-  .plans-list-item {
-    font-size: 14px;
-    padding-right: 20px;
-    margin: 10px 0;
-  }
+    .plans-list-item {
+        font-size: 14px;
+        padding-right: 20px;
+        margin: 10px 0;
+    }
 
-  .subscribe-btn {
-    font-size: 16px;
-    padding: 12px 18px;
-  }
+    .subscribe-btn {
+        font-size: 16px;
+        padding: 12px 18px;
+    }
 
-  .plans-duration-selector {
-    flex-direction: column;
-    gap: 8px;
-  }
+    .plans-duration-selector {
+        flex-direction: column;
+        gap: 8px;
+    }
 
-  .duration-btn {
-    width: 100%;
-    justify-content: center;
-    white-space: normal;
-    font-size: 14px;
-    padding: 8px 12px;
-  }
+    .duration-btn {
+        width: 100%;
+        justify-content: center;
+        white-space: normal;
+        font-size: 14px;
+        padding: 8px 12px;
+    }
 }
