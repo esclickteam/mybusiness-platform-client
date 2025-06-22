@@ -97,7 +97,8 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       alert("לא ניתן לערוך פגישה: מזהה העסק לא זמין");
       return;
     }
-    navigate(`/business/${businessId}/dashboard/appointments/edit/${appointmentId}`);
+      navigate(`/business/${businessId}/dashboard/crm/appointments/edit/${appointmentId}`);
+
   };
 
   return (
