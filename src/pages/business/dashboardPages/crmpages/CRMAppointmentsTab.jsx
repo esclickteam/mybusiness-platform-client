@@ -90,16 +90,16 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
   // סינון כפילויות + חיפוש עם useMemo
   const filteredUniqueAppointments = useMemo(() => {
   const seen = new Set();
-  const searchLower = search.toLowerCase();
+  const searchLower = search.toLowerCase().trim();
+  const searchDigitsOnly = search.replace(/\D/g, ""); // רק ספרות
 
-  console.log("חיפוש:", searchLower);
-  console.log("כל התיאומים:", appointments);
-
-  const filtered = appointments
+  return appointments
     .filter(appt => {
-      const clientName = appt.clientName ? appt.clientName.toLowerCase() : "";
-      const clientPhone = appt.clientPhone ? String(appt.clientPhone) : "";
-      return clientName.includes(searchLower) || clientPhone.includes(searchLower);
+      const clientName = appt.clientName ? appt.clientName.toLowerCase().trim() : "";
+      const clientPhone = appt.clientPhone ? appt.clientPhone.replace(/\D/g, "") : "";
+
+      // סינון לפי שם או לפי טלפון (מספרים בלבד)
+      return clientName.includes(searchLower) || clientPhone.includes(searchDigitsOnly);
     })
     .filter(appt => {
       if (!appt._id) return true;
@@ -107,11 +107,8 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
       seen.add(appt._id);
       return true;
     });
-
-  console.log("תיאומים מסוננים:", filtered);
-
-  return filtered;
 }, [appointments, search]);
+
 
 
 
