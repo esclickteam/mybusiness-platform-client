@@ -1,10 +1,12 @@
+/* GallerySection.css */
+
 /* מיכל הרשת של התמונות בגלריה - צד העריכה */
 .gallery-grid-container.edit {
-  display: flex;
+  display: grid; /* מחזיר ל-grid במקום flex */
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* שורות ועצמים משתנים */
   gap: 15px;
   padding: 10px 0;
-  overflow-x: auto;
-  scroll-behavior: smooth;
+  overflow-x: visible; /* מבטל גלילה אופקית */
 }
 
 /* מיכל הרשת של התמונות בגלריה - צד התצוגה (3 עמודות קבועות) */
@@ -13,6 +15,9 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
   padding: 10px 0;
+  max-width: 100%;      /* מונע חריגה רוחבית */
+  overflow-x: hidden;   /* מונע גלילה אופקית */
+  box-sizing: border-box;
 }
 
 /* עטיפת כל תמונה */
@@ -26,8 +31,8 @@
   align-items: center;
   justify-content: center;
   height: 140px;
-  min-width: 140px; /* חשוב לגלריה אופקית */
-  flex-shrink: 0;   /* מונע כיווץ בפריסה אופקית */
+  min-width: 140px; /* חשוב עבור גלריית סקרול אופקי בצד עריכה */
+  min-width: 0;     /* מונע חריגה רוחבית מיותרת בתצוגה */
 }
 
 /* התמונה עצמה */
