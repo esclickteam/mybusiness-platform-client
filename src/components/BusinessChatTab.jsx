@@ -104,6 +104,7 @@ export default function BusinessChatTab({
   conversationId,
   businessId,
   customerId,
+  customerName, // כאן מוסיפים את השם
   socket,
   initialMessages = [],
   onMessagesChange,
@@ -288,7 +289,7 @@ export default function BusinessChatTab({
       fileName: `audio.${recordedBlob.type.split("/")[1]}`,
       fileType: recordedBlob.type,
       fileDuration: timer,
-      createdAt: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
       sending: true,
       tempId,
     };
@@ -310,9 +311,11 @@ export default function BusinessChatTab({
     reader.readAsArrayBuffer(recordedBlob);
   };
 
-  // Render UI
   return (
     <div className="chat-container business">
+      <div className="chat-header">
+        <h3>{customerName || "לקוח"}</h3>
+      </div>
       <div className="message-list" ref={listRef}>
         {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) => m.system ? (
@@ -335,7 +338,7 @@ export default function BusinessChatTab({
             )}
             <div className="meta">
               <span className="time">{(() => {
-                const date = new Date(m.createdAt);
+                const date = new Date(m.timestamp);
                 if (isNaN(date)) return "";
                 return date.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
               })()}</span>

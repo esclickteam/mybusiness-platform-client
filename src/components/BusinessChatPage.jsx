@@ -36,7 +36,6 @@ export default function BusinessChatPage() {
 
     setLoading(true);
     API.get("/messages/client-conversations")
-
       .then(({ data }) => {
         setConvos(data.conversations || []);
 
@@ -47,10 +46,14 @@ export default function BusinessChatPage() {
         });
         setUnreadCountsByConversation(initialUnread);
 
-        // בוחרים שיחה ראשונה אם קיימת
+        // בוחרים שיחה ראשונה אם קיימת, עם מזהה ועם שם לקוח
         if (data.conversations && data.conversations.length > 0) {
           const first = data.conversations[0];
-          setSelected({ conversationId: first._id, partnerId: null /* אפשר להוסיף ID לקוח אם יש */ });
+          setSelected({ 
+            conversationId: first._id, 
+            partnerId: first.client || first.business || null,
+            partnerName: first.clientName || first.businessName || "לקוח" // אם יש שדה שם מתאים
+          });
         } else {
           setSelected(null);
         }
@@ -114,8 +117,8 @@ export default function BusinessChatPage() {
     return () => socket.off("newClientMessageNotification", handleNewMessage);
   }, [socket, selected?.conversationId]);
 
-  const handleSelect = (conversationId, partnerId) => {
-    setSelected({ conversationId, partnerId });
+  const handleSelect = (conversationId, partnerId, partnerName) => {
+    setSelected({ conversationId, partnerId, partnerName });
   };
 
   if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
@@ -144,7 +147,7 @@ export default function BusinessChatPage() {
             conversationId={selected.conversationId}
             businessId={businessId}
             customerId={selected.partnerId}
-            businessName={user?.businessName || user?.name}
+            customerName={selected.partnerName}    // מעבירים גם את השם
             socket={socket}
             initialMessages={messages}
             onMessagesChange={setMessages}
