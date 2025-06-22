@@ -1,303 +1,240 @@
 /* עיצוב כללי של העמוד */
-.plans-container {
-    max-width: 480px;
-    margin: 2rem auto;
-    padding: 20px;
-    background: #f5f7fa;
-    font-family: "Arial", sans-serif;
-    color: #333;
+.plans-wrapper {
+  max-width: 480px;
+  margin: 2rem auto;
+  padding: 20px;
+  background: #f5f7fa;
+  font-family: "Arial", sans-serif;
+  color: #333;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-/* ניווט עליון */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #fff;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.nav-left {
-    display: flex;
-    gap: 15px;
-    justify-content: flex-start;
-}
-
-.nav-right {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.nav-icon {
-    font-size: 22px;
-    cursor: pointer;
-    color: #333;
-    transition: color 0.3s;
-}
-
-.nav-icon:hover {
-    color: #6a11cb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 /* כותרות */
-.plans-title {
-    font-size: 32px;
-    font-weight: 900;
-    color: #6a11cb;
-    margin-bottom: 0.5rem;
+.plans-header {
+  font-size: 32px;
+  font-weight: 900;
+  color: #6a11cb;
+  margin-bottom: 0.5rem;
 }
 
-.plans-subtitle {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #444;
-    font-weight: 600;
+.plans-subheader {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #444;
+  font-weight: 600;
 }
 
-/* גריד חבילה בודדת */
-.plans-grid.single-plan-grid {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* כרטיס מנוי */
+.plans-card {
+  background: linear-gradient(135deg, #ffef8a, #f8c500); /* רקע בהיר ונעים */
+  color: #5a4100;
+  border-radius: 16px;
+  padding: 30px 25px 40px;
+  width: 100%;
+  max-width: 320px;
+
+  border: 2px solid #b38f00; /* מסגרת חומה עדינה */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* צל רך ועמוק */
+
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 540px;
+  position: relative;
+  font-weight: 600;
+  font-size: 16px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* כרטיס חבילה בודדת */
-.full-plan-card {
-    background: linear-gradient(135deg, #ffef8a, #f8c500); /* רקע בהיר ונעים */
-    color: #5a4100;
-    border-radius: 16px;
-    padding: 30px 25px 40px;
-    width: 100%;
-    max-width: 320px;
-
-    border: 2px solid #b38f00; /* מסגרת חומה עדינה */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* צל רך ועמוק */
-
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 540px;
-    position: relative;
-    font-weight: 600;
-    font-size: 16px;
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+.plans-card:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  border-color: #ffd700; /* מסגרת זוהרת בהובר */
+  cursor: pointer;
 }
 
-.full-plan-card:hover {
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-    border-color: #ffd700; /* מסגרת זוהרת בהובר */
-    cursor: pointer;
-}
-
-/* כותרת החבילה */
-.full-plan-card h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    font-weight: 900;
-    line-height: 1.2;
-}
-
-/* מחיר */
-.plan-price {
-    font-size: 26px;
-    margin-bottom: 30px;
-    font-weight: 900;
-    color: #4a3200;
+/* כותרת הכרטיס */
+.card-title {
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: 900;
+  line-height: 1.2;
 }
 
 /* רשימת תכונות */
-.full-plan-card ul {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 35px 0;
-    text-align: right;
-    line-height: 1.5;
+.plans-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 35px 0;
+  line-height: 1.5;
 }
 
-.full-plan-card li {
-    margin: 14px 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    justify-content: flex-start;
-    position: relative;
-    padding-right: 28px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #4a3b00;
+.plans-list-item {
+  margin: 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-start;
+  position: relative;
+  padding-right: 28px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4a3b00;
 }
 
-.full-plan-card li::before {
-    content: "✔";
-    position: absolute;
-    right: 0;
-    font-size: 20px;
-    color: #6a4700;
+.plans-list-item .checkmark {
+  position: absolute;
+  right: 0;
+  font-size: 20px;
+  color: #6a4700;
 }
 
-/* כפתור בחירה */
-.select-button {
-    padding: 16px 24px;
-    border: none;
-    border-radius: 14px;
-    font-size: 18px;
-    font-weight: 800;
-    cursor: pointer;
-    background-color: #1565c0; 
-    color: white;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(90, 65, 0, 0.6);
-    user-select: none;
+/* בחירת תקופת המנוי */
+.plans-duration-selector {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.select-button:hover,
-.select-button:focus {
-    background-color: #0d47a1;
-    transform: scale(1.07);
-    outline: none;
-    box-shadow: 0 6px 14px rgba(125, 87, 18, 0.85);
+.duration-btn {
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  color: #5a4100;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 120px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(90, 65, 0, 0.2);
 }
 
-/* מחלקות לבחירת תוקף */
-.plan-duration-selector {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    align-items: center;
+.duration-btn:hover {
+  background-color: #fff8b5;
+  border-color: #6a11cb;
+  color: #3a0ca3;
 }
 
-.radio-label {
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    color: #5a4100;
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 2px solid transparent;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
-    min-width: 120px;
+.duration-btn.active {
+  background-color: #ffe066;
+  border-color: #6a11cb;
+  color: #3a0ca3;
+  box-shadow: 0 0 8px #6a11cbaa;
 }
 
-.radio-label input[type="radio"] {
-    cursor: pointer;
-    accent-color: #6a11cb;
-    width: 20px;
-    height: 20px;
-    margin: 0;
+.duration-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a3b00;
 }
 
-.radio-label.selected {
-    background-color: #ffe066;
-    border-color: #6a11cb;
-    color: #3a0ca3;
+/* כפתור הרשמה */
+.subscribe-btn {
+  padding: 16px 24px;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  background-color: #1565c0;
+  color: white;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(90, 65, 0, 0.6);
+  user-select: none;
 }
 
-/* מיקום הבחירה והתשלום בתחתית הכרטיס */
-.plan-footer {
-    margin-top: auto;
-    text-align: center;
+.subscribe-btn:hover,
+.subscribe-btn:focus {
+  background-color: #0d47a1;
+  transform: scale(1.07);
+  outline: none;
+  box-shadow: 0 6px 14px rgba(125, 87, 18, 0.85);
 }
 
 /* רספונסיביות לנייד */
 @media (max-width: 768px) {
-    .plans-grid.single-plan-grid {
-        flex-direction: column;
-        align-items: center;
-    }
+  .plans-card {
+    width: 90%;
+    min-height: auto;
+    padding: 25px 20px 35px;
+  }
 
-    .full-plan-card {
-        width: 90%;
-        min-height: auto;
-        padding: 25px 20px 35px;
-    }
+  .card-title {
+    font-size: 24px;
+  }
 
-    .full-plan-card h2 {
-        font-size: 24px;
-    }
+  .plans-list-item {
+    font-size: 15px;
+    padding-right: 24px;
+    margin: 12px 0;
+  }
 
-    .plan-price {
-        font-size: 22px;
-    }
+  .subscribe-btn {
+    font-size: 17px;
+    padding: 14px 20px;
+  }
 
-    .full-plan-card li {
-        font-size: 15px;
-        padding-right: 24px;
-        margin: 12px 0;
-    }
+  .plans-duration-selector {
+    gap: 10px;
+  }
 
-    .select-button {
-        font-size: 17px;
-        padding: 14px 20px;
-    }
-
-    .plan-duration-selector {
-        gap: 10px;
-    }
-
-    .radio-label {
-        font-size: 15px;
-        padding: 5px 10px;
-    }
+  .duration-btn {
+    font-size: 15px;
+    padding: 8px 14px;
+    min-width: auto;
+  }
 }
 
 /* שיפור נוסף למובייל קטן */
 @media (max-width: 480px) {
-  .plans-container {
+  .plans-wrapper {
     padding: 15px 10px;
   }
 
-  .full-plan-card {
+  .plans-card {
     width: 100%;
     min-height: auto;
     padding: 20px 15px 30px;
   }
 
-  .full-plan-card h2 {
+  .card-title {
     font-size: 20px;
   }
 
-  .plan-price {
-    font-size: 18px;
-  }
-
-  .full-plan-card li {
+  .plans-list-item {
     font-size: 14px;
     padding-right: 20px;
     margin: 10px 0;
   }
 
-  .select-button {
+  .subscribe-btn {
     font-size: 16px;
     padding: 12px 18px;
   }
 
-  .plan-duration-selector {
+  .plans-duration-selector {
     flex-direction: column;
     gap: 8px;
   }
 
-  .radio-label {
-    min-width: auto;
-    white-space: normal;
+  .duration-btn {
     width: 100%;
-    justify-content: flex-start;
-    padding-left: 12px;
+    justify-content: center;
+    white-space: normal;
     font-size: 14px;
-    padding: 5px 10px;
+    padding: 8px 12px;
   }
 }
