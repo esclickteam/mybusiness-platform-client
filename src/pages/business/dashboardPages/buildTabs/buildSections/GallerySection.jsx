@@ -9,7 +9,7 @@ export default function GallerySection({
   galleryInputRef,
   handleGalleryChange,
   handleDeleteImage,
-  setGalleryOrder,  
+  setGalleryOrder,
   isSaving,
   renderTopBar
 }) {
