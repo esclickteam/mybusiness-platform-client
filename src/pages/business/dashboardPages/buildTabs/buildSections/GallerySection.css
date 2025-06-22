@@ -2,10 +2,11 @@
 
 /* מיכל הרשת של התמונות בגלריה - צד העריכה */
 .gallery-grid-container.edit {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  display: flex;
   gap: 15px;
   padding: 10px 0;
+  overflow-x: auto;
+  scroll-behavior: smooth;
 }
 
 /* מיכל הרשת של התמונות בגלריה - צד התצוגה (3 עמודות קבועות) */
@@ -27,6 +28,7 @@
   align-items: center;
   justify-content: center;
   height: 140px;
+  min-width: 140px; /* חשוב עבור גלריית סקרול אופקי בצד עריכה */
 }
 
 /* התמונה עצמה */

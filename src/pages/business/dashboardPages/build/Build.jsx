@@ -65,6 +65,14 @@ export default function Build() {
   // הוספת סטייט עבור shopMode
   const [shopMode, setShopMode] = useState(null);
 
+   const setGalleryOrder = (newOrder) => {
+    setBusinessDetails(prev => ({
+      ...prev,
+      gallery: newOrder.map(item => item.preview),
+      galleryImageIds: newOrder.map(item => item.publicId),
+    }));
+  };
+
 
   function extractPublicIdFromUrl(url) {
     const filename = url.split("/").pop().split("?")[0];
@@ -623,6 +631,7 @@ export default function Build() {
             galleryInputRef={galleryInputRef}
             handleGalleryChange={handleGalleryChange}
             handleDeleteImage={handleDeleteGalleryImage}
+            setGalleryOrder={setGalleryOrder}
             handleEditImage={handleEditImage}
             renderTopBar={renderTopBar}
           />
