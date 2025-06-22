@@ -53,7 +53,8 @@ export default function GallerySection({
           הוספת תמונות
         </button>
 
-        <div className="gallery-grid-container" style={{ marginTop: "1rem" }}>
+        {/* כאן השתמשנו במחלקה 'gallery-grid-container edit' */}
+        <div className="gallery-grid-container edit" style={{ marginTop: "1rem" }}>
           {uniqueImages.length > 0 ? (
             uniqueImages.map(({ preview, publicId }, i) => (
               <div
@@ -87,7 +88,8 @@ export default function GallerySection({
         {renderTopBar?.()}
 
         <h3 className="section-title">הגלריה שלנו</h3>
-        <div className="gallery-grid-container">
+        {/* כאן השתמשנו במחלקה 'gallery-grid-container view' */}
+        <div className="gallery-grid-container view">
           {uniqueImages.length > 0 ? (
             uniqueImages.map(({ preview, publicId }, i) => (
               <div

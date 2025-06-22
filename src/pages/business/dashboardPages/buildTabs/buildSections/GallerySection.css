@@ -1,9 +1,17 @@
 /* GallerySection.css */
 
-/* מיכל הרשת של התמונות בגלריה */
-.gallery-grid-container {
+/* מיכל הרשת של התמונות בגלריה - צד העריכה */
+.gallery-grid-container.edit {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 15px;
+  padding: 10px 0;
+}
+
+/* מיכל הרשת של התמונות בגלריה - צד התצוגה (3 עמודות קבועות) */
+.gallery-grid-container.view {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 15px;
   padding: 10px 0;
 }
