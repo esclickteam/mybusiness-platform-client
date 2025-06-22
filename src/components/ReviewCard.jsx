@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const StarDisplay = ({ rating }) => {
   const full = Math.floor(rating);
@@ -24,6 +24,8 @@ const ratingLabels = {
 };
 
 export default function ReviewCard({ review }) {
+  const [showDetails, setShowDetails] = useState(false);
+
   if (!review) return null;
 
   const average =
@@ -71,10 +73,24 @@ export default function ReviewCard({ review }) {
         <strong>מאת:</strong> {review.client?.name || review.client || "אנונימי"}
       </div>
 
-      <div style={{ borderTop: "1px solid #eee", paddingTop: 8 }}>
-        <strong>פירוט דירוגים:</strong>
-        {review.ratings &&
-          Object.entries(review.ratings).map(([key, val]) => (
+      <button
+        onClick={() => setShowDetails(!showDetails)}
+        style={{
+          background: "#9b59b6",
+          color: "white",
+          border: "none",
+          borderRadius: 5,
+          padding: "6px 12px",
+          cursor: "pointer",
+          marginBottom: 10,
+        }}
+      >
+        {showDetails ? "הסתר פירוט דירוג" : "📋 פירוט דירוג"}
+      </button>
+
+      {showDetails && review.ratings && (
+        <div style={{ borderTop: "1px solid #eee", paddingTop: 8 }}>
+          {Object.entries(review.ratings).map(([key, val]) => (
             <div
               key={key}
               style={{
@@ -82,7 +98,7 @@ export default function ReviewCard({ review }) {
                 justifyContent: "space-between",
                 marginTop: 4,
                 fontSize: "0.95rem",
-                direction: "rtl"
+                direction: "rtl",
               }}
             >
               <span>{ratingLabels[key] || key}</span>
@@ -91,7 +107,8 @@ export default function ReviewCard({ review }) {
               </span>
             </div>
           ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
