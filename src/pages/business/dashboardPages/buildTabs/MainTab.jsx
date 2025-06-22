@@ -26,7 +26,7 @@ export default function MainTab({ businessDetails, socket }) {
     async function fetchInitialReviews() {
       if (!businessDetails?._id) return;
       try {
-        const res = await fetch(`/api/businesses/${businessDetails._id}/reviews?limit=2`);
+        const res = await fetch(`/api/reviews/business/${businessDetails._id}?limit=2`);
         if (res.ok) {
           const data = await res.json();
           setReviews(data.reviews || []);
@@ -38,7 +38,7 @@ export default function MainTab({ businessDetails, socket }) {
     fetchInitialReviews();
   }, [businessDetails?._id]);
 
-  // עדכוני ביקורות בזמן אמת מ-socket
+  // עדכוני ביקורות בזמן אמת מ-socket (אופציונלי)
   useEffect(() => {
     if (!socket) return;
 
@@ -79,7 +79,7 @@ export default function MainTab({ businessDetails, socket }) {
             <div key={review._id || review.id || i} className="review-card">
               <div className="review-header">
                 <strong className="review-user">{review.authorName || review.userName || "לקוח"}</strong>
-                <span className="star-text">⭐ {review.rating}</span>
+                <span className="star-text">⭐ {review.rating || review.averageScore}</span>
               </div>
               <p className="review-text">{review.comment}</p>
             </div>
