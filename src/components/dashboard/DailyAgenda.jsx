@@ -51,7 +51,16 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       alert('מספר טלפון של הלקוח לא זמין');
       return;
     }
-    const cleanPhone = phone.replace(/\D/g, ''); // מסירים תווים לא חוקיים
+    // ניקוי תווים לא חוקיים
+    let cleanPhone = phone.replace(/\D/g, '');
+    // הוספת קידומת מדינה 972 אם חסרה
+    if (!cleanPhone.startsWith('972')) {
+      if (cleanPhone.startsWith('0')) {
+        cleanPhone = '972' + cleanPhone.substring(1);
+      } else {
+        cleanPhone = '972' + cleanPhone;
+      }
+    }
     const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך היום בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
