@@ -89,22 +89,24 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
 
   // סינון כפילויות + חיפוש עם useMemo
   const filteredUniqueAppointments = useMemo(() => {
-    const seen = new Set();
-    return appointments
-      .filter(appt => {
-        const searchLower = search.toLowerCase();
-        return (
-          appt.clientName?.toLowerCase().includes(searchLower) ||
-          appt.clientPhone?.toLowerCase().includes(searchLower)
-        );
-      })
-      .filter(appt => {
-        if (!appt._id) return true;
-        if (seen.has(appt._id)) return false;
-        seen.add(appt._id);
-        return true;
-      });
-  }, [appointments, search]);
+  const seen = new Set();
+  const searchLower = search.toLowerCase();
+
+  return appointments
+    .filter(appt => {
+      const clientName = appt.clientName ? appt.clientName.toLowerCase() : "";
+      const clientPhone = appt.clientPhone ? String(appt.clientPhone) : "";
+
+      return clientName.includes(searchLower) || clientPhone.includes(searchLower);
+    })
+    .filter(appt => {
+      if (!appt._id) return true;
+      if (seen.has(appt._id)) return false;
+      seen.add(appt._id);
+      return true;
+    });
+}, [appointments, search]);
+
 
   // שינוי שירות - מעדכן את state העריכה או היצירה
   const handleServiceChange = (serviceId, isEdit = false) => {
