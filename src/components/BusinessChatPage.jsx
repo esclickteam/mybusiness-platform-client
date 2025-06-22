@@ -1,4 +1,3 @@
-// src/pages/BusinessChatPage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useOutletContext } from "react-router-dom";
@@ -28,121 +27,68 @@ export default function BusinessChatPage() {
   const totalUnreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
 
   useEffect(() => {
-    console.log("Updating total unread messages count:", totalUnreadCount);
     updateMessagesCount?.(totalUnreadCount);
   }, [totalUnreadCount, updateMessagesCount]);
 
+  // טוען רק שיחות עם לקוחות
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    console.log("Fetching conversations for businessId:", businessId);
     setLoading(true);
-    API.get("/conversations", { params: { businessId } })
+    API.get("/client-conversations")
       .then(({ data }) => {
-        console.log("Received conversations:", data);
+        setConvos(data.conversations || []);
 
-        setConvos(data);
-
+        // בניית מפת כמות הודעות שלא נקראו
         const initialUnread = {};
-        data.forEach((c) => {
-          const id = c.conversationId || c._id;
-          const unread = c.unreadCount || 0;
-          if (unread > 0) initialUnread[id] = unread;
+        (data.conversations || []).forEach((c) => {
+          if (c.unreadCount > 0) initialUnread[c._id] = c.unreadCount;
         });
         setUnreadCountsByConversation(initialUnread);
-        console.log("Initial unread counts by conversation:", initialUnread);
 
-        if (data.length > 0) {
-          const first = data[0];
-          const convoId = first.conversationId || first._id;
-          const partnerId = first.partnerId || first.participants?.find((p) => p !== businessId);
-          console.log("Selecting first conversation:", convoId, "partnerId:", partnerId);
-          setSelected({ conversationId: convoId, partnerId });
+        // בוחרים שיחה ראשונה אם קיימת
+        if (data.conversations && data.conversations.length > 0) {
+          const first = data.conversations[0];
+          setSelected({ conversationId: first._id, partnerId: null /* אפשר להוסיף ID לקוח אם יש */ });
         } else {
-          console.log("No conversations received");
           setSelected(null);
         }
       })
-      .catch((err) => {
-        console.error("Error fetching conversations:", err);
-        setError("שגיאה בטעינת שיחות");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch(() => setError("שגיאה בטעינת שיחות עם לקוחות"))
+      .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
   const messagesAreaRef = useRef(null);
 
+  // טעינת ההודעות של השיחה הנבחרת
   useEffect(() => {
-    if (!socket) {
-      console.log("No socket instance available");
+    if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
       return;
     }
 
-    const handleConnect = () => console.log("Socket connected");
-    const handleDisconnect = () => console.log("Socket disconnected");
-    const handleError = (err) => console.error("Socket error:", err);
-
-    socket.on("connect", handleConnect);
-    socket.on("disconnect", handleDisconnect);
-    socket.on("error", handleError);
-
-    return () => {
-      socket.off("connect", handleConnect);
-      socket.off("disconnect", handleDisconnect);
-      socket.off("error", handleError);
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    if (!socket || !socket.connected) {
-      console.log("Socket not connected");
-      setMessages([]);
-      return;
-    }
-
-    if (!selected?.conversationId) {
-      console.log("No conversation selected");
-      setMessages([]);
-      return;
-    }
-
-    console.log("Marking messages as read for conversation:", selected.conversationId);
     socket.emit("markMessagesRead", selected.conversationId, (resp) => {
-      if (!resp.ok) {
-        console.error("Failed to mark messages read:", resp.error);
-      } else {
+      if (resp.ok) {
         setUnreadCountsByConversation((prev) => {
           const next = { ...prev };
           delete next[selected.conversationId];
-          console.log("Updated unread counts after marking read:", next);
           return next;
         });
       }
     });
 
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
-      console.log("Leaving previous conversation:", prevSelectedRef.current);
       socket.emit("leaveConversation", prevSelectedRef.current);
     }
 
-    console.log("Joining conversation:", selected.conversationId);
     socket.emit("joinConversation", selected.conversationId, (ack) => {
-      if (!ack.ok) {
-        console.error("Failed to join conversation:", ack.error);
-        setError("לא ניתן להצטרף לשיחה");
-      }
+      if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
 
-    console.log("Requesting message history for conversation:", selected.conversationId);
     socket.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
       if (res.ok) {
-        console.log("Received messages history:", res.messages);
         setMessages(res.messages || []);
       } else {
-        console.error("Error loading message history:", res.error);
         setMessages([]);
         setError("שגיאה בטעינת ההודעות");
       }
@@ -151,30 +97,23 @@ export default function BusinessChatPage() {
     prevSelectedRef.current = selected.conversationId;
   }, [socket, selected]);
 
+  // טיפול בהודעות חדשות בזמן אמת
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewMessageNotification = (msg) => {
-      console.log("New client message notification received:", msg);
+    const handleNewMessage = (msg) => {
       const convoId = msg.conversationId || msg.conversation_id;
       if (convoId && convoId !== selected?.conversationId) {
-        setUnreadCountsByConversation((prev) => {
-          const updated = { ...prev, [convoId]: (prev[convoId] || 0) + 1 };
-          console.log("Updated unread counts on new message:", updated);
-          return updated;
-        });
+        setUnreadCountsByConversation((prev) => ({ ...prev, [convoId]: (prev[convoId] || 0) + 1 }));
       }
     };
 
-    socket.on("newClientMessageNotification", handleNewMessageNotification);
+    socket.on("newClientMessageNotification", handleNewMessage);
 
-    return () => {
-      socket.off("newClientMessageNotification", handleNewMessageNotification);
-    };
+    return () => socket.off("newClientMessageNotification", handleNewMessage);
   }, [socket, selected?.conversationId]);
 
   const handleSelect = (conversationId, partnerId) => {
-    console.log("Conversation selected:", conversationId, "partnerId:", partnerId);
     setSelected({ conversationId, partnerId });
   };
 
@@ -192,7 +131,7 @@ export default function BusinessChatPage() {
             selectedConversationId={selected?.conversationId}
             onSelect={handleSelect}
             unreadCountsByConversation={unreadCountsByConversation}
-            isBusiness
+            isBusiness={false} // כאן זה שיחות לקוחות, לא עסקיות
           />
         )}
         {error && <p className={styles.error}>{error}</p>}
