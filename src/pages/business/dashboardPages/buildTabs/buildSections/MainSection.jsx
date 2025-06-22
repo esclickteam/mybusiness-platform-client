@@ -50,7 +50,7 @@ export default function MainSection({
   }));
 
   // Deduplicate & limit to 5
-  const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 5);
+  const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 6);
 
   // wrap Select onChange to mimic native input event
   const wrapSelectChange = name => option =>

@@ -275,7 +275,7 @@ export default function Build() {
 
   const handleMainImagesChange = async e => {
     // 1) קבצים (עד 5)
-    const files = Array.from(e.target.files || []).slice(0, 5);
+    const files = Array.from(e.target.files || []).slice(0, 6);
     if (!files.length) return;
     e.target.value = null;
 
@@ -296,8 +296,8 @@ export default function Build() {
 
       if (res.status === 200) {
         // 5) חילוץ URL-ים ו־publicIds מה-response
-        const urls = (res.data.mainImages || []).slice(0, 5);
-        const ids = (res.data.mainImageIds || []).slice(0, 5);
+        const urls = (res.data.mainImages || []).slice(0, 6);
+        const ids = (res.data.mainImageIds || []).slice(0, 6);
 
         // 6) עדכון ה-state עם התוצאות מהשרת
         setBusinessDetails(prev => ({

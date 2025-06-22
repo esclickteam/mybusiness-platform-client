@@ -24,7 +24,7 @@ export default function MainTab({ businessDetails }) {
   const unique = dedupeByPreview(normalized);
 
   // 4) וחתוך ל-5 פריטים
-  const toShow = unique.slice(0, 5);
+  const toShow = unique.slice(0, 6);
 
   // 5) אם אין תמונות – הצג הודעה
   if (toShow.length === 0) {

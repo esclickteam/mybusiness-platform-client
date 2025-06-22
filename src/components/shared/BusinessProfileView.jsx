@@ -286,7 +286,7 @@ export default function BusinessProfileView() {
             {currentTab === "ראשי" && (
               <div className="public-main-images">
                 {mainImages.length ? (
-                  mainImages.slice(0, 5).map((url, i) => (
+                  mainImages.slice(0, 6).map((url, i) => (
                     <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" />
                   ))
                 ) : (
