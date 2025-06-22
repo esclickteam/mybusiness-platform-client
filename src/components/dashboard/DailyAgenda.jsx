@@ -5,13 +5,7 @@ import "./DailyAgenda.css";
 const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) => {
   const navigate = useNavigate();
 
-  if (!date)
-    return (
-      <p style={{ fontStyle: "italic", textAlign: "center" }}>
-        בחר/י תאריך כדי לראות לו״ז
-      </p>
-    );
-
+  // פורמט תאריך לתבנית "YYYY-MM-DD"
   const selectedDate = useMemo(() => {
     try {
       const d = new Date(date);
@@ -21,6 +15,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     }
   }, [date]);
 
+  // טיפול בתאריך לתצוגה בטקסט הכותרת, עם fallback
   const displayDate = useMemo(() => {
     try {
       return new Date(date).toLocaleDateString("he-IL");
@@ -29,6 +24,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     }
   }, [date]);
 
+  // סינון וסידור הפגישות ליום הנבחר
   const dayAppointments = useMemo(() => {
     if (!selectedDate) return [];
 
@@ -47,6 +43,16 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     return sorted;
   }, [appointments, selectedDate]);
 
+  // אם לא נבחר תאריך, נחזיר טקסט מתאים
+  if (!date) {
+    return (
+      <p style={{ fontStyle: "italic", textAlign: "center" }}>
+        בחר/י תאריך כדי לראות לו״ז
+      </p>
+    );
+  }
+
+  // פונקציית שליחת תזכורת בוואטסאפ
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
     if (!phone) {
       alert("מספר טלפון של הלקוח לא זמין");
@@ -79,6 +85,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     window.open(url, "_blank");
   };
 
+  // ניתוב לעריכת הפגישה
   const editAppointment = (appt) => {
     const appointmentId = appt._id || appt.id;
     if (!appointmentId) {
@@ -119,7 +126,13 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
                     className="agenda-btn"
                     aria-label={`שלח תזכורת לווטסאפ ללקוח ${clientName} לשעה ${time}`}
                     onClick={() =>
-                      sendWhatsAppReminder(clientPhone, clientName, a.date, time, serviceName)
+                      sendWhatsAppReminder(
+                        clientPhone,
+                        clientName,
+                        a.date,
+                        time,
+                        serviceName
+                      )
                     }
                   >
                     שלח תזכורת
