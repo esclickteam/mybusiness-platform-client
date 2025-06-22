@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import ImageLoader from "@components/ImageLoader";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
+import "./GallerySection.css"; // ייבוא קובץ ה-CSS
 
 export default function GallerySection({
   businessDetails,
@@ -12,7 +13,6 @@ export default function GallerySection({
 }) {
   const containerRef = useRef();
 
-  // Close menus on outside click if needed
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -23,7 +23,6 @@ export default function GallerySection({
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // Build wrapped list and dedupe
   const wrapped = (businessDetails.gallery || []).map((url, idx) => ({
     preview: url,
     publicId: (businessDetails.galleryImageIds || [])[idx] || null
@@ -32,7 +31,7 @@ export default function GallerySection({
 
   return (
     <>
-      {/* Left: upload form + preview images */}
+      {/* צד שמאל: העלאת תמונות + תצוגת תמונות עם כפתורי מחיקה */}
       <div className="form-column" ref={containerRef}>
         <h3>העלאת תמונות לגלריה</h3>
         <input
@@ -54,20 +53,17 @@ export default function GallerySection({
           הוספת תמונות
         </button>
 
-        {/* Preview images בצד שמאל */}
-        <div className="gallery-preview-left" style={{ marginTop: "1rem" }}>
+        <div className="gallery-grid-container" style={{ marginTop: "1rem" }}>
           {uniqueImages.length > 0 ? (
             uniqueImages.map(({ preview, publicId }, i) => (
               <div
                 key={publicId || `preview-left-${i}`}
                 className="gallery-item-wrapper image-wrapper"
-                style={{ position: "relative", marginBottom: "10px" }}
               >
                 <img
                   src={preview}
                   alt={`תמונת גלריה ${i + 1}`}
                   className="gallery-img"
-                  style={{ width: "100%", borderRadius: "8px" }}
                 />
                 <button
                   className="delete-btn"
@@ -75,15 +71,6 @@ export default function GallerySection({
                   type="button"
                   title="מחיקה"
                   disabled={isSaving}
-                  style={{
-                    position: "absolute",
-                    top: "5px",
-                    right: "5px",
-                    background: "rgba(255,255,255,0.7)",
-                    borderRadius: "50%",
-                    border: "none",
-                    cursor: "pointer"
-                  }}
                 >
                   🗑️
                 </button>
@@ -95,7 +82,7 @@ export default function GallerySection({
         </div>
       </div>
 
-      {/* Right: gallery preview */}
+      {/* צד ימין: תצוגת גלריה ללא כפתורי מחיקה */}
       <div className="preview-column">
         {renderTopBar?.()}
 
@@ -112,15 +99,6 @@ export default function GallerySection({
                   alt={`תמונת גלריה ${i + 1}`}
                   className="gallery-img"
                 />
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDeleteImage(publicId)}
-                  type="button"
-                  title="מחיקה"
-                  disabled={isSaving}
-                >
-                  🗑️
-                </button>
               </div>
             ))
           ) : (
