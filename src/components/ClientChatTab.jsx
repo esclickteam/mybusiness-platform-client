@@ -440,7 +440,8 @@ export default function ClientChatTab({
                 </a>
               )
             ) : (
-              <div className="text">{m.isEdited && m.editedText ? m.editedText : m.text}</div>
+              <div className="text">{m.isEdited && m.editedText ? m.editedText : (m.content || m.text)}</div>
+
             )}
             {m.isEdited && userRole === "business" && (
               <div className="edited-label" style={{ fontSize: "0.8em", color: "#888" }}>
