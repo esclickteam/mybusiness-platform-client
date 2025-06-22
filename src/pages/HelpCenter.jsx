@@ -67,6 +67,10 @@ export default function HelpCenter() {
     cat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredArticles = popularArticles.filter(article =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const handleCategoryClick = (path) => {
     navigate(path);
   };
@@ -83,69 +87,111 @@ export default function HelpCenter() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           dir="rtl"
-          aria-label="חיפוש קטגוריות"
+          aria-label="חיפוש קטגוריות ומאמרים"
+          autoComplete="off"
         />
         <span className="search-icon" role="img" aria-label="חיפוש">🔍</span>
       </div>
 
-      <section className="popular-articles">
-        <h2>מאמרים פופולריים</h2>
-        <div className="articles-grid">
-          {popularArticles.map((article) => (
-            <div key={article.id} className="article-card">
-              <p className="article-title">{article.title}</p>
-              <p className="article-description">{article.description}</p>
-              <Link
-                to={article.url}
-                className="more-info-button"
-                aria-label={`מידע נוסף על ${article.title}`}
-              >
-                מידע נוסף
-              </Link>
+      {searchTerm.trim() === "" ? (
+        <>
+          <section className="popular-articles">
+            <h2>מאמרים פופולריים</h2>
+            <div className="articles-grid">
+              {popularArticles.map((article) => (
+                <div key={article.id} className="article-card">
+                  <p className="article-title">{article.title}</p>
+                  <p className="article-description">{article.description}</p>
+                  <Link
+                    to={article.url}
+                    className="more-info-button"
+                    aria-label={`מידע נוסף על ${article.title}`}
+                  >
+                    מידע נוסף
+                  </Link>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </section>
 
-      <section className="faq-categories">
-        <h2>בחר קטגוריה לשאלות נפוצות</h2>
-        <div className="categories-grid">
-          {filteredCategories.length > 0 ? (
-            filteredCategories.map((category) => (
-              <div
-                key={category.id}
-                className="category-card"
-                role="button"
-                tabIndex={0}
-                onClick={() => handleCategoryClick(category.path)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") handleCategoryClick(category.path);
-                }}
-                aria-label={`פתח שאלות נפוצות בקטגוריה ${category.title}`}
-              >
-                {category.title}
-              </div>
-            ))
+          <section className="faq-categories">
+            <h2>בחר קטגוריה לשאלות נפוצות</h2>
+            <div className="categories-grid">
+              {faqCategories.map((category) => (
+                <div
+                  key={category.id}
+                  className="category-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleCategoryClick(category.path)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") handleCategoryClick(category.path);
+                  }}
+                  aria-label={`פתח שאלות נפוצות בקטגוריה ${category.title}`}
+                >
+                  {category.title}
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      ) : (
+        <section className="search-results">
+          <h2>תוצאות חיפוש עבור "{searchTerm}"</h2>
+
+          {filteredArticles.length > 0 ? (
+            <div className="articles-grid">
+              {filteredArticles.map(article => (
+                <div key={article.id} className="article-card">
+                  <p className="article-title">{article.title}</p>
+                  <p className="article-description">{article.description}</p>
+                  <Link to={article.url} className="more-info-button" aria-label={`מידע נוסף על ${article.title}`}>
+                    מידע נוסף
+                  </Link>
+                </div>
+              ))}
+            </div>
           ) : (
-            <p>לא נמצאו קטגוריות התואמות את "{searchTerm}"</p>
+            <p>לא נמצאו מאמרים התואמים את החיפוש.</p>
           )}
-        </div>
-      </section>
+
+          {filteredCategories.length > 0 ? (
+            <div className="categories-grid" style={{ marginTop: 20 }}>
+              {filteredCategories.map(category => (
+                <div
+                  key={category.id}
+                  className="category-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleCategoryClick(category.path)}
+                  onKeyPress={e => {
+                    if (e.key === "Enter") handleCategoryClick(category.path);
+                  }}
+                  aria-label={`פתח שאלות נפוצות בקטגוריה ${category.title}`}
+                >
+                  {category.title}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>לא נמצאו קטגוריות התואמות את החיפוש.</p>
+          )}
+        </section>
+      )}
 
       <section className="contact-us">
-  <h2>צריכים עזרה נוספת?</h2>
-  <div>
-    <button
-      type="button"
-      onClick={() => navigate("/business-support")}
-      className="support-button"
-      aria-label="עבור לעמוד תמיכה לעסקים"
-    >
-      עבור לעמוד התמיכה לעסקים
-    </button>
-  </div>
-</section>
-
+        <h2>צריכים עזרה נוספת?</h2>
+        <div>
+          <button
+            type="button"
+            onClick={() => navigate("/business-support")}
+            className="support-button"
+            aria-label="עבור לעמוד תמיכה לעסקים"
+          >
+            עבור לעמוד התמיכה לעסקים
+          </button>
+        </div>
+      </section>
 
       <ChatBot chatOpen={chatOpen} setChatOpen={setChatOpen} />
     </div>
