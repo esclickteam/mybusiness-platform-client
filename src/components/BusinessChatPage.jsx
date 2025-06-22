@@ -35,7 +35,8 @@ export default function BusinessChatPage() {
     if (!initialized || !businessId) return;
 
     setLoading(true);
-    API.get("/client-conversations")
+    API.get("/messages/client-conversations")
+
       .then(({ data }) => {
         setConvos(data.conversations || []);
 
