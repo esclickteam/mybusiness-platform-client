@@ -17,27 +17,27 @@ export default function BusinessChatPage() {
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]); // ‼ ה‑state היחיד להודעות
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const socket = useSocket();
   const prevSelectedRef = useRef(null);
 
-  // Map של ספירת הודעות לא נקראו לכל שיחה
+  // ספירת "לא נקרא" לכל שיחה
   const [unreadCountsByConversation, setUnreadCountsByConversation] = useState({});
 
-  // חישוב הסכום הכולל של הודעות לא נקראות להצגה בתפריט
+  // סכום כולל של הודעות לא‑נקראו (ל‑Sidebar)
   const totalUnreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
 
-  // עדכון ספירת הודעות כללית ב-outlet context לצורך התראה בתפריט הצד
+  // עדכון הבאג׳ בעמוד הראשי
   useEffect(() => {
-    if (updateMessagesCount) {
-      updateMessagesCount(totalUnreadCount);
-    }
+    updateMessagesCount?.(totalUnreadCount);
   }, [totalUnreadCount, updateMessagesCount]);
 
-  // טעינת רשימת השיחות
+  /* ---------------------------------------------------------------------------
+   *   טעינת רשימת השיחות (once per business)
+   * -------------------------------------------------------------------------*/
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -46,115 +46,109 @@ export default function BusinessChatPage() {
       .then(({ data }) => {
         setConvos(data);
 
+        // אתחול מפת Unread
         const initialUnread = {};
-        data.forEach((convo) => {
-          const id = convo.conversationId || convo._id;
-          const unread = convo.unreadCount || 0;
+        data.forEach((c) => {
+          const id = c.conversationId || c._id;
+          const unread = c.unreadCount || 0;
           if (unread > 0) initialUnread[id] = unread;
         });
         setUnreadCountsByConversation(initialUnread);
 
+        // בחירת שיחה ראשונה אוטומטית
         if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
-          const partnerId = first.partnerId || first.participants.find((p) => p !== businessId);
+          const partnerId =
+            first.partnerId || first.participants.find((p) => p !== businessId);
           setSelected({ conversationId: convoId, partnerId });
         }
       })
-      .catch(() => {
-        setError("שגיאה בטעינת שיחות");
-      })
+      .catch(() => setError("שגיאה בטעינת שיחות"))
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  // שימוש ב-useOnScreen עבור אזור התצוגה של ההודעות
+  /* ---------------------------------------------------------------------------
+   *   טעינת הודעות לשיחה הנבחרת (Single Source of Truth)
+   * -------------------------------------------------------------------------*/
   const messagesAreaRef = useRef();
   const messagesAreaOnScreen = useOnScreen(messagesAreaRef, "200px");
 
-  // ניהול טעינת ההודעות רק כשהאזור נראה במסך
   useEffect(() => {
+    // אין סוקט / אין שיחה / אזור לא גלוי → לא נטען
     if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
       return;
     }
-    if (!messagesAreaOnScreen) return; // מחכים עד שהאזור נראה
+    if (!messagesAreaOnScreen) return;
 
-    // סימון השיחה כנקראה בשרת
-    socket.emit("markMessagesRead", selected.conversationId, (response) => {
-      if (!response.ok) {
-        console.error("Failed to mark messages as read:", response.error);
+    // סימון כ‑נקרא
+    socket.emit("markMessagesRead", selected.conversationId, (resp) => {
+      if (!resp.ok) {
+        console.error("Failed to mark read", resp.error);
       } else {
         setUnreadCountsByConversation((prev) => {
-          const updated = { ...prev };
-          delete updated[selected.conversationId];
-          return updated;
+          const next = { ...prev };
+          delete next[selected.conversationId];
+          return next;
         });
       }
     });
 
-    // עזיבת השיחה הקודמת אם שונה
+    // עזיבת החדר הקודם
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
-      socket.emit("leaveConversation", prevSelectedRef.current, (ack) => {
-        if (!ack.ok) {
-          console.error("Failed to leave previous conversation:", ack.error);
-        }
-      });
+      socket.emit("leaveConversation", prevSelectedRef.current, () => {});
     }
 
-    // הצטרפות לשיחה החדשה
+    // הצטרפות לחדר החדש
     socket.emit("joinConversation", selected.conversationId, (ack) => {
-      if (!ack.ok) {
-        setError("לא ניתן להצטרף לשיחה");
-        console.error("Failed to join conversation:", ack.error);
-      }
+      if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
 
-    // טעינת היסטוריית ההודעות
+    // הבאת היסטוריה מהשרת (socket)
     socket.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
-      if (res.ok) {
-        setMessages(res.messages || []);
-      } else {
+      if (res.ok) setMessages(res.messages || []);
+      else {
         setMessages([]);
         setError("שגיאה בטעינת ההודעות");
-        console.error("Failed to load messages:", res.error);
       }
     });
 
     prevSelectedRef.current = selected.conversationId;
-  }, [selected, socket, messagesAreaOnScreen]);
+  }, [socket, selected, messagesAreaOnScreen]);
 
-  // מאזין להודעות חדשות
+  /* ---------------------------------------------------------------------------
+   *   מאזין לנוטיפיקציות של הודעה חדשה
+   * -------------------------------------------------------------------------*/
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewMessage = (message) => {
-      const convoId = message.conversationId || message.conversation_id;
-
+    const handleNew = (msg) => {
+      const convoId = msg.conversationId || msg.conversation_id;
       if (convoId && convoId !== selected?.conversationId) {
-        setUnreadCountsByConversation((prev) => {
-          const prevCount = prev[convoId] || 0;
-          return { ...prev, [convoId]: prevCount + 1 };
-        });
+        setUnreadCountsByConversation((prev) => ({
+          ...prev,
+          [convoId]: (prev[convoId] || 0) + 1,
+        }));
       }
     };
 
-    socket.on("newClientMessageNotification", handleNewMessage);
-
-    return () => {
-      socket.off("newClientMessageNotification", handleNewMessage);
-    };
+    socket.on("newClientMessageNotification", handleNew);
+    return () => socket.off("newClientMessageNotification", handleNew);
   }, [socket, selected?.conversationId]);
 
+  /* ---------------------------------------------------------------------------
+   *   בחירת שיחה מסרגל הצד
+   * -------------------------------------------------------------------------*/
   const handleSelect = (conversationId, partnerId) => {
     setSelected({ conversationId, partnerId });
   };
 
-  if (!initialized) {
-    return <p className={styles.loading}>טוען מידע…</p>;
-  }
+  if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
 
   return (
     <div className={styles.chatContainer}>
+      {/* סרגל שיחות */}
       <aside className={styles.sidebarInner}>
         {loading ? (
           <p className={styles.loading}>טוען שיחות…</p>
@@ -171,6 +165,7 @@ export default function BusinessChatPage() {
         {error && <p className={styles.error}>{error}</p>}
       </aside>
 
+      {/* אזור הודעות */}
       <section ref={messagesAreaRef} className={styles.chatArea}>
         {selected ? (
           <BusinessChatTab
@@ -179,8 +174,9 @@ export default function BusinessChatPage() {
             customerId={selected.partnerId}
             businessName={user?.businessName || user?.name}
             socket={socket}
-            messages={messages}
-            setMessages={setMessages}
+            /* props החדשים לפי Option B */
+            initialMessages={messages}
+            onMessagesChange={setMessages}
           />
         ) : (
           <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
