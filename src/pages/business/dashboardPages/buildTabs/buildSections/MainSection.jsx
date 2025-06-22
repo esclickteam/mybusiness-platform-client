@@ -214,7 +214,7 @@ export default function MainSection({
               </button>
             </div>
           ))}
-          {limitedMainImgs.length < 5 && (
+          {limitedMainImgs.length < 6 && (
             <div
               className="gallery-placeholder clickable"
               onClick={() => mainImagesInputRef.current?.click()}
