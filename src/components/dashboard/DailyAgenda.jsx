@@ -63,7 +63,15 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     }
     const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך היום בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
+
+    // זיהוי אם זה נייד או דסקטופ
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    const url = isMobile
+      ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+      : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
+
+    window.open(url, '_blank');
   };
 
   const editAppointment = (appt) => {
