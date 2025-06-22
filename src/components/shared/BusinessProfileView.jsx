@@ -22,21 +22,29 @@ const TABS = [
   "יומן",
 ];
 
-const fetchBusiness = async (businessId) => {
-  const res = await API.get(`/business/${businessId}`);
-  return res.data.business || res.data;
+// מילון תרגום שדות דירוג
+const ratingLabels = {
+  service: "שירות 🤝",
+  professional: "מקצועיות 💼",
+  timing: "עמידה בזמנים ⏰",
+  availability: "זמינות 📞",
+  value: "תמורה למחיר 💰",
+  goal: "השגת מטרה 🎯",
+  experience: "חוויה כללית 🎉",
 };
 
-const fetchWorkHours = async (businessId) => {
-  const res = await API.get("/appointments/get-work-hours", {
-    params: { businessId },
-  });
-  return res.data.workHours;
-};
-
-const fetchReviews = async (businessId) => {
-  const res = await API.get(`/reviews/business/${businessId}`);
-  return res.data.reviews || [];
+const StarDisplay = ({ rating }) => {
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5;
+  const stars = [];
+  for (let i = 0; i < full; i++) stars.push("★");
+  if (half) stars.push("✩");
+  while (stars.length < 5) stars.push("☆");
+  return (
+    <span style={{ color: "#f5a623", fontSize: "1.2rem", marginLeft: 4 }}>
+      {stars.join("")}
+    </span>
+  );
 };
 
 export default function BusinessProfileView() {
@@ -57,38 +65,27 @@ export default function BusinessProfileView() {
 
   const hasIncrementedRef = useRef(false);
 
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
+  // בקשות נתונים
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['business', bizId],
-    queryFn: () => fetchBusiness(bizId),
+    queryFn: () => API.get(`/business/${bizId}`).then(res => res.data.business || res.data),
     enabled: !!bizId,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: workHoursData } = useQuery({
     queryKey: ['workHours', bizId],
-    queryFn: () => fetchWorkHours(bizId),
+    queryFn: () => API.get("/appointments/get-work-hours", { params: { businessId: bizId } }).then(res => res.data.workHours),
     enabled: !!bizId
   });
 
   const { data: reviews = [], refetch: refetchReviews } = useQuery({
     queryKey: ['reviews', bizId],
-    queryFn: () => fetchReviews(bizId),
+    queryFn: () => API.get(`/reviews/business/${bizId}`).then(res => res.data.reviews || []),
     enabled: !!bizId
   });
 
-  useEffect(() => {
-    if (!bizId) return;
-    queryClient.prefetchQuery({
-      queryKey: ['workHours', bizId],
-      queryFn: () => fetchWorkHours(bizId),
-    });
-  }, [bizId, queryClient]);
-
+  // עדכונים לסטייטים
   useEffect(() => {
     if (!data) return;
     setFaqs(data.faqs || []);
@@ -99,7 +96,7 @@ export default function BusinessProfileView() {
     if (!workHoursData) return;
     let sched = {};
     if (Array.isArray(workHoursData)) {
-      workHoursData.forEach((item) => {
+      workHoursData.forEach(item => {
         sched[Number(item.day)] = item;
       });
     } else if (typeof workHoursData === "object") {
@@ -108,42 +105,10 @@ export default function BusinessProfileView() {
     setSchedule(sched);
   }, [workHoursData]);
 
-  useEffect(() => {
-    if (!user || !bizId) return;
-    (async () => {
-      try {
-        const favRes = await API.get("/users/me", { withCredentials: true });
-        const favList = favRes.data.favorites || [];
-        setIsFavorite(favList.includes(bizId));
-      } catch (err) {
-        console.error("Error fetching favorites", err);
-      }
-    })();
-  }, [user, bizId]);
-
-  useEffect(() => {
-    if (!bizId) return;
-    if (hasIncrementedRef.current) return;
-    hasIncrementedRef.current = true;
-
-    API.get(`/business/${bizId}/profile`)
-      .then((res) => {
-        const biz = res.data;
-        if (biz.views_count !== undefined) {
-          setProfileViewsCount(biz.views_count);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching profile (increment views):", err);
-      });
-  }, [bizId]);
-
-  const socketStats = useDashboardStats();
-  useEffect(() => {
-    if (socketStats?.views_count !== undefined && bizId) {
-      setProfileViewsCount(socketStats.views_count);
-    }
-  }, [socketStats, bizId]);
+  // הצגת ביקורות - מיון לפי תאריך חדש לישן
+  const sortedReviews = [...reviews].sort(
+    (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
+  );
 
   const toggleFavorite = async () => {
     if (!user) {
@@ -202,12 +167,6 @@ export default function BusinessProfileView() {
     setSelectedService(null);
   };
 
-  // מיון הביקורות לפי תאריך חדש לישן ושליפת 2 האחרונות
-  const sortedReviews = [...reviews].sort(
-    (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
-  );
-  const lastTwoReviews = sortedReviews.slice(0, 2);
-
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
@@ -242,26 +201,10 @@ export default function BusinessProfileView() {
           </div>
 
           <div className="about-phone">
-            {category && (
-              <p>
-                <strong>🏷️ קטגוריה:</strong> {category}
-              </p>
-            )}
-            {description && (
-              <p>
-                <strong>📝 תיאור:</strong> {description}
-              </p>
-            )}
-            {phone && (
-              <p>
-                <strong>📞 טלפון:</strong> {phone}
-              </p>
-            )}
-            {city && (
-              <p>
-                <strong>🏙️ עיר:</strong> {city}
-              </p>
-            )}
+            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
+            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
+            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
+            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
@@ -296,15 +239,43 @@ export default function BusinessProfileView() {
                 </div>
 
                 <div className="latest-reviews" style={{ marginTop: "2rem" }}>
-                  {lastTwoReviews.length ? (
-                    lastTwoReviews.map((r, i) => (
-                      <div key={r._id || i} className="review-card improved">
-                        <p><strong>⭐ דירוג ממוצע:</strong> {(r.rating || r.averageScore)?.toFixed(1) || "לא קיים"}</p>
-                        {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
-                        <p><strong>🗓️ תאריך:</strong> {new Date(r.createdAt || r.date).toLocaleDateString()}</p>
-                        {r.client && <p><strong>מאת:</strong> {r.client.name}</p>}
-                      </div>
-                    ))
+                  {sortedReviews.length ? (
+                    sortedReviews.slice(0, 2).map((r, i) => {
+                      const avg = r.rating || r.averageScore || 0;
+                      const dateStr = new Date(r.createdAt || r.date).toLocaleDateString("he-IL", {
+                        day: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                      });
+                      return (
+                        <div key={r._id || i} className="review-card improved">
+                          <p><strong>⭐ דירוג ממוצע:</strong> {avg.toFixed(1)}</p>
+                          {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
+                          <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
+                          {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
+
+                          {/* פירוט דירוגים מפורט */}
+                          {r.ratings && (
+                            <div className="rating-details" style={{ marginTop: "8px" }}>
+                              {Object.entries(r.ratings).map(([key, val]) => (
+                                <div
+                                  key={key}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    fontSize: "0.9rem",
+                                    direction: "rtl",
+                                  }}
+                                >
+                                  <span>{ratingLabels[key] || key}</span>
+                                  <span>{val.toFixed(1)} <StarDisplay rating={val} /></span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
                   ) : (
                     <p className="no-data">אין ביקורות להצגה</p>
                   )}
@@ -345,20 +316,49 @@ export default function BusinessProfileView() {
                     </div>
                   </div>
                 )}
-                {reviews.length ? (
-                  reviews.map((r, i) => (
-                    <div key={r._id || i} className="review-card improved">
-                      <p><strong>⭐ דירוג ממוצע:</strong> {(r.rating || r.averageScore)?.toFixed(1) || "לא קיים"}</p>
-                      {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
-                      <p><strong>🗓️ תאריך:</strong> {new Date(r.createdAt || r.date).toLocaleDateString()}</p>
-                      {r.client && <p><strong>מאת:</strong> {r.client.name}</p>}
-                    </div>
-                  ))
+                {sortedReviews.length ? (
+                  sortedReviews.map((r, i) => {
+                    const avg = r.rating || r.averageScore || 0;
+                    const dateStr = new Date(r.createdAt || r.date).toLocaleDateString("he-IL", {
+                      day: "numeric",
+                      month: "numeric",
+                      year: "numeric",
+                    });
+                    return (
+                      <div key={r._id || i} className="review-card improved">
+                        <p><strong>⭐ דירוג ממוצע:</strong> {avg.toFixed(1)}</p>
+                        {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
+                        <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
+                        {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
+
+                        {/* פירוט דירוגים מפורט */}
+                        {r.ratings && (
+                          <div className="rating-details" style={{ marginTop: "8px" }}>
+                            {Object.entries(r.ratings).map(([key, val]) => (
+                              <div
+                                key={key}
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  fontSize: "0.9rem",
+                                  direction: "rtl",
+                                }}
+                              >
+                                <span>{ratingLabels[key] || key}</span>
+                                <span>{val.toFixed(1)} <StarDisplay rating={val} /></span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
                 ) : (
                   <p className="no-data">אין ביקורות</p>
                 )}
               </div>
             )}
+            {/* שאר הטאבים ללא שינוי */}
             {currentTab === "שאלות תשובות" && (
               <div className="faqs-public">
                 {faqs.length === 0 ? (
@@ -366,12 +366,8 @@ export default function BusinessProfileView() {
                 ) : (
                   faqs.map((faq, i) => (
                     <div key={faq._id || i} className="faq-card">
-                      <p>
-                        <strong>שאלה:</strong> {faq.question}
-                      </p>
-                      <p>
-                        <strong>תשובה:</strong> {faq.answer}
-                      </p>
+                      <p><strong>שאלה:</strong> {faq.question}</p>
+                      <p><strong>תשובה:</strong> {faq.answer}</p>
                     </div>
                   ))
                 )}
