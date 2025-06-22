@@ -1,7 +1,10 @@
 import React, { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import "./DailyAgenda.css";
 
 const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) => {
+  const navigate = useNavigate();
+
   if (!date)
     return (
       <p style={{ fontStyle: "italic", textAlign: "center" }}>
@@ -48,17 +51,17 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
 
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
     if (!phone) {
-      alert('מספר טלפון של הלקוח לא זמין');
+      alert("מספר טלפון של הלקוח לא זמין");
       return;
     }
     // ניקוי תווים לא חוקיים
-    let cleanPhone = phone.replace(/\D/g, '');
+    let cleanPhone = phone.replace(/\D/g, "");
     // הוספת קידומת מדינה 972 אם חסרה
-    if (!cleanPhone.startsWith('972')) {
-      if (cleanPhone.startsWith('0')) {
-        cleanPhone = '972' + cleanPhone.substring(1);
+    if (!cleanPhone.startsWith("972")) {
+      if (cleanPhone.startsWith("0")) {
+        cleanPhone = "972" + cleanPhone.substring(1);
       } else {
-        cleanPhone = '972' + cleanPhone;
+        cleanPhone = "972" + cleanPhone;
       }
     }
 
@@ -80,18 +83,21 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
       : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
 
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
-  // ניווט למערכת CRM לפי מזהה הפגישה
   const editAppointment = (appt) => {
     const appointmentId = appt._id || appt.id;
     if (!appointmentId) {
       alert("לא ניתן לערוך פגישה: מזהה לא קיים");
       return;
     }
-    const crmUrl = `/business/dashboard/appointments/edit/${appointmentId}`;
-    window.open(crmUrl, "_blank"); // או window.location.href = crmUrl; לניווט באותה לשונית
+    const businessId = appt.businessId || ""; // ודא שיש לך את מזהה העסק בפגישה
+    if (!businessId) {
+      alert("לא ניתן לערוך פגישה: מזהה העסק לא זמין");
+      return;
+    }
+    navigate(`/business/${businessId}/dashboard/appointments/edit/${appointmentId}`);
   };
 
   return (
