@@ -2,11 +2,11 @@
 
 /* מיכל הרשת של התמונות בגלריה - צד העריכה */
 .gallery-grid-container.edit {
-  display: flex;
+  display: grid; /* מחזיר ל-grid במקום flex */
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* שורות ועצמים משתנים */
   gap: 15px;
   padding: 10px 0;
-  overflow-x: auto;
-  scroll-behavior: smooth;
+  overflow-x: visible; /* מבטל גלילה אופקית */
 }
 
 /* מיכל הרשת של התמונות בגלריה - צד התצוגה (3 עמודות קבועות) */
