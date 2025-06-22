@@ -3,91 +3,87 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/Plans.css";
 
-const pricingOptions = {
-  month: { label: "חודש", monthlyPrice: 585, duration: 1 },
-  quarter: { label: "3 חודשים", monthlyPrice: 520, duration: 3 }, // מחיר מופחת לחודש
-  year: { label: "שנה", monthlyPrice: 490, duration: 12 },        // מחיר מופחת לחודש
-};
-
-export default function Plans() {
-  const { user, loading } = useAuth();
+function Plans() {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [selectedPlan, setSelectedPlan] = useState("month");
+  const [selectedDuration, setSelectedDuration] = useState("1");
+  const prices = { "1": 799, "3": 769, "12": 699 };
 
-  if (loading) return <p role="status" aria-live="polite" className="loading-text">טוען...</p>;
-
-  const { label, monthlyPrice, duration } = pricingOptions[selectedPlan];
-  const totalPrice = monthlyPrice * duration;
+  const handleDurationChange = (duration) => setSelectedDuration(duration);
 
   const handleSelectPlan = () => {
     if (!user) {
-      navigate("/login", { replace: true });
+      navigate("/login");
       return;
     }
-
     navigate("/checkout", {
       state: {
-        planName: `הצטרפו למהפכת העסקים של עסקליק (${label})`,
-        totalPrice,
-        duration,
+        planName: "חבילת מנוי עסקליק",
+        totalPrice: prices[selectedDuration] * parseInt(selectedDuration),
+        duration: selectedDuration,
       },
     });
   };
 
   return (
-    <section className="plans-container" aria-label="הצטרפות לחבילת עסקליק">
-      <h1 className="plans-title">הצטרפו למהפכת העסקים של עסקליק</h1>
-      <p className="plans-subtitle">כשהלקוחות מחפשים, כדאי שהם ימצאו אותך!</p>
+    <div className="plans-wrapper">
+      <h1 className="plans-header">
+        הצטרפו עכשיו לחבילת מנוי עסקליק — הפתרון החכם לניהול העסק שלכם!
+      </h1>
+      <p className="plans-subheader">
+        בחרו את תקופת המנוי המתאימה לכם, ותתחילו ליהנות מכל הכלים והמערכות
+        החכמות שמקדמות את העסק שלכם קדימה בקלות וביעילות.
+      </p>
 
-      {/* כרטיס מתחת לכותרת */}
-      <article className="plan-card full-plan-card" aria-labelledby="full-plan-title">
-          <h2 id="full-plan-title">עסק מנצח מתחיל כאן</h2>
+      <div className="plans-card">
+        <h2 className="card-title">מה מקבל העסק שלך?</h2>
+        <ul className="plans-list">
+  {[
+    "ייעוץ שיווקי ועסקי מבוסס בינה מלאכותית עם 30 פניות איכותיות בחודש",
+    "שותף AI חכם עם יותר מ-20 המלצות ופעולות לשיפור מתמיד של העסק",
+    "פלטפורמה לשיתופי פעולה עסקיים והרחבת רשת הקשרים שלך",
+    "עמוד עסקי מקצועי הכולל פרטים מלאים, גלריה, שאלות נפוצות ועוד",
+    "מערכת נוחה להזמנת תורים ללקוחות שלך – פשוטה ומהירה",
+    "צ'אט אינטראקטיבי לשירות לקוחות בזמן אמת – קריטי בעידן המודרני",
+    "מערכת ביקורות אמינה – רק לקוחות שקיבלו שירות יכולים לדרג ולהשאיר חוות דעת",
+    "גישה מלאה וללא הגבלה לכל מערכות הפלטפורמה המקצועיות שלנו",
+    "ניהול יומן הזמנות מתקדם ומעקב יעדים חכם",
+    "מערכת CRM חכמה לניהול קשרי לקוחות ממוקד ואפקטיבי",
+    "דשבורד אנליטי מתקדם לניהול פגישות, תזכורות ושינויים בזמן אמת",
+    "התראות חכמות לזיהוי וניהול אירועים חשובים בזמן אמת",
+  ].map((text, idx) => (
+    <li key={idx} className="plans-list-item">
+      <span className="checkmark">✔</span> {text}
+    </li>
+  ))}
+</ul>
 
-
-        <ul className="plan-features">
-          <li>קבלת פניות ללא הגבלה</li>
-          <li>צ'אט עם לקוחות בזמן אמת</li>
-          <li>פרופיל עסקי מקצועי ודינמי</li>
-          <li>טפסים חכמים ליצירת קשר והצעות מחיר</li>
-          <li>ניהול גלריית תמונות וסרטונים</li>
-          <li>יומן עסקי מסונכרן עם לקוחות (כולל CRM מובנה)</li>
-          <li>תיאום עצמי בין לקוחות ובעל העסק</li>
-          <li>מערכת שיתופי פעולה בין עסקים – כולל מרקט שיתופים והסכמים דיגיטליים</li>
-          <li>AI שותף עסקי חכם – ייעוץ, תמחור, ביצוע פעולות, שיחה קולית (עד 30 שימושים בחודש)</li>
-          <li>דשבורד חכם לניהול העסק עם ניתוחים ומעקב בזמן אמת</li>
-          <li>מתאים לכל סוגי העסקים – גם נותני שירות במקום וגם ניידים עד הבית</li>
-        </ul>
-
-        <div className="plan-footer">
-          <div className="plan-duration-selector" role="radiogroup" aria-label="בחירת תוקף חבילה">
-            {Object.entries(pricingOptions).map(([key, { label, monthlyPrice }]) => (
-              <label key={key} className={`radio-label ${selectedPlan === key ? "selected" : ""}`}>
-                <input
-                  type="radio"
-                  name="planDuration"
-                  value={key}
-                  checked={selectedPlan === key}
-                  onChange={() => setSelectedPlan(key)}
-                />
-                {label} — <strong>{monthlyPrice.toLocaleString()} ₪ לחודש</strong>
-              </label>
-            ))}
-          </div>
-
-          <p className="plan-price" aria-live="polite" aria-atomic="true">
-            סה"כ לתקופה: <strong>{totalPrice.toLocaleString()} ₪</strong> ({label})
-          </p>
-
-          <button
-            className="select-button"
-            onClick={handleSelectPlan}
-            aria-label={`הצטרפו עכשיו למהפכת העסקים של עסקליק ${label}`}
-          >
-            הצטרפו עכשיו למהפכת העסקים של עסקליק {label}
-          </button>
+        <div className="plans-duration-selector">
+          {["1", "3", "12"].map((d) => (
+            <button
+              key={d}
+              onClick={() => handleDurationChange(d)}
+              className={`duration-btn ${
+                selectedDuration === d ? "active" : ""
+              }`}
+              aria-label={`מנוי ${
+                d === "1" ? "חודשי" : d === "3" ? "3 חודשים" : "שנתי"
+              } במחיר ${prices[d]} שקלים לחודש`}
+            >
+              {d === "1" ? "חודשי" : d === "3" ? "3 חודשים" : "שנתי"}
+              <span className="duration-price">{prices[d]} ₪ לחודש</span>
+            </button>
+          ))}
         </div>
-      </article>
-    </section>
+
+        <button className="subscribe-btn" onClick={handleSelectPlan}>
+          בחר מנוי והתחל לגדול עם עסקליק עכשיו!
+        </button>
+      </div>
+    </div>
   );
 }
+
+
+export default Plans;
