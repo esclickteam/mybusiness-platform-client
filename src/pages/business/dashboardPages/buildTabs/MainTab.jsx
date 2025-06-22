@@ -4,8 +4,8 @@ import "./MainTab.css";
 import { dedupeByPreview } from "../../../../utils/dedupe";
 
 export default function MainTab({ businessDetails, socket }) {
-  // תמונות - נרמל ומנקה כפילויות, חותך ל-6
-  const raw = businessDetails.mainImages || [];
+  // הגנה על undefined
+  const raw = businessDetails?.mainImages || [];
   const normalized = raw
     .map(item => {
       if (typeof item === "string") return { preview: item };
@@ -17,10 +17,28 @@ export default function MainTab({ businessDetails, socket }) {
   const unique = dedupeByPreview(normalized);
   const toShow = unique.slice(0, 6);
 
-  // ביקורות - סטייט פנימי כדי לעדכן בזמן אמת (אם יש socket)
-  const [reviews, setReviews] = useState(businessDetails.reviews || []);
+  // סטייט ביקורות
+  const initialReviews = businessDetails?.reviews || [];
+  const [reviews, setReviews] = useState(initialReviews);
 
-  // האזנה לעדכוני ביקורות בזמן אמת דרך socket.io
+  // טעינת ביקורות ראשונית ב-useEffect
+  useEffect(() => {
+    async function fetchInitialReviews() {
+      if (!businessDetails?._id) return;
+      try {
+        const res = await fetch(`/api/businesses/${businessDetails._id}/reviews?limit=2`);
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data.reviews || []);
+        }
+      } catch (e) {
+        console.error("Failed to fetch initial reviews", e);
+      }
+    }
+    fetchInitialReviews();
+  }, [businessDetails?._id]);
+
+  // עדכוני ביקורות בזמן אמת מ-socket
   useEffect(() => {
     if (!socket) return;
 
@@ -36,7 +54,6 @@ export default function MainTab({ businessDetails, socket }) {
     return () => socket.off("new_review", handleNewReview);
   }, [socket]);
 
-  // תמיד להציג רק 2 ביקורות אחרונות
   const lastTwoReviews = reviews.slice(0, 2);
 
   return (
@@ -58,10 +75,13 @@ export default function MainTab({ businessDetails, socket }) {
       {lastTwoReviews.length > 0 && (
         <div className="reviews-section">
           <h3>ביקורות אחרונות</h3>
-          {lastTwoReviews.map(review => (
-            <div key={review._id || review.id} className="review-item">
-              <strong>{review.authorName || review.userName || "לקוח"}</strong> - ⭐ {review.rating}
-              <p>{review.comment}</p>
+          {lastTwoReviews.map((review, i) => (
+            <div key={review._id || review.id || i} className="review-card">
+              <div className="review-header">
+                <strong className="review-user">{review.authorName || review.userName || "לקוח"}</strong>
+                <span className="star-text">⭐ {review.rating}</span>
+              </div>
+              <p className="review-text">{review.comment}</p>
             </div>
           ))}
         </div>
