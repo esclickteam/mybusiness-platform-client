@@ -91,15 +91,20 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
   const filteredUniqueAppointments = useMemo(() => {
   const seen = new Set();
   const searchLower = search.toLowerCase().trim();
-  const searchDigitsOnly = search.replace(/\D/g, ""); // רק ספרות
+  const searchDigitsOnly = search.replace(/\D/g, "");
 
   return appointments
     .filter(appt => {
       const clientName = appt.clientName ? appt.clientName.toLowerCase().trim() : "";
       const clientPhone = appt.clientPhone ? appt.clientPhone.replace(/\D/g, "") : "";
 
-      // סינון לפי שם או לפי טלפון (מספרים בלבד)
-      return clientName.includes(searchLower) || clientPhone.includes(searchDigitsOnly);
+      if (searchDigitsOnly.length > 0) {
+        // חיפוש במספר טלפון בלבד אם יש ספרות בחיפוש
+        return clientPhone.includes(searchDigitsOnly);
+      } else {
+        // חיפוש בשם בלבד אם אין ספרות בחיפוש
+        return clientName.includes(searchLower);
+      }
     })
     .filter(appt => {
       if (!appt._id) return true;
@@ -108,6 +113,7 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
       return true;
     });
 }, [appointments, search]);
+
 
 
 
