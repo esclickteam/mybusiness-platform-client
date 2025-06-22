@@ -306,8 +306,8 @@ export default function BusinessChatTab({
   const sendMessage = () => {
     if (sending) return;
 
-    const text = input.trim();
-    if (!text || !socket) return;
+    const content = input.trim();
+    if (!content || !socket) return;
 
     setSending(true);
 
@@ -317,7 +317,7 @@ export default function BusinessChatTab({
       conversationId,
       from: businessId,
       to: customerId,
-      text,
+      content, 
       timestamp: new Date().toISOString(),
       sending: true,
       tempId,
@@ -328,7 +328,7 @@ export default function BusinessChatTab({
 
     socket.emit(
       "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId },
+      { conversationId, from: businessId, to: customerId, content, tempId },
       (ack) => {
         setSending(false);
         if (ack.ok) {
@@ -520,7 +520,7 @@ export default function BusinessChatTab({
               }
               className="system-message"
             >
-              {m.text}
+              {m.content}
             </div>
           ) : (
             <div
