@@ -34,7 +34,6 @@ const fetchWorkHours = async (businessId) => {
   return res.data.workHours;
 };
 
-// הוספת פונקציה חדשה לקריאת ביקורות לפי businessId
 const fetchReviews = async (businessId) => {
   const res = await API.get(`/reviews/business/${businessId}`);
   return res.data.reviews || [];
@@ -46,7 +45,6 @@ export default function BusinessProfileView() {
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
-  // סטייטים קיימים
   const [faqs, setFaqs] = useState([]);
   const [services, setServices] = useState([]);
   const [schedule, setSchedule] = useState({});
@@ -59,7 +57,6 @@ export default function BusinessProfileView() {
 
   const hasIncrementedRef = useRef(false);
 
-  // קריאה לפרטי העסק
   const {
     data,
     isLoading,
@@ -72,14 +69,12 @@ export default function BusinessProfileView() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // קריאה לשעות עבודה
   const { data: workHoursData } = useQuery({
     queryKey: ['workHours', bizId],
     queryFn: () => fetchWorkHours(bizId),
     enabled: !!bizId
   });
 
-  // קריאה חדשה לביקורות
   const { data: reviews = [], refetch: refetchReviews } = useQuery({
     queryKey: ['reviews', bizId],
     queryFn: () => fetchReviews(bizId),
@@ -174,7 +169,6 @@ export default function BusinessProfileView() {
     try {
       await API.post(`/business/${bizId}/reviews`, formData);
       setShowReviewModal(false);
-      // רענון גם של פרטי העסק וגם של הביקורות
       await Promise.all([refetch(), refetchReviews()]);
     } catch {
       alert("שגיאה בשליחת ביקורת");
@@ -207,6 +201,12 @@ export default function BusinessProfileView() {
     setCurrentTab(tab);
     setSelectedService(null);
   };
+
+  // מיון הביקורות לפי תאריך חדש לישן ושליפת 2 האחרונות
+  const sortedReviews = [...reviews].sort(
+    (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
+  );
+  const lastTwoReviews = sortedReviews.slice(0, 2);
 
   return (
     <div className="profile-page">
@@ -284,15 +284,32 @@ export default function BusinessProfileView() {
 
           <div className="tab-content">
             {currentTab === "ראשי" && (
-              <div className="public-main-images">
-                {mainImages.length ? (
-                  mainImages.slice(0, 6).map((url, i) => (
-                    <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" />
-                  ))
-                ) : (
-                  <p className="no-data">אין תמונות להצגה</p>
-                )}
-              </div>
+              <>
+                <div className="public-main-images">
+                  {mainImages.length ? (
+                    mainImages.slice(0, 6).map((url, i) => (
+                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" />
+                    ))
+                  ) : (
+                    <p className="no-data">אין תמונות להצגה</p>
+                  )}
+                </div>
+
+                <div className="latest-reviews" style={{ marginTop: "2rem" }}>
+                  {lastTwoReviews.length ? (
+                    lastTwoReviews.map((r, i) => (
+                      <div key={r._id || i} className="review-card improved">
+                        <p><strong>⭐ דירוג ממוצע:</strong> {(r.rating || r.averageScore)?.toFixed(1) || "לא קיים"}</p>
+                        {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
+                        <p><strong>🗓️ תאריך:</strong> {new Date(r.createdAt || r.date).toLocaleDateString()}</p>
+                        {r.client && <p><strong>מאת:</strong> {r.client.name}</p>}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-data">אין ביקורות להצגה</p>
+                  )}
+                </div>
+              </>
             )}
             {currentTab === "גלריה" && (
               <div className="public-main-images">
