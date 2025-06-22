@@ -8,7 +8,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
   const businessId = user?.businessId || user?.business?._id || null;
-
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
@@ -40,19 +39,19 @@ const CRMAppointmentsTab = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  //appointments
-const { data: appointments = [], refetch: refetchAppointments, isLoading: isLoadingAppointments, isError: isErrorAppointments } = useQuery({
-  queryKey: ['appointments', 'all-with-services', businessId],
-  queryFn: () => API.get("/appointments/all-with-services").then(res => res.data),
-  enabled: !!businessId,
-});
+  // קבלת תיאומים
+  const { data: appointments = [], refetch: refetchAppointments, isLoading: isLoadingAppointments, isError: isErrorAppointments } = useQuery({
+    queryKey: ['appointments', 'all-with-services', businessId],
+    queryFn: () => API.get("/appointments/all-with-services").then(res => res.data),
+    enabled: !!businessId,
+  });
 
-//services
-const { data: services = [], isLoading: isLoadingServices, isError: isErrorServices } = useQuery({
-  queryKey: ['business', 'services', businessId],
-  queryFn: () => API.get("/business/my/services").then(res => res.data.services),
-  enabled: !!businessId,
-});
+  // קבלת שירותים
+  const { data: services = [], isLoading: isLoadingServices, isError: isErrorServices } = useQuery({
+    queryKey: ['business', 'services', businessId],
+    queryFn: () => API.get("/business/my/services").then(res => res.data.services),
+    enabled: !!businessId,
+  });
 
   useEffect(() => {
     if (!socket) return;
@@ -87,41 +86,68 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
     };
   }, [socket, queryClient, businessId]);
 
-  // סינון כפילויות + חיפוש עם useMemo
+  // סינון כפילויות + חיפוש
   const filteredUniqueAppointments = useMemo(() => {
-  const seen = new Set();
-  const searchLower = search.toLowerCase().trim();
-  const searchDigitsOnly = search.replace(/\D/g, "");
+    const seen = new Set();
+    const searchLower = search.toLowerCase().trim();
+    const searchDigitsOnly = search.replace(/\D/g, "");
 
-  return appointments
-    .filter(appt => {
-      const clientName = appt.clientName ? appt.clientName.toLowerCase().trim() : "";
-      const clientPhone = appt.clientPhone ? appt.clientPhone.replace(/\D/g, "") : "";
+    return appointments
+      .filter(appt => {
+        const clientName = appt.clientName ? appt.clientName.toLowerCase().trim() : "";
+        const clientPhone = appt.clientPhone ? appt.clientPhone.replace(/\D/g, "") : "";
 
-      if (searchDigitsOnly.length > 0) {
-        // אם יש ספרות בחיפוש – מחפשים רק בטלפון
-        return clientPhone.includes(searchDigitsOnly);
-      } else if (searchLower.length > 0) {
-        // אחרת מחפשים רק בשם
-        return clientName.includes(searchLower);
+        if (searchDigitsOnly.length > 0) {
+          return clientPhone.includes(searchDigitsOnly);
+        } else if (searchLower.length > 0) {
+          return clientName.includes(searchLower);
+        }
+        return true;
+      })
+      .filter(appt => {
+        if (!appt._id) return true;
+        if (seen.has(appt._id)) return false;
+        seen.add(appt._id);
+        return true;
+      });
+  }, [appointments, search]);
+
+  // פונקציה לשליחת תזכורת בוואטסאפ
+  const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
+    if (!phone) {
+      alert("מספר טלפון של הלקוח לא זמין");
+      return;
+    }
+    let cleanPhone = phone.replace(/\D/g, "");
+    if (!cleanPhone.startsWith("972")) {
+      if (cleanPhone.startsWith("0")) {
+        cleanPhone = "972" + cleanPhone.substring(1);
+      } else {
+        cleanPhone = "972" + cleanPhone;
       }
-      // אם אין חיפוש בכלל, מחזירים את כל התוצאות
-      return true;
-    })
-    .filter(appt => {
-      if (!appt._id) return true;
-      if (seen.has(appt._id)) return false;
-      seen.add(appt._id);
-      return true;
+    }
+
+    const formattedDate = new Date(date).toLocaleDateString("he-IL", {
+      weekday: "long",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
     });
-}, [appointments, search]);
 
+    const businessName = user?.businessName || "העסק שלך";
 
+    const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך בתאריך ${formattedDate} בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
+    const encodedMessage = encodeURIComponent(message);
 
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const url = isMobile
+      ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+      : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
 
+    window.open(url, "_blank");
+  };
 
-
-  // שינוי שירות - מעדכן את state העריכה או היצירה
+  // שאר הפונקציות שלך לעריכה, מחיקה, הוספה
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
     if (service) {
@@ -170,15 +196,14 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
     }
   };
 
-  // שמירת עריכה רק בלחיצה על שמירה
   const saveEdit = async () => {
     if (!editId) return;
     setIsSaving(true);
     try {
-      const res = await API.patch(`/appointments/${editId}`, editData);
+      await API.patch(`/appointments/${editId}`, editData);
       await refetchAppointments();
       setEditId(null);
-    } catch (err) {
+    } catch {
       alert("❌ שגיאה בשמירת השינוי");
     } finally {
       setIsSaving(false);
@@ -251,7 +276,7 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
         date: newAppointment.date,
         time: newAppointment.time,
         serviceName: newAppointment.serviceName,
-        duration: 30, // ברירת מחדל 30 דק'
+        duration: 30,
       });
       await refetchAppointments();
       setShowAddForm(false);
@@ -520,6 +545,20 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
                       </button>
                       <button className="action-btn action-cancel" onClick={() => handleDelete(appt._id)}>
                         ❌ בטל
+                      </button>
+                      <button
+                        className="action-btn action-reminder"
+                        onClick={() =>
+                          sendWhatsAppReminder(
+                            appt.clientPhone,
+                            appt.clientName,
+                            appt.date,
+                            appt.time,
+                            appt.serviceName || appt.service
+                          )
+                        }
+                      >
+                        📩 שלח תזכורת
                       </button>
                     </>
                   )}

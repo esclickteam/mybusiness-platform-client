@@ -274,3 +274,13 @@
   max-width: none;
   word-break: break-word;
 }
+
+/* כפתור שליחת תזכורת */
+.action-reminder {
+  background-color: #7c4dff;
+  color: white;
+  cursor: pointer;
+}
+.action-reminder:hover {
+  background-color: #6a3edb;
+}
