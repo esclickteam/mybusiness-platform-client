@@ -115,7 +115,8 @@ export default function ClientChatTab({
     setLoading(true);
     setError("");
 
-    fetch(`/api/chat/history?conversationId=${conversationId}`, {
+      fetch(`/api/chat/${conversationId}/history`, {
+
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
