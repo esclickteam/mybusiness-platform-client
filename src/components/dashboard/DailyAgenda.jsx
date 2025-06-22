@@ -5,14 +5,7 @@ import "./DailyAgenda.css";
 const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) => {
   const navigate = useNavigate();
 
-  if (!date)
-    return (
-      <p style={{ fontStyle: "italic", textAlign: "center" }}>
-        בחר/י תאריך כדי לראות לו״ז
-      </p>
-    );
-
-  // פורמט תאריך לתבנית "YYYY-MM-DD"
+  // כל הקריאות ל-hooks קודם כל, לפני תנאים עם return
   const selectedDate = useMemo(() => {
     try {
       const d = new Date(date);
@@ -22,7 +15,6 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     }
   }, [date]);
 
-  // טיפול בתאריך לתצוגה בטקסט הכותרת, עם fallback
   const displayDate = useMemo(() => {
     try {
       return new Date(date).toLocaleDateString("he-IL");
@@ -49,14 +41,19 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     return sorted;
   }, [appointments, selectedDate]);
 
+  if (!date)
+    return (
+      <p style={{ fontStyle: "italic", textAlign: "center" }}>
+        בחר/י תאריך כדי לראות לו״ז
+      </p>
+    );
+
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
     if (!phone) {
       alert("מספר טלפון של הלקוח לא זמין");
       return;
     }
-    // ניקוי תווים לא חוקיים
     let cleanPhone = phone.replace(/\D/g, "");
-    // הוספת קידומת מדינה 972 אם חסרה
     if (!cleanPhone.startsWith("972")) {
       if (cleanPhone.startsWith("0")) {
         cleanPhone = "972" + cleanPhone.substring(1);
@@ -64,8 +61,6 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
         cleanPhone = "972" + cleanPhone;
       }
     }
-
-    // פורמט תאריך קריא בעברית עם יום בשבוע (אופציונלי)
     const formattedDate = new Date(date).toLocaleDateString("he-IL", {
       weekday: "long",
       day: "numeric",
@@ -76,7 +71,6 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך בתאריך ${formattedDate} בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
     const encodedMessage = encodeURIComponent(message);
 
-    // זיהוי אם זה נייד או דסקטופ
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     const url = isMobile
@@ -92,13 +86,12 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       alert("לא ניתן לערוך פגישה: מזהה לא קיים");
       return;
     }
-    const businessId = appt.businessId || ""; // ודא שיש לך את מזהה העסק בפגישה
+    const businessId = appt.businessId || "";
     if (!businessId) {
       alert("לא ניתן לערוך פגישה: מזהה העסק לא זמין");
       return;
     }
-      navigate(`/business/${businessId}/dashboard/crm/appointments/edit/${appointmentId}`);
-
+    navigate(`/business/${businessId}/dashboard/crm/appointments/edit/${appointmentId}`);
   };
 
   return (
