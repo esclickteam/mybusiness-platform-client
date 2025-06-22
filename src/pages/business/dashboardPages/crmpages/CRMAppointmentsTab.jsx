@@ -92,11 +92,13 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
   const seen = new Set();
   const searchLower = search.toLowerCase();
 
-  return appointments
+  console.log("חיפוש:", searchLower);
+  console.log("כל התיאומים:", appointments);
+
+  const filtered = appointments
     .filter(appt => {
       const clientName = appt.clientName ? appt.clientName.toLowerCase() : "";
       const clientPhone = appt.clientPhone ? String(appt.clientPhone) : "";
-
       return clientName.includes(searchLower) || clientPhone.includes(searchLower);
     })
     .filter(appt => {
@@ -105,7 +107,12 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
       seen.add(appt._id);
       return true;
     });
+
+  console.log("תיאומים מסוננים:", filtered);
+
+  return filtered;
 }, [appointments, search]);
+
 
 
   // שינוי שירות - מעדכן את state העריכה או היצירה
