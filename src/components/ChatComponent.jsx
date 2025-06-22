@@ -38,6 +38,7 @@ export default function ChatComponent({
             const first = convs[0];
             const convoId = first._id ?? first.conversationId;
             const custId = first.participants.find((pid) => pid !== userId) ?? null;
+            console.log("ChatComponent: setting conversationId and currentCustomerId", convoId, custId);
             setConversationId(convoId);
             setCurrentCustomerId(custId);
           }
@@ -71,6 +72,7 @@ export default function ChatComponent({
       );
       if (conv) {
         const custId = conv.participants.find((pid) => pid !== userId) ?? null;
+        console.log("ChatComponent: updated currentCustomerId from conversations:", custId);
         setCurrentCustomerId(custId);
       }
     }
