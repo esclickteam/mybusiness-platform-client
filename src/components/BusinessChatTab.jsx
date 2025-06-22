@@ -131,6 +131,10 @@ export default function BusinessChatTab({
   // File attach
   const fileInputRef = useRef(null);
 
+   const handleAttach = () => {
+    fileInputRef.current?.click();
+  };
+
   // Recording state
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
