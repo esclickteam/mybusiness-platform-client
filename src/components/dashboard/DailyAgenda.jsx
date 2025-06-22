@@ -92,7 +92,8 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
       alert("לא ניתן לערוך פגישה: מזהה לא קיים");
       return;
     }
-    navigate(`/dashboard/crm/appointments/edit/${appointmentId}`);
+      navigate(`/dashboard/crm/appointments`);
+
   };
 
   return (
