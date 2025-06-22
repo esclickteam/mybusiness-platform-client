@@ -46,7 +46,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     return sorted;
   }, [appointments, selectedDate]);
 
-  const sendWhatsAppReminder = (phone, clientName, time, service) => {
+  const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
     if (!phone) {
       alert('מספר טלפון של הלקוח לא זמין');
       return;
@@ -61,7 +61,16 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
         cleanPhone = '972' + cleanPhone;
       }
     }
-    const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך היום בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
+
+    // פורמט תאריך קריא בעברית עם יום בשבוע (אופציונלי)
+    const formattedDate = new Date(date).toLocaleDateString("he-IL", {
+      weekday: "long",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    });
+
+    const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך בתאריך ${formattedDate} בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
     const encodedMessage = encodeURIComponent(message);
 
     // זיהוי אם זה נייד או דסקטופ
@@ -94,7 +103,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
             const time = a.time || "";
             const clientName = a.clientName || "לא ידוע";
             const serviceName = a.serviceName || "לא ידוע";
-            const clientPhone = a.clientPhone || ""; // חשוב לוודא שהשדה קיים ותקין
+            const clientPhone = a.clientPhone || "";
 
             return (
               <div
@@ -109,7 +118,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
                     className="agenda-btn"
                     aria-label={`שלח תזכורת לווטסאפ ללקוח ${clientName} לשעה ${time}`}
                     onClick={() =>
-                      sendWhatsAppReminder(clientPhone, clientName, time, serviceName)
+                      sendWhatsAppReminder(clientPhone, clientName, a.date, time, serviceName)
                     }
                   >
                     שלח תזכורת
