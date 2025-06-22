@@ -9,7 +9,13 @@ import { useSocket } from "../context/socketContext";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
-  const businessId = user?.businessId || user?.business?._id;
+  const rawBusinessId = user?.businessId || user?.business?._id;
+
+  // המר את businessId למחרוזת
+  const businessId =
+    rawBusinessId && typeof rawBusinessId === "object" && rawBusinessId._id
+      ? rawBusinessId._id.toString()
+      : rawBusinessId?.toString();
 
   const { updateMessagesCount } = useOutletContext();
 
@@ -49,10 +55,22 @@ export default function BusinessChatPage() {
         // בוחרים שיחה ראשונה אם קיימת, עם מזהה ועם שם לקוח
         if (data.conversations && data.conversations.length > 0) {
           const first = data.conversations[0];
-          setSelected({ 
-            conversationId: first._id, 
-            partnerId: first.client || first.business || null,
-            partnerName: first.clientName || first.businessName || "לקוח" // אם יש שדה שם מתאים
+
+          // המרה של partnerId למחרוזת
+          let partnerIdRaw = first.client || first.business || null;
+          let partnerId = partnerIdRaw;
+          if (partnerIdRaw && typeof partnerIdRaw === "object") {
+            if (partnerIdRaw._id) {
+              partnerId = partnerIdRaw._id.toString();
+            } else if (partnerIdRaw.toString) {
+              partnerId = partnerIdRaw.toString();
+            }
+          }
+
+          setSelected({
+            conversationId: first._id.toString(),
+            partnerId,
+            partnerName: first.clientName || first.businessName || "לקוח",
           });
         } else {
           setSelected(null);
@@ -118,7 +136,16 @@ export default function BusinessChatPage() {
   }, [socket, selected?.conversationId]);
 
   const handleSelect = (conversationId, partnerId, partnerName) => {
-    setSelected({ conversationId, partnerId, partnerName });
+    // המר את partnerId למחרוזת אם צריך
+    let idString = partnerId;
+    if (partnerId && typeof partnerId === "object") {
+      if (partnerId._id) {
+        idString = partnerId._id.toString();
+      } else if (partnerId.toString) {
+        idString = partnerId.toString();
+      }
+    }
+    setSelected({ conversationId: conversationId.toString(), partnerId: idString, partnerName });
   };
 
   if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
@@ -147,7 +174,7 @@ export default function BusinessChatPage() {
             conversationId={selected.conversationId}
             businessId={businessId}
             customerId={selected.partnerId}
-            customerName={selected.partnerName}    // מעבירים גם את השם
+            customerName={selected.partnerName} // מעבירים גם את השם
             socket={socket}
             initialMessages={messages}
             onMessagesChange={setMessages}
