@@ -145,7 +145,7 @@ export default function BusinessChatTab({
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `/api/conversations/history?conversationId=${conversationId}&page=${pageNum}&limit=20`,
+        `/api/conversations/${conversationId}/history?page=${pageNum}&limit=20`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -160,6 +160,7 @@ export default function BusinessChatTab({
   },
   [conversationId]
 );
+
 
 
 
