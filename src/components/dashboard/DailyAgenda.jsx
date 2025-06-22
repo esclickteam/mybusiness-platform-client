@@ -46,10 +46,15 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
     return sorted;
   }, [appointments, selectedDate]);
 
-  const sendWhatsAppReminder = (clientName, time, service) => {
+  const sendWhatsAppReminder = (phone, clientName, time, service) => {
+    if (!phone) {
+      alert('מספר טלפון של הלקוח לא זמין');
+      return;
+    }
+    const cleanPhone = phone.replace(/\D/g, ''); // מסירים תווים לא חוקיים
     const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך היום בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/?text=${encodedMessage}`, "_blank");
+    window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
   };
 
   const editAppointment = (appt) => {
@@ -72,6 +77,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
             const time = a.time || "";
             const clientName = a.clientName || "לא ידוע";
             const serviceName = a.serviceName || "לא ידוע";
+            const clientPhone = a.clientPhone || ""; // חשוב לוודא שהשדה קיים ותקין
 
             return (
               <div
@@ -86,7 +92,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך" }) =
                     className="agenda-btn"
                     aria-label={`שלח תזכורת לווטסאפ ללקוח ${clientName} לשעה ${time}`}
                     onClick={() =>
-                      sendWhatsAppReminder(clientName, time, serviceName)
+                      sendWhatsAppReminder(clientPhone, clientName, time, serviceName)
                     }
                   >
                     שלח תזכורת
