@@ -1,4 +1,3 @@
-// src/pages/BusinessChatTab.jsx – Option B: display-only, full input bar, files & audio
 import React, {
   useEffect,
   useRef,
@@ -289,7 +288,7 @@ export default function BusinessChatTab({
       fileName: `audio.${recordedBlob.type.split("/")[1]}`,
       fileType: recordedBlob.type,
       fileDuration: timer,
-      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       sending: true,
       tempId,
     };
@@ -335,7 +334,11 @@ export default function BusinessChatTab({
               <div className="text">{m.content}</div>
             )}
             <div className="meta">
-              <span className="time">{new Date(m.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}</span>
+              <span className="time">{(() => {
+                const date = new Date(m.createdAt);
+                if (isNaN(date)) return "";
+                return date.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+              })()}</span>
               {m.fileDuration && <span className="audio-length">{`${Math.floor(m.fileDuration/60).toString().padStart(2,"0")}:${Math.floor(m.fileDuration%60).toString().padStart(2,"0")}`}</span>}
               {m.sending && <span className="sending-indicator">⏳</span>}
               {m.failed && <span className="failed-indicator">❌</span>}

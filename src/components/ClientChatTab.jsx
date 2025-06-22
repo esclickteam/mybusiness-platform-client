@@ -451,7 +451,8 @@ export default function ClientChatTab({
             <div className="meta">
               <span className="time">
                 {(() => {
-                  const date = new Date(m.timestamp);
+                      const date = new Date(m.createdAt);
+
                   if (isNaN(date)) return "";
                   return date.toLocaleTimeString("he-IL", {
                     hour: "2-digit",
