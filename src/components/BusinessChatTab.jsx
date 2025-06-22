@@ -109,33 +109,27 @@ export default function BusinessChatTab({
   initialMessages = [],
   onMessagesChange,
 }) {
-  // Messages state managed via reducer
   const [messages, dispatchMessages] = useReducer(
     messagesReducer,
     initialMessages
   );
-  // Sync initial messages
   useEffect(() => {
     dispatchMessages({ type: "set", payload: initialMessages });
   }, [initialMessages]);
-  // Bubble up changes to parent
   useEffect(() => {
     onMessagesChange?.(messages);
   }, [messages, onMessagesChange]);
 
-  // Input and send state
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // File attach
   const fileInputRef = useRef(null);
 
   const handleAttach = () => {
     fileInputRef.current?.click();
   };
 
-  // Recording state
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
@@ -144,11 +138,9 @@ export default function BusinessChatTab({
   const recordedChunks = useRef([]);
   const timerRef = useRef(null);
 
-  // הפונקציה שמתחילה הקלטה
   const startRecording = async () => {
     if (recording || !navigator.mediaDevices) return;
     try {
-      console.log("[startRecording] Starting audio recording...");
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
       recordedChunks.current = [];
@@ -157,7 +149,6 @@ export default function BusinessChatTab({
       recorder.onstop = () => {
         const blob = new Blob(recordedChunks.current, { type: recorder.mimeType });
         setRecordedBlob(blob);
-        console.log("[startRecording] Recording stopped, blob ready.");
       };
       recorder.start();
       mediaRecorderRef.current = recorder;
@@ -169,23 +160,18 @@ export default function BusinessChatTab({
     }
   };
 
-  // הפונקציה שעוצרת הקלטה
   const stopRecording = () => {
-    console.log("[stopRecording] Stopping audio recording...");
     mediaRecorderRef.current?.stop();
     mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
     setRecording(false);
     clearInterval(timerRef.current);
   };
 
-  // מחיקת ההקלטה
   const discardRecording = () => {
-    console.log("[discardRecording] Discarding recorded audio.");
     setRecordedBlob(null);
     setTimer(0);
   };
 
-  // Socket listeners for new messages and typing
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -211,7 +197,6 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, customerId]);
 
-  // Auto-scroll on new messages
   const listRef = useRef(null);
   useEffect(() => {
     const el = listRef.current;
@@ -220,7 +205,6 @@ export default function BusinessChatTab({
     if (nearBottom) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
-  // Handle text input
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
@@ -228,8 +212,8 @@ export default function BusinessChatTab({
 
   const sendMessage = () => {
     if (sending) return;
-    const content = input.trim();
-    if (!content || !socket) return;
+    const text = input.trim();
+    if (!text || !socket) return;
     setSending(true);
     const tempId = uuidv4();
     const optimistic = {
@@ -237,20 +221,18 @@ export default function BusinessChatTab({
       conversationId,
       from: businessId,
       to: customerId,
-      content,
+      text,
       timestamp: new Date().toISOString(),
       sending: true,
       tempId,
     };
-    console.log("[sendMessage] dispatch optimistic message:", optimistic);
     dispatchMessages({ type: "append", payload: optimistic });
     setInput("");
 
     socket.emit(
       "sendMessage",
-      { conversationId, from: businessId, to: customerId, content, tempId },
+      { conversationId, from: businessId, to: customerId, text, tempId },
       (ack) => {
-        console.log("[sendMessage] ack received:", ack);
         setSending(false);
         if (!ack.ok) {
           console.warn("[sendMessage] Message sending failed:", ack.error);
@@ -279,16 +261,13 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
-    console.log("[handleFileChange] dispatch optimistic file message:", optimistic);
     dispatchMessages({ type: "append", payload: optimistic });
     const reader = new FileReader();
     reader.onload = () => {
-      console.log("[handleFileChange] emitting sendFile with tempId:", tempId);
       socket.emit(
         "sendFile",
         { conversationId, from: businessId, to: customerId, fileName: file.name, fileType: file.type, buffer: reader.result, tempId },
         (ack) => {
-          console.log("[sendFile] ack received:", ack);
           if (!ack.ok) {
             console.warn("[sendFile] File sending failed:", ack.error);
           }
@@ -318,17 +297,14 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
-    console.log("[sendRecording] dispatch optimistic audio message:", optimistic);
     dispatchMessages({ type: "append", payload: optimistic });
     setRecordedBlob(null);
     const reader = new FileReader();
     reader.onload = () => {
-      console.log("[sendRecording] emitting sendAudio with tempId:", tempId);
       socket.emit(
         "sendAudio",
         { conversationId, from: businessId, to: customerId, buffer: reader.result, fileType: recordedBlob.type, duration: timer, tempId },
         (ack) => {
-          console.log("[sendAudio] ack received:", ack);
           if (!ack.ok) {
             console.warn("[sendAudio] Audio sending failed:", ack.error);
           }
