@@ -28,15 +28,21 @@ export default function BusinessChatPage() {
   const totalUnreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
 
   useEffect(() => {
+    console.log("Updating total unread messages count:", totalUnreadCount);
     updateMessagesCount?.(totalUnreadCount);
   }, [totalUnreadCount, updateMessagesCount]);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
+
+    console.log("Fetching conversations for businessId:", businessId);
     setLoading(true);
     API.get("/conversations", { params: { businessId } })
       .then(({ data }) => {
+        console.log("Received conversations:", data);
+
         setConvos(data);
+
         const initialUnread = {};
         data.forEach((c) => {
           const id = c.conversationId || c._id;
@@ -44,49 +50,99 @@ export default function BusinessChatPage() {
           if (unread > 0) initialUnread[id] = unread;
         });
         setUnreadCountsByConversation(initialUnread);
+        console.log("Initial unread counts by conversation:", initialUnread);
 
         if (data.length > 0) {
           const first = data[0];
           const convoId = first.conversationId || first._id;
-          const partnerId = first.partnerId || first.participants.find((p) => p !== businessId);
+          const partnerId = first.partnerId || first.participants?.find((p) => p !== businessId);
+          console.log("Selecting first conversation:", convoId, "partnerId:", partnerId);
           setSelected({ conversationId: convoId, partnerId });
+        } else {
+          console.log("No conversations received");
+          setSelected(null);
         }
       })
-      .catch(() => setError("שגיאה בטעינת שיחות"))
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        console.error("Error fetching conversations:", err);
+        setError("שגיאה בטעינת שיחות");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [initialized, businessId]);
 
-  // Remove useOnScreen - always load messages when selected changes
   const messagesAreaRef = useRef(null);
 
   useEffect(() => {
-    if (!socket || !socket.connected || !selected?.conversationId) {
+    if (!socket) {
+      console.log("No socket instance available");
       setMessages([]);
       return;
     }
 
+    const handleConnect = () => console.log("Socket connected");
+    const handleDisconnect = () => console.log("Socket disconnected");
+    const handleError = (err) => console.error("Socket error:", err);
+
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
+    socket.on("error", handleError);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+      socket.off("error", handleError);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket || !socket.connected) {
+      console.log("Socket not connected");
+      setMessages([]);
+      return;
+    }
+
+    if (!selected?.conversationId) {
+      console.log("No conversation selected");
+      setMessages([]);
+      return;
+    }
+
+    console.log("Marking messages as read for conversation:", selected.conversationId);
     socket.emit("markMessagesRead", selected.conversationId, (resp) => {
-      if (!resp.ok) console.error("Failed to mark read", resp.error);
-      else {
+      if (!resp.ok) {
+        console.error("Failed to mark messages read:", resp.error);
+      } else {
         setUnreadCountsByConversation((prev) => {
           const next = { ...prev };
           delete next[selected.conversationId];
+          console.log("Updated unread counts after marking read:", next);
           return next;
         });
       }
     });
 
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
+      console.log("Leaving previous conversation:", prevSelectedRef.current);
       socket.emit("leaveConversation", prevSelectedRef.current);
     }
 
+    console.log("Joining conversation:", selected.conversationId);
     socket.emit("joinConversation", selected.conversationId, (ack) => {
-      if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
+      if (!ack.ok) {
+        console.error("Failed to join conversation:", ack.error);
+        setError("לא ניתן להצטרף לשיחה");
+      }
     });
 
+    console.log("Requesting message history for conversation:", selected.conversationId);
     socket.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
-      if (res.ok) setMessages(res.messages || []);
-      else {
+      if (res.ok) {
+        console.log("Received messages history:", res.messages);
+        setMessages(res.messages || []);
+      } else {
+        console.error("Error loading message history:", res.error);
         setMessages([]);
         setError("שגיאה בטעינת ההודעות");
       }
@@ -97,17 +153,28 @@ export default function BusinessChatPage() {
 
   useEffect(() => {
     if (!socket) return;
-    const handleNew = (msg) => {
+
+    const handleNewMessageNotification = (msg) => {
+      console.log("New client message notification received:", msg);
       const convoId = msg.conversationId || msg.conversation_id;
       if (convoId && convoId !== selected?.conversationId) {
-        setUnreadCountsByConversation((prev) => ({ ...prev, [convoId]: (prev[convoId] || 0) + 1 }));
+        setUnreadCountsByConversation((prev) => {
+          const updated = { ...prev, [convoId]: (prev[convoId] || 0) + 1 };
+          console.log("Updated unread counts on new message:", updated);
+          return updated;
+        });
       }
     };
-    socket.on("newClientMessageNotification", handleNew);
-    return () => socket.off("newClientMessageNotification", handleNew);
+
+    socket.on("newClientMessageNotification", handleNewMessageNotification);
+
+    return () => {
+      socket.off("newClientMessageNotification", handleNewMessageNotification);
+    };
   }, [socket, selected?.conversationId]);
 
   const handleSelect = (conversationId, partnerId) => {
+    console.log("Conversation selected:", conversationId, "partnerId:", partnerId);
     setSelected({ conversationId, partnerId });
   };
 
