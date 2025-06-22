@@ -63,6 +63,9 @@ export default function BusinessProfileView() {
   const [profileViewsCount, setProfileViewsCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // סטייט לניהול אילו ביקורות פתוחות
+  const [expandedReviews, setExpandedReviews] = useState({});
+
   const hasIncrementedRef = useRef(false);
 
   // בקשות נתונים
@@ -105,7 +108,7 @@ export default function BusinessProfileView() {
     setSchedule(sched);
   }, [workHoursData]);
 
-  // הצגת ביקורות - מיון לפי תאריך חדש לישן
+  // מיון ביקורות לפי תאריך חדש לישן
   const sortedReviews = [...reviews].sort(
     (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
   );
@@ -140,6 +143,14 @@ export default function BusinessProfileView() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // פונקציה להפעלת/כיבוי פירוט דירוג ביקורת
+  const toggleReviewDetails = (id) => {
+    setExpandedReviews((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
 
   if (isLoading) return <div className="loading">טוען…</div>;
@@ -247,6 +258,8 @@ export default function BusinessProfileView() {
                         month: "numeric",
                         year: "numeric",
                       });
+                      const isExpanded = expandedReviews[r._id || i] || false;
+
                       return (
                         <div key={r._id || i} className="review-card improved">
                           <p><strong>⭐ דירוג ממוצע:</strong> {avg.toFixed(1)}</p>
@@ -254,8 +267,23 @@ export default function BusinessProfileView() {
                           <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
                           {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
 
-                          {/* פירוט דירוגים מפורט */}
-                          {r.ratings && (
+                          <button
+                            style={{
+                              marginTop: "8px",
+                              backgroundColor: "#c5a3ff",
+                              border: "none",
+                              borderRadius: "6px",
+                              padding: "6px 12px",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                              color: "#4a148c",
+                            }}
+                            onClick={() => toggleReviewDetails(r._id || i)}
+                          >
+                            {isExpanded ? "הסתר פירוט דירוג 📋" : "פירוט דירוג 📋"}
+                          </button>
+
+                          {isExpanded && r.ratings && (
                             <div className="rating-details" style={{ marginTop: "8px" }}>
                               {Object.entries(r.ratings).map(([key, val]) => (
                                 <div
@@ -324,6 +352,8 @@ export default function BusinessProfileView() {
                       month: "numeric",
                       year: "numeric",
                     });
+                    const isExpanded = expandedReviews[r._id || i] || false;
+
                     return (
                       <div key={r._id || i} className="review-card improved">
                         <p><strong>⭐ דירוג ממוצע:</strong> {avg.toFixed(1)}</p>
@@ -331,8 +361,23 @@ export default function BusinessProfileView() {
                         <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
                         {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
 
-                        {/* פירוט דירוגים מפורט */}
-                        {r.ratings && (
+                        <button
+                          style={{
+                            marginTop: "8px",
+                            backgroundColor: "#c5a3ff",
+                            border: "none",
+                            borderRadius: "6px",
+                            padding: "6px 12px",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                            color: "#4a148c",
+                          }}
+                          onClick={() => toggleReviewDetails(r._id || i)}
+                        >
+                          {isExpanded ? "הסתר פירוט דירוג 📋" : "פירוט דירוג 📋"}
+                        </button>
+
+                        {isExpanded && r.ratings && (
                           <div className="rating-details" style={{ marginTop: "8px" }}>
                             {Object.entries(r.ratings).map(([key, val]) => (
                               <div
