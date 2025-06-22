@@ -92,7 +92,9 @@ function messagesReducer(state, action) {
     case "append":
       // הוספת הודעה חדשה או עדכון הודעה קיימת
       const existingIndex = state.findIndex(
-        (m) => m._id === action.payload._id || (m.tempId && m.tempId === action.payload.tempId)
+        (m) =>
+          m._id === action.payload._id ||
+          (m.tempId && m.tempId === action.payload.tempId)
       );
       if (existingIndex !== -1) {
         const newState = [...state];
@@ -152,7 +154,12 @@ export default function BusinessChatTab({
         );
         if (!response.ok) throw new Error("Failed to fetch messages");
         const data = await response.json();
-        return Array.isArray(data.messages) ? data.messages : [];
+        if (!Array.isArray(data.messages)) return [];
+        // הוספת timestamp מתוך createdAt
+        return data.messages.map((m) => ({
+          ...m,
+          timestamp: m.createdAt,
+        }));
       } catch (err) {
         console.error("Fetch messages failed:", err);
         return [];
@@ -254,12 +261,15 @@ export default function BusinessChatTab({
         if (msgs.length === 0) {
           setHasMore(false);
         } else {
-          dispatchMessages({ type: "add", payload: msgs });
+          const mapped = msgs.map((m) => ({
+            ...m,
+            timestamp: m.createdAt,
+          }));
+          dispatchMessages({ type: "add", payload: mapped });
           setPage((p) => p + 1);
 
           setTimeout(() => {
             if (el) {
-              // מיקום גלילה לשמירת מיקום נכון לאחר טעינה
               el.scrollTop = 1;
             }
           }, 0);
@@ -281,8 +291,7 @@ export default function BusinessChatTab({
     const el = messageListRef.current;
     if (!el) return;
 
-    const isNearBottom =
-      el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
     if (isNearBottom) {
       el.scrollTop = el.scrollHeight;
     }
@@ -549,7 +558,7 @@ export default function BusinessChatTab({
                   </a>
                 )
               ) : (
-                <div className="text">{m.text}</div>
+                <div className="text">{m.content}</div>
               )}
 
               <div className="meta">
