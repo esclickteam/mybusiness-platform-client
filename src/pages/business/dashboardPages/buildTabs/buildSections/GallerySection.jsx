@@ -66,7 +66,7 @@ export default function GallerySection({
         </button>
 
         <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="gallery" direction="horizontal">
+          <Droppable droppableId="gallery">
             {(provided) => (
               <div
                 className="gallery-grid-container edit"
