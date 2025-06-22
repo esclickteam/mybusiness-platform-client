@@ -99,12 +99,14 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
       const clientPhone = appt.clientPhone ? appt.clientPhone.replace(/\D/g, "") : "";
 
       if (searchDigitsOnly.length > 0) {
-        // חיפוש במספר טלפון בלבד אם יש ספרות בחיפוש
+        // אם יש ספרות בחיפוש – מחפשים רק בטלפון
         return clientPhone.includes(searchDigitsOnly);
-      } else {
-        // חיפוש בשם בלבד אם אין ספרות בחיפוש
+      } else if (searchLower.length > 0) {
+        // אחרת מחפשים רק בשם
         return clientName.includes(searchLower);
       }
+      // אם אין חיפוש בכלל, מחזירים את כל התוצאות
+      return true;
     })
     .filter(appt => {
       if (!appt._id) return true;
@@ -113,6 +115,7 @@ const { data: services = [], isLoading: isLoadingServices, isError: isErrorServi
       return true;
     });
 }, [appointments, search]);
+
 
 
 
