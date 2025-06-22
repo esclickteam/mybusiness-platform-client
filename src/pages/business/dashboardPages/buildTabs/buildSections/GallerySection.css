@@ -15,6 +15,9 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
   padding: 10px 0;
+  max-width: 100%;      /* מונע חריגה רוחבית */
+  overflow-x: hidden;   /* מונע גלילה אופקית */
+  box-sizing: border-box;
 }
 
 /* עטיפת כל תמונה */
@@ -29,6 +32,7 @@
   justify-content: center;
   height: 140px;
   min-width: 140px; /* חשוב עבור גלריית סקרול אופקי בצד עריכה */
+  min-width: 0;     /* מונע חריגה רוחבית מיותרת בתצוגה */
 }
 
 /* התמונה עצמה */

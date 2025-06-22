@@ -72,7 +72,6 @@ export default function GallerySection({
                 className="gallery-grid-container edit"
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                style={{ display: "flex", gap: "10px", overflowX: "auto" }}
               >
                 {uniqueImages.map(({ preview, publicId }, index) => (
                   <Draggable key={publicId} draggableId={publicId} index={index}>
@@ -85,23 +84,12 @@ export default function GallerySection({
                         style={{
                           userSelect: "none",
                           ...provided.draggableProps.style,
-                          minWidth: "140px",
-                          height: "140px",
-                          borderRadius: "12px",
-                          overflow: "hidden",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                          position: "relative",
-                          background: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center"
                         }}
                       >
                         <img
                           src={preview}
                           alt={`תמונת גלריה ${index + 1}`}
                           className="gallery-img"
-                          style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px" }}
                         />
                         <button
                           className="delete-btn"
@@ -109,20 +97,6 @@ export default function GallerySection({
                           type="button"
                           title="מחיקה"
                           disabled={isSaving}
-                          style={{
-                            position: "absolute",
-                            top: "6px",
-                            right: "6px",
-                            background: "rgba(255,255,255,0.8)",
-                            borderRadius: "50%",
-                            border: "none",
-                            cursor: "pointer",
-                            fontSize: "1.2rem",
-                            lineHeight: 1,
-                            padding: "2px 6px",
-                            transition: "background 0.2s ease",
-                            zIndex: 10,
-                          }}
                         >
                           🗑️
                         </button>
