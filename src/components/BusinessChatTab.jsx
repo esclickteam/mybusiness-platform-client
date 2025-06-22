@@ -104,7 +104,7 @@ export default function BusinessChatTab({
   conversationId,
   businessId,
   customerId,
-  customerName, // כאן מוסיפים את השם
+  customerName,
   socket,
   initialMessages = [],
   onMessagesChange,
@@ -131,7 +131,7 @@ export default function BusinessChatTab({
   // File attach
   const fileInputRef = useRef(null);
 
-   const handleAttach = () => {
+  const handleAttach = () => {
     fileInputRef.current?.click();
   };
 
@@ -143,6 +143,47 @@ export default function BusinessChatTab({
   const mediaStreamRef = useRef(null);
   const recordedChunks = useRef([]);
   const timerRef = useRef(null);
+
+  // הפונקציה שמתחילה הקלטה
+  const startRecording = async () => {
+    if (recording || !navigator.mediaDevices) return;
+    try {
+      console.log("[startRecording] Starting audio recording...");
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      recordedChunks.current = [];
+      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(recordedChunks.current, { type: recorder.mimeType });
+        setRecordedBlob(blob);
+        console.log("[startRecording] Recording stopped, blob ready.");
+      };
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setRecording(true);
+      setTimer(0);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } catch (err) {
+      console.error("[startRecording] Recording error:", err);
+    }
+  };
+
+  // הפונקציה שעוצרת הקלטה
+  const stopRecording = () => {
+    console.log("[stopRecording] Stopping audio recording...");
+    mediaRecorderRef.current?.stop();
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    setRecording(false);
+    clearInterval(timerRef.current);
+  };
+
+  // מחיקת ההקלטה
+  const discardRecording = () => {
+    console.log("[discardRecording] Discarding recorded audio.");
+    setRecordedBlob(null);
+    setTimer(0);
+  };
 
   // Socket listeners for new messages and typing
   useEffect(() => {
@@ -186,70 +227,33 @@ export default function BusinessChatTab({
   };
 
   const sendMessage = () => {
-  if (sending) return;
-  const content = input.trim();
-  if (!content || !socket) return;
-  setSending(true);
-  const tempId = uuidv4();
-  const optimistic = {
-    _id: tempId,
-    conversationId,
-    from: businessId,
-    to: customerId,
-    content,
-    timestamp: new Date().toISOString(),
-    sending: true,
-    tempId,
-  };
-  console.log("[sendMessage] dispatch optimistic message:", optimistic);
-  dispatchMessages({ type: "append", payload: optimistic });
-  setInput("");
+    if (sending) return;
+    const content = input.trim();
+    if (!content || !socket) return;
+    setSending(true);
+    const tempId = uuidv4();
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      content,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+    console.log("[sendMessage] dispatch optimistic message:", optimistic);
+    dispatchMessages({ type: "append", payload: optimistic });
+    setInput("");
 
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: businessId, to: customerId, content, tempId },
-    (ack) => {
-      console.log("[sendMessage] ack received:", ack);
-      setSending(false);
-      if (!ack.ok) {
-        console.warn("[sendMessage] Message sending failed:", ack.error);
-      }
-      dispatchMessages({
-        type: "updateStatus",
-        payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
-      });
-    }
-  );
-};
-
-const handleFileChange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file || !socket) return;
-  const tempId = uuidv4();
-  const optimistic = {
-    _id: tempId,
-    conversationId,
-    from: businessId,
-    to: customerId,
-    fileUrl: URL.createObjectURL(file),
-    fileName: file.name,
-    fileType: file.type,
-    timestamp: new Date().toISOString(),
-    sending: true,
-    tempId,
-  };
-  console.log("[handleFileChange] dispatch optimistic file message:", optimistic);
-  dispatchMessages({ type: "append", payload: optimistic });
-  const reader = new FileReader();
-  reader.onload = () => {
-    console.log("[handleFileChange] emitting sendFile with tempId:", tempId);
     socket.emit(
-      "sendFile",
-      { conversationId, from: businessId, to: customerId, fileName: file.name, fileType: file.type, buffer: reader.result, tempId },
+      "sendMessage",
+      { conversationId, from: businessId, to: customerId, content, tempId },
       (ack) => {
-        console.log("[sendFile] ack received:", ack);
+        console.log("[sendMessage] ack received:", ack);
+        setSending(false);
         if (!ack.ok) {
-          console.warn("[sendFile] File sending failed:", ack.error);
+          console.warn("[sendMessage] Message sending failed:", ack.error);
         }
         dispatchMessages({
           type: "updateStatus",
@@ -258,49 +262,85 @@ const handleFileChange = (e) => {
       }
     );
   };
-  reader.readAsArrayBuffer(file);
-};
 
-const sendRecording = () => {
-  if (!recordedBlob || !socket) return;
-  const tempId = uuidv4();
-  const optimistic = {
-    _id: tempId,
-    conversationId,
-    from: businessId,
-    to: customerId,
-    fileUrl: URL.createObjectURL(recordedBlob),
-    fileName: `audio.${recordedBlob.type.split("/")[1]}`,
-    fileType: recordedBlob.type,
-    fileDuration: timer,
-    timestamp: new Date().toISOString(),
-    sending: true,
-    tempId,
-  };
-  console.log("[sendRecording] dispatch optimistic audio message:", optimistic);
-  dispatchMessages({ type: "append", payload: optimistic });
-  setRecordedBlob(null);
-  const reader = new FileReader();
-  reader.onload = () => {
-    console.log("[sendRecording] emitting sendAudio with tempId:", tempId);
-    socket.emit(
-      "sendAudio",
-      { conversationId, from: businessId, to: customerId, buffer: reader.result, fileType: recordedBlob.type, duration: timer, tempId },
-      (ack) => {
-        console.log("[sendAudio] ack received:", ack);
-        if (!ack.ok) {
-          console.warn("[sendAudio] Audio sending failed:", ack.error);
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !socket) return;
+    const tempId = uuidv4();
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(file),
+      fileName: file.name,
+      fileType: file.type,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+    console.log("[handleFileChange] dispatch optimistic file message:", optimistic);
+    dispatchMessages({ type: "append", payload: optimistic });
+    const reader = new FileReader();
+    reader.onload = () => {
+      console.log("[handleFileChange] emitting sendFile with tempId:", tempId);
+      socket.emit(
+        "sendFile",
+        { conversationId, from: businessId, to: customerId, fileName: file.name, fileType: file.type, buffer: reader.result, tempId },
+        (ack) => {
+          console.log("[sendFile] ack received:", ack);
+          if (!ack.ok) {
+            console.warn("[sendFile] File sending failed:", ack.error);
+          }
+          dispatchMessages({
+            type: "updateStatus",
+            payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
+          });
         }
-        dispatchMessages({
-          type: "updateStatus",
-          payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
-        });
-      }
-    );
+      );
+    };
+    reader.readAsArrayBuffer(file);
   };
-  reader.readAsArrayBuffer(recordedBlob);
-};
 
+  const sendRecording = () => {
+    if (!recordedBlob || !socket) return;
+    const tempId = uuidv4();
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(recordedBlob),
+      fileName: `audio.${recordedBlob.type.split("/")[1]}`,
+      fileType: recordedBlob.type,
+      fileDuration: timer,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+    console.log("[sendRecording] dispatch optimistic audio message:", optimistic);
+    dispatchMessages({ type: "append", payload: optimistic });
+    setRecordedBlob(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      console.log("[sendRecording] emitting sendAudio with tempId:", tempId);
+      socket.emit(
+        "sendAudio",
+        { conversationId, from: businessId, to: customerId, buffer: reader.result, fileType: recordedBlob.type, duration: timer, tempId },
+        (ack) => {
+          console.log("[sendAudio] ack received:", ack);
+          if (!ack.ok) {
+            console.warn("[sendAudio] Audio sending failed:", ack.error);
+          }
+          dispatchMessages({
+            type: "updateStatus",
+            payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
+          });
+        }
+      );
+    };
+    reader.readAsArrayBuffer(recordedBlob);
+  };
 
   return (
     <div className="chat-container business">
