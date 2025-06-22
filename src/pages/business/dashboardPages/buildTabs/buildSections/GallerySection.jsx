@@ -32,7 +32,7 @@ export default function GallerySection({
 
   return (
     <>
-      {/* Left: upload form */}
+      {/* Left: upload form + preview images */}
       <div className="form-column" ref={containerRef}>
         <h3>העלאת תמונות לגלריה</h3>
         <input
@@ -53,6 +53,46 @@ export default function GallerySection({
         >
           הוספת תמונות
         </button>
+
+        {/* Preview images בצד שמאל */}
+        <div className="gallery-preview-left" style={{ marginTop: "1rem" }}>
+          {uniqueImages.length > 0 ? (
+            uniqueImages.map(({ preview, publicId }, i) => (
+              <div
+                key={publicId || `preview-left-${i}`}
+                className="gallery-item-wrapper image-wrapper"
+                style={{ position: "relative", marginBottom: "10px" }}
+              >
+                <img
+                  src={preview}
+                  alt={`תמונת גלריה ${i + 1}`}
+                  className="gallery-img"
+                  style={{ width: "100%", borderRadius: "8px" }}
+                />
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteImage(publicId)}
+                  type="button"
+                  title="מחיקה"
+                  disabled={isSaving}
+                  style={{
+                    position: "absolute",
+                    top: "5px",
+                    right: "5px",
+                    background: "rgba(255,255,255,0.7)",
+                    borderRadius: "50%",
+                    border: "none",
+                    cursor: "pointer"
+                  }}
+                >
+                  🗑️
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className="no-data">אין תמונות בגלריה</p>
+          )}
+        </div>
       </div>
 
       {/* Right: gallery preview */}
