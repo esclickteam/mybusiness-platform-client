@@ -211,39 +211,48 @@ export default function BusinessChatTab({
   };
 
   const sendMessage = () => {
-    if (sending) return;
-    const text = input.trim();
-    if (!text || !socket) return;
-    setSending(true);
-    const tempId = uuidv4();
-    const optimistic = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      text,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-    dispatchMessages({ type: "append", payload: optimistic });
-    setInput("");
+  if (sending) return;
+  const text = input.trim();
+  if (!text || !socket) return;
 
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId },
-      (ack) => {
-        setSending(false);
-        if (!ack.ok) {
-          console.warn("[sendMessage] Message sending failed:", ack.error);
-        }
-        dispatchMessages({
-          type: "updateStatus",
-          payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
-        });
-      }
-    );
+  console.log("[sendMessage] Sending message with data:", {
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+  });
+
+  setSending(true);
+  const tempId = uuidv4();
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
   };
+  dispatchMessages({ type: "append", payload: optimistic });
+  setInput("");
+
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: businessId, to: customerId, text, tempId },
+    (ack) => {
+      setSending(false);
+      if (!ack.ok) {
+        console.warn("[sendMessage] Message sending failed:", ack.error);
+      }
+      dispatchMessages({
+        type: "updateStatus",
+        payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
+      });
+    }
+  );
+};
+
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
