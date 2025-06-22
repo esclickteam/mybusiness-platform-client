@@ -5,7 +5,6 @@ import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
 import ImageLoader from "@components/ImageLoader";
 
-// Prepare sorted, deduped options
 const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
   a.localeCompare(b, "he")
 );
@@ -14,6 +13,7 @@ const cityOptions = CITIES.map(city => ({ value: city, label: city }));
 
 export default function MainSection({
   businessDetails = {},
+  reviews = [], // מערך הביקורות
   handleInputChange,
   handleMainImagesChange,
   handleDeleteImage,
@@ -27,7 +27,6 @@ export default function MainSection({
   isSaving,
   renderTopBar
 }) {
-  // Hooks must be called unconditionally
   const containerRef = useRef();
 
   useEffect(() => {
@@ -40,19 +39,14 @@ export default function MainSection({
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // Render only after business has loaded
   if (!businessDetails._id) return null;
 
-  // Build preview+ID objects from state arrays
   const wrappedMainImages = (businessDetails.mainImages || []).map((url, idx) => ({
     preview: url,
     publicId: (businessDetails.mainImageIds || [])[idx] || null
   }));
 
-  // Deduplicate & limit to 5
   const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 6);
-
-  // wrap Select onChange to mimic native input event
   const wrapSelectChange = name => option =>
     handleInputChange({ target: { name, value: option ? option.value : "" } });
 
@@ -60,18 +54,21 @@ export default function MainSection({
     businessName = "",
     description = "",
     phone = "",
-    email = "",       // <-- הוסף כאן את מייל
+    email = "",
     category = "",
     address = {}
   } = businessDetails;
   const { city = "" } = address;
+
+  // מיון הביקורות לפי תאריך חדש לישן והוצאת 2 האחרונות
+  const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const lastTwoReviews = sortedReviews.slice(0, 2);
 
   return (
     <>
       <div className="form-column" ref={containerRef}>
         <h2>🎨 עריכת פרטי העסק</h2>
 
-        {/* שם העסק */}
         <label>
           שם העסק: <span style={{ color: "red" }}>*</span>
         </label>
@@ -85,7 +82,6 @@ export default function MainSection({
           disabled={isSaving}
         />
 
-        {/* תיאור */}
         <label>תיאור:</label>
         <textarea
           name="description"
@@ -95,7 +91,6 @@ export default function MainSection({
           disabled={isSaving}
         />
 
-        {/* טלפון */}
         <label>טלפון:</label>
         <input
           type="text"
@@ -106,7 +101,6 @@ export default function MainSection({
           disabled={isSaving}
         />
 
-        {/* אימייל */}
         <label>אימייל:</label>
         <input
           type="email"
@@ -117,7 +111,6 @@ export default function MainSection({
           disabled={isSaving}
         />
 
-        {/* קטגוריה */}
         <label>
           קטגוריה: <span style={{ color: "red" }}>*</span>
         </label>
@@ -142,7 +135,6 @@ export default function MainSection({
           styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
         />
 
-        {/* עיר */}
         <label>
           עיר: <span style={{ color: "red" }}>*</span>
         </label>
@@ -167,7 +159,6 @@ export default function MainSection({
           styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
         />
 
-        {/* לוגו */}
         <label>לוגו:</label>
         <input
           type="file"
@@ -187,7 +178,6 @@ export default function MainSection({
           העלאת לוגו
         </button>
 
-        {/* תמונות ראשיות */}
         <label>תמונות ראשיות:</label>
         <input
           type="file"
@@ -224,7 +214,6 @@ export default function MainSection({
           )}
         </div>
 
-        {/* שמירה */}
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
           {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
@@ -242,13 +231,44 @@ export default function MainSection({
         )}
       </div>
 
-      {/* תצוגה מקדימה */}
       <div className="preview-column">
         {renderTopBar?.()}
+
         <div className="preview-images">
           {limitedMainImgs.map(({ preview }, i) => (
             <div key={i} className="image-wrapper">
               <ImageLoader src={preview} alt="תמונה ראשית" />
+            </div>
+          ))}
+        </div>
+
+        <div className="latest-reviews" style={{ marginTop: "1rem" }}>
+          {lastTwoReviews.map((review, idx) => (
+            <div
+              key={idx}
+              className="review-card"
+              style={{
+                border: "1px solid #ccc",
+                borderRadius: "6px",
+                padding: "1rem",
+                marginBottom: "1rem",
+                backgroundColor: "#fff",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+              }}
+            >
+              <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
+                דירוג ממוצע: {review.rating || "אין דירוג"}
+              </div>
+              <div>
+                <strong>חוות דעת:</strong> {review.opinion || "אין חוות דעת"}
+              </div>
+              <div>
+                <strong>תאריך:</strong>{" "}
+                {review.date ? new Date(review.date).toLocaleDateString("he-IL") : "לא צוין"}
+              </div>
+              <div>
+                <strong>מאת:</strong> {review.author || "לא צוין"}
+              </div>
             </div>
           ))}
         </div>

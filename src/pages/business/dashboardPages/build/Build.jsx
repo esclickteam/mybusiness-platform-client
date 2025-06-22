@@ -601,6 +601,7 @@ export default function Build() {
         return (
           <MainSection
             businessDetails={businessDetails}
+            reviews={businessDetails.reviews}
             handleInputChange={handleInputChange}
             handleMainImagesChange={handleMainImagesChange}
             handleDeleteImage={handleDeleteMainImage}
