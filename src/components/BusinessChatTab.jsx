@@ -215,6 +215,13 @@ export default function BusinessChatTab({
   const text = input.trim();
   if (!text || !socket) return;
 
+  // בדיקת שדות חובה לפני שליחה
+  if (!conversationId || !businessId || !customerId) {
+    console.warn("[sendMessage] Missing required fields:", { conversationId, businessId, customerId });
+    alert("לא ניתן לשלוח הודעה: פרטים חסרים.");
+    return;
+  }
+
   console.log("[sendMessage] Sending message with data:", {
     conversationId,
     from: businessId,
@@ -252,6 +259,7 @@ export default function BusinessChatTab({
     }
   );
 };
+
 
 
   const handleFileChange = (e) => {

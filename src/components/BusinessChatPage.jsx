@@ -11,7 +11,6 @@ export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const rawBusinessId = user?.businessId || user?.business?._id;
 
-  // המר את businessId למחרוזת
   const businessId =
     rawBusinessId && typeof rawBusinessId === "object" && rawBusinessId._id
       ? rawBusinessId._id.toString()
@@ -30,13 +29,15 @@ export default function BusinessChatPage() {
 
   const [unreadCountsByConversation, setUnreadCountsByConversation] = useState({});
 
-  const totalUnreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
+  const totalUnreadCount = Object.values(unreadCountsByConversation).reduce(
+    (a, b) => a + b,
+    0
+  );
 
   useEffect(() => {
     updateMessagesCount?.(totalUnreadCount);
   }, [totalUnreadCount, updateMessagesCount]);
 
-  // טוען רק שיחות עם לקוחות
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -45,18 +46,15 @@ export default function BusinessChatPage() {
       .then(({ data }) => {
         setConvos(data.conversations || []);
 
-        // בניית מפת כמות הודעות שלא נקראו
         const initialUnread = {};
         (data.conversations || []).forEach((c) => {
           if (c.unreadCount > 0) initialUnread[c._id] = c.unreadCount;
         });
         setUnreadCountsByConversation(initialUnread);
 
-        // בוחרים שיחה ראשונה אם קיימת, עם מזהה ועם שם לקוח
         if (data.conversations && data.conversations.length > 0) {
           const first = data.conversations[0];
 
-          // המרה של partnerId למחרוזת
           let partnerIdRaw = first.client || first.business || null;
           let partnerId = partnerIdRaw;
           if (partnerIdRaw && typeof partnerIdRaw === "object") {
@@ -66,7 +64,7 @@ export default function BusinessChatPage() {
               partnerId = partnerIdRaw.toString();
             }
           }
-
+          console.log("Initial selected partnerId:", partnerId); // לוג חשוב
           setSelected({
             conversationId: first._id.toString(),
             partnerId,
@@ -82,7 +80,6 @@ export default function BusinessChatPage() {
 
   const messagesAreaRef = useRef(null);
 
-  // טעינת ההודעות של השיחה הנבחרת
   useEffect(() => {
     if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
@@ -119,14 +116,16 @@ export default function BusinessChatPage() {
     prevSelectedRef.current = selected.conversationId;
   }, [socket, selected]);
 
-  // טיפול בהודעות חדשות בזמן אמת
   useEffect(() => {
     if (!socket) return;
 
     const handleNewMessage = (msg) => {
       const convoId = msg.conversationId || msg.conversation_id;
       if (convoId && convoId !== selected?.conversationId) {
-        setUnreadCountsByConversation((prev) => ({ ...prev, [convoId]: (prev[convoId] || 0) + 1 }));
+        setUnreadCountsByConversation((prev) => ({
+          ...prev,
+          [convoId]: (prev[convoId] || 0) + 1,
+        }));
       }
     };
 
@@ -136,7 +135,6 @@ export default function BusinessChatPage() {
   }, [socket, selected?.conversationId]);
 
   const handleSelect = (conversationId, partnerId, partnerName) => {
-    // המר את partnerId למחרוזת אם צריך
     let idString = partnerId;
     if (partnerId && typeof partnerId === "object") {
       if (partnerId._id) {
@@ -145,7 +143,12 @@ export default function BusinessChatPage() {
         idString = partnerId.toString();
       }
     }
-    setSelected({ conversationId: conversationId.toString(), partnerId: idString, partnerName });
+    console.log("handleSelect partnerId:", idString); // לוג חשוב
+    setSelected({
+      conversationId: conversationId.toString(),
+      partnerId: idString,
+      partnerName,
+    });
   };
 
   if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
@@ -162,7 +165,7 @@ export default function BusinessChatPage() {
             selectedConversationId={selected?.conversationId}
             onSelect={handleSelect}
             unreadCountsByConversation={unreadCountsByConversation}
-            isBusiness={false} // כאן זה שיחות לקוחות, לא עסקיות
+            isBusiness={false}
           />
         )}
         {error && <p className={styles.error}>{error}</p>}
@@ -174,7 +177,7 @@ export default function BusinessChatPage() {
             conversationId={selected.conversationId}
             businessId={businessId}
             customerId={selected.partnerId}
-            customerName={selected.partnerName} // מעבירים גם את השם
+            customerName={selected.partnerName}
             socket={socket}
             initialMessages={messages}
             onMessagesChange={setMessages}
