@@ -141,28 +141,25 @@ export default function BusinessChatTab({
 
   // --- פונקציה למשיכת הודעות עם פגינציה ---
   const fetchMessagesPage = useCallback(
-  async (pageNum = 0) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `/api/conversations/${conversationId}/history?page=${pageNum}&limit=20`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch messages");
-      const data = await response.json();
-      return Array.isArray(data.messages) ? data.messages : [];
-    } catch (err) {
-      console.error("Fetch messages failed:", err);
-      return [];
-    }
-  },
-  [conversationId]
-);
-
-
-
+    async (pageNum = 0) => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `/api/conversations/${conversationId}/history?page=${pageNum}&limit=20`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!response.ok) throw new Error("Failed to fetch messages");
+        const data = await response.json();
+        return Array.isArray(data.messages) ? data.messages : [];
+      } catch (err) {
+        console.error("Fetch messages failed:", err);
+        return [];
+      }
+    },
+    [conversationId]
+  );
 
   // --- טעינת הודעות ראשונית והגדרת הפגינציה ---
   useEffect(() => {
