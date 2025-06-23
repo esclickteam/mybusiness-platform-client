@@ -1,10 +1,10 @@
 .profile-wrapper {
-  max-width: 1100px;
+  max-width: 480px; /* צר יותר */
   margin: 4rem auto;
-  padding: 3rem 4rem;
+  padding: 2.5rem 2rem;
   background: linear-gradient(135deg, #ede9fb, #f9f7ff);
-  border-radius: 40px;
-  box-shadow: 0 25px 50px rgba(120, 81, 169, 0.2);
+  border-radius: 28px;
+  box-shadow: 0 20px 40px rgba(120, 81, 169, 0.25);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   color: #4a3f78;
@@ -13,29 +13,29 @@
 
 .profile-header {
   text-align: center;
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   font-weight: 900;
-  margin-bottom: 3rem;
-  letter-spacing: 1.2px;
+  margin-bottom: 2.8rem;
+  letter-spacing: 1.1px;
   color: #6f5ecb;
-  text-shadow: 0 0 15px #a9a0f5;
+  text-shadow: 0 0 14px #a9a0f5;
 }
 
 .profile-card {
   background: white;
-  border-radius: 30px;
-  padding: 3rem 4rem;
-  box-shadow: 0 30px 60px rgba(120, 81, 169, 0.3);
+  border-radius: 25px;
+  padding: 2.8rem 3rem;
+  box-shadow: 0 20px 50px rgba(120, 81, 169, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 3.5rem;
+  gap: 3rem;
 }
 
 .profile-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
@@ -44,19 +44,19 @@
   flex-shrink: 0;
   border-radius: 100%;
   overflow: hidden;
-  width: 150px;
-  height: 150px;
-  box-shadow: 0 6px 30px rgba(120, 81, 169, 0.35);
+  width: 120px;
+  height: 120px;
+  box-shadow: 0 5px 25px rgba(120, 81, 169, 0.35);
   transition: transform 0.4s ease;
 }
 
 .profile-logo-label:hover {
-  transform: scale(1.15);
+  transform: scale(1.12);
 }
 
 .profile-logo {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 100%;
   object-fit: cover;
   display: block;
@@ -65,40 +65,40 @@
 .profile-main-info {
   flex-grow: 1;
   text-align: right;
-  padding-right: 30px;
+  padding-right: 25px;
 }
 
 .profile-business-name {
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   font-weight: 900;
   margin: 0 0 0.5rem 0;
   color: #6747c7;
-  text-shadow: 0 0 10px #8f7ae9;
+  text-shadow: 0 0 9px #8f7ae9;
 }
 
 .profile-category {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #a594e9;
 }
 
 .profile-actions {
   display: flex;
-  gap: 18px;
+  gap: 15px;
   flex-wrap: wrap;
 }
 
 .btn-primary,
 .btn-secondary {
-  padding: 1rem 2.6rem;
-  border-radius: 40px;
+  padding: 0.95rem 2.2rem;
+  border-radius: 36px;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   cursor: pointer;
   border: none;
   transition: background-color 0.35s ease, box-shadow 0.35s ease;
   user-select: none;
-  box-shadow: 0 8px 25px rgba(120, 81, 169, 0.35);
+  box-shadow: 0 7px 25px rgba(120, 81, 169, 0.35);
 }
 
 .btn-primary {
@@ -124,36 +124,41 @@
 }
 
 .profile-section {
-  border-top: 2px solid #dfd9fb;
-  padding: 1.8rem 2rem;
+  max-width: 450px;
+  margin: 2rem auto;
+  padding: 1.7rem 1.8rem;
+  background-color: #f4f1fc;
+  border-radius: 18px;
+  box-shadow: 0 6px 14px rgba(120, 81, 169, 0.12);
+  text-align: center;
+  font-size: 1.25rem;
   color: #5a4e90;
   font-weight: 600;
   user-select: text;
-  font-size: 1.3rem;
-
-  max-width: 600px;
-  margin: 2rem auto;
-  border-radius: 20px;
-  background-color: #f4f1fc;
-  box-shadow: 0 6px 14px rgba(120, 81, 169, 0.12);
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 110px;
+  box-sizing: border-box;
 }
 
 .profile-section h3 {
-  margin-bottom: 1rem;
   font-weight: 700;
-  font-size: 1.7rem;
+  font-size: 1.55rem;
   color: #5f53a5;
   text-shadow: 0 0 6px #bfb6f6;
+  margin: 0;
 }
 
 .profile-section p {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: #423971;
   line-height: 1.6;
-  margin: 0 auto;
+  margin: 0;
   font-weight: 400;
-  max-width: 450px;
+  max-width: 400px;
   text-align: center;
 }
 
@@ -161,14 +166,14 @@
   padding-inline-start: 0;
   list-style-type: none;
   color: #564f8e;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   line-height: 1.8;
   margin: 0 auto;
-  max-width: 450px;
+  max-width: 400px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .profile-collab-list li::before {
@@ -180,11 +185,11 @@
 .modal-box {
   direction: rtl;
   background: white;
-  border-radius: 35px;
-  padding: 3rem 3.5rem;
-  max-width: 580px;
+  border-radius: 30px;
+  padding: 2.8rem 3.3rem;
+  max-width: 520px;
   margin: 5% auto;
-  box-shadow: 0 25px 55px rgba(120, 81, 169, 0.35);
+  box-shadow: 0 20px 50px rgba(120, 81, 169, 0.35);
   outline: none;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #483d7a;
@@ -193,7 +198,7 @@
 .modal-box h2 {
   text-align: center;
   font-weight: 900;
-  font-size: 2.3rem;
+  font-size: 2.2rem;
   margin-bottom: 2rem;
   text-shadow: 0 0 10px #c3bbff;
 }
@@ -201,7 +206,7 @@
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
+  gap: 1.6rem;
 }
 
 .profile-form label {
@@ -214,8 +219,8 @@
 .profile-form textarea {
   width: 100%;
   padding: 1rem 1.2rem;
-  font-size: 1.15rem;
-  border-radius: 20px;
+  font-size: 1.1rem;
+  border-radius: 18px;
   border: 2px solid #c3bbff;
   background-color: #f9f8ff;
   transition: all 0.35s ease;
