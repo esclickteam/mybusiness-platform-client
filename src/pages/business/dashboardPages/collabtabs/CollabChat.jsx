@@ -3,7 +3,6 @@ import { io } from "socket.io-client";
 import API from "../../../../api";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
@@ -34,19 +33,19 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
-    const filtered = msgs.filter((m) => {
+    return msgs.filter((m) => {
       const id = m._id?.toString() || m.tempId || m.timestamp;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
-    return filtered;
   }, []);
 
   const fetchConversations = useCallback(async () => {
     try {
       const token = await refreshAccessToken();
       if (!token) return;
+
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -59,7 +58,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
       }
-    } catch {
+    } catch (err) {
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
@@ -68,6 +67,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   useEffect(() => {
     if (!myBusinessId) return;
     if (socketInitializedRef.current) return;
+
     socketInitializedRef.current = true;
 
     async function setupSocket() {
@@ -131,6 +131,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       try {
         const token = await refreshAccessToken();
         if (!token) return;
+
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -140,7 +141,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           toBusinessId: msg.toBusinessId || msg.to,
         }));
         setMessages(uniqueMessages(normMsgs));
-      } catch {
+      } catch (err) {
         setMessages([]);
       }
     })();
@@ -188,8 +189,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-    if (isSending) return;
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+    if (isSending || !input.trim() || !selectedConversation || !socketRef.current) return;
 
     setIsSending(true);
 
@@ -335,10 +335,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
     reader.readAsArrayBuffer(file);
   };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   return (
     <Box
@@ -523,70 +519,56 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               padding: 16,
               borderTop: "1px solid #eee",
               alignItems: "center",
-              backgroundColor: "#f5f3ff",
-              boxShadow: "0 -2px 6px rgb(90 71 168 / 0.3)",
+              backgroundColor: "#f0ecff",
+              borderRadius: "0 0 18px 18px",
             }}
           >
+            {/* כפתור צרוף קבצים */}
             <Button
               type="button"
               onClick={handleAttach}
               sx={{
                 minWidth: 40,
-                width: 40,
                 height: 40,
-                padding: 0,
-                borderRadius: "50%",
-                backgroundColor: "#e3dffc",
-                color: "#7153dd",
-                boxShadow: "0 4px 12px rgba(111, 94, 203, 0.4)",
+                borderRadius: 8,
+                backgroundColor: "#fff",
+                boxShadow: "0 2px 8px rgba(111,94,203,0.3)",
                 "&:hover": {
-                  backgroundColor: "#c7bcf8",
-                  boxShadow: "0 6px 18px rgba(111, 94, 203, 0.7)",
+                  backgroundColor: "#ece6ff",
                 },
-                fontSize: "1.3rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
               }}
               title="צרף קובץ"
             >
               📎
             </Button>
 
-            <TextField
-              fullWidth
-              size="medium"
+            {/* שדה כתיבת הודעה */}
+            <input
+              type="text"
               placeholder="כתוב הודעה..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              autoComplete="off"
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 25,
-                "& .MuiOutlinedInput-root": {
-                  paddingRight: "20px",
-                  paddingLeft: "20px",
-                  borderRadius: 25,
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#7153dd",
-                },
-                "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#7153dd",
-                  borderWidth: 2,
-                },
+              style={{
+                flexGrow: 1,
+                height: 40,
+                borderRadius: 20,
+                border: "1.5px solid #7153dd",
+                padding: "0 12px",
+                fontSize: 14,
+                outline: "none",
               }}
             />
 
+            {/* כפתור שליחה */}
             <Button
               type="submit"
-              variant="contained"
               sx={{
-                minWidth: 80,
+                minWidth: 60,
                 height: 40,
-                borderRadius: "20px",
+                borderRadius: 8,
                 fontWeight: 700,
                 backgroundColor: "#7153dd",
+                color: "#fff",
                 boxShadow: "0 4px 12px rgba(111, 94, 203, 0.6)",
                 "&:hover": {
                   backgroundColor: "#5d3dc7",
