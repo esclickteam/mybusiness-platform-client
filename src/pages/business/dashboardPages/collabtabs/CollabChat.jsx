@@ -2,11 +2,10 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import API from "../../../../api";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
-import SendIcon from '@mui/icons-material/Send';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
+import TextField from "@mui/material/TextField";
+import SendIcon from "@mui/icons-material/Send";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
@@ -61,7 +60,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
       }
-    } catch {
+    } catch (err) {
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
@@ -125,7 +124,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       setMessages([]);
       return;
     }
-
     const convId = selectedConversation._id;
     socketRef.current.emit("joinConversation", convId);
 
@@ -162,11 +160,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
         toBusinessId: fullMsg.toBusinessId || fullMsg.to,
       };
-
       if (normalized.conversationId === selectedConversation._id) {
         setMessages((prev) => uniqueMessages([...prev, normalized]));
       }
-
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === normalized.conversationId
@@ -521,54 +517,37 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             style={{
               display: "flex",
               gap: 8,
-              padding: 12,
+              padding: 16,
               borderTop: "1px solid #eee",
               alignItems: "center",
-              background: "#f1efff",
-              borderBottomLeftRadius: 14,
-              borderBottomRightRadius: 14,
             }}
           >
             <IconButton
+              size="medium"
               onClick={handleAttach}
               title="צרף קובץ"
-              size="medium"
               sx={{
-                backgroundColor: "white",
                 borderRadius: 2,
-                boxShadow: "0 2px 10px rgb(150 140 200 / 0.3)",
-                "&:hover": {
-                  backgroundColor: "#e0dfff",
-                },
+                boxShadow: "0 0 10px rgb(150 140 200 / 0.5)",
+                backgroundColor: "white",
               }}
             >
               <AttachFileIcon />
             </IconButton>
 
             <TextField
+              fullWidth
+              size="small"
               placeholder="כתוב הודעה..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               autoComplete="off"
-              size="small"
-              fullWidth
               sx={{
                 borderRadius: 2,
                 "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                  backgroundColor: "white",
-                  paddingRight: "10px",
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#7d63ff",
-                  borderWidth: 1.5,
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#5e43f3",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#4d30db",
-                  borderWidth: 2,
+                  paddingRight: "12px",
+                  paddingLeft: "12px",
                 },
               }}
             />
@@ -597,21 +576,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             >
               <SendIcon />
             </IconButton>
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-              accept="image/*,audio/*,video/*,application/pdf"
-            />
           </form>
         )}
 
         {onClose && (
-          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
+          <IconButton
+            sx={{ position: "absolute", top: 13, left: 18 }}
+            onClick={onClose}
+            size="small"
+          >
             ✖
-          </Button>
+          </IconButton>
         )}
       </Box>
     </Box>
