@@ -221,6 +221,37 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
+const handleNewMessage = useCallback((msg) => {
+    const fullMsg = msg.fullMsg || msg;
+    const normalized = {
+      ...fullMsg,
+      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+      toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+    };
+
+    if (normalized.conversationId === selectedConversation?._id) {
+      setMessages((prev) => uniqueMessages([...prev, normalized]));
+    }
+
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv._id === normalized.conversationId
+          ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
+          : conv
+      )
+    );
+  }, [selectedConversation, uniqueMessages]);
+
+  useEffect(() => {
+    if (!socketRef.current) return;
+
+    socketRef.current.on("newMessage", handleNewMessage);
+    return () => {
+      socketRef.current.off("newMessage", handleNewMessage);
+    };
+  }, [handleNewMessage]);
+
+
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) return;
 
