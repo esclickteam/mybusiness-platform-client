@@ -202,21 +202,18 @@ export default function BusinessChatTab({
       }
     };
 
-    const handleReadReceipt = ({ messageId, userId: readerId }) => {
-      dispatch({
-        type: "set",
-        payload: (prev) =>
-          prev.map((msg) => {
-            if (msg._id?.toString() === messageId?.toString()) {
-              const readBy = msg.readBy || [];
-              if (!readBy.some((id) => id.toString() === readerId.toString())) {
-                return { ...msg, readBy: [...readBy, readerId] };
-              }
-            }
-            return msg;
-          }),
-      });
-    };
+    const handleReadReceipt = ({ messageId, userId: readerId, readBy }) => {
+  setMessages((prev) =>
+    prev.map((msg) => {
+      if (msg._id === messageId) {
+        // עדכון עם מערך readBy שמגיע מהשרת, או השארת הקיים אם לא קיים
+        return { ...msg, readBy: readBy || msg.readBy || [] };
+      }
+      return msg;
+    })
+  );
+};
+
 
     socket.on("newMessage", handleNew);
     socket.on("typing", handleTyping);
