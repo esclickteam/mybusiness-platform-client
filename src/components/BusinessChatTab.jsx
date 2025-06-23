@@ -4,6 +4,8 @@ import "./BusinessChatTab.css";
 
 // Component for audio messages
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
+  if (!src) return null; // הגנה במקרה שאין מקור אודיו תקין
+
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -133,55 +135,61 @@ export default function BusinessChatTab({
 
   // 1. התחברות ל־conversation, סימון קריאה, וטענת היסטוריה
   useEffect(() => {
-  if (!socket || !conversationId) {
-    dispatch({ type: "set", payload: [] });
-    return;
-  }
-
-  socket.emit("joinConversation", conversationId, (ack) => {
-    if (!ack.ok) console.error("joinConversation failed");
-  });
-
-  socket.emit("markMessagesRead", conversationId, (resp) => {
-    if (!resp.ok) console.error("markMessagesRead failed");
-  });
-
-  socket.emit(
-    "getHistory",
-    { conversationId },
-    (res) => {
-      if (res.ok) {
-        const msgs = (res.messages || []).map((m) => ({
-          ...m,
-          timestamp:    m.createdAt,    // createdAt → timestamp
-          text:         m.content,      // content → text
-          fileUrl:      m.fileUrl,      // URL קבוע מהשרת
-          fileType:     m.fileType,
-          fileName:     m.fileName,
-          fileDuration: m.fileDuration,
-        }));
-        dispatch({ type: "set", payload: msgs });
-      } else {
-        console.error("getHistory failed");
-        dispatch({ type: "set", payload: [] });
-      }
+    if (!socket || !conversationId) {
+      dispatch({ type: "set", payload: [] });
+      return;
     }
-  );
 
-  return () => {
-    socket.emit("leaveConversation", conversationId);
-  };
-}, [socket, conversationId]);
+    socket.emit("joinConversation", conversationId, (ack) => {
+      if (!ack.ok) console.error("joinConversation failed");
+    });
 
+    socket.emit("markMessagesRead", conversationId, (resp) => {
+      if (!resp.ok) console.error("markMessagesRead failed");
+    });
 
+    socket.emit(
+      "getHistory",
+      { conversationId },
+      (res) => {
+        if (res.ok) {
+          const msgs = (res.messages || []).map((m) => ({
+            ...m,
+            timestamp: m.createdAt || new Date().toISOString(),
+            text: m.content || "",
+            fileUrl: m.fileUrl || null,
+            fileType: m.fileType || null,
+            fileName: m.fileName || "",
+            fileDuration: m.fileDuration || 0,
+          }));
+          dispatch({ type: "set", payload: msgs });
+        } else {
+          console.error("getHistory failed");
+          dispatch({ type: "set", payload: [] });
+        }
+      }
+    );
 
+    return () => {
+      socket.emit("leaveConversation", conversationId);
+    };
+  }, [socket, conversationId]);
 
   // 2. מאזינים ל־newMessage ו־typing
   useEffect(() => {
     if (!socket) return;
     const handleNew = (msg) => {
       if (msg.conversationId === conversationId) {
-        dispatch({ type: "append", payload: msg });
+        const safeMsg = {
+          ...msg,
+          timestamp: msg.createdAt || new Date().toISOString(),
+          text: msg.content || "",
+          fileUrl: msg.fileUrl || null,
+          fileType: msg.fileType || null,
+          fileName: msg.fileName || "",
+          fileDuration: msg.fileDuration || 0,
+        };
+        dispatch({ type: "append", payload: safeMsg });
       }
     };
     const handleTyping = ({ from }) => {
@@ -256,58 +264,58 @@ export default function BusinessChatTab({
   const handleAttach = () => {
     fileInputRef.current?.click();
   };
+
   const handleFileChange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file || !socket) return;
-  const tempId = uuidv4();
+    const file = e.target.files?.[0];
+    if (!file || !socket) return;
+    const tempId = uuidv4();
 
-  // אופטימיסטית: מציגים blob עד לקבלת ה־fileUrl מהשרת
-  const optimistic = {
-    _id: tempId,
-    conversationId,
-    from: businessId,
-    to: customerId,
-    fileUrl: URL.createObjectURL(file),
-    fileName: file.name,
-    fileType: file.type,
-    timestamp: new Date().toISOString(),
-    sending: true,
-    tempId,
-  };
-  dispatch({ type: "append", payload: optimistic });
+    // אופטימיסטית: מציגים blob עד לקבלת ה־fileUrl מהשרת
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(file),
+      fileName: file.name,
+      fileType: file.type,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+    dispatch({ type: "append", payload: optimistic });
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    socket.emit(
-      "sendFile",
-      {
-        conversationId,
-        from: businessId,
-        to: customerId,
-        fileName: file.name,
-        fileType: file.type,
-        buffer: reader.result,
-        tempId,
-      },
-      (ack) => {
-        // כאן אנחנו מקבלים fileUrl אמת מהשרת
-        dispatch({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: {
-              fileUrl: ack.message.fileUrl,  // <-- URL קבוע ששמרנו בשרת
-              sending: false,
-              failed: !ack.ok,
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendFile",
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          fileName: file.name,
+          fileType: file.type,
+          buffer: reader.result,
+          tempId,
+        },
+        (ack) => {
+          // כאן אנחנו מקבלים fileUrl אמת מהשרת
+          dispatch({
+            type: "updateStatus",
+            payload: {
+              id: tempId,
+              updates: {
+                fileUrl: ack.message?.fileUrl || null, // הגנה במקרה שהשרת לא שולח fileUrl
+                sending: false,
+                failed: !ack.ok,
+              },
             },
-          },
-        });
-      }
-    );
+          });
+        }
+      );
+    };
+    reader.readAsArrayBuffer(file);
   };
-  reader.readAsArrayBuffer(file);
-};
-
 
   const startRecording = async () => {
     if (recording || !navigator.mediaDevices) return;
@@ -431,25 +439,25 @@ export default function BusinessChatTab({
               }`}
             >
               {m.fileUrl ? (
-  m.fileType?.startsWith("audio") ? (
-    <WhatsAppAudioPlayer
-      src={m.fileUrl}
-      duration={m.fileDuration}
-    />
-  ) : m.fileType?.startsWith("image") ? (
-    <img
-      src={m.fileUrl}
-      alt={m.fileName}
-      style={{ maxWidth: 200, borderRadius: 8 }}
-    />
-  ) : (
-    <a href={m.fileUrl} download>
-      {m.fileName}
-    </a>
-  )
-) : (
-  <div className="text">{m.text}</div>
-)}
+                m.fileType?.startsWith("audio") ? (
+                  <WhatsAppAudioPlayer
+                    src={m.fileUrl}
+                    duration={m.fileDuration}
+                  />
+                ) : m.fileType?.startsWith("image") ? (
+                  <img
+                    src={m.fileUrl}
+                    alt={m.fileName}
+                    style={{ maxWidth: 200, borderRadius: 8 }}
+                  />
+                ) : (
+                  <a href={m.fileUrl} download>
+                    {m.fileName}
+                  </a>
+                )
+              ) : (
+                <div className="text">{m.text}</div>
+              )}
 
               <div className="meta">
                 <span className="time">
@@ -568,13 +576,9 @@ export default function BusinessChatTab({
               </button>
               <button
                 onClick={recording ? stopRecording : startRecording}
-                className={`recordBtn${
-                  recording ? " recording" : ""
-                }`}
+                className={`recordBtn${recording ? " recording" : ""}`}
                 disabled={sending}
-                title={
-                  recording ? "עצור הקלטה" : "התחל הקלטה"
-                }
+                title={recording ? "עצור הקלטה" : "התחל הקלטה"}
               >
                 🎤
               </button>
