@@ -37,9 +37,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
     `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
 
   const totalDots = 20;
-  const activeDot = duration
-    ? Math.floor((progress / duration) * totalDots)
-    : 0;
+  const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
 
   return (
     <div className={`custom-audio-player ${userAvatar ? "with-avatar" : "no-avatar"}`}>
@@ -75,9 +73,7 @@ function messagesReducer(state, action) {
       return action.payload;
     case "append": {
       const idx = state.findIndex(
-        (m) =>
-          m._id === action.payload._id ||
-          m.tempId === action.payload.tempId
+        (m) => m._id === action.payload._id || m.tempId === action.payload.tempId
       );
       if (idx !== -1) {
         const next = [...state];
@@ -108,8 +104,18 @@ export default function BusinessChatTab({
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+
+  // States for audio recording
+  const [recording, setRecording] = useState(false);
+  const [recordedBlob, setRecordedBlob] = useState(null);
+  const [timer, setTimer] = useState(0);
+
   const fileInputRef = useRef(null);
   const listRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const recordedChunks = useRef([]);
+  const timerRef = useRef(null);
 
   // helper להגנה על תאריכים לא תקינים
   const formatTime = (ts) => {
@@ -147,7 +153,7 @@ export default function BusinessChatTab({
           fileType: m.fileType || null,
           fileName: m.fileName || "",
           fileDuration: m.fileDuration || 0,
-          readBy: m.readBy || [], // חשוב להוסיף
+          readBy: m.readBy || [],
         }));
         dispatch({ type: "set", payload: msgs });
       } else {
@@ -196,7 +202,6 @@ export default function BusinessChatTab({
         payload: {
           id: messageId,
           updates: (prevMsg) => {
-            // prevMsg.readBy קיים במצב הקודם
             const readBy = prevMsg?.readBy || [];
             if (!readBy.includes(userId)) {
               return { readBy: [...readBy, userId] };
@@ -223,8 +228,7 @@ export default function BusinessChatTab({
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
-    const nearBottom =
-      el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
     if (nearBottom) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
@@ -234,9 +238,7 @@ export default function BusinessChatTab({
 
     // סמן הודעות שנשלחו לצד השני וטרם נקראו על ידך
     const unreadMessages = messages.filter(
-      (m) =>
-        m.from !== businessId && // מהצד השני
-        (!m.readBy || !m.readBy.includes(businessId)) // לא נקראו על ידך
+      (m) => m.from !== businessId && (!m.readBy || !m.readBy.includes(businessId))
     );
 
     unreadMessages.forEach((msg) => {
@@ -247,8 +249,7 @@ export default function BusinessChatTab({
     });
   }, [messages, socket, conversationId, businessId]);
 
-  // Handlers לשליחת הודעות, קבצים, הקלטות נשארים כפי שהיו (למעט מעט שינויים)
-
+  // Handlers להקלדה ושליחה
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
@@ -269,7 +270,7 @@ export default function BusinessChatTab({
       timestamp: new Date().toISOString(),
       sending: true,
       tempId,
-      readBy: [], // התחלת לא נקרא ע"י אף אחד
+      readBy: [],
     };
     dispatch({ type: "append", payload: optimistic });
     setInput("");
@@ -293,9 +294,146 @@ export default function BusinessChatTab({
     );
   };
 
-  // שאר הקוד נשאר זהה (קבצים, הקלטות, UI)
+  // --- פונקציות הקלטת אודיו ---
+  const startRecording = async () => {
+    if (recording || !navigator.mediaDevices) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      recordedChunks.current = [];
+      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
+      recorder.onstop = () => {
+        setRecordedBlob(new Blob(recordedChunks.current, { type: recorder.mimeType }));
+      };
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setRecording(true);
+      setTimer(0);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } catch (err) {
+      console.error("[startRecording] Recording error:", err);
+    }
+  };
 
-  // --- הצגת ההודעות כולל סימון קריאה ---
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    setRecording(false);
+    clearInterval(timerRef.current);
+  };
+
+  const discardRecording = () => {
+    setRecordedBlob(null);
+    setTimer(0);
+  };
+
+  const sendRecording = () => {
+    if (!recordedBlob || !socket) return;
+    const tempId = uuidv4();
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(recordedBlob),
+      fileName: `audio.${recordedBlob.type.split("/")[1]}`,
+      fileType: recordedBlob.type,
+      fileDuration: timer,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+      readBy: [],
+    };
+    dispatch({ type: "append", payload: optimistic });
+    setRecordedBlob(null);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendAudio",
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          buffer: reader.result,
+          fileType: recordedBlob.type,
+          duration: timer,
+          tempId,
+        },
+        (ack) => {
+          dispatch({
+            type: "updateStatus",
+            payload: {
+              id: tempId,
+              updates: {
+                ...(ack.message || {}),
+                sending: false,
+                failed: !ack.ok,
+              },
+            },
+          });
+        }
+      );
+    };
+    reader.readAsArrayBuffer(recordedBlob);
+  };
+
+  // Handler לקבצים
+  const handleAttach = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !socket) return;
+    const tempId = uuidv4();
+
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(file),
+      fileName: file.name,
+      fileType: file.type,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+      readBy: [],
+    };
+    dispatch({ type: "append", payload: optimistic });
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendFile",
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          fileName: file.name,
+          fileType: file.type,
+          buffer: reader.result,
+          tempId,
+        },
+        (ack) => {
+          dispatch({
+            type: "updateStatus",
+            payload: {
+              id: tempId,
+              updates: {
+                fileUrl: ack.message?.fileUrl || null,
+                sending: false,
+                failed: !ack.ok,
+              },
+            },
+          });
+        }
+      );
+    };
+    reader.readAsArrayBuffer(file);
+  };
 
   return (
     <div className="chat-container business">
@@ -304,9 +442,7 @@ export default function BusinessChatTab({
       </div>
 
       <div className="message-list" ref={listRef}>
-        {messages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
+        {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) =>
           m.system ? (
             <div key={m._id || `sys-${i}`} className="system-message">
@@ -336,9 +472,11 @@ export default function BusinessChatTab({
               <div className="meta">
                 <span className="time">{formatTime(m.timestamp)}</span>
 
-                {/* הצגת סימן קריאה של הודעה שנקראה על ידי הצד השני */}
+                {/* סימון קריאה */}
                 {m.from === businessId && m.readBy && m.readBy.includes(customerId) && (
-                  <span className="read-indicator" title="נקראה">✔✔</span>
+                  <span className="read-indicator" title="נקראה">
+                    ✔✔
+                  </span>
                 )}
 
                 {m.fileDuration && (
@@ -363,49 +501,24 @@ export default function BusinessChatTab({
           <div className="audio-preview-row">
             {recording ? (
               <>
-                <button
-                  onClick={stopRecording}
-                  className="recordBtn recording"
-                >
+                <button onClick={stopRecording} className="recordBtn recording">
                   ⏹️
                 </button>
-                <span className="preview-timer">{`${Math.floor(
-                  timer / 60
-                )
+                <span className="preview-timer">{`${Math.floor(timer / 60)
                   .toString()
-                  .padStart(2, "0")}:${(timer % 60)
-                  .toString()
-                  .padStart(2, "0")}`}</span>
-                <button
-                  onClick={discardRecording}
-                  className="preview-btn trash"
-                >
+                  .padStart(2, "0")}:${(timer % 60).toString().padStart(2, "0")}`}</span>
+                <button onClick={discardRecording} className="preview-btn trash">
                   🗑️
                 </button>
               </>
             ) : (
               <>
-                <audio
-                  src={URL.createObjectURL(recordedBlob)}
-                  controls
-                />
-                <div>{`משך: ${Math.floor(timer / 60)}:${(
-                  timer %
-                  60
-                )
-                  .toString()
-                  .padStart(2, "0")}`}</div>
-                <button
-                  onClick={sendRecording}
-                  className="send-btn"
-                  disabled={sending}
-                >
+                <audio src={URL.createObjectURL(recordedBlob)} controls />
+                <div>{`משך: ${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, "0")}`}</div>
+                <button onClick={sendRecording} className="send-btn" disabled={sending}>
                   שלח
                 </button>
-                <button
-                  onClick={discardRecording}
-                  className="discard-btn"
-                >
+                <button onClick={discardRecording} className="discard-btn">
                   מחק
                 </button>
               </>
@@ -418,11 +531,7 @@ export default function BusinessChatTab({
               placeholder="הקלד הודעה..."
               value={input}
               onChange={handleInput}
-              onKeyDown={(e) =>
-                e.key === "Enter" &&
-                !e.shiftKey &&
-                (e.preventDefault(), sendMessage())
-              }
+              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
               rows={1}
               disabled={sending}
             />
@@ -435,12 +544,7 @@ export default function BusinessChatTab({
               ◀
             </button>
             <div className="inputBar-right">
-              <button
-                onClick={handleAttach}
-                className="attachBtn"
-                disabled={sending}
-                title="צרף קובץ"
-              >
+              <button onClick={handleAttach} className="attachBtn" disabled={sending} title="צרף קובץ">
                 📎
               </button>
               <button
