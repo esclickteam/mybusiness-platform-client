@@ -1,12 +1,69 @@
-.profile-wrapper {
-  max-width: 720px; /* רוחב כללי של הפרופיל */
-  margin: 4rem auto;
-  padding: 3rem 3rem;
+/* ----- Layout כללי ----- */
+.page-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: #f0edf8;
+  min-height: 100vh;
+  box-sizing: border-box;
+  direction: rtl; /* תומך בעברית */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ----- סיידבר צדדי ----- */
+.sidebar {
+  width: 200px;
+  background: #6f5ecb;
+  border-radius: 20px;
+  padding: 1.5rem 1rem;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(111, 94, 203, 0.3);
+  user-select: none;
+  position: sticky;
+  top: 20px;
+  height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 1.4rem;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.15rem;
+  display: block;
+  padding: 0.4rem 0.6rem;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+  background-color: #523ead;
+  box-shadow: 0 5px 15px rgba(81, 58, 175, 0.6);
+}
+
+/* ----- תוכן ראשי ----- */
+.main-content {
+  flex-grow: 1;
+  max-width: 600px;
   background: linear-gradient(135deg, #ede9fb, #f9f7ff);
   border-radius: 40px;
-  box-shadow: 0 25px 50px rgba(120, 81, 169, 0.2);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  direction: rtl;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 25px 50px rgba(120, 81, 169, 0.15);
+}
+
+/* ----- פרופיל עסקי ----- */
+.profile-wrapper {
   color: #4a3f78;
   user-select: none;
 }
@@ -28,7 +85,7 @@
   box-shadow: 0 30px 60px rgba(120, 81, 169, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 3.5rem;
+  gap: 3rem;
 }
 
 .profile-top {
@@ -124,10 +181,10 @@
 }
 
 .profile-section {
-  width: 100%;           /* תופס כל רוחב פנימי */
-  max-width: 480px;      /* רוחב אחיד ומוגבל */
-  min-height: 130px;     /* גובה מינימום אחיד */
-  margin: 0 auto;        /* מרכז בתוך הקונטיינר */
+  width: 100%;
+  max-width: 480px;
+  min-height: 130px;
+  margin: 0 auto;
   padding: 2rem 2.5rem;
   background-color: #f4f1fc;
   border-radius: 20px;
@@ -137,7 +194,6 @@
   color: #5a4e90;
   font-weight: 600;
   user-select: text;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -182,93 +238,145 @@
   margin-right: 0.5rem;
 }
 
-/* modal */
+/* ----- מודאל עריכה ----- */
 .modal-box {
   direction: rtl;
-  background: white;
-  border-radius: 35px;
-  padding: 3rem 3.5rem;
-  max-width: 580px;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 520px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   margin: 5% auto;
-  box-shadow: 0 25px 55px rgba(120, 81, 169, 0.35);
-  outline: none;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #483d7a;
-}
-
-.modal-box h2 {
-  text-align: center;
-  font-weight: 900;
-  font-size: 2.3rem;
-  margin-bottom: 2rem;
-  text-shadow: 0 0 10px #c3bbff;
+  box-shadow: 0 15px 40px rgba(101, 74, 224, 0.35);
 }
 
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
+  gap: 1.2rem;
+  padding: 1rem 0;
 }
 
 .profile-form label {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.1rem;
-  color: #5a4e90;
+  color: #4a3f78;
 }
 
 .profile-form input,
 .profile-form textarea {
   width: 100%;
-  padding: 1.2rem 1.4rem;
-  font-size: 1.15rem;
-  border-radius: 20px;
-  border: 2px solid #c3bbff;
-  background-color: #f9f8ff;
-  transition: all 0.35s ease;
-  font-family: inherit;
-  resize: vertical;
-  font-weight: 600;
-  color: #4b4383;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1.5px solid #bdb4e8;
+  background-color: #f9f9ff;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .profile-form input:focus,
 .profile-form textarea:focus {
   border-color: #7153dd;
-  background-color: #fff;
+  background-color: white;
   outline: none;
-  box-shadow: 0 0 18px rgba(113, 83, 221, 0.55);
+  box-shadow: 0 0 0 3px rgba(113, 83, 221, 0.2);
 }
 
 .profile-form textarea {
-  min-height: 120px;
+  resize: vertical;
+  min-height: 80px;
 }
 
 .modal-buttons {
   display: flex;
   justify-content: center;
-  gap: 2.5rem;
-  margin-top: 2.5rem;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.loading-text {
-  text-align: center;
-  margin: 5rem 0;
-  font-size: 1.7rem;
-  color: #7153dd;
-  font-weight: 700;
+/* ----- מודאל צ'אט ----- */
+.chat-modal {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
 }
-.modal-box {
-  direction: rtl;
+
+.chat-box {
+  width: 100%;
+  max-width: 900px;
   background: white;
-  border-radius: 35px;
-  padding: 3rem 3.5rem;
-  max-width: 580px;
-  max-height: 85vh;      /* הוסף את השורה הזו */
-  margin: 5% auto;
-  box-shadow: 0 25px 55px rgba(120, 81, 169, 0.35);
+  border-radius: 20px;
+  box-shadow: 0 30px 50px rgba(120, 81, 169, 0.15);
+  padding: 2rem;
   outline: none;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #483d7a;
-  overflow-y: auto;      /* הוסף את השורה הזו */
-  box-sizing: border-box;
+}
+
+/* ----- רספונסיביות ----- */
+@media (max-width: 900px) {
+  .page-container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 1rem 0.5rem;
+    border-radius: 16px;
+  }
+
+  .sidebar ul li {
+    display: inline-block;
+    margin: 0 0.8rem 0 0;
+  }
+
+  .sidebar ul li a {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .main-content {
+    max-width: 100%;
+    padding: 1.5rem 1rem;
+    border-radius: 24px;
+  }
+
+  .profile-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .profile-top {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .profile-logo-label {
+    width: 120px;
+    height: 120px;
+  }
+
+  .profile-logo {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 500px) {
+  .profile-business-name {
+    font-size: 2rem;
+  }
+
+  .profile-category {
+    font-size: 1.1rem;
+  }
+
+  .profile-section {
+    padding: 1.5rem 1rem;
+    font-size: 1.1rem;
+    min-height: 100px;
+  }
 }
