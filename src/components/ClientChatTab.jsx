@@ -244,19 +244,24 @@ export default function ClientChatTab({
   }, [messages]);
 
   useEffect(() => {
-    if (!socket || !messages.length) return;
+  if (!socket || !messages.length) return;
 
-    const unreadMessages = messages.filter(
-      (m) => m.from !== userId && (!m.readBy || !m.readBy.some(id => id.toString() === userId.toString()))
-    );
+  // סמן הודעות שהגיעו מהצד השני וטרם נקראו על ידך
+  const unreadMessages = messages.filter(
+    (m) => m.from !== userId && (!m.readBy || !m.readBy.some(id => id.toString() === userId.toString()))
+  );
 
+  // סימון קריאה רק כאשר המשתמש באמת נכנס לצ'אט (אפשר להוסיף תנאי נוסף אם רוצים)
+  if (unreadMessages.length > 0) {
     unreadMessages.forEach((msg) => {
       socket.emit("markMessageRead", {
         conversationId,
         messageId: msg._id,
       });
     });
-  }, [messages, socket, conversationId, userId]);
+  }
+}, [messages, socket, conversationId, userId]);
+
 
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
