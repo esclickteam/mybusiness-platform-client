@@ -451,21 +451,22 @@ export default function ClientChatTab({
 
             {/* סימון קריאה תמיד עם שני וים */}
             {m.from === userId && (
-              <span
-                className={`read-indicator ${
-                  m.readBy && m.readBy.some(id => id.toString() === businessId.toString())
-                    ? "read"
-                    : "sent"
-                }`}
-                title={
-                  m.readBy && m.readBy.some(id => id.toString() === businessId.toString())
-                    ? "נקראה"
-                    : "נשלחה"
-                }
-              >
-                ✔✔
-              </span>
-            )}
+  <span
+    className={`read-indicator ${
+      m.readBy && m.readBy.some(id => id.toString() === businessId.toString())
+        ? "read"   // וי כחול אם העסק קרא
+        : "sent"   // וי אפור אם לא קרא
+    }`}
+    title={
+      m.readBy && m.readBy.some(id => id.toString() === businessId.toString())
+        ? "נקראה"
+        : "נשלחה"
+    }
+  >
+    ✔✔
+  </span>
+)}
+
 
             <div className="meta">
               <span className="time">
