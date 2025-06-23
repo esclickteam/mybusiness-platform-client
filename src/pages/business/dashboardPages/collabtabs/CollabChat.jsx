@@ -51,8 +51,6 @@ function getOtherBusinessId(conv, myBusinessId) {
   return "";
 }
 
-
-
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
@@ -227,7 +225,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!socketRef.current || !selectedConversation) return;
 
     const handler = (msg) => {
-      console.log("Received newMessage:", msg);
+      console.log("Received newMessage:", JSON.stringify(msg));
       const fullMsg = msg.fullMsg || msg;
       const normalized = {
         ...fullMsg,
@@ -273,28 +271,27 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
     console.log("Raw otherId from getOtherBusinessId:", otherIdRaw);
 
-if (!otherIdRaw) {
-  console.warn("לא נמצא מזהה הנמען");
-  return;
-}
-const otherId =
-  typeof otherIdRaw === "string"
-    ? otherIdRaw
-    : otherIdRaw._id
-    ? otherIdRaw._id.toString()
-    : otherIdRaw.toString();
+    if (!otherIdRaw) {
+      console.warn("לא נמצא מזהה הנמען");
+      return;
+    }
+    const otherId =
+      typeof otherIdRaw === "string"
+        ? otherIdRaw
+        : otherIdRaw._id
+        ? otherIdRaw._id.toString()
+        : otherIdRaw.toString();
 
     console.log("Converted otherId to string:", otherId);
 
+    const payload = {
+      conversationId: selectedConversation._id.toString(),
+      from: myBusinessId.toString(),
+      to: otherId,
+      text: input.trim(),
+    };
 
-const payload = {
-  conversationId: selectedConversation._id.toString(),
-  from: myBusinessId.toString(),
-  to: otherId,
-  text: input.trim(),
-};
-
-console.log("Payload to send:", payload);
+    console.log("Payload to send:", payload);
 
     const optimistic = {
       ...payload,
