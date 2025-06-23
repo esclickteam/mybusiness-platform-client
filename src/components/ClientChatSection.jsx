@@ -11,7 +11,7 @@ export default function ClientChatSection() {
   const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
-  const [businessName, setBusinessName] = useState("");
+  const [otherPartyName, setOtherPartyName] = useState(""); // שמור כאן את שם הצד השני
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
@@ -75,7 +75,7 @@ export default function ClientChatSection() {
     );
   }, [businessId]);
 
-  // טעינת שם העסק אחרי שיש conversationId
+  // טעינת שם הצד השני אחרי שיש conversationId
   useEffect(() => {
     if (!socketRef.current || !conversationId || !userId) return;
 
@@ -88,10 +88,11 @@ export default function ClientChatSection() {
             [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
           );
           if (conv) {
-            setBusinessName(conv.businessName || "");
+            // שמירת השם של הצד השני בשיחה
+            setOtherPartyName(conv.otherParty?.name || "");
             setError("");
           } else {
-            setBusinessName("");
+            setOtherPartyName("");
           }
         } else {
           setError("שגיאה בטעינת שם העסק");
@@ -109,15 +110,14 @@ export default function ClientChatSection() {
 
     // טעינת ההיסטוריה הראשונית
     socketRef.current.emit("getHistory", { conversationId }, (res) => {
-  if (res.ok) {
-    // תיקון: לוודא שההודעות הן מערך
-    setMessages(Array.isArray(res.messages) ? res.messages : []);
-    setError("");
-  } else {
-    setMessages([]);
-    setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
-  }
-});
+      if (res.ok) {
+        setMessages(Array.isArray(res.messages) ? res.messages : []);
+        setError("");
+      } else {
+        setMessages([]);
+        setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
+      }
+    });
 
     // מטפל בהודעות חדשות
     const handleNewMessage = (msg) => {
@@ -187,7 +187,7 @@ export default function ClientChatSection() {
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
-          <div className={styles.convItemActive}>{businessName || businessId}</div>
+          <div className={styles.convItemActive}>{otherPartyName || businessId}</div>
         </aside>
         <section className={styles.chatArea}>
           {conversationId ? (
