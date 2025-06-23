@@ -37,6 +37,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  const selectedConversationRef = useRef(null);
+
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
 
   const refreshAccessToken = useCallback(async () => {
@@ -54,6 +56,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
+
+  // Sync the ref with the current selectedConversation
+  useEffect(() => {
+    selectedConversationRef.current = selectedConversation;
+  }, [selectedConversation]);
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
@@ -78,14 +85,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         messages: Array.isArray(c.messages) ? c.messages : [],
       }));
       setConversations(convs);
-      if (!selectedConversation && convs.length > 0) {
+      if (!selectedConversationRef.current && convs.length > 0) {
         setSelectedConversation(convs[0]);
       }
     } catch (err) {
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
-  }, [refreshAccessToken, selectedConversation]);
+  }, [refreshAccessToken]);
 
   useEffect(() => {
     if (!myBusinessId) return;
@@ -146,11 +153,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       return;
     }
     const convId = selectedConversation._id;
+
     const joinHandler = () => {
-      socketRef.current.emit("joinConversation", convId);
+      // Always use the ref here to get latest selectedConversation
+      socketRef.current.emit("joinConversation", selectedConversationRef.current._id);
     };
 
-    // הצטרפות ל-room בפעם הראשונה ובכל התחברות מחדש
     socketRef.current.on("connect", joinHandler);
     joinHandler();
 
@@ -187,7 +195,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         toBusinessId: fullMsg.toBusinessId || fullMsg.to,
       };
 
-      if (normalized.conversationId === selectedConversation?._id) {
+      if (normalized.conversationId === selectedConversationRef.current?._id) {
         setMessages((prev) => uniqueMessages([...prev, normalized]));
       }
 
@@ -199,7 +207,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         )
       );
     },
-    [selectedConversation, uniqueMessages]
+    [uniqueMessages]
   );
 
   useEffect(() => {
@@ -217,9 +225,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const sendMessage = () => {
     if (isSending) return;
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+    if (!input.trim() || !selectedConversationRef.current || !socketRef.current) return;
 
-    const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
+    const otherIdRaw = getOtherBusinessId(selectedConversationRef.current, myBusinessId);
     if (!otherIdRaw) return;
     const otherId =
       typeof otherIdRaw === "string"
@@ -229,7 +237,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         : otherIdRaw.toString();
 
     const payload = {
-      conversationId: selectedConversation._id.toString(),
+      conversationId: selectedConversationRef.current._id.toString(),
       from: myBusinessId.toString(),
       to: otherId,
       text: input.trim(),
@@ -275,9 +283,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file || !socketRef.current || !selectedConversation) return;
+    if (!file || !socketRef.current || !selectedConversationRef.current) return;
 
-    const toRaw = getOtherBusinessId(selectedConversation, myBusinessId);
+    const toRaw = getOtherBusinessId(selectedConversationRef.current, myBusinessId);
     if (!toRaw) return;
 
     const toBusinessId =
@@ -293,7 +301,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const optimisticMsg = {
       _id: tempId,
-      conversationId: selectedConversation._id,
+      conversationId: selectedConversationRef.current._id,
       fromBusinessId: myBusinessId,
       toBusinessId,
       fileUrl: URL.createObjectURL(file),
@@ -307,7 +315,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     setConversations((prevConvs) =>
       prevConvs.map((conv) => {
-        if (conv._id === selectedConversation._id) {
+        if (conv._id === selectedConversationRef.current._id) {
           const msgs = Array.isArray(conv.messages) ? conv.messages : [];
           return {
             ...conv,
@@ -323,7 +331,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       socketRef.current.emit(
         "sendFile",
         {
-          conversationId: selectedConversation._id,
+          conversationId: selectedConversationRef.current._id,
           from: myBusinessId,
           to: toBusinessId,
           fileType: file.type,
@@ -338,7 +346,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             setMessages((prev) => prev.filter((m) => m._id !== tempId));
             setConversations((prevConvs) =>
               prevConvs.map((conv) => {
-                if (conv._id === selectedConversation._id) {
+                if (conv._id === selectedConversationRef.current._id) {
                   const msgs = Array.isArray(conv.messages)
                     ? conv.messages.filter((m) => m._id !== tempId)
                     : [];
@@ -358,7 +366,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             );
             setConversations((prevConvs) =>
               prevConvs.map((conv) => {
-                if (conv._id === selectedConversation._id) {
+                if (conv._id === selectedConversationRef.current._id) {
                   const msgs = Array.isArray(conv.messages)
                     ? conv.messages.filter((m) => m._id !== tempId)
                     : [];
