@@ -1,39 +1,41 @@
 .profile-wrapper {
-  max-width: 650px;
+  max-width: 1100px; /* רחב יותר */
   margin: 4rem auto;
-  padding: 2rem;
-  background: linear-gradient(135deg, #e0d4f6, #f6f0fc);
-  border-radius: 30px;
-  box-shadow: 0 15px 30px rgba(120, 81, 169, 0.25);
+  padding: 3rem 4rem;
+  background: linear-gradient(135deg, #ede9fb, #f9f7ff);
+  border-radius: 40px;
+  box-shadow: 0 25px 50px rgba(120, 81, 169, 0.2);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
-  color: #4b367c;
+  color: #4a3f78;
   user-select: none;
 }
 
 .profile-header {
   text-align: center;
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 900;
-  margin-bottom: 2.5rem;
-  text-shadow: 0 0 10px #a085e2;
+  margin-bottom: 3rem;
+  letter-spacing: 1.2px;
+  color: #6f5ecb;
+  text-shadow: 0 0 15px #a9a0f5;
 }
 
 .profile-card {
   background: white;
-  border-radius: 25px;
-  padding: 2rem 3rem;
-  box-shadow: 0 10px 30px rgba(120, 81, 169, 0.2);
+  border-radius: 30px;
+  padding: 3rem 4rem;
+  box-shadow: 0 30px 60px rgba(120, 81, 169, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3.5rem;
 }
 
 .profile-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
@@ -42,19 +44,19 @@
   flex-shrink: 0;
   border-radius: 100%;
   overflow: hidden;
-  width: 130px;
-  height: 130px;
-  box-shadow: 0 4px 20px rgba(120, 81, 169, 0.3);
-  transition: transform 0.3s ease;
+  width: 150px;
+  height: 150px;
+  box-shadow: 0 6px 30px rgba(120, 81, 169, 0.35);
+  transition: transform 0.4s ease;
 }
 
 .profile-logo-label:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .profile-logo {
-  width: 130px;
-  height: 130px;
+  width: 150px;
+  height: 150px;
   border-radius: 100%;
   object-fit: cover;
   display: block;
@@ -63,166 +65,170 @@
 .profile-main-info {
   flex-grow: 1;
   text-align: right;
-  padding-right: 25px;
+  padding-right: 30px;
 }
 
 .profile-business-name {
-  font-size: 2.3rem;
+  font-size: 2.8rem;
   font-weight: 900;
-  margin: 0 0 0.4rem 0;
-  color: #5a3ea0;
-  text-shadow: 0 0 5px #7e63d4;
+  margin: 0 0 0.5rem 0;
+  color: #6747c7;
+  text-shadow: 0 0 10px #8f7ae9;
 }
 
 .profile-category {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #8f7ac8;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #a594e9;
 }
 
 .profile-actions {
   display: flex;
-  gap: 15px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
 .btn-primary,
 .btn-secondary {
-  padding: 0.9rem 2.2rem;
+  padding: 1rem 2.6rem;
   border-radius: 40px;
-  font-weight: 700;
-  font-size: 1.15rem;
+  font-weight: 800;
+  font-size: 1.2rem;
   cursor: pointer;
   border: none;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.35s ease, box-shadow 0.35s ease;
   user-select: none;
-  box-shadow: 0 6px 14px rgba(120, 81, 169, 0.3);
+  box-shadow: 0 8px 25px rgba(120, 81, 169, 0.35);
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #6b4ed9, #8456f3);
+  background: linear-gradient(90deg, #7153dd, #9a7ff8);
   color: white;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(90deg, #573abf, #6b4ed9);
+  background: linear-gradient(90deg, #5d3dc7, #7d66e6);
+  box-shadow: 0 10px 30px rgba(101, 74, 224, 0.7);
 }
 
 .btn-secondary {
-  background: #e5e2f9;
-  color: #5a3ea0;
-  box-shadow: 0 4px 10px rgba(90, 62, 160, 0.25);
+  background: #e3dffc;
+  color: #6f5ecb;
+  box-shadow: 0 6px 15px rgba(111, 94, 203, 0.3);
 }
 
 .btn-secondary:hover {
-  background: #d6cff5;
+  background: #c7bcf8;
+  box-shadow: 0 7px 18px rgba(111, 94, 203, 0.6);
 }
 
 .profile-section {
-  border-top: 1.5px solid #e8e4f7;
-  padding-top: 1.6rem;
-  color: #5a3ea0;
-  user-select: text;
+  border-top: 2px solid #dfd9fb;
+  padding-top: 1.8rem;
+  color: #5a4e90;
   font-weight: 600;
+  user-select: text;
+  font-size: 1.3rem;
 }
 
 .profile-section h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
-  text-shadow: 0 0 3px #bfb6f6;
+  margin-bottom: 1rem;
+  font-weight: 800;
+  font-size: 1.7rem;
+  color: #5f53a5;
+  text-shadow: 0 0 6px #b3aaff;
 }
 
 .profile-section p {
-  font-size: 1.15rem;
-  color: #423971;
-  line-height: 1.6;
+  font-size: 1.2rem;
+  color: #4e4580;
+  line-height: 1.75;
   margin: 0;
   font-weight: 400;
 }
 
 .profile-collab-list {
-  padding-inline-start: 1.8rem;
+  padding-inline-start: 2rem;
   list-style-type: disc;
-  color: #473f82;
-  font-size: 1.15rem;
-  line-height: 1.7;
+  color: #564f8e;
+  font-size: 1.2rem;
+  line-height: 1.8;
   margin: 0;
 }
 
-/* Modal */
+/* modal */
 .modal-box {
   direction: rtl;
   background: white;
-  border-radius: 25px;
-  padding: 2.5rem 3rem;
-  max-width: 500px;
+  border-radius: 35px;
+  padding: 3rem 3.5rem;
+  max-width: 580px;
   margin: 5% auto;
-  box-shadow: 0 15px 40px rgba(120, 81, 169, 0.35);
+  box-shadow: 0 25px 55px rgba(120, 81, 169, 0.35);
   outline: none;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #4a3973;
+  color: #483d7a;
 }
 
 .modal-box h2 {
   text-align: center;
   font-weight: 900;
-  font-size: 2rem;
-  margin-bottom: 1.8rem;
-  text-shadow: 0 0 7px #9d8aed;
+  font-size: 2.3rem;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px #c3bbff;
 }
 
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 1.8rem;
 }
 
 .profile-form label {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #5a3ea0;
+  color: #5a4e90;
 }
 
 .profile-form input,
 .profile-form textarea {
   width: 100%;
-  padding: 1rem 1.2rem;
-  font-size: 1.1rem;
-  border-radius: 18px;
-  border: 2px solid #b9aeee;
-  background-color: #f6f5fc;
-  transition: all 0.3s ease;
+  padding: 1.2rem 1.4rem;
+  font-size: 1.15rem;
+  border-radius: 20px;
+  border: 2px solid #c3bbff;
+  background-color: #f9f8ff;
+  transition: all 0.35s ease;
   font-family: inherit;
   resize: vertical;
   font-weight: 600;
-  color: #4a3f78;
+  color: #4b4383;
 }
 
 .profile-form input:focus,
 .profile-form textarea:focus {
-  border-color: #6b4ed9;
-  background-color: white;
+  border-color: #7153dd;
+  background-color: #fff;
   outline: none;
-  box-shadow: 0 0 15px rgba(107, 78, 217, 0.5);
+  box-shadow: 0 0 18px rgba(113, 83, 221, 0.55);
 }
 
 .profile-form textarea {
-  min-height: 110px;
+  min-height: 120px;
 }
 
-/* modal buttons */
 .modal-buttons {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin-top: 2rem;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
 }
 
 .loading-text {
   text-align: center;
-  margin: 4rem 0;
-  font-size: 1.6rem;
-  color: #6b4ed9;
+  margin: 5rem 0;
+  font-size: 1.7rem;
+  color: #7153dd;
   font-weight: 700;
 }
