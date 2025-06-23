@@ -5,7 +5,6 @@ import React, {
   useReducer,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
-import API from "../api";
 import "./BusinessChatTab.css";
 
 // Component for audio messages
@@ -33,8 +32,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (playing) audio.pause();
-    else audio.play();
+    playing ? audio.pause() : audio.play();
     setPlaying((p) => !p);
   };
 
@@ -61,7 +59,10 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
       </button>
       <div className="progress-dots">
         {[...Array(totalDots)].map((_, i) => (
-          <div key={i} className={`dot${i <= activeDot ? " active" : ""}`} />
+          <div
+            key={i}
+            className={`dot${i <= activeDot ? " active" : ""}`}
+          />
         ))}
       </div>
       <div className="time-display">
@@ -72,18 +73,14 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
-// Reducer for message state, now with prepend for pagination
+// Reducer for message state
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
       return action.payload;
-    case "prepend":
-      return [...action.payload, ...state];
     case "append": {
       const idx = state.findIndex(
-        (m) =>
-          m._id === action.payload._id ||
-          (m.tempId && m.tempId === action.payload.tempId)
+        (m) => m._id === action.payload._id || m.tempId === action.payload.tempId
       );
       if (idx !== -1) {
         const next = [...state];
@@ -112,213 +109,34 @@ export default function BusinessChatTab({
   initialMessages = [],
   onMessagesChange,
 }) {
-  // --- messages state + pagination state ---
   const [messages, dispatchMessages] = useReducer(
     messagesReducer,
     initialMessages
   );
-  const [page, setPage]             = useState(0);
-  const [limit]                     = useState(20);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  // Sync initialMessages into reducer
   useEffect(() => {
     dispatchMessages({ type: "set", payload: initialMessages });
   }, [initialMessages]);
-
-  // Inform parent on messages change
   useEffect(() => {
     onMessagesChange?.(messages);
   }, [messages, onMessagesChange]);
 
-  // Fetch paginated history
-  const fetchHistory = async (pageToLoad = 0) => {
-    if (!conversationId) return;
-    setLoadingMore(true);
-    try {
-      const { data } = await API.get(
-        `/messages/${conversationId}/history?page=${pageToLoad}&limit=${limit}`
-      );
-      setTotalPages(data.totalPages);
-      if (pageToLoad === 0) {
-        dispatchMessages({ type: "set", payload: data.messages });
-      } else {
-        dispatchMessages({ type: "prepend", payload: data.messages });
-      }
-      setPage(data.page);
-    } catch (err) {
-      console.error("Error fetching history:", err);
-    } finally {
-      setLoadingMore(false);
-    }
-  };
-
-  // On conversation change, load page 0
-  useEffect(() => {
-    fetchHistory(0);
-  }, [conversationId]);
-
-  // Socket real-time handlers
-  useEffect(() => {
-    if (!socket || !conversationId) return;
-    const handleNew = (msg) => {
-      if (msg.conversationId === conversationId) {
-        dispatchMessages({ type: "append", payload: msg });
-      }
-    };
-    const handleTyping = ({ from }) => {
-      if (from === customerId) {
-        setIsTyping(true);
-        clearTimeout(handleTyping._t);
-        handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
-      }
-    };
-    socket.on("newMessage", handleNew);
-    socket.on("typing", handleTyping);
-    return () => {
-      socket.off("newMessage", handleNew);
-      socket.off("typing", handleTyping);
-      clearTimeout(handleTyping._t);
-    };
-  }, [socket, conversationId, customerId]);
-
-  // Auto-scroll when near bottom
-  const listRef = useRef(null);
-  useEffect(() => {
-    const el = listRef.current;
-    if (!el) return;
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-    if (nearBottom) el.scrollTop = el.scrollHeight;
-  }, [messages, isTyping]);
-
-  // Load more on scroll to top
-  const handleScroll = (e) => {
-    const el = e.target;
-    if (
-      el.scrollTop < 100 &&
-      page < totalPages - 1 &&
-      !loadingMore
-    ) {
-      fetchHistory(page + 1);
-    }
-  };
-
-  // Typing indicator
-  const [isTyping, setIsTyping] = useState(false);
-
-  // Text input state
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
-  const handleInput = (e) => {
-    setInput(e.target.value);
-    socket?.emit("typing", { conversationId, from: businessId });
-  };
-
-  // Send text message
-  const sendMessage = () => {
-    if (sending) return;
-    const text = input.trim();
-    if (!text || !socket) return;
-    if (!conversationId || !businessId || !customerId) {
-      alert("לא ניתן לשלוח הודעה: פרטים חסרים.");
-      return;
-    }
-    setSending(true);
-    const tempId = uuidv4();
-    const optimistic = {
-      _id: tempId,
-      tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      content: text,
-      timestamp: new Date().toISOString(),
-      sending: true,
-    };
-    dispatchMessages({ type: "append", payload: optimistic });
-    setInput("");
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: businessId, to: customerId, content: text, tempId },
-      (ack) => {
-        setSending(false);
-        dispatchMessages({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: {
-              ...(ack.message || {}),
-              sending: false,
-              failed: !ack.ok,
-            },
-          },
-        });
-      }
-    );
-  };
-
-  // File attach
   const fileInputRef = useRef(null);
-  const handleAttach = () => fileInputRef.current?.click();
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !socket) return;
-    const tempId = uuidv4();
-    const optimistic = {
-      _id: tempId,
-      tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: URL.createObjectURL(file),
-      fileName: file.name,
-      fileType: file.type,
-      timestamp: new Date().toISOString(),
-      sending: true,
-    };
-    dispatchMessages({ type: "append", payload: optimistic });
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit(
-        "sendFile",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          fileName: file.name,
-          fileType: file.type,
-          buffer: reader.result,
-          tempId,
-        },
-        (ack) => {
-          dispatchMessages({
-            type: "updateStatus",
-            payload: {
-              id: tempId,
-              updates: {
-                ...(ack.message || {}),
-                sending: false,
-                failed: !ack.ok,
-              },
-            },
-          });
-        }
-      );
-    };
-    reader.readAsArrayBuffer(file);
+  const handleAttach = () => {
+    fileInputRef.current?.click();
   };
 
-  // Audio recording
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
   const mediaRecorderRef = useRef(null);
-  const mediaStreamRef   = useRef(null);
-  const recordedChunks   = useRef([]);
-  const timerRef         = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const recordedChunks = useRef([]);
+  const timerRef = useRef(null);
 
   const startRecording = async () => {
     if (recording || !navigator.mediaDevices) return;
@@ -354,12 +172,137 @@ export default function BusinessChatTab({
     setTimer(0);
   };
 
+  useEffect(() => {
+    if (!socket || !conversationId) return;
+
+    const handleNew = (msg) => {
+      if (msg.conversationId === conversationId) {
+        dispatchMessages({ type: "append", payload: msg });
+      }
+    };
+    const handleTyping = ({ from }) => {
+      if (from === customerId) {
+        setIsTyping(true);
+        clearTimeout(handleTyping._t);
+        handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
+      }
+    };
+
+    socket.on("newMessage", handleNew);
+    socket.on("typing", handleTyping);
+    return () => {
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
+      clearTimeout(handleTyping._t);
+    };
+  }, [socket, conversationId, customerId]);
+
+  const listRef = useRef(null);
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    if (nearBottom) el.scrollTop = el.scrollHeight;
+  }, [messages, isTyping]);
+
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    socket?.emit("typing", { conversationId, from: businessId });
+  };
+
+  const sendMessage = () => {
+  if (sending) return;
+  const text = input.trim();
+  if (!text || !socket) return;
+
+  // בדיקת שדות חובה לפני שליחה
+  if (!conversationId || !businessId || !customerId) {
+    console.warn("[sendMessage] Missing required fields:", { conversationId, businessId, customerId });
+    alert("לא ניתן לשלוח הודעה: פרטים חסרים.");
+    return;
+  }
+
+  console.log("[sendMessage] Sending message with data:", {
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+  });
+
+  setSending(true);
+  const tempId = uuidv4();
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
+  };
+  dispatchMessages({ type: "append", payload: optimistic });
+  setInput("");
+
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: businessId, to: customerId, text, tempId },
+    (ack) => {
+      setSending(false);
+      if (!ack.ok) {
+        console.warn("[sendMessage] Message sending failed:", ack.error);
+      }
+      dispatchMessages({
+        type: "updateStatus",
+        payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
+      });
+    }
+  );
+};
+
+
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !socket) return;
+    const tempId = uuidv4();
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(file),
+      fileName: file.name,
+      fileType: file.type,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+    dispatchMessages({ type: "append", payload: optimistic });
+    const reader = new FileReader();
+    reader.onload = () => {
+      socket.emit(
+        "sendFile",
+        { conversationId, from: businessId, to: customerId, fileName: file.name, fileType: file.type, buffer: reader.result, tempId },
+        (ack) => {
+          if (!ack.ok) {
+            console.warn("[sendFile] File sending failed:", ack.error);
+          }
+          dispatchMessages({
+            type: "updateStatus",
+            payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
+          });
+        }
+      );
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
   const sendRecording = () => {
     if (!recordedBlob || !socket) return;
     const tempId = uuidv4();
     const optimistic = {
       _id: tempId,
-      tempId,
       conversationId,
       from: businessId,
       to: customerId,
@@ -369,6 +312,7 @@ export default function BusinessChatTab({
       fileDuration: timer,
       timestamp: new Date().toISOString(),
       sending: true,
+      tempId,
     };
     dispatchMessages({ type: "append", payload: optimistic });
     setRecordedBlob(null);
@@ -376,26 +320,14 @@ export default function BusinessChatTab({
     reader.onload = () => {
       socket.emit(
         "sendAudio",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          buffer: reader.result,
-          fileType: recordedBlob.type,
-          duration: timer,
-          tempId,
-        },
+        { conversationId, from: businessId, to: customerId, buffer: reader.result, fileType: recordedBlob.type, duration: timer, tempId },
         (ack) => {
+          if (!ack.ok) {
+            console.warn("[sendAudio] Audio sending failed:", ack.error);
+          }
           dispatchMessages({
             type: "updateStatus",
-            payload: {
-              id: tempId,
-              updates: {
-                ...(ack.message || {}),
-                sending: false,
-                failed: !ack.ok,
-              },
-            },
+            payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
           });
         }
       );
@@ -403,85 +335,44 @@ export default function BusinessChatTab({
     reader.readAsArrayBuffer(recordedBlob);
   };
 
-  // Render
   return (
     <div className="chat-container business">
       <div className="chat-header">
         <h3>{customerName || "לקוח"}</h3>
       </div>
-
-      <div
-        className="message-list"
-        ref={listRef}
-        onScroll={handleScroll}
-      >
-        {/* Load more button */}
-        {page < totalPages - 1 && (
-          <button
-            className="load-more-btn"
-            onClick={() => fetchHistory(page + 1)}
-            disabled={loadingMore}
+      <div className="message-list" ref={listRef}>
+        {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {messages.map((m, i) => m.system ? (
+          <div key={m._id || `sys-${i}`} className="system-message">{m.content}</div>
+        ) : (
+          <div
+            key={m._id || m.tempId}
+            className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
           >
-            {loadingMore ? "טוען עוד…" : "טען עוד הודעות"}
-          </button>
-        )}
-
-        {messages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
-
-        {messages.map((m, i) =>
-          m.system ? (
-            <div key={m._id || `sys-${i}`} className="system-message">
-              {m.content}
-            </div>
-          ) : (
-            <div
-              key={m._id || m.tempId}
-              className={`
-                message
-                ${m.from === businessId ? "mine" : "theirs"}
-                ${m.sending ? "sending" : ""}
-                ${m.failed ? "failed" : ""}
-              `}
-            >
-              {m.fileUrl ? (
-                /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
-                  <img
-                    src={m.fileUrl}
-                    alt={m.fileName}
-                    style={{ maxWidth: 200, borderRadius: 8 }}
-                  />
-                ) : m.fileType.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer
-                    src={m.fileUrl}
-                    duration={m.fileDuration}
-                  />
-                ) : (
-                  <a href={m.fileUrl} download>
-                    {m.fileName}
-                  </a>
-                )
+            {m.fileUrl ? (
+              m.fileType.startsWith("audio") ? (
+                <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} />
+              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
+                <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
-                <div className="text">{m.content}</div>
-              )}
-              <div className="meta">
-                <span className="time">
-                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                {m.sending && <span className="sending-indicator">⏳</span>}
-                {m.failed && <span className="failed-indicator">❌</span>}
-              </div>
+                <a href={m.fileUrl} download>{m.fileName}</a>
+              )
+            ) : (
+              <div className="text">{m.content}</div>
+            )}
+            <div className="meta">
+              <span className="time">{(() => {
+                const date = new Date(m.timestamp);
+                if (isNaN(date)) return "";
+                return date.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+              })()}</span>
+              {m.fileDuration && <span className="audio-length">{`${Math.floor(m.fileDuration/60).toString().padStart(2,"0")}:${Math.floor(m.fileDuration%60).toString().padStart(2,"0")}`}</span>}
+              {m.sending && <span className="sending-indicator">⏳</span>}
+              {m.failed && <span className="failed-indicator">❌</span>}
             </div>
-          )
-        )}
-
-        {isTyping && (
-          <div className="typing-indicator">הלקוח מקליד...</div>
-        )}
+          </div>
+        ))}
+        {isTyping && <div className="typing-indicator">הלקוח מקליד...</div>}
       </div>
 
       <div className="inputBar">
@@ -490,26 +381,13 @@ export default function BusinessChatTab({
             {recording ? (
               <>
                 <button onClick={stopRecording} className="recordBtn recording">⏹️</button>
-                <span className="preview-timer">
-                  {`${Math.floor(timer/60)
-                    .toString()
-                    .padStart(2,"0")}:${(timer%60)
-                    .toString()
-                    .padStart(2,"0")}`}
-                </span>
+                <span className="preview-timer">{`${Math.floor(timer/60).toString().padStart(2,"0")}:${(timer%60).toString().padStart(2,"0")}`}</span>
                 <button onClick={discardRecording} className="preview-btn trash">🗑️</button>
               </>
             ) : (
               <>
                 <audio src={URL.createObjectURL(recordedBlob)} controls />
-                <div>
-                  משך:{" "}
-                  {`${Math.floor(timer/60)
-                    .toString()
-                    .padStart(2,"0")}:${(timer%60)
-                    .toString()
-                    .padStart(2,"0")}`}
-                </div>
+                <div>משך: {`${Math.floor(timer/60)}:${(timer%60).toString().padStart(2,"0")}`}</div>
                 <button onClick={sendRecording} className="send-btn" disabled={sending}>שלח</button>
                 <button onClick={discardRecording} className="discard-btn">מחק</button>
               </>
@@ -522,44 +400,15 @@ export default function BusinessChatTab({
               placeholder="הקלד הודעה..."
               value={input}
               onChange={handleInput}
-              onKeyDown={(e) =>
-                e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
-              }
+              onKeyDown={(e) => e.key==='Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
               rows={1}
               disabled={sending}
             />
-            <button
-              onClick={sendMessage}
-              className="sendButtonFlat"
-              disabled={sending || !input.trim()}
-              title="שלח"
-            >
-              ◀
-            </button>
+            <button onClick={sendMessage} className="sendButtonFlat" disabled={sending||!input.trim()} title="שלח">◀</button>
             <div className="inputBar-right">
-              <button
-                onClick={handleAttach}
-                className="attachBtn"
-                disabled={sending}
-                title="צרף קובץ"
-              >
-                📎
-              </button>
-              <button
-                onClick={recording ? stopRecording : startRecording}
-                className={`recordBtn${recording ? " recording" : ""}`}
-                disabled={sending}
-                title={recording ? "עצור הקלטה" : "התחל הקלטה"}
-              >
-                🎤
-              </button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                accept="image/*,audio/*,video/*"
-                onChange={handleFileChange}
-              />
+              <button onClick={handleAttach} className="attachBtn" disabled={sending} title="צרף קובץ">📎</button>
+              <button onClick={recording?stopRecording:startRecording} className={`recordBtn${recording?" recording":""}`} disabled={sending} title={recording?"עצור הקלטה":"התחל הקלטה"}>🎤</button>
+              <input type="file" ref={fileInputRef} style={{display:'none'}} accept="image/*,audio/*,video/*" onChange={handleFileChange} />
             </div>
           </>
         )}
