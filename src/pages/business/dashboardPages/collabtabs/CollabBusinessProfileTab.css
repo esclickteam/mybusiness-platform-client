@@ -1,42 +1,23 @@
-:root {
-  --color-primary: #7851a9;
-  --color-primary-light: #a089d9;
-  --color-text-dark: #2b2b2b;
-  --color-bg: #f8f7fb;
-  --color-card-bg: #ffffff;
-  --color-border: #e3e1ea;
-  --color-button-bg: var(--color-primary);
-  --color-button-hover: #623e95;
-  --color-button-secondary-bg: #ddd;
-  --color-button-secondary-hover: #bbb;
-}
-
-body {
-  background-color: var(--color-bg);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  direction: rtl;
-  margin: 0;
-  padding: 0;
-  color: var(--color-text-dark);
-}
-
 .profile-wrapper {
   max-width: 850px;
   margin: 3rem auto;
   padding: 0 20px 3rem 20px;
+  direction: rtl;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f7fb;
 }
 
 .profile-header {
   text-align: center;
   font-size: 2.2rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: #7851a9;
   margin-bottom: 2rem;
   user-select: none;
 }
 
 .profile-card {
-  background-color: var(--color-card-bg);
+  background-color: #ffffff;
   border-radius: 20px;
   padding: 2rem 3rem;
   box-shadow: 0 8px 28px rgba(120, 81, 169, 0.18);
@@ -87,12 +68,12 @@ body {
   font-size: 2rem;
   font-weight: 800;
   margin: 0 0 6px 0;
-  color: var(--color-primary);
+  color: #7851a9;
 }
 
 .profile-category {
   font-size: 1.1rem;
-  color: var(--color-primary-light);
+  color: #a089d9;
   font-weight: 600;
 }
 
@@ -115,29 +96,29 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--color-button-bg);
+  background-color: #7851a9;
   color: #fff;
   box-shadow: 0 4px 12px rgba(120, 81, 169, 0.35);
 }
 
 .btn-primary:hover {
-  background-color: var(--color-button-hover);
+  background-color: #623e95;
 }
 
 .btn-secondary {
-  background-color: var(--color-button-secondary-bg);
-  color: var(--color-text-dark);
+  background-color: #ddd;
+  color: #333;
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 .btn-secondary:hover {
-  background-color: var(--color-button-secondary-hover);
+  background-color: #bbb;
 }
 
 .profile-section {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid #e3e1ea;
   padding-top: 1.4rem;
-  color: var(--color-text-dark);
+  color: #2b2b2b;
   user-select: text;
 }
 
@@ -145,7 +126,7 @@ body {
   font-weight: 700;
   font-size: 1.3rem;
   margin-bottom: 0.7rem;
-  color: var(--color-primary);
+  color: #7851a9;
 }
 
 .profile-section p {
@@ -166,7 +147,7 @@ body {
 /* טופס במודאל */
 .modal-box {
   direction: rtl;
-  background: var(--color-card-bg);
+  background: #ffffff;
   border-radius: 20px;
   padding: 2rem 2.5rem;
   max-width: 480px;
@@ -178,7 +159,7 @@ body {
 
 .modal-box h2 {
   text-align: center;
-  color: var(--color-primary);
+  color: #7851a9;
   margin-bottom: 1.5rem;
   user-select: none;
 }
@@ -192,7 +173,7 @@ body {
 .profile-form label {
   font-weight: 700;
   font-size: 1rem;
-  color: var(--color-text-dark);
+  color: #2b2b2b;
   user-select: text;
 }
 
@@ -211,7 +192,7 @@ body {
 
 .profile-form input:focus,
 .profile-form textarea:focus {
-  border-color: var(--color-primary);
+  border-color: #7851a9;
   background-color: #fff;
   outline: none;
   box-shadow: 0 0 8px rgba(120, 81, 169, 0.4);
@@ -233,6 +214,6 @@ body {
   text-align: center;
   margin: 3rem 0;
   font-size: 1.5rem;
-  color: var(--color-primary);
+  color: #7851a9;
   font-weight: 600;
 }
