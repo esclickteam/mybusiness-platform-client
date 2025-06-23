@@ -175,49 +175,51 @@ export default function BusinessChatTab({
   }, [socket, conversationId]);
 
   // מאזינים להודעות חדשות, הקלדה ועדכון סטטוס קריאה
-  useEffect(() => {
-    if (!socket) return;
+  // בתוך useEffect של מאזינים:
+useEffect(() => {
+  if (!socket) return;
 
-    const handleNew = (msg) => {
-      if (msg.conversationId === conversationId) {
-        const safeMsg = {
-          ...msg,
-          timestamp: msg.createdAt || new Date().toISOString(),
-          text: msg.content || "",
-          fileUrl: msg.fileUrl || null,
-          fileType: msg.fileType || null,
-          fileName: msg.fileName || "",
-          fileDuration: msg.fileDuration || 0,
-          readBy: msg.readBy || [],
-        };
-        dispatch({ type: "append", payload: safeMsg });
-      }
-    };
+  const handleNew = (msg) => {
+    if (msg.conversationId === conversationId) {
+      const safeMsg = {
+        ...msg,
+        timestamp: msg.createdAt || new Date().toISOString(),
+        text: msg.content || "",
+        fileUrl: msg.fileUrl || null,
+        fileType: msg.fileType || null,
+        fileName: msg.fileName || "",
+        fileDuration: msg.fileDuration || 0,
+        readBy: msg.readBy || [],
+      };
+      dispatch({ type: "append", payload: safeMsg });
+    }
+  };
 
-    const handleTyping = ({ from }) => {
-      if (from === customerId) {
-        setIsTyping(true);
-        clearTimeout(handleTyping._t);
-        handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
-      }
-    };
-
-    const handleReadReceipt = ({ messageId, readBy }) => {
-  dispatch({ type: "updateReadBy", payload: { messageId, readBy } });
-};
-
-
-    socket.on("newMessage", handleNew);
-    socket.on("typing", handleTyping);
-    socket.on("messageRead", handleReadReceipt);
-
-    return () => {
-      socket.off("newMessage", handleNew);
-      socket.off("typing", handleTyping);
-      socket.off("messageRead", handleReadReceipt);
+  const handleTyping = ({ from }) => {
+    if (from === customerId) {
+      setIsTyping(true);
       clearTimeout(handleTyping._t);
-    };
-  }, [socket, conversationId, customerId]);
+      handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
+    }
+  };
+
+  // עדכון מערך הקריאה לפי מה שהשרת שולח
+  const handleReadReceipt = ({ messageId, readBy }) => {
+    dispatch({ type: "updateReadBy", payload: { messageId, readBy } });
+  };
+
+  socket.on("newMessage", handleNew);
+  socket.on("typing", handleTyping);
+  socket.on("messageRead", handleReadReceipt);
+
+  return () => {
+    socket.off("newMessage", handleNew);
+    socket.off("typing", handleTyping);
+    socket.off("messageRead", handleReadReceipt);
+    clearTimeout(handleTyping._t);
+  };
+}, [socket, conversationId, customerId]);
+
 
   // גלילה אוטומטית לתחתית כשמתווספות הודעות או הקלדה
   useEffect(() => {
