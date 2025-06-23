@@ -206,6 +206,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
   (msg) => {
+    console.log("[handleNewMessage] Received new message:", msg);
     const fullMsg = msg.fullMsg || msg;
     const normalized = {
       ...fullMsg,
@@ -240,6 +241,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 );
 
 
+
   useEffect(() => {
     if (!socketRef.current) return;
     socketRef.current.on("newMessage", handleNewMessage);
@@ -253,59 +255,62 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-    if (isSending) return;
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+  if (isSending) return;
+  if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
-    const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
-    if (!otherIdRaw) return;
-    const otherId =
-      typeof otherIdRaw === "string"
-        ? otherIdRaw
-        : otherIdRaw._id
-        ? otherIdRaw._id.toString()
-        : otherIdRaw.toString();
+  const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
+  if (!otherIdRaw) return;
+  const otherId = typeof otherIdRaw === "string"
+    ? otherIdRaw
+    : otherIdRaw._id
+      ? otherIdRaw._id.toString()
+      : otherIdRaw.toString();
 
-    const payload = {
-      conversationId: selectedConversation._id.toString(),
-      from: myBusinessId.toString(),
-      to: otherId,
-      text: input.trim(),
-    };
-
-    const optimistic = {
-      ...payload,
-      timestamp: new Date().toISOString(),
-      _id: "pending-" + Math.random().toString(36).substr(2, 9),
-      fromBusinessId: payload.from,
-      toBusinessId: payload.to,
-      sending: true,
-    };
-
-    dispatchMessages({ type: "append", payload: optimistic });
-    setInput("");
-    setIsSending(true);
-
-    socketRef.current.emit("sendMessage", payload, (ack) => {
-      setIsSending(false);
-      if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + ack.error);
-        dispatchMessages({
-          type: "set",
-          payload: messages.filter((m) => m._id !== optimistic._id),
-        });
-      } else if (ack.message?._id) {
-        const real = {
-          ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-          toBusinessId: ack.message.toBusinessId || ack.message.to,
-        };
-        dispatchMessages({
-          type: "replace",
-          payload: real,
-        });
-      }
-    });
+  const payload = {
+    conversationId: selectedConversation._id.toString(),
+    from: myBusinessId.toString(),
+    to: otherId,
+    text: input.trim(),
   };
+
+  console.log("[sendMessage] Sending payload:", payload);
+
+  const optimistic = {
+    ...payload,
+    timestamp: new Date().toISOString(),
+    _id: "pending-" + Math.random().toString(36).substr(2, 9),
+    fromBusinessId: payload.from,
+    toBusinessId: payload.to,
+    sending: true,
+  };
+
+  dispatchMessages({ type: "append", payload: optimistic });
+  setInput("");
+  setIsSending(true);
+
+  socketRef.current.emit("sendMessage", payload, (ack) => {
+    setIsSending(false);
+    console.log("[sendMessage] Server ack:", ack);
+    if (!ack.ok) {
+      alert("שליחת הודעה נכשלה: " + ack.error);
+      dispatchMessages({
+        type: "set",
+        payload: messages.filter((m) => m._id !== optimistic._id),
+      });
+    } else if (ack.message?._id) {
+      const real = {
+        ...ack.message,
+        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+        toBusinessId: ack.message.toBusinessId || ack.message.to,
+      };
+      dispatchMessages({
+        type: "replace",
+        payload: real,
+      });
+    }
+  });
+};
+
 
   const handleAttach = () => {
     if (fileInputRef.current) {
