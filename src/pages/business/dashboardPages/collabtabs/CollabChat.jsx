@@ -94,6 +94,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       const convs = convsRaw.map((c) => ({
         ...c,
         messages: Array.isArray(c.messages) ? c.messages : [],
+        // חשוב: ודא ש- conversationType מגיע מהשרת או כאן מוגדר
+        conversationType: c.conversationType || "user-business",
       }));
       setConversations(convs);
       if (!selectedConversation && convs.length > 0) {
@@ -158,11 +160,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout, fetchConversations]);
 
-  // הצטרפות לחדרי שיחה כאשר מתעדכנות השיחות
+  // הצטרפות לחדרי שיחה עם הפרדת סוגי שיחות לפי prefix
   useEffect(() => {
     if (!socketRef.current) return;
     conversations.forEach((conv) => {
-      socketRef.current.emit("joinConversation", conv._id);
+      const isBusinessConversation = conv.conversationType === "business-business";
+      socketRef.current.emit("joinConversation", conv._id, isBusinessConversation);
     });
   }, [conversations]);
 
@@ -175,7 +178,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     const convId = selectedConversation._id;
 
     const joinHandler = () => {
-      socketRef.current.emit("joinConversation", convId);
+      const isBusinessConversation = selectedConversation.conversationType === "business-business";
+      socketRef.current.emit("joinConversation", convId, isBusinessConversation);
     };
 
     socketRef.current.on("connect", joinHandler);
@@ -200,53 +204,53 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     })();
 
     return () => {
-      socketRef.current.emit("leaveConversation", convId);
+      const isBusinessConversation = selectedConversation.conversationType === "business-business";
+      socketRef.current.emit("leaveConversation", convId, isBusinessConversation);
       socketRef.current.off("connect", joinHandler);
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
   // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
-  (msg) => {
-    const fullMsg = msg.fullMsg || msg;
-    const normalized = {
-      ...fullMsg,
-      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-      toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-      conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
-    };
+    (msg) => {
+      const fullMsg = msg.fullMsg || msg;
+      const normalized = {
+        ...fullMsg,
+        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
+      };
 
-    // הוספת סינון: אם ההודעה לא שייכת לשיחה הנבחרת - מתעלמים
-    if (!selectedConversation || normalized.conversationId !== selectedConversation._id) {
-      return;
-    }
-
-    dispatchMessages((prevMessages) => {
-      // המשך הקוד כמו שהיה...
-    });
-
-    // עדכון שיחה נבחרת ושיחות בהתאם
-    setSelectedConversation((prev) => {
-      if (prev && prev._id === normalized.conversationId) {
-        return {
-          ...prev,
-          messages: uniqueMessages([...(prev.messages || []), normalized]),
-        };
+      if (!selectedConversation || normalized.conversationId !== selectedConversation._id) {
+        return;
       }
-      return prev;
-    });
 
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv._id === normalized.conversationId
-          ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
-          : conv
-      )
-    );
-  },
-  [selectedConversation, uniqueMessages]
-);
+      dispatchMessages((prevMessages) => {
+        const exists = prevMessages.some((m) => m._id === normalized._id);
+        if (exists) return prevMessages;
+        return [...prevMessages, normalized];
+      });
 
+      setSelectedConversation((prev) => {
+        if (prev && prev._id === normalized.conversationId) {
+          return {
+            ...prev,
+            messages: uniqueMessages([...(prev.messages || []), normalized]),
+          };
+        }
+        return prev;
+      });
+
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === normalized.conversationId
+            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
+            : conv
+        )
+      );
+    },
+    [selectedConversation, uniqueMessages]
+  );
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -272,8 +276,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         ? otherIdRaw._id.toString()
         : otherIdRaw.toString();
 
+    const conversationType = selectedConversation.conversationType || "user-business";
+
     if (attachedFile) {
-      // במקרה של קובץ מצורף שולחים אותו
       const file = attachedFile;
       const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
@@ -342,17 +347,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 toBusinessId: ack.message.toBusinessId || ack.message.to,
               };
 
-              // שליחת הודעת טקסט ריקה עם פרטי הקובץ
               socketRef.current.emit(
                 "sendMessage",
                 {
                   conversationId: selectedConversation._id,
                   from: myBusinessId,
                   to: otherId,
-                  text: "", // או כל טקסט רלוונטי
+                  text: "",
                   fileUrl: realMsg.fileUrl,
                   fileName: realMsg.fileName,
                   fileType: realMsg.fileType,
+                  conversationType,
                 },
                 (msgAck) => {
                   if (!msgAck.ok) {
@@ -385,15 +390,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       };
       reader.readAsArrayBuffer(file);
     } else {
-      // שליחת הודעת טקסט רגילה
+      const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
+
       const payload = {
         conversationId: selectedConversation._id.toString(),
         from: myBusinessId.toString(),
         to: otherId,
         text: input.trim(),
+        conversationType,
       };
-
-      const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
       const optimistic = {
         ...payload,
@@ -407,7 +412,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       dispatchMessages({ type: "append", payload: optimistic });
       setInput("");
 
-      // גלילה מיידית
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 50);
