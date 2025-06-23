@@ -1,38 +1,40 @@
 .profile-wrapper {
-  max-width: 850px;
-  margin: 3rem auto;
-  padding: 0 20px 3rem 20px;
-  direction: rtl;
+  max-width: 650px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #e0d4f6, #f6f0fc);
+  border-radius: 30px;
+  box-shadow: 0 15px 30px rgba(120, 81, 169, 0.25);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f7fb;
+  direction: rtl;
+  color: #4b367c;
+  user-select: none;
 }
 
 .profile-header {
   text-align: center;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #7851a9;
-  margin-bottom: 2rem;
-  user-select: none;
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 0 10px #a085e2;
 }
 
 .profile-card {
-  background-color: #ffffff;
-  border-radius: 20px;
+  background: white;
+  border-radius: 25px;
   padding: 2rem 3rem;
-  box-shadow: 0 8px 28px rgba(120, 81, 169, 0.18);
+  box-shadow: 0 10px 30px rgba(120, 81, 169, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  user-select: none;
+  gap: 2.5rem;
 }
 
 .profile-top {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
   flex-wrap: wrap;
-  gap: 2rem;
 }
 
 .profile-logo-label {
@@ -40,180 +42,187 @@
   flex-shrink: 0;
   border-radius: 100%;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(120, 81, 169, 0.3);
-  width: 120px;
-  height: 120px;
+  width: 130px;
+  height: 130px;
+  box-shadow: 0 4px 20px rgba(120, 81, 169, 0.3);
   transition: transform 0.3s ease;
 }
 
 .profile-logo-label:hover {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .profile-logo {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
+  width: 130px;
+  height: 130px;
   border-radius: 100%;
+  object-fit: cover;
   display: block;
 }
 
 .profile-main-info {
   flex-grow: 1;
   text-align: right;
-  padding-right: 20px;
+  padding-right: 25px;
 }
 
 .profile-business-name {
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0 0 6px 0;
-  color: #7851a9;
+  font-size: 2.3rem;
+  font-weight: 900;
+  margin: 0 0 0.4rem 0;
+  color: #5a3ea0;
+  text-shadow: 0 0 5px #7e63d4;
 }
 
 .profile-category {
-  font-size: 1.1rem;
-  color: #a089d9;
+  font-size: 1.2rem;
   font-weight: 600;
+  color: #8f7ac8;
 }
 
 .profile-actions {
   display: flex;
-  gap: 12px;
+  gap: 15px;
   flex-wrap: wrap;
 }
 
 .btn-primary,
 .btn-secondary {
-  padding: 0.75rem 1.8rem;
-  border-radius: 28px;
+  padding: 0.9rem 2.2rem;
+  border-radius: 40px;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.15rem;
   cursor: pointer;
   border: none;
-  user-select: none;
   transition: background-color 0.3s ease;
+  user-select: none;
+  box-shadow: 0 6px 14px rgba(120, 81, 169, 0.3);
 }
 
 .btn-primary {
-  background-color: #7851a9;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(120, 81, 169, 0.35);
+  background: linear-gradient(90deg, #6b4ed9, #8456f3);
+  color: white;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
 .btn-primary:hover {
-  background-color: #623e95;
+  background: linear-gradient(90deg, #573abf, #6b4ed9);
 }
 
 .btn-secondary {
-  background-color: #ddd;
-  color: #333;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  background: #e5e2f9;
+  color: #5a3ea0;
+  box-shadow: 0 4px 10px rgba(90, 62, 160, 0.25);
 }
 
 .btn-secondary:hover {
-  background-color: #bbb;
+  background: #d6cff5;
 }
 
 .profile-section {
-  border-top: 1px solid #e3e1ea;
-  padding-top: 1.4rem;
-  color: #2b2b2b;
+  border-top: 1.5px solid #e8e4f7;
+  padding-top: 1.6rem;
+  color: #5a3ea0;
   user-select: text;
+  font-weight: 600;
 }
 
 .profile-section h3 {
-  font-weight: 700;
-  font-size: 1.3rem;
-  margin-bottom: 0.7rem;
-  color: #7851a9;
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 0 3px #bfb6f6;
 }
 
 .profile-section p {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  color: #423971;
   line-height: 1.6;
   margin: 0;
+  font-weight: 400;
 }
 
 .profile-collab-list {
-  padding-inline-start: 1.6rem;
+  padding-inline-start: 1.8rem;
   list-style-type: disc;
-  color: #555;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  color: #473f82;
+  font-size: 1.15rem;
+  line-height: 1.7;
   margin: 0;
 }
 
-/* טופס במודאל */
+/* Modal */
 .modal-box {
   direction: rtl;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 2rem 2.5rem;
-  max-width: 480px;
+  background: white;
+  border-radius: 25px;
+  padding: 2.5rem 3rem;
+  max-width: 500px;
   margin: 5% auto;
-  box-shadow: 0 8px 30px rgba(120, 81, 169, 0.3);
+  box-shadow: 0 15px 40px rgba(120, 81, 169, 0.35);
   outline: none;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #4a3973;
 }
 
 .modal-box h2 {
   text-align: center;
-  color: #7851a9;
-  margin-bottom: 1.5rem;
-  user-select: none;
+  font-weight: 900;
+  font-size: 2rem;
+  margin-bottom: 1.8rem;
+  text-shadow: 0 0 7px #9d8aed;
 }
 
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
+  gap: 1.6rem;
 }
 
 .profile-form label {
   font-weight: 700;
-  font-size: 1rem;
-  color: #2b2b2b;
-  user-select: text;
+  font-size: 1.1rem;
+  color: #5a3ea0;
 }
 
 .profile-form input,
 .profile-form textarea {
   width: 100%;
-  padding: 0.85rem 1.2rem;
-  font-size: 1rem;
-  border-radius: 14px;
-  border: 1.8px solid #c1bede;
-  background-color: #f9f8fe;
+  padding: 1rem 1.2rem;
+  font-size: 1.1rem;
+  border-radius: 18px;
+  border: 2px solid #b9aeee;
+  background-color: #f6f5fc;
   transition: all 0.3s ease;
   font-family: inherit;
   resize: vertical;
+  font-weight: 600;
+  color: #4a3f78;
 }
 
 .profile-form input:focus,
 .profile-form textarea:focus {
-  border-color: #7851a9;
-  background-color: #fff;
+  border-color: #6b4ed9;
+  background-color: white;
   outline: none;
-  box-shadow: 0 0 8px rgba(120, 81, 169, 0.4);
+  box-shadow: 0 0 15px rgba(107, 78, 217, 0.5);
 }
 
 .profile-form textarea {
-  min-height: 90px;
+  min-height: 110px;
 }
 
-/* כפתורים במודאל */
+/* modal buttons */
 .modal-buttons {
   display: flex;
   justify-content: center;
-  gap: 1.8rem;
-  margin-top: 1.8rem;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
 .loading-text {
   text-align: center;
-  margin: 3rem 0;
-  font-size: 1.5rem;
-  color: #7851a9;
-  font-weight: 600;
+  margin: 4rem 0;
+  font-size: 1.6rem;
+  color: #6b4ed9;
+  font-weight: 700;
 }
