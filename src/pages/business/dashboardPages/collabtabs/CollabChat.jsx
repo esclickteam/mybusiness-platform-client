@@ -245,25 +245,30 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
 
     const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
-    if (!otherIdRaw) {
-      console.warn("לא נמצא מזהה הנמען");
-      return;
-    }
-    const otherId =
-      typeof otherIdRaw === "string"
-        ? otherIdRaw
-        : otherIdRaw._id
-        ? otherIdRaw._id.toString()
-        : otherIdRaw.toString();
+    console.log("Raw otherId from getOtherBusinessId:", otherIdRaw);
 
-    setIsSending(true);
+if (!otherIdRaw) {
+  console.warn("לא נמצא מזהה הנמען");
+  return;
+}
+const otherId =
+  typeof otherIdRaw === "string"
+    ? otherIdRaw
+    : otherIdRaw._id
+    ? otherIdRaw._id.toString()
+    : otherIdRaw.toString();
 
-    const payload = {
-      conversationId: selectedConversation._id.toString(),
-      from: myBusinessId.toString(),
-      to: otherId,
-      text: input.trim(),
-    };
+    console.log("Converted otherId to string:", otherId);
+
+
+const payload = {
+  conversationId: selectedConversation._id.toString(),
+  from: myBusinessId.toString(),
+  to: otherId,
+  text: input.trim(),
+};
+
+console.log("Payload to send:", payload);
 
     const optimistic = {
       ...payload,
