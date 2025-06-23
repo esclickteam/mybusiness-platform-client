@@ -6,7 +6,6 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useAuth } from "../../../../context/AuthContext";
 
-// פונקציה כללית למציאת מזהה העסק השני מתוך conversation
 function getOtherBusinessId(conv, myBusinessId) {
   if (!conv || !myBusinessId) {
     console.warn("getOtherBusinessId: missing conv or myBusinessId");
@@ -14,40 +13,17 @@ function getOtherBusinessId(conv, myBusinessId) {
   }
 
   if (Array.isArray(conv.participantsInfo)) {
-    console.log("getOtherBusinessId: checking participantsInfo array");
     const info = conv.participantsInfo.find(
-      (b) => {
-        const bIdStr = b._id.toString();
-        const myIdStr = myBusinessId.toString();
-        console.log(`Comparing participantsInfo id: ${bIdStr} !== ${myIdStr}`);
-        return bIdStr !== myIdStr;
-      }
+      (b) => b._id.toString() !== myBusinessId.toString()
     );
-    if (info) {
-      const idStr = info._id.toString();
-      console.log("getOtherBusinessId: found id in participantsInfo:", idStr);
-      return idStr;
-    }
+    if (info) return info._id.toString();
   }
 
   if (Array.isArray(conv.participants)) {
-    console.log("getOtherBusinessId: checking participants array");
-    const raw = conv.participants.find(
-      (id) => {
-        const idStr = id.toString();
-        const myIdStr = myBusinessId.toString();
-        console.log(`Comparing participants id: ${idStr} !== ${myIdStr}`);
-        return idStr !== myIdStr;
-      }
-    );
-    if (raw) {
-      const rawStr = raw.toString();
-      console.log("getOtherBusinessId: found id in participants:", rawStr);
-      return rawStr;
-    }
+    const raw = conv.participants.find((id) => id.toString() !== myBusinessId.toString());
+    if (raw) return raw.toString();
   }
 
-  console.warn("getOtherBusinessId: no other participant found");
   return "";
 }
 
@@ -63,12 +39,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const refreshAccessToken = useCallback(async () => {
     const token = await refreshAccessTokenOriginal();
-    console.log("Refreshed access token:", token);
     return token;
   }, [refreshAccessTokenOriginal]);
 
   const logout = useCallback(() => {
-    console.log("Logging out user");
     logoutOriginal();
   }, [logoutOriginal]);
 
@@ -92,11 +66,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const fetchConversations = useCallback(async () => {
     try {
       const token = await refreshAccessToken();
-      if (!token) {
-        console.warn("No token available for fetchConversations");
-        return;
-      }
-      console.log("Fetching conversations with token:", token);
+      if (!token) return;
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -110,30 +80,19 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         setSelectedConversation(convs[0]);
       }
     } catch (err) {
-      console.error("Error fetching conversations:", err);
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
   }, [refreshAccessToken, selectedConversation]);
 
   useEffect(() => {
-    if (!myBusinessId) {
-      console.warn("No myBusinessId provided, skipping socket setup");
-      return;
-    }
-    if (socketInitializedRef.current) {
-      console.log("Socket already initialized, skipping setup");
-      return;
-    }
+    if (!myBusinessId) return;
+    if (socketInitializedRef.current) return;
     socketInitializedRef.current = true;
 
     async function setupSocket() {
       const token = await refreshAccessToken();
-      if (!token) {
-        console.warn("No token available for socket connection");
-        return;
-      }
-      console.log("Setting up socket connection with token:", token);
+      if (!token) return;
 
       const sock = io(SOCKET_URL, {
         path: "/socket.io",
@@ -149,7 +108,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       socketRef.current = sock;
 
       sock.on("connect", () => {
-        console.log("Socket connected:", sock.id);
         fetchConversations();
       });
 
@@ -158,10 +116,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       });
 
       sock.on("tokenExpired", async () => {
-        console.log("Socket token expired, refreshing...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
-          console.warn("Failed to refresh token, logging out");
           logout();
           return;
         }
@@ -175,7 +131,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     return () => {
       if (socketRef.current) {
-        console.log("Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
         socketInitializedRef.current = false;
@@ -189,17 +144,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       return;
     }
     const convId = selectedConversation._id;
-    console.log("Joining conversation room:", convId);
     socketRef.current.emit("joinConversation", convId);
 
     (async () => {
       try {
         const token = await refreshAccessToken();
-        if (!token) {
-          console.warn("No token available for fetch messages");
-          return;
-        }
-        console.log(`Fetching messages for conversation ${convId} with token`, token);
+        if (!token) return;
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -209,54 +159,18 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           toBusinessId: msg.toBusinessId || msg.to,
         }));
         setMessages(uniqueMessages(normMsgs));
-      } catch (err) {
-        console.error("Error fetching messages:", err);
+      } catch {
         setMessages([]);
       }
     })();
 
     return () => {
-      console.log("Leaving conversation room:", convId);
       socketRef.current.emit("leaveConversation", convId);
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
-const handleNewMessage = useCallback((msg) => {
-    const fullMsg = msg.fullMsg || msg;
-    const normalized = {
-      ...fullMsg,
-      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-      toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-    };
-
-    if (normalized.conversationId === selectedConversation?._id) {
-      setMessages((prev) => uniqueMessages([...prev, normalized]));
-    }
-
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv._id === normalized.conversationId
-          ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
-          : conv
-      )
-    );
-  }, [selectedConversation, uniqueMessages]);
-
-  useEffect(() => {
-    if (!socketRef.current) return;
-
-    socketRef.current.on("newMessage", handleNewMessage);
-    return () => {
-      socketRef.current.off("newMessage", handleNewMessage);
-    };
-  }, [handleNewMessage]);
-
-
-  useEffect(() => {
-    if (!socketRef.current || !selectedConversation) return;
-
-    const handler = (msg) => {
-      console.log("Received newMessage:", JSON.stringify(msg));
+  const handleNewMessage = useCallback(
+    (msg) => {
       const fullMsg = msg.fullMsg || msg;
       const normalized = {
         ...fullMsg,
@@ -264,7 +178,7 @@ const handleNewMessage = useCallback((msg) => {
         toBusinessId: fullMsg.toBusinessId || fullMsg.to,
       };
 
-      if (normalized.conversationId === selectedConversation._id) {
+      if (normalized.conversationId === selectedConversation?._id) {
         setMessages((prev) => uniqueMessages([...prev, normalized]));
       }
 
@@ -275,50 +189,35 @@ const handleNewMessage = useCallback((msg) => {
             : conv
         )
       );
-    };
+    },
+    [selectedConversation, uniqueMessages]
+  );
 
-    socketRef.current.off("newMessage", handler);
-    socketRef.current.on("newMessage", handler);
+  useEffect(() => {
+    if (!socketRef.current) return;
 
+    socketRef.current.on("newMessage", handleNewMessage);
     return () => {
-      socketRef.current.off("newMessage", handler);
+      socketRef.current.off("newMessage", handleNewMessage);
     };
-  }, [selectedConversation, uniqueMessages]);
+  }, [handleNewMessage]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = () => {
-    if (isSending) {
-      console.warn("Already sending message, aborting.");
-      return;
-    }
-    if (!input.trim() || !selectedConversation || !socketRef.current) {
-      console.warn("Cannot send message: missing input, conversation, or socket");
-      return;
-    }
+    if (isSending) return;
+    if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
     const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
-    console.log("Raw otherId from getOtherBusinessId:", otherIdRaw);
-
-    if (!otherIdRaw) {
-      console.warn("לא נמצא מזהה הנמען");
-      return;
-    }
-    const otherId = (() => {
-  if (typeof otherIdRaw === "string") {
-    return otherIdRaw;
-  } else if (otherIdRaw && otherIdRaw._id) {
-    return otherIdRaw._id.toString();
-  } else if (otherIdRaw && typeof otherIdRaw.toString === "function") {
-    return otherIdRaw.toString();
-  } else {
-    return JSON.stringify(otherIdRaw);
-  }
-})();
-
-    console.log("Converted otherId to string:", otherId);
+    if (!otherIdRaw) return;
+    const otherId =
+      typeof otherIdRaw === "string"
+        ? otherIdRaw
+        : otherIdRaw._id
+        ? otherIdRaw._id.toString()
+        : otherIdRaw.toString();
 
     const payload = {
       conversationId: selectedConversation._id.toString(),
@@ -326,8 +225,6 @@ const handleNewMessage = useCallback((msg) => {
       to: otherId,
       text: input.trim(),
     };
-
-    console.log("Payload to send:", payload);
 
     const optimistic = {
       ...payload,
@@ -338,9 +235,9 @@ const handleNewMessage = useCallback((msg) => {
       sending: true,
     };
 
-    console.log("Sending message:", payload);
     setMessages((prev) => uniqueMessages([...prev, optimistic]));
     setInput("");
+    setIsSending(true);
 
     socketRef.current.emit("sendMessage", payload, (ack) => {
       setIsSending(false);
@@ -372,10 +269,8 @@ const handleNewMessage = useCallback((msg) => {
     if (!file || !socketRef.current || !selectedConversation) return;
 
     const toRaw = getOtherBusinessId(selectedConversation, myBusinessId);
-    if (!toRaw) {
-      console.warn("לא נמצא מזהה הנמען בקובץ");
-      return;
-    }
+    if (!toRaw) return;
+
     const toBusinessId =
       typeof toRaw === "string"
         ? toRaw
@@ -416,7 +311,6 @@ const handleNewMessage = useCallback((msg) => {
 
     const reader = new FileReader();
     reader.onload = () => {
-      console.log("Uploading file:", file.name);
       socketRef.current.emit(
         "sendFile",
         {
@@ -525,9 +419,7 @@ const handleNewMessage = useCallback((msg) => {
                 businessName: "עסק",
               };
             const lastMsg =
-              conv.messages.length > 0
-                ? conv.messages[conv.messages.length - 1].text
-                : "";
+              conv.messages.length > 0 ? conv.messages[conv.messages.length - 1].text : "";
             return (
               <Box
                 key={conv._id}
@@ -536,8 +428,7 @@ const handleNewMessage = useCallback((msg) => {
                   py: 1.5,
                   cursor: "pointer",
                   borderBottom: "1px solid #f3f0fa",
-                  background:
-                    selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                  background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
                 }}
                 onClick={() => {
                   setSelectedConversation(conv);
@@ -591,8 +482,7 @@ const handleNewMessage = useCallback((msg) => {
                   <Box
                     key={msg._id ? msg._id.toString() : `pending-${i}`}
                     sx={{
-                      background:
-                        msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                      background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
                       alignSelf:
                         msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
                       p: 1.2,
@@ -661,9 +551,7 @@ const handleNewMessage = useCallback((msg) => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (!isSending && input.trim()) {
-                sendMessage();
-              }
+              if (!isSending && input.trim()) sendMessage();
             }}
             style={{
               display: "flex",
