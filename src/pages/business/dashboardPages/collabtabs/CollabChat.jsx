@@ -3,6 +3,10 @@ import { io } from "socket.io-client";
 import API from "../../../../api";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import SendIcon from '@mui/icons-material/Send';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
@@ -45,7 +49,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     try {
       const token = await refreshAccessToken();
       if (!token) return;
-
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -58,7 +61,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
       }
-    } catch (err) {
+    } catch {
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
@@ -67,7 +70,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   useEffect(() => {
     if (!myBusinessId) return;
     if (socketInitializedRef.current) return;
-
     socketInitializedRef.current = true;
 
     async function setupSocket() {
@@ -131,7 +133,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       try {
         const token = await refreshAccessToken();
         if (!token) return;
-
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -141,7 +142,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           toBusinessId: msg.toBusinessId || msg.to,
         }));
         setMessages(uniqueMessages(normMsgs));
-      } catch (err) {
+      } catch {
         setMessages([]);
       }
     })();
@@ -156,7 +157,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const handler = (msg) => {
       const fullMsg = msg.fullMsg || msg;
-
       const normalized = {
         ...fullMsg,
         fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
@@ -189,7 +189,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-    if (isSending || !input.trim() || !selectedConversation || !socketRef.current) return;
+    if (isSending) return;
+    if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
     setIsSending(true);
 
@@ -335,6 +336,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
     reader.readAsArrayBuffer(file);
   };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <Box
@@ -516,69 +521,82 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             style={{
               display: "flex",
               gap: 8,
-              padding: 16,
+              padding: 12,
               borderTop: "1px solid #eee",
               alignItems: "center",
-              backgroundColor: "#f0ecff",
-              borderRadius: "0 0 18px 18px",
+              background: "#f1efff",
+              borderBottomLeftRadius: 14,
+              borderBottomRightRadius: 14,
             }}
           >
-            {/* כפתור צרוף קבצים */}
-            <Button
-              type="button"
+            <IconButton
               onClick={handleAttach}
+              title="צרף קובץ"
+              size="medium"
               sx={{
-                minWidth: 40,
-                height: 40,
-                borderRadius: 8,
-                backgroundColor: "#fff",
-                boxShadow: "0 2px 8px rgba(111,94,203,0.3)",
+                backgroundColor: "white",
+                borderRadius: 2,
+                boxShadow: "0 2px 10px rgb(150 140 200 / 0.3)",
                 "&:hover": {
-                  backgroundColor: "#ece6ff",
+                  backgroundColor: "#e0dfff",
                 },
               }}
-              title="צרף קובץ"
             >
-              📎
-            </Button>
+              <AttachFileIcon />
+            </IconButton>
 
-            {/* שדה כתיבת הודעה */}
-            <input
-              type="text"
+            <TextField
               placeholder="כתוב הודעה..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              style={{
-                flexGrow: 1,
-                height: 40,
-                borderRadius: 20,
-                border: "1.5px solid #7153dd",
-                padding: "0 12px",
-                fontSize: 14,
-                outline: "none",
+              autoComplete="off"
+              size="small"
+              fullWidth
+              sx={{
+                borderRadius: 2,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  backgroundColor: "white",
+                  paddingRight: "10px",
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#7d63ff",
+                  borderWidth: 1.5,
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#5e43f3",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#4d30db",
+                  borderWidth: 2,
+                },
               }}
             />
 
-            {/* כפתור שליחה */}
-            <Button
+            <IconButton
               type="submit"
+              size="medium"
+              disabled={!input.trim() || isSending}
               sx={{
-                minWidth: 60,
-                height: 40,
-                borderRadius: 8,
-                fontWeight: 700,
-                backgroundColor: "#7153dd",
-                color: "#fff",
-                boxShadow: "0 4px 12px rgba(111, 94, 203, 0.6)",
+                backgroundColor: "#8b8cd7",
+                borderRadius: 2,
+                color: "white",
+                transition: "background-color 0.3s",
+                boxShadow: "0 2px 10px rgb(150 140 200 / 0.5)",
                 "&:hover": {
-                  backgroundColor: "#5d3dc7",
-                  boxShadow: "0 6px 18px rgba(92, 62, 199, 0.9)",
+                  backgroundColor: "#6e6fc1",
+                },
+                "&:disabled": {
+                  backgroundColor: "#b2b3d9",
+                  color: "#e0e0e0",
+                  cursor: "default",
+                  boxShadow: "none",
                 },
               }}
-              disabled={!input.trim() || isSending}
+              title="שלח הודעה"
             >
-              ➤
-            </Button>
+              <SendIcon />
+            </IconButton>
 
             <input
               type="file"
@@ -591,11 +609,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         )}
 
         {onClose && (
-          <Button
-            sx={{ position: "absolute", top: 13, left: 18 }}
-            onClick={onClose}
-            title="סגור צ'אט"
-          >
+          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
             ✖
           </Button>
         )}
