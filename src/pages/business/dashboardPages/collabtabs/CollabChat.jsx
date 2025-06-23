@@ -228,30 +228,37 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     setIsSending(true);
 
-    const otherId =
+    let otherId =
   selectedConversation.participantsInfo?.find(
     (b) => b._id.toString() !== myBusinessId.toString()
-  )?._id.toString() ||
+  )?._id || 
   selectedConversation.participants.find((id) => {
-    // אם id הוא אובייקט, המיר אותו למחרוזת
     if (typeof id === "object" && id !== null) {
       return id.toString() !== myBusinessId.toString();
     }
-    // אחרת, השווה ישירות
     return id !== myBusinessId.toString();
   });
 
-const otherIdString =
-  typeof otherId === "object" && otherId !== null
-    ? otherId.toString()
-    : otherId;
+// המרה בטוחה למחרוזת מזהה
+if (typeof otherId === "object" && otherId !== null) {
+  if (typeof otherId._id !== "undefined") {
+    otherId = otherId._id.toString();
+  } else if (typeof otherId.toString === "function") {
+    otherId = otherId.toString();
+  } else {
+    otherId = "";
+  }
+} else {
+  otherId = otherId.toString();
+}
 
 const payload = {
   conversationId: selectedConversation._id,
   from: myBusinessId.toString(),
-  to: otherIdString,
+  to: otherId,
   text: input.trim(),
 };
+
 
 
 
