@@ -23,12 +23,10 @@ export default function BusinessChatPage() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   const socket = useSocket();
   const prevSelectedRef = useRef(null);
 
   const [unreadCountsByConversation, setUnreadCountsByConversation] = useState({});
-
   const totalUnreadCount = Object.values(unreadCountsByConversation).reduce(
     (a, b) => a + b,
     0
@@ -38,37 +36,32 @@ export default function BusinessChatPage() {
     updateMessagesCount?.(totalUnreadCount);
   }, [totalUnreadCount, updateMessagesCount]);
 
+  // Fetch conversations list
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     setLoading(true);
     API.get("/messages/client-conversations")
       .then(({ data }) => {
-        setConvos(data.conversations || []);
+        console.log("🔥 client-conversations response:", data.conversations);
+        const convosData = data.conversations || [];
+        setConvos(convosData);
 
+        // Initialize unread counts
         const initialUnread = {};
-        (data.conversations || []).forEach((c) => {
-          if (c.unreadCount > 0) initialUnread[c._id] = c.unreadCount;
+        convosData.forEach((c) => {
+          if (c.unreadCount > 0) initialUnread[c.conversationId] = c.unreadCount;
         });
         setUnreadCountsByConversation(initialUnread);
 
-        if (data.conversations && data.conversations.length > 0) {
-          const first = data.conversations[0];
-
-          let partnerIdRaw = first.client || first.business || null;
-          let partnerId = partnerIdRaw;
-          if (partnerIdRaw && typeof partnerIdRaw === "object") {
-            if (partnerIdRaw._id) {
-              partnerId = partnerIdRaw._id.toString();
-            } else if (partnerIdRaw.toString) {
-              partnerId = partnerIdRaw.toString();
-            }
-          }
-          console.log("Initial selected partnerId:", partnerId); // לוג חשוב
+        // Initial selection of first conversation
+        if (convosData.length > 0) {
+          const { conversationId, clientId, clientName } = convosData[0];
+          console.log("Initial selected convo:", { conversationId, clientId, clientName });
           setSelected({
-            conversationId: first._id.toString(),
-            partnerId,
-            partnerName: first.clientName || first.businessName || "לקוח",
+            conversationId,
+            partnerId:   clientId,
+            partnerName: clientName,
           });
         } else {
           setSelected(null);
@@ -80,6 +73,7 @@ export default function BusinessChatPage() {
 
   const messagesAreaRef = useRef(null);
 
+  // Handle socket events and history
   useEffect(() => {
     if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
@@ -104,18 +98,23 @@ export default function BusinessChatPage() {
       if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
 
-    socket.emit("getHistory", { conversationId: selected.conversationId }, (res) => {
-      if (res.ok) {
-        setMessages(res.messages || []);
-      } else {
-        setMessages([]);
-        setError("שגיאה בטעינת ההודעות");
+    socket.emit(
+      "getHistory",
+      { conversationId: selected.conversationId },
+      (res) => {
+        if (res.ok) {
+          setMessages(res.messages || []);
+        } else {
+          setMessages([]);
+          setError("שגיאה בטעינת ההודעות");
+        }
       }
-    });
+    );
 
     prevSelectedRef.current = selected.conversationId;
   }, [socket, selected]);
 
+  // Listen for new message notifications
   useEffect(() => {
     if (!socket) return;
 
@@ -130,25 +129,13 @@ export default function BusinessChatPage() {
     };
 
     socket.on("newClientMessageNotification", handleNewMessage);
-
     return () => socket.off("newClientMessageNotification", handleNewMessage);
   }, [socket, selected?.conversationId]);
 
+  // Selection handler
   const handleSelect = (conversationId, partnerId, partnerName) => {
-    let idString = partnerId;
-    if (partnerId && typeof partnerId === "object") {
-      if (partnerId._id) {
-        idString = partnerId._id.toString();
-      } else if (partnerId.toString) {
-        idString = partnerId.toString();
-      }
-    }
-    console.log("handleSelect partnerId:", idString); // לוג חשוב
-    setSelected({
-      conversationId: conversationId.toString(),
-      partnerId: idString,
-      partnerName,
-    });
+    console.log("handleSelect got:", { conversationId, partnerId, partnerName });
+    setSelected({ conversationId, partnerId, partnerName });
   };
 
   if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
