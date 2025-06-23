@@ -3,7 +3,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import API from "../../../../api";
 import CollabChat from "./CollabChat";
-import "./CollabBusinessProfileTabNew.css";
+import "./CollabBusinessProfileTab.css";
 
 import { useAi } from "../../../../context/AiContext";
 import AiModal from "../../../../components/AiModal";
