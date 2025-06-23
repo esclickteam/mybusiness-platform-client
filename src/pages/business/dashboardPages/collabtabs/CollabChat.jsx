@@ -297,7 +297,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   console.log("[sendMessage] Sending payload:", payload);
 
-  // יצירת הודעה אופטימית עם מזהה זמני
   const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
   const optimistic = {
@@ -311,29 +310,34 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   dispatchMessages({ type: "append", payload: optimistic });
   setInput("");
+
+  // גלילה מיידית לתחתית אחרי הוספת ההודעה האופטימית
+  setTimeout(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, 50);
+
   setIsSending(true);
 
   socketRef.current.emit("sendMessage", payload, (ack) => {
-  setIsSending(false);
-  console.log("[sendMessage] Server ack:", ack);
-  if (!ack.ok) {
-    alert("שליחת הודעה נכשלה: " + ack.error);
-    // הסרת ההודעה האופטימית במקרה של כשלון, עם גישה למצב מעודכן
-    dispatchMessages((prevMessages) => prevMessages.filter((m) => m._id !== tempId));
-  } else if (ack.message?._id) {
-    const real = {
-      ...ack.message,
-      fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-      toBusinessId: ack.message.toBusinessId || ack.message.to,
-    };
-    // החלפה של ההודעה האופטימית בהודעה האמיתית עם ה-ID מהשרת
-    dispatchMessages({
-      type: "replace",
-      payload: real,
-    });
-  }
-});
+    setIsSending(false);
+    console.log("[sendMessage] Server ack:", ack);
+    if (!ack.ok) {
+      alert("שליחת הודעה נכשלה: " + ack.error);
+      dispatchMessages((prevMessages) => prevMessages.filter((m) => m._id !== tempId));
+    } else if (ack.message?._id) {
+      const real = {
+        ...ack.message,
+        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+        toBusinessId: ack.message.toBusinessId || ack.message.to,
+      };
+      dispatchMessages({
+        type: "replace",
+        payload: real,
+      });
+    }
+  });
 };
+
 
 
 
