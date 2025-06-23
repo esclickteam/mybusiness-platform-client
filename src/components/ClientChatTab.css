@@ -77,6 +77,16 @@
   margin-top: 2px;
 }
 
+/* סימון קריאה - נקראה */
+.read-indicator {
+  font-size: 14px;
+  color: #25d366;
+  user-select: none;
+  margin-left: 6px;
+  align-self: center;
+}
+
+/* הודעות מערכת */
 .system-message {
   background: #f1f1f6;
   color: #8b8b99;

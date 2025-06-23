@@ -115,8 +115,7 @@ export default function ClientChatTab({
     setLoading(true);
     setError("");
 
-      fetch(`/api/conversations/${conversationId}/history`, {
-
+    fetch(`/api/conversations/${conversationId}/history`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -199,21 +198,36 @@ export default function ClientChatTab({
     };
 
     const handleRecommendationUpdated = (updatedRec) => {
-  if (updatedRec.conversationId !== conversationId) return;
+      if (updatedRec.conversationId !== conversationId) return;
 
-  setMessages((prev) =>
-    prev.map((m) =>
-      m._id === updatedRec._id || m.recommendationId === updatedRec._id
-        ? { ...m, ...updatedRec }
-        : m
-    )
-  );
-};
+      setMessages((prev) =>
+        prev.map((m) =>
+          m._id === updatedRec._id || m.recommendationId === updatedRec._id
+            ? { ...m, ...updatedRec }
+            : m
+        )
+      );
+    };
 
+    // טיפול בעדכון סימון קריאה (read receipt)
+    const handleReadReceipt = ({ messageId, userId: readerId }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg._id === messageId) {
+            const readBy = msg.readBy || [];
+            if (!readBy.includes(readerId)) {
+              return { ...msg, readBy: [...readBy, readerId] };
+            }
+          }
+          return msg;
+        })
+      );
+    };
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("messageApproved", handleMessageApproved);
     socket.on("recommendationUpdated", handleRecommendationUpdated);
+    socket.on("messageRead", handleReadReceipt);
 
     socket.emit("joinConversation", conversationId);
     socket.emit("joinRoom", businessId);
@@ -222,15 +236,36 @@ export default function ClientChatTab({
       socket.off("newMessage", handleIncomingMessage);
       socket.off("messageApproved", handleMessageApproved);
       socket.off("recommendationUpdated", handleRecommendationUpdated);
+      socket.off("messageRead", handleReadReceipt);
       socket.emit("leaveConversation", conversationId);
     };
   }, [socket, conversationId, businessId, setMessages]);
 
+  // גלילה אוטומטית לתחתית כשמתווספות הודעות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // שליחת סימון קריאה עבור הודעות חדשות שנקראו מצד הלקוח
+  useEffect(() => {
+    if (!socket || !messages.length) return;
+
+    // סמן הודעות שהגיעו מהצד השני וטרם נקראו על ידך
+    const unreadMessages = messages.filter(
+      (m) => m.from !== userId && (!m.readBy || !m.readBy.includes(userId))
+    );
+
+    unreadMessages.forEach((msg) => {
+      socket.emit("markMessageRead", {
+        conversationId,
+        messageId: msg._id,
+      });
+    });
+  }, [messages, socket, conversationId, userId]);
+
+  // פונקציות ניהול הקלטה ושמירת הודעות (אודיו, קבצים, טקסט וכו')
 
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
@@ -251,7 +286,6 @@ export default function ClientChatTab({
     setSending(true);
     setError("");
 
-    // יצירת מזהה זמני ל-optimistic update
     const tempId = uuidv4();
 
     const optimisticMsg = {
@@ -265,12 +299,10 @@ export default function ClientChatTab({
       timestamp: new Date(),
     };
 
-    // הוספת הודעה זמנית ל-UI (Optimistic UI Update)
     setMessages((prev) => [...prev, optimisticMsg]);
 
     setInput("");
 
-    // שליחת ההודעה לשרת עם tempId
     socket.emit(
       "sendMessage",
       {
@@ -284,12 +316,10 @@ export default function ClientChatTab({
       (ack) => {
         setSending(false);
         if (ack?.ok) {
-          // החלפת ההודעה הזמנית בהודעה האמיתית מהשרת
           setMessages((prev) =>
             prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
           );
         } else {
-          // במקרה של שגיאה, הסר את ההודעה הזמנית והצג שגיאה
           setError("שגיאה בשליחת ההודעה");
           setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
         }
@@ -297,6 +327,7 @@ export default function ClientChatTab({
     );
   };
 
+  // הקלטת אודיו
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
 
@@ -365,6 +396,7 @@ export default function ClientChatTab({
     }
   };
 
+  // שליחת קובץ
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file || !socket) return;
@@ -410,54 +442,32 @@ export default function ClientChatTab({
               m.isRecommendation ? " ai-recommendation" : ""
             }`}
           >
-            {m.image ? (
-              <img
-                src={m.image}
-                alt={m.fileName || "image"}
-                style={{ maxWidth: 200, borderRadius: 8 }}
-              />
-            ) : m.fileUrl || m.file?.data ? (
-              m.fileType && m.fileType.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl || m.file.data}
-                  userAvatar={m.userAvatar}
-                  duration={m.fileDuration}
-                />
-              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
-                <img
-                  src={m.fileUrl || m.file.data}
-                  alt={m.fileName || "image"}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
-              ) : (
-                <a
-                  href={m.fileUrl || m.file?.data}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                >
-                  {m.fileName || "קובץ להורדה"}
-                </a>
-              )
+            {/* תוכן ההודעה */}
+            {m.fileUrl && m.fileType && m.fileType.startsWith("audio") ? (
+              <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
+            ) : m.fileUrl && /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
+              <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
+            ) : m.fileUrl ? (
+              <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                {m.fileName || "קובץ להורדה"}
+              </a>
             ) : (
-              <div className="text">{m.isEdited && m.editedText ? m.editedText : (m.content || m.text)}</div>
+              <div className="text">{m.content || m.text}</div>
+            )}
 
+            {/* סימון קריאה */}
+            {m.from === userId && m.readBy && m.readBy.includes(businessId) && (
+              <span className="read-indicator" title="נקראה">
+                ✔✔
+              </span>
             )}
-            {m.isEdited && userRole === "business" && (
-              <div className="edited-label" style={{ fontSize: "0.8em", color: "#888" }}>
-                (נערך)
-              </div>
-            )}
+
             <div className="meta">
               <span className="time">
                 {(() => {
-                      const date = new Date(m.createdAt);
-
+                  const date = new Date(m.createdAt);
                   if (isNaN(date)) return "";
-                  return date.toLocaleTimeString("he-IL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  });
+                  return date.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
                 })()}
               </span>
               {m.fileDuration && (
@@ -542,7 +552,7 @@ export default function ClientChatTab({
               </button>
               <button
                 className={`recordBtn${recording ? " recording" : ""}`}
-                onClick={handleRecordStart}
+                onClick={recording ? handleRecordStop : handleRecordStart}
                 disabled={sending}
                 type="button"
               >
