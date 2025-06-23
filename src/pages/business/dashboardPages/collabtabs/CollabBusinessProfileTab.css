@@ -1,10 +1,10 @@
 .profile-wrapper {
-  max-width: 480px; /* צר יותר */
+  max-width: 720px; /* רוחב כללי של הפרופיל */
   margin: 4rem auto;
-  padding: 2.5rem 2rem;
+  padding: 3rem 3rem;
   background: linear-gradient(135deg, #ede9fb, #f9f7ff);
-  border-radius: 28px;
-  box-shadow: 0 20px 40px rgba(120, 81, 169, 0.25);
+  border-radius: 40px;
+  box-shadow: 0 25px 50px rgba(120, 81, 169, 0.2);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   color: #4a3f78;
@@ -13,29 +13,29 @@
 
 .profile-header {
   text-align: center;
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 900;
-  margin-bottom: 2.8rem;
-  letter-spacing: 1.1px;
+  margin-bottom: 3rem;
+  letter-spacing: 1.2px;
   color: #6f5ecb;
-  text-shadow: 0 0 14px #a9a0f5;
+  text-shadow: 0 0 15px #a9a0f5;
 }
 
 .profile-card {
   background: white;
-  border-radius: 25px;
-  padding: 2.8rem 3rem;
-  box-shadow: 0 20px 50px rgba(120, 81, 169, 0.3);
+  border-radius: 30px;
+  padding: 3rem 3rem;
+  box-shadow: 0 30px 60px rgba(120, 81, 169, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 3.5rem;
 }
 
 .profile-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
@@ -44,19 +44,19 @@
   flex-shrink: 0;
   border-radius: 100%;
   overflow: hidden;
-  width: 120px;
-  height: 120px;
-  box-shadow: 0 5px 25px rgba(120, 81, 169, 0.35);
+  width: 140px;
+  height: 140px;
+  box-shadow: 0 6px 30px rgba(120, 81, 169, 0.35);
   transition: transform 0.4s ease;
 }
 
 .profile-logo-label:hover {
-  transform: scale(1.12);
+  transform: scale(1.15);
 }
 
 .profile-logo {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   border-radius: 100%;
   object-fit: cover;
   display: block;
@@ -65,40 +65,40 @@
 .profile-main-info {
   flex-grow: 1;
   text-align: right;
-  padding-right: 25px;
+  padding-right: 30px;
 }
 
 .profile-business-name {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 900;
   margin: 0 0 0.5rem 0;
   color: #6747c7;
-  text-shadow: 0 0 9px #8f7ae9;
+  text-shadow: 0 0 10px #8f7ae9;
 }
 
 .profile-category {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #a594e9;
 }
 
 .profile-actions {
   display: flex;
-  gap: 15px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
 .btn-primary,
 .btn-secondary {
-  padding: 0.95rem 2.2rem;
-  border-radius: 36px;
+  padding: 1rem 2.6rem;
+  border-radius: 40px;
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   cursor: pointer;
   border: none;
   transition: background-color 0.35s ease, box-shadow 0.35s ease;
   user-select: none;
-  box-shadow: 0 7px 25px rgba(120, 81, 169, 0.35);
+  box-shadow: 0 8px 25px rgba(120, 81, 169, 0.35);
 }
 
 .btn-primary {
@@ -124,41 +124,42 @@
 }
 
 .profile-section {
-  max-width: 450px;
-  margin: 2rem auto;
-  padding: 1.7rem 1.8rem;
+  width: 100%;           /* תופס כל רוחב פנימי */
+  max-width: 480px;      /* רוחב אחיד ומוגבל */
+  min-height: 130px;     /* גובה מינימום אחיד */
+  margin: 0 auto;        /* מרכז בתוך הקונטיינר */
+  padding: 2rem 2.5rem;
   background-color: #f4f1fc;
-  border-radius: 18px;
-  box-shadow: 0 6px 14px rgba(120, 81, 169, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 6px 14px rgba(120, 81, 169, 0.15);
   text-align: center;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   color: #5a4e90;
   font-weight: 600;
   user-select: text;
+
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
   justify-content: center;
-  align-items: center;
-  min-height: 110px;
+  gap: 0.6rem;
   box-sizing: border-box;
 }
 
 .profile-section h3 {
   font-weight: 700;
-  font-size: 1.55rem;
+  font-size: 1.7rem;
   color: #5f53a5;
   text-shadow: 0 0 6px #bfb6f6;
   margin: 0;
 }
 
 .profile-section p {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   color: #423971;
   line-height: 1.6;
-  margin: 0;
+  margin: 0 auto;
   font-weight: 400;
-  max-width: 400px;
+  max-width: 440px;
   text-align: center;
 }
 
@@ -166,14 +167,14 @@
   padding-inline-start: 0;
   list-style-type: none;
   color: #564f8e;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   line-height: 1.8;
   margin: 0 auto;
-  max-width: 400px;
+  max-width: 440px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .profile-collab-list li::before {
@@ -185,11 +186,11 @@
 .modal-box {
   direction: rtl;
   background: white;
-  border-radius: 30px;
-  padding: 2.8rem 3.3rem;
-  max-width: 520px;
+  border-radius: 35px;
+  padding: 3rem 3.5rem;
+  max-width: 580px;
   margin: 5% auto;
-  box-shadow: 0 20px 50px rgba(120, 81, 169, 0.35);
+  box-shadow: 0 25px 55px rgba(120, 81, 169, 0.35);
   outline: none;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #483d7a;
@@ -198,7 +199,7 @@
 .modal-box h2 {
   text-align: center;
   font-weight: 900;
-  font-size: 2.2rem;
+  font-size: 2.3rem;
   margin-bottom: 2rem;
   text-shadow: 0 0 10px #c3bbff;
 }
@@ -206,7 +207,7 @@
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 1.8rem;
 }
 
 .profile-form label {
@@ -218,9 +219,9 @@
 .profile-form input,
 .profile-form textarea {
   width: 100%;
-  padding: 1rem 1.2rem;
-  font-size: 1.1rem;
-  border-radius: 18px;
+  padding: 1.2rem 1.4rem;
+  font-size: 1.15rem;
+  border-radius: 20px;
   border: 2px solid #c3bbff;
   background-color: #f9f8ff;
   transition: all 0.35s ease;
