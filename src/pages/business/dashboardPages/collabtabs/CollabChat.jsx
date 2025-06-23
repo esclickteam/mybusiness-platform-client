@@ -260,9 +260,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
   if (!otherIdRaw) return;
-  const otherId = typeof otherIdRaw === "string"
-    ? otherIdRaw
-    : otherIdRaw._id
+  const otherId =
+    typeof otherIdRaw === "string"
+      ? otherIdRaw
+      : otherIdRaw._id
       ? otherIdRaw._id.toString()
       : otherIdRaw.toString();
 
@@ -275,10 +276,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   console.log("[sendMessage] Sending payload:", payload);
 
+  // יצירת הודעה אופטימית עם מזהה זמני
+  const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
+
   const optimistic = {
     ...payload,
     timestamp: new Date().toISOString(),
-    _id: "pending-" + Math.random().toString(36).substr(2, 9),
+    _id: tempId,
     fromBusinessId: payload.from,
     toBusinessId: payload.to,
     sending: true,
@@ -293,9 +297,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     console.log("[sendMessage] Server ack:", ack);
     if (!ack.ok) {
       alert("שליחת הודעה נכשלה: " + ack.error);
+      // הסרת ההודעה האופטימית במקרה של כשלון
       dispatchMessages({
         type: "set",
-        payload: messages.filter((m) => m._id !== optimistic._id),
+        payload: messages.filter((m) => m._id !== tempId),
       });
     } else if (ack.message?._id) {
       const real = {
@@ -303,6 +308,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         fromBusinessId: ack.message.fromBusinessId || ack.message.from,
         toBusinessId: ack.message.toBusinessId || ack.message.to,
       };
+      // החלפה של ההודעה האופטימית בהודעה האמיתית עם ה-ID מהשרת
       dispatchMessages({
         type: "replace",
         payload: real,
@@ -310,6 +316,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   });
 };
+
 
 
   const handleAttach = () => {
