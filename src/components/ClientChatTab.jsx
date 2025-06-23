@@ -91,6 +91,7 @@ export default function ClientChatTab({
   messages,
   setMessages,
   userRole,
+  conversationType = "user-business", // הוספתי ברירת מחדל
 }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -108,15 +109,16 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טעינת ההיסטוריה פעם אחת עם שינוי conversationId
+  // הגדרת isBusinessConversation לפי conversationType
+  const isBusinessConversation = conversationType === "business-business";
+
   useEffect(() => {
     if (!conversationId) return;
 
     setLoading(true);
     setError("");
 
-      fetch(`/api/conversations/${conversationId}/history`, {
-
+    fetch(`/api/conversations/${conversationId}/history`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -139,7 +141,6 @@ export default function ClientChatTab({
       });
   }, [conversationId, setMessages]);
 
-  // מאזיני socket לעדכונים בזמן אמת (בלי fetch חוזר)
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
@@ -155,7 +156,6 @@ export default function ClientChatTab({
         : null;
 
       setMessages((prev) => {
-        // אם ההודעה כבר קיימת (כולל החלפת tempId ב-id אמיתי), עדכן במקום להוסיף כפילויות
         const existsIdx = prev.findIndex((m) => {
           const mid = m.isRecommendation
             ? `rec_${m.recommendationId}`
@@ -199,32 +199,31 @@ export default function ClientChatTab({
     };
 
     const handleRecommendationUpdated = (updatedRec) => {
-  if (updatedRec.conversationId !== conversationId) return;
+      if (updatedRec.conversationId !== conversationId) return;
 
-  setMessages((prev) =>
-    prev.map((m) =>
-      m._id === updatedRec._id || m.recommendationId === updatedRec._id
-        ? { ...m, ...updatedRec }
-        : m
-    )
-  );
-};
-
+      setMessages((prev) =>
+        prev.map((m) =>
+          m._id === updatedRec._id || m.recommendationId === updatedRec._id
+            ? { ...m, ...updatedRec }
+            : m
+        )
+      );
+    };
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("messageApproved", handleMessageApproved);
     socket.on("recommendationUpdated", handleRecommendationUpdated);
 
-    socket.emit("joinConversation", conversationId);
+    socket.emit("joinConversation", conversationId, isBusinessConversation);
     socket.emit("joinRoom", businessId);
 
     return () => {
       socket.off("newMessage", handleIncomingMessage);
       socket.off("messageApproved", handleMessageApproved);
       socket.off("recommendationUpdated", handleRecommendationUpdated);
-      socket.emit("leaveConversation", conversationId);
+      socket.emit("leaveConversation", conversationId, isBusinessConversation);
     };
-  }, [socket, conversationId, businessId, setMessages]);
+  }, [socket, conversationId, businessId, setMessages, isBusinessConversation]);
 
   useEffect(() => {
     if (messageListRef.current) {
@@ -280,6 +279,7 @@ export default function ClientChatTab({
         role: "client",
         text: optimisticMsg.text,
         tempId,
+        conversationType, 
       },
       (ack) => {
         setSending(false);
@@ -351,6 +351,7 @@ export default function ClientChatTab({
           buffer,
           fileType: recordedBlob.type,
           duration: timer,
+          conversationType,
         },
         (ack) => {
           setSending(false);
@@ -382,6 +383,7 @@ export default function ClientChatTab({
           buffer: Buffer.from(reader.result.split(",")[1], "base64"),
           fileType: file.type,
           fileName: file.name,
+          conversationType,
         },
         (ack) => {
           setSending(false);
