@@ -20,7 +20,9 @@ function getOtherBusinessId(conv, myBusinessId) {
   }
 
   if (Array.isArray(conv.participants)) {
-    const raw = conv.participants.find((id) => id.toString() !== myBusinessId.toString());
+    const raw = conv.participants.find(
+      (id) => id.toString() !== myBusinessId.toString()
+    );
     if (raw) return raw.toString();
   }
 
@@ -144,7 +146,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       return;
     }
     const convId = selectedConversation._id;
-    socketRef.current.emit("joinConversation", convId);
+    const joinHandler = () => {
+      socketRef.current.emit("joinConversation", convId);
+    };
+
+    // הצטרפות ל-room בפעם הראשונה ובכל התחברות מחדש
+    socketRef.current.on("connect", joinHandler);
+    joinHandler();
 
     (async () => {
       try {
@@ -166,6 +174,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     return () => {
       socketRef.current.emit("leaveConversation", convId);
+      socketRef.current.off("connect", joinHandler);
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
