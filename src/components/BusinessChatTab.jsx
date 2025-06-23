@@ -196,21 +196,21 @@ export default function BusinessChatTab({
     };
 
     // טיפול בעדכון סטטוס קריאה (Read Receipt)
-    const handleReadReceipt = ({ messageId, userId }) => {
-      dispatch({
-        type: "updateStatus",
-        payload: {
-          id: messageId,
-          updates: (prevMsg) => {
-            const readBy = prevMsg?.readBy || [];
-            if (!readBy.includes(userId)) {
-              return { readBy: [...readBy, userId] };
-            }
-            return {};
-          },
-        },
-      });
-    };
+    const handleReadReceipt = ({ messageId, userId: readerId }) => {
+  setMessages((prev) =>
+    prev.map((msg) => {
+      if (msg._id.toString() === messageId.toString()) {
+        const readBy = msg.readBy || [];
+        // בדוק אם כבר קיים המזהה במערך אחרי המרה למחרוזת
+        if (!readBy.some(id => id.toString() === readerId.toString())) {
+          return { ...msg, readBy: [...readBy, readerId] };
+        }
+      }
+      return msg;
+    })
+  );
+};
+
 
     socket.on("newMessage", handleNew);
     socket.on("typing", handleTyping);
@@ -238,8 +238,10 @@ export default function BusinessChatTab({
 
     // סמן הודעות שנשלחו לצד השני וטרם נקראו על ידך
     const unreadMessages = messages.filter(
-      (m) => m.from !== businessId && (!m.readBy || !m.readBy.includes(businessId))
-    );
+  (m) => 
+    m.from !== userId &&
+    (!m.readBy || !m.readBy.some(id => id.toString() === userId.toString()))
+);
 
     unreadMessages.forEach((msg) => {
       socket.emit("markMessageRead", {
