@@ -1,62 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import API from "../../../../api";
-import CreatePartnershipAgreementForm from "../../../../components/CreateAgreementForm";
-import ProposalForm from "./ProposalForm";
 import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
   searchMode,
-  setSearchMode,
   searchCategory,
-  setSearchCategory,
   freeText,
-  setFreeText,
-  categories,
-  setSelectedBusiness,
-  setOpenModal,
-  isDevUser,
-  handleSendProposal,
 }) {
   const navigate = useNavigate();
 
   const [myBusinessId, setMyBusinessId] = useState(null);
-  const [myBusinessName, setMyBusinessName] = useState("");
-
-  const [currentProposalId, setCurrentProposalId] = useState(null);
+  const [partners, setPartners] = useState([]);
 
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
         const res = await API.get("/business/my");
         setMyBusinessId(res.data.business._id);
-        setMyBusinessName(res.data.business.businessName);
       } catch (err) {
         console.error("Error fetching my business:", err);
       }
     }
     fetchMyBusiness();
   }, []);
-
-  const [partners, setPartners] = useState([]);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [chatModalOpen, setChatModalOpen] = useState(false);
-  const [chatTarget, setChatTarget] = useState(null);
-  const [chatMessage, setChatMessage] = useState("");
-  const [sending, setSending] = useState(false);
-
-  const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
-  const [createAgreementPartner, setCreateAgreementPartner] = useState(null);
-
-  const [sendProposalModalOpen, setSendProposalModalOpen] = useState(false);
-  const [selectedBusinessForProposal, setSelectedBusinessForProposal] = useState(null);
 
   useEffect(() => {
     async function fetchPartners() {
@@ -72,6 +39,7 @@ export default function CollabFindPartnerTab({
     return () => clearInterval(intervalId);
   }, []);
 
+  // פילטר על בסיס חיפוש ומצב חיפוש
   const filteredPartners = partners.filter((business) => {
     if (searchMode === "category" && searchCategory) {
       return (
@@ -100,18 +68,43 @@ export default function CollabFindPartnerTab({
 
   return (
     <div>
-      {/* Search Bar */}
-      <div className="search-container">{/* שדות חיפוש ופילטרים */}</div>
+      {/* ניווט בין עמודים */}
+      <nav className="search-type-toggle" style={{ marginBottom: 16 }}>
+        <button
+          className={searchMode === "profile" ? "toggle-button active" : "toggle-button"}
+          onClick={() => window.location.assign("/business/profile")}
+        >
+          פרופיל עסקי
+        </button>
+        <button
+          className={searchMode === "partners" ? "toggle-button active" : "toggle-button"}
+          onClick={() => window.location.assign("/business/collaborations/findPartner")}
+        >
+          מצא שותף עסקי
+        </button>
+        <button
+          className={searchMode === "offers" ? "toggle-button active" : "toggle-button"}
+          onClick={() => window.location.assign("/business/collaborations/offers")}
+        >
+          הצעות
+        </button>
+        <button
+          className={searchMode === "market" ? "toggle-button active" : "toggle-button"}
+          onClick={() => window.location.assign("/business/collaborations/market")}
+        >
+          מרקט שותפים
+        </button>
+      </nav>
 
-      {/* Partners List */}
+      {/* רשימת שותפים */}
       {filteredPartners.length === 0 ? (
-        <p>לא נמצאו שותפים.</p>
+        <p style={{ textAlign: "center", marginTop: 40, color: "#666" }}>לא נמצאו שותפים.</p>
       ) : (
         filteredPartners.map((business) => {
           const isMine = business._id === myBusinessId;
           return (
             <div
-              key={business._id || business.id}
+              key={business._id}
               className={`collab-card${isMine ? " my-business" : ""}`}
             >
               <h3 className="business-name">
@@ -120,7 +113,9 @@ export default function CollabFindPartnerTab({
               </h3>
               <p className="business-category">{business.category}</p>
               <p className="business-desc">{business.description}</p>
-              <span className="status-badge">סטטוס בקשה: {business.status || "לא ידוע"}</span>
+              {/* סטטוס – אם אתה לא רוצה תוריד את זה מה-HTML */}
+              {/* <span className="status-badge">סטטוס בקשה: {business.status || "לא ידוע"}</span> */}
+
               <div className="collab-card-buttons">
                 {isMine ? (
                   <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
@@ -140,15 +135,3 @@ export default function CollabFindPartnerTab({
     </div>
   );
 }
-
-const modalStyle = {
-  backgroundColor: "#fff",
-  p: 4,
-  borderRadius: 2,
-  maxWidth: 420,
-  m: "10% auto",
-  maxHeight: "80vh",
-  overflowY: "auto",
-  display: "flex",
-  flexDirection: "column",
-};
