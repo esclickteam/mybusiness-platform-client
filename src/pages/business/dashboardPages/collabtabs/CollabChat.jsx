@@ -17,14 +17,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
 
   const refreshAccessToken = useCallback(async () => {
-    console.log("[CollabChat] Refreshing token...");
     const token = await refreshAccessTokenOriginal();
-    console.log("[CollabChat] Token refreshed:", token ? "YES" : "NO");
     return token;
   }, [refreshAccessTokenOriginal]);
 
   const logout = useCallback(() => {
-    console.log("[CollabChat] Logging out user");
     logoutOriginal();
   }, [logoutOriginal]);
 
@@ -37,64 +34,44 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
-    const filtered = msgs.filter((m) => {
+    return msgs.filter((m) => {
       const id = m._id?.toString() || m.tempId || m.timestamp;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
-    console.log("[CollabChat] uniqueMessages filtered count:", filtered.length);
-    return filtered;
   }, []);
 
   const fetchConversations = useCallback(async () => {
     try {
-      console.log("[CollabChat] Fetching conversations...");
       const token = await refreshAccessToken();
-      if (!token) {
-        console.warn("[CollabChat] No token, aborting fetchConversations");
-        return;
-      }
+      if (!token) return;
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const convsRaw = res.data.conversations || [];
-      console.log("[CollabChat] Raw conversations fetched:", convsRaw);
       const convs = convsRaw.map((c) => ({
         ...c,
         messages: Array.isArray(c.messages) ? c.messages : [],
       }));
-      console.log("[CollabChat] Conversations with safe messages:", convs);
       setConversations(convs);
       if (!selectedConversation && convs.length > 0) {
-        console.log("[CollabChat] Setting first conversation as selected");
         setSelectedConversation(convs[0]);
       }
     } catch (err) {
-      console.error("[CollabChat] Failed fetching conversations:", err);
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
   }, [refreshAccessToken, selectedConversation]);
 
   useEffect(() => {
-    if (!myBusinessId) {
-      console.warn("[CollabChat] No business ID, aborting socket setup");
-      return;
-    }
-
-    if (socketInitializedRef.current) {
-      console.log("[CollabChat] Socket already initialized, skipping setup");
-      return;
-    }
+    if (!myBusinessId) return;
+    if (socketInitializedRef.current) return;
     socketInitializedRef.current = true;
 
     async function setupSocket() {
       const token = await refreshAccessToken();
-      if (!token) {
-        console.warn("[CollabChat] No token, aborting socket setup");
-        return;
-      }
+      if (!token) return;
 
       const sock = io(SOCKET_URL, {
         path: "/socket.io",
@@ -110,16 +87,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       socketRef.current = sock;
 
       sock.on("connect", () => {
-        console.log("[CollabChat] Socket connected with id:", sock.id);
         fetchConversations();
       });
 
       sock.on("connect_error", (err) => {
-        console.error("[CollabChat] Socket connection error:", err);
+        console.error("Socket connection error:", err);
       });
 
       sock.on("tokenExpired", async () => {
-        console.log("[CollabChat] Token expired, refreshing...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
@@ -135,7 +110,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     return () => {
       if (socketRef.current) {
-        console.log("[CollabChat] Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
         socketInitializedRef.current = false;
@@ -145,22 +119,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) {
-      console.log("[CollabChat] No socket or no selectedConversation, clearing messages");
       setMessages([]);
       return;
     }
-
     const convId = selectedConversation._id;
-    console.log("[CollabChat] Joining conversation:", convId);
     socketRef.current.emit("joinConversation", convId);
 
     (async () => {
       try {
         const token = await refreshAccessToken();
-        if (!token) {
-          console.warn("[CollabChat] No token, aborting message fetch");
-          return;
-        }
+        if (!token) return;
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -169,16 +137,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           fromBusinessId: msg.fromBusinessId || msg.from,
           toBusinessId: msg.toBusinessId || msg.to,
         }));
-        console.log(`[CollabChat] Fetched ${normMsgs.length} messages for conversation ${convId}`);
         setMessages(uniqueMessages(normMsgs));
-      } catch (err) {
-        console.error("[CollabChat] Fetch messages failed:", err);
+      } catch {
         setMessages([]);
       }
     })();
 
     return () => {
-      console.log("[CollabChat] Leaving conversation:", convId);
       socketRef.current.emit("leaveConversation", convId);
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
@@ -188,24 +153,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const handler = (msg) => {
       const fullMsg = msg.fullMsg || msg;
-
       const normalized = {
         ...fullMsg,
         fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
         toBusinessId: fullMsg.toBusinessId || fullMsg.to,
       };
-
-      console.log("[CollabChat] Received newMessage event:", {
-        id: fullMsg._id,
-        text: normalized.text,
-        time: new Date().toISOString(),
-        fullMsg,
-      });
-
       if (normalized.conversationId === selectedConversation._id) {
         setMessages((prev) => uniqueMessages([...prev, normalized]));
       }
-
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === normalized.conversationId
@@ -219,26 +174,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     socketRef.current.on("newMessage", handler);
 
     return () => {
-      console.log("[CollabChat] Removing newMessage listener");
       socketRef.current.off("newMessage", handler);
     };
   }, [selectedConversation, uniqueMessages]);
 
   useEffect(() => {
-    console.log("[CollabChat] Scrolling to bottom");
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = () => {
-    console.log("[CollabChat] sendMessage triggered", { input, isSending });
-    if (isSending) {
-      console.warn("[CollabChat] sendMessage ignored, already sending");
-      return;
-    }
-    if (!input.trim() || !selectedConversation || !socketRef.current) {
-      console.warn("[CollabChat] sendMessage aborted, missing input or selectedConversation or socket");
-      return;
-    }
+    if (isSending) return;
+    if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
     setIsSending(true);
 
@@ -577,6 +523,27 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               borderRadius: "0 0 18px 18px",
             }}
           >
+            <Button
+              type="button"
+              onClick={handleAttach}
+              sx={{
+                fontSize: "1.6rem",
+                padding: "10px 14px",
+                borderRadius: "50%",
+                minWidth: 0,
+                backgroundColor: "#e3dffc",
+                color: "#7153dd",
+                boxShadow: "0 6px 15px rgba(111, 94, 203, 0.4)",
+                "&:hover": {
+                  backgroundColor: "#c7bcf8",
+                  boxShadow: "0 8px 20px rgba(111, 94, 203, 0.7)",
+                },
+              }}
+              title="צרף קובץ"
+            >
+              📎
+            </Button>
+
             <TextField
               fullWidth
               size="medium"
@@ -618,28 +585,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               disabled={!input.trim() || isSending}
             >
               שלח
-            </Button>
-
-            <Button
-              type="button"
-              onClick={handleAttach}
-              sx={{
-                ml: 1,
-                fontSize: "1.6rem",
-                padding: "10px 14px",
-                borderRadius: "50%",
-                minWidth: 0,
-                backgroundColor: "#e3dffc",
-                color: "#7153dd",
-                boxShadow: "0 6px 15px rgba(111, 94, 203, 0.4)",
-                "&:hover": {
-                  backgroundColor: "#c7bcf8",
-                  boxShadow: "0 8px 20px rgba(111, 94, 203, 0.7)",
-                },
-              }}
-              title="צרף קובץ"
-            >
-              📎
             </Button>
 
             <input
