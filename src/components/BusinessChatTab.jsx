@@ -7,7 +7,6 @@ import React, {
 import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
-// Component for audio messages
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -73,7 +72,6 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
-// Reducer for message state
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
@@ -261,7 +259,7 @@ export default function BusinessChatTab({
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: URL.createObjectURL(file), // להציג זמנית
+      fileUrl: URL.createObjectURL(file),
       fileName: file.name,
       fileType: file.type,
       timestamp: new Date().toISOString(),
@@ -278,7 +276,7 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendFile] File sending failed:", ack.error);
           }
-          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת (לא להשאיר URL זמני)
+          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
@@ -297,7 +295,7 @@ export default function BusinessChatTab({
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: URL.createObjectURL(recordedBlob), // להציג זמנית
+      fileUrl: URL.createObjectURL(recordedBlob),
       fileName: `audio.${recordedBlob.type.split("/")[1]}`,
       fileType: recordedBlob.type,
       fileDuration: timer,
