@@ -36,7 +36,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketInitializedRef = useRef(false);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
-
   const selectedConversationRef = useRef(null);
 
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
@@ -57,7 +56,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  // Sync the ref with the current selectedConversation
+  // Sync ref עם הבחירה הנוכחית
   useEffect(() => {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation]);
@@ -72,6 +71,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   }, []);
 
+  // טען שיחות מה־API
   const fetchConversations = useCallback(async () => {
     try {
       const token = await refreshAccessToken();
@@ -94,6 +94,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
   }, [refreshAccessToken]);
 
+  // התחברות ל־WebSocket
   useEffect(() => {
     if (!myBusinessId) return;
     if (socketInitializedRef.current) return;
@@ -147,6 +148,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout, fetchConversations]);
 
+  // ברגע שהשיחות נטענות, מצטרפים לכל חדר
+  useEffect(() => {
+    if (!socketRef.current) return;
+    conversations.forEach((conv) => {
+      socketRef.current.emit("joinConversation", conv._id);
+    });
+  }, [conversations]);
+
+  // טעינת הודעות כשמשתנה selectedConversation
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) {
       setMessages([]);
@@ -155,7 +165,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     const convId = selectedConversation._id;
 
     const joinHandler = () => {
-      // Always use the ref here to get latest selectedConversation
       socketRef.current.emit("joinConversation", selectedConversationRef.current._id);
     };
 
@@ -186,6 +195,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
+  // טיפול בהודעות נכנסות
   const handleNewMessage = useCallback(
     (msg) => {
       const fullMsg = msg.fullMsg || msg;
@@ -193,12 +203,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         ...fullMsg,
         fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
         toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+        // תמיכה בשמות חלופיים
+        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
       };
 
+      // אם מיועדת לשיחה הנוכחית
       if (normalized.conversationId === selectedConversationRef.current?._id) {
         setMessages((prev) => uniqueMessages([...prev, normalized]));
       }
 
+      // עדכון ברשימת השיחות
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === normalized.conversationId
@@ -212,7 +226,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   useEffect(() => {
     if (!socketRef.current) return;
-
     socketRef.current.on("newMessage", handleNewMessage);
     return () => {
       socketRef.current.off("newMessage", handleNewMessage);
@@ -385,10 +398,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     reader.readAsArrayBuffer(file);
   };
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
   return (
     <Box
       sx={{
@@ -445,7 +454,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   py: 1.5,
                   cursor: "pointer",
                   borderBottom: "1px solid #f3f0fa",
-                  background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                  background:
+                    selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
                 }}
                 onClick={() => {
                   setSelectedConversation(conv);
@@ -499,9 +509,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   <Box
                     key={msg._id ? msg._id.toString() : `pending-${i}`}
                     sx={{
-                      background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                      background:
+                        msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
                       alignSelf:
-                        msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
+                        msg.fromBusinessId === myBusinessId
+                          ? "flex-end"
+                          : "flex-start",
                       p: 1.2,
                       borderRadius: 2,
                       mb: 1,
