@@ -4,7 +4,7 @@ import "./BusinessChatTab.css";
 
 // Component for audio messages
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
-  if (!src) return null; // הגנה במקרה שאין מקור אודיו תקין
+  if (!src) return null;
 
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -112,10 +112,8 @@ export default function BusinessChatTab({
   const [isTyping, setIsTyping] = useState(false);
   const fileInputRef = useRef(null);
 
-  // הגדרת isBusinessConversation לפי conversationType
   const isBusinessConversation = conversationType === "business-business";
 
-  // helper להגנה על תאריכים לא תקינים
   const formatTime = (ts) => {
     if (!ts) return "";
     const d = new Date(ts);
@@ -126,7 +124,6 @@ export default function BusinessChatTab({
     });
   };
 
-  // הקלטת אודיו
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
@@ -137,7 +134,6 @@ export default function BusinessChatTab({
 
   const listRef = useRef(null);
 
-  // 1. התחברות ל־conversation, סימון קריאה, וטענת היסטוריה
   useEffect(() => {
     if (!socket || !conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -154,7 +150,7 @@ export default function BusinessChatTab({
 
     socket.emit(
       "getHistory",
-      { conversationId },
+      { conversationId, conversationType }, // שולח גם conversationType
       (res) => {
         if (res.ok) {
           const msgs = (res.messages || []).map((m) => ({
@@ -177,13 +173,15 @@ export default function BusinessChatTab({
     return () => {
       socket.emit("leaveConversation", conversationId, isBusinessConversation);
     };
-  }, [socket, conversationId, isBusinessConversation]);
+  }, [socket, conversationId, isBusinessConversation, conversationType]);
 
-  // 2. מאזינים ל־newMessage ו־typing
   useEffect(() => {
     if (!socket) return;
     const handleNew = (msg) => {
-      if (msg.conversationId === conversationId) {
+      if (
+        msg.conversationId === conversationId &&
+        msg.conversationType === conversationType // סינון לפי סוג שיחה
+      ) {
         const safeMsg = {
           ...msg,
           timestamp: msg.createdAt || new Date().toISOString(),
@@ -210,9 +208,8 @@ export default function BusinessChatTab({
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
     };
-  }, [socket, conversationId, customerId]);
+  }, [socket, conversationId, customerId, conversationType]);
 
-  // 3. גלילה אוטומטית לתחתית כשמתווספות הודעות
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
@@ -221,7 +218,6 @@ export default function BusinessChatTab({
     if (nearBottom) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
-  // 4. Handlers לשליחה, קבצים והקלטה
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
@@ -248,7 +244,7 @@ export default function BusinessChatTab({
 
     socket.emit(
       "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId, conversationType }, // הוספנו conversationType כאן
+      { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
       (ack) => {
         setSending(false);
         dispatch({
@@ -275,7 +271,6 @@ export default function BusinessChatTab({
     if (!file || !socket) return;
     const tempId = uuidv4();
 
-    // אופטימיסטית: מציגים blob עד לקבלת ה־fileUrl מהשרת
     const optimistic = {
       _id: tempId,
       conversationId,
@@ -302,15 +297,15 @@ export default function BusinessChatTab({
           fileType: file.type,
           buffer: reader.result,
           tempId,
+          conversationType, // שולח conversationType גם כאן
         },
         (ack) => {
-          // כאן אנחנו מקבלים fileUrl אמת מהשרת
           dispatch({
             type: "updateStatus",
             payload: {
               id: tempId,
               updates: {
-                fileUrl: ack.message?.fileUrl || null, // הגנה במקרה שהשרת לא שולח fileUrl
+                fileUrl: ack.message?.fileUrl || null,
                 sending: false,
                 failed: !ack.ok,
               },
@@ -397,6 +392,7 @@ export default function BusinessChatTab({
           fileType: recordedBlob.type,
           duration: timer,
           tempId,
+          conversationType, // שולח conversationType
         },
         (ack) => {
           dispatch({
