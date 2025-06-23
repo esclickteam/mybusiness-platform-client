@@ -11,28 +11,18 @@ import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import { AiProvider } from "../../../context/AiContext";
 import "./Collab.css";
 
-// תפריט צד קבוע עם ניווט טאבים
-const Sidebar = ({ activeTab, onChangeTab }) => {
-  const tabs = [
-    { id: "profile", label: "פרופיל עסקי" },
-    { id: "findPartner", label: "מצא שותף עסקי" },
-    { id: "messages", label: "הצעות" },
-    { id: "market", label: "מרקט שיתופים" },
-  ];
+const tabMap = {
+  profile: 0,
+  findPartner: 1,
+  messages: 2,
+  market: 3,
+};
 
-  return (
-    <div className="collab-sidebar">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          className={`tab ${activeTab === tab.id ? "active" : ""}`}
-          onClick={() => onChangeTab(tab.id)}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
-  );
+const tabLabels = {
+  profile: "פרופיל עסקי",
+  findPartner: "מצא שותף עסקי",
+  messages: "הצעות",
+  market: "מרקט שיתופים",
 };
 
 export default function Collab() {
@@ -42,16 +32,7 @@ export default function Collab() {
 
   const devMode = true;
 
-  // ננהל את הטאב הנבחר לפי פרמטר מהכתובת או ברירת מחדל
-  const [tab, setTab] = useState(tabParam || "profile");
-
-  // נעדכן URL ונחליף תוכן
-  const changeTab = (newTab) => {
-    setTab(newTab);
-    navigate(`/business/collaborations/${newTab}`, { replace: true });
-  };
-
-  // שאר הלוגיקה (socket, פרופיל וכו') נשארת זהה
+  const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
 
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
@@ -76,6 +57,12 @@ export default function Collab() {
       newSocket.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
+      setTab(tabMap[tabParam]);
+    }
+  }, [tabParam, tab]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -167,48 +154,59 @@ export default function Collab() {
 
   return (
     <AiProvider>
-      <div className="collab-layout">
-        <Sidebar activeTab={tab} onChangeTab={changeTab} />
-
-        <div className="collab-content">
-          {tab === "profile" &&
-            (loadingProfile ? (
-              <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
-            ) : (
-              <CollabBusinessProfileTab
-                profileData={profileData}
-                profileImage={profileImage}
-                handleSaveProfile={handleSaveProfile}
-              />
-            ))}
-
-          {tab === "findPartner" && (
-            <CollabFindPartnerTab
-              searchMode="category"
-              setSearchMode={() => {}}
-              searchCategory={""}
-              setSearchCategory={() => {}}
-              freeText={""}
-              setFreeText={() => {}}
-              categories={[]}
-              setSelectedBusiness={() => {}}
-              handleSendProposal={handleSendProposal}
-              handleOpenChat={handleOpenChat}
-              isDevUser={isDevUser}
-            />
-          )}
-
-          {tab === "messages" && (
-            <CollabMessagesTab
-              socket={socket}
-              refreshFlag={refreshSent + refreshReceived}
-              onStatusChange={handleStatusChange}
-              userBusinessId={user?.businessId}
-            />
-          )}
-
-          {tab === "market" && <CollabMarketTab isDevUser={isDevUser} />}
+      <div className="p-6 collab-container">
+        <div className="tab-header">
+          {Object.keys(tabMap).map((key) => (
+            <button
+              key={key}
+              className={`tab ${tab === tabMap[key] ? "active" : ""}`}
+              onClick={() => {
+                setTab(tabMap[key]);
+                navigate(`/business/collaborations/${key}`, { replace: true });
+              }}
+            >
+              {tabLabels[key]}
+            </button>
+          ))}
         </div>
+
+        {tab === tabMap.profile &&
+          (loadingProfile ? (
+            <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
+          ) : (
+            <CollabBusinessProfileTab
+              profileData={profileData}
+              profileImage={profileImage}
+              handleSaveProfile={handleSaveProfile}
+            />
+          ))}
+
+        {tab === tabMap.findPartner && (
+          <CollabFindPartnerTab
+            searchMode="category"
+            setSearchMode={() => {}}
+            searchCategory={""}
+            setSearchCategory={() => {}}
+            freeText={""}
+            setFreeText={() => {}}
+            categories={[]}
+            setSelectedBusiness={() => {}}
+            handleSendProposal={handleSendProposal}
+            handleOpenChat={handleOpenChat}
+            isDevUser={isDevUser}
+          />
+        )}
+
+        {tab === tabMap.messages && (
+          <CollabMessagesTab
+            socket={socket}
+            refreshFlag={refreshSent + refreshReceived}
+            onStatusChange={handleStatusChange}
+            userBusinessId={user?.businessId}
+          />
+        )}
+
+        {tab === tabMap.market && <CollabMarketTab isDevUser={isDevUser} />}
       </div>
     </AiProvider>
   );
