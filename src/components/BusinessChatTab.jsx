@@ -256,13 +256,12 @@ export default function BusinessChatTab({
     const file = e.target.files?.[0];
     if (!file || !socket) return;
     const tempId = uuidv4();
-    const tempUrl = URL.createObjectURL(file);
     const optimistic = {
       _id: tempId,
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: tempUrl, // להצגה זמנית בלבד
+      fileUrl: URL.createObjectURL(file), // להציג זמנית
       fileName: file.name,
       fileType: file.type,
       timestamp: new Date().toISOString(),
@@ -279,13 +278,11 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendFile] File sending failed:", ack.error);
           }
-          // עדכון ההודעה עם ה-URL הקבוע שהשרת מחזיר
+          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת (לא להשאיר URL זמני)
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
           });
-          // שחרור הזיכרון של ה-URL הזמני
-          URL.revokeObjectURL(tempUrl);
         }
       );
     };
@@ -295,13 +292,12 @@ export default function BusinessChatTab({
   const sendRecording = () => {
     if (!recordedBlob || !socket) return;
     const tempId = uuidv4();
-    const tempUrl = URL.createObjectURL(recordedBlob);
     const optimistic = {
       _id: tempId,
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: tempUrl, // להצגה זמנית בלבד
+      fileUrl: URL.createObjectURL(recordedBlob), // להציג זמנית
       fileName: `audio.${recordedBlob.type.split("/")[1]}`,
       fileType: recordedBlob.type,
       fileDuration: timer,
@@ -320,12 +316,11 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendAudio] Audio sending failed:", ack.error);
           }
-          // עדכון ההודעה עם ה-URL הקבוע שהשרת מחזיר
+          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
           });
-          URL.revokeObjectURL(tempUrl);
         }
       );
     };
