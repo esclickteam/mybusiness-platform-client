@@ -135,52 +135,54 @@ export default function BusinessChatTab({
   const listRef = useRef(null);
 
   useEffect(() => {
-    if (!socket || !conversationId) {
-      dispatch({ type: "set", payload: [] });
-      return;
-    }
+  if (!socket || !conversationId) {
+    dispatch({ type: "set", payload: [] });
+    return;
+  }
 
-    socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
-      if (!ack.ok) console.error("joinConversation failed:", ack.error);
-    });
+  socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
+    if (!ack.ok) console.error("joinConversation failed:", ack.error);
+  });
 
-    socket.emit("markMessagesRead", conversationId, (resp) => {
-      if (!resp.ok) console.error("markMessagesRead failed");
-    });
+  socket.emit("markMessagesRead", conversationId, (resp) => {
+    if (!resp.ok) console.error("markMessagesRead failed");
+  });
 
-    socket.emit(
-      "getHistory",
-      { conversationId, conversationType }, // שולח גם conversationType
-      (res) => {
-        if (res.ok) {
-          const msgs = (res.messages || []).map((m) => ({
-            ...m,
-            timestamp: m.createdAt || new Date().toISOString(),
-            text: m.content || "",
-            fileUrl: m.fileUrl || null,
-            fileType: m.fileType || null,
-            fileName: m.fileName || "",
-            fileDuration: m.fileDuration || 0,
-          }));
-          dispatch({ type: "set", payload: msgs });
-        } else {
-          console.error("getHistory failed");
-          dispatch({ type: "set", payload: [] });
-        }
+  // הוספת conversationType לקריאה
+  socket.emit(
+    "getHistory",
+    { conversationId, conversationType }, 
+    (res) => {
+      if (res.ok) {
+        const msgs = (res.messages || []).map((m) => ({
+          ...m,
+          timestamp: m.createdAt || new Date().toISOString(),
+          text: m.content || "",
+          fileUrl: m.fileUrl || null,
+          fileType: m.fileType || null,
+          fileName: m.fileName || "",
+          fileDuration: m.fileDuration || 0,
+        }));
+        dispatch({ type: "set", payload: msgs });
+      } else {
+        console.error("getHistory failed");
+        dispatch({ type: "set", payload: [] });
       }
-    );
+    }
+  );
 
-    return () => {
-      socket.emit("leaveConversation", conversationId, isBusinessConversation);
-    };
-  }, [socket, conversationId, isBusinessConversation, conversationType]);
+  return () => {
+    socket.emit("leaveConversation", conversationId, isBusinessConversation);
+  };
+}, [socket, conversationId, isBusinessConversation, conversationType]);
+
 
   useEffect(() => {
     if (!socket) return;
     const handleNew = (msg) => {
       if (
         msg.conversationId === conversationId &&
-        msg.conversationType === conversationType // סינון לפי סוג שיחה
+        msg.conversationType === conversationType 
       ) {
         const safeMsg = {
           ...msg,
