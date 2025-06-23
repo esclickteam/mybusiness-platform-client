@@ -59,14 +59,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
       }
-    } catch {
+    } catch (err) {
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
   }, [refreshAccessToken, selectedConversation]);
 
   useEffect(() => {
-    if (!myBusinessId || socketInitializedRef.current) return;
+    if (!myBusinessId) return;
+    if (socketInitializedRef.current) return;
     socketInitializedRef.current = true;
 
     async function setupSocket() {
@@ -89,6 +90,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       sock.on("connect", () => {
         fetchConversations();
       });
+
+      sock.on("connect_error", (err) => {});
 
       sock.on("tokenExpired", async () => {
         const newToken = await refreshAccessToken();
@@ -118,7 +121,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       setMessages([]);
       return;
     }
-
     const convId = selectedConversation._id;
     socketRef.current.emit("joinConversation", convId);
 
@@ -135,7 +137,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           toBusinessId: msg.toBusinessId || msg.to,
         }));
         setMessages(uniqueMessages(normMsgs));
-      } catch {
+      } catch (err) {
         setMessages([]);
       }
     })();
@@ -517,21 +519,20 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               padding: 16,
               borderTop: "1px solid #eee",
               alignItems: "center",
-              backgroundColor: "#f0efff",
+              backgroundColor: "#fff",
               boxShadow: "0 -2px 8px rgba(0,0,0,0.1)",
               borderRadius: "0 0 18px 18px",
             }}
           >
-            {/* כפתור צרף קובץ */}
+            {/* כפתור הוספת קובץ */}
             <Button
               type="button"
               onClick={handleAttach}
               sx={{
-                fontSize: "1.5rem",
-                padding: "6px 14px",
-                borderRadius: "18px",
-                minWidth: "40px",
-                minHeight: "40px",
+                minWidth: 40,
+                minHeight: 40,
+                fontSize: "1.6rem",
+                borderRadius: "50%",
                 backgroundColor: "#e3dffc",
                 color: "#7153dd",
                 boxShadow: "0 6px 15px rgba(111, 94, 203, 0.4)",
@@ -545,7 +546,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               📎
             </Button>
 
-            {/* שורת כתיבה */}
+            {/* שורת הכתיבה */}
             <TextField
               fullWidth
               size="medium"
@@ -554,10 +555,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               onChange={(e) => setInput(e.target.value)}
               autoComplete="off"
               sx={{
-                backgroundColor: "#fff",
-                borderRadius: "18px",
+                backgroundColor: "#f0efff",
+                borderRadius: "20px",
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "18px",
+                  borderRadius: "20px",
                   "& fieldset": { borderColor: "#bbb" },
                   "&:hover fieldset": { borderColor: "#7153dd" },
                   "&.Mui-focused fieldset": {
@@ -565,23 +566,22 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                     boxShadow: "0 0 6px rgba(113, 83, 221, 0.5)",
                   },
                 },
-                input: { padding: "10px 16px", fontSize: "1rem" },
-                minHeight: "40px",
-                maxHeight: "40px",
+                input: { padding: "14px 16px", fontSize: "1rem" },
+                height: 40,
               }}
             />
 
-            {/* כפתור שליחה */}
+            {/* כפתור השליחה */}
             <Button
               type="submit"
               variant="contained"
               sx={{
+                minWidth: 80,
+                minHeight: 40,
                 fontWeight: 700,
-                borderRadius: "18px",
-                padding: "6px 20px",
-                fontSize: "1.2rem",
-                minWidth: "80px",
-                minHeight: "40px",
+                borderRadius: "20px",
+                padding: "0 24px",
+                fontSize: "1.15rem",
                 boxShadow: "0 6px 15px rgba(113, 83, 221, 0.6)",
                 textTransform: "none",
                 "&:hover": {
