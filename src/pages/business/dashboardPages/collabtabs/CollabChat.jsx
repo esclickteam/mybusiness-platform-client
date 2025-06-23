@@ -52,6 +52,7 @@ function getOtherBusinessId(conv, myBusinessId) {
 }
 
 
+
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
