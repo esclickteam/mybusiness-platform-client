@@ -18,10 +18,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const refreshAccessToken = useCallback(async () => {
     const token = await refreshAccessTokenOriginal();
+    console.log("Refreshed access token:", token);
     return token;
   }, [refreshAccessTokenOriginal]);
 
   const logout = useCallback(() => {
+    console.log("Logging out user");
     logoutOriginal();
   }, [logoutOriginal]);
 
@@ -46,10 +48,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const fetchConversations = useCallback(async () => {
     try {
       const token = await refreshAccessToken();
-      if (!token) return;
+      if (!token) {
+        console.warn("No token available for fetchConversations");
+        return;
+      }
+      console.log("Fetching conversations with token:", token);
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Conversations response:", res.data);
       const convsRaw = res.data.conversations || [];
       const convs = convsRaw.map((c) => ({
         ...c,
@@ -60,19 +67,30 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         setSelectedConversation(convs[0]);
       }
     } catch (err) {
+      console.error("Error fetching conversations:", err);
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
   }, [refreshAccessToken, selectedConversation]);
 
   useEffect(() => {
-    if (!myBusinessId) return;
-    if (socketInitializedRef.current) return;
+    if (!myBusinessId) {
+      console.warn("No myBusinessId provided, skipping socket setup");
+      return;
+    }
+    if (socketInitializedRef.current) {
+      console.log("Socket already initialized, skipping setup");
+      return;
+    }
     socketInitializedRef.current = true;
 
     async function setupSocket() {
       const token = await refreshAccessToken();
-      if (!token) return;
+      if (!token) {
+        console.warn("No token available for socket connection");
+        return;
+      }
+      console.log("Setting up socket connection with token:", token);
 
       const sock = io(SOCKET_URL, {
         path: "/socket.io",
@@ -88,14 +106,19 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       socketRef.current = sock;
 
       sock.on("connect", () => {
+        console.log("Socket connected:", sock.id);
         fetchConversations();
       });
 
-      sock.on("connect_error", (err) => {});
+      sock.on("connect_error", (err) => {
+        console.error("Socket connection error:", err.message);
+      });
 
       sock.on("tokenExpired", async () => {
+        console.log("Socket token expired, refreshing...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
+          console.warn("Failed to refresh token, logging out");
           logout();
           return;
         }
@@ -109,6 +132,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     return () => {
       if (socketRef.current) {
+        console.log("Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
         socketInitializedRef.current = false;
@@ -122,15 +146,21 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       return;
     }
     const convId = selectedConversation._id;
+    console.log("Joining conversation room:", convId);
     socketRef.current.emit("joinConversation", convId);
 
     (async () => {
       try {
         const token = await refreshAccessToken();
-        if (!token) return;
+        if (!token) {
+          console.warn("No token available for fetch messages");
+          return;
+        }
+        console.log(`Fetching messages for conversation ${convId} with token`, token);
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log("Messages response:", res.data);
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
           fromBusinessId: msg.fromBusinessId || msg.from,
@@ -138,11 +168,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         }));
         setMessages(uniqueMessages(normMsgs));
       } catch (err) {
+        console.error("Error fetching messages:", err);
         setMessages([]);
       }
     })();
 
     return () => {
+      console.log("Leaving conversation room:", convId);
       socketRef.current.emit("leaveConversation", convId);
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
@@ -151,6 +183,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     if (!socketRef.current || !selectedConversation) return;
 
     const handler = (msg) => {
+      console.log("Received newMessage:", msg);
       const fullMsg = msg.fullMsg || msg;
       const normalized = {
         ...fullMsg,
@@ -184,8 +217,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-    if (isSending) return;
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+    if (isSending) {
+      console.warn("Already sending message, aborting.");
+      return;
+    }
+    if (!input.trim() || !selectedConversation || !socketRef.current) {
+      console.warn("Cannot send message: missing input, conversation, or socket");
+      return;
+    }
 
     setIsSending(true);
 
@@ -209,6 +248,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       sending: true,
     };
 
+    console.log("Sending message:", payload);
     setMessages((prev) => uniqueMessages([...prev, optimistic]));
     setInput("");
 
@@ -275,6 +315,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const reader = new FileReader();
     reader.onload = () => {
+      console.log("Uploading file:", file.name);
       socketRef.current.emit(
         "sendFile",
         {
@@ -391,7 +432,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   borderBottom: "1px solid #f3f0fa",
                   background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
                 }}
-                onClick={() => setSelectedConversation(conv)}
+                onClick={() => {
+                  console.log("Selected conversation:", conv._id);
+                  setSelectedConversation(conv);
+                }}
               >
                 <Box sx={{ fontWeight: 600 }}>{partner.businessName}</Box>
                 <Box
