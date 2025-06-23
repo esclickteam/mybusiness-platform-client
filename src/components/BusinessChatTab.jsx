@@ -431,25 +431,26 @@ export default function BusinessChatTab({
               }`}
             >
               {m.fileUrl ? (
-                m.fileType.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer
-                    src={m.fileUrl}
-                    duration={m.fileDuration}
-                  />
-                ) : m.fileType.startsWith("image") ? (
-                  <img
-                    src={m.fileUrl}
-                    alt={m.fileName}
-                    style={{ maxWidth: 200, borderRadius: 8 }}
-                  />
-                ) : (
-                  <a href={m.fileUrl} download>
-                    {m.fileName}
-                  </a>
-                )
-              ) : (
-                <div className="text">{m.text}</div>
-              )}
+  m.fileType?.startsWith("audio") ? (
+    <WhatsAppAudioPlayer
+      src={m.fileUrl}
+      duration={m.fileDuration}
+    />
+  ) : m.fileType?.startsWith("image") ? (
+    <img
+      src={m.fileUrl}
+      alt={m.fileName}
+      style={{ maxWidth: 200, borderRadius: 8 }}
+    />
+  ) : (
+    <a href={m.fileUrl} download>
+      {m.fileName}
+    </a>
+  )
+) : (
+  <div className="text">{m.text}</div>
+)}
+
               <div className="meta">
                 <span className="time">
                   {formatTime(m.timestamp)}
