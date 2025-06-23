@@ -59,10 +59,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
       </button>
       <div className="progress-dots">
         {[...Array(totalDots)].map((_, i) => (
-          <div
-            key={i}
-            className={`dot${i <= activeDot ? " active" : ""}`}
-          />
+          <div key={i} className={`dot${i <= activeDot ? " active" : ""}`} />
         ))}
       </div>
       <div className="time-display">
@@ -113,10 +110,19 @@ export default function BusinessChatTab({
     messagesReducer,
     initialMessages
   );
+
+  // אתחול ההודעות פעם אחת (כשזיהוי השיחה משתנה)
   useEffect(() => {
     dispatchMessages({ type: "set", payload: initialMessages });
-  }, [initialMessages]);
+  }, [conversationId, initialMessages]);
+
+  // כדי לדלג על הקריאה הראשונית ל־onMessagesChange
+  const isInitialMount = useRef(true);
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     onMessagesChange?.(messages);
   }, [messages, onMessagesChange]);
 
@@ -261,7 +267,7 @@ export default function BusinessChatTab({
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: URL.createObjectURL(file), // להציג זמנית
+      fileUrl: URL.createObjectURL(file),
       fileName: file.name,
       fileType: file.type,
       timestamp: new Date().toISOString(),
@@ -278,7 +284,6 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendFile] File sending failed:", ack.error);
           }
-          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת (לא להשאיר URL זמני)
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
@@ -297,7 +302,7 @@ export default function BusinessChatTab({
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: URL.createObjectURL(recordedBlob), // להציג זמנית
+      fileUrl: URL.createObjectURL(recordedBlob),
       fileName: `audio.${recordedBlob.type.split("/")[1]}`,
       fileType: recordedBlob.type,
       fileDuration: timer,
@@ -316,7 +321,6 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendAudio] Audio sending failed:", ack.error);
           }
-          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
