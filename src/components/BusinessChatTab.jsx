@@ -7,6 +7,7 @@ import React, {
 import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
+// Component for audio messages
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -72,6 +73,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
+// Reducer for message state
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
@@ -254,12 +256,13 @@ export default function BusinessChatTab({
     const file = e.target.files?.[0];
     if (!file || !socket) return;
     const tempId = uuidv4();
+    const tempUrl = URL.createObjectURL(file);
     const optimistic = {
       _id: tempId,
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: URL.createObjectURL(file),
+      fileUrl: tempUrl, // להצגה זמנית בלבד
       fileName: file.name,
       fileType: file.type,
       timestamp: new Date().toISOString(),
@@ -276,11 +279,13 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendFile] File sending failed:", ack.error);
           }
-          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת
+          // עדכון ההודעה עם ה-URL הקבוע שהשרת מחזיר
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
           });
+          // שחרור הזיכרון של ה-URL הזמני
+          URL.revokeObjectURL(tempUrl);
         }
       );
     };
@@ -290,12 +295,13 @@ export default function BusinessChatTab({
   const sendRecording = () => {
     if (!recordedBlob || !socket) return;
     const tempId = uuidv4();
+    const tempUrl = URL.createObjectURL(recordedBlob);
     const optimistic = {
       _id: tempId,
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: URL.createObjectURL(recordedBlob),
+      fileUrl: tempUrl, // להצגה זמנית בלבד
       fileName: `audio.${recordedBlob.type.split("/")[1]}`,
       fileType: recordedBlob.type,
       fileDuration: timer,
@@ -314,11 +320,12 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendAudio] Audio sending failed:", ack.error);
           }
-          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת
+          // עדכון ההודעה עם ה-URL הקבוע שהשרת מחזיר
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
           });
+          URL.revokeObjectURL(tempUrl);
         }
       );
     };
