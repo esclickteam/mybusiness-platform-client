@@ -240,7 +240,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   });
 
 // המרה בטוחה למחרוזת מזהה
-if (typeof otherId === "object" && otherId !== null) {
+if (typeof otherId === "object" && otherId !==  null) {
   if (typeof otherId._id !== "undefined") {
     otherId = otherId._id.toString();
   } else if (typeof otherId.toString === "function") {
