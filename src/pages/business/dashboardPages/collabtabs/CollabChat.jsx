@@ -69,7 +69,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [messages, dispatchMessages] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
-  const [isSending, setIsSending] = useState(false);
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
@@ -205,63 +204,60 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
-  (msg) => {
-    const fullMsg = msg.fullMsg || msg;
-    const normalized = {
-      ...fullMsg,
-      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-      toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-      conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
-    };
+    (msg) => {
+      const fullMsg = msg.fullMsg || msg;
+      const normalized = {
+        ...fullMsg,
+        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
+      };
 
-    dispatchMessages((prevMessages) => {
-      const optimisticIndex = prevMessages.findIndex(
-        (m) =>
-          m._id.startsWith("pending-") &&
-          m.text === normalized.text &&
-          m.fromBusinessId === normalized.fromBusinessId
+      dispatchMessages((prevMessages) => {
+        const optimisticIndex = prevMessages.findIndex(
+          (m) =>
+            m._id.startsWith("pending-") &&
+            m.text === normalized.text &&
+            m.fromBusinessId === normalized.fromBusinessId
+        );
+
+        if (optimisticIndex !== -1) {
+          // החלפת ההודעה האופטימית בהודעה האמיתית
+          const newMessages = [...prevMessages];
+          newMessages[optimisticIndex] = normalized;
+          return newMessages;
+        }
+
+        // אם ההודעה כבר קיימת, אל תוסיף שוב
+        if (prevMessages.some((m) => m._id === normalized._id)) {
+          return prevMessages;
+        }
+
+        // הוסף הודעה חדשה
+        return [...prevMessages, normalized];
+      });
+
+      // עדכון שיחה נבחרת ושיחות בהתאם
+      setSelectedConversation((prev) => {
+        if (prev && prev._id === normalized.conversationId) {
+          return {
+            ...prev,
+            messages: uniqueMessages([...(prev.messages || []), normalized]),
+          };
+        }
+        return prev;
+      });
+
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === normalized.conversationId
+            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
+            : conv
+        )
       );
-
-      if (optimisticIndex !== -1) {
-        // החלפת ההודעה האופטימית בהודעה האמיתית
-        const newMessages = [...prevMessages];
-        newMessages[optimisticIndex] = normalized;
-        return newMessages;
-      }
-
-      // אם ההודעה כבר קיימת, אל תוסיף שוב
-      if (prevMessages.some((m) => m._id === normalized._id)) {
-        return prevMessages;
-      }
-
-      // הוסף הודעה חדשה
-      return [...prevMessages, normalized];
-    });
-
-    // עדכון שיחה נבחרת ושיחות בהתאם
-    setSelectedConversation((prev) => {
-      if (prev && prev._id === normalized.conversationId) {
-        return {
-          ...prev,
-          messages: uniqueMessages([...(prev.messages || []), normalized]),
-        };
-      }
-      return prev;
-    });
-
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv._id === normalized.conversationId
-          ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
-          : conv
-      )
-    );
-  },
-  [selectedConversation, uniqueMessages]
-);
-
-
-
+    },
+    [selectedConversation, uniqueMessages]
+  );
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -276,70 +272,61 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-  if (isSending) return;
-  if (!input.trim() || !selectedConversation || !socketRef.current) return;
+    if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
-  const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
-  if (!otherIdRaw) return;
-  const otherId =
-    typeof otherIdRaw === "string"
-      ? otherIdRaw
-      : otherIdRaw._id
-      ? otherIdRaw._id.toString()
-      : otherIdRaw.toString();
+    const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
+    if (!otherIdRaw) return;
+    const otherId =
+      typeof otherIdRaw === "string"
+        ? otherIdRaw
+        : otherIdRaw._id
+        ? otherIdRaw._id.toString()
+        : otherIdRaw.toString();
 
-  const payload = {
-    conversationId: selectedConversation._id.toString(),
-    from: myBusinessId.toString(),
-    to: otherId,
-    text: input.trim(),
+    const payload = {
+      conversationId: selectedConversation._id.toString(),
+      from: myBusinessId.toString(),
+      to: otherId,
+      text: input.trim(),
+    };
+
+    const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
+
+    const optimistic = {
+      ...payload,
+      timestamp: new Date().toISOString(),
+      _id: tempId,
+      fromBusinessId: payload.from,
+      toBusinessId: payload.to,
+      sending: true,
+    };
+
+    dispatchMessages({ type: "append", payload: optimistic });
+    setInput("");
+
+    // גלילה מיידית
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+
+    // לא נעצור שליחה נוספת
+    socketRef.current.emit("sendMessage", payload, (ack) => {
+      if (!ack.ok) {
+        alert("שליחת הודעה נכשלה: " + ack.error);
+        dispatchMessages((prevMessages) => prevMessages.filter((m) => m._id !== tempId));
+      } else if (ack.message?._id) {
+        const real = {
+          ...ack.message,
+          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+          toBusinessId: ack.message.toBusinessId || ack.message.to,
+        };
+        dispatchMessages({
+          type: "replace",
+          payload: real,
+        });
+      }
+    });
   };
-
-  console.log("[sendMessage] Sending payload:", payload);
-
-  const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
-
-  const optimistic = {
-    ...payload,
-    timestamp: new Date().toISOString(),
-    _id: tempId,
-    fromBusinessId: payload.from,
-    toBusinessId: payload.to,
-    sending: true,
-  };
-
-  dispatchMessages({ type: "append", payload: optimistic });
-  setInput("");
-
-  // גלילה מיידית לתחתית אחרי הוספת ההודעה האופטימית
-  setTimeout(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, 50);
-
-  setIsSending(true);
-
-  socketRef.current.emit("sendMessage", payload, (ack) => {
-    setIsSending(false);
-    console.log("[sendMessage] Server ack:", ack);
-    if (!ack.ok) {
-      alert("שליחת הודעה נכשלה: " + ack.error);
-      dispatchMessages((prevMessages) => prevMessages.filter((m) => m._id !== tempId));
-    } else if (ack.message?._id) {
-      const real = {
-        ...ack.message,
-        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-        toBusinessId: ack.message.toBusinessId || ack.message.to,
-      };
-      dispatchMessages({
-        type: "replace",
-        payload: real,
-      });
-    }
-  });
-};
-
-
-
 
   const handleAttach = () => {
     if (fileInputRef.current) {
@@ -361,8 +348,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         : toRaw._id
         ? toRaw._id.toString()
         : toRaw.toString();
-
-    setIsSending(true);
 
     const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
@@ -407,7 +392,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           tempId,
         },
         (ack) => {
-          setIsSending(false);
           if (!ack.ok) {
             alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה לא ידועה"));
             dispatchMessages({
@@ -641,7 +625,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (!isSending && input.trim()) sendMessage();
+              if (input.trim()) sendMessage();
             }}
             style={{
               display: "flex",
@@ -716,7 +700,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   boxShadow: "0 8px 20px rgba(92, 62, 199, 0.8)",
                 },
               }}
-              disabled={!input.trim() || isSending}
+              disabled={!input.trim()}
             >
               שלח
             </Button>
