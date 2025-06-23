@@ -324,6 +324,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             buffer: reader.result,
             fileName: file.name,
             tempId,
+            conversationType,
           },
           (ack) => {
             if (!ack.ok) {
