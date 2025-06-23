@@ -1,5 +1,5 @@
 .profile-wrapper {
-  max-width: 1100px; /* רחב יותר */
+  max-width: 1100px;
   margin: 4rem auto;
   padding: 3rem 4rem;
   background: linear-gradient(135deg, #ede9fb, #f9f7ff);
@@ -125,36 +125,55 @@
 
 .profile-section {
   border-top: 2px solid #dfd9fb;
-  padding-top: 1.8rem;
+  padding: 1.8rem 2rem;
   color: #5a4e90;
   font-weight: 600;
   user-select: text;
   font-size: 1.3rem;
+
+  max-width: 600px;
+  margin: 2rem auto;
+  border-radius: 20px;
+  background-color: #f4f1fc;
+  box-shadow: 0 6px 14px rgba(120, 81, 169, 0.12);
+  text-align: center;
 }
 
 .profile-section h3 {
   margin-bottom: 1rem;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.7rem;
   color: #5f53a5;
-  text-shadow: 0 0 6px #b3aaff;
+  text-shadow: 0 0 6px #bfb6f6;
 }
 
 .profile-section p {
   font-size: 1.2rem;
-  color: #4e4580;
-  line-height: 1.75;
-  margin: 0;
+  color: #423971;
+  line-height: 1.6;
+  margin: 0 auto;
   font-weight: 400;
+  max-width: 450px;
+  text-align: center;
 }
 
 .profile-collab-list {
-  padding-inline-start: 2rem;
-  list-style-type: disc;
+  padding-inline-start: 0;
+  list-style-type: none;
   color: #564f8e;
   font-size: 1.2rem;
   line-height: 1.8;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 450px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-collab-list li::before {
+  content: "🤝";
+  margin-right: 0.5rem;
 }
 
 /* modal */
@@ -194,7 +213,7 @@
 .profile-form input,
 .profile-form textarea {
   width: 100%;
-  padding: 1.2rem 1.4rem;
+  padding: 1rem 1.2rem;
   font-size: 1.15rem;
   border-radius: 20px;
   border: 2px solid #c3bbff;
