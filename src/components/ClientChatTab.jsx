@@ -457,9 +457,8 @@ export default function ClientChatTab({
 
             {/* סימון קריאה */}
             {m.from === userId && m.readBy && m.readBy.some(id => id.toString() === businessId.toString()) && (
-  <span className="read-indicator" title="נקראה">✔✔</span>
-)}
-
+              <span className="read-indicator" title="נקראה">✔✔</span>
+            )}
 
             <div className="meta">
               <span className="time">
