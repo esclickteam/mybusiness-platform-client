@@ -7,7 +7,7 @@ export default function ConversationsList({
   selectedConversationId,
   onSelect,
   isBusiness,
-  unreadCountsByConversation = {}, // הוספנו פרופ חדש למפה של ספירות
+  unreadCountsByConversation = {},
 }) {
   if (conversations.length === 0) {
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
@@ -15,12 +15,11 @@ export default function ConversationsList({
 
   // מסננים כפילויות לפי partnerId
   const uniqueConvs = conversations.filter((conv, idx, arr) => {
-    const parts = Array.isArray(conv.participants) ? conv.participants : [];
-    const partnerId = parts.find((p) => p !== businessId) || conv.partnerId || "";
+    // partnerId נקבע לפי סוג המשתמש
+    const partnerId = isBusiness ? conv.clientId : conv.businessId;
     return (
       arr.findIndex((c) => {
-        const cParts = Array.isArray(c.participants) ? c.participants : [];
-        const pid = cParts.find((p) => p !== businessId) || c.partnerId || "";
+        const pid = isBusiness ? c.clientId : c.businessId;
         return pid === partnerId;
       }) === idx
     );
@@ -32,29 +31,20 @@ export default function ConversationsList({
         <div className={styles.sidebarTitle}>
           {isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק"}
         </div>
-        {uniqueConvs.map((conv, idx) => {
-          const parts = Array.isArray(conv.participants) ? conv.participants : [];
-          const partnerId = parts.find((p) => p !== businessId) || conv.partnerId || "";
-          const convoId =
-            conv.conversationId ||
-            (conv._id ? conv._id.toString() : "") ||
-            conv.id ||
-            `conv-${idx}`;
-
+        {uniqueConvs.map((conv) => {
+          const convoId = conv.conversationId || (conv._id?.toString() ?? "");
+          const partnerId = isBusiness ? conv.clientId : conv.businessId;
           const displayName = isBusiness
-            ? conv.customerName || conv.partnerName || partnerId
-            : conv.businessName || conv.partnerName || partnerId;
-
+            ? conv.clientName
+            : conv.businessName || partnerId;
           const isActive = convoId === selectedConversationId;
-
-          // ספירת הודעות לא נקראות של השיחה הנוכחית
           const unreadCount = unreadCountsByConversation[convoId] || 0;
 
           return (
             <div
               key={convoId}
               className={`${styles.convItem} ${isActive ? styles.active : ""}`}
-              onClick={() => onSelect(convoId, partnerId)}
+              onClick={() => onSelect(convoId, partnerId, displayName)}
               style={{ position: "relative" }}
             >
               {displayName}
