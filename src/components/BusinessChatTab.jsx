@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
-// Component for audio messages
+// קומפוננטת נגינת אודיו
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
 
@@ -67,10 +67,11 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
+// Reducer לניהול הודעות
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
-      return action.payload;
+      return typeof action.payload === "function" ? action.payload(state) : action.payload;
     case "append": {
       const idx = state.findIndex(
         (m) => m._id === action.payload._id || m.tempId === action.payload.tempId
@@ -86,6 +87,12 @@ function messagesReducer(state, action) {
       return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
+          : m
+      );
+    case "updateReadBy":
+      return state.map((m) =>
+        m._id === action.payload.messageId
+          ? { ...m, readBy: action.payload.readBy }
           : m
       );
     default:
@@ -105,7 +112,7 @@ export default function BusinessChatTab({
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // States for audio recording
+  // States להקלטת אודיו
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [timer, setTimer] = useState(0);
@@ -117,7 +124,7 @@ export default function BusinessChatTab({
   const recordedChunks = useRef([]);
   const timerRef = useRef(null);
 
-  // helper להגנה על תאריכים לא תקינים
+  // פונקציה לעיצוב זמן
   const formatTime = (ts) => {
     if (!ts) return "";
     const d = new Date(ts);
@@ -128,7 +135,7 @@ export default function BusinessChatTab({
     });
   };
 
-  // 1. התחברות, סימון קריאה, טעינת היסטוריה
+  // התחברות, טעינת היסטוריה וסימון קריאה
   useEffect(() => {
     if (!socket || !conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -167,7 +174,7 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId]);
 
-  // 2. מאזינים להודעות חדשות, הקלדה ועדכון סטטוס קריאה
+  // מאזינים להודעות חדשות, הקלדה ועדכון סטטוס קריאה
   useEffect(() => {
     if (!socket) return;
 
@@ -195,22 +202,21 @@ export default function BusinessChatTab({
       }
     };
 
-    // טיפול בעדכון סטטוס קריאה (Read Receipt)
     const handleReadReceipt = ({ messageId, userId: readerId }) => {
-  setMessages((prev) =>
-    prev.map((msg) => {
-      if (msg._id.toString() === messageId.toString()) {
-        const readBy = msg.readBy || [];
-        // בדוק אם כבר קיים המזהה במערך אחרי המרה למחרוזת
-        if (!readBy.some(id => id.toString() === readerId.toString())) {
-          return { ...msg, readBy: [...readBy, readerId] };
-        }
-      }
-      return msg;
-    })
-  );
-};
-
+      dispatch({
+        type: "set",
+        payload: (prev) =>
+          prev.map((msg) => {
+            if (msg._id?.toString() === messageId?.toString()) {
+              const readBy = msg.readBy || [];
+              if (!readBy.some((id) => id.toString() === readerId.toString())) {
+                return { ...msg, readBy: [...readBy, readerId] };
+              }
+            }
+            return msg;
+          }),
+      });
+    };
 
     socket.on("newMessage", handleNew);
     socket.on("typing", handleTyping);
@@ -224,7 +230,7 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, customerId]);
 
-  // 3. גלילה אוטומטית לתחתית כשמתווספות הודעות
+  // גלילה אוטומטית לתחתית כשמתווספות הודעות או הקלדה
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
@@ -232,16 +238,15 @@ export default function BusinessChatTab({
     if (nearBottom) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
-  // 4. שליחת סימון קריאה כאשר ההודעות מוצגות ללקוח
+  // סימון קריאה אוטומטי כאשר הודעות מוצגות ללקוח
   useEffect(() => {
     if (!socket || !messages.length) return;
 
-    // סמן הודעות שנשלחו לצד השני וטרם נקראו על ידך
     const unreadMessages = messages.filter(
-  (m) => 
-    m.from !== userId &&
-    (!m.readBy || !m.readBy.some(id => id.toString() === userId.toString()))
-);
+      (m) =>
+        m.from !== businessId &&
+        (!m.readBy || !m.readBy.some((id) => id.toString() === businessId.toString()))
+    );
 
     unreadMessages.forEach((msg) => {
       socket.emit("markMessageRead", {
@@ -381,7 +386,7 @@ export default function BusinessChatTab({
     reader.readAsArrayBuffer(recordedBlob);
   };
 
-  // Handler לקבצים
+  // טיפול בקבצים מצורפים
   const handleAttach = () => {
     fileInputRef.current?.click();
   };
@@ -453,9 +458,9 @@ export default function BusinessChatTab({
           ) : (
             <div
               key={m._id || m.tempId}
-              className={`message${m.from === businessId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${
-                m.failed ? " failed" : ""
-              }`}
+              className={`message${m.from === businessId ? " mine" : " theirs"}${
+                m.sending ? " sending" : ""
+              }${m.failed ? " failed" : ""}`}
             >
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
@@ -475,7 +480,7 @@ export default function BusinessChatTab({
                 <span className="time">{formatTime(m.timestamp)}</span>
 
                 {/* סימון קריאה */}
-                {m.from === businessId && m.readBy && m.readBy.includes(customerId) && (
+                {m.from === businessId && m.readBy && m.readBy.some(id => id.toString() === customerId.toString()) && (
                   <span className="read-indicator" title="נקראה">
                     ✔✔
                   </span>
