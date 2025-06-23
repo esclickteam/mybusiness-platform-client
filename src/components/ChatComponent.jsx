@@ -37,7 +37,10 @@ export default function ChatComponent({
           if (!conversationId && convs.length > 0) {
             const first = convs[0];
             const convoId = first._id ?? first.conversationId;
-            const custId = first.participants.find((pid) => pid !== userId) ?? null;
+            // השוואה תוך המרת ObjectId למחרוזת
+            const custId = first.participants.find(
+              (pid) => pid.toString() !== userId.toString()
+            ) ?? null;
             console.log("ChatComponent: setting conversationId and currentCustomerId", convoId, custId);
             setConversationId(convoId);
             setCurrentCustomerId(custId);
@@ -71,7 +74,9 @@ export default function ChatComponent({
         (c) => (c._id ?? c.conversationId) === conversationId
       );
       if (conv) {
-        const custId = conv.participants.find((pid) => pid !== userId) ?? null;
+        const custId = conv.participants.find(
+          (pid) => pid.toString() !== userId.toString()
+        ) ?? null;
         console.log("ChatComponent: updated currentCustomerId from conversations:", custId);
         setCurrentCustomerId(custId);
       }
