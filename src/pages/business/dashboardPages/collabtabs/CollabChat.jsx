@@ -2,10 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import API from "../../../../api";
 import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import SendIcon from "@mui/icons-material/Send";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
@@ -19,11 +17,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
 
   const refreshAccessToken = useCallback(async () => {
+    console.log("[CollabChat] Refreshing token...");
     const token = await refreshAccessTokenOriginal();
+    console.log("[CollabChat] Token refreshed:", token ? "YES" : "NO");
     return token;
   }, [refreshAccessTokenOriginal]);
 
   const logout = useCallback(() => {
+    console.log("[CollabChat] Logging out user");
     logoutOriginal();
   }, [logoutOriginal]);
 
@@ -36,44 +37,64 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
-    return msgs.filter((m) => {
+    const filtered = msgs.filter((m) => {
       const id = m._id?.toString() || m.tempId || m.timestamp;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
+    console.log("[CollabChat] uniqueMessages filtered count:", filtered.length);
+    return filtered;
   }, []);
 
   const fetchConversations = useCallback(async () => {
     try {
+      console.log("[CollabChat] Fetching conversations...");
       const token = await refreshAccessToken();
-      if (!token) return;
+      if (!token) {
+        console.warn("[CollabChat] No token, aborting fetchConversations");
+        return;
+      }
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const convsRaw = res.data.conversations || [];
+      console.log("[CollabChat] Raw conversations fetched:", convsRaw);
       const convs = convsRaw.map((c) => ({
         ...c,
         messages: Array.isArray(c.messages) ? c.messages : [],
       }));
+      console.log("[CollabChat] Conversations with safe messages:", convs);
       setConversations(convs);
       if (!selectedConversation && convs.length > 0) {
+        console.log("[CollabChat] Setting first conversation as selected");
         setSelectedConversation(convs[0]);
       }
     } catch (err) {
+      console.error("[CollabChat] Failed fetching conversations:", err);
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
   }, [refreshAccessToken, selectedConversation]);
 
   useEffect(() => {
-    if (!myBusinessId) return;
-    if (socketInitializedRef.current) return;
+    if (!myBusinessId) {
+      console.warn("[CollabChat] No business ID, aborting socket setup");
+      return;
+    }
+
+    if (socketInitializedRef.current) {
+      console.log("[CollabChat] Socket already initialized, skipping setup");
+      return;
+    }
     socketInitializedRef.current = true;
 
     async function setupSocket() {
       const token = await refreshAccessToken();
-      if (!token) return;
+      if (!token) {
+        console.warn("[CollabChat] No token, aborting socket setup");
+        return;
+      }
 
       const sock = io(SOCKET_URL, {
         path: "/socket.io",
@@ -89,14 +110,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       socketRef.current = sock;
 
       sock.on("connect", () => {
+        console.log("[CollabChat] Socket connected with id:", sock.id);
         fetchConversations();
       });
 
       sock.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
+        console.error("[CollabChat] Socket connection error:", err);
       });
 
       sock.on("tokenExpired", async () => {
+        console.log("[CollabChat] Token expired, refreshing...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
@@ -112,6 +135,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     return () => {
       if (socketRef.current) {
+        console.log("[CollabChat] Disconnecting socket");
         socketRef.current.disconnect();
         socketRef.current = null;
         socketInitializedRef.current = false;
@@ -121,16 +145,22 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) {
+      console.log("[CollabChat] No socket or no selectedConversation, clearing messages");
       setMessages([]);
       return;
     }
+
     const convId = selectedConversation._id;
+    console.log("[CollabChat] Joining conversation:", convId);
     socketRef.current.emit("joinConversation", convId);
 
     (async () => {
       try {
         const token = await refreshAccessToken();
-        if (!token) return;
+        if (!token) {
+          console.warn("[CollabChat] No token, aborting message fetch");
+          return;
+        }
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -139,13 +169,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           fromBusinessId: msg.fromBusinessId || msg.from,
           toBusinessId: msg.toBusinessId || msg.to,
         }));
+        console.log(`[CollabChat] Fetched ${normMsgs.length} messages for conversation ${convId}`);
         setMessages(uniqueMessages(normMsgs));
-      } catch {
+      } catch (err) {
+        console.error("[CollabChat] Fetch messages failed:", err);
         setMessages([]);
       }
     })();
 
     return () => {
+      console.log("[CollabChat] Leaving conversation:", convId);
       socketRef.current.emit("leaveConversation", convId);
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
@@ -155,14 +188,24 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const handler = (msg) => {
       const fullMsg = msg.fullMsg || msg;
+
       const normalized = {
         ...fullMsg,
         fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
         toBusinessId: fullMsg.toBusinessId || fullMsg.to,
       };
+
+      console.log("[CollabChat] Received newMessage event:", {
+        id: fullMsg._id,
+        text: normalized.text,
+        time: new Date().toISOString(),
+        fullMsg,
+      });
+
       if (normalized.conversationId === selectedConversation._id) {
         setMessages((prev) => uniqueMessages([...prev, normalized]));
       }
+
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === normalized.conversationId
@@ -176,17 +219,26 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     socketRef.current.on("newMessage", handler);
 
     return () => {
+      console.log("[CollabChat] Removing newMessage listener");
       socketRef.current.off("newMessage", handler);
     };
   }, [selectedConversation, uniqueMessages]);
 
   useEffect(() => {
+    console.log("[CollabChat] Scrolling to bottom");
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = () => {
-    if (isSending) return;
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+    console.log("[CollabChat] sendMessage triggered", { input, isSending });
+    if (isSending) {
+      console.warn("[CollabChat] sendMessage ignored, already sending");
+      return;
+    }
+    if (!input.trim() || !selectedConversation || !socketRef.current) {
+      console.warn("[CollabChat] sendMessage aborted, missing input or selectedConversation or socket");
+      return;
+    }
 
     setIsSending(true);
 
@@ -520,73 +572,90 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               padding: 16,
               borderTop: "1px solid #eee",
               alignItems: "center",
+              backgroundColor: "#fff",
+              boxShadow: "0 -2px 8px rgba(0,0,0,0.1)",
+              borderRadius: "0 0 18px 18px",
             }}
           >
-            <IconButton
-              size="medium"
-              onClick={handleAttach}
-              title="צרף קובץ"
-              sx={{
-                borderRadius: 2,
-                boxShadow: "0 0 10px rgb(150 140 200 / 0.5)",
-                backgroundColor: "white",
-              }}
-            >
-              <AttachFileIcon />
-            </IconButton>
-
             <TextField
               fullWidth
-              size="small"
+              size="medium"
               placeholder="כתוב הודעה..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               autoComplete="off"
               sx={{
-                borderRadius: 2,
+                backgroundColor: "#f0efff",
+                borderRadius: "20px",
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
-                  paddingRight: "12px",
-                  paddingLeft: "12px",
+                  borderRadius: "20px",
+                  "& fieldset": { borderColor: "#bbb" },
+                  "&:hover fieldset": { borderColor: "#7153dd" },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#7153dd",
+                    boxShadow: "0 0 6px rgba(113, 83, 221, 0.5)",
+                  },
                 },
+                input: { padding: "14px 16px", fontSize: "1rem" },
               }}
             />
 
-            <IconButton
+            <Button
               type="submit"
-              size="medium"
-              disabled={!input.trim() || isSending}
+              variant="contained"
               sx={{
-                backgroundColor: "#8b8cd7",
-                borderRadius: 2,
-                color: "white",
-                transition: "background-color 0.3s",
-                boxShadow: "0 2px 10px rgb(150 140 200 / 0.5)",
+                fontWeight: 700,
+                borderRadius: "20px",
+                padding: "12px 32px",
+                fontSize: "1.15rem",
+                boxShadow: "0 6px 15px rgba(113, 83, 221, 0.6)",
+                textTransform: "none",
                 "&:hover": {
-                  backgroundColor: "#6e6fc1",
-                },
-                "&:disabled": {
-                  backgroundColor: "#b2b3d9",
-                  color: "#e0e0e0",
-                  cursor: "default",
-                  boxShadow: "none",
+                  backgroundColor: "#5d3dc7",
+                  boxShadow: "0 8px 20px rgba(92, 62, 199, 0.8)",
                 },
               }}
-              title="שלח הודעה"
+              disabled={!input.trim() || isSending}
             >
-              <SendIcon />
-            </IconButton>
+              שלח
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleAttach}
+              sx={{
+                ml: 1,
+                fontSize: "1.6rem",
+                padding: "10px 14px",
+                borderRadius: "50%",
+                minWidth: 0,
+                backgroundColor: "#e3dffc",
+                color: "#7153dd",
+                boxShadow: "0 6px 15px rgba(111, 94, 203, 0.4)",
+                "&:hover": {
+                  backgroundColor: "#c7bcf8",
+                  boxShadow: "0 8px 20px rgba(111, 94, 203, 0.7)",
+                },
+              }}
+              title="צרף קובץ"
+            >
+              📎
+            </Button>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+              accept="image/*,audio/*,video/*,application/pdf"
+            />
           </form>
         )}
 
         {onClose && (
-          <IconButton
-            sx={{ position: "absolute", top: 13, left: 18 }}
-            onClick={onClose}
-            size="small"
-          >
+          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
             ✖
-          </IconButton>
+          </Button>
         )}
       </Box>
     </Box>
