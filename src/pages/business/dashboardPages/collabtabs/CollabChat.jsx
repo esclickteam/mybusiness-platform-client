@@ -34,12 +34,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
-    return msgs.filter((m) => {
+    const filtered = msgs.filter((m) => {
       const id = m._id?.toString() || m.tempId || m.timestamp;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
+    return filtered;
   }, []);
 
   const fetchConversations = useCallback(async () => {
@@ -90,9 +91,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         fetchConversations();
       });
 
-      sock.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
-      });
+      sock.on("connect_error", (err) => {});
 
       sock.on("tokenExpired", async () => {
         const newToken = await refreshAccessToken();
@@ -138,7 +137,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           toBusinessId: msg.toBusinessId || msg.to,
         }));
         setMessages(uniqueMessages(normMsgs));
-      } catch {
+      } catch (err) {
         setMessages([]);
       }
     })();
@@ -158,9 +157,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
         toBusinessId: fullMsg.toBusinessId || fullMsg.to,
       };
+
       if (normalized.conversationId === selectedConversation._id) {
         setMessages((prev) => uniqueMessages([...prev, normalized]));
       }
+
       setConversations((prev) =>
         prev.map((conv) =>
           conv._id === normalized.conversationId
@@ -523,14 +524,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               borderRadius: "0 0 18px 18px",
             }}
           >
+            {/* כפתור הוספת קובץ */}
             <Button
               type="button"
               onClick={handleAttach}
               sx={{
+                minWidth: 40,
+                minHeight: 40,
                 fontSize: "1.6rem",
-                padding: "10px 14px",
                 borderRadius: "50%",
-                minWidth: 0,
                 backgroundColor: "#e3dffc",
                 color: "#7153dd",
                 boxShadow: "0 6px 15px rgba(111, 94, 203, 0.4)",
@@ -544,6 +546,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               📎
             </Button>
 
+            {/* שורת הכתיבה */}
             <TextField
               fullWidth
               size="medium"
@@ -564,16 +567,20 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   },
                 },
                 input: { padding: "14px 16px", fontSize: "1rem" },
+                height: 40,
               }}
             />
 
+            {/* כפתור השליחה */}
             <Button
               type="submit"
               variant="contained"
               sx={{
+                minWidth: 80,
+                minHeight: 40,
                 fontWeight: 700,
                 borderRadius: "20px",
-                padding: "12px 32px",
+                padding: "0 24px",
                 fontSize: "1.15rem",
                 boxShadow: "0 6px 15px rgba(113, 83, 221, 0.6)",
                 textTransform: "none",
