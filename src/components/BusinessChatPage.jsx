@@ -10,7 +10,6 @@ import { useSocket } from "../context/socketContext";
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const rawBusinessId = user?.businessId || user?.business?._id;
-
   const businessId =
     rawBusinessId && typeof rawBusinessId === "object" && rawBusinessId._id
       ? rawBusinessId._id.toString()
@@ -31,15 +30,13 @@ export default function BusinessChatPage() {
     (a, b) => a + b,
     0
   );
-
   useEffect(() => {
     updateMessagesCount?.(totalUnreadCount);
   }, [totalUnreadCount, updateMessagesCount]);
 
-  // Fetch conversations list
+  // Fetch conversations
   useEffect(() => {
     if (!initialized || !businessId) return;
-
     setLoading(true);
     API.get("/messages/client-conversations")
       .then(({ data }) => {
@@ -47,14 +44,14 @@ export default function BusinessChatPage() {
         const convosData = data.conversations || [];
         setConvos(convosData);
 
-        // Initialize unread counts
+        // unread initial
         const initialUnread = {};
         convosData.forEach((c) => {
           if (c.unreadCount > 0) initialUnread[c.conversationId] = c.unreadCount;
         });
         setUnreadCountsByConversation(initialUnread);
 
-        // Initial selection of first conversation
+        // initial select
         if (convosData.length > 0) {
           const { conversationId, clientId, clientName } = convosData[0];
           console.log("Initial selected convo:", { conversationId, clientId, clientName });
@@ -63,23 +60,18 @@ export default function BusinessChatPage() {
             partnerId:   clientId,
             partnerName: clientName,
           });
-        } else {
-          setSelected(null);
         }
       })
       .catch(() => setError("שגיאה בטעינת שיחות עם לקוחות"))
       .finally(() => setLoading(false));
   }, [initialized, businessId]);
 
-  const messagesAreaRef = useRef(null);
-
-  // Handle socket events and history
+  // Socket handlers…
   useEffect(() => {
     if (!socket || !socket.connected || !selected?.conversationId) {
       setMessages([]);
       return;
     }
-
     socket.emit("markMessagesRead", selected.conversationId, (resp) => {
       if (resp.ok) {
         setUnreadCountsByConversation((prev) => {
@@ -89,35 +81,28 @@ export default function BusinessChatPage() {
         });
       }
     });
-
     if (prevSelectedRef.current && prevSelectedRef.current !== selected.conversationId) {
       socket.emit("leaveConversation", prevSelectedRef.current);
     }
-
     socket.emit("joinConversation", selected.conversationId, (ack) => {
       if (!ack.ok) setError("לא ניתן להצטרף לשיחה");
     });
-
     socket.emit(
       "getHistory",
       { conversationId: selected.conversationId },
       (res) => {
-        if (res.ok) {
-          setMessages(res.messages || []);
-        } else {
+        if (res.ok) setMessages(res.messages || []);
+        else {
           setMessages([]);
           setError("שגיאה בטעינת ההודעות");
         }
       }
     );
-
     prevSelectedRef.current = selected.conversationId;
   }, [socket, selected]);
 
-  // Listen for new message notifications
   useEffect(() => {
     if (!socket) return;
-
     const handleNewMessage = (msg) => {
       const convoId = msg.conversationId || msg.conversation_id;
       if (convoId && convoId !== selected?.conversationId) {
@@ -127,12 +112,10 @@ export default function BusinessChatPage() {
         }));
       }
     };
-
     socket.on("newClientMessageNotification", handleNewMessage);
     return () => socket.off("newClientMessageNotification", handleNewMessage);
   }, [socket, selected?.conversationId]);
 
-  // Selection handler
   const handleSelect = (conversationId, partnerId, partnerName) => {
     console.log("handleSelect got:", { conversationId, partnerId, partnerName });
     setSelected({ conversationId, partnerId, partnerName });
@@ -152,13 +135,13 @@ export default function BusinessChatPage() {
             selectedConversationId={selected?.conversationId}
             onSelect={handleSelect}
             unreadCountsByConversation={unreadCountsByConversation}
-            isBusiness={false}
+            isBusiness={true}      
           />
         )}
         {error && <p className={styles.error}>{error}</p>}
       </aside>
 
-      <section ref={messagesAreaRef} className={styles.chatArea}>
+      <section className={styles.chatArea}>
         {selected ? (
           <BusinessChatTab
             conversationId={selected.conversationId}
