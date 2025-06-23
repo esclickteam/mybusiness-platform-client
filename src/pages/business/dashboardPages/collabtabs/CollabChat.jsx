@@ -275,12 +275,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       console.warn("לא נמצא מזהה הנמען");
       return;
     }
-    const otherId =
-      typeof otherIdRaw === "string"
-        ? otherIdRaw
-        : otherIdRaw._id
-        ? otherIdRaw._id.toString()
-        : otherIdRaw.toString();
+    const otherId = (() => {
+  if (typeof otherIdRaw === "string") {
+    return otherIdRaw;
+  } else if (otherIdRaw && otherIdRaw._id) {
+    return otherIdRaw._id.toString();
+  } else if (otherIdRaw && typeof otherIdRaw.toString === "function") {
+    return otherIdRaw.toString();
+  } else {
+    return JSON.stringify(otherIdRaw);
+  }
+})();
 
     console.log("Converted otherId to string:", otherId);
 
