@@ -206,7 +206,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
   (msg) => {
-    console.log("[handleNewMessage] Received new message:", msg);
     const fullMsg = msg.fullMsg || msg;
     const normalized = {
       ...fullMsg,
@@ -215,19 +214,40 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
     };
 
-    if (normalized.conversationId === selectedConversation?._id) {
-      dispatchMessages({ type: "append", payload: normalized });
+    dispatchMessages((prevMessages) => {
+      const optimisticIndex = prevMessages.findIndex(
+        (m) =>
+          m._id.startsWith("pending-") &&
+          m.text === normalized.text &&
+          m.fromBusinessId === normalized.fromBusinessId
+      );
 
-      setSelectedConversation((prev) => {
-        if (prev && prev._id === normalized.conversationId) {
-          return {
-            ...prev,
-            messages: uniqueMessages([...(prev.messages || []), normalized]),
-          };
-        }
-        return prev;
-      });
-    }
+      if (optimisticIndex !== -1) {
+        // החלפת ההודעה האופטימית בהודעה האמיתית
+        const newMessages = [...prevMessages];
+        newMessages[optimisticIndex] = normalized;
+        return newMessages;
+      }
+
+      // אם ההודעה כבר קיימת, אל תוסיף שוב
+      if (prevMessages.some((m) => m._id === normalized._id)) {
+        return prevMessages;
+      }
+
+      // הוסף הודעה חדשה
+      return [...prevMessages, normalized];
+    });
+
+    // עדכון שיחה נבחרת ושיחות בהתאם
+    setSelectedConversation((prev) => {
+      if (prev && prev._id === normalized.conversationId) {
+        return {
+          ...prev,
+          messages: uniqueMessages([...(prev.messages || []), normalized]),
+        };
+      }
+      return prev;
+    });
 
     setConversations((prev) =>
       prev.map((conv) =>
@@ -239,6 +259,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   },
   [selectedConversation, uniqueMessages]
 );
+
 
 
 
