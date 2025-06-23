@@ -244,11 +244,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       return;
     }
 
-    const otherId = getOtherBusinessId(selectedConversation, myBusinessId);
-    if (!otherId) {
+    const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
+    if (!otherIdRaw) {
       console.warn("לא נמצא מזהה הנמען");
       return;
     }
+    const otherId =
+      typeof otherIdRaw === "string"
+        ? otherIdRaw
+        : otherIdRaw._id
+        ? otherIdRaw._id.toString()
+        : otherIdRaw.toString();
 
     setIsSending(true);
 
@@ -301,11 +307,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     const file = e.target.files?.[0];
     if (!file || !socketRef.current || !selectedConversation) return;
 
-    const toBusinessId = getOtherBusinessId(selectedConversation, myBusinessId);
-    if (!toBusinessId) {
+    const toRaw = getOtherBusinessId(selectedConversation, myBusinessId);
+    if (!toRaw) {
       console.warn("לא נמצא מזהה הנמען בקובץ");
       return;
     }
+    const toBusinessId =
+      typeof toRaw === "string"
+        ? toRaw
+        : toRaw._id
+        ? toRaw._id.toString()
+        : toRaw.toString();
 
     setIsSending(true);
 
