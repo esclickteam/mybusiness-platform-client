@@ -143,27 +143,28 @@ export default function BusinessChatTab({
     socket.emit("markMessagesRead", conversationId, (resp) => {
       if (!resp.ok) console.error("markMessagesRead failed");
     });
-    socket.emit(
-      "getHistory",
-      { conversationId },
-      (res) => {
-        if (res.ok) {
-          // ממפים את createdAt ל־timestamp
-          const msgs = (res.messages || []).map((m) => ({
-            ...m,
-            timestamp: m.createdAt,
-          }));
-          dispatch({ type: "set", payload: msgs });
-        } else {
-          console.error("getHistory failed");
-          dispatch({ type: "set", payload: [] });
-        }
+     socket.emit(
+    "getHistory",
+    { conversationId },
+    (res) => {
+      if (res.ok) {
+        const msgs = (res.messages || []).map((m) => ({
+          ...m,
+          timestamp: m.createdAt,  // ממפה createdAt ל־timestamp
+          text:      m.content,    // ממפה content ל־text
+        }));
+        dispatch({ type: "set", payload: msgs });
+      } else {
+        console.error("getHistory failed");
+        dispatch({ type: "set", payload: [] });
       }
-    );
-    return () => {
-      socket.emit("leaveConversation", conversationId);
-    };
-  }, [socket, conversationId]);
+    }
+  );
+
+  return () => {
+    socket.emit("leaveConversation", conversationId);
+  };
+}, [socket, conversationId]);
 
   // 2. מאזינים ל־newMessage ו־typing
   useEffect(() => {
