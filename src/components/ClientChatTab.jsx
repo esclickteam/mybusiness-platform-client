@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Buffer } from "buffer";
 import "./ClientChatTab.css";
+import { Buffer } from "buffer";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const audioRef = useRef(null);
@@ -32,10 +32,10 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
     const audio = audioRef.current;
     if (!audio) return;
     playing ? audio.pause() : audio.play();
-    setPlaying(p => !p);
+    setPlaying((p) => !p);
   };
 
-  const formatTime = time => {
+  const formatTime = (time) => {
     if (!time || isNaN(time) || !isFinite(time)) return "0:00";
     const m = Math.floor(time / 60);
     const s = Math.floor(time % 60);
@@ -76,7 +76,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
-const getMessageKey = m => {
+const getMessageKey = (m) => {
   if (m.recommendationId) return `rec_${m.recommendationId}_rec`;
   if (m._id) return `msg_${m._id}_msg`;
   if (m.tempId) return `temp_${m.tempId}_temp`;
@@ -108,123 +108,112 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טעינת היסטוריית ההודעות עם readBy ברירת מחדל
+  // טעינת ההיסטוריה פעם אחת עם שינוי conversationId
   useEffect(() => {
     if (!conversationId) return;
 
     setLoading(true);
     setError("");
 
-    fetch(`/api/conversations/${conversationId}/history`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      fetch(`/api/conversations/${conversationId}/history`, {
+
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
       credentials: "include",
     })
-      .then(async res => {
+      .then(async (res) => {
         if (!res.ok) {
           const errMsg = await res.text();
           throw new Error(errMsg || "Error loading chat history");
         }
         return res.json();
       })
-      .then(data => {
-        const loaded = Array.isArray(data.messages)
-          ? data.messages.map(m => ({
-              ...m,
-              readBy: Array.isArray(m.readBy) ? m.readBy : [],
-            }))
-          : [];
-        setMessages(loaded);
+      .then((data) => {
+        setMessages(Array.isArray(data.messages) ? data.messages : []);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setError("שגיאה בטעינת ההיסטוריה: " + err.message);
         setLoading(false);
       });
   }, [conversationId, setMessages]);
 
-  // WebSocket – טיפול בהודעות נכנסות
+  // מאזיני socket לעדכונים בזמן אמת (בלי fetch חוזר)
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
-    const handleIncomingMessage = msg => {
+    const handleIncomingMessage = (msg) => {
       if (msg.isRecommendation && msg.status === "pending") return;
 
-      setMessages(prev => {
-        const existsIdx = prev.findIndex(m => {
-          const mId = m.isRecommendation
+      const id = msg.isRecommendation
+        ? `rec_${msg.recommendationId}`
+        : msg._id
+        ? `msg_${msg._id}`
+        : msg.tempId
+        ? `temp_${msg.tempId}`
+        : null;
+
+      setMessages((prev) => {
+        // אם ההודעה כבר קיימת (כולל החלפת tempId ב-id אמיתי), עדכן במקום להוסיף כפילויות
+        const existsIdx = prev.findIndex((m) => {
+          const mid = m.isRecommendation
             ? `rec_${m.recommendationId}`
             : m._id
             ? `msg_${m._id}`
             : m.tempId
             ? `temp_${m.tempId}`
             : null;
-          const newId = msg.isRecommendation
-            ? `rec_${msg.recommendationId}`
-            : msg._id
-            ? `msg_${msg._id}`
-            : msg.tempId
-            ? `temp_${msg.tempId}`
-            : null;
           if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
-          return mId === newId;
+          return mid === id;
         });
 
         if (existsIdx !== -1) {
-          return prev.map((m, i) =>
-            i === existsIdx
-              ? { ...m, ...msg, readBy: msg.readBy?.length ? msg.readBy : m.readBy ?? [] }
-
-              : m
-          );
+          const newMessages = [...prev];
+          newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
+          return newMessages;
         }
-        return [...prev, { ...msg, readBy: msg.readBy ?? [] }];
+        return [...prev, msg];
       });
     };
 
-    const handleMessageApproved = msg => {
+    const handleMessageApproved = (msg) => {
       if (msg.conversationId !== conversationId) return;
 
-      setMessages(prev =>
-        prev.map(m =>
-          m._id === msg._id ||
-          (m.tempId && msg.tempId && m.tempId === msg.tempId) ||
-          (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
-            ? { ...m, ...msg, status: "approved" }
-            : m
-        )
-      );
+      setMessages((prev) => {
+        const idx = prev.findIndex(
+          (m) =>
+            m._id === msg._id ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId) ||
+            (m.isRecommendation &&
+              msg.recommendationId &&
+              m.recommendationId === msg.recommendationId)
+        );
+        if (idx !== -1) {
+          const newMessages = [...prev];
+          newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
+          return newMessages;
+        }
+        return [...prev, msg];
+      });
     };
 
-    const handleRecommendationUpdated = updatedRec => {
-      if (updatedRec.conversationId !== conversationId) return;
+    const handleRecommendationUpdated = (updatedRec) => {
+  if (updatedRec.conversationId !== conversationId) return;
 
-      setMessages(prev =>
-        prev.map(m =>
-          m._id === updatedRec._id || m.recommendationId === updatedRec._id
-            ? { ...m, ...updatedRec }
-            : m
-        )
-      );
-    };
+  setMessages((prev) =>
+    prev.map((m) =>
+      m._id === updatedRec._id || m.recommendationId === updatedRec._id
+        ? { ...m, ...updatedRec }
+        : m
+    )
+  );
+};
 
-    const handleReadReceipt = ({ messageId, userId: readerId }) => {
-      setMessages(prev =>
-        prev.map(msg => {
-          if (msg._id === messageId) {
-            const readBy = msg.readBy || [];
-            if (!readBy.some(id => id.toString() === readerId.toString())) {
-              return { ...msg, readBy: [...readBy, readerId] };
-            }
-          }
-          return msg;
-        })
-      );
-    };
 
     socket.on("newMessage", handleIncomingMessage);
     socket.on("messageApproved", handleMessageApproved);
     socket.on("recommendationUpdated", handleRecommendationUpdated);
-    socket.on("messageRead", handleReadReceipt);
 
     socket.emit("joinConversation", conversationId);
     socket.emit("joinRoom", businessId);
@@ -233,63 +222,25 @@ export default function ClientChatTab({
       socket.off("newMessage", handleIncomingMessage);
       socket.off("messageApproved", handleMessageApproved);
       socket.off("recommendationUpdated", handleRecommendationUpdated);
-      socket.off("messageRead", handleReadReceipt);
       socket.emit("leaveConversation", conversationId);
     };
   }, [socket, conversationId, businessId, setMessages]);
 
-  // גלילה לתחתית אחרי כל שינוי
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // סימון קריאה אופטימיסטי + ACK מהשרת
-  useEffect(() => {
-    if (!socket || !conversationId || !messages.length) return;
-
-    const unread = messages.filter(
-      m =>
-        m.from !== userId && (!Array.isArray(m.readBy) || !m.readBy.includes(userId))
-    );
-    if (unread.length === 0) return;
-
-    // אופטימיסטי: סימון מיידי ב-state
-    setMessages(prev =>
-      prev.map(m =>
-        unread.find(u => u._id === m._id)
-          ? { ...m, readBy: [...(m.readBy || []), userId] }
-          : m
-      )
-    );
-
-    // שליחת הבקשה לכל הודעה שלא נקראה
-    unread.forEach(m =>
-      socket.emit(
-        "markMessageRead",
-        { conversationId, messageId: m._id },
-        updatedMsg => {
-          if (updatedMsg && updatedMsg._id) {
-            setMessages(prev =>
-              prev.map(x =>
-                x._id === updatedMsg._id ? { ...x, ...updatedMsg } : x
-              )
-            );
-          }
-        }
-      )
-    );
-  }, [messages, socket, conversationId, userId]);
-
-  // שאר הלוגיקה (שליחה, הקלטה, קבצים) נשארת ללא שינוי
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   };
 
-  const handleAttach = () => fileInputRef.current?.click();
+  const handleAttach = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
 
   const sendMessage = () => {
     if (!input.trim() || sending || !socket) return;
@@ -300,7 +251,9 @@ export default function ClientChatTab({
     setSending(true);
     setError("");
 
+    // יצירת מזהה זמני ל-optimistic update
     const tempId = uuidv4();
+
     const optimisticMsg = {
       _id: tempId,
       tempId,
@@ -310,28 +263,35 @@ export default function ClientChatTab({
       role: "client",
       text: input.trim(),
       timestamp: new Date(),
-      readBy: [],
     };
 
-    setMessages(prev => [...prev, optimisticMsg]);
+    // הוספת הודעה זמנית ל-UI (Optimistic UI Update)
+    setMessages((prev) => [...prev, optimisticMsg]);
+
     setInput("");
 
+    // שליחת ההודעה לשרת עם tempId
     socket.emit(
       "sendMessage",
-      { conversationId, from: userId, to: businessId, role: "client", text: optimisticMsg.text, tempId },
-      ack => {
+      {
+        conversationId,
+        from: userId,
+        to: businessId,
+        role: "client",
+        text: optimisticMsg.text,
+        tempId,
+      },
+      (ack) => {
         setSending(false);
         if (ack?.ok) {
-          setMessages(prev =>
-  prev.map(msg =>
-    msg.tempId === tempId && ack.message
-      ? { ...msg, ...ack.message, readBy: ack.message.readBy ?? msg.readBy ?? [] }
-      : msg
-  )
-);
+          // החלפת ההודעה הזמנית בהודעה האמיתית מהשרת
+          setMessages((prev) =>
+            prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
+          );
         } else {
+          // במקרה של שגיאה, הסר את ההודעה הזמנית והצג שגיאה
           setError("שגיאה בשליחת ההודעה");
-          setMessages(prev => prev.filter(msg => msg.tempId !== tempId));
+          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
         }
       }
     );
@@ -350,7 +310,7 @@ export default function ClientChatTab({
       const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
 
-      recorder.ondataavailable = e => {
+      recorder.ondataavailable = (e) => {
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
       recorder.onstop = () => {
@@ -363,7 +323,7 @@ export default function ClientChatTab({
       recorder.start();
       setRecording(true);
       setTimer(0);
-      timerRef.current = setInterval(() => setTimer(t => t + 1), 1000);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     } catch {
       setError("אין הרשאה להקלטה");
     }
@@ -383,8 +343,16 @@ export default function ClientChatTab({
 
       socket.emit(
         "sendAudio",
-        { conversationId, from: userId, to: businessId, role: "client", buffer, fileType: recordedBlob.type, duration: timer },
-        ack => {
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          buffer,
+          fileType: recordedBlob.type,
+          duration: timer,
+        },
+        (ack) => {
           setSending(false);
           setRecordedBlob(null);
           setTimer(0);
@@ -442,44 +410,54 @@ export default function ClientChatTab({
               m.isRecommendation ? " ai-recommendation" : ""
             }`}
           >
-            {/* תוכן ההודעה */}
-            {m.fileUrl && m.fileType && m.fileType.startsWith("audio") ? (
-              <WhatsAppAudioPlayer src={m.fileUrl} userAvatar={m.userAvatar} duration={m.fileDuration} />
-            ) : m.fileUrl && /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
-              <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
-            ) : m.fileUrl ? (
-              <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
-                {m.fileName || "קובץ להורדה"}
-              </a>
+            {m.image ? (
+              <img
+                src={m.image}
+                alt={m.fileName || "image"}
+                style={{ maxWidth: 200, borderRadius: 8 }}
+              />
+            ) : m.fileUrl || m.file?.data ? (
+              m.fileType && m.fileType.startsWith("audio") ? (
+                <WhatsAppAudioPlayer
+                  src={m.fileUrl || m.file.data}
+                  userAvatar={m.userAvatar}
+                  duration={m.fileDuration}
+                />
+              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
+                <img
+                  src={m.fileUrl || m.file.data}
+                  alt={m.fileName || "image"}
+                  style={{ maxWidth: 200, borderRadius: 8 }}
+                />
+              ) : (
+                <a
+                  href={m.fileUrl || m.file?.data}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
+                  {m.fileName || "קובץ להורדה"}
+                </a>
+              )
             ) : (
-              <div className="text">{m.content || m.text}</div>
+              <div className="text">{m.isEdited && m.editedText ? m.editedText : (m.content || m.text)}</div>
+
             )}
-
-            {/* סימון קריאה תמיד עם שני וים */}
-            {m.from === userId && (
-  <span
-    className={`read-indicator ${
-      m.readBy && m.readBy.some(id => id.toString() === businessId.toString())
-        ? "read"   // וי כחול אם העסק קרא
-        : "sent"   // וי אפור אם לא קרא
-    }`}
-    title={
-      m.readBy && m.readBy.some(id => id.toString() === businessId.toString())
-        ? "נקראה"
-        : "נשלחה"
-    }
-  >
-    ✔✔
-  </span>
-)}
-
-
+            {m.isEdited && userRole === "business" && (
+              <div className="edited-label" style={{ fontSize: "0.8em", color: "#888" }}>
+                (נערך)
+              </div>
+            )}
             <div className="meta">
               <span className="time">
                 {(() => {
-                  const date = new Date(m.createdAt);
+                      const date = new Date(m.createdAt);
+
                   if (isNaN(date)) return "";
-                  return date.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+                  return date.toLocaleTimeString("he-IL", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
                 })()}
               </span>
               {m.fileDuration && (
@@ -564,7 +542,7 @@ export default function ClientChatTab({
               </button>
               <button
                 className={`recordBtn${recording ? " recording" : ""}`}
-                onClick={recording ? handleRecordStop : handleRecordStart}
+                onClick={handleRecordStart}
                 disabled={sending}
                 type="button"
               >
