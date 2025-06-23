@@ -109,6 +109,17 @@ export default function BusinessChatTab({
   const [isTyping, setIsTyping] = useState(false);
   const fileInputRef = useRef(null);
 
+  // helper להגנה על תאריכים לא תקינים
+  const formatTime = (ts) => {
+    if (!ts) return "";
+    const d = new Date(ts);
+    if (isNaN(d)) return "";
+    return d.toLocaleTimeString("he-IL", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   // הקלטת אודיו
   const [recording, setRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
@@ -136,8 +147,14 @@ export default function BusinessChatTab({
       "getHistory",
       { conversationId },
       (res) => {
-        if (res.ok) dispatch({ type: "set", payload: res.messages || [] });
-        else {
+        if (res.ok) {
+          // ממפים את createdAt ל־timestamp
+          const msgs = (res.messages || []).map((m) => ({
+            ...m,
+            timestamp: m.createdAt,
+          }));
+          dispatch({ type: "set", payload: msgs });
+        } else {
           console.error("getHistory failed");
           dispatch({ type: "set", payload: [] });
         }
@@ -419,10 +436,7 @@ export default function BusinessChatTab({
               )}
               <div className="meta">
                 <span className="time">
-                  {new Date(m.timestamp).toLocaleTimeString(
-                    "he-IL",
-                    { hour: "2-digit", minute: "2-digit" }
-                  )}
+                  {formatTime(m.timestamp)}
                 </span>
                 {m.fileDuration && (
                   <span className="audio-length">{`${Math.floor(
