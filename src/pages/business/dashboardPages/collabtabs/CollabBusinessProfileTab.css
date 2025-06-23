@@ -380,3 +380,45 @@
     min-height: 100px;
   }
 }
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.8rem;
+}
+
+.modal-buttons .btn-primary {
+  background: linear-gradient(90deg, #7153dd, #9a7ff8);
+  color: white;
+  padding: 1rem 3rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border-radius: 40px;
+  box-shadow: 0 10px 30px rgba(113, 83, 221, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-buttons .btn-primary:hover {
+  background: linear-gradient(90deg, #5d3dc7, #7d66e6);
+  box-shadow: 0 12px 35px rgba(92, 62, 199, 0.8);
+}
+
+.modal-buttons .btn-secondary {
+  background-color: #ded4ff;
+  color: #7153dd;
+  padding: 1rem 3rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border-radius: 40px;
+  box-shadow: 0 10px 20px rgba(130, 111, 219, 0.6);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-buttons .btn-secondary:hover {
+  background-color: #c2b3ff;
+  box-shadow: 0 12px 25px rgba(129, 110, 220, 0.9);
+}
