@@ -6,6 +6,27 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useAuth } from "../../../../context/AuthContext";
 
+// פונקציה כללית למציאת מזהה העסק השני מתוך conversation
+function getOtherBusinessId(conv, myBusinessId) {
+  if (!conv || !myBusinessId) return "";
+
+  if (Array.isArray(conv.participantsInfo)) {
+    const info = conv.participantsInfo.find(
+      (b) => b._id.toString() !== myBusinessId.toString()
+    );
+    if (info) return info._id.toString();
+  }
+
+  if (Array.isArray(conv.participants)) {
+    const raw = conv.participants.find(
+      (id) => id.toString() !== myBusinessId.toString()
+    );
+    if (raw) return raw.toString();
+  }
+
+  return "";
+}
+
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
@@ -36,13 +57,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
-    const filtered = msgs.filter((m) => {
+    return msgs.filter((m) => {
       const id = m._id?.toString() || m.tempId || m.timestamp;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
-    return filtered;
   }, []);
 
   const fetchConversations = useCallback(async () => {
@@ -56,7 +76,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Conversations response:", res.data);
       const convsRaw = res.data.conversations || [];
       const convs = convsRaw.map((c) => ({
         ...c,
@@ -160,7 +179,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("Messages response:", res.data);
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
           fromBusinessId: msg.fromBusinessId || msg.from,
@@ -217,80 +235,60 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-  if (isSending) {
-    console.warn("Already sending message, aborting.");
-    return;
-  }
-  if (!input.trim() || !selectedConversation || !socketRef.current) {
-    console.warn("Cannot send message: missing input, conversation, or socket");
-    return;
-  }
+    if (isSending) {
+      console.warn("Already sending message, aborting.");
+      return;
+    }
+    if (!input.trim() || !selectedConversation || !socketRef.current) {
+      console.warn("Cannot send message: missing input, conversation, or socket");
+      return;
+    }
 
-  setIsSending(true);
+    const otherId = getOtherBusinessId(selectedConversation, myBusinessId);
+    if (!otherId) {
+      console.warn("לא נמצא מזהה הנמען");
+      return;
+    }
 
-  // מצא את מזהה הצד השני בצורה בטוחה
-  let otherId =
-    selectedConversation.participantsInfo?.find(
-      (b) => b._id.toString() !== myBusinessId.toString()
-    )?._id ||
-    selectedConversation.participants.find((id) => {
-      if (typeof id === "object" && id !== null) {
-        return id.toString() !== myBusinessId.toString();
+    setIsSending(true);
+
+    const payload = {
+      conversationId: selectedConversation._id.toString(),
+      from: myBusinessId.toString(),
+      to: otherId,
+      text: input.trim(),
+    };
+
+    const optimistic = {
+      ...payload,
+      timestamp: new Date().toISOString(),
+      _id: "pending-" + Math.random().toString(36).substr(2, 9),
+      fromBusinessId: payload.from,
+      toBusinessId: payload.to,
+      sending: true,
+    };
+
+    console.log("Sending message:", payload);
+    setMessages((prev) => uniqueMessages([...prev, optimistic]));
+    setInput("");
+
+    socketRef.current.emit("sendMessage", payload, (ack) => {
+      setIsSending(false);
+      if (!ack.ok) {
+        alert("שליחת הודעה נכשלה: " + ack.error);
+        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
+      } else if (ack.message?._id) {
+        const real = {
+          ...ack.message,
+          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+          toBusinessId: ack.message.toBusinessId || ack.message.to,
+        };
+        setMessages((prev) =>
+          uniqueMessages([...prev.filter((m) => m._id !== optimistic._id), real])
+        );
       }
-      return id !== myBusinessId.toString();
     });
-
-  // המרה בטוחה למחרוזת מזהה
-  if (typeof otherId === "object" && otherId !== null) {
-    if (typeof otherId._id !== "undefined") {
-      otherId = otherId._id.toString();
-    } else if (typeof otherId.toString === "function") {
-      otherId = otherId.toString();
-    } else {
-      otherId = "";
-    }
-  } else {
-    otherId = otherId.toString();
-  }
-
-  const payload = {
-    conversationId: selectedConversation._id.toString(),
-    from: myBusinessId.toString(),
-    to: otherId,
-    text: input.trim(),
   };
-
-  const optimistic = {
-    ...payload,
-    timestamp: new Date().toISOString(),
-    _id: "pending-" + Math.random().toString(36).substr(2, 9),
-    fromBusinessId: payload.from,
-    toBusinessId: payload.to,
-    sending: true,
-  };
-
-  console.log("Sending message:", payload);
-  setMessages((prev) => uniqueMessages([...prev, optimistic]));
-  setInput("");
-
-  socketRef.current.emit("sendMessage", payload, (ack) => {
-    setIsSending(false);
-    if (!ack.ok) {
-      alert("שליחת הודעה נכשלה: " + ack.error);
-      setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
-    } else if (ack.message?._id) {
-      const real = {
-        ...ack.message,
-        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-        toBusinessId: ack.message.toBusinessId || ack.message.to,
-      };
-      setMessages((prev) =>
-        uniqueMessages([...prev.filter((m) => m._id !== optimistic._id), real])
-      );
-    }
-  });
-};
-
 
   const handleAttach = () => {
     if (fileInputRef.current) {
@@ -303,10 +301,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     const file = e.target.files?.[0];
     if (!file || !socketRef.current || !selectedConversation) return;
 
+    const toBusinessId = getOtherBusinessId(selectedConversation, myBusinessId);
+    if (!toBusinessId) {
+      console.warn("לא נמצא מזהה הנמען בקובץ");
+      return;
+    }
+
     setIsSending(true);
 
     const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
-    const toBusinessId = selectedConversation.participants.find((id) => id !== myBusinessId);
 
     const optimisticMsg = {
       _id: tempId,
@@ -440,10 +443,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         {conversations
           .filter((conv) => conv && Array.isArray(conv.messages))
           .map((conv) => {
-            const idx = conv.participants.findIndex((id) => id !== myBusinessId);
-            const partner = conv.participantsInfo?.[idx] || { businessName: "עסק" };
+            const otherId = getOtherBusinessId(conv, myBusinessId);
+            const partner =
+              conv.participantsInfo?.find((b) => b._id.toString() === otherId) || {
+                businessName: "עסק",
+              };
             const lastMsg =
-              conv.messages.length > 0 ? conv.messages[conv.messages.length - 1].text : "";
+              conv.messages.length > 0
+                ? conv.messages[conv.messages.length - 1].text
+                : "";
             return (
               <Box
                 key={conv._id}
@@ -452,10 +460,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   py: 1.5,
                   cursor: "pointer",
                   borderBottom: "1px solid #f3f0fa",
-                  background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                  background:
+                    selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
                 }}
                 onClick={() => {
-                  console.log("Selected conversation:", conv._id);
                   setSelectedConversation(conv);
                 }}
               >
@@ -500,15 +508,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 >
                   שיחה עם{" "}
                   {selectedConversation.participantsInfo?.find(
-                    (b) => b._id !== myBusinessId
+                    (b) => b._id.toString() !== myBusinessId.toString()
                   )?.businessName || "עסק"}
                 </Box>
                 {messages.map((msg, i) => (
                   <Box
                     key={msg._id ? msg._id.toString() : `pending-${i}`}
                     sx={{
-                      background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-                      alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
+                      background:
+                        msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                      alignSelf:
+                        msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
                       p: 1.2,
                       borderRadius: 2,
                       mb: 1,
@@ -590,7 +600,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               borderRadius: "0 0 18px 18px",
             }}
           >
-            {/* כפתור הוספת קובץ */}
             <Button
               type="button"
               onClick={handleAttach}
@@ -612,7 +621,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               📎
             </Button>
 
-            {/* שורת הכתיבה */}
             <TextField
               fullWidth
               size="medium"
@@ -637,7 +645,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               }}
             />
 
-            {/* כפתור השליחה */}
             <Button
               type="submit"
               variant="contained"
