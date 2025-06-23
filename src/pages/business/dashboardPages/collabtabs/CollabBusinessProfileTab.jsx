@@ -3,7 +3,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import API from "../../../../api";
 import CollabChat from "./CollabChat";
-import "./CollabBusinessProfileTab.css";
+import "./CollabBusinessProfileTabNew.css";
 
 import { useAi } from "../../../../context/AiContext";
 import AiModal from "../../../../components/AiModal";
@@ -17,25 +17,20 @@ export default function CollabBusinessProfileTab({ socket }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // מזהי עסק לצ'אט
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
 
-  // שימוש בקונטקסט AI
   const { addSuggestion, activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading: aiLoading } = useAi();
 
   useEffect(() => {
     fetchProfile();
     fetchMyBusinessId();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewRecommendation = (rec) => {
-      addSuggestion(rec);
-    };
+    const handleNewRecommendation = (rec) => addSuggestion(rec);
 
     socket.on("newRecommendation", handleNewRecommendation);
 
@@ -53,7 +48,7 @@ export default function CollabBusinessProfileTab({ socket }) {
         setLogoPreview(data.business.logo || null);
         setMyBusinessName(data.business.businessName || "עסק שלי");
       }
-    } catch (e) {
+    } catch {
       alert("שגיאה בטעינת פרטי העסק");
     }
     setLoading(false);
@@ -63,7 +58,7 @@ export default function CollabBusinessProfileTab({ socket }) {
     try {
       const { data } = await API.get("/business-chat/me");
       if (data.myBusinessId) setMyBusinessId(data.myBusinessId);
-    } catch (e) {}
+    } catch {}
   };
 
   const handleLogoChange = (e) => {
@@ -109,7 +104,7 @@ export default function CollabBusinessProfileTab({ socket }) {
   };
 
   if (loading || !profileData) {
-    return <div style={{ textAlign: "center", margin: "2em" }}>טוען...</div>;
+    return <div className="loading-text">טוען...</div>;
   }
 
   const safeProfile = {
@@ -125,14 +120,16 @@ export default function CollabBusinessProfileTab({ socket }) {
 
   return (
     <>
-      <div className="profile-wrapper">
-        <h2 className="profile-header">📇 פרופיל עסקי</h2>
+      <section className="profile-wrapper">
+        <header className="profile-header">
+          <h1>📇 פרופיל עסקי</h1>
+        </header>
 
-        <div className="profile-card">
+        <article className="profile-card">
           <div className="profile-top">
-            <label htmlFor="logo-upload" className="logo-label">
+            <label htmlFor="logo-upload" className="profile-logo-label">
               <img
-                src={logoPreview || "https://via.placeholder.com/150"}
+                src={logoPreview || "https://via.placeholder.com/150?text=לוגו"}
                 alt="לוגו העסק"
                 className="profile-logo"
               />
@@ -145,9 +142,9 @@ export default function CollabBusinessProfileTab({ socket }) {
               />
             </label>
 
-            <div className="profile-info">
-              <h3 className="business-name">{safeProfile.businessName}</h3>
-              <span className="business-category">{safeProfile.category}</span>
+            <div className="profile-main-info">
+              <h2 className="profile-business-name">{safeProfile.businessName}</h2>
+              <span className="profile-category">{safeProfile.category}</span>
             </div>
 
             <div className="profile-actions">
@@ -167,19 +164,19 @@ export default function CollabBusinessProfileTab({ socket }) {
           </div>
 
           <div className="profile-section">
-            <h4>📍 אזור פעילות</h4>
+            <h3>📍 אזור פעילות</h3>
             <p>{safeProfile.area}</p>
           </div>
 
           <div className="profile-section">
-            <h4>📝 על העסק</h4>
+            <h3>📝 על העסק</h3>
             <p>{safeProfile.about}</p>
           </div>
 
           <div className="profile-section">
-            <h4>🤝 שיתופי פעולה רצויים</h4>
+            <h3>🤝 שיתופי פעולה רצויים</h3>
             {safeProfile.collabPref ? (
-              <ul className="collab-list">
+              <ul className="profile-collab-list">
                 {safeProfile.collabPref.split("\n").map((line, i) =>
                   line.trim() ? <li key={i}>{line}</li> : null
                 )}
@@ -189,47 +186,22 @@ export default function CollabBusinessProfileTab({ socket }) {
             )}
           </div>
 
-          <div className="profile-section">
-            <h4>📞 פרטי קשר</h4>
-            <p>
-              <strong>איש קשר:</strong> {safeProfile.contact}
-            </p>
-            <p>
-              <strong>טלפון:</strong> {safeProfile.phone}
-            </p>
-            <p>
-              <strong>אימייל:</strong> {safeProfile.email}
-            </p>
+          <div className="profile-section profile-contact">
+            <h3>📞 פרטי קשר</h3>
+            <p><strong>איש קשר:</strong> {safeProfile.contact}</p>
+            <p><strong>טלפון:</strong> {safeProfile.phone}</p>
+            <p><strong>אימייל:</strong> {safeProfile.email}</p>
           </div>
-        </div>
-      </div>
+        </article>
+      </section>
 
       {/* מודאל עריכת פרופיל */}
       <Modal open={showEditProfile} onClose={() => setShowEditProfile(false)}>
-        <Box
-          sx={{
-            direction: "rtl",
-            backgroundColor: "#fff",
-            padding: "2rem",
-            borderRadius: "1rem",
-            maxWidth: "500px",
-            width: "90%",
-            maxHeight: "90vh",
-            overflowY: "auto",
-            margin: "5% auto",
-            boxShadow: 5,
-          }}
-        >
-          <h3 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-            עריכת פרופיל עסקי
-          </h3>
-          <form onSubmit={handleSaveProfile} className="styled-form">
+        <Box className="modal-box">
+          <h2>עריכת פרופיל עסקי</h2>
+          <form onSubmit={handleSaveProfile} className="profile-form">
             <label>שם העסק</label>
-            <input
-              name="businessName"
-              defaultValue={safeProfile.businessName}
-              required
-            />
+            <input name="businessName" defaultValue={safeProfile.businessName} required />
 
             <label>תחום</label>
             <input name="category" defaultValue={safeProfile.category} required />
@@ -241,11 +213,7 @@ export default function CollabBusinessProfileTab({ socket }) {
             <textarea name="about" defaultValue={safeProfile.about} rows="3" />
 
             <label>שיתופי פעולה רצויים</label>
-            <textarea
-              name="collabPref"
-              defaultValue={safeProfile.collabPref}
-              rows="3"
-            />
+            <textarea name="collabPref" defaultValue={safeProfile.collabPref} rows="3" />
 
             <label>שם איש קשר</label>
             <input name="contact" defaultValue={safeProfile.contact} required />
@@ -257,11 +225,7 @@ export default function CollabBusinessProfileTab({ socket }) {
             <input name="email" defaultValue={safeProfile.email} required />
 
             <div className="modal-buttons">
-              <button
-                type="submit"
-                className="btn-primary"
-                disabled={saving}
-              >
+              <button type="submit" className="btn-primary" disabled={saving}>
                 {saving ? "שומר..." : "💾 שמירה"}
               </button>
               <button
@@ -277,27 +241,13 @@ export default function CollabBusinessProfileTab({ socket }) {
         </Box>
       </Modal>
 
-      {/* מודאל לצ'אט עסקי */}
+      {/* מודאל צ'אט עסקי */}
       <Modal
         open={showBusinessChat}
         onClose={() => setShowBusinessChat(false)}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        className="chat-modal"
       >
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: 900,
-            bgcolor: "#fff",
-            borderRadius: "16px",
-            boxShadow: 6,
-            p: 2,
-            outline: "none",
-          }}
-        >
+        <Box className="chat-box">
           {myBusinessId && (
             <CollabChat
               token={API.token || localStorage.getItem("token")}
@@ -309,7 +259,7 @@ export default function CollabBusinessProfileTab({ socket }) {
         </Box>
       </Modal>
 
-      {/* מודאל AI גלובלי להצגת המלצות */}
+      {/* מודאל AI */}
       <AiModal
         loading={aiLoading}
         activeSuggestion={activeSuggestion}

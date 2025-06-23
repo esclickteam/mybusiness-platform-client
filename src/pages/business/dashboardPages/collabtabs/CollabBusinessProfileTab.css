@@ -1,85 +1,99 @@
 :root {
-  --primary: #7c4dff;
-  --primary-dark: #5e35b1;
-  --text-dark: #1e1e2f;
-  --bg-light: #faf9ff;
-  --card-bg: #fff;
-  --shadow: rgba(0, 0, 0, 0.1);
+  --color-primary: #7851a9;
+  --color-primary-light: #a089d9;
+  --color-text-dark: #2b2b2b;
+  --color-bg: #f8f7fb;
+  --color-card-bg: #ffffff;
+  --color-border: #e3e1ea;
+  --color-button-bg: var(--color-primary);
+  --color-button-hover: #623e95;
+  --color-button-secondary-bg: #ddd;
+  --color-button-secondary-hover: #bbb;
 }
 
 body {
-  background-color: var(--bg-light);
+  background-color: var(--color-bg);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-dark);
 }
 
 .profile-wrapper {
-  max-width: 900px;
+  max-width: 850px;
   margin: 3rem auto;
-  padding: 1rem;
-  direction: rtl;
+  padding: 0 20px 3rem 20px;
 }
 
 .profile-header {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary-dark);
   text-align: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-primary);
   margin-bottom: 2rem;
+  user-select: none;
 }
 
 .profile-card {
-  background-color: var(--card-bg);
+  background-color: var(--color-card-bg);
   border-radius: 20px;
   padding: 2rem 3rem;
-  box-shadow: 0 12px 30px var(--shadow);
+  box-shadow: 0 8px 28px rgba(120, 81, 169, 0.18);
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  user-select: none;
 }
 
 .profile-top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
-.logo-label {
+.profile-logo-label {
   cursor: pointer;
   flex-shrink: 0;
-}
-
-.profile-logo {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid var(--primary);
+  border-radius: 100%;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(120, 81, 169, 0.3);
+  width: 120px;
+  height: 120px;
   transition: transform 0.3s ease;
 }
 
-.profile-logo:hover {
+.profile-logo-label:hover {
   transform: scale(1.05);
 }
 
-.profile-info {
+.profile-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 100%;
+  display: block;
+}
+
+.profile-main-info {
   flex-grow: 1;
   text-align: right;
+  padding-right: 20px;
 }
 
-.business-name {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--text-dark);
+.profile-business-name {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: var(--color-primary);
 }
 
-.business-category {
-  color: var(--primary);
-  font-weight: 600;
+.profile-category {
   font-size: 1.1rem;
-  margin-top: 4px;
+  color: var(--color-primary-light);
+  font-weight: 600;
 }
 
 .profile-actions {
@@ -90,106 +104,135 @@ body {
 
 .btn-primary,
 .btn-secondary {
-  padding: 0.7rem 1.6rem;
-  border: none;
-  border-radius: 25px;
-  font-weight: 600;
+  padding: 0.75rem 1.8rem;
+  border-radius: 28px;
+  font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  border: none;
   user-select: none;
+  transition: background-color 0.3s ease;
 }
 
 .btn-primary {
-  background-color: var(--primary);
-  color: white;
+  background-color: var(--color-button-bg);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(120, 81, 169, 0.35);
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--color-button-hover);
 }
 
 .btn-secondary {
-  background-color: #ddd;
-  color: #333;
+  background-color: var(--color-button-secondary-bg);
+  color: var(--color-text-dark);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 .btn-secondary:hover {
-  background-color: #bbb;
+  background-color: var(--color-button-secondary-hover);
 }
 
 .profile-section {
-  border-top: 1px solid #eee;
-  padding-top: 1rem;
-  color: #444;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.4rem;
+  color: var(--color-text-dark);
+  user-select: text;
 }
 
-.profile-section h4 {
-  font-size: 1.3rem;
+.profile-section h3 {
   font-weight: 700;
+  font-size: 1.3rem;
   margin-bottom: 0.7rem;
-  color: var(--primary-dark);
+  color: var(--color-primary);
 }
 
 .profile-section p {
   font-size: 1.1rem;
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
 }
 
-.collab-list {
+.profile-collab-list {
+  padding-inline-start: 1.6rem;
   list-style-type: disc;
-  padding-inline-start: 1.5rem;
   color: #555;
   font-size: 1.1rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* טופס במודאל */
-.styled-form {
+.modal-box {
   direction: rtl;
+  background: var(--color-card-bg);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  max-width: 480px;
+  margin: 5% auto;
+  box-shadow: 0 8px 30px rgba(120, 81, 169, 0.3);
+  outline: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modal-box h2 {
+  text-align: center;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  user-select: none;
+}
+
+.profile-form {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  padding: 1rem 0;
+  gap: 1.4rem;
 }
 
-.styled-form label {
+.profile-form label {
   font-weight: 700;
   font-size: 1rem;
-  margin-bottom: 0.4rem;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
+  user-select: text;
 }
 
-.styled-form input,
-.styled-form textarea {
+.profile-form input,
+.profile-form textarea {
   width: 100%;
-  padding: 0.8rem 1rem;
+  padding: 0.85rem 1.2rem;
   font-size: 1rem;
-  border-radius: 12px;
-  border: 1.5px solid #ccc;
-  background-color: #f9f9f9;
+  border-radius: 14px;
+  border: 1.8px solid #c1bede;
+  background-color: #f9f8fe;
   transition: all 0.3s ease;
   font-family: inherit;
-}
-
-.styled-form input:focus,
-.styled-form textarea:focus {
-  border-color: var(--primary);
-  background-color: white;
-  outline: none;
-  box-shadow: 0 0 6px rgba(124, 77, 255, 0.35);
-}
-
-.styled-form textarea {
   resize: vertical;
+}
+
+.profile-form input:focus,
+.profile-form textarea:focus {
+  border-color: var(--color-primary);
+  background-color: #fff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(120, 81, 169, 0.4);
+}
+
+.profile-form textarea {
   min-height: 90px;
 }
 
-/* כפתורי שמירה וביטול */
+/* כפתורים במודאל */
 .modal-buttons {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  gap: 1.8rem;
+  margin-top: 1.8rem;
+}
+
+.loading-text {
+  text-align: center;
+  margin: 3rem 0;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  font-weight: 600;
 }
