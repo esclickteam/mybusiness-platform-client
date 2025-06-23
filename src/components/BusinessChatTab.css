@@ -484,3 +484,13 @@
   margin-left: 6px;
   user-select: none;
 }
+
+/* אינדיקטור לקריאת הודעה (✔✔) */
+.read-indicator {
+  color: #0b93f6; /* כחול וואטסאפ */
+  font-weight: 700;
+  font-size: 14px;
+  margin-left: 6px;
+  user-select: none;
+  line-height: 1;
+}
