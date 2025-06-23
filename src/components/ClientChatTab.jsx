@@ -172,7 +172,8 @@ export default function ClientChatTab({
         if (existsIdx !== -1) {
           return prev.map((m, i) =>
             i === existsIdx
-              ? { ...m, ...msg, readBy: m.readBy ?? msg.readBy ?? [] }
+              ? { ...m, ...msg, readBy: msg.readBy?.length ? msg.readBy : m.readBy ?? [] }
+
               : m
           );
         }
@@ -322,10 +323,12 @@ export default function ClientChatTab({
         setSending(false);
         if (ack?.ok) {
           setMessages(prev =>
-            prev.map(msg =>
-              msg.tempId === tempId && ack.message ? ack.message : msg
-            )
-          );
+  prev.map(msg =>
+    msg.tempId === tempId && ack.message
+      ? { ...msg, ...ack.message, readBy: ack.message.readBy ?? msg.readBy ?? [] }
+      : msg
+  )
+);
         } else {
           setError("שגיאה בשליחת ההודעה");
           setMessages(prev => prev.filter(msg => msg.tempId !== tempId));
