@@ -206,6 +206,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
   (msg) => {
+    console.log("[handleNewMessage] Received new message:", msg);
     const fullMsg = msg.fullMsg || msg;
     const normalized = {
       ...fullMsg,
@@ -213,14 +214,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       toBusinessId: fullMsg.toBusinessId || fullMsg.to,
       conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
     };
-
-    // בדיקה אם ההודעה כבר קיימת לפי _id או tempId
-    const alreadyExists = messages.some(
-      m => m._id === normalized._id || m.tempId === normalized.tempId
-    );
-    if (alreadyExists) {
-      return; // לא מוסיפים כפילויות
-    }
 
     if (normalized.conversationId === selectedConversation?._id) {
       dispatchMessages({ type: "append", payload: normalized });
@@ -244,9 +237,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       )
     );
   },
-  [selectedConversation, uniqueMessages, messages] // הוספת messages לתלותות
+  [selectedConversation, uniqueMessages]
 );
-
 
 
 
