@@ -211,56 +211,46 @@ export default function BusinessChatTab({
   };
 
   const sendMessage = () => {
-  if (sending) return;
-  const text = input.trim();
-  if (!text || !socket) return;
+    if (sending) return;
+    const text = input.trim();
+    if (!text || !socket) return;
 
-  // בדיקת שדות חובה לפני שליחה
-  if (!conversationId || !businessId || !customerId) {
-    console.warn("[sendMessage] Missing required fields:", { conversationId, businessId, customerId });
-    alert("לא ניתן לשלוח הודעה: פרטים חסרים.");
-    return;
-  }
-
-  console.log("[sendMessage] Sending message with data:", {
-    conversationId,
-    from: businessId,
-    to: customerId,
-    text,
-  });
-
-  setSending(true);
-  const tempId = uuidv4();
-  const optimistic = {
-    _id: tempId,
-    conversationId,
-    from: businessId,
-    to: customerId,
-    text,
-    timestamp: new Date().toISOString(),
-    sending: true,
-    tempId,
-  };
-  dispatchMessages({ type: "append", payload: optimistic });
-  setInput("");
-
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: businessId, to: customerId, text, tempId },
-    (ack) => {
-      setSending(false);
-      if (!ack.ok) {
-        console.warn("[sendMessage] Message sending failed:", ack.error);
-      }
-      dispatchMessages({
-        type: "updateStatus",
-        payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
-      });
+    if (!conversationId || !businessId || !customerId) {
+      console.warn("[sendMessage] Missing required fields:", { conversationId, businessId, customerId });
+      alert("לא ניתן לשלוח הודעה: פרטים חסרים.");
+      return;
     }
-  );
-};
 
+    setSending(true);
+    const tempId = uuidv4();
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      text,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+    dispatchMessages({ type: "append", payload: optimistic });
+    setInput("");
 
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: businessId, to: customerId, text, tempId },
+      (ack) => {
+        setSending(false);
+        if (!ack.ok) {
+          console.warn("[sendMessage] Message sending failed:", ack.error);
+        }
+        dispatchMessages({
+          type: "updateStatus",
+          payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
+        });
+      }
+    );
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -271,7 +261,7 @@ export default function BusinessChatTab({
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: URL.createObjectURL(file),
+      fileUrl: URL.createObjectURL(file), // להציג זמנית
       fileName: file.name,
       fileType: file.type,
       timestamp: new Date().toISOString(),
@@ -288,6 +278,7 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendFile] File sending failed:", ack.error);
           }
+          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת (לא להשאיר URL זמני)
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
@@ -306,7 +297,7 @@ export default function BusinessChatTab({
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: URL.createObjectURL(recordedBlob),
+      fileUrl: URL.createObjectURL(recordedBlob), // להציג זמנית
       fileName: `audio.${recordedBlob.type.split("/")[1]}`,
       fileType: recordedBlob.type,
       fileDuration: timer,
@@ -325,6 +316,7 @@ export default function BusinessChatTab({
           if (!ack.ok) {
             console.warn("[sendAudio] Audio sending failed:", ack.error);
           }
+          // עדכון ההודעה עם ה-URL שקיבלנו מהשרת
           dispatchMessages({
             type: "updateStatus",
             payload: { id: tempId, updates: { ...(ack.message || {}), sending: false, failed: !ack.ok } },
@@ -352,7 +344,7 @@ export default function BusinessChatTab({
             {m.fileUrl ? (
               m.fileType.startsWith("audio") ? (
                 <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} />
-              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
+              ) : m.fileType.startsWith("image") ? (
                 <img src={m.fileUrl} alt={m.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
               ) : (
                 <a href={m.fileUrl} download>{m.fileName}</a>
