@@ -8,6 +8,21 @@ import { useAuth } from "../../../../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
+/** עזר למציאת המשתתף השני בצ'אט */
+function getOtherBusinessId(conversation, myBusinessId) {
+  // אם קיים participantsInfo
+  const info = conversation.participantsInfo?.find(
+    ({ _id }) => _id.toString() !== myBusinessId.toString()
+  );
+  if (info) return info._id.toString();
+
+  // אחרת מתוך participants
+  const raw = conversation.participants.find((p) =>
+    p.toString() !== myBusinessId.toString()
+  );
+  return raw?.toString() || "";
+}
+
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketRef = useRef(null);
   const socketInitializedRef = useRef(false);
@@ -15,17 +30,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const fileInputRef = useRef(null);
 
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
-
   const refreshAccessToken = useCallback(async () => {
     const token = await refreshAccessTokenOriginal();
-    console.log("Refreshed access token:", token);
     return token;
   }, [refreshAccessTokenOriginal]);
-
-  const logout = useCallback(() => {
-    console.log("Logging out user");
-    logoutOriginal();
-  }, [logoutOriginal]);
+  const logout = useCallback(() => logoutOriginal(), [logoutOriginal]);
 
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -34,94 +43,65 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
 
+  /** מסנן כפילויות לפי _id/tempId/timestamp */
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
-    const filtered = msgs.filter((m) => {
+    return msgs.filter((m) => {
       const id = m._id?.toString() || m.tempId || m.timestamp;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
-    return filtered;
   }, []);
 
+  /** טוען את רשימת השיחות */
   const fetchConversations = useCallback(async () => {
     try {
       const token = await refreshAccessToken();
-      if (!token) {
-        console.warn("No token available for fetchConversations");
-        return;
-      }
-      console.log("Fetching conversations with token:", token);
+      if (!token) return;
       const res = await API.get("/business-chat/my-conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Conversations response:", res.data);
       const convsRaw = res.data.conversations || [];
       const convs = convsRaw.map((c) => ({
         ...c,
         messages: Array.isArray(c.messages) ? c.messages : [],
       }));
       setConversations(convs);
-      if (!selectedConversation && convs.length > 0) {
+      if (!selectedConversation && convs.length) {
         setSelectedConversation(convs[0]);
       }
     } catch (err) {
       console.error("Error fetching conversations:", err);
-      setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
   }, [refreshAccessToken, selectedConversation]);
 
+  /** גלילה לתחתית הרשימה */
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  /** חיבור לסוקט */
   useEffect(() => {
-    if (!myBusinessId) {
-      console.warn("No myBusinessId provided, skipping socket setup");
-      return;
-    }
-    if (socketInitializedRef.current) {
-      console.log("Socket already initialized, skipping setup");
-      return;
-    }
+    if (!myBusinessId || socketInitializedRef.current) return;
     socketInitializedRef.current = true;
 
     async function setupSocket() {
       const token = await refreshAccessToken();
-      if (!token) {
-        console.warn("No token available for socket connection");
-        return;
-      }
-      console.log("Setting up socket connection with token:", token);
-
+      if (!token) return;
       const sock = io(SOCKET_URL, {
         path: "/socket.io",
-        auth: {
-          token,
-          role: "business",
-          businessId: myBusinessId,
-          businessName: myBusinessName,
-        },
+        auth: { token, role: "business", businessId: myBusinessId, businessName: myBusinessName },
         transports: ["websocket"],
       });
-
       socketRef.current = sock;
 
-      sock.on("connect", () => {
-        console.log("Socket connected:", sock.id);
-        fetchConversations();
-      });
-
-      sock.on("connect_error", (err) => {
-        console.error("Socket connection error:", err.message);
-      });
-
+      sock.on("connect", () => fetchConversations());
+      sock.on("connect_error", (err) => console.error("Socket error:", err.message));
       sock.on("tokenExpired", async () => {
-        console.log("Socket token expired, refreshing...");
         const newToken = await refreshAccessToken();
-        if (!newToken) {
-          console.warn("Failed to refresh token, logging out");
-          logout();
-          return;
-        }
+        if (!newToken) return logout();
         sock.auth.token = newToken;
         sock.disconnect();
         sock.connect();
@@ -129,44 +109,36 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     }
 
     setupSocket();
-
     return () => {
-      if (socketRef.current) {
-        console.log("Disconnecting socket");
-        socketRef.current.disconnect();
-        socketRef.current = null;
-        socketInitializedRef.current = false;
-      }
+      socketRef.current?.disconnect();
+      socketInitializedRef.current = false;
+      socketRef.current = null;
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout, fetchConversations]);
 
+  /** טעינת הודעות כשבוחרים שיחה */
   useEffect(() => {
-    if (!socketRef.current || !selectedConversation) {
+    const sock = socketRef.current;
+    if (!sock || !selectedConversation) {
       setMessages([]);
       return;
     }
     const convId = selectedConversation._id;
-    console.log("Joining conversation room:", convId);
-    socketRef.current.emit("joinConversation", convId);
+    sock.emit("joinConversation", convId);
 
     (async () => {
       try {
         const token = await refreshAccessToken();
-        if (!token) {
-          console.warn("No token available for fetch messages");
-          return;
-        }
-        console.log(`Fetching messages for conversation ${convId} with token`, token);
+        if (!token) return;
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("Messages response:", res.data);
-        const normMsgs = (res.data.messages || []).map((msg) => ({
+        const norm = (res.data.messages || []).map((msg) => ({
           ...msg,
           fromBusinessId: msg.fromBusinessId || msg.from,
           toBusinessId: msg.toBusinessId || msg.to,
         }));
-        setMessages(uniqueMessages(normMsgs));
+        setMessages(uniqueMessages(norm));
       } catch (err) {
         console.error("Error fetching messages:", err);
         setMessages([]);
@@ -174,140 +146,103 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     })();
 
     return () => {
-      console.log("Leaving conversation room:", convId);
-      socketRef.current.emit("leaveConversation", convId);
+      sock.emit("leaveConversation", convId);
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
+  /** האזנה ל־newMessage */
   useEffect(() => {
-    if (!socketRef.current || !selectedConversation) return;
-
+    const sock = socketRef.current;
+    if (!sock || !selectedConversation) return;
     const handler = (msg) => {
-      console.log("Received newMessage:", msg);
-      const fullMsg = msg.fullMsg || msg;
-      const normalized = {
-        ...fullMsg,
-        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+      const full = msg.fullMsg || msg;
+      const m = {
+        ...full,
+        fromBusinessId: full.fromBusinessId || full.from,
+        toBusinessId: full.toBusinessId || full.to,
       };
-
-      if (normalized.conversationId === selectedConversation._id) {
-        setMessages((prev) => uniqueMessages([...prev, normalized]));
+      if (m.conversationId === selectedConversation._id) {
+        setMessages((prev) => uniqueMessages([...prev, m]));
       }
-
       setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === normalized.conversationId
-            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
-            : conv
+        prev.map((c) =>
+          c._id === m.conversationId
+            ? { ...c, messages: uniqueMessages([...(c.messages||[]), m]) }
+            : c
         )
       );
     };
-
-    socketRef.current.off("newMessage", handler);
-    socketRef.current.on("newMessage", handler);
-
-    return () => {
-      socketRef.current.off("newMessage", handler);
-    };
+    sock.on("newMessage", handler);
+    return () => sock.off("newMessage", handler);
   }, [selectedConversation, uniqueMessages]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  /** גלילה אוטומטית */
+  useEffect(scrollToBottom, [messages, scrollToBottom]);
 
+  /** מוסיף הודעה אופטימית לשני הסטייטים */
+  const appendOptimistic = useCallback((convId, msg) => {
+    setMessages((prev) => uniqueMessages([...prev, msg]));
+    setConversations((prev) =>
+      prev.map((c) =>
+        c._id === convId
+          ? { ...c, messages: uniqueMessages([...(c.messages||[]), msg]) }
+          : c
+      )
+    );
+  }, [uniqueMessages]);
+
+  /** שליחת טקסט */
   const sendMessage = () => {
-  if (isSending) {
-    console.warn("Already sending message, aborting.");
-    return;
-  }
-  if (!input.trim() || !selectedConversation || !socketRef.current) {
-    console.warn("Cannot send message: missing input, conversation, or socket");
-    return;
-  }
+    if (isSending || !input.trim() || !selectedConversation) return;
+    setIsSending(true);
 
-  setIsSending(true);
+    const otherId = getOtherBusinessId(selectedConversation, myBusinessId);
+    const payload = {
+      conversationId: selectedConversation._id.toString(),
+      from: myBusinessId.toString(),
+      to: otherId,
+      text: input.trim(),
+    };
+    const optimistic = {
+      ...payload,
+      _id: "pending-" + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toISOString(),
+      fromBusinessId: payload.from,
+      toBusinessId: payload.to,
+      sending: true,
+    };
 
-  // מצא את מזהה הצד השני בצורה בטוחה
-  let otherId =
-    selectedConversation.participantsInfo?.find(
-      (b) => b._id.toString() !== myBusinessId.toString()
-    )?._id ||
-    selectedConversation.participants.find((id) => {
-      if (typeof id === "object" && id !== null) {
-        return id.toString() !== myBusinessId.toString();
+    appendOptimistic(selectedConversation._id, optimistic);
+    setInput("");
+
+    socketRef.current.emit("sendMessage", payload, (ack) => {
+      setIsSending(false);
+      if (!ack.ok) {
+        // הסרת האופטימית
+        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
+        alert("שליחת הודעה נכשלה: " + ack.error);
+      } else {
+        const real = {
+          ...ack.message,
+          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+          toBusinessId: ack.message.toBusinessId || ack.message.to,
+        };
+        setMessages((prev) =>
+          uniqueMessages([...prev.filter((m) => m._id !== optimistic._id), real])
+        );
       }
-      return id !== myBusinessId.toString();
     });
-
-  // המרה בטוחה למחרוזת מזהה
-  if (typeof otherId === "object" && otherId !== null) {
-    if (typeof otherId._id !== "undefined") {
-      otherId = otherId._id.toString();
-    } else if (typeof otherId.toString === "function") {
-      otherId = otherId.toString();
-    } else {
-      otherId = "";
-    }
-  } else {
-    otherId = otherId.toString();
-  }
-
-  const payload = {
-    conversationId: selectedConversation._id.toString(),
-    from: myBusinessId.toString(),
-    to: otherId,
-    text: input.trim(),
   };
 
-  const optimistic = {
-    ...payload,
-    timestamp: new Date().toISOString(),
-    _id: "pending-" + Math.random().toString(36).substr(2, 9),
-    fromBusinessId: payload.from,
-    toBusinessId: payload.to,
-    sending: true,
-  };
-
-  console.log("Sending message:", payload);
-  setMessages((prev) => uniqueMessages([...prev, optimistic]));
-  setInput("");
-
-  socketRef.current.emit("sendMessage", payload, (ack) => {
-    setIsSending(false);
-    if (!ack.ok) {
-      alert("שליחת הודעה נכשלה: " + ack.error);
-      setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
-    } else if (ack.message?._id) {
-      const real = {
-        ...ack.message,
-        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-        toBusinessId: ack.message.toBusinessId || ack.message.to,
-      };
-      setMessages((prev) =>
-        uniqueMessages([...prev.filter((m) => m._id !== optimistic._id), real])
-      );
-    }
-  });
-};
-
-
-  const handleAttach = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = null;
-      fileInputRef.current.click();
-    }
-  };
-
+  /** טענת קובץ */
+  const handleAttach = () => fileInputRef.current?.click();
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file || !socketRef.current || !selectedConversation) return;
-
+    if (!file || !selectedConversation) return;
     setIsSending(true);
 
     const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
-    const toBusinessId = selectedConversation.participants.find((id) => id !== myBusinessId);
-
+    const toBusinessId = getOtherBusinessId(selectedConversation, myBusinessId);
     const optimisticMsg = {
       _id: tempId,
       conversationId: selectedConversation._id,
@@ -320,24 +255,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       sending: true,
     };
 
-    setMessages((prev) => uniqueMessages([...prev, optimisticMsg]));
-
-    setConversations((prevConvs) =>
-      prevConvs.map((conv) => {
-        if (conv._id === selectedConversation._id) {
-          const msgs = Array.isArray(conv.messages) ? conv.messages : [];
-          return {
-            ...conv,
-            messages: uniqueMessages([...msgs, optimisticMsg]),
-          };
-        }
-        return conv;
-      })
-    );
+    appendOptimistic(selectedConversation._id, optimisticMsg);
 
     const reader = new FileReader();
     reader.onload = () => {
-      console.log("Uploading file:", file.name);
       socketRef.current.emit(
         "sendFile",
         {
@@ -352,42 +273,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         (ack) => {
           setIsSending(false);
           if (!ack.ok) {
-            alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה לא ידועה"));
             setMessages((prev) => prev.filter((m) => m._id !== tempId));
-            setConversations((prevConvs) =>
-              prevConvs.map((conv) => {
-                if (conv._id === selectedConversation._id) {
-                  const msgs = Array.isArray(conv.messages)
-                    ? conv.messages.filter((m) => m._id !== tempId)
-                    : [];
-                  return { ...conv, messages: msgs };
-                }
-                return conv;
-              })
-            );
-          } else if (ack.message?._id) {
-            const realMsg = {
-              ...ack.message,
-              fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-              toBusinessId: ack.message.toBusinessId || ack.message.to,
-            };
-            setMessages((prev) =>
-              uniqueMessages([...prev.filter((m) => m._id !== tempId), realMsg])
-            );
-            setConversations((prevConvs) =>
-              prevConvs.map((conv) => {
-                if (conv._id === selectedConversation._id) {
-                  const msgs = Array.isArray(conv.messages)
-                    ? conv.messages.filter((m) => m._id !== tempId)
-                    : [];
-                  return {
-                    ...conv,
-                    messages: uniqueMessages([...msgs, realMsg]),
-                  };
-                }
-                return conv;
-              })
-            );
+            alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה"));
           }
         }
       );
@@ -395,285 +282,111 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     reader.readAsArrayBuffer(file);
   };
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
   return (
-    <Box
-      sx={{
-        width: "100%",
-        minHeight: 540,
-        height: "70vh",
-        background: "#f8f7ff",
-        borderRadius: "18px",
-        boxShadow: 2,
-        display: "flex",
-        overflow: "hidden",
-      }}
-    >
-      {/* עמודת שיחות */}
-      <Box
-        sx={{
-          width: 270,
-          borderLeft: "1px solid #eee",
-          background: "#fff",
-          overflowY: "auto",
-        }}
-      >
-        <Box
-          sx={{
-            fontWeight: 700,
-            color: "#764ae6",
-            fontSize: 19,
-            px: 2.5,
-            py: 2,
-          }}
-        >
-          הודעות עסקיות
-        </Box>
-        {conversations.length === 0 && (
-          <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>
-            אין שיחות עסקיות
-          </Box>
-        )}
-        {conversations
-          .filter((conv) => conv && Array.isArray(conv.messages))
-          .map((conv) => {
-            const idx = conv.participants.findIndex((id) => id !== myBusinessId);
-            const partner = conv.participantsInfo?.[idx] || { businessName: "עסק" };
-            const lastMsg =
-              conv.messages.length > 0 ? conv.messages[conv.messages.length - 1].text : "";
-            return (
-              <Box
-                key={conv._id}
-                sx={{
-                  px: 2.5,
-                  py: 1.5,
-                  cursor: "pointer",
-                  borderBottom: "1px solid #f3f0fa",
-                  background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
-                }}
-                onClick={() => {
-                  console.log("Selected conversation:", conv._id);
-                  setSelectedConversation(conv);
-                }}
-              >
-                <Box sx={{ fontWeight: 600 }}>{partner.businessName}</Box>
-                <Box
-                  sx={{
-                    color: "#7c6ae6",
-                    fontSize: 13,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {lastMsg || "אין הודעות"}
-                </Box>
+    <Box sx={{ width: "100%", height: "70vh", display: "flex", background: "#f8f7ff", borderRadius: 2 }}>
+      {/* שיחות */}
+      <Box sx={{ width: 270, background: "#fff", borderLeft: "1px solid #eee", overflowY: "auto" }}>
+        <Box sx={{ p: 2, fontWeight: 700, color: "#764ae6" }}>הודעות עסקיות</Box>
+        {conversations.map((conv) => {
+          const partnerName =
+            conv.participantsInfo?.find(({ _id }) => _id.toString() !== myBusinessId.toString())
+              ?.businessName || "עסק";
+          const lastText = conv.messages?.slice(-1)[0]?.text || "אין הודעות";
+          return (
+            <Box
+              key={conv._id}
+              onClick={() => setSelectedConversation(conv)}
+              sx={{
+                p: 2,
+                cursor: "pointer",
+                background: selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
+                borderBottom: "1px solid #f3f0fa",
+              }}
+            >
+              <Box sx={{ fontWeight: 600 }}>{partnerName}</Box>
+              <Box sx={{ fontSize: 13, color: "#7c6ae6", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {lastText}
               </Box>
-            );
-          })}
+            </Box>
+          );
+        })}
       </Box>
 
-      {/* עמודת הודעות */}
-      <Box
-        sx={{
-          flex: 1,
-          position: "relative",
-          background: "#f8f7ff",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Box sx={{ flex: 1, px: 2, pt: 2, overflowY: "auto" }}>
+      {/* הודעות */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", position: "relative" }}>
+        <Box sx={{ flex: 1, p: 2, overflowY: "auto" }}>
           {selectedConversation ? (
-            Array.isArray(messages) && messages.length > 0 ? (
+            messages.length ? (
               <>
-                <Box
-                  sx={{
-                    mb: 2,
-                    color: "#6d4fc4",
-                    fontWeight: 600,
-                    fontSize: 17,
-                  }}
-                >
+                <Box sx={{ mb: 2, fontSize: 17, fontWeight: 600, color: "#6d4fc4" }}>
                   שיחה עם{" "}
-                  {selectedConversation.participantsInfo?.find(
-                    (b) => b._id !== myBusinessId
-                  )?.businessName || "עסק"}
+                  {
+                    selectedConversation.participantsInfo?.find(
+                      ({ _id }) => _id.toString() !== myBusinessId.toString()
+                    )?.businessName
+                  }
                 </Box>
-                {messages.map((msg, i) => (
+                {messages.map((msg) => (
                   <Box
-                    key={msg._id ? msg._id.toString() : `pending-${i}`}
+                    key={msg._id}
                     sx={{
-                      background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
-                      alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
-                      p: 1.2,
-                      borderRadius: 2,
                       mb: 1,
+                      p: 1,
                       maxWidth: 340,
+                      alignSelf: msg.fromBusinessId === myBusinessId ? "flex-end" : "flex-start",
+                      background: msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
+                      borderRadius: 2,
                       boxShadow: 1,
                       wordBreak: "break-word",
                     }}
                   >
                     {msg.fileUrl ? (
-                      msg.fileType && msg.fileType.startsWith("audio") ? (
+                      msg.fileType.startsWith("image") ? (
+                        <img src={msg.fileUrl} alt={msg.fileName} style={{ maxWidth: 200, borderRadius: 8 }} />
+                      ) : msg.fileType.startsWith("audio") ? (
                         <audio controls src={msg.fileUrl} />
-                      ) : msg.fileType && msg.fileType.startsWith("image") ? (
-                        <img
-                          src={msg.fileUrl}
-                          alt={msg.fileName || "image"}
-                          style={{ maxWidth: 200, borderRadius: 8 }}
-                        />
                       ) : (
-                        <a
-                          href={msg.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          download
-                        >
-                          {msg.fileName || "קובץ להורדה"}
-                        </a>
+                        <a href={msg.fileUrl} download>{msg.fileName}</a>
                       )
                     ) : (
-                      <Box>{msg.text}</Box>
+                      msg.text
                     )}
-                    <Box
-                      sx={{
-                        fontSize: 11,
-                        color: "#888",
-                        mt: 0.5,
-                        textAlign: "left",
-                      }}
-                    >
-                      {msg.timestamp &&
-                        new Date(msg.timestamp).toLocaleTimeString("he-IL", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      {msg.sending && <span> ⏳</span>}
-                      {msg.failed && <span> ❌</span>}
+                    <Box sx={{ fontSize: 11, color: "#888", mt: 0.5 }}>
+                      {new Date(msg.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
+                      {msg.sending && " ⏳"}
                     </Box>
                   </Box>
                 ))}
                 <div ref={messagesEndRef} />
               </>
             ) : (
-              <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
+              <Box sx={{ textAlign: "center", mt: 12, color: "#bbb" }}>
                 {error || "אין הודעות בשיחה זו"}
               </Box>
             )
           ) : (
-            <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-              בחרי שיחה עסקית מהעמודה הימנית
-            </Box>
+            <Box sx={{ textAlign: "center", mt: 12, color: "#bbb" }}>בחר/י שיחה מהצד</Box>
           )}
         </Box>
 
+        {/* שורת כתיבה */}
         {selectedConversation && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!isSending && input.trim()) {
-                sendMessage();
-              }
-            }}
-            style={{
-              display: "flex",
-              gap: 8,
-              padding: 16,
-              borderTop: "1px solid #eee",
-              alignItems: "center",
-              backgroundColor: "#fff",
-              boxShadow: "0 -2px 8px rgba(0,0,0,0.1)",
-              borderRadius: "0 0 18px 18px",
-            }}
-          >
-            {/* כפתור הוספת קובץ */}
-            <Button
-              type="button"
-              onClick={handleAttach}
-              sx={{
-                minWidth: 40,
-                minHeight: 40,
-                fontSize: "1.6rem",
-                borderRadius: "50%",
-                backgroundColor: "#e3dffc",
-                color: "#7153dd",
-                boxShadow: "0 6px 15px rgba(111, 94, 203, 0.4)",
-                "&:hover": {
-                  backgroundColor: "#c7bcf8",
-                  boxShadow: "0 8px 20px rgba(111, 94, 203, 0.7)",
-                },
-              }}
-              title="צרף קובץ"
-            >
-              📎
-            </Button>
-
-            {/* שורת הכתיבה */}
+          <Box component="form" onSubmit={(e) => { e.preventDefault(); sendMessage(); }} sx={{ display: "flex", p: 2, gap: 1, background: "#fff", borderTop: "1px solid #eee" }}>
+            <Button onClick={handleAttach} title="צרף קובץ">📎</Button>
             <TextField
               fullWidth
-              size="medium"
               placeholder="כתוב הודעה..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              autoComplete="off"
-              sx={{
-                backgroundColor: "#f0efff",
-                borderRadius: "20px",
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "20px",
-                  "& fieldset": { borderColor: "#bbb" },
-                  "&:hover fieldset": { borderColor: "#7153dd" },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#7153dd",
-                    boxShadow: "0 0 6px rgba(113, 83, 221, 0.5)",
-                  },
-                },
-                input: { padding: "14px 16px", fontSize: "1rem" },
-                height: 40,
-              }}
+              onKeyDown={(e) => e.key === "Enter" && !isSending && sendMessage()}
             />
-
-            {/* כפתור השליחה */}
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                minWidth: 80,
-                minHeight: 40,
-                fontWeight: 700,
-                borderRadius: "20px",
-                padding: "0 24px",
-                fontSize: "1.15rem",
-                boxShadow: "0 6px 15px rgba(113, 83, 221, 0.6)",
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "#5d3dc7",
-                  boxShadow: "0 8px 20px rgba(92, 62, 199, 0.8)",
-                },
-              }}
-              disabled={!input.trim() || isSending}
-            >
-              שלח
-            </Button>
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-              accept="image/*,audio/*,video/*,application/pdf"
-            />
-          </form>
+            <Button type="submit" variant="contained" disabled={!input.trim() || isSending}>שלח</Button>
+            <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleFileChange} accept="image/*,audio/*,video/*,application/pdf" />
+          </Box>
         )}
 
         {onClose && (
-          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
-            ✖
-          </Button>
+          <Button onClick={onClose} sx={{ position: "absolute", top: 8, left: 8 }}>✖</Button>
         )}
       </Box>
     </Box>
